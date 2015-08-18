@@ -11,7 +11,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ColumnActio
 
 public abstract class AbstractFillIfEmpty extends AbstractActionMetadata implements ColumnAction {
 
-    public static final String DEFAULT_VALUE_PARAMETER = "default_value"; //$NON-NLS-1$
+    public static final String DEFAULT_VALUE_PARAMETER = "empty_default_value"; //$NON-NLS-1$
 
     @Override
     public String getCategory() {

@@ -12,15 +12,100 @@
         <li>datasets : on dataset list change, set the default preparation id in each element</li>
      </ul>
      * @requires data-prep.services.dataset.service:DatasetService
+     * @requires data-prep.services.dataset.service:DatasetListSortService
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires talend.widget.service:TalendConfirmService
      * @requires data-prep.services.utils.service:MessageService
      * @requires data-prep.services.uploadWorkflowService:UploadWorkflowService
      */
-    function DatasetListCtrl($stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService, UploadWorkflowService) {
+    function DatasetListCtrl($stateParams, DatasetService, DatasetListSortService, PlaygroundService,
+                             TalendConfirmService, MessageService, UploadWorkflowService) {
         var vm = this;
+
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
+
+        /**
+         * @ngdoc property
+         * @name sortList
+         * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description The sort list
+         * @type {array}
+         */
+        vm.sortList = DatasetListSortService.getSortList();
+
+        /**
+         * @ngdoc property
+         * @name orderList
+         * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description The sort order list
+         * @type {string}
+         */
+        vm.orderList = DatasetListSortService.getOrderList();
+
+        /**
+         * @ngdoc property
+         * @name sortSelected
+         * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Selected sort.
+         * @type {object}
+         */
+        vm.sortSelected = DatasetListSortService.getSortItem();
+
+        /**
+         * @ngdoc property
+         * @name sortOrderSelected
+         * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Selected sort order.
+         * @type {object}
+         */
+        vm.sortOrderSelected = DatasetListSortService.getOrderItem();
+
+        /**
+         * @ngdoc method
+         * @name sort
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description sort dataset by sortType by calling refreshDatasets from DatasetService
+         * @param {object} sortType Criteria to sort
+         */
+        vm.updateSortBy = function(sortType) {
+            if(vm.sortSelected === sortType) {
+                return;
+            }
+
+            var oldSort = vm.sortSelected;
+            vm.sortSelected = sortType;
+            DatasetListSortService.setSort(sortType.id);
+
+            DatasetService.refreshDatasets()
+                .catch(function() {
+                    vm.sortSelected = oldSort;
+                    DatasetListSortService.setSort(oldSort.id);
+                });
+        };
+
+        /**
+         * @ngdoc method
+         * @name sort
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description sort dataset in order (ASC or DESC) by calling refreshDatasets from DatasetService
+         * @param {object} order Sort order ASC(ascending) or DESC(descending)
+         */
+        vm.updateSortOrder = function(order) {
+            if(vm.sortOrderSelected === order) {
+                return;
+            }
+
+            var oldSort = vm.sortOrderSelected;
+            vm.sortOrderSelected = order;
+            DatasetListSortService.setOrder(order.id);
+
+            DatasetService.refreshDatasets()
+                .catch(function() {
+                    vm.sortOrderSelected = oldSort;
+                    DatasetListSortService.setOrder(oldSort.id);
+                });
+        };
 
         /**
          * @ngdoc method
@@ -53,26 +138,6 @@
 
         /**
          * @ngdoc method
-         * @name toggleFavorite
-         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description toogle dataset as Favorite or not
-         * @param {object} dataset - the dataset to be set or unset favorite
-         */
-        vm.toggleFavorite = function(dataset) {
-            DatasetService.toggleFavorite(dataset);//just a delegate
-        };
-
-        /**
-         * @ngdoc method
-         * @name processCertification
-         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description Ask certification for a dataset
-         * @param {object} dataset - the dataset to ask certifiction for
-         */
-        vm.processCertification = DatasetService.processCertification;
-
-        /**
-         * @ngdoc method
          * @name loadUrlSelectedDataset
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description [PRIVATE] Load playground with provided dataset id, if present in route param
@@ -97,8 +162,6 @@
         DatasetService
             .getDatasets()
             .then(loadUrlSelectedDataset);
-
-
     }
 
     /**

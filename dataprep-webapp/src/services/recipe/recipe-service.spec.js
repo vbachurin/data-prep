@@ -442,440 +442,574 @@ describe('Recipe service', function () {
         spyOn(TransformationService, 'initParamsValues').and.callThrough();
     }));
 
-    it('should reset recipe item list when no preparation is loaded', inject(function(RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = null;
-        RecipeService.getRecipe()[0] = {};
-        expect(RecipeService.getRecipe().length).toBeTruthy();
+    describe('refresh', function() {
+        it('should reset recipe item list when no preparation is loaded', inject(function(RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = null;
+            RecipeService.getRecipe()[0] = {};
+            expect(RecipeService.getRecipe().length).toBeTruthy();
 
-        //when
-        RecipeService.refresh();
+            //when
+            RecipeService.refresh();
 
-        //then
-        expect(RecipeService.getRecipe().length).toBe(0);
-    }));
+            //then
+            expect(RecipeService.getRecipe().length).toBe(0);
+        }));
 
-    it('should get recipe with no params when a preparation is loaded', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+        it('should get recipe with no params when a preparation is loaded', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
 
-        //when
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //when
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        var recipe = RecipeService.getRecipe();
-        expect(recipe.length).toBe(6);
-        expect(recipe[0].column.name).toBe('country');
-        expect(recipe[0].transformation.stepId).toBe('329ccf0cce42db4dc0ffa9f389c05ff7d75c1748');
-        expect(recipe[0].transformation.name).toBe('uppercase');
-        expect(recipe[0].transformation.parameters).toEqual([]);
-        expect(recipe[0].transformation.items).toEqual([]);
+            //then
+            var recipe = RecipeService.getRecipe();
+            expect(recipe.length).toBe(6);
+            expect(recipe[0].column.name).toBe('country');
+            expect(recipe[0].transformation.stepId).toBe('329ccf0cce42db4dc0ffa9f389c05ff7d75c1748');
+            expect(recipe[0].transformation.name).toBe('uppercase');
+            expect(recipe[0].transformation.parameters).toEqual([]);
+            expect(recipe[0].transformation.items).toEqual([]);
 
-        expect(recipe[2].column.name).toBe('campain');
-        expect(recipe[2].transformation.stepId).toBe('0c58ee3034114eb620b8e598e02c74172a43e96a');
-        expect(recipe[2].transformation.name).toBe('negate');
-        expect(recipe[2].transformation.parameters).toEqual([]);
-        expect(recipe[2].transformation.items).toEqual([]);
-    }));
+            expect(recipe[2].column.name).toBe('campain');
+            expect(recipe[2].transformation.stepId).toBe('0c58ee3034114eb620b8e598e02c74172a43e96a');
+            expect(recipe[2].transformation.name).toBe('negate');
+            expect(recipe[2].transformation.parameters).toEqual([]);
+            expect(recipe[2].transformation.items).toEqual([]);
+        }));
 
-    it('should get recipe from preparation and init recipe simple params', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+        it('should get recipe from preparation and init recipe simple params', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
 
-        //when
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //when
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        var recipe = RecipeService.getRecipe();
-        expect(recipe.length).toBe(6);
+            //then
+            var recipe = RecipeService.getRecipe();
+            expect(recipe.length).toBe(6);
 
-        expect(recipe[1].column.name).toBe('gender');
-        expect(recipe[1].transformation.stepId).toBe('ec87e2acda2b181fc7eb7c22d91e128c6d0434fc');
-        expect(recipe[1].transformation.name).toBe('fillemptywithdefault');
-        expect(recipe[1].transformation.items).toEqual([]);
-        expect(recipe[1].transformation.parameters).toEqual([
-            {
-                name: 'default_value',
-                type: 'string',
-                description: 'parameter.default_value.desc',
-                label: 'parameter.default_value.label',
-                default: '',
-                initialValue: 'M',
-                value: 'M',
-                inputType: 'text'
-            }]);
+            expect(recipe[1].column.name).toBe('gender');
+            expect(recipe[1].transformation.stepId).toBe('ec87e2acda2b181fc7eb7c22d91e128c6d0434fc');
+            expect(recipe[1].transformation.name).toBe('fillemptywithdefault');
+            expect(recipe[1].transformation.items).toEqual([]);
+            expect(recipe[1].transformation.parameters).toEqual([
+                {
+                    name: 'default_value',
+                    type: 'string',
+                    description: 'parameter.default_value.desc',
+                    label: 'parameter.default_value.label',
+                    default: '',
+                    initialValue: 'M',
+                    value: 'M',
+                    inputType: 'text'
+                }]);
 
-        expect(recipe[3].column.name).toBe('first_item');
-        expect(recipe[3].transformation.stepId).toBe('1e1f41dd6d4554705abebd8d1896022acdbad217');
-        expect(recipe[3].transformation.name).toBe('cut');
-        expect(recipe[3].transformation.items).toEqual([]);
-        expect(recipe[3].transformation.parameters).toEqual([
-            {
-                name: 'pattern',
-                type: 'string',
-                description: 'parameter.pattern.desc',
-                label: 'parameter.pattern.label',
-                default: '',
-                initialValue: '.',
-                value: '.',
-                inputType: 'text'
-            }]);
-    }));
+            expect(recipe[3].column.name).toBe('first_item');
+            expect(recipe[3].transformation.stepId).toBe('1e1f41dd6d4554705abebd8d1896022acdbad217');
+            expect(recipe[3].transformation.name).toBe('cut');
+            expect(recipe[3].transformation.items).toEqual([]);
+            expect(recipe[3].transformation.parameters).toEqual([
+                {
+                    name: 'pattern',
+                    type: 'string',
+                    description: 'parameter.pattern.desc',
+                    label: 'parameter.pattern.label',
+                    default: '',
+                    initialValue: '.',
+                    value: '.',
+                    inputType: 'text'
+                }]);
+        }));
 
-    it('should get recipe from preparation and init recipe choices', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+        it('should get recipe from preparation and init recipe choices', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
 
-        //when
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //when
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        var recipe = RecipeService.getRecipe();
-        expect(recipe.length).toBe(6);
+            //then
+            var recipe = RecipeService.getRecipe();
+            expect(recipe.length).toBe(6);
 
-        expect(recipe[5].column.name).toBe('campain');
-        expect(recipe[5].transformation.stepId).toBe('2aba0e60054728f046d35315830bce9abc3c5249');
-        expect(recipe[5].transformation.name).toBe('fillemptywithdefaultboolean');
-        expect(recipe[5].transformation.parameters).toEqual([]);
-        expect(recipe[5].transformation.items).toEqual([
-            {
-                name: 'default_value',
-                category: 'categ',
-                values: [
-                    { name: 'True', parameters: [], default: true },
-                    { name: 'False', parameters: [], default: false }
-                ],
-                description: 'parameter.default_value.desc',
-                label: 'parameter.default_value.label',
-                initialValue: { name: 'True', parameters: [], default: true },
-                selectedValue: { name: 'True', parameters: [], default: true }
-            }]);
-    }));
+            expect(recipe[5].column.name).toBe('campain');
+            expect(recipe[5].transformation.stepId).toBe('2aba0e60054728f046d35315830bce9abc3c5249');
+            expect(recipe[5].transformation.name).toBe('fillemptywithdefaultboolean');
+            expect(recipe[5].transformation.parameters).toEqual([]);
+            expect(recipe[5].transformation.items).toEqual([
+                {
+                    name: 'default_value',
+                    category: 'categ',
+                    values: [
+                        { name: 'True', parameters: [], default: true },
+                        { name: 'False', parameters: [], default: false }
+                    ],
+                    description: 'parameter.default_value.desc',
+                    label: 'parameter.default_value.label',
+                    initialValue: { name: 'True', parameters: [], default: true },
+                    selectedValue: { name: 'True', parameters: [], default: true }
+                }]);
+        }));
 
-    it('should get recipe from preparation and init dynamic params', inject(function($rootScope, RecipeService, TransformationService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+        it('should get recipe from preparation and init dynamic params', inject(function($rootScope, RecipeService, TransformationService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
 
-        //when
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //when
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        var recipe = RecipeService.getRecipe();
-        expect(recipe.length).toBe(6);
+            //then
+            var recipe = RecipeService.getRecipe();
+            expect(recipe.length).toBe(6);
 
-        expect(recipe[4].column.name).toBe('uglystate');
-        expect(recipe[4].transformation.stepId).toBe('add60ff0f6de4c703fa75725ada38fb37af065e6');
-        expect(recipe[4].transformation.name).toBe('textclustering');
-        expect(recipe[4].transformation.parameters).toEqual([]);
-        expect(recipe[4].transformation.items).toEqual([]);
-        expect(recipe[4].transformation.cluster).toEqual(expectedInitializedCluster);
+            expect(recipe[4].column.name).toBe('uglystate');
+            expect(recipe[4].transformation.stepId).toBe('add60ff0f6de4c703fa75725ada38fb37af065e6');
+            expect(recipe[4].transformation.name).toBe('textclustering');
+            expect(recipe[4].transformation.parameters).toEqual([]);
+            expect(recipe[4].transformation.items).toEqual([]);
+            expect(recipe[4].transformation.cluster).toEqual(expectedInitializedCluster);
 
-        expect(TransformationService.initDynamicParameters).toHaveBeenCalledWith(recipe[4].transformation, { columnId: '1', preparationId: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4', stepId: '1e1f41dd6d4554705abebd8d1896022acdbad217' });
-        expect(TransformationService.initParamsValues).toHaveBeenCalledWith(recipe[4].transformation, recipe[4].actionParameters.parameters);
-    }));
+            expect(TransformationService.initDynamicParameters).toHaveBeenCalledWith(recipe[4].transformation, { columnId: '1', preparationId: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4', stepId: '1e1f41dd6d4554705abebd8d1896022acdbad217' });
+            expect(TransformationService.initParamsValues).toHaveBeenCalledWith(recipe[4].transformation, recipe[4].actionParameters.parameters);
+        }));
 
-    it('should reuse dynamic params from previous recipe if ids are the same, on refresh', inject(function($rootScope, RecipeService, TransformationService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
-        RecipeService.refresh();
-        $rootScope.$digest();
-        var oldRecipe = RecipeService.getRecipe();
-        expect(TransformationService.initDynamicParameters.calls.count()).toBe(1);
+        it('should reuse dynamic params from previous recipe if ids are the same, on refresh', inject(function($rootScope, RecipeService, TransformationService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+            RecipeService.refresh();
+            $rootScope.$digest();
+            var oldRecipe = RecipeService.getRecipe();
+            expect(TransformationService.initDynamicParameters.calls.count()).toBe(1);
 
-        //when
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //when
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        var recipe = RecipeService.getRecipe();
-        expect(recipe[4].transformation.parameters).toBe(oldRecipe[4].transformation.parameters);
-        expect(recipe[4].transformation.items).toBe(oldRecipe[4].transformation.items);
-        expect(recipe[4].transformation.cluster).toBe(oldRecipe[4].transformation.cluster);
+            //then
+            var recipe = RecipeService.getRecipe();
+            expect(recipe[4].transformation.parameters).toBe(oldRecipe[4].transformation.parameters);
+            expect(recipe[4].transformation.items).toBe(oldRecipe[4].transformation.items);
+            expect(recipe[4].transformation.cluster).toBe(oldRecipe[4].transformation.cluster);
 
-        expect(TransformationService.initDynamicParameters.calls.count()).toBe(1);
-    }));
+            expect(TransformationService.initDynamicParameters.calls.count()).toBe(1);
+        }));
 
-    it('should save steps actions parameters', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+        it('should save steps actions parameters', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
 
-        //when
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //when
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        var recipe = RecipeService.getRecipe();
-        expect(recipe[0].actionParameters).toEqual({ action: 'uppercase', parameters: Object({ column_name: 'country' }) });
-        expect(recipe[1].actionParameters).toEqual({ action: 'fillemptywithdefault', parameters: Object({ default_value: 'M', column_name: 'gender' }) });
-        expect(recipe[2].actionParameters).toEqual({ action: 'negate', parameters: Object({ column_name: 'campain' }) });
-        expect(recipe[3].actionParameters).toEqual({ action: 'cut', parameters: Object({ pattern: '.', column_name: 'first_item' }) });
-        expect(recipe[4].actionParameters).toEqual({ action: 'textclustering', parameters: { Texa: 'Texas', Tixass: 'Texas', 'Tex@s': 'Texas', Massachusetts: 'Massachussets', Masachusetts: 'Massachussets', Massachussetts: 'Massachussets', Massachusets: 'Massachussets', Masachussets: 'Massachussets', column_id: '1', column_name: 'uglystate' }});
-        expect(recipe[5].actionParameters).toEqual({ action: 'fillemptywithdefaultboolean', parameters: Object({ default_value: 'True', column_name: 'campain' }) });
-    }));
+            //then
+            var recipe = RecipeService.getRecipe();
+            expect(recipe[0].actionParameters).toEqual({ action: 'uppercase', parameters: Object({ column_name: 'country' }) });
+            expect(recipe[1].actionParameters).toEqual({ action: 'fillemptywithdefault', parameters: Object({ default_value: 'M', column_name: 'gender' }) });
+            expect(recipe[2].actionParameters).toEqual({ action: 'negate', parameters: Object({ column_name: 'campain' }) });
+            expect(recipe[3].actionParameters).toEqual({ action: 'cut', parameters: Object({ pattern: '.', column_name: 'first_item' }) });
+            expect(recipe[4].actionParameters).toEqual({ action: 'textclustering', parameters: { Texa: 'Texas', Tixass: 'Texas', 'Tex@s': 'Texas', Massachusetts: 'Massachussets', Masachusetts: 'Massachussets', Massachussetts: 'Massachussets', Massachusets: 'Massachussets', Masachussets: 'Massachussets', column_id: '1', column_name: 'uglystate' }});
+            expect(recipe[5].actionParameters).toEqual({ action: 'fillemptywithdefaultboolean', parameters: Object({ default_value: 'True', column_name: 'campain' }) });
+        }));
+    });
 
-    it('should reset current values to initial saved values in param', inject(function(RecipeService, TransformationService) {
-        //given
-        var recipeItem = {
-            column: {id: 'colId'},
-            transformation: {
-                stepId: '329ccf0cce42db4dc0ffa9f389c05ff7d75c1748',
-                name: 'cut',
-                items: [
-                    {
-                        name: 'mode',
-                        type: 'LIST',
-                        values: [
-                            {name: 'regex'},
-                            {name: 'index'}
-                        ]
+    describe('utils modifier', function() {
+
+        it('should reset current values to initial saved values in param', inject(function(RecipeService, TransformationService) {
+            //given
+            var recipeItem = {
+                column: {id: 'colId'},
+                transformation: {
+                    stepId: '329ccf0cce42db4dc0ffa9f389c05ff7d75c1748',
+                    name: 'cut',
+                    items: [
+                        {
+                            name: 'mode',
+                            type: 'LIST',
+                            values: [
+                                {name: 'regex'},
+                                {name: 'index'}
+                            ]
+                        }
+                    ],
+                    parameters: [
+                        {
+                            name: 'param1',
+                            type: 'string',
+                            initialValue: 'myParam1',
+                            inputType: 'text'
+                        }
+                    ],
+                    cluster: {
+                        details: {}
                     }
-                ],
-                parameters: [
-                    {
-                        name: 'param1',
-                        type: 'string',
-                        initialValue: 'myParam1',
-                        inputType: 'text'
-                    }
-                ],
-                cluster: {
-                    details: {}
                 }
-            }
-        };
+            };
 
-        //when
-        RecipeService.resetParams(recipeItem);
+            //when
+            RecipeService.resetParams(recipeItem);
 
-        //then
-        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(recipeItem.transformation.parameters, null);
-        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(recipeItem.transformation.items, 'CHOICE');
-        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(recipeItem.transformation.cluster, 'CLUSTER');
-    }));
+            //then
+            expect(TransformationService.resetParamValue).toHaveBeenCalledWith(recipeItem.transformation.parameters, null);
+            expect(TransformationService.resetParamValue).toHaveBeenCalledWith(recipeItem.transformation.items, 'CHOICE');
+            expect(TransformationService.resetParamValue).toHaveBeenCalledWith(recipeItem.transformation.cluster, 'CLUSTER');
+        }));
 
-    it('should reset current values to initial saved values in param', inject(function(RecipeService) {
-        //given
-        var recipe = [{transformation: {stepId: '0'}},
-            {transformation: {stepId: '1'}},
-            {transformation: {stepId: '2'}},
-            {transformation: {stepId: '3'}}];
-        RecipeService.getRecipe().push(recipe[0], recipe[1], recipe[2], recipe[3]);
+        it('should reset current values to initial saved values in param', inject(function(RecipeService) {
+            //given
+            var recipe = [{transformation: {stepId: '0'}},
+                {transformation: {stepId: '1'}},
+                {transformation: {stepId: '2'}},
+                {transformation: {stepId: '3'}}];
+            RecipeService.getRecipe().push(recipe[0], recipe[1], recipe[2], recipe[3]);
 
-        //when
-        RecipeService.disableStepsAfter(recipe[1]);
+            //when
+            RecipeService.disableStepsAfter(recipe[1]);
 
-        //then
-        expect(recipe[0].inactive).toBeFalsy();
-        expect(recipe[1].inactive).toBeFalsy();
-        expect(recipe[2].inactive).toBeTruthy();
-        expect(recipe[3].inactive).toBeTruthy();
-        expect(RecipeService.getActiveThresholdStep()).toBe(recipe[1]);
-    }));
+            //then
+            expect(recipe[0].inactive).toBeFalsy();
+            expect(recipe[1].inactive).toBeFalsy();
+            expect(recipe[2].inactive).toBeTruthy();
+            expect(recipe[3].inactive).toBeTruthy();
+            expect(RecipeService.getActiveThresholdStep()).toBe(recipe[1]);
+        }));
+    });
 
-    it('should return the step before provided step', inject(function(RecipeService) {
-        //given
-        var recipe = [{transformation: {stepId: '0'}},
-            {transformation: {stepId: '1'}},
-            {transformation: {stepId: '2'}},
-            {transformation: {stepId: '3'}}];
-        RecipeService.getRecipe().push(recipe[0], recipe[1], recipe[2], recipe[3]);
+    describe('getter/checker', function() {
 
-        //when
-        var previous = RecipeService.getPreviousStep(recipe[2]);
+        it('should return the step before provided step', inject(function(RecipeService) {
+            //given
+            var recipe = [{transformation: {stepId: '0'}},
+                {transformation: {stepId: '1'}},
+                {transformation: {stepId: '2'}},
+                {transformation: {stepId: '3'}}];
+            RecipeService.getRecipe().push(recipe[0], recipe[1], recipe[2], recipe[3]);
 
-        //then
-        expect(previous).toBe(recipe[1]);
-    }));
+            //when
+            var previous = RecipeService.getPreviousStep(recipe[2]);
 
-    it('should return the initial step when provided step is the first transformation', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //then
+            expect(previous).toBe(recipe[1]);
+        }));
 
-        //when
-        var previous = RecipeService.getPreviousStep(RecipeService.getRecipe()[0]);
+        it('should return the initial step when provided step is the first transformation', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        expect(previous.transformation.stepId).toBe('f6e172c33bdacbc69bca9d32b2bd78174712a171');
-    }));
+            //when
+            var previous = RecipeService.getPreviousStep(RecipeService.getRecipe()[0]);
 
-    it('should return the wanted step', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //then
+            expect(previous.transformation.stepId).toBe('f6e172c33bdacbc69bca9d32b2bd78174712a171');
+        }));
 
-        var expectedStep = RecipeService.getRecipe()[1];
+        it('should return the wanted step', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //when
-        var result = RecipeService.getStep(1, false);
+            var expectedStep = RecipeService.getRecipe()[1];
 
-        //then
-        expect(result).toBe(expectedStep);
-    }));
+            //when
+            var result = RecipeService.getStep(1, false);
 
-    it('should return null when the index is superior to the recipe length', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //then
+            expect(result).toBe(expectedStep);
+        }));
 
-        //when
-        var result = RecipeService.getStep(25, false);
+        it('should return null when the index is superior to the recipe length', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        expect(result).toBe(null);
-    }));
+            //when
+            var result = RecipeService.getStep(25, false);
 
-    it('should return the last step when the index is superior to the recipe length', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //then
+            expect(result).toBe(null);
+        }));
 
-        var expectedStep = RecipeService.getRecipe()[5];
+        it('should return the last step when the index is superior to the recipe length', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //when
-        var result = RecipeService.getStep(25, true);
+            var expectedStep = RecipeService.getRecipe()[5];
 
-        //then
-        expect(result).toBe(expectedStep);
-    }));
+            //when
+            var result = RecipeService.getStep(25, true);
 
-    it('should return the last active step index', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //then
+            expect(result).toBe(expectedStep);
+        }));
 
-        RecipeService.disableStepsAfter(RecipeService.getRecipe()[2]);
+        it('should return the last active step index', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //when
-        var index = RecipeService.getActiveThresholdStepIndex();
+            RecipeService.disableStepsAfter(RecipeService.getRecipe()[2]);
 
-        //then
-        expect(index).toBe(2);
-    }));
+            //when
+            var index = RecipeService.getActiveThresholdStepIndex();
 
-    it('should return last step index when no specific active step has been set', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //then
+            expect(index).toBe(2);
+        }));
 
-        //when
-        var index = RecipeService.getActiveThresholdStepIndex();
+        it('should return last step index when no specific active step has been set', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        expect(index).toBe(5);
-    }));
+            //when
+            var index = RecipeService.getActiveThresholdStepIndex();
 
-    it('should return the initial state if the index is 0', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //then
+            expect(index).toBe(5);
+        }));
 
-        //when
-        var step = RecipeService.getStepBefore(0);
+        it('should return the initial state if the index is 0', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        expect(step).toEqual({ transformation: {stepId: 'f6e172c33bdacbc69bca9d32b2bd78174712a171' }});
-    }));
+            //when
+            var step = RecipeService.getStepBefore(0);
 
-    it('should return the last step if the index is bigger than the recipe size', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //then
+            expect(step).toEqual({ transformation: {stepId: 'f6e172c33bdacbc69bca9d32b2bd78174712a171' }});
+        }));
 
-        //when
-        var step = RecipeService.getStepBefore(1000);
+        it('should return the last step if the index is bigger than the recipe size', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        expect(step).toEqual(RecipeService.getRecipe()[5]);
-    }));
+            //when
+            var step = RecipeService.getStepBefore(1000);
 
-    it('should return the step before the one identified by the index', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //then
+            expect(step).toEqual(RecipeService.getRecipe()[5]);
+        }));
 
-        //when
-        var step = RecipeService.getStepBefore(2);
+        it('should return the step before the one identified by the index', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        expect(step).toEqual(RecipeService.getRecipe()[1]);
-    }));
+            //when
+            var step = RecipeService.getStepBefore(2);
 
-    it('should return the step index', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //then
+            expect(step).toEqual(RecipeService.getRecipe()[1]);
+        }));
 
-        //when
-        var index = RecipeService.getStepIndex(RecipeService.getRecipe()[2]);
+        it('should return the step index', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        expect(index).toBe(2);
-    }));
+            //when
+            var index = RecipeService.getStepIndex(RecipeService.getRecipe()[2]);
 
-    it('should return true when step is the first step', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //then
+            expect(index).toBe(2);
+        }));
 
-        //when
-        var isFirst = RecipeService.isFirstStep(RecipeService.getRecipe()[0]);
+        it('should return true when step is the first step', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        expect(isFirst).toBe(true);
-    }));
+            //when
+            var isFirst = RecipeService.isFirstStep(RecipeService.getRecipe()[0]);
 
-    it('should return false when step is NOT the first step', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //then
+            expect(isFirst).toBe(true);
+        }));
 
-        //when
-        var isFirst = RecipeService.isFirstStep(RecipeService.getRecipe()[2]);
+        it('should return false when step is NOT the first step', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        expect(isFirst).toBe(false);
-    }));
+            //when
+            var isFirst = RecipeService.isFirstStep(RecipeService.getRecipe()[2]);
 
-    it('should return true when step is the last step', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //then
+            expect(isFirst).toBe(false);
+        }));
 
-        //when
-        var isLast = RecipeService.isLastStep(RecipeService.getRecipe()[5]);
+        it('should return true when step is the last step', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        expect(isLast).toBe(true);
-    }));
+            //when
+            var isLast = RecipeService.isLastStep(RecipeService.getRecipe()[5]);
 
-    it('should return false when step is NOT the last step', inject(function($rootScope, RecipeService, PreparationService) {
-        //given
-        PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
-        RecipeService.refresh();
-        $rootScope.$digest();
+            //then
+            expect(isLast).toBe(true);
+        }));
 
-        //when
-        var isLast = RecipeService.isLastStep(RecipeService.getRecipe()[2]);
+        it('should return false when step is NOT the last step', inject(function($rootScope, RecipeService, PreparationService) {
+            //given
+            PreparationService.currentPreparationId = '627766216e4b3c99ee5c8621f32ac42f4f87f1b4';
+            RecipeService.refresh();
+            $rootScope.$digest();
 
-        //then
-        expect(isLast).toBe(false);
-    }));
+            //when
+            var isLast = RecipeService.isLastStep(RecipeService.getRecipe()[2]);
+
+            //then
+            expect(isLast).toBe(false);
+        }));
+    });
+
+    describe('early preview', function() {
+        var originalRecipe;
+        var column, transformation, params;
+
+        beforeEach(inject(function(RecipeService) {
+            //init recipe
+            originalRecipe = RecipeService.getRecipe();
+
+            originalRecipe.push({transformation: {id: '1'}});
+            originalRecipe.push({transformation: {id: '2'}});
+            originalRecipe.push({transformation: {id: '3'}});
+
+            RecipeService.disableStepsAfter(RecipeService.getRecipe()[0]);
+
+            //params
+            column = {
+                id: '0001',
+                name: 'firstname'
+            };
+            transformation = {
+                name: 'replace_on_value',
+                label: 'Replace value that match...',
+                description: 'Replace cells that match the value',
+                parameters: [
+                    {name: 'value', type: 'string'},
+                    {name: 'replace', type: 'string'}
+                ],
+                items: [
+                    {name: 'dummy param'}
+                ],
+                dynamic: false
+            };
+            params = {
+                scope: 'column',
+                column_id: '0001',
+                column_name: 'firstname',
+                value: 'James',
+                replace: 'Jimmy'
+            };
+        }));
+
+        it('should create a new recipe with preview step appended', inject(function(RecipeService) {
+            //when
+            RecipeService.earlyPreview(column, transformation, params);
+
+            //then
+            var recipe = RecipeService.getRecipe();
+            expect(recipe).not.toBe(originalRecipe);
+            expect(recipe.length).toBe(4);
+            expect(recipe[0]).toBe(originalRecipe[0]);
+            expect(recipe[1]).toBe(originalRecipe[1]);
+            expect(recipe[2]).toBe(originalRecipe[2]);
+            expect(recipe[3]).toEqual({
+                column: {
+                    id: column.id,
+                    name: column.name
+                },
+                transformation: {
+                    stepId: 'early preview',
+                    name: transformation.name,
+                    label: transformation.label,
+                    description: transformation.description,
+                    parameters: [
+                        { name: 'value', type: 'string', value: 'James', initialValue: 'James', inputType: 'text' },
+                        { name: 'replace', type: 'string', value: 'Jimmy', initialValue: 'Jimmy', inputType: 'text' }
+                    ],
+                    items: [{ name: 'dummy param', initialValue: undefined, selectedValue: undefined }],
+                    dynamic: transformation.dynamic
+                },
+                actionParameters: {
+                    action: transformation.name,
+                    parameters: params
+                },
+                preview: true,
+                inactive: false
+            });
+            expect(recipe[3].transformation.parameters).not.toBe(transformation.parameters);
+            expect(recipe[3].transformation.items).not.toBe(transformation.items);
+        }));
+
+        it('should enable all steps', inject(function(RecipeService) {
+            //when
+            RecipeService.earlyPreview(column, transformation, params);
+
+            //then
+            var recipe = RecipeService.getRecipe();
+            recipe.forEach(function(step) {
+                expect(step.inactive).toBeFalsy();
+            });
+        }));
+
+        it('should cancel preview and set back previous state', inject(function(RecipeService) {
+            //given
+            RecipeService.earlyPreview(column, transformation, params);
+            var recipe = RecipeService.getRecipe();
+            expect(recipe).not.toBe(originalRecipe);
+            expect(recipe.length).toBe(4);
+
+            //when
+            RecipeService.cancelEarlyPreview();
+
+            //then
+            recipe = RecipeService.getRecipe();
+            expect(recipe).toBe(originalRecipe);
+            expect(recipe.length).toBe(3);
+            expect(recipe[0].inactive).toBeFalsy();
+            expect(recipe[1].inactive).toBeTruthy();
+            expect(recipe[2].inactive).toBeTruthy();
+        }));
+
+        it('should do nothing on cancel preview when there is no preview', inject(function(RecipeService) {
+            //given
+            var recipe = RecipeService.getRecipe();
+            expect(recipe).toBe(originalRecipe);
+            expect(recipe.length).toBe(3);
+
+            //when
+            RecipeService.cancelEarlyPreview();
+
+            //then
+            recipe = RecipeService.getRecipe();
+            expect(recipe).toBe(originalRecipe);
+            expect(recipe.length).toBe(3);
+        }));
+    });
 });

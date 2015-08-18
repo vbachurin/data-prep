@@ -1,4 +1,4 @@
-package org.talend.dataprep.preparation.store;
+package org.talend.dataprep.cache;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -39,14 +39,6 @@ public class NoOpContentCache implements ContentCache {
     }
 
     /**
-     * @see ContentCache#hasAny(ContentCacheKey)
-     */
-    @Override
-    public boolean hasAny(ContentCacheKey key) {
-        return false;
-    }
-
-    /**
      * @see ContentCache#get(ContentCacheKey)
      */
     @Override
@@ -67,14 +59,6 @@ public class NoOpContentCache implements ContentCache {
      */
     @Override
     public void evict(ContentCacheKey key) {
-        // Nothing to do.
-    }
-
-    /**
-     * @see ContentCache#evictAllEntries(ContentCacheKey)
-     */
-    @Override
-    public void evictAllEntries(ContentCacheKey key) {
         // Nothing to do.
     }
 

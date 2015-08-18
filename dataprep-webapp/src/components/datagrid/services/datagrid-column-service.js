@@ -15,8 +15,10 @@
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function DatagridColumnService($rootScope, $compile, DatagridStyleService, DatagridService, ConverterService, PlaygroundService) {
+    function DatagridColumnService($rootScope, $compile, DatagridStyleService, ConverterService, PlaygroundService) {
         var grid;
+        var availableHeaders = [];
+        var renewAllFlag;
 
         var gridHeaderPreviewTemplate =
             '<div class="grid-header <%= diffClass %>">' +
@@ -25,11 +27,9 @@
             '   </div>' +
             '<div class="quality-bar"><div class="record-unknown"></div></div>';
 
-        var gridHeaderTemplate = '<div id="datagrid-header-<%= index %>"></div>';
-
         var service = {
-            colHeaderElements: [],
             init: init,
+            renewAllColumns: renewAllColumns,
             createColumns: createColumns
         };
         return service;
@@ -40,7 +40,7 @@
 
         /**
          * @ngdoc method
-         * @name createColumnItem
+         * @name createColumnDefinition
          * @methodOf data-prep.datagrid.service:DatagridColumnService
          * @param {object} col The column metadata to adapt
          * @param {number} index The column index
@@ -52,18 +52,14 @@
          * </ul>
          * @returns {object} The adapted column item
          */
-        function createColumnItem(col, index, preview) {
-            var template;
-            if (preview) {
-                template = _.template(gridHeaderPreviewTemplate)({
+        function createColumnDefinition(col, preview) {
+            var template = preview ?
+                 _.template(gridHeaderPreviewTemplate)({
                     name: col.name,
                     diffClass: DatagridStyleService.getColumnPreviewStyle(col),
                     simpleType: col.domain ? col.domain : ConverterService.simplifyType(col.type)
-                });
-            }
-            else {
-                template = _.template(gridHeaderTemplate)({index: index});
-            }
+                }) :
+                '';
 
             return {
                 id: col.id,
@@ -72,46 +68,9 @@
                 formatter: DatagridStyleService.columnFormatter(col),
                 minWidth: 80,
                 tdpColMetadata: col,
-                editor: Slick.Editors.TalendEditor(PlaygroundService.editCell)
+                editor: preview ? null : Slick.Editors.TalendEditor(PlaygroundService.editCell),
+                preview: preview
             };
-        }
-
-        /**
-         * @ngdoc method
-         * @name updateColumnHeaderElements
-         * @methodOf data-prep.datagrid.service:DatagridColumnService
-         * @param {object[]} columnsMetadata Columns details
-         * @param {boolean} renewAllColumns Force recreation of every column
-         * @description for each column, we try to reused an old saved column header if the column match. Otherwise,
-         * a new column header is created.
-         * The headers are stored internally and exposed as service.colHeaderElements.
-         */
-        function updateColumnHeaderElements(columnsMetadata, renewAllColumns) {
-            //map every column to a header
-            var finalColHeaderElements = _.map(columnsMetadata, function (col) {
-                //find saved header corresponding to column
-                var header = renewAllColumns ? null : _.find(service.colHeaderElements, function (colHeader) {
-                    return colHeader.column.id === col.id;
-                });
-                if (header) {
-                    header.scope.column = col;
-                }
-                //or create a new one if no corresponding one
-                else {
-                    header = createHeader(col);
-                }
-
-                return header;
-            });
-
-            //destroy the unused headers
-            var diff = _.difference(service.colHeaderElements, finalColHeaderElements);
-            _.forEach(diff, function (header) {
-                header.scope.$destroy();
-                header.element.remove();
-            });
-
-            service.colHeaderElements = finalColHeaderElements;
         }
 
         /**
@@ -120,7 +79,6 @@
          * @methodOf data-prep.datagrid.service:DatagridColumnService
          * @param {object[]} columnsMetadata Columns details
          * @param {boolean} preview Flag that indicates if we are in preview mode
-         * @param {boolean} renewAllColumns Force recreation of every column
          * @description Two modes :
          * <ul>
          *     <li>Preview : we save actual headers and simulate fake headers with the new preview columns</li>
@@ -128,25 +86,44 @@
          * the same as before, or a new created one otherwise.</li>
          * </ul>
          */
-        function createColumns(columnsMetadata, preview, renewAllColumns) {
-            //detach current headers elements but they still exists internally
-            _.forEach(service.colHeaderElements, function (header) {
-                header.element.detach();
-            });
-
-            if (!preview) {
-                updateColumnHeaderElements(columnsMetadata, renewAllColumns);
-            }
-
+        function createColumns(columnsMetadata, preview) {
             //create new SlickGrid columns
-            return _.map(columnsMetadata, function (col, index) {
-                return createColumnItem(col, index, preview);
+            return _.map(columnsMetadata, function (col) {
+                return createColumnDefinition(col, preview);
             });
         }
 
         //------------------------------------------------------------------------------------------------------
         //-----------------------------------------------GRID HEADERS-------------------------------------------
         //------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name destroyHeader
+         * @methodOf data-prep.datagrid.service:DatagridColumnService
+         * @param {object} headerDefinition The header definition that contains scope (the angular scope) and header (the element)
+         * @description Destroy the angular scope and header element
+         */
+        function destroyHeader(headerDefinition) {
+            headerDefinition.scope.$destroy();
+            headerDefinition.header.remove();
+        }
+
+        /**
+         * @ngdoc method
+         * @name renewAllColumns
+         * @methodOf data-prep.datagrid.service:DatagridColumnService
+         * @param {boolean} value The new flag value
+         * @description Set the 'renewAllFlag' with provided value to control whether the headers should be reused or recreated
+         */
+        function renewAllColumns(value) {
+            renewAllFlag = value;
+
+            if(value) {
+                _.forEach(availableHeaders, destroyHeader);
+                availableHeaders = [];
+            }
+        }
+
         /**
          * @ngdoc method
          * @name createHeader
@@ -165,40 +142,87 @@
             $compile(headerElement)(headerScope);
 
             return {
-                element: headerElement,
+                id: col.id,
                 scope: headerScope,
-                column: col
+                header: headerElement
             };
         }
 
         /**
          * @ngdoc method
-         * @name clearHeaders
+         * @name detachAndSaveHeader
          * @methodOf data-prep.datagrid.service:DatagridColumnService
-         * @description [PRIVATE] Clear the actual headers directives. It destroy the existing scopes and elements.
+         * @param {object} event The Slickgrid header destroy event
+         * @param {object} columnsArgs The column header arguments passed by SlickGrid
+         * @description This is part of the process to avoid recreation od the datagrid header when it is not necessary.
+         * It detach the element and save it with its scope, so it can be reused.
+         * If the 'renewAllFlag' is set to true, the headers are destroyed. So they are forced to be recreated.
          */
-        function clearHeaders() {
-            _.forEach(service.colHeaderElements, function (header) {
-                header.scope.$destroy();
-                header.element.remove();
-            });
-            service.colHeaderElements = [];
+        function detachAndSaveHeader(event, columnsArgs) {
+            //No header to detach on preview
+            var columnDef = columnsArgs.column;
+            if(columnDef.preview) {
+                return;
+            }
+
+            //Destroy the header if explicitly requested
+            if(renewAllFlag) {
+                destroyHeader(columnDef);
+            }
+            //Detach and save it otherwise
+            else {
+                var scope = columnDef.scope;
+                var header = columnDef.header;
+
+                header.detach();
+                availableHeaders.push({
+                    id: columnDef.id,
+                    scope: scope,
+                    header: header
+                });
+            }
         }
 
         /**
          * @ngdoc method
-         * @name renewDatagridHeaders
+         * @name createAndAttachHeader
          * @methodOf data-prep.datagrid.service:DatagridColumnService
-         * @description [PRIVATE] Clear and recreate the column headers directives (dropdown actions and quality bars).
-         The columns are from {@link data-prep.services.playground.service:DatagridService DatagridService}
+         * @param {object} event The Slickgrid header creation event
+         * @param {object} columnsArgs The column header arguments passed by SlickGrid
+         * @description This is part of the process to avoid recreation od the datagrid header when it is not necessary.
+         * It fetch an existing saved header to reuse it, or create it otherwise.
+         * The existing header is then updated with the new column metadata.
          */
-        function renewDatagridHeaders() {
-            clearHeaders();
+        function createAndAttachHeader(event, columnsArgs) {
+            //No header to append on preview
+            var columnDef = columnsArgs.column;
+            if(columnDef.preview) {
+                return;
+            }
 
-            _.forEach(DatagridService.data.columns, function (col) {
-                var header = createHeader(col);
-                service.colHeaderElements.push(header);
-            });
+            //Get existing header and remove it from available headers list
+            var headerDefinition = _.find(availableHeaders, {id: columnDef.id});
+            if(headerDefinition) {
+                var headerIndex = availableHeaders.indexOf(headerDefinition);
+                availableHeaders.splice(headerIndex, 1);
+            }
+
+            //Create the header if no available created header, update it otherwise
+            if(headerDefinition) {
+                headerDefinition.scope.column = columnDef.tdpColMetadata;
+                headerDefinition.scope.$digest();
+            }
+            else {
+                headerDefinition = createHeader(columnDef.tdpColMetadata);
+            }
+
+            //Update column definition
+            columnDef.scope = headerDefinition.scope;
+            columnDef.header = headerDefinition.header;
+
+            //Append the header
+            var node = angular.element(columnsArgs.node);
+            node.append(headerDefinition.header);
         }
 
         //------------------------------------------------------------------------------------------------------
@@ -206,14 +230,14 @@
         //------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
-         * @name attachColumnReorderListeners
+         * @name attachColumnHeaderEvents
          * @methodOf data-prep.datagrid.service:DatagridColumnService
-         * @description [PRIVATE] Attach listeners for header reorder. The handler destroy the headers and recreate them.
-         * The behavior is necessary because SlickGrid remove the header and append them again. But by removing them, the
-         * header directives
+         * @description Attach listeners for header creation/destroy. The handler detach and save headers on destroy,
+         * attach (create them if necessary) and update them on render
          */
-        function attachColumnReorderListeners() {
-            grid.onColumnsReordered.subscribe(renewDatagridHeaders);
+        function attachColumnHeaderEvents() {
+            grid.onBeforeHeaderCellDestroy.subscribe(detachAndSaveHeader);
+            grid.onHeaderCellRendered.subscribe(createAndAttachHeader);
         }
 
         /**
@@ -225,7 +249,7 @@
          */
         function init(newGrid) {
             grid = newGrid;
-            attachColumnReorderListeners();
+            attachColumnHeaderEvents();
         }
     }
 

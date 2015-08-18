@@ -8,27 +8,49 @@
      * @restrict EA
      * @usage
      <talend-button-dropdown button-text="Click Me" button-action="buttonAction()">
-        <ul>
-            <li>Menu 1</li>
-            <li>Menu 2</li>
-        </ul>
+     <ul>
+     <li>Menu 1</li>
+     <li>Menu 2</li>
+     </ul>
      </talend-button-dropdown>
+     * @param {string} buttonIcon The icon to display in the main button
      * @param {string} buttonText The text to display in the main button
      * @param {function} buttonAction The callback to execute on main button click
      */
-    function TalendButtonDropdown() {
+    function TalendButtonDropdown($timeout) {
         return {
             restrict: 'E',
             transclude: true,
-            templateUrl: 'components/widgets/button-dropdown/button-dropdown.html',
+            template: '<talend-dropdown class="button-dropdown" close-on-select="true">   ' +
+                        '   <div class="dropdown-container">    ' +
+                        '       <button class="button-dropdown-main" ng-click="buttonDropdownCtrl.buttonAction()">  ' +
+                        '           <i data-icon="{{buttonDropdownCtrl.buttonIcon}}" class="iconfont" ng-if="buttonDropdownCtrl.buttonIcon"></i>{{buttonDropdownCtrl.buttonText}}   ' +
+                        '       </button>   ' +
+                        '       <div class="line-separator"></div>  ' +
+                        '       <button class="button-dropdown-side dropdown-action"></button>  ' +
+                        '       <ng-transclude class="dropdown-menu"></ng-transclude>   ' +
+                        '   </div>  ' +
+                        '</talend-dropdown>',
             scope: {
                 buttonIcon: '@',
                 buttonText: '@',
                 buttonAction: '&'
             },
             bindToController: true,
-            controller: function() {},
-            controllerAs: 'buttonDropdownCtrl'
+            controller: function () {},
+            controllerAs: 'buttonDropdownCtrl',
+            link: function (scope, iElement, attrs) {
+                if (!attrs.buttonAction) {
+                    $timeout(function () {
+                        var action =  iElement.find('.dropdown-action').eq(0);
+
+                        iElement.find('.button-dropdown-main')
+                            .on('click', function() {
+                                action.click();
+                            });
+                    });
+                }
+            }
         };
     }
 

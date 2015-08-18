@@ -21,14 +21,20 @@ public class DataSetList extends DataPrepCommand<InputStream> {
 
     private final HttpClient client;
 
-    private DataSetList(HttpClient client) {
+    private final String sort;
+
+    private final String order;
+
+    private DataSetList(HttpClient client, String sort, String order) {
         super(PreparationAPI.TRANSFORM_GROUP, client);
         this.client = client;
+        this.sort = sort;
+        this.order = order;
     }
 
     @Override
     protected InputStream run() throws Exception {
-        HttpGet contentRetrieval = new HttpGet(datasetServiceUrl + "/datasets");
+        HttpGet contentRetrieval = new HttpGet(datasetServiceUrl + "/datasets?sort=" + sort + "&order=" + order);
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200) {

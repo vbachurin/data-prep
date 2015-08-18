@@ -197,7 +197,7 @@ describe('Datagrid external service', function () {
             var range = [1, 3, 5];
             gridMock.initRenderedRangeMock(range);
 
-            expect(PreviewService.gridRangeIndex).toEqual([]);
+            expect(PreviewService.gridRangeIndex).toBeFalsy();
 
             //when
             var onScroll = gridMock.onScroll.subscribe.calls.argsFor(0)[0];

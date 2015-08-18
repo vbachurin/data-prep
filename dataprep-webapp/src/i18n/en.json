@@ -18,8 +18,14 @@
   "_comment": "Inventory",
   "INVENTORY_DETAILS": "owned by {{author}}, created {{created | TDPMoment}}, contains {{records}} lines",
   "NAME_SORT": "Name",
+  "DATE_SORT": "Date",
   "SORTED_BY": "Sorted by",
+  "ASC_ORDER": "Ascending",
+  "DESC_ORDER": "Descending",
+  "SORT_IN": "in",
+  "SORT_ORDER": "order",
   "UPLOAD_ERROR": "Upload error",
+
 
   "_comment": "Preparations",
   "LAST_MODIFICATION": "last change",

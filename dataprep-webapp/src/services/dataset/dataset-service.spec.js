@@ -115,7 +115,6 @@ describe('Dataset Service', function () {
     it('should get a promise that resolve the existing datasets if already fetched', inject(function ($rootScope, DatasetService) {
         //given
         var results = null;
-
         //when
         DatasetService.getDatasets()
             .then(function(response) {

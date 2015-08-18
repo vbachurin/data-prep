@@ -86,11 +86,12 @@
         function initGrid (elementId) {
             //create grid
             var options = {
+                autoEdit: false,
                 editable: true,
                 enableAddRow: false,
                 enableCellNavigation: true,
                 enableTextSelectionOnCells: false,
-                autoEdit: false
+                syncColumnCellResize: true
             };
             grid = new Slick.Grid(elementId, DatagridService.dataView, [], options);
 
