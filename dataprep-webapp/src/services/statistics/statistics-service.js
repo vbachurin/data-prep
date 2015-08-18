@@ -245,7 +245,7 @@
 
         function addRangeFilter(interval) {
             var column = service.selectedColumn;
-            var filterFn = FilterService.addFilter.bind(null, 'between_range', column.id, column.name, {phrase: interval});
+            var filterFn = FilterService.addFilter.bind(null, 'inside_range', column.id, column.name, {phrase: interval});
 
             $timeout(filterFn);
         }
@@ -290,7 +290,7 @@
                     initRangeHistogram(column.statistics.histogram);
                     updateBoxplotData();
                     var currentRangeFilter = _.find(FilterService.filters, function(filter){
-                        return filter.colId === column.id && filter.type === 'between_range';
+                        return filter.colId === column.id && filter.type === 'inside_range';
                     });
                     service.rangeLimits = {
                         min : column.statistics.min,

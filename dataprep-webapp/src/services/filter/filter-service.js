@@ -39,8 +39,8 @@
                     return 'empty records';
                 case 'valid_records':
                     return 'valid records';
-                case 'between_range':
-                    return 'in ['+ args.phrase[0]+ ', ' + args.phrase[1]+']';
+                case 'inside_range':
+                    return 'in ['+ args.phrase[0]+ ' ... ' + args.phrase[1]+']';
             }
         });
     }
@@ -163,7 +163,8 @@
          * @ngdoc method
          * @name createRangeFilterFn
          * @methodOf data-prep.services.filter.service:FilterService
-         * @param {string} colId - the column id??????????????????
+         * @param {string} colId - the column id
+         * * @param {Array} values - the filter interval
          * @description [PRIVATE] Create a 'range' filter function
          * @returns {function} - the predicated function
          */
@@ -203,9 +204,9 @@
                     filterFn = createValidFilterFn(colId, args.values);
                     filterInfo = new Filter(type, colId, colName, false, args, filterFn);
                     break;
-                case 'between_range':
+                case 'inside_range':
                     var existantNumColFilter = _.find(self.filters, function(filter){
-                        return filter.colId === colId && filter.type === 'between_range';
+                        return filter.colId === colId && filter.type === 'inside_range';
                     });
 
                     if(existantNumColFilter){
@@ -248,21 +249,23 @@
             var index = self.filters.indexOf(oldFilter);
             var oldFn = oldFilter.filterFn;
 
-            var newArgs;
             var newFilterFn;
             var newFilter;
+            var newArgs = {
+                phrase: newValue
+            };
+            var editableFilter;
             switch(oldFilter.type) {
                 case 'contains':
-                    newArgs = { phrase: newValue};
                     newFilterFn = createContainFilterFn(oldFilter.colId, newValue);
-                    newFilter = new Filter(oldFilter.type, oldFilter.colId, oldFilter.colName, true, newArgs, newFilterFn);
+                    editableFilter = true;
                     break;
-                case 'between_range':
-                    newArgs = { phrase: newValue};
+                case 'inside_range':
                     newFilterFn = createRangeFilterFn(oldFilter.colId, newValue);
-                    newFilter = new Filter(oldFilter.type, oldFilter.colId, oldFilter.colName, true, newArgs, newFilterFn);
+                    editableFilter = false;
                     break;
             }
+            newFilter = new Filter(oldFilter.type, oldFilter.colId, oldFilter.colName, editableFilter, newArgs, newFilterFn);
 
             DatagridService.updateFilter(oldFn, newFilter.filterFn);
             self.filters.splice(index, 1, newFilter);

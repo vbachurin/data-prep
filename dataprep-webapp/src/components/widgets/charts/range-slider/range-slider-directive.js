@@ -26,6 +26,7 @@
 				var h = attrs.height;
 				var w = attrs.width;
 				var container = attrs.id;
+				var renderTimeout;
 
 				function renderRangerSlider(rangeLimits){
 					var minimum = rangeLimits.min;
@@ -33,16 +34,35 @@
 					var minBrush = rangeLimits.minBrush || minimum;
 					var maxBrush = rangeLimits.maxBrush || maximum;
 
-					var filterFloat = function (value) {
-						if(/^(\-|\+)?([0-9]+(\.[0-9]+)?|Infinity)$/
-								.test(value)){
-							//d3.select('.invalid-value-msg').style('display', 'none');
+					var filterFloat = function filterFloat (value) {
+						if(/^([-+]?[0-9]*)\.?([0-9]+([eE][-+]?[0-9]+)?|Infinity)$/.test(value)){
+							//if(value.indexOf('e') !== -1 || value.indexOf('E') !== -1){
+							//	return Number(value.trim()).toPrecision(nbDecimals);
+							//	//return d3.format('e')(Number(value.trim()));
+							//}
 							return Number(value.trim());
 						}
 						return 'Invalid Entered Value';
 					};
 
-					var nbDecimals = 2;
+					var checkCommaExistence = function checkCommaExistence (){
+						var minAndMax = document.getElementsByName('minRange')[0].value + document.getElementsByName('maxRange')[0].value;
+						return minAndMax.indexOf(',') !== -1 ? true : false;
+					};
+
+					var showMsgErr = function showMsgErr(){
+						var msgErr = 'Invalid Entered Value';
+						var finalMsgErr = checkCommaExistence()? msgErr + ': Use "." instead of ","' : msgErr;
+						d3.select('text.invalid-value-msg')
+							.text(finalMsgErr);
+					};
+
+					var hideMsgErr = function hideMsgErr(){
+						d3.select('text.invalid-value-msg')
+							.text('');
+					};
+
+					var nbDecimals = d3.max([decimalPlaces(minBrush),decimalPlaces(maxBrush)]);
 					var margin = {top: 25, right: 25, bottom: 80, left: 10},
 						width = w - margin.left - margin.right,
 						height = h - margin.top - margin.bottom;
@@ -51,9 +71,11 @@
 						.domain([minimum, maximum])
 						.range([0, width]);
 
+					var centerValue = (minBrush + maxBrush)/2;
+
 					var brush = d3.svg.brush()
 						.x(x)
-						.extent([minBrush, maxBrush])
+						.extent([centerValue, centerValue])
 						.on('brushstart', brushstart)
 						.on('brush', brushmove)
 						.on('brushend', brushend);
@@ -68,14 +90,20 @@
 					var xAxisg = svg.append('g')
 						.attr('class', 'x axis')
 						.attr('transform', 'translate(0,' + height + ')')
-						.call(d3.svg.axis().scale(x).orient('bottom').ticks(Math.abs(x.range()[1] - x.range()[0]) / 50));
+						.call(d3.svg.axis().scale(x).orient('bottom').ticks(Math.abs(x.range()[1] - x.range()[0]) / 50)
+							//.tickFormat(function(){
+							//	if( (''+minimum).indexOf('e') !== -1 ||
+							//		(''+minimum).indexOf('E') !== -1 ||
+							//		(''+maximum).indexOf('e') !== -1 ||
+							//		(''+maximum).indexOf('E') !== -1 ){
+							//		return d3.format('e');
+							//	} else {
+							//		return d3.format('e');
+							//	}
+							//})
+						);
 
-					xAxisg.selectAll('text').transition().duration(1000).attr('y', 13);
-
-					var brushg = svg.append('g')
-						.attr('transform', 'translate(0,' + (height - 10)+ ')')
-						.attr('class', 'brush')
-						.call(brush);
+					xAxisg.selectAll('text').attr('y', 13);
 
 					svg.append('g').append('foreignObject')
 						.attr('width', width)
@@ -89,9 +117,17 @@
 						.attr('x', width/2)
 						.attr('y', height+75)
 						.attr('text-anchor', 'middle')
-						.text('Invalid Entered Value')
-						.attr('fill', 'red')
-						.style('display', 'none');
+						.attr('fill', 'red');
+
+					var brushg = svg.append('g')
+						.attr('transform', 'translate(0,' + (height - 10)+ ')')
+						.attr('class', 'brush')
+						.call(brush);
+
+					brushg.call(brush.event)
+						.transition().duration(400)
+						.call(brush.extent([minBrush, maxBrush]))
+						.call(brush.event);
 
 					brushg.selectAll('.resize').append('rect')
 						.attr('transform', function(d,i){return i?'translate(-10, 0)':'translate(0,0)';})
@@ -106,7 +142,7 @@
 
 
 					function brushstart() {
-
+						//on brush start code goes here
 					}
 
 					function brushmove() {
@@ -133,11 +169,10 @@
 					fillInputs();
 
 					function fillInputs(){
-						d3.select('.invalid-value-msg').style('display', 'none');
+						hideMsgErr();
 						var s = brush.extent();
 						document.getElementsByName('minRange')[0].value=s[0].toFixed(nbDecimals);
 						document.getElementsByName('maxRange')[0].value=s[1].toFixed(nbDecimals);
-						console.log(s);
 						return s;
 					}
 
@@ -197,26 +232,37 @@
 					var minCorrectness = 1;
 					var maxCorrectness = 1;
 
+					document.getElementsByName('minRange')[0].onblur = adjustBrush;
+					document.getElementsByName('maxRange')[0].onblur = adjustBrush;
+
+					document.getElementsByName('minRange')[0].onkeydown = function(e){
+						e.stopPropagation();
+					};
+					document.getElementsByName('maxRange')[0].onkeydown = function(e){
+						e.stopPropagation();
+					};
+
 					document.getElementsByName('minRange')[0].onkeyup = function(e){
 						if(e.which !== 13 && e.which !== 27){
 							minCorrectness = filterFloat(this.value);
 							if(typeof minCorrectness !== 'number' || typeof maxCorrectness !== 'number'){
-								d3.select('.invalid-value-msg').style('display', 'block');
+								showMsgErr();
 							}
 							else{
-								d3.select('.invalid-value-msg').style('display', 'none');
+								hideMsgErr();
 							}
 						}
-						if(e.which === 13){
+						if(e.which === 13 || e.which === 9){
 							if(typeof minCorrectness === 'number' && typeof maxCorrectness === 'number'){
 								adjustBrush();
 							}
 							else{
 								fillInputs();
-								d3.select('.invalid-value-msg').style('display', 'none');
+								hideMsgErr();
 							}
 						}
 						if(e.which === 27){
+							e.stopPropagation();
 							fillInputs();
 						}
 					};
@@ -225,22 +271,23 @@
 						if(e.which !== 13 && e.which !== 27){
 							maxCorrectness = filterFloat(this.value);
 							if(typeof minCorrectness !== 'number' || typeof maxCorrectness !== 'number'){
-								d3.select('.invalid-value-msg').style('display', 'block');
+								showMsgErr();
 							}
 							else{
-								d3.select('.invalid-value-msg').style('display', 'none');
+								hideMsgErr();
 							}
 						}
-						if(e.which === 13){
+						if(e.which === 13 || e.which === 9){
 							if(typeof minCorrectness === 'number' && typeof maxCorrectness === 'number'){
 								adjustBrush();
 							}
 							else{
 								fillInputs();
-								d3.select('.invalid-value-msg').style('display', 'none');
+								hideMsgErr();
 							}
 						}
 						if(e.which === 27){
+							e.stopPropagation();
 							fillInputs();
 						}
 					};
@@ -249,10 +296,9 @@
 				scope.$watch('rangeLimits',
 					function (rangeLimits) {
 						element.empty();
-						if (rangeLimits) {
-							renderRangerSlider(rangeLimits);
-							//clearTimeout(renderTimeout);
-							//renderTimeout = setTimeout(renderRangerSlider.bind(this, rangeLimits), 100);
+						if ((rangeLimits) && (rangeLimits.min !== rangeLimits.max)) {
+							clearTimeout(renderTimeout);
+							renderTimeout = setTimeout(renderRangerSlider.bind(this, rangeLimits), 100);
 						}
 					});
 			}
