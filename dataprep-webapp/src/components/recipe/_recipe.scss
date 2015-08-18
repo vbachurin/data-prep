@@ -6,6 +6,10 @@
   color: $color;
   font-size: 0.95em;
 
+  .preview {
+    background-color: $new-color;
+  }
+
   > .content > .content-container {
     padding-right: 14px;
   }

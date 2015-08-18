@@ -19,11 +19,11 @@ import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.api.service.command.CloneInputStream;
 import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
+import org.talend.dataprep.cache.ContentCache;
+import org.talend.dataprep.cache.ContentCacheKey;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCode;
-import org.talend.dataprep.preparation.store.ContentCache;
-import org.talend.dataprep.preparation.store.ContentCacheKey;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
@@ -35,8 +35,9 @@ import com.netflix.hystrix.HystrixCommand;
 @Scope("request")
 public class DataSetGet extends DataPrepCommand<InputStream> {
 
+    /** The dataset content cache. */
     @Autowired
-    ContentCache contentCache;
+    private ContentCache contentCache;
 
     /** The dataset id. */
     private final String dataSetId;
@@ -87,7 +88,7 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
     protected InputStream run() throws Exception {
         // Look if initial data set content was previously cached
         final Preparation preparation = Preparation.defaultPreparation(dataSetId);
-        ContentCacheKey key = new ContentCacheKey(preparation.id(), Step.ROOT_STEP.id(), sample);
+        ContentCacheKey key = new ContentCacheKey(preparation, Step.ROOT_STEP.id(), sample);
         if (contentCache.has(key)) {
             return contentCache.get(key);
         }
@@ -118,7 +119,7 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
             contentRetrieval.releaseConnection();
             return new ByteArrayInputStream(new byte[0]);
         } else if (statusCode == HttpStatus.SC_OK) {
-            final OutputStream cacheEntry = contentCache.put(new ContentCacheKey(preparation.id(), Step.ROOT_STEP.id(), sample),
+            final OutputStream cacheEntry = contentCache.put(new ContentCacheKey(preparation, Step.ROOT_STEP.id(), sample),
                     ContentCache.TimeToLive.DEFAULT);
             final InputStream content = response.getEntity().getContent();
             final InputStream dataSetInput = new ReleasableInputStream(content, contentRetrieval::releaseConnection);

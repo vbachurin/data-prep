@@ -404,7 +404,7 @@ describe('Datagrid style service', function () {
             var result = formatter(null, null, value, columnDef, dataContext);
 
             //then
-            expect(result).toBe('<div class="cellDeletedValue"><strike>my value</strike></div>');
+            expect(result).toBe('<div class="cellDeletedValue">my value</div>');
         }));
 
         it('should add a space " " as value on empty cell in a deleted row', inject(function (DatagridStyleService) {
@@ -420,7 +420,7 @@ describe('Datagrid style service', function () {
             var result = formatter(null, null, value, columnDef, dataContext);
 
             //then
-            expect(result).toBe('<div class="cellDeletedValue"><strike> </strike></div>');
+            expect(result).toBe('<div class="cellDeletedValue"> </div>');
         }));
 
         it('should add "new" class on a new row', inject(function (DatagridStyleService) {

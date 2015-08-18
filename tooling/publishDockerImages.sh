@@ -47,10 +47,10 @@ computes_docker_images_lists() {
   verbose=$1
 
   # list of images that are not built on this server, and then should be pulled before added to tar:
-  external_list=`more $final_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -E $external_images_pattern`
+  external_list=`less $final_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -E $external_images_pattern`
 
   # list of images that are built on this server:
-  internal_list=`more $final_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -v -E $external_images_pattern`
+  internal_list=`less $final_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -v -E $external_images_pattern`
 
   # all images:
   list=$internal_list' '$external_list

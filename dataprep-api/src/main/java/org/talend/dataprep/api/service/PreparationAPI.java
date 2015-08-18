@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.service.api.PreviewAddInput;
 import org.talend.dataprep.api.service.api.PreviewDiffInput;
 import org.talend.dataprep.api.service.api.PreviewUpdateInput;
 import org.talend.dataprep.api.service.command.preparation.*;
@@ -210,10 +211,10 @@ public class PreparationAPI extends APIService {
     @RequestMapping(value = "/api/preparations/preview/diff", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a preview diff between 2 steps of the same preparation.")
     @Timed
-    public void previewDiff(@RequestBody PreviewDiffInput input, HttpServletResponse response) {
+    public void previewDiff(@RequestBody final PreviewDiffInput input, final HttpServletResponse response) {
         try {
-            HystrixCommand<InputStream> transformation = getCommand(PreviewDiff.class, getClient(), input);
-            ServletOutputStream outputStream = response.getOutputStream();
+            final HystrixCommand<InputStream> transformation = getCommand(PreviewDiff.class, getClient(), input);
+            final ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(transformation.execute(), outputStream);
             outputStream.flush();
         } catch (Exception e) {
@@ -223,10 +224,23 @@ public class PreparationAPI extends APIService {
 
     @RequestMapping(value = "/api/preparations/preview/update", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a preview diff between the same step of the same preparation but with one step update.")
-    public void previewUpdate(@RequestBody PreviewUpdateInput input, HttpServletResponse response) {
+    public void previewUpdate(@RequestBody final PreviewUpdateInput input, final HttpServletResponse response) {
         try {
-            HystrixCommand<InputStream> transformation = getCommand(PreviewUpdate.class, getClient(), input);
-            ServletOutputStream outputStream = response.getOutputStream();
+            final HystrixCommand<InputStream> transformation = getCommand(PreviewUpdate.class, getClient(), input);
+            final ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copyLarge(transformation.execute(), outputStream);
+            outputStream.flush();
+        } catch (Exception e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
+        }
+    }
+
+    @RequestMapping(value = "/api/preparations/preview/add", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get a preview between the head step and a new appended transformation")
+    public void previewAdd(@RequestBody final PreviewAddInput input, final HttpServletResponse response) {
+        try {
+            final HystrixCommand<InputStream> transformation = getCommand(PreviewAdd.class, getClient(), input);
+            final ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(transformation.execute(), outputStream);
             outputStream.flush();
         } catch (Exception e) {

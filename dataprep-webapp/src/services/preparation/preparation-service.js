@@ -43,7 +43,8 @@
 
             //preview
             getPreviewDiff: getPreviewDiff,
-            getPreviewUpdate: getPreviewUpdate
+            getPreviewUpdate: getPreviewUpdate,
+            getPreviewAdd: getPreviewAdd
         };
         return service;
 
@@ -312,6 +313,22 @@
          */
         function getPreviewUpdate(currentStep, updateStep, newParams, recordsTdpId, canceler) {
             return PreparationRestService.getPreviewUpdate(service.currentPreparationId, currentStep, updateStep, newParams, recordsTdpId, canceler);
+        }
+
+        /**
+         * @ngdoc method
+         * @name getPreviewAdd
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @param {string} datasetId The dataset id
+         * @param {string} action The action name to add
+         * @param {string} params The action parameters
+         * @param {string} recordsTdpId The records TDP ids to preview
+         * @param {string} canceler The canceler promise
+         * @description POST preview diff between the preparation head and a new added transformation
+         * @returns {promise} The POST promise
+         */
+        function getPreviewAdd(datasetId, action, params, recordsTdpId, canceler) {
+            return PreparationRestService.getPreviewAdd(service.currentPreparationId, datasetId, action, params, recordsTdpId, canceler);
         }
     }
 

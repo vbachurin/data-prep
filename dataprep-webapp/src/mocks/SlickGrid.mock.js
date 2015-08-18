@@ -21,9 +21,11 @@ function SlickGridMock () {
 
         //slickGrid events
         onActiveCellChanged: {subscribe: function() {}},
+        onBeforeHeaderCellDestroy: {subscribe: function() {}},
         onClick: {subscribe: function() {}},
         onColumnsReordered: {subscribe: function() {}},
         onColumnsResized: {subscribe: function() {}},
+        onHeaderCellRendered: {subscribe: function() {}},
         onHeaderClick: {subscribe: function() {}},
         onMouseEnter: {subscribe: function() {}},
         onMouseLeave: {subscribe: function() {}},

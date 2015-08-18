@@ -121,7 +121,7 @@ describe('Statistics service', function () {
     };
 
     var mapCol = {
-        'domain': 'STATE_CODE_US',
+        'domain': 'US_STATE_CODE',
         'type': '',
         'statistics': {
             'frequencyTable': [
@@ -360,7 +360,7 @@ describe('Statistics service', function () {
             var col = {
                 id: '0001',
                 type: 'boolean',
-                domain: 'STATE_CODE_US',
+                domain: 'US_STATE_CODE',
                 statistics: {
                     count: 4,
                     distinctCount: 5,
