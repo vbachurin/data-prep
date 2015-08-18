@@ -742,8 +742,8 @@ public class DataSetServiceTests extends DataSetBaseTest {
         final SemanticDomain jsoDomain = new SemanticDomain("JSO", "JSO label", 1.0F);
         column.getSemanticDomains().add(jsoDomain);
 
-        assertThat(column.getDomain(), is("FIRSTNAME"));
-        assertThat(column.getDomainLabel(), is("FIRSTNAME"));
+        assertThat(column.getDomain(), is("First Name"));
+        assertThat(column.getDomainLabel(), is("First Name"));
         assertThat(column.getDomainFrequency(), is(2.0F));
 
         //when
@@ -777,8 +777,8 @@ public class DataSetServiceTests extends DataSetBaseTest {
                 .findFirst()
                 .get();
 
-        assertThat(column.getDomain(), is("FIRSTNAME"));
-        assertThat(column.getDomainLabel(), is("FIRSTNAME"));
+        assertThat(column.getDomain(), is("First Name"));
+        assertThat(column.getDomainLabel(), is("First Name"));
         assertThat(column.getDomainFrequency(), is(2.0F));
         assertThat(column.getType(), is("string"));
 
@@ -791,8 +791,8 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         //then
         res.then().statusCode(200);
-        assertThat(column.getDomain(), is("FIRSTNAME"));
-        assertThat(column.getDomainLabel(), is("FIRSTNAME"));
+        assertThat(column.getDomain(), is("First Name"));
+        assertThat(column.getDomainLabel(), is("First Name"));
         assertThat(column.getDomainFrequency(), is(2.0F));
         assertThat(column.getType(), is("integer"));
     }
@@ -814,8 +814,8 @@ public class DataSetServiceTests extends DataSetBaseTest {
                 .findFirst()
                 .get();
 
-        assertThat(column.getDomain(), is("FIRSTNAME"));
-        assertThat(column.getDomainLabel(), is("FIRSTNAME"));
+        assertThat(column.getDomain(), is("First Name"));
+        assertThat(column.getDomainLabel(), is("First Name"));
         assertThat(column.getDomainFrequency(), is(2.0F));
 
         //when

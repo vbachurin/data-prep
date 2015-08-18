@@ -26,6 +26,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.mock.env.MockPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.Application;
@@ -33,10 +34,10 @@ import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationRepository;
+import org.talend.dataprep.cache.ContentCache;
+import org.talend.dataprep.cache.ContentCacheKey;
 import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
-import org.talend.dataprep.preparation.store.ContentCache;
-import org.talend.dataprep.preparation.store.ContentCacheKey;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -69,6 +70,9 @@ public class DataPreparationAPITest {
     @Autowired
     ContentCache cache;
 
+    @Autowired
+    protected Jackson2ObjectMapperBuilder builder;
+
     @Before
     public void setUp() {
         RestAssured.port = port;
@@ -99,10 +103,17 @@ public class DataPreparationAPITest {
 
     @Test
     public void testDataSetUpdate() throws Exception {
-        given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("dataset/dataset.csv")))
-                .queryParam("Content-Type", "text/csv").when().put("/api/datasets/123456789").asString();
-        String dataSetContent = when().get("/api/datasets/123456789?metadata=false&columns=false").asString();
-        assertNotNull(dataSetContent);
+        // given a created dataset
+        final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
+
+        // when it's updated
+        given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("t-shirt_100.csv")))
+                .queryParam("Content-Type", "text/csv").when().put("/api/datasets/" + dataSetId + "?name=testDataset").asString();
+
+        // then, the content is updated
+        String dataSetContent = when().get("/api/datasets/" + dataSetId + "?metadata=false&columns=true").asString();
+        final String expectedContent = IOUtils.toString(this.getClass().getResourceAsStream("t-shirt_100.csv.expected.json"));
+        assertThat(dataSetContent, sameJSONAs(expectedContent).allowingExtraUnexpectedFields());
     }
 
     @Test
@@ -223,7 +234,7 @@ public class DataPreparationAPITest {
 
         // then
         final Preparation preparation = new Preparation(dataSetId, ROOT_STEP);
-        ContentCacheKey key = new ContentCacheKey(preparation.id(), ROOT_STEP.id());
+        ContentCacheKey key = new ContentCacheKey(preparation, ROOT_STEP.id());
         assertThat(cache.has(key), is(false));
         when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
         assertThat(cache.has(key), is(true));
@@ -519,10 +530,13 @@ public class DataPreparationAPITest {
     public void testPreparationInitialContent() throws Exception {
         // given
         final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparationContentGet", "text/csv");
+        String json = given().get("/api/preparations/{preparation}/details", preparationId).asString();
+        Preparation preparation = builder.build().reader(Preparation.class).readValue(json);
+
         final InputStream expected = DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_columns.json");
 
         // when
-        ContentCacheKey key = new ContentCacheKey(preparationId, ROOT_STEP.id());
+        ContentCacheKey key = new ContentCacheKey(preparation, ROOT_STEP.id());
         assertThat(cache.has(key), is(false));
         final String content = when().get("/api/preparations/{id}/content", preparationId).asString();
         assertThat(cache.has(key), is(true));
@@ -535,8 +549,10 @@ public class DataPreparationAPITest {
     public void testPreparationContentWithActions() throws Exception {
         // given
         final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparationContentGet", "text/csv");
+        String json = given().get("/api/preparations/{preparation}/details", preparationId).asString();
+        Preparation preparation = builder.build().reader(Preparation.class).readValue(json);
+        List<String> steps = preparation.getSteps();
 
-        List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(1));
         assertThat(steps.get(0), is(ROOT_STEP.id()));
 
@@ -549,11 +565,11 @@ public class DataPreparationAPITest {
         assertThat(steps.get(0), is(ROOT_STEP.id()));
 
         // Cache is lazily populated
-        ContentCacheKey rootKey = new ContentCacheKey(preparationId, ROOT_STEP.id());
+        ContentCacheKey rootKey = new ContentCacheKey(preparation, ROOT_STEP.id());
         assertThat(cache.has(rootKey), is(false));
-        ContentCacheKey step0Key = new ContentCacheKey(preparationId, steps.get(0));
+        ContentCacheKey step0Key = new ContentCacheKey(preparation, steps.get(0));
         assertThat(cache.has(step0Key), is(false));
-        ContentCacheKey step1Key = new ContentCacheKey(preparationId, steps.get(1));
+        ContentCacheKey step1Key = new ContentCacheKey(preparation, steps.get(1));
         assertThat(cache.has(step1Key), is(false));
 
         // Request preparation content at different versions (preparation has 2 steps -> Root + Upper Case).

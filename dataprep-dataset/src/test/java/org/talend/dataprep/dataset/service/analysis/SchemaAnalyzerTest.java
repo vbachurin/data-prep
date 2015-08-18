@@ -122,8 +122,9 @@ public class SchemaAnalyzerTest {
             assertThat( column.getType(), is( expectedTypes[i].getName() ) );
             assertThat( column.getDomain(), is( expectedDomains[i++] ) );
             Assertions.assertThat( column.getSemanticDomains() ).isNotNull().isNotEmpty().hasSize( 5 )
-                .contains( new SemanticDomain("FR_POSTAL_CODE","FR POSTAL CODE", (float)58.33), //
-                           new SemanticDomain("US_POSTAL_CODE","US POSTAL CODE", (float)58.33));
+.contains(
+                    new SemanticDomain("FR_POSTAL_CODE", "FR Postal Code", (float) 58.33), //
+                    new SemanticDomain("US_POSTAL_CODE", "US Postal Code", (float) 58.33));
 
         }
     }
@@ -140,7 +141,7 @@ public class SchemaAnalyzerTest {
         // Gender must be a String with Gender domain
         String[] expectedNames = { "name", "bounty", "gender" };
         Type[] expectedTypes = { Type.STRING, Type.INTEGER, Type.STRING };
-        String[] expectedDomains = { "FIRSTNAME", "", "GENDER" };
+        String[] expectedDomains = { "First Name", "", "Gender" };
         int i = 0;
         for (ColumnMetadata column : metadata.getRow().getColumns()) {
             assertThat(column.getName(), is(expectedNames[i]));

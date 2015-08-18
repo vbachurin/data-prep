@@ -16,8 +16,8 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.api.service.command.dataset.DataSetGet;
-import org.talend.dataprep.preparation.store.ContentCache;
-import org.talend.dataprep.preparation.store.ContentCacheKey;
+import org.talend.dataprep.cache.ContentCache;
+import org.talend.dataprep.cache.ContentCacheKey;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -56,7 +56,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
     }
 
     /**
-     * Call Preparation Service to get preparation details
+     * Call Preparation Service to get preparation.
      *
      * @param preparationId - the preparation id
      * @return the resulting Json node object
@@ -195,7 +195,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         ctx.preparation = preparation;
         ctx.version = version;
         // Direct try on cache at given version
-        ContentCacheKey key = new ContentCacheKey(preparationId, version, sample);
+        ContentCacheKey key = new ContentCacheKey(preparation, version, sample);
         if (contentCache.has(key)) {
             ctx.content = contentCache.get(key);
             ctx.actions = Collections.emptyList();
@@ -211,7 +211,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
             final List<String> preparationSteps = preparation.getSteps();
             for (String step : preparationSteps) {
                 transformationStartStep = step;
-                key = new ContentCacheKey(preparationId, step, sample);
+                key = new ContentCacheKey(preparation, step, sample);
                 if (contentCache.has(key)) {
                     ctx.content = contentCache.get(key);
                     break;
