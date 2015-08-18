@@ -15,6 +15,7 @@
     function ActionsSuggestionsCtrl($timeout, ColumnSuggestionService, TransformationService, PlaygroundService, PreviewService, PreparationService, RecipeService) {
         var previewTimeout;
         var previewCancelerTimeout;
+        var previewDisabled = false;
 
         var vm = this;
         vm.columnSuggestionService = ColumnSuggestionService;
@@ -147,8 +148,7 @@
         vm.transformClosure = function transform(transfo, transfoScope) {
             /*jshint camelcase: false */
             return function(params) {
-                PreviewService.cancelPreview();
-                RecipeService.cancelEarlyPreview();
+                previewDisabled = true;
 
                 params = params || {};
                 params.scope = transfoScope;
@@ -158,6 +158,11 @@
                 PlaygroundService.appendStep(transfo.name, params)
                     .then(function() {
                         vm.showDynamicModal = false;
+                    })
+                    .finally(function() {
+                        setTimeout(function() {
+                            previewDisabled = false;
+                        }, 500);
                     });
             };
         };
@@ -173,6 +178,10 @@
         vm.earlyPreview = function earlyPreview(transformation, transfoScope) {
             /*jshint camelcase: false */
             return function(params) {
+                if(previewDisabled) {
+                    return;
+                }
+
                 $timeout.cancel(previewTimeout);
                 $timeout.cancel(previewCancelerTimeout);
 
@@ -185,7 +194,7 @@
 
                     RecipeService.earlyPreview(vm.column, transformation, params);
                     PreviewService.getPreviewAddRecords(datasetId, transformation.name, params);
-                }, 200);
+                }, 300);
             };
         };
 
@@ -196,6 +205,10 @@
          * @description Cancel any current or pending early preview
          */
         vm.cancelEarlyPreview = function cancelEarlyPreview() {
+            if(previewDisabled) {
+                return;
+            }
+
             $timeout.cancel(previewTimeout);
 
             previewCancelerTimeout = $timeout(function() {

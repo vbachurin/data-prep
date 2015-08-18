@@ -106,25 +106,6 @@ describe('Actions suggestions-stats controller', function () {
             expect(ctrl.showDynamicModal).toBe(false);
         }));
 
-        it('should cancel early preview on step append', inject(function (RecipeService, PreviewService) {
-            //given
-            var transformation = {name: 'tolowercase'};
-            var transfoScope = 'column';
-            var params = {param: 'value'};
-            var ctrl = createController();
-
-            expect(RecipeService.cancelEarlyPreview).not.toHaveBeenCalled();
-            expect(PreviewService.cancelPreview).not.toHaveBeenCalled();
-
-            //when
-            var closure = ctrl.transformClosure(transformation, transfoScope);
-            closure(params);
-
-            //then
-            expect(RecipeService.cancelEarlyPreview).toHaveBeenCalled();
-            expect(PreviewService.cancelPreview).toHaveBeenCalled();
-        }));
-
         it('should append new step on static transformation selection', inject(function (PlaygroundService) {
             //given
             var transformation = {name: 'tolowercase'};
@@ -272,29 +253,32 @@ describe('Actions suggestions-stats controller', function () {
     describe('early preview', function () {
         var currentMetadata = {id: '123456'};
         var column = {id: '0001', name: 'firstname'};
+        var transfoScope;
+        var transformation;
+        var params;
 
         beforeEach(inject(function(ColumnSuggestionService, PlaygroundService) {
             ColumnSuggestionService.currentColumn = column;
             PlaygroundService.currentMetadata = currentMetadata;
-        }));
 
-        it('should add the new preview step in recipe after a 200ms delay', inject(function ($timeout, RecipeService) {
-            //given
-            var ctrl = createController();
-
-            var transfoScope = 'column';
-            var transformation = {
+            transfoScope = 'column';
+            transformation = {
                 name: 'replace_on_value'
             };
-            var params = {
+            params = {
                 value: 'James',
                 replace: 'Jimmy'
             };
+        }));
+
+        it('should add the new preview step in recipe after a 300ms delay', inject(function ($timeout, RecipeService) {
+            //given
+            var ctrl = createController();
 
             //when
             ctrl.earlyPreview(transformation, transfoScope)(params);
             expect(RecipeService.earlyPreview).not.toHaveBeenCalled();
-            $timeout.flush(200);
+            $timeout.flush(300);
 
             //then
             expect(RecipeService.earlyPreview).toHaveBeenCalledWith(
@@ -310,23 +294,14 @@ describe('Actions suggestions-stats controller', function () {
             );
         }));
 
-        it('should trigger grid preview after a 200ms delay', inject(function ($timeout, PreviewService) {
+        it('should trigger grid preview after a 300ms delay', inject(function ($timeout, PreviewService) {
             //given
             var ctrl = createController();
-
-            var transfoScope = 'column';
-            var transformation = {
-                name: 'replace_on_value'
-            };
-            var params = {
-                value: 'James',
-                replace: 'Jimmy'
-            };
 
             //when
             ctrl.earlyPreview(transformation, transfoScope)(params);
             expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
-            $timeout.flush(200);
+            $timeout.flush(300);
 
             //then
             expect(PreviewService.getPreviewAddRecords).toHaveBeenCalledWith(
@@ -345,15 +320,6 @@ describe('Actions suggestions-stats controller', function () {
         it('should cancel pending early preview', inject(function ($timeout, RecipeService, PreviewService) {
             //given
             var ctrl = createController();
-
-            var transfoScope = 'column';
-            var transformation = {
-                name: 'replace_on_value'
-            };
-            var params = {
-                value: 'James',
-                replace: 'Jimmy'
-            };
 
             ctrl.earlyPreview(transformation, transfoScope)(params);
             expect(RecipeService.earlyPreview).not.toHaveBeenCalled();
@@ -381,6 +347,69 @@ describe('Actions suggestions-stats controller', function () {
             //then
             expect(RecipeService.cancelEarlyPreview).toHaveBeenCalled();
             expect(PreviewService.cancelPreview).toHaveBeenCalled();
+        }));
+
+        it('should disable early preview on step append', inject(function ($timeout, PreviewService) {
+            //given
+            var transformation = {name: 'tolowercase'};
+            var transfoScope = 'column';
+            var params = {param: 'value'};
+            var ctrl = createController();
+
+            //when
+            var closure = ctrl.transformClosure(transformation, transfoScope);
+            closure(params);
+
+            //then : preview should be disabled
+            ctrl.earlyPreview(transformation, transfoScope)(params);
+            $timeout.flush();
+            expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
+        }));
+
+        it('should disable early preview cancel on step append', inject(function ($timeout, RecipeService, PreviewService) {
+            //given
+            var transformation = {name: 'tolowercase'};
+            var transfoScope = 'column';
+            var params = {param: 'value'};
+            var ctrl = createController();
+
+            //when
+            var closure = ctrl.transformClosure(transformation, transfoScope);
+            closure(params);
+
+            //then : preview should be disabled
+            ctrl.cancelEarlyPreview();
+            $timeout.flush();
+            expect(RecipeService.cancelEarlyPreview).not.toHaveBeenCalled();
+            expect(PreviewService.cancelPreview).not.toHaveBeenCalled();
+        }));
+
+        it('should enable early preview after step append (with a 500ms delay)', inject(function ($timeout, PreviewService) {
+            //given
+            jasmine.clock().install();
+
+            var transformation = {name: 'tolowercase'};
+            var transfoScope = 'column';
+            var params = {param: 'value'};
+            var ctrl = createController();
+
+            //when
+            var closure = ctrl.transformClosure(transformation, transfoScope);
+            closure(params);
+            scope.$digest();
+
+            //then : preview should still be disabled
+            ctrl.earlyPreview(transformation, transfoScope)(params);
+            $timeout.flush();
+            expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
+
+            //then : preview should be enabled after 500ms
+            jasmine.clock().tick(500);
+            ctrl.earlyPreview(transformation, transfoScope)(params);
+            $timeout.flush();
+            expect(PreviewService.getPreviewAddRecords).toHaveBeenCalled();
+
+            jasmine.clock().uninstall();
         }));
     });
 });
