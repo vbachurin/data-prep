@@ -40,7 +40,7 @@ describe('Recipe Bullet service', function () {
         jasmine.clock().uninstall();
     });
 
-    it('should trigger append preview on inactive step hover after a delay of 200ms', inject(function ($timeout, RecipeService, PreviewService, RecipeBulletService) {
+    it('should trigger append preview on inactive step hover after a delay of 300ms', inject(function ($timeout, RecipeService, PreviewService, RecipeBulletService) {
         //given
         var recipe = RecipeService.getRecipe();
         recipe.push(
@@ -53,7 +53,7 @@ describe('Recipe Bullet service', function () {
 
         //when
         RecipeBulletService.stepHoverStart(recipe[2]);
-        jasmine.clock().tick(199);
+        jasmine.clock().tick(299);
         expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();
         jasmine.clock().tick(1);
 
@@ -125,7 +125,7 @@ describe('Recipe Bullet service', function () {
         expect(PlaygroundService.loadStep).toHaveBeenCalledWith(step1);
     }));
 
-    it('should trigger diff preview after a 200ms', inject(function ($timeout, RecipeService, PreviewService, RecipeBulletService) {
+    it('should trigger diff preview after a 300ms', inject(function ($timeout, RecipeService, PreviewService, RecipeBulletService) {
         //given
         var recipe = RecipeService.getRecipe();
         recipe.push(
@@ -137,7 +137,7 @@ describe('Recipe Bullet service', function () {
 
         //when
         RecipeBulletService.stepHoverStart(recipe[2]);
-        jasmine.clock().tick(199);
+        jasmine.clock().tick(299);
         expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();
         jasmine.clock().tick(1);
 

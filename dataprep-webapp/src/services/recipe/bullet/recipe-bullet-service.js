@@ -85,7 +85,7 @@
             previewTimeout = setTimeout(function() {
                 var previewFn = step.inactive ? previewAppend : previewDisable;
                 previewFn(step);
-            }, 200);
+            }, 300);
         }
 
         /**
