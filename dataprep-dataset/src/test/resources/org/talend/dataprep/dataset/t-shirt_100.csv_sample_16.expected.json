@@ -421,17 +421,7 @@
           "averageLength": "NaN",
           "averageLengthWithBlank": "NaN"
         }
-      },
-      "domain": "DATE",
-      "domainLabel": "Date",
-      "domainFrequency": 20.0,
-      "semanticDomains": [
-        {
-          "id": "DATE",
-          "label": "Date",
-          "frequency": 100.0
-        }
-      ]
+      }
     },
     {
       "name": "order_id",
@@ -647,17 +637,7 @@
           "averageLength": "NaN",
           "averageLengthWithBlank": "NaN"
         }
-      },
-      "domain": "DATE",
-      "domainLabel": "Date",
-      "domainFrequency": 20.0,
-      "semanticDomains": [
-        {
-          "id": "DATE",
-          "label": "Date",
-          "frequency": 100.0
-        }
-      ]
+      }
     },
     {
       "name": "total",
