@@ -66,6 +66,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
      * The new pattern to use. It must be init before the transformation
      */
     private String newPattern;
+
     /**
      * @see ActionMetadata#getName()
      */
@@ -114,36 +115,13 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
             return;
         }
 
-        // parse and checks the new date pattern
-        final JsonFactory jsonFactory = new JsonFactory();
-        final ObjectMapper mapper = new ObjectMapper(jsonFactory);
-
-        // store the current pattern in the context
-        final JsonNode rootNode = getStatisticsNode(mapper, column);
-        final JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
-
-        // read the list of patterns from columns metadata:
-        List<DateTimeFormatter> patterns = readPatternFromJson(row, columnId);
-
-        // update the pattern in the column
-        try {
-            ((ObjectNode) mostUsedPatternNode).put("pattern", newPattern); //$NON-NLS-1$
-            final StringWriter temp = new StringWriter(1000);
-
-            final JsonGenerator generator = jsonFactory.createGenerator(temp);
-            mapper.writeTree(generator, rootNode);
-            column.setStatistics(temp.toString());
-        } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_WRITE_JSON, e);
-        }
-
         // Change the date pattern
         final String value = row.get(columnId);
         if (value == null) {
             return;
         }
         try {
-            final TemporalAccessor date = superParse(value, patterns);
+            final TemporalAccessor date = superParse(value, row, columnId);
             row.set(columnId, newDateFormat.format(date));
         } catch (DateTimeException e) {
             // cannot parse the date, let's leave it as is

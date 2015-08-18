@@ -83,25 +83,6 @@ public class ChangeDatePatternTest {
     }
 
     @Test
-    public void should_change_column_metadata() throws IOException {
-        // given
-        String statistics = IOUtils.toString(ChangeDatePatternTest.class.getResourceAsStream("statistics_yyyy-MM-dd.json"));
-        ColumnMetadata column = ColumnMetadata.Builder.column().id(1).name("due_date").statistics(statistics).type(Type.DATE)
-                .build();
-        RowMetadata rowMetadata = new RowMetadata(Collections.singletonList(column));
-
-        // when
-        action.beforeApply(parameters);
-        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
-
-        // then
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-        JsonNode rootNode = mapper.readTree(column.getStatistics());
-        String actualPattern = rootNode.get("patternFrequencyTable").get(0).get("pattern").textValue();
-        assertEquals("dd - MMM - yyyy", actualPattern);
-    }
-
-    @Test
     public void toto() {
         action.getItems();
     }
@@ -201,22 +182,6 @@ public class ChangeDatePatternTest {
 
         // then (values should be unchanged)
         assertEquals(values, row.values());
-    }
-
-    @Test
-    public void testSuperParse() throws ParseException {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        TemporalAccessor date = LocalDate.of(2015, 8, 17);
-        String expected = dtf.format(date);
-
-        List<DateTimeFormatter> patterns = new ArrayList<>();
-        patterns.add(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-        patterns.add(DateTimeFormatter.ofPattern("MM-dd-yy"));
-        patterns.add(DateTimeFormatter.ofPattern("yy/dd/MM"));
-
-        assertEquals(expected, dtf.format(action.superParse("2015/08/17", patterns)));
-        assertEquals(expected, dtf.format(action.superParse("08-17-15", patterns)));
-        assertEquals(expected, dtf.format(action.superParse("15/17/08", patterns)));
     }
 
     @Test

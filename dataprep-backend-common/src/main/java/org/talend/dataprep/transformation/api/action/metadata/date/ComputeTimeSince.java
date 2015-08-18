@@ -99,9 +99,6 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final ColumnMetadata column = row.getRowMetadata().getById(columnId);
 
-        // read the list of patterns from columns metadata:
-        List<DateTimeFormatter> patterns = readPatternFromJson(row, columnId);
-
         // create the new column and add the new column after the current one
         final ColumnMetadata newColumnMetadata = createNewColumn(column);
         row.getRowMetadata().insertAfter(columnId, newColumnMetadata);
@@ -109,7 +106,7 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
         // parse the date
         final String value = row.get(columnId);
         try {
-            final TemporalAccessor temporalAccessor = superParse(value, patterns);
+            final TemporalAccessor temporalAccessor = superParse(value, row, columnId);
             final Temporal valueAsDate = unit == HOURS ? LocalDateTime.from(temporalAccessor) : LocalDate.from(temporalAccessor);
             final long newValue = unit.between(valueAsDate, now);
             row.set(newColumnMetadata.getId(), newValue + "");

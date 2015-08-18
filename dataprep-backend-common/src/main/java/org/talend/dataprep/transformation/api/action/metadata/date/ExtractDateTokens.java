@@ -134,9 +134,6 @@ public class ExtractDateTokens extends AbstractDate implements ColumnAction {
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
 
-        // read the list of patterns from columns metadata:
-        List<DateTimeFormatter> patterns = readPatternFromJson(row, columnId);
-
         // Create new columns for date tokens
         final Map<String, String> dateFieldColumns = new HashMap<>();
         for (DateFieldMappingBean date_field : DATE_FIELDS) {
@@ -153,7 +150,7 @@ public class ExtractDateTokens extends AbstractDate implements ColumnAction {
         }
         TemporalAccessor temporalAccessor = null;
         try {
-            temporalAccessor = superParse(value, patterns);
+            temporalAccessor = superParse(value, row, columnId);
         } catch (DateTimeException e) {
             // temporalAccessor is left null, this will be used bellow to set empty new value for all fields
             LOGGER.debug("Unable to parse date {}.", value, e);
