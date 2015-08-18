@@ -74,6 +74,17 @@ public interface DataSetContentStore {
     }
 
     /**
+     * Return a sample of the given size for the wanted dataset without the dataset id.
+     *
+     * @param dataSetMetadata The {@link DataSetMetadata data set} to read rows from.
+     * @param size the wanted sample size.
+     * @return A valid <b>{@link DataSetRow}</b> stream sample.
+     */
+    default Stream<DataSetRow> sampleWithoutId(DataSetMetadata dataSetMetadata, long size) {
+        return streamWithoutRowId(dataSetMetadata).limit(size);
+    }
+
+    /**
      * Returns the {@link DataSetMetadata data set} content as "raw" (i.e. the content supplied by user upon data set
      * creation).
      * 

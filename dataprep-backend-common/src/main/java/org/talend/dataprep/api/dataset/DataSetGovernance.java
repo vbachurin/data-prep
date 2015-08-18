@@ -1,5 +1,7 @@
 package org.talend.dataprep.api.dataset;
 
+import java.util.Objects;
+
 /**
  * Represents governance data of the dataset.
  */
@@ -21,4 +23,20 @@ public class DataSetGovernance {
         this.certificationStep = certificationStep;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        DataSetGovernance that = (DataSetGovernance) o;
+        return Objects.equals(certificationStep, that.certificationStep);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(certificationStep);
+    }
 }

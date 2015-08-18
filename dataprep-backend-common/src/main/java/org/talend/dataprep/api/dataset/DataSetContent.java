@@ -2,6 +2,7 @@ package org.talend.dataprep.api.dataset;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -84,4 +85,25 @@ public class DataSetContent {
         this.nbLinesInFooter = nbLinesInFooter;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        DataSetContent that = (DataSetContent) o;
+        return Objects.equals(nbRecords, that.nbRecords) && //
+                Objects.equals(nbLinesInHeader, that.nbLinesInHeader) && //
+                Objects.equals(nbLinesInFooter, that.nbLinesInFooter) && //
+                Objects.equals(mediaType, that.mediaType) && //
+                Objects.equals(parameters, that.parameters) && //
+                Objects.equals(formatGuessId, that.formatGuessId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nbRecords, nbLinesInHeader, nbLinesInFooter, mediaType, parameters, formatGuessId);
+    }
 }
