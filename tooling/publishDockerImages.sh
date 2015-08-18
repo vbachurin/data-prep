@@ -101,12 +101,11 @@ push_docker_images() {
   echo '==========================================='
   echo 'docker push'
   echo '==========================================='
-
+  images_to_tag=`more $original_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -v -E $external_images_pattern`
   for image in $internal_list;
   do
-    completeName=$image:$version
-    time docker push $registry/$completeName
-    docker rmi $registry/$completeName
+    time docker push $registry/$image
+    docker rmi $registry/$image $image
   done
   echo '==========================================='
 }
