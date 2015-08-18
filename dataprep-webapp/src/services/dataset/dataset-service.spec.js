@@ -181,14 +181,6 @@ describe('Dataset Service', function () {
         expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
     }));
 
-    it('should refresh dataset list with sort parameters', inject(function (DatasetService, DatasetListService) {
-        //when
-        DatasetService.refreshDatasets('name', 'asc');
-
-        //then
-        expect(DatasetListService.refreshDatasets).toHaveBeenCalledWith('name', 'asc');
-    }));
-
     it('should consolidate preparations and datasets on datasets refresh', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
         //when
         DatasetService.refreshDatasets();

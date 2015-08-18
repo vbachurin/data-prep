@@ -12,39 +12,54 @@
         <li>datasets : on dataset list change, set the default preparation id in each element</li>
      </ul>
      * @requires data-prep.services.dataset.service:DatasetService
+     * @requires data-prep.services.dataset.service:DatasetListSortService
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires talend.widget.service:TalendConfirmService
      * @requires data-prep.services.utils.service:MessageService
      * @requires data-prep.services.uploadWorkflowService:UploadWorkflowService
-     * @requires data-prep.services.dataset.service:DatasetListSortService
      */
-    function DatasetListCtrl($stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService, UploadWorkflowService, DatasetListService, DatasetListSortService) {
+    function DatasetListCtrl($stateParams, DatasetService, DatasetListSortService, PlaygroundService,
+                             TalendConfirmService, MessageService, UploadWorkflowService) {
         var vm = this;
 
-        vm.datasetListSortService = DatasetListSortService;
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
-        vm.datasetListService = DatasetListService;
+
+        /**
+         * @ngdoc property
+         * @name sortList
+         * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description The sort list
+         * @type {array}
+         */
+        vm.sortList = DatasetListSortService.getSortList();
+
+        /**
+         * @ngdoc property
+         * @name orderList
+         * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description The sort order list
+         * @type {string}
+         */
+        vm.orderList = DatasetListSortService.getOrderList();
 
         /**
          * @ngdoc property
          * @name sortSelected
          * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description Selected sort. If sort is not in cache, Default sort is used
+         * @description Selected sort.
          * @type {object}
          */
-        vm.sortSelected = vm.datasetListSortService.getDefaultSort();
-        vm.datasetListSortService.setDatasetsSort(vm.sortSelected.id);
+        vm.sortSelected = DatasetListSortService.getSortItem();
 
         /**
          * @ngdoc property
          * @name sortOrderSelected
          * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description Selected sort order. If order is not in cache, default order is used
+         * @description Selected sort order.
          * @type {object}
          */
-        vm.sortOrderSelected = vm.datasetListSortService.getDefaultOrder();
-        vm.datasetListSortService.setDatasetsOrder(vm.sortOrderSelected.id);
+        vm.sortOrderSelected = DatasetListSortService.getOrderItem();
 
         /**
          * @ngdoc method
@@ -60,16 +75,12 @@
 
             var oldSort = vm.sortSelected;
             vm.sortSelected = sortType;
-
-            vm.datasetListSortService.setDatasetsSort(vm.sortSelected.id);
+            DatasetListSortService.setSort(sortType.id);
 
             DatasetService.refreshDatasets()
-                .then(function() {
-
-                })
                 .catch(function() {
                     vm.sortSelected = oldSort;
-                    vm.datasetListSortService.setDatasetsSort(vm.sortSelected.id);
+                    DatasetListSortService.setSort(oldSort.id);
                 });
         };
 
@@ -85,18 +96,14 @@
                 return;
             }
 
-            var oldSortOrder = vm.sortOrderSelected;
+            var oldSort = vm.sortOrderSelected;
             vm.sortOrderSelected = order;
-
-            vm.datasetListSortService.setDatasetsOrder(vm.sortOrderSelected.id);
+            DatasetListSortService.setOrder(order.id);
 
             DatasetService.refreshDatasets()
-                .then(function() {
-
-                })
                 .catch(function() {
-                    vm.sortOrderSelected = oldSortOrder;
-                    vm.datasetListSortService.setDatasetsOrder(vm.sortOrderSelected.id);
+                    vm.sortOrderSelected = oldSort;
+                    DatasetListSortService.setOrder(oldSort.id);
                 });
         };
 
@@ -131,26 +138,6 @@
 
         /**
          * @ngdoc method
-         * @name toggleFavorite
-         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description toogle dataset as Favorite or not
-         * @param {object} dataset - the dataset to be set or unset favorite
-         */
-        vm.toggleFavorite = function(dataset) {
-            DatasetService.toggleFavorite(dataset);//just a delegate
-        };
-
-        /**
-         * @ngdoc method
-         * @name processCertification
-         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description Ask certification for a dataset
-         * @param {object} dataset - the dataset to ask certifiction for
-         */
-        vm.processCertification = DatasetService.processCertification;
-
-        /**
-         * @ngdoc method
          * @name loadUrlSelectedDataset
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description [PRIVATE] Load playground with provided dataset id, if present in route param
@@ -182,48 +169,14 @@
      * @name datasets
      * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
      * @description The dataset list.
-     * This list is bound to {@link data-prep.services.dataset.service:DatasetListService DatasetListService}.datasets
+     * This list is bound to {@link data-prep.services.dataset.service:DatasetService DatasetService}.datasetsList()
      */
     Object.defineProperty(DatasetListCtrl.prototype,
         'datasets', {
             enumerable: true,
             configurable: false,
             get: function () {
-                return this.datasetListService.datasets;
-            }
-        });
-
-
-    /**
-     * @ngdoc property
-     * @name sortList
-     * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
-     * @description The dataset list sort.
-     * This list is bound to {@link data-prep.services.dataset.service:DatasetListSortService DatasetListSortService}.sortList
-     */
-    Object.defineProperty(DatasetListCtrl.prototype,
-        'sortList', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.datasetListSortService.sortList;
-            }
-        });
-
-
-    /**
-     * @ngdoc property
-     * @name orderList
-     * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
-     * @description The dataset list sort order.
-     * This list is bound to {@link data-prep.services.dataset.service:DatasetListSortService DatasetListSortService}.orderList
-     */
-    Object.defineProperty(DatasetListCtrl.prototype,
-        'orderList', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.datasetListSortService.orderList;
+                return this.datasetService.datasetsList();
             }
         });
 

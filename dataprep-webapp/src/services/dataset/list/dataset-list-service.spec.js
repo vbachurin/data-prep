@@ -154,7 +154,7 @@ describe('Dataset List Service', function () {
 
     beforeEach(module('data-prep.services.dataset'));
 
-    beforeEach(inject(function ($q, DatasetRestService) {
+    beforeEach(inject(function ($q, DatasetRestService, DatasetListSortService) {
         initDatasets();
         initPreparations();
 
@@ -164,6 +164,9 @@ describe('Dataset List Service', function () {
         spyOn(DatasetRestService, 'update').and.returnValue($q.when(true));
         spyOn(DatasetRestService, 'delete').and.returnValue($q.when(true));
         spyOn(DatasetRestService, 'processCertification').and.returnValue($q.when(true));
+
+        spyOn(DatasetListSortService, 'getSort').and.returnValue('name');
+        spyOn(DatasetListSortService, 'getOrder').and.returnValue('asc');
     }));
 
     it('should refresh dataset list', inject(function ($rootScope, DatasetListService) {
@@ -194,19 +197,15 @@ describe('Dataset List Service', function () {
     }));
 
     it('should trigger refresh with sort parameters', inject(function (DatasetListService, DatasetRestService, DatasetListSortService) {
-
-        DatasetListSortService.datasetsSort = 'name';
-        DatasetListSortService.datasetsOrder = 'asc';
-
         //when
         DatasetListService.refreshDatasets();
 
         //then
+        expect(DatasetListSortService.getSort).toHaveBeenCalled();
+        expect(DatasetListSortService.getOrder).toHaveBeenCalled();
         expect(DatasetRestService.getDatasets.calls.mostRecent().args[0]).toBe('name');
         expect(DatasetRestService.getDatasets.calls.mostRecent().args[1]).toBe('asc');
     }));
-
-
 
     it('should create dataset', inject(function ($rootScope, DatasetListService, DatasetRestService) {
         //given

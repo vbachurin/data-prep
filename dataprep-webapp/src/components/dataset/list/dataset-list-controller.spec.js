@@ -14,7 +14,7 @@ describe('Dataset list controller', function () {
 
     beforeEach(module('data-prep.dataset-list'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, $state, DatasetService, PlaygroundService, MessageService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, $state, DatasetService, PlaygroundService, MessageService, DatasetListSortService) {
         var datasetsValues = [datasets, refreshedDatasets];
         scope = $rootScope.$new();
 
@@ -29,6 +29,9 @@ describe('Dataset list controller', function () {
         spyOn(DatasetService, 'getDatasets').and.callFake(function () {
             return $q.when(datasetsValues.shift());
         });
+
+        spyOn(DatasetListSortService, 'setSort').and.returnValue();
+        spyOn(DatasetListSortService, 'setOrder').and.returnValue();
 
         spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'show').and.callThrough();
@@ -85,31 +88,27 @@ describe('Dataset list controller', function () {
                 spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.when(true));
             }));
 
-
-            it('should refresh dataset when order is changed', inject(function ($q, DatasetService, DatasetListSortService) {
-
+            it('should refresh dataset when sort is changed', inject(function ($q, DatasetService) {
                 //given
-                spyOn(DatasetListSortService, 'getDefaultOrder').and.returnValue($q.when({id: 'desc', name: 'DESC_ORDER'}));
-
                 var ctrl = createController();
-                var newSortOrder = {id: 'asc', name: 'ASC_ORDER'};
+                ctrl.sortSelected = {id: 'date', name: 'DATE_SORT'};
+                var newSort = {id: 'name', name: 'NAME_SORT'};
 
                 //when
-                ctrl.updateSortOrder(newSortOrder);
+                ctrl.updateSortBy(newSort);
 
                 //then
                 expect(DatasetService.refreshDatasets).toHaveBeenCalledWith();
             }));
 
-            it('should refresh dataset when sort is changed', inject(function ($q, DatasetService, DatasetListSortService) {
+            it('should refresh dataset when order is changed', inject(function ($q, DatasetService) {
                 //given
-                spyOn(DatasetListSortService, 'getDefaultSort').and.returnValue($q.when({id: 'date', name: 'DATE_SORT'}));
-
                 var ctrl = createController();
-                var newSort = {id: 'name', name: 'NAME_SORT'};
+                ctrl.selectedOrder = {id: 'desc', name: 'DESC_ORDER'};
+                var newSortOrder = {id: 'asc', name: 'ASC_ORDER'};
 
                 //when
-                ctrl.updateSortBy(newSort);
+                ctrl.updateSortOrder(newSortOrder);
 
                 //then
                 expect(DatasetService.refreshDatasets).toHaveBeenCalledWith();
@@ -141,27 +140,8 @@ describe('Dataset list controller', function () {
                 expect(DatasetService.refreshDatasets.calls.count()).toBe(1);
             }));
 
-
-            it('should call setDatasetsOrder with new order when done', inject(function (DatasetService, DatasetListSortService) {
+            it('should update sort parameter', inject(function (DatasetService, DatasetListSortService) {
                 //given
-                spyOn(DatasetListSortService, 'getDefaultOrder').and.returnValue({id: 'desc', name: 'DESC_ORDER'});
-                spyOn(DatasetListSortService, 'setDatasetsOrder');
-
-                var ctrl = createController();
-                var newSortOrder = {id: 'asc', name: 'ASC_ORDER'};
-
-                //when
-                ctrl.updateSortOrder(newSortOrder);
-
-                //then
-                expect(DatasetListSortService.setDatasetsOrder).toHaveBeenCalledWith('asc');
-            }));
-
-            it('should call setDatasetsSort with new sort when done', inject(function (DatasetService, DatasetListSortService) {
-                //given
-                spyOn(DatasetListSortService, 'getDefaultSort').and.returnValue({id: 'date', name: 'DATE'});
-                spyOn(DatasetListSortService, 'setDatasetsSort');
-
                 var ctrl = createController();
                 var newSort = {id: 'name', name: 'NAME'};
 
@@ -169,7 +149,19 @@ describe('Dataset list controller', function () {
                 ctrl.updateSortBy(newSort);
 
                 //then
-                expect(DatasetListSortService.setDatasetsSort).toHaveBeenCalledWith('name');
+                expect(DatasetListSortService.setSort).toHaveBeenCalledWith('name');
+            }));
+
+            it('should update order parameter', inject(function (DatasetService, DatasetListSortService) {
+                //given
+                var ctrl = createController();
+                var newSortOrder = {id: 'asc', name: 'ASC_ORDER'};
+
+                //when
+                ctrl.updateSortOrder(newSortOrder);
+
+                //then
+                expect(DatasetListSortService.setOrder).toHaveBeenCalledWith('asc');
             }));
 
         });
@@ -179,48 +171,46 @@ describe('Dataset list controller', function () {
                 spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.reject(false));
             }));
 
-            it('should set the old order parameter', inject(function (DatasetListSortService) {
+            it('should set the old sort parameter', function () {
                 //given
-                spyOn(DatasetListSortService, 'getDefaultOrder').and.returnValue({id: 'desc', name: 'DESC'});
-
-                var ctrl = createController();
-                var newSortOrder =  {id: 'asc', name: 'ASC_ORDER'};
-
-                expect(ctrl.sortOrderSelected.id).toBe('desc');
-
-                //when
-                ctrl.updateSortOrder(newSortOrder);
-                expect(ctrl.sortOrderSelected.id).toBe('asc');
-                scope.$digest();
-
-                //then
-                expect(ctrl.sortOrderSelected.id).toBe('desc');
-            }));
-
-            it('should NOT set the old sort parameter', inject(function (DatasetListSortService) {
-                //given
-                spyOn(DatasetListSortService, 'getDefaultSort').and.returnValue({id: 'date', name: 'DATE'});
-
-                var ctrl = createController();
+                var previousSelectedSort = {id: 'date', name: 'DATE'};
                 var newSort =  {id: 'name', name: 'NAME_SORT'};
 
-                expect(ctrl.sortSelected.id).toBe('date');
+                var ctrl = createController();
+                ctrl.sortSelected = previousSelectedSort;
 
                 //when
                 ctrl.updateSortBy(newSort);
-                expect(ctrl.sortSelected.id).toBe('name');
+                expect(ctrl.sortSelected).toBe(newSort);
                 scope.$digest();
 
                 //then
-                expect(ctrl.sortSelected.id).toBe('date');
-            }));
+                expect(ctrl.sortSelected).toBe(previousSelectedSort);
+            });
+
+            it('should set the old order parameter', function () {
+                //given
+                var previousSelectedOrder = {id: 'desc', name: 'DESC'};
+                var newSortOrder =  {id: 'asc', name: 'ASC_ORDER'};
+
+                var ctrl = createController();
+                ctrl.sortOrderSelected = previousSelectedOrder;
+
+                //when
+                ctrl.updateSortOrder(newSortOrder);
+                expect(ctrl.sortOrderSelected).toBe(newSortOrder);
+                scope.$digest();
+
+                //then
+                expect(ctrl.sortOrderSelected).toBe(previousSelectedOrder);
+            });
         });
     });
 
     describe('already created', function () {
         var ctrl;
 
-        beforeEach(inject(function ($rootScope, $q, MessageService, DatasetService, DatasetSheetPreviewService) {
+        beforeEach(inject(function ($rootScope, $q, MessageService, DatasetService, DatasetSheetPreviewService, TalendConfirmService) {
             ctrl = createController();
             scope.$digest();
 
@@ -230,16 +220,13 @@ describe('Dataset list controller', function () {
             spyOn(DatasetSheetPreviewService, 'loadPreview').and.returnValue($q.when(true));
             spyOn(DatasetSheetPreviewService, 'display').and.returnValue($q.when(true));
             spyOn(DatasetService, 'toggleFavorite').and.returnValue($q.when(true));
+            spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when(true));
         }));
 
-        it('should delete dataset and show toast', inject(function ($q, MessageService, DatasetService, TalendConfirmService, DatasetListSortService) {
-
-            spyOn(DatasetListSortService, 'getDefaultSort').and.returnValue({id: 'name', name: 'NAME'});
-            spyOn(DatasetListSortService, 'getDefaultOrder').and.returnValue({id: 'desc', name: 'DESC'});
-
+        it('should delete dataset and show toast', inject(function ($q, MessageService, DatasetService, TalendConfirmService) {
             //given
             var dataset = datasets[0];
-            spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when(true));
+
 
             //when
             ctrl.delete(dataset);
@@ -257,26 +244,6 @@ describe('Dataset list controller', function () {
 
             //then
             expect(ctrl.datasets).toBe(refreshedDatasets);
-        }));
-
-        it('should process certification on dataset', inject(function (DatasetService) {
-            //when
-            ctrl.processCertification(datasets[0]);
-
-            //then
-            expect(DatasetService.processCertification).toHaveBeenCalledWith(datasets[0]);
-        }));
-
-        it('should toogle dataset favorite flag', inject(function ($rootScope, DatasetService) {
-            //given
-            var dataset = {name: 'Customers (50 lines)', id: 'aA2bc348e933bc2', favorite: false};
-
-            //when
-            ctrl.toggleFavorite(dataset);
-            $rootScope.$apply();
-
-            //then
-            expect(DatasetService.toggleFavorite).toHaveBeenCalledWith(dataset);
         }));
     });
 });

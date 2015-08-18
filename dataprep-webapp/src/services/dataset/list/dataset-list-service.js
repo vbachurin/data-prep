@@ -46,11 +46,12 @@
          * @returns {promise} The pending GET promise
          */
         var refreshDatasets = function refreshDatasets() {
-
             cancelPendingGetRequest();
+            var sort = DatasetListSortService.getSort();
+            var order = DatasetListSortService.getOrder();
 
             deferredCancel = $q.defer();
-            datasetsPromise = DatasetRestService.getDatasets(DatasetListSortService.datasetsSort, DatasetListSortService.datasetsOrder, deferredCancel)
+            datasetsPromise = DatasetRestService.getDatasets(sort, order, deferredCancel)
                 .then(function(res) {
                     self.datasets = res.data;
                     datasetsPromise = null;

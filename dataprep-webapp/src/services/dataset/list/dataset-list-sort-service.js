@@ -4,23 +4,20 @@
     /**
      * @ngdoc service
      * @name data-prep.services.dataset.service:DatasetListSortService
-     * @description Dataset list sort service
+     * @description Dataset list sort parameters service
      */
     function DatasetListSortService($window) {
-
-        var self = this;
-
-        var sortSelectedKey = 'dataprep.dataset.sort';
-        var sortOrderSelectedKey = 'dataprep.dataset.sortOrder';
+        var sortLocalStorageKey = 'dataprep.dataset.sort';
+        var orderLocalStorageKey = 'dataprep.dataset.order';
 
         /**
          * @ngdoc property
          * @name sortList
          * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description List of supported sort.
+         * @description List of available sort.
          * @type {object[]}
          */
-        self.sortList = [
+        var sortList = [
             {id: 'name', name: 'NAME_SORT'},
             {id: 'date', name: 'DATE_SORT'}
         ];
@@ -29,78 +26,145 @@
          * @ngdoc property
          * @name orderList
          * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description List of sorting order.
+         * @description List of available order.
          * @type {object[]}
          */
-        self.orderList = [
+        var orderList = [
             {id: 'asc', name: 'ASC_ORDER'},
             {id: 'desc', name: 'DESC_ORDER'}
         ];
-
 
         /**
          * @ngdoc property
          * @name datasetsSort
          * @propertyOf data-prep.services.dataset.service:DatasetListSortService
-         * @description the dataset list sort
+         * @description The selected sort parameter
          */
-        self.datasetsSort = null;
+        var sort = getDefaultSort();
 
         /**
          * @ngdoc property
          * @name datasetsOrder
          * @propertyOf data-prep.services.dataset.service:DatasetListSortService
-         * @description the dataset list order
+         * @description The selected sort order
          */
-        self.datasetsOrder = null;
+        var order = getDefaultOrder();
 
+        return {
+            getSortList: getSortList,
+            getSort: getSort,
+            getSortItem: getSortItem,
+            setSort: setSort,
 
-        /**@ngdoc method
+            getOrderList: getOrderList,
+            getOrder: getOrder,
+            getOrderItem: getOrderItem,
+            setOrder: setOrder
+        };
+
+        /**
+         * @ngdoc method
          * @name getDefaultSort
          * @methodOf data-prep.services.dataset.service:DatasetListSortService
-         * @description return the sort stored in localStorage, otherwise return the sort by default
+         * @description Returns the sort parameter from localStorage if it exists, or the sort by default otherwise
          */
         function getDefaultSort() {
-            var savedSort = $window.localStorage.getItem(sortSelectedKey);
-            return !savedSort ? self.sortList[1] : _.find(self.sortList, {id: savedSort});
+            var savedSort = $window.localStorage.getItem(sortLocalStorageKey);
+            return savedSort ? savedSort : sortList[1].id;
         }
 
-
-        /**@ngdoc method
+        /**
+         * @ngdoc method
          * @name getDefaultOrder
          * @methodOf data-prep.services.dataset.service:DatasetListSortService
-         * @description return the sort order stored in localStorage, otherwise return the sort order by default
+         * @description Returns the sort order from localStorage if it exists, or the sort order by default otherwise
          */
         function getDefaultOrder() {
-            var savedSortOrder = $window.localStorage.getItem(sortOrderSelectedKey);
-            return !savedSortOrder ? self.orderList[1] : _.find(self.orderList, {id: savedSortOrder});
+            var savedSortOrder = $window.localStorage.getItem(orderLocalStorageKey);
+            return savedSortOrder ? savedSortOrder : orderList[1].id;
         }
 
-
-        /**@ngdoc method
-         * @name setDatasetsSort
+        /**
+         * @ngdoc method
+         * @name getSortList
          * @methodOf data-prep.services.dataset.service:DatasetListSortService
-         * @description update the datasets list sort
+         * @description Returns the list of available sort parameters
          */
-        function setDatasetsSort(id) {
-            self.datasetsSort = id;
-            $window.localStorage.setItem(sortSelectedKey, self.datasetsSort);
+        function getSortList() {
+            return sortList.slice(0);
         }
 
-        /**@ngdoc method
-         * @name setDatasetsOrder
+        /**
+         * @ngdoc method
+         * @name getOrderList
          * @methodOf data-prep.services.dataset.service:DatasetListSortService
-         * @description update the datasets list sort order
+         * @description Returns the list of available sort order parameters
          */
-        function setDatasetsOrder(id) {
-            self.datasetsOrder = id;
-            $window.localStorage.setItem(sortOrderSelectedKey, self.datasetsOrder);
+        function getOrderList() {
+            return orderList.slice(0);
         }
 
-        self.getDefaultSort = getDefaultSort ;
-        self.getDefaultOrder = getDefaultOrder ;
-        self.setDatasetsSort = setDatasetsSort ;
-        self.setDatasetsOrder = setDatasetsOrder ;
+        /**
+         * @ngdoc method
+         * @name getSort
+         * @methodOf data-prep.services.dataset.service:DatasetListSortService
+         * @description Returns the actual sort parameter
+         */
+        function getSort() {
+            return sort;
+        }
+
+        /**
+         * @ngdoc method
+         * @name getSortItem
+         * @methodOf data-prep.services.dataset.service:DatasetListSortService
+         * @description Returns the actual sort parameter item from sort list
+         */
+        function getSortItem() {
+            return _.find(sortList, {id: sort});
+        }
+
+        /**
+         * @ngdoc method
+         * @name getOrderItem
+         * @methodOf data-prep.services.dataset.service:DatasetListSortService
+         * @description Returns the actual order parameter item from order list
+         */
+        function getOrderItem() {
+            return _.find(orderList, {id: order});
+        }
+
+        /**
+         * @ngdoc method
+         * @name getOrder
+         * @methodOf data-prep.services.dataset.service:DatasetListSortService
+         * @description Returns the actual order parameter
+         */
+        function getOrder() {
+            return order;
+        }
+
+        /**
+         * @ngdoc method
+         * @name setSort
+         * @methodOf data-prep.services.dataset.service:DatasetListSortService
+         * @description Update the sort parameter locally and in localStorage
+         */
+        function setSort(id) {
+            sort = id;
+            $window.localStorage.setItem(sortLocalStorageKey, id);
+        }
+
+        /**
+         * @ngdoc method
+         * @name setOrder
+         * @methodOf data-prep.services.dataset.service:DatasetListSortService
+         * @description Update the order parameter locally and in localStorage
+         */
+        function setOrder(id) {
+            order = id;
+            $window.localStorage.setItem(orderLocalStorageKey, id);
+        }
     }
 
     angular.module('data-prep.services.dataset')
