@@ -17,15 +17,26 @@ describe('Datagrid column service', function () {
     }));
 
     describe('on creation', function () {
-        it('should add column reorder handler', inject(function (DatagridColumnService) {
+        it('should add SlickGrid header destroy handler', inject(function (DatagridColumnService) {
             //given
-            spyOn(gridMock.onColumnsReordered, 'subscribe').and.returnValue();
+            spyOn(gridMock.onBeforeHeaderCellDestroy, 'subscribe').and.returnValue();
 
             //when
             DatagridColumnService.init(gridMock);
 
             //then
-            expect(gridMock.onColumnsReordered.subscribe).toHaveBeenCalled();
+            expect(gridMock.onBeforeHeaderCellDestroy.subscribe).toHaveBeenCalled();
+        }));
+
+        it('should add SlickGrid header creation handler', inject(function (DatagridColumnService) {
+            //given
+            spyOn(gridMock.onHeaderCellRendered, 'subscribe').and.returnValue();
+
+            //when
+            DatagridColumnService.init(gridMock);
+
+            //then
+            expect(gridMock.onHeaderCellRendered.subscribe).toHaveBeenCalled();
         }));
     });
 
@@ -44,19 +55,6 @@ describe('Datagrid column service', function () {
 
             spyOn(DatagridStyleService, 'getColumnPreviewStyle').and.returnValue('');
             spyOn(DatagridStyleService, 'columnFormatter').and.returnValue(formatter);
-        }));
-
-        it('should detach all header directives', inject(function(DatagridColumnService) {
-            //given
-            DatagridColumnService.colHeaderElements = headers;
-
-            //when
-            DatagridColumnService.createColumns([], true, false);
-
-            //then
-            headers.forEach(function(header) {
-                expect(header.element.detach).toHaveBeenCalled();
-            });
         }));
 
         it('should create new preview grid columns', inject(function(DatagridColumnService) {
@@ -93,183 +91,205 @@ describe('Datagrid column service', function () {
             //then
             expect(createdColumns[0].id).toEqual('0000');
             expect(createdColumns[0].field).toEqual('0000');
-            expect(createdColumns[0].name).toEqual('<div id="datagrid-header-0"></div>');
+            expect(createdColumns[0].name).toEqual('');
             expect(createdColumns[0].formatter).toEqual(formatter);
             expect(createdColumns[0].minWidth).toEqual(80);
             expect(createdColumns[0].tdpColMetadata).toEqual({ id: '0000', name: 'col0', type: 'string' } );
 
             expect(createdColumns[1].id).toEqual('0001');
             expect(createdColumns[1].field).toEqual('0001');
-            expect(createdColumns[1].name).toEqual('<div id="datagrid-header-1"></div>');
+            expect(createdColumns[1].name).toEqual('');
             expect(createdColumns[1].formatter).toEqual(formatter);
             expect(createdColumns[1].minWidth).toEqual(80);
             expect(createdColumns[1].tdpColMetadata).toEqual({ id: '0001', name: 'col1', type: 'integer' } );
 
             expect(createdColumns[2].id).toEqual('0002');
             expect(createdColumns[2].field).toEqual('0002');
-            expect(createdColumns[2].name).toEqual('<div id="datagrid-header-2"></div>');
+            expect(createdColumns[2].name).toEqual('');
             expect(createdColumns[2].formatter).toEqual(formatter);
             expect(createdColumns[2].minWidth).toEqual(80);
             expect(createdColumns[2].tdpColMetadata).toEqual({ id: '0002', name: 'col2', type: 'string', domain: 'salary' });
         }));
+    });
 
-        it('should fill colHeaderElements with datagrid headers', inject(function(DatagridColumnService) {
-            //given
-            expect(DatagridColumnService.colHeaderElements).toEqual([]);
+    describe('on column header destroy event', function() {
+        var columnDef;
 
-            //when
-            DatagridColumnService.createColumns(columnsMetadata, false, false);
+        beforeEach(inject(function(DatagridColumnService) {
+            spyOn(gridMock.onBeforeHeaderCellDestroy, 'subscribe').and.returnValue();
 
-            //then
-            expect(DatagridColumnService.colHeaderElements.length).toBe(3);
+            columnDef = {
+                header: {remove: function() {}, detach: function() {}},
+                scope: {$destroy: function() {}}
+            };
 
-            columnsMetadata.forEach(function(colMetadata, index) {
-                expect(DatagridColumnService.colHeaderElements[index].element).toBeDefined();
-                expect(DatagridColumnService.colHeaderElements[index].scope).toBeDefined();
-                expect(DatagridColumnService.colHeaderElements[index].scope.column).toBe(colMetadata);
-                expect(DatagridColumnService.colHeaderElements[index].column).toBe(colMetadata);
-            });
+            spyOn(columnDef.header, 'detach').and.returnValue();
+            spyOn(columnDef.header, 'remove').and.returnValue();
+            spyOn(columnDef.scope, '$destroy').and.returnValue();
+
+            DatagridColumnService.init(gridMock);
         }));
 
-        it('should reuse same column header and update column metadata', inject(function(DatagridColumnService) {
+        it('should do nothing when column is part of a preview', inject(function(DatagridColumnService) {
             //given
-            var newColumnsMetadata = [
-                {id: '0000', name: 'col0', type: 'string'}, //Test case : reuse it
-                {id: '0001', name: 'NewCol1Name', type: 'integer'}, //Test case : reuse it
-                {id: '0002Bis', name: 'NewColName2', type: 'integer'}
-            ];
-
-            DatagridColumnService.createColumns(columnsMetadata, false, false);
-            var oldColHeaderElements = DatagridColumnService.colHeaderElements;
-            expect(oldColHeaderElements.length).toBe(3);
+            columnDef.preview = true;
+            var columnsArgs = {
+                id: '0001',
+                column: columnDef
+            };
+            DatagridColumnService.renewAllColumns(true);
 
             //when
-            DatagridColumnService.createColumns(newColumnsMetadata, false, false);
+            var onBeforeHeaderCellDestroy = gridMock.onBeforeHeaderCellDestroy.subscribe.calls.argsFor(0)[0];
+            onBeforeHeaderCellDestroy(null, columnsArgs);
 
             //then
-            expect(DatagridColumnService.colHeaderElements.length).toBe(3);
-            expect(DatagridColumnService.colHeaderElements[0]).toBe(oldColHeaderElements[0]);
-            expect(DatagridColumnService.colHeaderElements[0].scope.column).toBe(newColumnsMetadata[0]);
-            expect(DatagridColumnService.colHeaderElements[1]).toBe(oldColHeaderElements[1]);
-            expect(DatagridColumnService.colHeaderElements[1].scope.column).toBe(newColumnsMetadata[1]);
-            expect(DatagridColumnService.colHeaderElements[2]).not.toBe(oldColHeaderElements[2]);
+            expect(columnDef.header.detach).not.toHaveBeenCalled();
+            expect(columnDef.header.remove).not.toHaveBeenCalled();
+            expect(columnDef.scope.$destroy).not.toHaveBeenCalled();
         }));
 
-        it('should delete unused header and create a new one for the new column', inject(function(DatagridColumnService) {
+        it('should destroy header when renewAllFlag is set to true', inject(function(DatagridColumnService) {
             //given
-            var newColumnsMetadata = [
-                {id: '0000', name: 'col0', type: 'string'},
-                {id: '0001', name: 'NewCol1Name', type: 'integer'},
-                {id: '0002Bis', name: 'NewColName2', type: 'integer'} //Test case : delete it and create a new one
-            ];
-
-            DatagridColumnService.createColumns(columnsMetadata, false, false);
-            var oldColHeaderElements = DatagridColumnService.colHeaderElements;
-            expect(oldColHeaderElements.length).toBe(3);
-
-            oldColHeaderElements.forEach(function(header) {
-                spyOn(header.scope, '$destroy').and.returnValue();
-                spyOn(header.element, 'remove').and.returnValue();
-                spyOn(header.element, 'detach').and.returnValue();
-            });
+            columnDef.preview = false;
+            var columnsArgs = {
+                id: '0001',
+                column: columnDef
+            };
+            DatagridColumnService.renewAllColumns(true);
 
             //when
-            DatagridColumnService.createColumns(newColumnsMetadata, false, false);
+            var onBeforeHeaderCellDestroy = gridMock.onBeforeHeaderCellDestroy.subscribe.calls.argsFor(0)[0];
+            onBeforeHeaderCellDestroy(null, columnsArgs);
 
             //then
-            expect(oldColHeaderElements[0].scope.$destroy).not.toHaveBeenCalled();
-            expect(oldColHeaderElements[0].element.remove).not.toHaveBeenCalled();
-            expect(oldColHeaderElements[1].scope.$destroy).not.toHaveBeenCalled();
-            expect(oldColHeaderElements[1].element.remove).not.toHaveBeenCalled();
-            expect(oldColHeaderElements[2].scope.$destroy).toHaveBeenCalled();
-            expect(oldColHeaderElements[2].element.remove).toHaveBeenCalled();
+            expect(columnDef.header.detach).not.toHaveBeenCalled();
+            expect(columnDef.header.remove).toHaveBeenCalled();
+            expect(columnDef.scope.$destroy).toHaveBeenCalled();
         }));
 
-        it('should force column recreation', inject(function(DatagridColumnService) {
+        it('should detach header when renewAllFlag is set to false', inject(function(DatagridColumnService) {
             //given
-            var newColumnsMetadata = [
-                {id: '0000', name: 'col0', type: 'string'},
-                {id: '0001', name: 'NewCol1Name', type: 'integer'},
-                {id: '0002Bis', name: 'NewColName2', type: 'integer'}
-            ];
-            var forceCreation = true;
-
-            DatagridColumnService.createColumns(columnsMetadata, false, false);
-            var oldColHeaderElements = DatagridColumnService.colHeaderElements;
-            expect(oldColHeaderElements.length).toBe(3);
-
-            oldColHeaderElements.forEach(function(header) {
-                spyOn(header.scope, '$destroy').and.returnValue();
-                spyOn(header.element, 'remove').and.returnValue();
-                spyOn(header.element, 'detach').and.returnValue();
-            });
+            columnDef.preview = false;
+            var columnsArgs = {
+                id: '0001',
+                column: columnDef
+            };
+            DatagridColumnService.renewAllColumns(false);
 
             //when
-            DatagridColumnService.createColumns(newColumnsMetadata, false, forceCreation);
+            var onBeforeHeaderCellDestroy = gridMock.onBeforeHeaderCellDestroy.subscribe.calls.argsFor(0)[0];
+            onBeforeHeaderCellDestroy(null, columnsArgs);
 
             //then
-            expect(oldColHeaderElements[0].scope.$destroy).toHaveBeenCalled();
-            expect(oldColHeaderElements[0].element.remove).toHaveBeenCalled();
-            expect(oldColHeaderElements[1].scope.$destroy).toHaveBeenCalled();
-            expect(oldColHeaderElements[1].element.remove).toHaveBeenCalled();
-            expect(oldColHeaderElements[2].scope.$destroy).toHaveBeenCalled();
-            expect(oldColHeaderElements[2].element.remove).toHaveBeenCalled();
+            expect(columnDef.header.detach).toHaveBeenCalled();
+            expect(columnDef.header.remove).not.toHaveBeenCalled();
+            expect(columnDef.scope.$destroy).not.toHaveBeenCalled();
         }));
     });
 
-    describe('on column reorder event', function() {
-        var headers;
+    describe('on column header rendered event', function() {
+        var availableScope;
+        var availableHeader;
+
+        function saveHeader(id, scope, header) {
+            var columnsToDestroy = {
+                id: id,
+                scope: scope,
+                header: header,
+                preview: false
+            };
+            var headerToDetach = {
+                column: columnsToDestroy
+            };
+
+            //destroy to save header in the available headers
+            var onBeforeHeaderCellDestroy = gridMock.onBeforeHeaderCellDestroy.subscribe.calls.argsFor(0)[0];
+            onBeforeHeaderCellDestroy(null, headerToDetach);
+        }
 
         beforeEach(inject(function(DatagridColumnService) {
-            spyOn(gridMock.onColumnsReordered, 'subscribe').and.returnValue();
-
-            headers = [
-                {element: {remove: function() {}}, scope: {$destroy: function() {}}},
-                {element: {remove: function() {}}, scope: {$destroy: function() {}}},
-                {element: {remove: function() {}}, scope: {$destroy: function() {}}}];
-            headers.forEach(function(header) {
-                spyOn(header.element, 'remove').and.returnValue();
-                spyOn(header.scope, '$destroy').and.returnValue();
-            });
+            spyOn(gridMock.onBeforeHeaderCellDestroy, 'subscribe').and.returnValue();
+            spyOn(gridMock.onHeaderCellRendered, 'subscribe').and.returnValue();
 
             DatagridColumnService.init(gridMock);
-            DatagridColumnService.colHeaderElements = headers.slice(0);
+
+            //save header in available headers list
+            availableScope = {$destroy: function() {}, $digest: function() {}};
+            availableHeader = angular.element('<div id="availableHeader"></div>');
+            saveHeader('0001', availableScope, availableHeader);
+
+            spyOn(availableScope, '$digest').and.returnValue();
         }));
 
-        it('should remove and destroy all existing headers', inject(function(DatagridService) {
+        it('should attach and update available header that has the same id', inject(function() {
             //given
-            DatagridService.data = {columns: columnsMetadata};
+            var columnsArgs = {
+                column:  {
+                    id: '0001',
+                    tdpColMetadata: {}
+                },
+                node: angular.element('<div></div>')[0]
+            };
 
             //when
-            var onColumnsReordered = gridMock.onColumnsReordered.subscribe.calls.argsFor(0)[0];
-            onColumnsReordered();
+            var onHeaderCellRendered = gridMock.onHeaderCellRendered.subscribe.calls.argsFor(0)[0];
+            onHeaderCellRendered(null, columnsArgs);
 
             //then
-            headers.forEach(function(header) {
-                expect(header.element.remove).toHaveBeenCalled();
-                expect(header.scope.$destroy).toHaveBeenCalled();
-            });
+            expect(availableScope.column).toBe(columnsArgs.column.tdpColMetadata);
+            expect(availableScope.$digest).toHaveBeenCalled();
+
+            expect(columnsArgs.column.header).toBe(availableHeader);
+            expect(columnsArgs.column.scope).toBe(availableScope);
+
+            expect(angular.element(columnsArgs.node).find('#availableHeader').length).toBe(1);
         }));
 
-        it('should create new headers', inject(function(DatagridService, DatagridColumnService) {
+        it('should create and attach a new header', inject(function() {
             //given
-            DatagridService.data = {columns: columnsMetadata};
+            var columnsArgs = {
+                column:  {
+                    id: '0002',
+                    tdpColMetadata: {}
+                },
+                node: angular.element('<div></div>')[0]
+            };
 
             //when
-            var onColumnsReordered = gridMock.onColumnsReordered.subscribe.calls.argsFor(0)[0];
-            onColumnsReordered();
+            var onHeaderCellRendered = gridMock.onHeaderCellRendered.subscribe.calls.argsFor(0)[0];
+            onHeaderCellRendered(null, columnsArgs);
 
             //then
-            expect(DatagridColumnService.colHeaderElements.length).toBe(3);
-            expect(DatagridColumnService.colHeaderElements[0].scope.column).toBe(columnsMetadata[0]);
-            expect(DatagridColumnService.colHeaderElements[0].column).toBe(columnsMetadata[0]);
-            expect(DatagridColumnService.colHeaderElements[0].element).toBeDefined();
-            expect(DatagridColumnService.colHeaderElements[1].scope.column).toBe(columnsMetadata[1]);
-            expect(DatagridColumnService.colHeaderElements[1].column).toBe(columnsMetadata[1]);
-            expect(DatagridColumnService.colHeaderElements[1].element).toBeDefined();
-            expect(DatagridColumnService.colHeaderElements[2].scope.column).toBe(columnsMetadata[2]);
-            expect(DatagridColumnService.colHeaderElements[2].column).toBe(columnsMetadata[2]);
-            expect(DatagridColumnService.colHeaderElements[2].element).toBeDefined();
+            expect(columnsArgs.column.scope).toBeDefined();
+            expect(columnsArgs.column.header).toBeDefined();
+
+            expect(columnsArgs.column.header).not.toBe(availableHeader);
+            expect(columnsArgs.column.scope).not.toBe(availableScope);
+
+            expect(angular.element(columnsArgs.node).find('datagrid-header').length).toBe(1);
+        }));
+
+        it('should do nothing if column is from preview', inject(function() {
+            //given
+            var columnsArgs = {
+                column:  {
+                    id: '0002',
+                    tdpColMetadata: {},
+                    preview: true
+                },
+                node: angular.element('<div></div>')[0]
+            };
+
+            //when
+            var onHeaderCellRendered = gridMock.onHeaderCellRendered.subscribe.calls.argsFor(0)[0];
+            onHeaderCellRendered(null, columnsArgs);
+
+            //then
+            expect(columnsArgs.column.scope).not.toBeDefined();
+            expect(columnsArgs.column.header).not.toBeDefined();
+
+            expect(angular.element(columnsArgs.node).find('datagrid-header').length).toBe(0);
         }));
     });
 });

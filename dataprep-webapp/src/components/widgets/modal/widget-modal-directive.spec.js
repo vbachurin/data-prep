@@ -396,8 +396,9 @@ describe('Dropdown directive', function () {
             expect(document.activeElement.className).toBe('modal-inner');
         });
 
-        it('should focus on second input on show and select the text coz first has "no-focus" class', inject(function($timeout) {
+        it('should focus on second input on show and select the text coz first has "no-focus" class', inject(function() {
             //given
+            jasmine.clock().install();
             scope.fullscreen = false;
             scope.state = false;
             scope.closeButton = false;
@@ -414,11 +415,13 @@ describe('Dropdown directive', function () {
             //when
             scope.state = true;
             scope.$digest();
-            $timeout.flush();
+            jasmine.clock().tick(200);
 
             //then
             expect(document.activeElement.id).toBe('secondInput');
             expect(window.getSelection().toString()).toBe('city');
+
+            jasmine.clock().uninstall();
         }));
 
         it('should focus on next last shown modal on focused modal close', function () {

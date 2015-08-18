@@ -566,6 +566,33 @@ public class DataSetServiceTests extends DataSetBaseTest {
         assertThat(datasetContent, sameJSONAsFile(expected));
     }
 
+    /**
+     * Test the import of an excel file that is also detected as csv file. See
+     * https://jira.talendforge.org/browse/TDP-258
+     *
+     * @see org.talend.dataprep.schema.LineBasedFormatGuesser
+     */
+    @Test
+    public void testXlsFileThatIsAlsoParsedAsCSV() throws Exception {
+
+        String dataSetId = given()
+                .body(IOUtils.toByteArray(this.getClass().getResourceAsStream("../TDP-375_xsl_read_as_csv.xls")))
+                        // .queryParam("Content-Type", "application/vnd.ms-excel")
+                .when().post("/datasets").asString();
+
+        assertQueueMessages(dataSetId);
+
+        String json = given().when().get("/datasets/{id}/metadata", dataSetId).asString();
+        ObjectMapper mapper = new ObjectMapper();
+        final JsonNode rootNode = mapper.reader().readTree(json);
+        final JsonNode metadata = rootNode.get("metadata");
+
+        // only interested in the parser --> excel parser must be used !
+        assertEquals(metadata.get("type").asText(), "application/vnd.ms-excel");
+        assertEquals(metadata.get("formatGuess").asText(), "formatGuess#xls");
+        assertEquals(metadata.get("records").asText(), "500");
+    }
+
     @Test
     public void testQuotes() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../bands_quotes.csv")))
@@ -849,8 +876,8 @@ public class DataSetServiceTests extends DataSetBaseTest {
         final SemanticDomain jsoDomain = new SemanticDomain("JSO", "JSO label", 1.0F);
         column.getSemanticDomains().add(jsoDomain);
 
-        assertThat(column.getDomain(), is("FIRSTNAME"));
-        assertThat(column.getDomainLabel(), is("FIRSTNAME"));
+        assertThat(column.getDomain(), is("First Name"));
+        assertThat(column.getDomainLabel(), is("First Name"));
         assertThat(column.getDomainFrequency(), is(2.0F));
 
         //when
@@ -884,8 +911,8 @@ public class DataSetServiceTests extends DataSetBaseTest {
                 .findFirst()
                 .get();
 
-        assertThat(column.getDomain(), is("FIRSTNAME"));
-        assertThat(column.getDomainLabel(), is("FIRSTNAME"));
+        assertThat(column.getDomain(), is("First Name"));
+        assertThat(column.getDomainLabel(), is("First Name"));
         assertThat(column.getDomainFrequency(), is(2.0F));
         assertThat(column.getType(), is("string"));
 
@@ -898,8 +925,8 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         //then
         res.then().statusCode(200);
-        assertThat(column.getDomain(), is("FIRSTNAME"));
-        assertThat(column.getDomainLabel(), is("FIRSTNAME"));
+        assertThat(column.getDomain(), is("First Name"));
+        assertThat(column.getDomainLabel(), is("First Name"));
         assertThat(column.getDomainFrequency(), is(2.0F));
         assertThat(column.getType(), is("integer"));
     }
@@ -921,8 +948,8 @@ public class DataSetServiceTests extends DataSetBaseTest {
                 .findFirst()
                 .get();
 
-        assertThat(column.getDomain(), is("FIRSTNAME"));
-        assertThat(column.getDomainLabel(), is("FIRSTNAME"));
+        assertThat(column.getDomain(), is("First Name"));
+        assertThat(column.getDomainLabel(), is("First Name"));
         assertThat(column.getDomainFrequency(), is(2.0F));
 
         //when

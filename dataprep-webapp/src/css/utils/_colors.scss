@@ -27,7 +27,7 @@ $color-ok:#8abc00 ;
 $color-warning: #ffcd00 ;
 $color-error: #ce6564 ;
 
-//drop shadows
+// drop shadows
 $icon-drop-shadow: 0px 1px 1px rgba(0, 0, 0, 1);
 $box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.5);
 $box-shadow-to-right: 5px 3px 10px rgba(212, 212, 212, .6);
@@ -49,8 +49,13 @@ $super-light-gray: #f5f5f5 ;
 $black: #000000 ;
 $orange: #ffa616;
 
-//Quality Bar
+// Quality Bar
 $ok-color: rgb(138, 188, 0);
 $empty-color: $white;
 $nok-color: rgb(247, 168, 0);
 $unknown-color: $medium-gray;
+
+// Preview
+$new-color: rgba(193, 217, 6, 0.5);
+$update-color: rgba(79, 193, 222, 0.5);
+$delete-color: $light-gray;

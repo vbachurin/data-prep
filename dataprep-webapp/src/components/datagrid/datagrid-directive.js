@@ -33,22 +33,11 @@
             controller: 'DatagridCtrl',
             link: function (scope, iElement) {
                 var grid;
-                var renewAllColumns = false;
                 var columnTimeout, externalTimeout, focusTimeout;
 
                 //------------------------------------------------------------------------------------------------------
                 //--------------------------------------------------GETTERS---------------------------------------------
                 //------------------------------------------------------------------------------------------------------
-                /**
-                 * @ngdoc method
-                 * @name getHeaders
-                 * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @description [PRIVATE] Get the column headers directives that should be inserted in the SlickGrid headers
-                 */
-                var getHeaders = function getHeaders() {
-                    return DatagridColumnService.colHeaderElements;
-                };
-
                 /**
                  * @ngdoc method
                  * @name getMetadata
@@ -84,19 +73,6 @@
                 //------------------------------------------------------------------------------------------------------
                 /**
                  * @ngdoc method
-                 * @name insertHeaders
-                 * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @description [PRIVATE] Insert the column headers directives in the SlickGrid headers.
-                 * The expected order is based on the grid headers order.
-                 */
-                var insertHeaders = function insertHeaders() {
-                    _.forEach(DatagridColumnService.colHeaderElements, function (header, index) {
-                        iElement.find('#datagrid-header-' + index).eq(0).append(header.element);
-                    });
-                };
-
-                /**
-                 * @ngdoc method
                  * @name onMetadataChange
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Reset cell styles, scroll to top and expect to recreate all columns on next update
@@ -106,7 +82,7 @@
                         DatagridStyleService.resetCellStyles();
                         DatagridStyleService.resetColumnStyles();
                         grid.scrollRowToTop(0);
-                        renewAllColumns = true;
+                        DatagridColumnService.renewAllColumns(true);
                     }
                 };
 
@@ -124,14 +100,12 @@
                         //create columns, manage style and size, set columns in grid, and insert headers
                         clearTimeout(columnTimeout);
                         columnTimeout = setTimeout(function() {
-                            columns = DatagridColumnService.createColumns(data.columns, data.preview, renewAllColumns);
+
+                            columns = DatagridColumnService.createColumns(data.columns, data.preview);
                             DatagridStyleService.manageColumnStyle(columns, data.preview);
                             DatagridSizeService.autosizeColumns(columns); // IMPORTANT : this set columns in the grid
-                            renewAllColumns = false;
 
-                            if(!data.preview) {
-                                insertHeaders();
-                            }
+                            DatagridColumnService.renewAllColumns(false);
                         }, 0);
 
                         //manage column selection (external)
@@ -201,12 +175,6 @@
                  * When filter change, displayed values change, so we reset active cell and cell styles
                  */
                 scope.$watchCollection(getFilters, onFiltersChange);
-
-                /**
-                 * Insert the grid headers
-                 */
-                scope.$watch(getHeaders, insertHeaders);
-
             }
         };
     }

@@ -9,8 +9,8 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
 
-@Component(FillWithFillIfEmptyBoolean.ACTION_BEAN_PREFIX + FillWithFillIfEmptyBoolean.FILL_EMPTY_ACTION_NAME)
-public class FillWithFillIfEmptyBoolean extends AbstractFillIfEmpty {
+@Component(FillWithBooleanIfEmpty.ACTION_BEAN_PREFIX + FillWithBooleanIfEmpty.FILL_EMPTY_ACTION_NAME)
+public class FillWithBooleanIfEmpty extends AbstractFillIfEmpty {
 
     public static final String FILL_EMPTY_ACTION_NAME = "fillemptywithdefaultboolean"; //$NON-NLS-1$
 
@@ -22,8 +22,8 @@ public class FillWithFillIfEmptyBoolean extends AbstractFillIfEmpty {
     @Override
     @Nonnull
     public Item[] getItems() {
-        final Value[] values = new Value[]{new Value("True", true), new Value("False")}; //$NON-NLS-1$//$NON-NLS-2$
-        return new Item[]{new Item(DEFAULT_VALUE_PARAMETER, "categ", values)}; //$NON-NLS-1$
+        final Value[] values = new Value[] { new Value("True", true), new Value("False") }; //$NON-NLS-1$//$NON-NLS-2$
+        return new Item[] { new Item(DEFAULT_VALUE_PARAMETER, "categ", values) }; //$NON-NLS-1$
     }
 
     /**

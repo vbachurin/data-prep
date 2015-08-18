@@ -27,7 +27,8 @@
 
             //preview
             getPreviewDiff: getPreviewDiff,
-            getPreviewUpdate: getPreviewUpdate
+            getPreviewUpdate: getPreviewUpdate,
+            getPreviewAdd: getPreviewAdd,
         };
 
         //---------------------------------------------------------------------------------
@@ -280,6 +281,43 @@
             var request = {
                 method: 'POST',
                 url: RestURLs.previewUrl + '/update',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: actionParam,
+                timeout: canceler.promise
+            };
+
+            return $http(request);
+        }
+
+        /**
+         * @ngdoc method
+         * @name getPreviewAdd
+         * @methodOf data-prep.services.preparation.service:PreparationRestService
+         * @param {string} preparationId The preparation id to preview
+         * @param {string} datasetId The dataset id to preview
+         * @param {string} action The action to add
+         * @param {string} params The action parameters
+         * @param {string} recordsTdpId The records TDP ids to preview
+         * @param {string} canceler The canceler promise
+         * @description POST preview diff between the preparation head and a new added transformation
+         * @returns {promise} The POST promise
+         */
+        function getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, canceler) {
+            var actionParam = {
+                action : {
+                    action: action,
+                    parameters: params
+                },
+                tdpIds: recordsTdpId,
+                datasetId: datasetId,
+                preparationId: preparationId
+            };
+
+            var request = {
+                method: 'POST',
+                url: RestURLs.previewUrl + '/add',
                 headers: {
                     'Content-Type': 'application/json'
                 },

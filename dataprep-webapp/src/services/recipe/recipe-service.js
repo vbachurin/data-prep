@@ -14,6 +14,15 @@
 
         /**
          * @ngdoc property
+         * @name recipeStateBeforePreview
+         * @propertyOf data-prep.services.recipe.service:RecipeService
+         * @description [PRIVATE] The recipe state before early preview
+         * @type {object}
+         */
+        var recipeStateBeforePreview;
+
+        /**
+         * @ngdoc property
          * @name recipe
          * @propertyOf data-prep.services.recipe.service:RecipeService
          * @description [PRIVATE] the recipe step list
@@ -56,7 +65,11 @@
             //recipe and steps manipulation
             disableStepsAfter: disableStepsAfter,
             resetParams: resetParams,
-            refresh: refresh
+            refresh: refresh,
+
+            //append step preview
+            earlyPreview: earlyPreview,
+            cancelEarlyPreview: cancelEarlyPreview
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -130,6 +143,7 @@
             initialState = null;
             recipe = [];
             activeThresholdStep = null;
+            recipeStateBeforePreview = null;
         }
 
         /**
@@ -324,6 +338,8 @@
          * @description Refresh recipe items with current preparation steps
          */
         function refresh() {
+            recipeStateBeforePreview = null;
+
             if(!PreparationService.currentPreparationId) {
                 return reset();
             }
@@ -341,6 +357,7 @@
                         .map(createItem)
                         .value();
                     activeThresholdStep = null;
+                    recipeStateBeforePreview = null;
                     recipe = newRecipe;
 
                     return {
@@ -357,7 +374,7 @@
          * @ngdoc method
          * @name disableStepsAfter
          * @methodOf data-prep.services.recipe.service:RecipeService
-         * @param {object} step - the limit between active and inactive
+         * @param {object} step The limit between active and inactive
          * @description Disable all steps after the given one
          */
         function disableStepsAfter(step) {
@@ -374,6 +391,70 @@
                 }
             });
             activeThresholdStep = step;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        //-----------------------------------------------------PREVIEW--------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name earlyPreview
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @param {object} column The target step column
+         * @param {object} transformation The transformation
+         * @param {object} params The transformation params
+         * @description Add a preview step in the recipe. The state before preview is saved to be able to revert.
+         */
+        function earlyPreview(column, transformation, params) {
+            //save state if not already in preview mode
+            recipeStateBeforePreview = recipeStateBeforePreview || {
+                recipe: recipe,
+                lastActiveStep: activeThresholdStep
+            };
+
+            //create the preview step
+            var previewStep = {
+                column: {
+                    id: column.id,
+                    name: column.name
+                },
+                transformation: {
+                    stepId: 'early preview',
+                    name: transformation.name,
+                    label: transformation.label,
+                    description: transformation.description,
+                    parameters: _.cloneDeep(transformation.parameters),
+                    items: _.cloneDeep(transformation.items),
+                    dynamic: transformation.dynamic
+                },
+                actionParameters: {
+                    action: transformation.name,
+                    parameters: params
+                },
+                preview: true
+            };
+            TransformationService.initParamsValues(previewStep.transformation, params);
+
+            //set the new state : add the step and enable all steps
+            recipe = recipeStateBeforePreview.recipe.slice(0);
+            recipe.push(previewStep);
+            disableStepsAfter(previewStep);
+        }
+
+        /**
+         * @ngdoc method
+         * @name cancelEarlyPreview
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @description Set back the state before preview and reset preview state
+         */
+        function cancelEarlyPreview() {
+            if(!recipeStateBeforePreview) {
+                return;
+            }
+
+            recipe = recipeStateBeforePreview.recipe;
+            disableStepsAfter(recipeStateBeforePreview.lastActiveStep);
+            recipeStateBeforePreview = null;
         }
     }
 
