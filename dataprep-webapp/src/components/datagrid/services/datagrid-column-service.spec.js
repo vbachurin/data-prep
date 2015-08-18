@@ -216,7 +216,7 @@ describe('Datagrid column service', function () {
 
             //save header in available headers list
             availableScope = {$destroy: function() {}, $digest: function() {}};
-            availableHeader = angular.element('<div id="availableHeader"></div>')
+            availableHeader = angular.element('<div id="availableHeader"></div>');
             saveHeader('0001', availableScope, availableHeader);
 
             spyOn(availableScope, '$digest').and.returnValue();
