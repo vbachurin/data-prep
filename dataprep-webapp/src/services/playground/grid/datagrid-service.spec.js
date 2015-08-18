@@ -448,6 +448,21 @@ describe('Datagrid service', function () {
             ]);
         }));
 
+        it('should apply nothing when executor is falsy', inject(function (DatagridService) {
+            //given
+            var executor = null;
+
+            //when
+            DatagridService.execute(executor);
+
+            //then
+            expect(DatagridService.dataView.insertItem).not.toHaveBeenCalled();
+            expect(DatagridService.dataView.deleteItem).not.toHaveBeenCalled();
+            expect(DatagridService.dataView.updateItem).not.toHaveBeenCalled();
+
+            expect(DatagridService.data).toBe(originalData);
+        }));
+
         it('should apply executor', inject(function (DatagridService) {
             //given
             var executor = {
