@@ -979,7 +979,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         final ColumnMetadata column = dataSetMetadata.getRow().getById("0001");
 
         assertThat(column.getType(), is("date"));
-        assertThat(column.getDomain(), is("DATE"));
+        assertThat(column.getDomain(), is(""));
         assertThat(column.getStatistics(), sameJSONAsFile(DataSetServiceTests.class.getResourceAsStream("../date_time_pattern_expected.json")));
 
     }
