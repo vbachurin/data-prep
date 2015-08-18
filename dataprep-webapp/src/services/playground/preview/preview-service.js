@@ -249,19 +249,16 @@
         /**
          * @ngdoc method
          * @name cancelPreview
-         * @param {boolean} partial If true, we cancel pending preview but we do NOT reset/restore the original data
          * @param {string} focusedColId The column id where to set the grid focus
          * @methodOf data-prep.services.playground.service:PreviewService
          * @description Cancel the current preview or the pending preview (resolving the cancel promise).
          * The original records is set back into the datagrid
          */
-        function cancelPreview(partial, focusedColId) {
+        function cancelPreview(focusedColId) {
             stopPendingPreview();
 
-            if(!partial && originalData) {
-                DatagridService.focusedColumn = focusedColId;
-                reset(true);
-            }
+            DatagridService.focusedColumn = focusedColId;
+            reset(true);
         }
 
         /**

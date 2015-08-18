@@ -370,22 +370,6 @@ describe('Preview Service', function () {
             expect(previewCanceler.promise.$$state.status).toBe(1);
         }));
 
-        it('should NOT set focused column nor restore original data on cancel call', inject(function(PreviewService, DatagridService) {
-            //given
-            expect(DatagridService.execute).not.toHaveBeenCalled();
-            expect(DatagridService.focusedColumn).toBeFalsy();
-
-            var partial = true; // do NOT restore original data
-            var focusedColId = '0001';
-
-            //when
-            PreviewService.cancelPreview(partial, focusedColId);
-
-            //then
-            expect(DatagridService.execute).not.toHaveBeenCalled();
-            expect(DatagridService.focusedColumn).toBeFalsy();
-        }));
-
         it('should set focused column and restore original data on cancel call', inject(function($rootScope, PreviewService, DatagridService) {
             //given
             $rootScope.$digest();
@@ -394,11 +378,10 @@ describe('Preview Service', function () {
             expect(DatagridService.execute).toHaveBeenCalledWith(previewExecutor);
             expect(DatagridService.focusedColumn).toBeFalsy();
 
-            var partial = false; // do restore original data
             var focusedColId = '0001';
 
             //when
-            PreviewService.cancelPreview(partial, focusedColId);
+            PreviewService.cancelPreview(focusedColId);
 
             //then
             expect(DatagridService.execute.calls.count()).toBe(3);
