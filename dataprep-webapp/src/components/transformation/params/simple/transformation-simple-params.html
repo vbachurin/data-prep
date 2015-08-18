@@ -12,7 +12,8 @@
                    type="{{::param.inputType}}"
                    ng-trim="false"
                    ng-model="param.value"
-                   type-validation="{{::param.type}}"/>
+                   type-validation="{{::param.type}}"
+                   not-blank-validation="{{::param.nullable}}"/>
             <span ng-if="::(param.type === 'boolean')">{{param.name}}</span>
         </div>
 

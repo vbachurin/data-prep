@@ -4,7 +4,7 @@
     /**
      * @ngdoc directive
      * @name data-prep.type-validation.directive:NotBlankValidation
-     * @description This directive perform a validation on the input value.
+     * @description This directive perform a validation on the input value if needed.
      * @restrict E
      * @usage
      <input
@@ -16,7 +16,10 @@
             require: 'ngModel',
             link: function(scope, elm, attrs, ctrl) {
                 ctrl.$validators.notBlankValidation = function(modelValue) {
-                    return !!modelValue.trim();
+                    if(attrs.notBlankValidation === 'false'){
+                        return !!modelValue.trim();
+                    }
+                    return true;
                 };
             }
         };
