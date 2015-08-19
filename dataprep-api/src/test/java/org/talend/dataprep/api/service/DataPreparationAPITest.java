@@ -12,6 +12,7 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -173,6 +174,69 @@ public class DataPreparationAPITest {
         assertTrue(list.contains(dataSetId));
     }
 
+    @Test
+    public void testDataSetListWithDateOrder() throws Exception {
+        final ObjectMapper mapper = new ObjectMapper();
+        // given
+        final String dataSetId1 = createDataset("dataset/dataset.csv", "aaaa", "text/csv");
+        Thread.sleep(100);
+        final String dataSetId2 = createDataset("dataset/dataset.csv", "bbbb", "text/csv");
+
+        // when (sort by date, order is desc)
+        String list = when().get("/api/datasets?sort={sort}&order={order}", "date", "desc").asString();
+
+        // then
+        Iterator<JsonNode> elements = mapper.readTree(list).elements();
+        String[] expectedNames = new String[] {dataSetId2, dataSetId1};
+        int i = 0;
+        while (elements.hasNext()) {
+            assertThat(elements.next().get("id").asText(), is(expectedNames[i++]));
+        }
+
+        // when (sort by date, order is desc)
+        list = when().get("/api/datasets?sort={sort}&order={order}", "date", "asc").asString();
+
+        // then
+        elements = mapper.readTree(list).elements();
+        expectedNames = new String[] {dataSetId1, dataSetId2};
+        i = 0;
+        while (elements.hasNext()) {
+            assertThat(elements.next().get("id").asText(), is(expectedNames[i++]));
+        }
+    }
+
+    @Test
+    public void testDataSetListWithNameOrder() throws Exception {
+        final ObjectMapper mapper = new ObjectMapper();
+        // given
+        final String dataSetId1 = createDataset("dataset/dataset.csv", "aaaa", "text/csv");
+        Thread.sleep(100);
+        final String dataSetId2 = createDataset("dataset/dataset.csv", "bbbb", "text/csv");
+
+        // when (sort by date, order is desc)
+        String list = when().get("/api/datasets?sort={sort}&order={order}", "name", "desc").asString();
+
+        // then
+        Iterator<JsonNode> elements = mapper.readTree(list).elements();
+        String[] expectedNames = new String[] {dataSetId2, dataSetId1};
+        int i = 0;
+        while (elements.hasNext()) {
+            assertThat(elements.next().get("id").asText(), is(expectedNames[i++]));
+        }
+
+        // when (sort by date, order is desc)
+        list = when().get("/api/datasets?sort={sort}&order={order}", "date", "asc").asString();
+
+        // then
+        elements = mapper.readTree(list).elements();
+        expectedNames = new String[] {dataSetId1, dataSetId2};
+        i = 0;
+        while (elements.hasNext()) {
+            assertThat(elements.next().get("id").asText(), is(expectedNames[i++]));
+        }
+    }
+
+
     /**
      * Simple dataset deletion case.
      */
@@ -225,25 +289,6 @@ public class DataPreparationAPITest {
         // then
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
-
-    @Test
-    public void testDataSetCreate_cache_status() throws Exception {
-        // given
-        final String dataSetId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
-        final InputStream expected = DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_metadata.json");
-
-        // then
-        final Preparation preparation = new Preparation(dataSetId, ROOT_STEP);
-        ContentCacheKey key = new ContentCacheKey(preparation, ROOT_STEP.id());
-        assertThat(cache.has(key), is(false));
-        when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
-        assertThat(cache.has(key), is(true));
-
-        // then (check if cached content is the expected one).
-        final String contentAsString = when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
-        assertThat(contentAsString, sameJSONAsFile(expected));
-    }
-
 
     @Test
     public void testDataSetGetWithSample() throws Exception {

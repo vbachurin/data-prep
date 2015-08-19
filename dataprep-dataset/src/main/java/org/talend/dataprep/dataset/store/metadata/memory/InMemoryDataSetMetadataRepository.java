@@ -88,8 +88,11 @@ public class InMemoryDataSetMetadataRepository implements DataSetMetadataReposit
     @Override
     public DataSetMetadata get(String id) {
         DataSetMetadata dataSetMetadata = store.get(id);
+        if (dataSetMetadata == null) {
+            return null;
+        }
         resetTransientValues(dataSetMetadata);
-        return dataSetMetadata;
+        return dataSetMetadata.clone();
     }
 
     @Override

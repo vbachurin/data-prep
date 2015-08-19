@@ -9,8 +9,11 @@
      * {@link data-prep.services.dataset.service:DatasetService DatasetService} must be the only entry point for datasets</b>
      * @requires data-prep.services.dataset.service:DatasetRestService
      */
-    function DatasetListService($q, DatasetRestService) {
+    function DatasetListService($q, DatasetRestService, DatasetListSortService) {
+
+        var deferredCancel;
         var datasetsPromise;
+
         var self = this;
 
         /**
@@ -21,23 +24,39 @@
          */
         this.datasets = null;
 
+
+        /**
+         * @ngdoc method
+         * @name cancelPendingGetRequest
+         * @methodOf data-prep.services.dataset.service:DatasetListService
+         * @description Cancel the pending datasets list GET request
+         */
+        function cancelPendingGetRequest() {
+            if(datasetsPromise){
+                deferredCancel.resolve('user cancel');
+                datasetsPromise = null;
+            }
+        }
+
         /**
          * @ngdoc method
          * @name refreshDatasets
          * @methodOf data-prep.services.dataset.service:DatasetListService
-         * @description Refresh datasets if no refresh is pending
-         * @returns {promise} - the pending GET promise
+         * @description Refresh datasets list
+         * @returns {promise} The pending GET promise
          */
         var refreshDatasets = function refreshDatasets() {
-            if(! datasetsPromise) {
-                datasetsPromise = DatasetRestService.getDatasets()
-                    .then(function(res) {
-                        self.datasets = res.data;
-                        datasetsPromise = null;
-                        return self.datasets;
-                    });
-            }
+            cancelPendingGetRequest();
+            var sort = DatasetListSortService.getSort();
+            var order = DatasetListSortService.getOrder();
 
+            deferredCancel = $q.defer();
+            datasetsPromise = DatasetRestService.getDatasets(sort, order, deferredCancel)
+                .then(function(res) {
+                    self.datasets = res.data;
+                    datasetsPromise = null;
+                    return self.datasets;
+                });
             return datasetsPromise;
         };
 
@@ -51,7 +70,13 @@
          */
         var create = function create(dataset) {
             var promise = DatasetRestService.create(dataset);
-            promise.then(refreshDatasets);
+
+            //The appended promise is not returned because DatasetRestService.create return a $upload object with progress function
+            //which is used by the caller
+            promise.then(function (){
+                  refreshDatasets();
+            });
+
             return promise;
         };
 
@@ -65,7 +90,13 @@
          */
         var importRemoteDataset = function importRemoteDataset(parameters) {
             var promise = DatasetRestService.import(parameters);
-            promise.then(refreshDatasets);
+
+            //The appended promise is not returned because DatasetRestService.import return a $upload object with progress function
+            //which is used by the caller
+            promise.then(function (){
+                refreshDatasets();
+            });
+
             return promise;
         };
 
@@ -73,13 +104,18 @@
          * @ngdoc method
          * @name update
          * @methodOf data-prep.services.dataset.service:DatasetListService
-         * @param {object} dataset The dataset to delete
-         * @description Update a dataset from backend and refresh its internal list
+         * @param {object} dataset The dataset to delete         * @description Update a dataset from backend and refresh its internal list
          * @returns {promise} The pending POST promise
          */
         var update = function update(dataset) {
             var promise = DatasetRestService.update(dataset);
-            promise.then(refreshDatasets);
+
+            //The appended promise is not returned because DatasetRestService.import return a $upload object with progress function
+            //which is used by the caller
+            promise.then(function (){
+                refreshDatasets();
+            });
+
             return promise;
         };
 
@@ -93,7 +129,9 @@
          */
         var processCertification = function processCertification(dataset) {
             return DatasetRestService.processCertification(dataset.id)
-                .then(refreshDatasets);
+                .then(function (){
+                    refreshDatasets();
+                });
         };
 
         /**
