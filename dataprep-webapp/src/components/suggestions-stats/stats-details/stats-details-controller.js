@@ -25,6 +25,13 @@
             //return StatisticsService.addFilter(item.data);
         };
 
+        /**
+         * @ngdoc method
+         * @name onBrushEndFn
+         * @methodOf data-prep.stats-details.controller:StatsDetailsCtrl
+         * @param {Array} interval of the range (ex : [1, 15])
+         * @description adds a range filter to the selected numeric column
+         */
         vm.onBrushEndFn = function onBrushEndFn (interval){
             return StatisticsService.addRangeFilter(interval);
         };

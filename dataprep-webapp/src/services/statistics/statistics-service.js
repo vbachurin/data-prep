@@ -243,14 +243,19 @@
             $timeout(filterFn);
         }
 
+        /**
+         * @ngdoc method
+         * @name addRangeFilter
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {Array} interval of the filter
+         * @description Adds a rangefilter in the angular context
+         */
         function addRangeFilter(interval) {
             var column = service.selectedColumn;
             var filterFn = FilterService.addFilter.bind(null, 'inside_range', column.id, column.name, {phrase: interval});
 
             $timeout(filterFn);
         }
-
-
 
         /**
          * @ngdoc method

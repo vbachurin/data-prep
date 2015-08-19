@@ -31,11 +31,11 @@
 				function renderRangerSlider(rangeLimits){
 					var minimum = rangeLimits.min;
 					var maximum = rangeLimits.max;
-					var minBrush = rangeLimits.minBrush || minimum;
-					var maxBrush = rangeLimits.maxBrush || maximum;
+					var minBrush = typeof rangeLimits.minBrush !== 'undefined' ? rangeLimits.minBrush : minimum;
+					var maxBrush = typeof rangeLimits.maxBrush !== 'undefined' ? rangeLimits.maxBrush : maximum;
 
-					var filterFloat = function filterFloat (value) {
-						if(/^([-+]?[0-9]*)\.?([0-9]+([eE][-+]?[0-9]+)?|Infinity)$/.test(value)){
+					var toNumber = function toNumber (value) {
+						if(/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/.test(value)){
 							return Number(value.trim());
 						}
 						return null;
@@ -58,7 +58,7 @@
 							.text('');
 					};
 
-					var nbDecimals = d3.max([decimalPlaces(minBrush),decimalPlaces(maxBrush)]);
+					var nbDecimals = d3.max([decimalPlaces(minBrush), decimalPlaces(maxBrush)]);
 					var margin = {top: 25, right: 25, bottom: 80, left: 10},
 						width = w - margin.left - margin.right,
 						height = h - margin.top - margin.bottom;
@@ -87,15 +87,15 @@
 						.attr('class', 'x axis')
 						.attr('transform', 'translate(0,' + height + ')')
 						.call(d3.svg.axis().scale(x).orient('bottom').ticks(Math.abs(x.range()[1] - x.range()[0]) / 50)
-							.tickFormat(function(d){
-								if(d > 1e4 || d < -1e4){
-									return d3.format('e')(d);
-								}
-								else {
-									return d3.format(',')(d);
-								}
-							})
-						);
+								.tickFormat(function(d){
+									if(d > 1e4 || d < -1e4){
+										return d3.format('e')(d);
+									}
+									else {
+										return d3.format(',')(d);
+									}
+								})
+							);
 
 					xAxisg.selectAll('text').attr('y', 13);
 
@@ -156,7 +156,7 @@
 
 						d3.select(this).transition().duration(400)
 							.call(brush.extent(extent1));
-
+						//trigger filter process in the datagrid
 						scope.onBrushEnd()(brush.extent().map(function(n){return +n.toFixed(nbDecimals);}));
 					}
 
@@ -172,8 +172,8 @@
 
 					function adjustBrush(){
 
-						var enteredMax = filterFloat(document.getElementsByName('maxRange')[0].value);
-						var enteredMin = filterFloat(document.getElementsByName('minRange')[0].value);
+						var enteredMax = toNumber(document.getElementsByName('maxRange')[0].value);
+						var enteredMin = toNumber(document.getElementsByName('minRange')[0].value);
 
 						if(enteredMax === null || enteredMin === null){
 							return;
@@ -182,7 +182,6 @@
 						nbDecimals = d3.max([decimalPlaces(enteredMin), decimalPlaces(enteredMax)]);
 
 						var finalExtent = [];
-						//will be replaced directly by the min
 
 						if(enteredMax < enteredMin){
 							var _aux = enteredMin;
@@ -209,6 +208,7 @@
 							.call(brush.extent(finalExtent));
 						//should be after brush update
 						fillInputs();
+						//trigger filter process in the datagrid
 						scope.onBrushEnd()(brush.extent().map(function(n){return +n.toFixed(nbDecimals);}));
 					}
 
@@ -237,7 +237,7 @@
 
 					document.getElementsByName('minRange')[0].onkeyup = function(e){
 						if(e.which !== 13 && e.which !== 27){
-							minCorrectness = filterFloat(this.value);
+							minCorrectness = toNumber(this.value);
 							if(minCorrectness === null || maxCorrectness === null){
 								showMsgErr();
 							}
@@ -257,14 +257,13 @@
 						}
 
 						if(e.which === 27){
-							e.stopPropagation();
 							fillInputs();
 						}
 					};
 
 					document.getElementsByName('maxRange')[0].onkeyup = function(e){
 						if(e.which !== 13 && e.which !== 27){
-							maxCorrectness = filterFloat(this.value);
+							maxCorrectness = toNumber(this.value);
 							if(minCorrectness === null || maxCorrectness === null){
 								showMsgErr();
 							}
@@ -284,7 +283,6 @@
 						}
 
 						if(e.which === 27){
-							e.stopPropagation();
 							fillInputs();
 						}
 					};

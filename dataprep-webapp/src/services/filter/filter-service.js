@@ -169,7 +169,7 @@
          * @name createRangeFilterFn
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {string} colId - the column id
-         * * @param {Array} values - the filter interval
+         * @param {Array} values - the filter interval
          * @description [PRIVATE] Create a 'range' filter function
          * @returns {function} - the predicated function
          */

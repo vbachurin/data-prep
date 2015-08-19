@@ -16,6 +16,7 @@
          * @methodOf data-prep.filter-list.controller:FilterListCtrl
          * @param {object} filter - the filter to delete
          * @description Delete a filter by calling {@link data-prep.services.filter.service:FilterService FilterService}
+         * and resets the rangeSlider for numeric columns to its initial minimum and maximum
          */
         vm.delete = function(obj){
             FilterService.removeFilter(obj);
@@ -26,7 +27,6 @@
                 };
             }
         };
-
 
         /**
          * @ngdoc method
