@@ -101,8 +101,8 @@ push_docker_images() {
   echo '==========================================='
   echo 'docker push'
   echo '==========================================='
-  images_to_tag=`more $original_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -v -E $external_images_pattern`
-  for image in $internal_list;
+  images_to_push=`more $original_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -v -E $external_images_pattern`
+  for image in $images_to_push;
   do
     time docker push $registry/$image
     docker rmi $registry/$image $image
