@@ -1,5 +1,5 @@
 <li class="more">
-    <a>{{ ::'COLUMN_TYPE_IS' | translate }}&nbsp;<span class="info">{{ typeMenuCtrl.currentSimplifiedDomain }}</span></a>
+    <a><span class="itemText">{{ ::'COLUMN_TYPE_IS' | translate }}&nbsp;</span><span class="info">{{ typeMenuCtrl.currentSimplifiedDomain }}</span></a>
     <ul class="submenu">
         <li ng-repeat="semanticDomain in typeMenuCtrl.domains track by semanticDomain.id"
             ng-click="typeMenuCtrl.changeDomain(semanticDomain)">
