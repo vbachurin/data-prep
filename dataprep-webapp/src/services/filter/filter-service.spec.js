@@ -121,7 +121,7 @@ describe('Filter service', function() {
         expect(value).toBe('Toto');
     }));
 
-    it('should update filter and update datagrid filter', inject(function(FilterService, DatagridService) {
+    it('should update "contains" filter and update datagrid filter', inject(function(FilterService, DatagridService) {
         //given
         FilterService.addFilter('contains', 'col1', 'column 1', {phrase: 'Toto'});
         FilterService.addFilter('contains', 'col2', 'column 2', {phrase: 'Toto'});
@@ -142,6 +142,26 @@ describe('Filter service', function() {
         expect(newFilter2.args.phrase).toBe('Tata');
         expect(newFilter2.value).toBe('Tata');
         expect(DatagridService.updateFilter).toHaveBeenCalledWith(filter2.filterFn, newFilter2.filterFn);
+    }));
+
+    it('should update "inside_range" filter after a brush and update datagrid filter', inject(function(FilterService, DatagridService) {
+        //given
+        FilterService.addFilter('inside_range', 'col1', 'column 1', {phrase: [5,10]});
+        var filter = FilterService.filters[0];
+
+        //when
+        FilterService.updateFilter(filter, [0,22]);
+
+        //then
+        var newFilter = FilterService.filters[0];
+        expect(FilterService.filters.length).toBe(1);
+        expect(newFilter).not.toBe(filter);
+        expect(newFilter.type).toBe('inside_range');
+        expect(newFilter.colId).toBe('col1');
+        expect(newFilter.colName).toBe('column 1');
+        expect(newFilter.args.phrase).toEqual([0,22]);
+        expect(newFilter.value).toBe('in [0 ... 22]');
+        expect(DatagridService.updateFilter).toHaveBeenCalledWith(filter.filterFn, newFilter.filterFn);
     }));
 
     it('should add "invalid records" filter and add datagrid filter', inject(function(FilterService, DatagridService) {
@@ -209,5 +229,69 @@ describe('Filter service', function() {
         expect(filterInfo.filterFn({col1: ''})).toBeFalsy();
 
         expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
+    }));
+
+    it('should add "inside range" filter and add datagrid filter', inject(function(FilterService, DatagridService) {
+        //given
+        expect(FilterService.filters.length).toBe(0);
+
+        //when
+        FilterService.addFilter('inside_range', 'col1', 'column name', {phrase: [0, 22]});
+        FilterService.addFilter('inside_range', 'col2', 'column name2', {phrase: [0, 1000000]});
+
+        //then
+        expect(FilterService.filters.length).toBe(2);
+
+        var filterInfo = FilterService.filters[0];
+        expect(filterInfo.type).toBe('inside_range');
+        expect(filterInfo.colId).toBe('col1');
+        expect(filterInfo.colName).toBe('column name');
+        expect(filterInfo.value).toBe('in [0 ... 22]');
+        expect(filterInfo.editable).toBe(false);
+        expect(filterInfo.args).toEqual({phrase: [0, 22]});
+        expect(filterInfo.filterFn({col1:5})).toBeTruthy();
+        expect(filterInfo.filterFn({col1:-5})).toBeFalsy();
+
+        expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
+
+        var filterInfo2 = FilterService.filters[1];
+        expect(filterInfo2.type).toBe('inside_range');
+        expect(filterInfo2.colId).toBe('col2');
+        expect(filterInfo2.colName).toBe('column name2');
+        expect(filterInfo2.value).toBe('in [0e+0 ... 1e+6]');
+        expect(filterInfo2.editable).toBe(false);
+        expect(filterInfo2.args).toEqual({phrase:  [0, 1000000]});
+        expect(filterInfo2.filterFn({col2: 1000})).toBeTruthy();
+        expect(filterInfo2.filterFn({col2: -5})).toBeFalsy();
+
+        expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo2.filterFn);
+    }));
+
+    it('should update "inside range" filter and add datagrid filter', inject(function(FilterService) {
+        //given
+        expect(FilterService.filters.length).toBe(0);
+
+        //when
+        FilterService.addFilter('inside_range', 'col1', 'column name', {phrase: [0, 22]});
+
+        var filterInfo1 = FilterService.filters[0];
+        //before the brush 4 in [0 ... 22]
+        expect(filterInfo1.filterFn({col1: 4})).toBeTruthy();
+        //on brush end the range of the slider was reduced from [0...22] to [5...10]
+        FilterService.addFilter('inside_range', 'col1', 'column name', {phrase: [5, 10]});
+
+        //then
+        expect(FilterService.filters.length).toBe(1);
+
+        var filterInfo2 = FilterService.filters[0];
+        expect(filterInfo2.type).toBe('inside_range');
+        expect(filterInfo2.colId).toBe('col1');
+        expect(filterInfo2.colName).toBe('column name');
+        expect(filterInfo2.value).toBe('in [5 ... 10]');
+        expect(filterInfo2.editable).toBe(false);
+        expect(filterInfo2.args).toEqual({phrase:  [5, 10]});
+        expect(filterInfo2.filterFn({col1: 8})).toBeTruthy();
+        //the 4 is no more inside the brush range
+        expect(filterInfo2.filterFn({col1: 4})).toBeFalsy();
     }));
 });

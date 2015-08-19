@@ -225,6 +225,20 @@ describe('Statistics service', function () {
             //then
             expect(FilterService.addFilter).toHaveBeenCalledWith('empty_records', 'toto', undefined, {});
         }));
+
+        it('should add a new "inside_range" filter', inject(function (StatisticsService, FilterService, $timeout) {
+            //given
+            StatisticsService.selectedColumn = {};
+            StatisticsService.selectedColumn.id = '0000';
+            spyOn(FilterService, 'addFilter').and.returnValue();
+
+            //when
+            StatisticsService.addRangeFilter([0,22]);
+            $timeout.flush();
+
+            //then
+            expect(FilterService.addFilter).toHaveBeenCalledWith('inside_range', '0000', undefined, {phrase:[0,22]});
+        }));
     });
 
     describe('The Visualization data for Horizontal barchart and Map', function () {
@@ -614,5 +628,79 @@ describe('Statistics service', function () {
         expect(StatisticsService.data).toBeFalsy();
         expect(StatisticsService.stateDistribution).toBeFalsy();
         expect(StatisticsService.statistics).toBeFalsy();
+        expect(StatisticsService.rangeLimits).toBeFalsy();
+    }));
+
+    /***************************** rangeSlider **************************************/
+    it('should set range and brush limits to the min and max of the column', inject(function (StatisticsService, FilterService) {
+        //given
+        var col = {
+            'id': '0001',
+            type: 'integer',
+            domain: 'city name',
+            statistics: {
+                count: 4,
+                distinctCount: 5,
+                duplicateCount: 6,
+                empty: 7,
+                invalid: 8,
+                valid: 9,
+                min: 10,
+                max: 11,
+                mean: 12,
+                variance: 13,
+                quantiles: {
+                    lowerQuantile: 'NaN'
+                }
+            }
+        };
+        FilterService.filters = [];
+
+        //when
+        StatisticsService.processData(col);
+
+        //then
+        expect(StatisticsService.rangeLimits).toEqual({
+                min : 10,
+                max : 11,
+                minBrush : undefined,
+                maxBrush : undefined
+        });
+    }));
+
+    it('should update the brush limits to the existent ones', inject(function (StatisticsService, FilterService) {
+        //given
+        var col = {
+            'id': '0001',
+            type: 'integer',
+            domain: 'city name',
+            statistics: {
+                count: 4,
+                distinctCount: 5,
+                duplicateCount: 6,
+                empty: 7,
+                invalid: 8,
+                valid: 9,
+                min: 0,
+                max: 11,
+                mean: 12,
+                variance: 13,
+                quantiles: {
+                    lowerQuantile: 'NaN'
+                }
+            }
+        };
+        FilterService.filters = [{colId:'0001', type:'inside_range', args:{phrase:[5,10]}}];
+
+        //when
+        StatisticsService.processData(col);
+
+        //then
+        expect(StatisticsService.rangeLimits).toEqual({
+            min : 0,
+            max : 11,
+            minBrush :5,
+            maxBrush :10
+        });
     }));
 });

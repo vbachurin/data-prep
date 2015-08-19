@@ -20,12 +20,13 @@
          */
         vm.delete = function(obj){
             FilterService.removeFilter(obj);
-            if(obj.colId === StatisticsService.selectedColumn.id && obj.type === 'inside_range'){
+            if(StatisticsService.selectedColumn){
+                if(obj.colId === StatisticsService.selectedColumn.id && obj.type === 'inside_range'){
                 StatisticsService.rangeLimits = {
                     min : StatisticsService.selectedColumn.statistics.min,
                     max : StatisticsService.selectedColumn.statistics.max
                 };
-            }
+            }}
         };
 
         /**

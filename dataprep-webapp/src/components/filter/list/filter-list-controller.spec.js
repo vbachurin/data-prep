@@ -37,16 +37,36 @@ describe('filter search controller', function() {
         expect(filter.value).toBe('toto');
     }));
 
-    it('should call filter service remove filter function', inject(function(FilterService) {
+    it('should call filter service remove filter function', inject(function(FilterService, StatisticsService) {
         //given
         FilterService.addFilter('contains', '0000', 'col', {phrase: 'toto'});
         var ctrl = createController();
         var filter = ctrl.filters[0];
+        StatisticsService.selectedColumn = {id:'0001'};
 
         //when
         ctrl.delete(filter);
 
         //then
         expect(FilterService.removeFilter).toHaveBeenCalledWith(filter);
+    }));
+
+    it('should reinitialize the range slider', inject(function(FilterService, StatisticsService) {
+        //given
+        FilterService.addFilter('inside_range', '0001', 'col', {phrase: 'toto'});
+        var ctrl = createController();
+        var filter = ctrl.filters[0];
+        StatisticsService.rangeLimits = null;
+        StatisticsService.selectedColumn = {id:'0001',
+            statistics:{
+                min:0,
+                max:22
+            }};
+
+        //when
+        ctrl.delete(filter);
+
+        //then
+        expect(StatisticsService.rangeLimits).toEqual({min:0,max:22});
     }));
 });
