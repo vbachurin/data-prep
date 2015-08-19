@@ -12,6 +12,12 @@
                 choices="paramsCtrl.transformation.items">
         </transform-choice-params>
 
+        <!-- Date -->
+        <transform-date-params
+                ng-if="paramsCtrl.transformation.items.length"
+                choices="paramsCtrl.transformation.items">
+        </transform-date-params>
+
         <!-- Cluster -->
         <transform-cluster-params
                 ng-if="paramsCtrl.transformation.cluster"

@@ -1,0 +1,29 @@
+<div class="param">
+    <div class="param-row" ng-repeat="param in dateParamsCtrl.parameters track by $index">
+        <div class="param-name" ng-if="::(dateParamsCtrl.label !== 'false')">Date: {{dateParamsCtrl.label}}{{::param.label}}:</div>
+
+        <div class="param-input" ng-if="::(dateParamsCtrl.editableSelect)">
+            <editable-select
+                    list="param.list"
+                    ng-model="param.value"></editable-select>
+        </div>
+        <div class="param-input" ng-if="::(!dateParamsCtrl.editableSelect)">
+            <input name="{{::(param.name + $index)}}"
+                   type="{{::param.inputType}}"
+                   ng-trim="false"
+                   ng-model="param.value"
+                   type-validation="{{::param.type}}"/>
+            <span ng-if="::(param.type === 'boolean')">{{param.name}}</span>
+        </div>
+
+        <img src="assets/images/information.png"
+             title="{{::param.description}}"
+             class="param-desc-icon"
+             ng-if="::(dateParamsCtrl.tooltip !== 'false')"/>
+
+        <div class="param-error error"
+             ng-if="paramCtrl.paramForm[param.name + $index].$error.typeValidation || paramsCtrl.paramForm[param.name + $index].$error.number">
+            This must be a {{::param.type}}
+        </div>
+    </div>
+</div>
