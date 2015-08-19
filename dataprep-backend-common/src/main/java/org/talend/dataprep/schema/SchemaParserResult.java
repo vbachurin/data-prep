@@ -1,5 +1,6 @@
 package org.talend.dataprep.schema;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -76,6 +77,16 @@ public class SchemaParserResult {
             this.columnMetadatas = columnMetadatas;
         }
 
+        public SheetContent clone() {
+            List<ColumnMetadata> columns = null;
+            if (this.columnMetadatas != null) {
+                columns = new ArrayList<>();
+                for (ColumnMetadata column : this.columnMetadatas) {
+                    columns.add(ColumnMetadata.Builder.column().copy(column).build());
+                }
+            }
+            return new SheetContent(this.name, columns);
+        }
         @Override
         public String toString()
         {
@@ -114,12 +125,25 @@ public class SchemaParserResult {
         }
 
         public Builder sheetContents(List<SheetContent> sheetContents) {
-            this.sheetContents = sheetContents;
+            if (sheetContents == null) {
+                return this;
+            }
+            this.sheetContents = new ArrayList<>();
+            for (SheetContent content : sheetContents) {
+                this.sheetContents.add(content.clone());
+            }
             return this;
         }
 
         public Builder sheetName(String sheetName) {
             this.sheetName = sheetName;
+            return this;
+        }
+
+        public Builder copy(SchemaParserResult original) {
+            this.draft = original.draft();
+            this.sheetContents = original.getSheetContents();
+            this.sheetName = original.getSheetName();
             return this;
         }
 

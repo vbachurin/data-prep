@@ -325,7 +325,7 @@
             initValuesStatistics(column);
 
             //TODO replace with new geo chart
-            if (column.domain.indexOf('STATE_CODE_') !== -1) {
+            if (column.domain.indexOf('STATE_CODE') !== -1) {
                 processMapData(column);
             }
             //TODO Coming soon after the integration of the globe map : reset charts and init localization chart data

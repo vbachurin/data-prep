@@ -11,6 +11,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
@@ -18,6 +19,8 @@ import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.api.service.command.preparation.PreparationListForDataSet;
+import org.talend.dataprep.cache.ContentCache;
+import org.talend.dataprep.cache.ContentCacheKey;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
 
@@ -32,8 +35,14 @@ import com.netflix.hystrix.HystrixCommand;
 @Scope("request")
 public class DataSetDelete extends DataPrepCommand<Void> {
 
+    /** This class' logger. */
     private static final Logger LOG = LoggerFactory.getLogger(DataSetDelete.class);
 
+    /** Content cache. */
+    @Autowired
+    private ContentCache contentCache;
+
+    /** Dataset id. */
     private final String dataSetId;
 
     /**
@@ -91,6 +100,7 @@ public class DataSetDelete extends DataPrepCommand<Void> {
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode == 200) {
+            contentCache.evict(new ContentCacheKey(dataSetId));
             return null;
         }
         throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET, TDPExceptionContext.build().put("dataSetId", dataSetId));

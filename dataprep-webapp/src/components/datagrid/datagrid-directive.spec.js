@@ -28,13 +28,14 @@ describe('Datagrid directive', function() {
         };
 
         spyOn(DatagridGridService, 'initGrid').and.callThrough();
+        spyOn(DatagridGridService, 'navigateToFocusedColumn').and.returnValue();
         spyOn(DatagridColumnService, 'createColumns').and.returnValue(createdColumns);
+        spyOn(DatagridColumnService, 'renewAllColumns').and.returnValue();
         spyOn(DatagridSizeService, 'autosizeColumns').and.returnValue();
         spyOn(DatagridStyleService, 'manageColumnStyle').and.returnValue();
         spyOn(DatagridStyleService, 'resetCellStyles').and.returnValue();
         spyOn(DatagridStyleService, 'resetColumnStyles').and.returnValue();
         spyOn(DatagridExternalService, 'updateSuggestionPanel').and.returnValue();
-        spyOn(DatagridGridService, 'navigateToFocusedColumn').and.returnValue();
     }));
 
     beforeEach(function() {
@@ -86,7 +87,7 @@ describe('Datagrid directive', function() {
 
         it('should update columns', inject(function(DatagridColumnService) {
             //then
-            expect(DatagridColumnService.createColumns).toHaveBeenCalledWith(data.columns, data.preview, false);
+            expect(DatagridColumnService.createColumns).toHaveBeenCalledWith(data.columns, data.preview);
         }));
 
         it('should update created columns style', inject(function(DatagridStyleService) {
@@ -97,6 +98,11 @@ describe('Datagrid directive', function() {
         it('should auto size created columns (and set them in grid, done by autosize() function)', inject(function(DatagridSizeService) {
             //then
             expect(DatagridSizeService.autosizeColumns).toHaveBeenCalledWith(createdColumns);
+        }));
+
+        it('should reset renew all columns flag', inject(function(DatagridColumnService) {
+            //then
+            expect(DatagridColumnService.renewAllColumns).toHaveBeenCalledWith(false);
         }));
 
         it('should navigate in the grid to show the interesting column after a 300ms delay', inject(function(DatagridGridService) {
@@ -190,6 +196,11 @@ describe('Datagrid directive', function() {
             //then
             expect(grid.scrollRowToTop).toHaveBeenCalledWith(0);
         });
+
+        it('should force column recreation (no reuse)', inject(function(DatagridColumnService) {
+            //then
+            expect(DatagridColumnService.renewAllColumns).toHaveBeenCalledWith(true);
+        }));
     });
 
     describe('on filter change', function() {
@@ -214,70 +225,4 @@ describe('Datagrid directive', function() {
             expect(grid.scrollRowToTop).toHaveBeenCalledWith(0);
         });
     });
-
-    describe('on headers elements change', function() {
-        var createDummyElementWithId;
-
-        beforeEach(inject(function($rootScope, $compile) {
-            //create a div with provided id
-            createDummyElementWithId = function(elementId) {
-                var dummyElement = angular.element('<div id="' + elementId + '"></div>');
-                $compile(dummyElement)($rootScope.$new());
-                return dummyElement;
-            };
-        }));
-
-        beforeEach(inject(function(DatagridService, DatagridColumnService) {
-            //given
-            createElement();
-
-            //given : init grid
-            DatagridService.data = {columns: [{id: '0000'}, {id: '0001'}], preview: false};
-            scope.$digest();
-
-            //given : set grid columns
-            var columns = [
-                {
-                    id: '0000',
-                    field: '0000',
-                    name: '<div id="datagrid-header-0"></div>',
-                    minWidth: 80
-                },
-                {
-                    id: '0001',
-                    field: '0001',
-                    name: '<div id="datagrid-header-1"></div>',
-                    minWidth: 80
-                },
-                {
-                    id: '0002',
-                    field: '0002',
-                    name: '<div id="datagrid-header-2"></div>',
-                    minWidth: 80
-                }
-            ];
-            grid.setColumns(columns);
-            grid.invalidate();
-
-            //when : header elements changed
-            DatagridColumnService.colHeaderElements = [
-                {element: createDummyElementWithId('header0')},
-                {element: createDummyElementWithId('header1')},
-                {element: createDummyElementWithId('header2')}
-            ];
-            scope.$digest();
-            jasmine.clock().tick(1);
-        }));
-
-        it('should insert headers elements in grid columns headers', function() {
-            //then
-            var header0 = element.find('#datagrid-header-0').eq(0);
-            var header1 = element.find('#datagrid-header-1').eq(0);
-            var header2 = element.find('#datagrid-header-2').eq(0);
-            expect(header0.find('#header0').length).toBe(1);
-            expect(header1.find('#header1').length).toBe(1);
-            expect(header2.find('#header2').length).toBe(1);
-        });
-    });
-
 });

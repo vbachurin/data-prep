@@ -1,7 +1,8 @@
 <talend-accordions>
     <talend-accordions-item ng-repeat="step in recipeCtrl.recipe track by step.transformation.stepId"
                             on-open="recipeCtrl.resetParams(step)"
-                            default="$index === (recipeCtrl.recipe.length - 1)">
+                            default="$index === (recipeCtrl.recipe.length - 1)"
+                            ng-class="::{'preview': step.preview}">
         <div class="trigger step-description"
              ng-click="recipeCtrl.showModal[$index] = !!step.transformation.cluster"
              ng-switch="step.actionParameters.parameters.scope">

@@ -9,7 +9,7 @@ if [ -z "$version"  ]; then
   exit 1
 fi
 
-registry=talend-registry:5000
+registry='talend-registry:5000'
 
 # folder (on local machine) where to put bins at the end (where builds can be downloaded)
 path_for_bins=/home/build-admin/Products/data-prep/
@@ -31,10 +31,12 @@ docker_tag() {
   echo '==========================================='
   echo 'docker tag'
   echo '==========================================='
-  for image in $images;
+  images_to_tag=`more $original_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -v -E $external_images_pattern`
+
+  for image in $images_to_tag;
   do
-    completeName=$image:$version
-    docker tag --force $completeName $registry/$completeName
+    echo 'docker tag --force '$image' '$registry/$image
+    docker tag --force $image $registry/$image
   done
 
   echo ' '
@@ -45,10 +47,10 @@ computes_docker_images_lists() {
   verbose=$1
 
   # list of images that are not built on this server, and then should be pulled before added to tar:
-  external_list=`more $final_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -E $external_images_pattern`
+  external_list=`less $final_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -E $external_images_pattern`
 
   # list of images that are built on this server:
-  internal_list=`more $final_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -v -E $external_images_pattern`
+  internal_list=`less $final_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -v -E $external_images_pattern`
 
   # all images:
   list=$internal_list' '$external_list
@@ -56,6 +58,7 @@ computes_docker_images_lists() {
   if [[ "$verbose" = "true" ]]; then
     echo 'external images: '$external_list
     echo 'internal images: '$internal_list
+    echo 'all images: '$list
   fi
 }
 
@@ -98,19 +101,18 @@ push_docker_images() {
   echo '==========================================='
   echo 'docker push'
   echo '==========================================='
-
-  for image in $internal_list;
+  images_to_push=`more $original_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -v -E $external_images_pattern`
+  for image in $images_to_push;
   do
-    completeName=$image:$version
-    time docker push $registry/$completeName
-    docker rmi $registry/$completeName
+    time docker push $registry/$image
+    docker rmi $registry/$image $image
   done
   echo '==========================================='
 }
 
-docker_tag
 produce_compose_file
-computes_docker_images_lists false
+computes_docker_images_lists true
+docker_tag
 pull_external
 build_archive_images
 publish_files

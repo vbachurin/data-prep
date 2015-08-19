@@ -29,6 +29,7 @@ describe('Preparation Service', function () {
         spyOn(PreparationRestService, 'getDetails').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getPreviewDiff').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getPreviewUpdate').and.returnValue($q.when(true));
+        spyOn(PreparationRestService, 'getPreviewAdd').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'removeStep').and.returnValue($q.when(true));
     }));
 
@@ -461,6 +462,22 @@ describe('Preparation Service', function () {
 
             //then
             expect(PreparationRestService.getPreviewUpdate).toHaveBeenCalledWith('6cd546546548a745', currentStep, updateStep, newParams, recordsTdpId, canceler);
+        }));
+
+        it('should get add preview', inject(function ($q, PreparationService, PreparationRestService) {
+            //given
+            PreparationService.currentPreparationId = '6cd546546548a745';
+            var datasetId = '754a54654fd694e6464';
+            var action = 'cut';
+            var params = {value: 'toto'};
+            var recordsTdpId = [1,2,3];
+            var canceler = $q.defer();
+
+            //when
+            PreparationService.getPreviewAdd(datasetId, action, params, recordsTdpId, canceler);
+
+            //then
+            expect(PreparationRestService.getPreviewAdd).toHaveBeenCalledWith('6cd546546548a745', datasetId, action, params, recordsTdpId, canceler);
         }));
     });
 
