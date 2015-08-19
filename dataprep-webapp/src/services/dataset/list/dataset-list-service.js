@@ -184,7 +184,10 @@
          * @returns {promise} The pending GET or resolved promise
          */
         var getDatasetsPromise = function getDatasetsPromise() {
-            return self.datasets === null || datasetsPromise ? refreshDatasets() : $q.when(self.datasets);
+            if(datasetsPromise) {
+                return datasetsPromise;
+            }
+            return self.datasets === null ? refreshDatasets() : $q.when(self.datasets);
         };
 
         this.refreshDatasets = refreshDatasets;
