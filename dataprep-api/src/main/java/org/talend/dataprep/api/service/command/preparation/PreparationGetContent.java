@@ -64,9 +64,16 @@ public class PreparationGetContent extends PreparationCommand<InputStream> {
      */
     @Override
     protected InputStream run() throws Exception {
+
         PreparationContext preparationContext = getContext(id, version, sample);
-        List<Action> actions = preparationContext.getActions();
         InputStream content = preparationContext.getContent();
+        List<Action> actions = preparationContext.getActions();
+
+        // preparation in cache
+        if (preparationContext.fromCache()) {
+            return content;
+        }
+
         // Run transformation (if any action to perform)
         if (!actions.isEmpty()) {
             final String encodedActions = serializeActions(actions);
@@ -74,15 +81,14 @@ public class PreparationGetContent extends PreparationCommand<InputStream> {
             final Transform transformCommand = context.getBean(Transform.class, client, content, encodedActions);
             content = transformCommand.execute();
         }
-        // Cache result (if wasn't already cached)
-        if (preparationContext.fromCache()) {
-            return content;
-        } else {
-            ContentCacheKey key = new ContentCacheKey(preparationContext.getPreparation(), preparationContext.getVersion(),
-                    sample);
-            final OutputStream newCacheEntry = contentCache.put(key, ContentCache.TimeToLive.DEFAULT);
-            return new CloneInputStream(content, newCacheEntry);
-        }
+
+        //@formatter:off
+        ContentCacheKey key = new ContentCacheKey(preparationContext.getPreparation(),
+                                                  preparationContext.getVersion(),
+                                                  sample);
+        //@formatter:on
+        final OutputStream newCacheEntry = contentCache.put(key, ContentCache.TimeToLive.DEFAULT);
+        return new CloneInputStream(content, newCacheEntry);
     }
 
 }

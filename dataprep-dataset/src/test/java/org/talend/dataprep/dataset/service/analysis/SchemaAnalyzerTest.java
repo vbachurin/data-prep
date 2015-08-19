@@ -63,12 +63,13 @@ public class SchemaAnalyzerTest {
         formatAnalysis.analyze("1234");
         // Analyze schema
         schemaAnalysis.analyze("1234");
-        assertThat(metadata.getLifecycle().schemaAnalyzed(), is(true));
+        final DataSetMetadata actual = repository.get("1234");
+        assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         String[] expectedNames = { "nickname", "secret firstname", "secret lastname", "date of birth", "city" };
         Type[] expectedTypes = { Type.STRING, Type.STRING, Type.STRING, Type.DATE, Type.STRING };
         int i = 0;
         int j = 0;
-        for (ColumnMetadata column : metadata.getRow().getColumns()) {
+        for (ColumnMetadata column : actual.getRow().getColumns()) {
             assertThat(column.getName(), is(expectedNames[i++]));
             assertThat(column.getType(), is(expectedTypes[j++].getName()));
         }
@@ -87,12 +88,13 @@ public class SchemaAnalyzerTest {
         formatAnalysis.analyze("1234");
         // Analyze schema
         schemaAnalysis.analyze("1234");
-        assertThat(metadata.getLifecycle().schemaAnalyzed(), is(true));
+        final DataSetMetadata actual = repository.get("1234");
+        assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         String[] expectedNames = { "whaterver" }; // Not a typo: this is what QA provided as column name.
         Type[] expectedTypes = { Type.STRING };
         int i = 0;
         int j = 0;
-        for (ColumnMetadata column : metadata.getRow().getColumns()) {
+        for (ColumnMetadata column : actual.getRow().getColumns()) {
             assertThat(column.getName(), is(expectedNames[i++]));
             assertThat(column.getType(), is(expectedTypes[j++].getName()));
         }
@@ -111,13 +113,14 @@ public class SchemaAnalyzerTest {
         formatAnalysis.analyze("1234");
         // Analyze schema
         schemaAnalysis.analyze("1234");
-        assertThat(metadata.getLifecycle().schemaAnalyzed(), is(true));
+        final DataSetMetadata actual = repository.get("1234");
+        assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         String[] expectedNames = { "zip" };
         Type[] expectedTypes = { Type.INTEGER };
         String[] expectedDomains = { "FR_POSTAL_CODE" };
         int i = 0;
 
-        for (ColumnMetadata column : metadata.getRow().getColumns()) {
+        for (ColumnMetadata column : actual.getRow().getColumns()) {
             assertThat(column.getName(), is(expectedNames[i]));
             assertThat( column.getType(), is( expectedTypes[i].getName() ) );
             assertThat( column.getDomain(), is( expectedDomains[i++] ) );
@@ -137,13 +140,14 @@ public class SchemaAnalyzerTest {
         formatAnalysis.analyze("1234");
         // Analyze schema
         schemaAnalysis.analyze("1234");
-        assertThat(metadata.getLifecycle().schemaAnalyzed(), is(true));
+        final DataSetMetadata actual = repository.get("1234");
+        assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         // Gender must be a String with Gender domain
         String[] expectedNames = { "name", "bounty", "gender" };
         Type[] expectedTypes = { Type.STRING, Type.INTEGER, Type.STRING };
         String[] expectedDomains = { "First Name", "", "Gender" };
         int i = 0;
-        for (ColumnMetadata column : metadata.getRow().getColumns()) {
+        for (ColumnMetadata column : actual.getRow().getColumns()) {
             assertThat(column.getName(), is(expectedNames[i]));
             assertThat(column.getType(), is(expectedTypes[i].getName()));
             assertThat(column.getDomain(), is(expectedDomains[i]));
@@ -164,11 +168,12 @@ public class SchemaAnalyzerTest {
         formatAnalysis.analyze("1234");
         // Analyze schema
         schemaAnalysis.analyze("1234");
-        assertThat(metadata.getLifecycle().schemaAnalyzed(), is(true));
+        final DataSetMetadata actual = repository.get("1234");
+        assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         String[] expectedNames = { "id", "firstname", "lastname", "age", "date-of-birth", "alive" };
         Type[] expectedTypes = { Type.INTEGER, Type.STRING, Type.STRING, Type.INTEGER, Type.DATE, Type.BOOLEAN };
         int i = 0;
-        for (ColumnMetadata column : metadata.getRow().getColumns()) {
+        for (ColumnMetadata column : actual.getRow().getColumns()) {
             assertThat(column.getName(), is(expectedNames[i]));
             assertThat(column.getType(), is(expectedTypes[i].getName()));
             i++;
