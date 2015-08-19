@@ -36,13 +36,9 @@
 
 					var filterFloat = function filterFloat (value) {
 						if(/^([-+]?[0-9]*)\.?([0-9]+([eE][-+]?[0-9]+)?|Infinity)$/.test(value)){
-							//if(value.indexOf('e') !== -1 || value.indexOf('E') !== -1){
-							//	return Number(value.trim()).toPrecision(nbDecimals);
-							//	//return d3.format('e')(Number(value.trim()));
-							//}
 							return Number(value.trim());
 						}
-						return 'Invalid Entered Value';
+						return null;
 					};
 
 					var checkCommaExistence = function checkCommaExistence (){
@@ -92,7 +88,7 @@
 						.attr('transform', 'translate(0,' + height + ')')
 						.call(d3.svg.axis().scale(x).orient('bottom').ticks(Math.abs(x.range()[1] - x.range()[0]) / 50)
 							.tickFormat(function(d){
-								if(d > 1e4){
+								if(d > 1e4 || d < -1e4){
 									return d3.format('e')(d);
 								}
 								else {
@@ -169,8 +165,8 @@
 					function fillInputs(){
 						hideMsgErr();
 						var s = brush.extent();
-						document.getElementsByName('minRange')[0].value = s[0] > 1e4 ? d3.format(',e')(s[0]) : s[0].toFixed(nbDecimals);
-						document.getElementsByName('maxRange')[0].value = s[1] > 1e4 ? d3.format(',e')(s[1]) : s[1].toFixed(nbDecimals);
+						document.getElementsByName('minRange')[0].value = s[0] > 1e4 || s[0] < -1e4 ? d3.format('e')(s[0].toFixed(nbDecimals)) : s[0].toFixed(nbDecimals);
+						document.getElementsByName('maxRange')[0].value = s[1] > 1e4 || s[1] < -1e4 ? d3.format('e')(s[1].toFixed(nbDecimals)) : s[1].toFixed(nbDecimals);
 						return s;
 					}
 
@@ -179,11 +175,11 @@
 						var enteredMax = filterFloat(document.getElementsByName('maxRange')[0].value);
 						var enteredMin = filterFloat(document.getElementsByName('minRange')[0].value);
 
-						if(typeof enteredMax !== 'number' || typeof enteredMin !== 'number'){
+						if(enteredMax === null || enteredMin === null){
 							return;
 						}
 
-						nbDecimals = d3.max([decimalPlaces(enteredMin), decimalPlaces(enteredMax)]) || 2;
+						nbDecimals = d3.max([decimalPlaces(enteredMin), decimalPlaces(enteredMax)]);
 
 						var finalExtent = [];
 						//will be replaced directly by the min
@@ -227,8 +223,7 @@
 							(match[2] ? +match[2] : 0));
 					}
 
-					var minCorrectness = 1;
-					var maxCorrectness = 1;
+					var minCorrectness, maxCorrectness;
 
 					document.getElementsByName('minRange')[0].onblur = adjustBrush;
 					document.getElementsByName('maxRange')[0].onblur = adjustBrush;
@@ -243,15 +238,16 @@
 					document.getElementsByName('minRange')[0].onkeyup = function(e){
 						if(e.which !== 13 && e.which !== 27){
 							minCorrectness = filterFloat(this.value);
-							if(typeof minCorrectness !== 'number' || typeof maxCorrectness !== 'number'){
+							if(minCorrectness === null || maxCorrectness === null){
 								showMsgErr();
 							}
 							else{
 								hideMsgErr();
 							}
 						}
+
 						if(e.which === 13 || e.which === 9){
-							if(typeof minCorrectness === 'number' && typeof maxCorrectness === 'number'){
+							if(minCorrectness !== null && maxCorrectness !== null){
 								adjustBrush();
 							}
 							else{
@@ -259,6 +255,7 @@
 								hideMsgErr();
 							}
 						}
+
 						if(e.which === 27){
 							e.stopPropagation();
 							fillInputs();
@@ -268,15 +265,16 @@
 					document.getElementsByName('maxRange')[0].onkeyup = function(e){
 						if(e.which !== 13 && e.which !== 27){
 							maxCorrectness = filterFloat(this.value);
-							if(typeof minCorrectness !== 'number' || typeof maxCorrectness !== 'number'){
+							if(minCorrectness === null || maxCorrectness === null){
 								showMsgErr();
 							}
 							else{
 								hideMsgErr();
 							}
 						}
+
 						if(e.which === 13 || e.which === 9){
-							if(typeof minCorrectness === 'number' && typeof maxCorrectness === 'number'){
+							if(minCorrectness !== null && maxCorrectness !== null){
 								adjustBrush();
 							}
 							else{
@@ -284,6 +282,7 @@
 								hideMsgErr();
 							}
 						}
+
 						if(e.which === 27){
 							e.stopPropagation();
 							fillInputs();

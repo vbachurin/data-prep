@@ -40,7 +40,7 @@
                 case 'valid_records':
                     return 'valid records';
                 case 'inside_range':
-                    if(args.phrase[0] > 1e4 || args.phrase[1] > 1e4){
+                    if(args.phrase[0] > 1e4 || args.phrase[1] > 1e4 || args.phrase[0] < -1e4 || args.phrase[1] < -1e4){
                         return 'in ['+ args.phrase[0].toExponential()+ ' ... ' + args.phrase[1].toExponential()+']';
                     }
                     else {
