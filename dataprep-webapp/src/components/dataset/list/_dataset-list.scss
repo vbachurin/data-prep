@@ -1,0 +1,34 @@
+.dataset {
+  $button-background-color: $white;
+  $button-color-text: $black;
+
+  @mixin button-dropdown-restyle() {
+    background: $button-background-color;
+    color: $button-color-text;
+    padding: 0 5px 0 5px;
+  }
+
+  .inventory-sort {
+    @include display(flex);
+    @include flex-direction(row);
+    @include align-items(center);
+    @include justify-content(flex-end);
+
+    font-size: 0.9em;
+
+    .button-dropdown-side {
+      @include button-dropdown-restyle();
+      padding-left: 0;
+    }
+  }
+
+  .button-dropdown-longtext .button-dropdown-main {
+    @include button-dropdown-restyle();
+    width: 95px;
+  }
+
+  .button-dropdown-shorttext .button-dropdown-main {
+    @include button-dropdown-restyle();
+    width: 55px;
+  }
+}

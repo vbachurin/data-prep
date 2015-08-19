@@ -18,6 +18,7 @@ import javax.jms.Message;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.spark.SparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +33,7 @@ import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
-import org.talend.dataprep.dataset.service.analysis.AsynchronousDataSetAnalyzer;
-import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
-import org.talend.dataprep.dataset.service.analysis.FormatAnalysis;
-import org.talend.dataprep.dataset.service.analysis.SynchronousDataSetAnalyzer;
+import org.talend.dataprep.dataset.service.analysis.*;
 import org.talend.dataprep.dataset.service.api.UpdateColumnParameters;
 import org.talend.dataprep.dataset.service.locator.DataSetLocatorService;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
@@ -57,41 +55,62 @@ import com.wordnik.swagger.annotations.*;
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
 public class DataSetService {
 
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-YYYY HH:mm"); //$NON-NLS-1
-
+    /** This class' logger. */
     private static final Logger LOG = LoggerFactory.getLogger(DataSetService.class);
 
+    /** Date format to use. */
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-YYYY HH:mm"); // $NON-NLS-1
     static {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
     }
 
+    /** DQ asynchronous analyzers. */
     @Autowired
-    AsynchronousDataSetAnalyzer[] asynchronousAnalyzers;
+    private AsynchronousDataSetAnalyzer[] asynchronousAnalyzers;
 
+    /** DQ synchronous analyzers. */
     @Autowired
-    List<SynchronousDataSetAnalyzer> synchronousAnalyzers;
+    private List<SynchronousDataSetAnalyzer> synchronousAnalyzers;
 
+    /** Quality analyzer needed to compute quality on dataset sample. */
     @Autowired
-    JmsTemplate jmsTemplate;
+    private QualityAnalysis qualityAnalyzer;
 
+    /** JMS template used to call aysnchronous analysers. */
+    @Autowired
+    private JmsTemplate jmsTemplate;
+
+    /** Dataset metadata repository. */
     @Autowired
     private DataSetMetadataRepository dataSetMetadataRepository;
 
+    /** Dataset content store. */
     @Autowired
     private ContentStoreRouter contentStore;
 
+    /** User repository. */
     @Autowired
     private UserDataRepository userDataRepository;
 
+    /** Format guess factory. */
     @Autowired
     private FormatGuess.Factory formatGuessFactory;
 
+    /** Dataset locator (used for remote datasets). */
     @Autowired
     private DataSetLocatorService datasetLocator;
 
+    /** DataPrep ready to use jackson object mapper. */
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
+    /** Spark context needed for dataset statistics computing in case of samples. */
+    @Autowired
+    private SparkContext sparkContext;
+
+    /**
+     * Sort the synchronous analyzers.
+     */
     @PostConstruct
     public void initialize() {
         synchronousAnalyzers.sort((analyzer1, analyzer2) -> analyzer1.order() - analyzer2.order());
@@ -146,14 +165,41 @@ public class DataSetService {
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is a Epoch time value (in UTC time zone).")
     @Timed
-    public Iterable<DataSetMetadata> list() {
+    public Iterable<DataSetMetadata> list(@ApiParam(value = "Sort key (by name or date).") @RequestParam(defaultValue = "DATE", required = false) String sort,
+                                          @ApiParam(value = "Order for sort key (desc or asc).") @RequestParam(defaultValue = "DESC", required = false) String order) {
         final Spliterator<DataSetMetadata> iterator = dataSetMetadataRepository.list().spliterator();
         Stream<DataSetMetadata> stream = StreamSupport.stream(iterator, false);
-        return stream.filter(metadata -> !metadata.getLifecycle().importing())//
+        // Select order (asc or desc)
+        final Comparator<String> comparisonOrder;
+        switch (order.toUpperCase()) {
+            case "ASC":
+                comparisonOrder = Comparator.naturalOrder();
+                break;
+            case "DESC":
+                comparisonOrder = Comparator.reverseOrder();
+                break;
+            default:
+                throw new TDPException(DataSetErrorCodes.ILLEGAL_ORDER_FOR_LIST, TDPExceptionContext.build().put("order", order));
+        }
+        // Select comparator for sort (either by name or date)
+        final Comparator<DataSetMetadata> comparator;
+        switch (sort.toUpperCase()) {
+            case "NAME":
+                comparator = Comparator.comparing(dataSetMetadata -> dataSetMetadata.getName().toUpperCase(), comparisonOrder);
+                break;
+            case "DATE":
+                comparator = Comparator.comparing(dataSetMetadata -> String.valueOf(dataSetMetadata.getCreationDate()), comparisonOrder);
+                break;
+            default:
+                throw new TDPException(DataSetErrorCodes.ILLEGAL_SORT_FOR_LIST, TDPExceptionContext.build().put("sort", order));
+        }
+        // Return sorted results
+        return stream.filter(metadata -> !metadata.getLifecycle().importing()) //
                 .map(metadata -> {
                     completeWithUserData(metadata);
                     return metadata;
-                })//
+                }) //
+                .sorted(comparator) //
                 .collect(Collectors.toList());
     }
 
@@ -253,9 +299,13 @@ public class DataSetService {
             if (columns) {
                 dataSet.setColumns(dataSetMetadata.getRow().getColumns());
             }
-            // deal with the sample size or the full dataset
+
             if (sample != null && sample > 0) {
                 dataSet.setRecords(contentStore.sample(dataSetMetadata, sample));
+                // computes the statistics only if columns are required
+                if (columns) {
+                    computeSampleStatistics(dataSetMetadata, sample);
+                }
             } else {
                 dataSet.setRecords(contentStore.stream(dataSetMetadata));
             }
@@ -431,7 +481,9 @@ public class DataSetService {
             @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName, //
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId, //
             HttpServletResponse response) {
+
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+
         if (dataSetMetadata == null) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             return DataSet.empty(); // No data set, returns empty content.
@@ -585,8 +637,8 @@ public class DataSetService {
      * flag. The user data for the current will be created if it does not exist. If no data set exists for given id, a
      * {@link TDPException} is thrown.
      *
-     * @param unset,     if true this will remove the dataSetId from the list of favorites, if false then it adds the
-     *                   dataSetId to the favorite list
+     * @param unset, if true this will remove the dataSetId from the list of favorites, if false then it adds the
+     * dataSetId to the favorite list
      * @param dataSetId, the id of the favorites data set. If the data set does not exists nothing is done.
      */
     @RequestMapping(value = "/datasets/{id}/favorite", method = PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
@@ -648,11 +700,7 @@ public class DataSetService {
             LOG.debug("update dataset column for #{} with type {} and/or domain {}", dataSetId, parameters.getType(), parameters.getDomain());
 
             // get the column
-            final ColumnMetadata column = dataSetMetadata.getRow().getColumns() //
-                    .stream() //
-                    .filter(col -> StringUtils.equals(col.getId(), columnId)) //
-                    .findFirst() //
-                    .orElse(null);
+            final ColumnMetadata column = dataSetMetadata.getRow().getById(columnId);
             if (column == null) {
                 throw new TDPException(DataSetErrorCodes.COLUMN_DOES_NOT_EXIST, //
                         TDPExceptionContext.build() //
@@ -690,6 +738,28 @@ public class DataSetService {
             dataSetMetadataRepository.add(dataSetMetadata);
         } finally {
             lock.unlock();
+        }
+    }
+
+    /**
+     * Computes quality and statistics for a dataset sample.
+     *
+     * @param dataSetMetadata the dataset metadata.
+     * @param sample the sample size
+     */
+    private void computeSampleStatistics(DataSetMetadata dataSetMetadata, long sample) {
+        try {
+            // compute statistics on a copy
+            DataSet copy = new DataSet();
+            copy.setMetadata(dataSetMetadata);
+            copy.setColumns(dataSetMetadata.getRow().getColumns());
+            copy.setRecords(contentStore.sampleWithoutId(dataSetMetadata, sample));
+
+            // TODO François, is there a better way to compute quality & statistics like Analyzers.with(...) ?
+            qualityAnalyzer.computeQuality(copy.getMetadata(), contentStore.sampleWithoutId(dataSetMetadata, sample));
+            DataSetAnalysis.computeStatistics(copy, sparkContext, builder);
+        } catch (IOException e) {
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
         }
     }
 }

@@ -27,6 +27,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.dataset.store.metadata.memory.InMemoryDataSetMetadataRepository;
 
@@ -44,8 +45,9 @@ public class MetadataRepositoryLockTest {
         // I am not sure of the validity of this test as it tests the DistributedLock that is already provided by a
         // third party lib.
         DataSetMetadataRepository metadataRepository = appContext.getBean(InMemoryDataSetMetadataRepository.class);
-        DataSetMetadata dsm1 = new DataSetMetadata("1", "one", "jim", 12, null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        DataSetMetadata dsm2 = new DataSetMetadata("1", "theone", "jimmy", 12, null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        DataSetMetadata dsm1 = new DataSetMetadata("1", "one", "jim", 12, new RowMetadata()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        DataSetMetadata dsm2 = new DataSetMetadata("1", "theone", "jimmy", 12, new RowMetadata()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        dsm2.setRowMetadata(new RowMetadata());
         final AtomicLong threadCount = new AtomicLong(2);
         new Thread(() -> {
             try {

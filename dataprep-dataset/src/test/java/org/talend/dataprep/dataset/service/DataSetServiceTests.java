@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -31,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -43,6 +43,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.DataSetBaseTest;
 import org.talend.dataprep.schema.CSVFormatGuess;
+import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -85,7 +86,8 @@ public class DataSetServiceTests extends DataSetBaseTest {
         metadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, ";");
         dataSetMetadataRepository.add(metadata);
 
-        String expected = "[{\"id\":\"" + id1
+        String expected = "[{\"id\":\""
+                + id1
                 + "\",\"name\":\"name1\",\"records\":0,\"author\":\"anonymous\",\"nbLinesHeader\":0,\"nbLinesFooter\":0,\"created\":0}]";
 
         InputStream content = when().get("/datasets").asInputStream();
@@ -122,6 +124,145 @@ public class DataSetServiceTests extends DataSetBaseTest {
         assertTrue(favoritesResp.get(0));
         assertTrue(favoritesResp.get(1));
 
+    }
+
+    @Test
+    public void listNameSort() throws Exception {
+        when().get("/datasets?sort=name").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
+        // Adds 2 data set metadata to store
+        String id1 = UUID.randomUUID().toString();
+        final DataSetMetadata metadata1 = metadata().id(id1).name("AAAA").author("anonymous").created(0)
+                .formatGuessId(new CSVFormatGuess().getBeanId()).build();
+        dataSetMetadataRepository.add(metadata1);
+        String id2 = UUID.randomUUID().toString();
+        final DataSetMetadata metadata2 = metadata().id(id2).name("BBBB").author("anonymous").created(0)
+                .formatGuessId(new CSVFormatGuess().getBeanId()).build();
+        dataSetMetadataRepository.add(metadata2);
+        // Ensure order by name (most recent first)
+        String actual = when().get("/datasets?sort=name").asString();
+        ObjectMapper mapper = new ObjectMapper();
+        final Iterator<JsonNode> elements = mapper.readTree(actual).elements();
+        String[] expectedNames = new String[]{"BBBB", "AAAA"};
+        int i = 0;
+        while (elements.hasNext()) {
+            assertThat(elements.next().get("name").asText(), is(expectedNames[i++]));
+        }
+    }
+
+    @Test
+    public void listDateSort() throws Exception {
+        when().get("/datasets?sort=date").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
+        // Adds 2 data set metadata to store
+        String id1 = UUID.randomUUID().toString();
+        final DataSetMetadata metadata1 = metadata().id(id1).name("AAAA").author("anonymous").created(20)
+                .formatGuessId(new CSVFormatGuess().getBeanId()).build();
+        dataSetMetadataRepository.add(metadata1);
+        String id2 = UUID.randomUUID().toString();
+        final DataSetMetadata metadata2 = metadata().id(id2).name("BBBB").author("anonymous").created(0)
+                .formatGuessId(new CSVFormatGuess().getBeanId()).build();
+        dataSetMetadataRepository.add(metadata2);
+        // Ensure order by date (most recent first)
+        String actual = when().get("/datasets?sort=date").asString();
+        ObjectMapper mapper = new ObjectMapper();
+        final Iterator<JsonNode> elements = mapper.readTree(actual).elements();
+        String[] expectedNames = new String[]{"AAAA", "BBBB"};
+        int i = 0;
+        while (elements.hasNext()) {
+            assertThat(elements.next().get("name").asText(), is(expectedNames[i++]));
+        }
+    }
+
+    @Test
+    public void listDateOrder() throws Exception {
+        when().get("/datasets?sort=date&order=asc").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
+        // Adds 2 data set metadata to store
+        String id1 = UUID.randomUUID().toString();
+        final DataSetMetadata metadata1 = metadata().id(id1).name("AAAA").author("anonymous").created(20)
+                .formatGuessId(new CSVFormatGuess().getBeanId()).build();
+        dataSetMetadataRepository.add(metadata1);
+        String id2 = UUID.randomUUID().toString();
+        final DataSetMetadata metadata2 = metadata().id(id2).name("BBBB").author("anonymous").created(0)
+                .formatGuessId(new CSVFormatGuess().getBeanId()).build();
+        dataSetMetadataRepository.add(metadata2);
+        final ObjectMapper mapper = new ObjectMapper();
+        // Ensure order by date (most recent first)
+        String actual = when().get("/datasets?sort=date&order=desc").asString();
+        Iterator<JsonNode> elements = mapper.readTree(actual).elements();
+        String[] expectedNames = new String[]{"AAAA", "BBBB"};
+        int i = 0;
+        while (elements.hasNext()) {
+            assertThat(elements.next().get("name").asText(), is(expectedNames[i++]));
+        }
+        // Ensure order by date (oldest first when no order value)
+        actual = when().get("/datasets?sort=date").asString();
+        elements = mapper.readTree(actual).elements();
+        expectedNames = new String[]{"AAAA", "BBBB"};
+        i = 0;
+        while (elements.hasNext()) {
+            assertThat(elements.next().get("name").asText(), is(expectedNames[i++]));
+        }
+        // Ensure order by date (oldest first)
+        actual = when().get("/datasets?sort=date&order=asc").asString();
+        elements = mapper.readTree(actual).elements();
+        expectedNames = new String[]{"BBBB", "AAAA"};
+        i = 0;
+        while (elements.hasNext()) {
+            assertThat(elements.next().get("name").asText(), is(expectedNames[i++]));
+        }
+    }
+
+    @Test
+    public void listNameOrder() throws Exception {
+        when().get("/datasets?sort=name&order=asc").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
+        // Adds 2 data set metadata to store
+        String id1 = UUID.randomUUID().toString();
+        final DataSetMetadata metadata1 = metadata().id(id1).name("AAAA").author("anonymous").created(20)
+                .formatGuessId(new CSVFormatGuess().getBeanId()).build();
+        dataSetMetadataRepository.add(metadata1);
+        String id2 = UUID.randomUUID().toString();
+        final DataSetMetadata metadata2 = metadata().id(id2).name("CCCC").author("anonymous").created(0)
+                .formatGuessId(new CSVFormatGuess().getBeanId()).build();
+        dataSetMetadataRepository.add(metadata2);
+        String id3 = UUID.randomUUID().toString();
+        final DataSetMetadata metadata3 = metadata().id(id3).name("bbbb").author("anonymous").created(0)
+                .formatGuessId(new CSVFormatGuess().getBeanId()).build();
+        dataSetMetadataRepository.add(metadata3);
+        final ObjectMapper mapper = new ObjectMapper();
+        // Ensure order by name (last character from alphabet first)
+        String actual = when().get("/datasets?sort=name&order=desc").asString();
+        Iterator<JsonNode> elements = mapper.readTree(actual).elements();
+        String[] expectedNames = new String[]{"CCCC", "bbbb", "AAAA"};
+        int i = 0;
+        while (elements.hasNext()) {
+            assertThat(elements.next().get("name").asText(), is(expectedNames[i++]));
+        }
+        // Ensure order by name (last character from alphabet first when no order value)
+        actual = when().get("/datasets?sort=name").asString();
+        elements = mapper.readTree(actual).elements();
+        expectedNames = new String[]{"CCCC", "bbbb", "AAAA"};
+        i = 0;
+        while (elements.hasNext()) {
+            assertThat(elements.next().get("name").asText(), is(expectedNames[i++]));
+        }
+        // Ensure order by name (first character from alphabet first)
+        actual = when().get("/datasets?sort=name&order=asc").asString();
+        elements = mapper.readTree(actual).elements();
+        expectedNames = new String[]{"AAAA", "bbbb", "CCCC"};
+        i = 0;
+        while (elements.hasNext()) {
+            assertThat(elements.next().get("name").asText(), is(expectedNames[i++]));
+        }
+    }
+
+
+    @Test
+    public void listIllegalSort() throws Exception {
+        when().get("/datasets?sort=aaaa").then().statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    public void listIllegalOrder() throws Exception {
+        when().get("/datasets?order=aaaa").then().statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -194,6 +335,17 @@ public class DataSetServiceTests extends DataSetBaseTest {
         String sample = requestDataSetSample(dataSetId, "17");
         // then
         assertEquals(17, getNumberOfRecords(sample));
+    }
+
+    @Test
+    public void sampleShouldUpdateStatistics() throws Exception {
+        // given
+        String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
+        // when
+        String sample = requestDataSetSample(dataSetId, "16");
+        // then
+        InputStream expected = this.getClass().getResourceAsStream("../t-shirt_100.csv_sample_16.expected.json");
+        assertThat(sample, sameJSONAsFile(expected));
     }
 
     @Test
@@ -303,8 +455,6 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void preview_multi_sheet_with_a_sheet_name() throws Exception {
 
-        // Talend_Desk-Tableau_de_Bord-011214.xls
-
         String dataSetId = given()
                 .body(IOUtils
                         .toByteArray(DataSetServiceTests.class.getResourceAsStream("../Talend_Desk-Tableau_de_Bord-011214.xls")))
@@ -312,15 +462,13 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
 
         final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        dataSetMetadataRepository.add(dataSetMetadata);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
         String json = given().contentType(JSON).get("/datasets/{id}/preview?sheetName=Leads", dataSetId).asString();
-
         DataSet dataSet = objectMapper.reader(DataSet.class).readValue(json);
 
-        Assertions.assertThat(dataSet.getColumns()).isNotNull().isNotEmpty().isNotEmpty().hasSize(14);
+        Assertions.assertThat(dataSet.getColumns()).isNotNull().isNotEmpty().hasSize(14);
 
         json = given().contentType(JSON).get("/datasets/{id}/preview?sheetName=Tableau de bord", dataSetId)
                 .asString();
@@ -443,7 +591,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         String dataSetId = given()
                 .body(IOUtils.toByteArray(this.getClass().getResourceAsStream("../TDP-375_xsl_read_as_csv.xls")))
-                // .queryParam("Content-Type", "application/vnd.ms-excel")
+                        // .queryParam("Content-Type", "application/vnd.ms-excel")
                 .when().post("/datasets").asString();
 
         assertQueueMessages(dataSetId);
@@ -631,12 +779,12 @@ public class DataSetServiceTests extends DataSetBaseTest {
         assertQueueMessages(dataSetId);
 
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        assertThat(dataSetMetadata, CoreMatchers.notNullValue());
+        assertThat(dataSetMetadata, notNullValue());
         assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
         when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        assertThat(dataSetMetadata, CoreMatchers.notNullValue());
+        assertThat(dataSetMetadata, notNullValue());
         assertEquals(Certification.PENDING, dataSetMetadata.getGovernance().getCertificationStep());
         assertThat(dataSetMetadata.getRow().getColumns(), not(empty()));
     }
@@ -651,14 +799,16 @@ public class DataSetServiceTests extends DataSetBaseTest {
         assertQueueMessages(dataSetId);
 
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        assertThat(dataSetMetadata, CoreMatchers.notNullValue());
+        assertThat(dataSetMetadata, notNullValue());
         int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
         assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
+        // NONE -> PENDING
         when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
+        // PENDING -> CERTIFIED
         when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        assertThat(dataSetMetadata, CoreMatchers.notNullValue());
+        assertThat(dataSetMetadata, notNullValue());
         assertEquals(Certification.CERTIFIED, dataSetMetadata.getGovernance().getCertificationStep());
         assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
     }
@@ -734,11 +884,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
                 .asString();
 
         final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        final ColumnMetadata column = dataSetMetadata.getRow().getColumns()
-                .stream()
-                .filter(col -> col.getId().equals("0002"))
-                .findFirst()
-                .get();
+        final ColumnMetadata column = dataSetMetadata.getRow().getById("0002");
         final SemanticDomain jsoDomain = new SemanticDomain("JSO", "JSO label", 1.0F);
         column.getSemanticDomains().add(jsoDomain);
 
@@ -755,9 +901,10 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         //then
         res.then().statusCode(200);
-        assertThat(column.getDomain(), is("JSO"));
-        assertThat(column.getDomainLabel(), is("JSO label"));
-        assertThat(column.getDomainFrequency(), is(1.0F));
+        final ColumnMetadata actual = dataSetMetadataRepository.get(dataSetId).getRow().getById("0002");
+        assertThat(actual.getDomain(), is("JSO"));
+        assertThat(actual.getDomainLabel(), is("JSO label"));
+        assertThat(actual.getDomainFrequency(), is(1.0F));
     }
 
     @Test
@@ -771,11 +918,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
                 .asString();
 
         final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        final ColumnMetadata column = dataSetMetadata.getRow().getColumns()
-                .stream()
-                .filter(col -> col.getId().equals("0002"))
-                .findFirst()
-                .get();
+        final ColumnMetadata column = dataSetMetadata.getRow().getById("0002");
 
         assertThat(column.getDomain(), is("First Name"));
         assertThat(column.getDomainLabel(), is("First Name"));
@@ -791,10 +934,11 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         //then
         res.then().statusCode(200);
-        assertThat(column.getDomain(), is("First Name"));
-        assertThat(column.getDomainLabel(), is("First Name"));
-        assertThat(column.getDomainFrequency(), is(2.0F));
-        assertThat(column.getType(), is("integer"));
+        final ColumnMetadata actual = dataSetMetadataRepository.get(dataSetId).getRow().getById("0002");
+        assertThat(actual.getDomain(), is("First Name"));
+        assertThat(actual.getDomainLabel(), is("First Name"));
+        assertThat(actual.getDomainFrequency(), is(2.0F));
+        assertThat(actual.getType(), is("integer"));
     }
 
     @Test
@@ -808,11 +952,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
                 .asString();
 
         final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        final ColumnMetadata column = dataSetMetadata.getRow().getColumns()
-                .stream()
-                .filter(col -> col.getId().equals("0002"))
-                .findFirst()
-                .get();
+        final ColumnMetadata column = dataSetMetadata.getRow().getById("0002");
 
         assertThat(column.getDomain(), is("First Name"));
         assertThat(column.getDomainLabel(), is("First Name"));
@@ -827,9 +967,10 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         //then
         res.then().statusCode(200);
-        assertThat(column.getDomain(), is(""));
-        assertThat(column.getDomainLabel(), is(""));
-        assertThat(column.getDomainFrequency(), is(0.0F));
+        final ColumnMetadata actual = dataSetMetadataRepository.get(dataSetId).getRow().getById("0002");
+        assertThat(actual.getDomain(), is(""));
+        assertThat(actual.getDomainLabel(), is(""));
+        assertThat(actual.getDomainFrequency(), is(0.0F));
     }
 
     @Test
@@ -845,8 +986,9 @@ public class DataSetServiceTests extends DataSetBaseTest {
         final ColumnMetadata column = dataSetMetadata.getRow().getById("0001");
 
         assertThat(column.getType(), is("date"));
-        assertThat(column.getDomain(), is("DATE"));
-        assertThat(column.getStatistics(), sameJSONAsFile(DataSetServiceTests.class.getResourceAsStream("../date_time_pattern_expected.json")));
+        assertThat(column.getDomain(), is(SemanticCategoryEnum.UNKNOWN.getDisplayName()));
+        assertThat(column.getStatistics(), sameJSONAsFile(
+            DataSetServiceTests.class.getResourceAsStream( "../date_time_pattern_expected.json" ) ));
 
     }
 
@@ -870,9 +1012,9 @@ public class DataSetServiceTests extends DataSetBaseTest {
         return given() //
                 .expect() //
                 .statusCode(200) //
-                // .log().ifValidationFails() //
+                        // .log().ifValidationFails() //
                 .when() //
-                .get("/datasets/{id}/content?metadata=false&columns=false&sample={sampleSize}", dataSetId, sampleSize) //
+                .get("/datasets/{id}/content?metadata=false&columns=true&sample={sampleSize}", dataSetId, sampleSize) //
                 .asString();
 
     }

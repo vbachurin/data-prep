@@ -55,10 +55,11 @@ public class FormatAnalyzerTest {
         repository.add(metadata);
         contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../avengers.csv"));
         formatAnalysis.analyze("1234");
-        assertThat(repository.get("1234"), notNullValue());
-        assertThat(metadata.getContent().getFormatGuessId(), is(CSVFormatGuess.BEAN_ID));
-        assertThat(metadata.getContent().getMediaType(), is("text/csv"));
-        assertThat(metadata.getContent().getParameters().get("SEPARATOR"), is(";"));
+        final DataSetMetadata actual = repository.get("1234");
+        assertThat(actual, notNullValue());
+        assertThat(actual.getContent().getFormatGuessId(), is(CSVFormatGuess.BEAN_ID));
+        assertThat(actual.getContent().getMediaType(), is("text/csv"));
+        assertThat(actual.getContent().getParameters().get("SEPARATOR"), is(";"));
     }
 
     @Test
@@ -67,10 +68,11 @@ public class FormatAnalyzerTest {
         repository.add(metadata);
         contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../tagada.xls"));
         formatAnalysis.analyze("1234");
-        assertThat(repository.get("1234"), notNullValue());
-        assertThat(metadata.getContent().getFormatGuessId(), is(XlsFormatGuess.BEAN_ID));
-        assertThat(metadata.getContent().getMediaType(), is("application/vnd.ms-excel"));
-        assertThat(metadata.getContent().getParameters().isEmpty(), is(true));
+        final DataSetMetadata actual = repository.get("1234");
+        assertThat(actual, notNullValue());
+        assertThat(actual.getContent().getFormatGuessId(), is(XlsFormatGuess.BEAN_ID));
+        assertThat(actual.getContent().getMediaType(), is("application/vnd.ms-excel"));
+        assertThat(actual.getContent().getParameters().isEmpty(), is(true));
     }
 
 }

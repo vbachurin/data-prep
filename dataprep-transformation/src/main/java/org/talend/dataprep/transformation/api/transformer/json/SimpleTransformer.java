@@ -110,6 +110,7 @@ class SimpleTransformer implements Transformer {
                 }
                 return r;
             });
+
             // Write transformed records to stream
             AtomicBoolean wroteMetadata = new AtomicBoolean(false);
             List<DataSetRow> transformedRows = new ArrayList<>();
@@ -135,6 +136,7 @@ class SimpleTransformer implements Transformer {
                     throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
                 }
             });
+
             // Column statistics
             if (transformColumns) {
                 // Spark statistics
