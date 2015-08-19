@@ -91,16 +91,14 @@
 						.attr('class', 'x axis')
 						.attr('transform', 'translate(0,' + height + ')')
 						.call(d3.svg.axis().scale(x).orient('bottom').ticks(Math.abs(x.range()[1] - x.range()[0]) / 50)
-							//.tickFormat(function(){
-							//	if( (''+minimum).indexOf('e') !== -1 ||
-							//		(''+minimum).indexOf('E') !== -1 ||
-							//		(''+maximum).indexOf('e') !== -1 ||
-							//		(''+maximum).indexOf('E') !== -1 ){
-							//		return d3.format('e');
-							//	} else {
-							//		return d3.format('e');
-							//	}
-							//})
+							.tickFormat(function(d){
+								if(d > 1e4){
+									return d3.format('e')(d);
+								}
+								else {
+									return d3.format(',')(d);
+								}
+							})
 						);
 
 					xAxisg.selectAll('text').attr('y', 13);
@@ -171,8 +169,8 @@
 					function fillInputs(){
 						hideMsgErr();
 						var s = brush.extent();
-						document.getElementsByName('minRange')[0].value=s[0].toFixed(nbDecimals);
-						document.getElementsByName('maxRange')[0].value=s[1].toFixed(nbDecimals);
+						document.getElementsByName('minRange')[0].value = s[0] > 1e4 ? d3.format(',e')(s[0]) : s[0].toFixed(nbDecimals);
+						document.getElementsByName('maxRange')[0].value = s[1] > 1e4 ? d3.format(',e')(s[1]) : s[1].toFixed(nbDecimals);
 						return s;
 					}
 
