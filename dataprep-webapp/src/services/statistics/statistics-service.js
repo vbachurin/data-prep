@@ -325,11 +325,12 @@
          * @param {string} datasetId The column to visualize
          * @param {string} preparationId The column to visualize
          * @param {string} stepId The column to visualize
+         * @param {number} sampleSize The sample size
          * @param {object} column The column to visualize
          * @param {object} aggregation The column to visualize
          * @description Processes the statistics aggregation for visualization
          */
-        function processAggregation(datasetId, preparationId, stepId, column, aggregation) {
+        function processAggregation(datasetId, preparationId, stepId, sampleSize, column, aggregation) {
             if(!aggregation) {
                 return processData(service.selectedColumn);
             }
@@ -342,7 +343,7 @@
                 datasetId: datasetId,
                 preparationId: preparationId,
                 stepId: stepId,
-                sampleSize: 100,
+                sampleSize: sampleSize,
                 operations: [{
                     operator: aggregation.id,
                     columnId: column.id
