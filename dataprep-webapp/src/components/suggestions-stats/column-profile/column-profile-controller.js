@@ -1,12 +1,9 @@
 (function() {
     'use strict';
 
-    function ColumnProfileCtrl($scope, DatagridService, StatisticsService, SuggestionsStatsAggregationsService, PlaygroundService) {
+    function ColumnProfileCtrl($scope, StatisticsService, PlaygroundService, PreparationService, RecipeService) {
         var vm = this;
-        vm.datasetGridService = DatagridService;
         vm.statisticsService = StatisticsService;
-
-        vm.datasetAggregationsService = SuggestionsStatsAggregationsService;
         vm.chartConfig = {};
 
         vm.barchartClickFn = function barchartClickFn (item){
@@ -17,9 +14,13 @@
         //----------------------------------------------AGGREGATION---------------------------------------------
         //------------------------------------------------------------------------------------------------------
         /**
-         * List of all possible calculations
+         * @ngdoc property
+         * @name aggregations
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @description The list of possible aggregations
+         * @type {array}
          */
-        vm.calculationsList =  [
+        vm.aggregations =  [
             {id: 'sum', name: 'SUM'},
             {id: 'max', name: 'MAX'},
             {id: 'min', name: 'MIN'},
@@ -28,40 +29,43 @@
             {id: 'median', name: 'MEDIAN'}
         ];
 
-
         /**
-         * Update Chart for aggregation
-         * @param column - the aggregation target column selected
-         * @param calculation - the aggregation operation selected
+         * @ngdoc method
+         * @name getCurrentAggregation
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @description The current aggregations
+         * @return {string} The current aggregation name
          */
-        vm.updateCharts = function (column, calculation) {
-            vm.datasetAggregationsService.updateAggregationsChanges(column, calculation);
-
-            var aggregationCalculation = calculation;
-
-            if (!aggregationCalculation) {
-                //Calculation by default
-                aggregationCalculation = {id: 'count', name: 'COUNT'};
-            }
-
-            if(column){ // Aggregation
-
-                StatisticsService.processVisuDataAggregation(
-                    PlaygroundService.currentMetadata.id,
-                    vm.datasetAggregationsService.columnSelected,
-                    column,
-                    aggregationCalculation
-                );
-
-            } else { //Count Line
-
-                StatisticsService.processNonMapData(vm.datasetAggregationsService.columnSelected);
-            }
+        vm.getCurrentAggregation = function getCurrentAggregation() {
+            return StatisticsService.histogram && StatisticsService.histogram.aggregation ?
+                StatisticsService.histogram.aggregation.name:
+                'LINE_COUNT';
         };
 
+        /**
+         * @ngdoc method
+         * @name changeAggregation
+         * @methodOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @param {object} column The column to aggregate
+         * @param {object} aggregation The aggregation to perform
+         * @description Trigger a new aggregation graph
+         */
+        vm.changeAggregation = function changeAggregation(column, aggregation) {
+            if(StatisticsService.histogram &&
+                StatisticsService.histogram.aggregationColumn === column &&
+                StatisticsService.histogram.aggregation === aggregation) {
+                return;
+            }
+
+            var datasetId = PlaygroundService.currentMetadata.id;
+            var preparationId = PreparationService.currentPreparationId;
+            var stepId = preparationId ? RecipeService.getLastActiveStep().id : null;
+
+            StatisticsService.processAggregation(datasetId, preparationId, stepId, column, aggregation);
+        };
 
         //------------------------------------------------------------------------------------------------------
-        //----------------------------------------------CHARTS OPTIONS------------------------------------------
+        //----------------------------------------------GEO CHARTS ---------------------------------------------
         //------------------------------------------------------------------------------------------------------
         /**
          * Common highcharts options
@@ -121,9 +125,6 @@
             return options;
         };
 
-        //------------------------------------------------------------------------------------------------------
-        //-----------------------------------------------CHARTS BUILD-------------------------------------------
-        //------------------------------------------------------------------------------------------------------
         /**
          * Init a geo distribution chart
          * @param column
@@ -178,127 +179,37 @@
             }
         );
 
-
-        /**
-         * @ngdoc property
-         * @name selectedColumn
-         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
-         * @description The selected aggregation.
-         * This is bound to {@link data-prep.statistics:StatisticsService StatisticsService}.selectedColumn
-         */
-        Object.defineProperty(ColumnProfileCtrl.prototype,
-            'selectedColumn', {
-                enumerable: true,
-                configurable: true,
-                get: function () {
-                    return this.statisticsService.selectedColumn;
-                }
-            });
-
-        /**
-         * @ngdoc property
-         * @name aggregationSelected
-         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
-         * @description The selected aggregation.
-         * This is bound to {@link data-prep.suggestions-stats:SuggestionsStatsAggregationsService SuggestionsStatsAggregationsService}.aggregationSelected
-         */
-        Object.defineProperty(ColumnProfileCtrl.prototype,
-            'aggregationSelected', {
-                enumerable: true,
-                configurable: true,
-                get: function () {
-                    return this.datasetAggregationsService.aggregationSelected;
-                }
-            });
-
-        /**
-         * @ngdoc property
-         * @name columnAggregationSelected
-         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
-         * @description The selected aggregation target column.
-         * This is bound to {@link data-prep.suggestions-stats:SuggestionsStatsAggregationsService SuggestionsStatsAggregationsService}.columnAggregationSelected
-         */
-        Object.defineProperty(ColumnProfileCtrl.prototype,
-            'columnAggregationSelected', {
-                enumerable: true,
-                configurable: true,
-                get: function () {
-                    return this.datasetAggregationsService.columnAggregationSelected;
-                }
-            });
-
-        /**
-         * @ngdoc property
-         * @name calculationAggregationSelected
-         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
-         * @description The selected aggregation calculation.
-         * This is bound to {@link data-prep.suggestions-stats:SuggestionsStatsAggregationsService SuggestionsStatsAggregationsService}.calculationAggregationSelected
-         */
-        Object.defineProperty(ColumnProfileCtrl.prototype,
-            'calculationAggregationSelected', {
-                enumerable: true,
-                configurable: true,
-                get: function () {
-                    return this.datasetAggregationsService.calculationAggregationSelected;
-                }
-            });
-
-        /**
-         * @ngdoc property
-         * @name numericColumns
-         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
-         * @description The numeric columns list of the dataset.
-         * This is bound to {@link data-prep.suggestions-stats:SuggestionsStatsAggregationsService SuggestionsStatsAggregationsService}.numericColumns
-         */
-        Object.defineProperty(ColumnProfileCtrl.prototype,
-            'numericColumns', {
-                enumerable: true,
-                configurable: true,
-                get: function () {
-                    return this.datasetAggregationsService.numericColumns;
-                }
-            });
-
-        /**
-         * @ngdoc property
-         * @name barChartValueKey
-         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
-         * @description barChartValueKey is used to display value in the tooltip of horizontal-barchart
-         * This is bound to {@link data-prep.suggestions-stats:SuggestionsStatsAggregationsService SuggestionsStatsAggregationsService}.barChartValueKey
-         */
-        Object.defineProperty(ColumnProfileCtrl.prototype,
-            'barChartValueKey', {
-                enumerable: true,
-                configurable: true,
-                get: function () {
-                    return this.datasetAggregationsService.barChartValueKey;
-                }
-            });
-
-
-        /**
-         * @ngdoc property
-         * @name barChartValueKeyLabel
-         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
-         * @description barChartValueKeyLabel is used to display value label in the tooltip of horizontal-barchart
-         * This is bound to {@link data-prep.suggestions-stats:SuggestionsStatsAggregationsService SuggestionsStatsAggregationsService}.barChartValueKeyLabel
-         */
-        Object.defineProperty(ColumnProfileCtrl.prototype,
-            'barChartValueKeyLabel', {
-                enumerable: true,
-                configurable: true,
-                get: function () {
-                    return this.datasetAggregationsService.barChartValueKeyLabel;
-                }
-            });
     }
 
+    /**
+     * @ngdoc property
+     * @name processedData
+     * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+     * @description The data to display
+     * This is bound to {@link data-prep.statistics:StatisticsService StatisticsService}.histogram
+     */
     Object.defineProperty(ColumnProfileCtrl.prototype,
-        'processedData', {
+        'histogram', {
             enumerable: true,
             configurable: false,
             get: function () {
-                return this.statisticsService.data;
+                return this.statisticsService.histogram;
+            }
+        });
+
+    /**
+     * @ngdoc property
+     * @name aggregationColumns
+     * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+     * @description The numeric columns list of the dataset.
+     * This is bound to {@link data-prep.statistics:StatisticsService StatisticsService}.getAggregationColumns()
+     */
+    Object.defineProperty(ColumnProfileCtrl.prototype,
+        'aggregationColumns', {
+            enumerable: true,
+            configurable: true,
+            get: function () {
+                return this.statisticsService.getAggregationColumns();
             }
         });
 

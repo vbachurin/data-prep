@@ -7,34 +7,27 @@
      * @description Statistics REST service.
      */
     function StatisticsRestService($http, RestURLs) {
-
         /**
          * @ngdoc method
          * @name getAggregations
          * @methodOf data-prep.services.statistics.service:StatisticsRestService
-         * @param {string} stringifiedColumn The column metadata
+         * @param {object} parameters The aggregation parameters
          * @description Fetch the aggregation on a column of the dataset
          * @returns {HttpPromise} The POST promise
          */
-        this.getAggregations = function(stringifiedColumn) {
-
-            var responsePromise =  $http.post(RestURLs.datasetUrl + '/aggregation/column', stringifiedColumn)
-                .then(function(response) { //Success
+        this.getAggregations = function (parameters) {
+            return $http.post(RestURLs.aggregationUrl, parameters)
+                .then(function (response) {
                     return response.data;
-            }, function() { // Failure
-                    return [];
-                    /*
+                }, function () {
                     return [
-                        { 'data': 'Lansing', 'max': 15 },
-                        { 'data': 'Helena', 'max': 5 },
-                        { 'data': 'Baton Rouge', 'max': 64 },
-                        { 'data': 'Annapolis', 'max': 4 },
-                        { 'data': 'Pierre', 'max': 104 }
+                        {'data': 'Lansing', 'max': 15},
+                        {'data': 'Helena', 'max': 5},
+                        {'data': 'Baton Rouge', 'max': 64},
+                        {'data': 'Annapolis', 'max': 4},
+                        {'data': 'Pierre', 'max': 104}
                     ];
-                    */
-            });
-
-            return responsePromise;
+                });
         };
 
     }

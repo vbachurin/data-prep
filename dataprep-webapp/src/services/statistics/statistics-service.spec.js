@@ -39,41 +39,41 @@ describe('Statistics service', function () {
     };
 
     /*var localizationCol = {
-        'domain': 'LOCALIZATION',
-        'type': 'double',
-        'statistics': {
-            'frequencyTable': [],
-            'histogram': [
-                {
-                    'occurrences': 5,
-                    'range': {
-                        'min': 0,
-                        'max': 10
-                    }
-                },
-                {
-                    'occurrences': 15,
-                    'range': {
-                        'min': 10,
-                        'max': 20
-                    }
-                }
-            ],
-            count: 4,
-            distinctCount: 5,
-            duplicateCount: 6,
-            empty: 7,
-            invalid: 8,
-            valid: 9,
-            min: 10,
-            max: 11,
-            mean: 12,
-            variance: 13,
-            quantiles: {
-                lowerQuantile: 'NaN'
-            }
-        }
-    };*/
+     'domain': 'LOCALIZATION',
+     'type': 'double',
+     'statistics': {
+     'frequencyTable': [],
+     'histogram': [
+     {
+     'occurrences': 5,
+     'range': {
+     'min': 0,
+     'max': 10
+     }
+     },
+     {
+     'occurrences': 15,
+     'range': {
+     'min': 10,
+     'max': 20
+     }
+     }
+     ],
+     count: 4,
+     distinctCount: 5,
+     duplicateCount: 6,
+     empty: 7,
+     invalid: 8,
+     valid: 9,
+     min: 10,
+     max: 11,
+     mean: 12,
+     variance: 13,
+     quantiles: {
+     lowerQuantile: 'NaN'
+     }
+     }
+     };*/
 
     var barChartStrCol = {
         'domain': 'barchartAndString',
@@ -193,10 +193,6 @@ describe('Statistics service', function () {
 
     beforeEach(module('data-prep.services.statistics'));
 
-    afterEach(inject(function (StatisticsService) {
-        StatisticsService.resetCharts();
-    }));
-
     describe('filters', function () {
         it('should add a new "contains" filter', inject(function (StatisticsService, FilterService, $timeout) {
             //given
@@ -228,7 +224,7 @@ describe('Statistics service', function () {
     });
 
     describe('The Visualization data for Horizontal barchart and Map', function () {
-        describe('Map data', function() {
+        describe('Map data', function () {
             it('should set stateDistribution for geo chart when the column domain contains STATE_CODE', inject(function (StatisticsService) {
                 //given
                 expect(StatisticsService.stateDistribution).toBeFalsy();
@@ -242,77 +238,80 @@ describe('Statistics service', function () {
 
             it('should reset non geo chart data when the column domain contains STATE_CODE', inject(function (StatisticsService) {
                 //given
-                StatisticsService.boxplotData = {};
-                StatisticsService.data = {};
+                StatisticsService.boxPlot = {};
+                StatisticsService.histogram = {};
 
                 //when
                 StatisticsService.processData(mapCol);
 
                 //then
-                expect(StatisticsService.boxplotData).toBeFalsy();
-                expect(StatisticsService.data).toBeFalsy();
+                expect(StatisticsService.boxPlot).toBeFalsy();
+                expect(StatisticsService.histogram).toBeFalsy();
             }));
         });
 
-        describe('Histogram data', function() {
-            it('should set the frequency data when column type is "string"', inject(function (StatisticsService, TextFormatService) {
-                //given
-                expect(StatisticsService.data).toBeFalsy();
-
-                //when
-                StatisticsService.processData(barChartStrCol);
-
-                //then
-                expect(StatisticsService.data).toEqual(barChartStrCol.statistics.frequencyTable);
-                expect(StatisticsService.data[0].formattedValue).toEqual(TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(StatisticsService.data[0].data));
-            }));
-
+        describe('Histogram data', function () {
             it('should reset non histogram data when column type is "string"', inject(function (StatisticsService) {
                 //given
-                StatisticsService.boxplotData = {};
+                StatisticsService.boxPlot = {};
                 StatisticsService.stateDistribution = {};
 
                 //when
                 StatisticsService.processData(barChartStrCol);
 
                 //then
-                expect(StatisticsService.boxplotData).toBeFalsy();
+                expect(StatisticsService.boxPlot).toBeFalsy();
+                expect(StatisticsService.stateDistribution).toBeFalsy();
+            }));
+
+            it('should set the frequency data with formatted value when column type is "string"', inject(function (StatisticsService) {
+                //given
+                expect(StatisticsService.histogram).toBeFalsy();
+
+                //when
+                StatisticsService.processData(barChartStrCol);
+
+                //then
+                expect(StatisticsService.histogram).toEqual({
+                    data: [
+                        {data: '   toto', occurences: 202, formattedValue: '<span class="hiddenChars">   </span>toto'},
+                        {data: 'titi', occurences: 2, formattedValue: 'titi'},
+                        {data: 'coucou', occurences: 102, formattedValue: 'coucou'},
+                        {data: 'cici', occurences: 22, formattedValue: 'cici'}
+                    ],
+                    key: 'occurrences',
+                    label: 'Occurrences',
+                    column: barChartStrCol
+                });
+            }));
+
+            it('should reset non histogram data when column type is "boolean"', inject(function (StatisticsService) {
+                //given
+                StatisticsService.boxPlot = {};
+                StatisticsService.stateDistribution = {};
+
+                //when
+                StatisticsService.processData(barChartBoolCol);
+
+                //then
+                expect(StatisticsService.boxPlot).toBeFalsy();
                 expect(StatisticsService.stateDistribution).toBeFalsy();
             }));
 
             it('should set the frequency data when column type is "boolean"', inject(function (StatisticsService) {
                 //given
-                expect(StatisticsService.data).toBeFalsy();
+                expect(StatisticsService.histogram).toBeFalsy();
 
                 //when
                 StatisticsService.processData(barChartBoolCol);
 
                 //then
-                expect(StatisticsService.data).toEqual(barChartBoolCol.statistics.frequencyTable);
-            }));
-
-            it('should reset non histogram data when column type is "boolean"', inject(function (StatisticsService) {
-                //given
-                StatisticsService.boxplotData = {};
-                StatisticsService.stateDistribution = {};
-
-                //when
-                StatisticsService.processData(barChartBoolCol);
-
-                //then
-                expect(StatisticsService.boxplotData).toBeFalsy();
-                expect(StatisticsService.stateDistribution).toBeFalsy();
-            }));
-
-            it('should set the range data frequency when column type is "number"', inject(function (StatisticsService) {
-                //given
-                expect(StatisticsService.data).toBeFalsy();
-
-                //when
-                StatisticsService.processData(barChartNumCol);
-
-                //then
-                expect(StatisticsService.data[1].data).toBe(barChartNumCol.statistics.histogram[1].range.min + ' ... ' + barChartNumCol.statistics.histogram[1].range.max);
+                expect(StatisticsService.histogram).toEqual({
+                    key: 'occurrences',
+                    label: 'Occurrences',
+                    column: barChartBoolCol,
+                    data: barChartBoolCol.statistics.frequencyTable
+                });
             }));
 
             it('should reset non histogram data when column type is "number"', inject(function (StatisticsService) {
@@ -323,7 +322,19 @@ describe('Statistics service', function () {
                 StatisticsService.processData(barChartNumCol);
 
                 //then
+                expect(StatisticsService.boxPlot).toBeFalsy();
                 expect(StatisticsService.stateDistribution).toBeFalsy();
+            }));
+
+            it('should set the range data frequency when column type is "number"', inject(function (StatisticsService) {
+                //given
+                expect(StatisticsService.histogram).toBeFalsy();
+
+                //when
+                StatisticsService.processData(barChartNumCol);
+
+                //then
+                expect(StatisticsService.histogram.data[1].data).toBe(barChartNumCol.statistics.histogram[1].range.min + ' ... ' + barChartNumCol.statistics.histogram[1].range.max);
             }));
         });
 
@@ -331,25 +342,25 @@ describe('Statistics service', function () {
         // it('should set both the data and the stateDistribution to null because column domain is LOCALIZATION', inject(function (StatisticsService) {
         //    //when
         //    StatisticsService.processData(localizationCol);
-		//
+        //
         //    //then
         //    expect(StatisticsService.data).toBe(null);
         //    expect(StatisticsService.boxplotData).toBe(null);
         //    expect(StatisticsService.stateDistribution).toBe(null);
         //}));
 
-        it('should reset data when column type is not supported', inject(function (StatisticsService) {
+        it('should reset charts data when column type is not supported', inject(function (StatisticsService) {
             //given
-            StatisticsService.boxplotData = {};
-            StatisticsService.data = {};
+            StatisticsService.boxPlot = {};
+            StatisticsService.histogram = {};
             StatisticsService.stateDistribution = {};
 
             //when
             StatisticsService.processData(unknownTypeCol);
 
             //then
-            expect(StatisticsService.data).toBeFalsy();
-            expect(StatisticsService.boxplotData).toBeFalsy();
+            expect(StatisticsService.histogram).toBeFalsy();
+            expect(StatisticsService.boxPlot).toBeFalsy();
             expect(StatisticsService.stateDistribution).toBeFalsy();
         }));
     });
@@ -555,7 +566,7 @@ describe('Statistics service', function () {
             StatisticsService.processData(col);
 
             //then
-            expect(StatisticsService.boxplotData).toBeFalsy();
+            expect(StatisticsService.boxPlot).toBeFalsy();
         }));
 
         it('should set boxplotData statistics with quantile', inject(function (StatisticsService) {
@@ -587,124 +598,196 @@ describe('Statistics service', function () {
             StatisticsService.processData(col);
 
             //then
-            expect(StatisticsService.boxplotData).toEqual({
-                min:10,
-                max:11,
-                q1:15,
-                q2:16,
-                median:14,
-                mean:12,
-                variance:13
+            expect(StatisticsService.boxPlot).toEqual({
+                min: 10,
+                max: 11,
+                q1: 15,
+                q2: 16,
+                median: 14,
+                mean: 12,
+                variance: 13
             });
         }));
     });
 
+    describe('Aggregation statistics', function () {
+        var currentColumn = {'id': '0001', 'name': 'city'}; // the selected column
+        var datasetId = 'abcd';                             // the current data id
+        var preparationId = '2132548345365';                // the current preparation id
+        var stepId = '9878645468';                          // the currently viewed step id
+        var column = {'id': '0002', 'name': 'state'};       // the column where to perform the aggregation
+        var aggregation = {'id': 'max', 'name': 'MAX'};     // the aggregation operation
 
+        var getAggregationsResponse = [                     // the REST aggregation GET result
+            {'data': 'Lansing', 'max': 15},
+            {'data': 'Helena', 'max': 5},
+            {'data': 'Baton Rouge', 'max': 64},
+            {'data': 'Annapolis', 'max': 4},
+            {'data': 'Pierre', 'max': 104}
+        ];
 
-    describe('Aggregation Management', function () {
+        beforeEach(inject(function(StatisticsService) {
+            StatisticsService.selectedColumn = currentColumn;
+        }));
 
-        it('should update datas with REST WS call', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+        it('should update histogram data with classical occurence histogram when no aggregation is provided', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
             //given
-            var datasetId = 'abcd';
-            var currentColumn = {'id': '0001', 'name': 'city'};
-            var targetColumn ={'id': '0002', 'name': 'state'};
-            var calculation = {'id': 'max', 'name': 'MAX'};
-
-            var getAggregationsResponse =[
-                { 'data': 'Lansing', 'occurrences': 15 },
-                { 'data': 'Helena', 'occurrences': 5 },
-                { 'data': 'Baton Rouge', 'occurrences': 64 },
-                { 'data': 'Annapolis', 'occurrences': 4 },
-                { 'data': 'Pierre', 'occurrences': 104 }
-            ];
-
-            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
-
-            var result = [
-                { 'data': 'Lansing', 'occurrences': 15, 'formattedValue' : 'Lansing'},
-                { 'data': 'Helena','occurrences': 5, 'formattedValue' : 'Helena' },
-                { 'data': 'Baton Rouge','occurrences': 64, 'formattedValue' : 'Baton Rouge'},
-                { 'data': 'Annapolis','occurrences': 4, 'formattedValue' : 'Annapolis'},
-                { 'data': 'Pierre','occurrences': 104, 'formattedValue' : 'Pierre'}
-            ];
+            StatisticsService.selectedColumn = barChartStrCol;
+            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when());
 
             //when
-            StatisticsService.processVisuDataAggregation(datasetId, currentColumn, targetColumn, calculation);
+            StatisticsService.processAggregation();
+
+            //then
+            expect(StatisticsRestService.getAggregations).not.toHaveBeenCalled();
+            expect(StatisticsService.histogram).toEqual({
+                data: [
+                    {data: '   toto', occurences: 202, formattedValue: '<span class="hiddenChars">   </span>toto'},
+                    {data: 'titi', occurences: 2, formattedValue: 'titi'},
+                    {data: 'coucou', occurences: 102, formattedValue: 'coucou'},
+                    {data: 'cici', occurences: 22, formattedValue: 'cici'}
+                ],
+                key: 'occurrences',
+                label: 'Occurrences',
+                column: barChartStrCol
+            });
+        }));
+
+        it('should update histogram data from REST call result and aggregation infos', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+            //given
+            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
+
+            //when
+            StatisticsService.processAggregation(datasetId, preparationId, stepId, column, aggregation);
             $rootScope.$digest();
 
             //then
-            expect(StatisticsRestService.getAggregations).toHaveBeenCalledWith('{"datasetId":"abcd","currentColumnId":"0001","targetColumnId":"0002","calculationId":"max"}');
-            expect(StatisticsService.stateDistribution).toBeFalsy();
-            expect(StatisticsService.data).toEqual(result);
-
+            expect(StatisticsRestService.getAggregations).toHaveBeenCalledWith({
+                datasetId: 'abcd',
+                preparationId: '2132548345365',
+                stepId: '9878645468',
+                sampleSize: 100,
+                operations: [{operator: 'max', columnId: '0002'}],
+                groupBy: ['0001']
+            });
+            expect(StatisticsService.histogram).toEqual({
+                data: [
+                    {'data': 'Lansing', 'max': 15, 'formattedValue': 'Lansing'},
+                    {'data': 'Helena', 'max': 5, 'formattedValue': 'Helena'},
+                    {'data': 'Baton Rouge', 'max': 64, 'formattedValue': 'Baton Rouge'},
+                    {'data': 'Annapolis', 'max': 4, 'formattedValue': 'Annapolis'},
+                    {'data': 'Pierre', 'max': 104, 'formattedValue': 'Pierre'}
+                ],
+                key: 'max',
+                label: 'MAX',
+                column: StatisticsService.selectedColumn,
+                aggregationColumn: column,
+                aggregation: aggregation
+            });
         }));
 
-
-        it('should update datas without REST WS call', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+        it('should update histogram with content from cache', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
             //given
-            var datasetId = 'abcd';
-            var currentColumn = {'id': '0001', 'name': 'city'};
-            var targetColumn ={'id': '0002', 'name': 'state'};
-            var calculation = {'id': 'max', 'name': 'MAX'};
-
-            var getAggregationsResponse =[
-                { 'data': 'Lansing', 'occurrences': 15 },
-                { 'data': 'Helena', 'occurrences': 5 },
-                { 'data': 'Baton Rouge', 'occurrences': 64 },
-                { 'data': 'Annapolis', 'occurrences': 4 },
-                { 'data': 'Pierre', 'occurrences': 104 }
-            ];
-
             spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
 
+            //given : rest call to populate cache
+            StatisticsService.processAggregation(datasetId, preparationId, stepId, column, aggregation);
+            $rootScope.$digest();
+            expect(StatisticsRestService.getAggregations.calls.count()).toBe(1);
+            StatisticsService.histogram = null;
 
             //when
-            StatisticsService.processVisuDataAggregation(datasetId, currentColumn, targetColumn, calculation);
-            $rootScope.$digest();
-
-            StatisticsService.processVisuDataAggregation(datasetId, currentColumn, targetColumn, calculation);
+            StatisticsService.processAggregation(datasetId, preparationId, stepId, column, aggregation);
             $rootScope.$digest();
 
             //then
             expect(StatisticsRestService.getAggregations.calls.count()).toBe(1);
-
+            expect(StatisticsService.histogram).toEqual({
+                data: [
+                    {'data': 'Lansing', 'max': 15, 'formattedValue': 'Lansing'},
+                    {'data': 'Helena', 'max': 5, 'formattedValue': 'Helena'},
+                    {'data': 'Baton Rouge', 'max': 64, 'formattedValue': 'Baton Rouge'},
+                    {'data': 'Annapolis', 'max': 4, 'formattedValue': 'Annapolis'},
+                    {'data': 'Pierre', 'max': 104, 'formattedValue': 'Pierre'}
+                ],
+                key: 'max',
+                label: 'MAX',
+                column: StatisticsService.selectedColumn,
+                aggregationColumn: column,
+                aggregation: aggregation
+            });
         }));
 
-
-        it('should reset datas when REST WS call fails', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+        it('should reset histogram when REST WS call fails', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
             //given
-            var datasetId = 'abcd';
-            var currentColumn = {'id': '0001', 'name': 'city'};
-            var targetColumn ={'id': '0002', 'name': 'state'};
-            var calculation = {'id': 'max', 'name': 'MAX'};
-
-            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when([]));
+            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.reject());
 
             //when
-            StatisticsService.processVisuDataAggregation(datasetId, currentColumn, targetColumn, calculation);
+            StatisticsService.processAggregation(datasetId, preparationId, stepId, column, aggregation);
             $rootScope.$digest();
 
             //then
-            expect(StatisticsService.data.length).toBe(0);
-
+            expect(StatisticsService.histogram).toBeFalsy();
         }));
-
     });
 
-    it('should reset all data', inject(function(StatisticsService) {
-        //given
-        StatisticsService.boxplotData = {};
-        StatisticsService.data = {};
-        StatisticsService.stateDistribution = {};
-        StatisticsService.statistics = {};
+    describe('utils', function() {
+        it('should reset all data', inject(function (StatisticsService) {
+            //given
+            StatisticsService.boxPlot = {};
+            StatisticsService.histogram = {};
+            StatisticsService.stateDistribution = {};
+            StatisticsService.statistics = {};
 
-        //when
-        StatisticsService.resetCharts();
+            //when
+            StatisticsService.resetCharts();
 
-        //then
-        expect(StatisticsService.boxplotData).toBeFalsy();
-        expect(StatisticsService.data).toBeFalsy();
-        expect(StatisticsService.stateDistribution).toBeFalsy();
-        expect(StatisticsService.statistics).toBeFalsy();
-    }));
+            //then
+            expect(StatisticsService.boxPlot).toBeFalsy();
+            expect(StatisticsService.histogram).toBeFalsy();
+            expect(StatisticsService.stateDistribution).toBeFalsy();
+            expect(StatisticsService.statistics).toBeFalsy();
+        }));
+
+        it('should get numeric columns (as aggregation columns) from datagrid service', inject(function(StatisticsService, DatagridService) {
+            //given
+            var selectedcolumn = {id: '0001'};
+            StatisticsService.selectedColumn = selectedcolumn;
+
+            var datagridNumericColumns = [
+                {id: '0002'},
+                {id: '0003'}
+            ];
+            spyOn(DatagridService, 'getNumericColumns').and.returnValue(datagridNumericColumns);
+
+            //when
+            var aggregationColumns = StatisticsService.getAggregationColumns();
+
+            //then
+            expect(aggregationColumns).toBe(datagridNumericColumns);
+            expect(DatagridService.getNumericColumns).toHaveBeenCalledWith(selectedcolumn);
+        }));
+
+        it('should keep numeric columns and NOT request them again', inject(function(StatisticsService, DatagridService) {
+            //given
+            StatisticsService.selectedColumn = {id: '0001'};
+
+            var datagridNumericColumns = [
+                {id: '0002'},
+                {id: '0003'}
+            ];
+            spyOn(DatagridService, 'getNumericColumns').and.returnValue(datagridNumericColumns);
+
+            StatisticsService.getAggregationColumns();
+            expect(DatagridService.getNumericColumns.calls.count()).toBe(1);
+
+            //when
+            var aggregationColumns = StatisticsService.getAggregationColumns();
+
+            //then
+            expect(aggregationColumns).toBe(datagridNumericColumns);
+            expect(DatagridService.getNumericColumns.calls.count()).toBe(1);
+        }));
+    });
+
 });

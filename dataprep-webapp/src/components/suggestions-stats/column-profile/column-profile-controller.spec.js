@@ -30,58 +30,133 @@ describe('ColumnProfile controller', function () {
         expect(StatisticsService.addFilter).toHaveBeenCalledWith(obj.data);
     }));
 
-    it('should bind processedData getter to StatisticsService.data', inject(function (StatisticsService) {
-        //given
-        var data = {};
-        var ctrl = createController();
+    describe('external bindings', function() {
+        it('should bind histogram getter to StatisticsService.histogram', inject(function (StatisticsService) {
+            //given
+            var data = {};
+            var ctrl = createController();
 
-        //when
-        StatisticsService.data = data;
+            //when
+            StatisticsService.histogram = data;
 
-        //then
-        expect(ctrl.processedData).toBe(data);
-    }));
+            //then
+            expect(ctrl.histogram).toBe(data);
+        }));
 
-    it('should update charts using aggregation by defaut', inject(function (StatisticsService, SuggestionsStatsAggregationsService) {
-        //given
-        spyOn(SuggestionsStatsAggregationsService,'updateAggregationsChanges').and.returnValue();
-        spyOn(StatisticsService,'processVisuDataAggregation').and.returnValue();
-        spyOn(StatisticsService,'processNonMapData').and.returnValue();
+        it('should bind aggregationColumns getter to StatisticsService.getAggregationColumns()', inject(function (StatisticsService) {
+            //given
+            var ctrl = createController();
 
-        var ctrl = createController();
+            var numericColumns = [{id: '0001'}, {id: '0002'}];
+            spyOn(StatisticsService, 'getAggregationColumns').and.returnValue(numericColumns);
 
-        ctrl.datasetAggregationsService.columnSelected = {'id':'000', 'data':'Ulysse', 'occurrences':5};
-        //when
-        ctrl.updateCharts(null, null);
+            //then
+            expect(ctrl.aggregationColumns).toBe(numericColumns);
+        }));
+    });
 
-        //then
-        expect(SuggestionsStatsAggregationsService.updateAggregationsChanges).toHaveBeenCalledWith(null,null);
-        expect(StatisticsService.processVisuDataAggregation).not.toHaveBeenCalled();
-        expect(StatisticsService.processNonMapData).toHaveBeenCalledWith(ctrl.datasetAggregationsService.columnSelected);
-    }));
+    describe('aggregation', function() {
+        it('should get the current aggregation name', inject(function(StatisticsService) {
+            //given
+            var ctrl = createController();
+            StatisticsService.histogram = {
+                aggregation: {name: 'MAX'}
+            };
 
-    it('should update charts using aggregation selected', inject(function (StatisticsService, SuggestionsStatsAggregationsService, PlaygroundService) {
-        //given
-        spyOn(SuggestionsStatsAggregationsService,'updateAggregationsChanges').and.returnValue();
-        spyOn(StatisticsService,'processVisuDataAggregation').and.returnValue();
-        spyOn(StatisticsService,'processNonMapData').and.returnValue();
+            //when
+            var aggregation = ctrl.getCurrentAggregation();
 
-        var ctrl = createController();
+            //then
+            expect(aggregation).toBe('MAX');
+        }));
 
-        ctrl.datasetAggregationsService.columnSelected = {'id':'001', 'name':'city'};
-        PlaygroundService.currentMetadata = {'id':'abcd-abcf', 'name':'city'};
-        var aggregationCalculation = {id: 'max', name: 'MAX'};
-        var aggregationColumn = {'id':'001', 'name':'Ulysse'};
-        //when
-        ctrl.updateCharts(aggregationColumn, aggregationCalculation);
+        it('should get the default aggregation name when there is no histogram', inject(function(StatisticsService) {
+            //given
+            var ctrl = createController();
+            StatisticsService.histogram = null;
 
-        //then
-        expect(SuggestionsStatsAggregationsService.updateAggregationsChanges).toHaveBeenCalledWith(aggregationColumn,aggregationCalculation);
-        expect(StatisticsService.processVisuDataAggregation).toHaveBeenCalledWith(
-            PlaygroundService.currentMetadata.id,
-            ctrl.datasetAggregationsService.columnSelected,
-            aggregationColumn,
-            aggregationCalculation);
-        expect(StatisticsService.processNonMapData).not.toHaveBeenCalled();
-    }));
+            //when
+            var aggregation = ctrl.getCurrentAggregation();
+
+            //then
+            expect(aggregation).toBe('LINE_COUNT');
+        }));
+
+        it('should get the default aggregation name when histogram is not an aggregation', inject(function(StatisticsService) {
+            //given
+            var ctrl = createController();
+            StatisticsService.histogram = {data: []};
+
+            //when
+            var aggregation = ctrl.getCurrentAggregation();
+
+            //then
+            expect(aggregation).toBe('LINE_COUNT');
+        }));
+
+        it('should change aggregation chart with preparation and step id', inject(function(StatisticsService, PlaygroundService, PreparationService, RecipeService) {
+            //given
+            spyOn(StatisticsService, 'processAggregation').and.returnValue();
+            var ctrl = createController();
+
+            var datasetId = '13654634856752';
+            var preparationId = '5463514684';
+            var stepId = '698656896987486';
+            var column = {id: '0001'};
+            var aggregation = {name: 'MAX'};
+
+            PlaygroundService.currentMetadata = {id: datasetId};
+            PreparationService.currentPreparationId = preparationId;
+            spyOn(RecipeService, 'getLastActiveStep').and.returnValue({id: stepId});
+
+            //when
+            ctrl.changeAggregation(column, aggregation);
+
+            //then
+            expect(StatisticsService.processAggregation).toHaveBeenCalledWith(datasetId, preparationId, stepId, column, aggregation);
+        }));
+
+        it('should change aggregation chart with dataset id (no preparation)', inject(function(StatisticsService, PlaygroundService, PreparationService, RecipeService) {
+            //given
+            spyOn(StatisticsService, 'processAggregation').and.returnValue();
+            var ctrl = createController();
+
+            var datasetId = '13654634856752';
+            var column = {id: '0001'};
+            var aggregation = {name: 'MAX'};
+
+            PlaygroundService.currentMetadata = {id: datasetId};
+            PreparationService.currentPreparationId = null;
+            spyOn(RecipeService, 'getLastActiveStep').and.callFake(function() {
+                throw new Error('should NOT call RecipeService because there is no preparation');
+            });
+
+            //when
+            ctrl.changeAggregation(column, aggregation);
+
+            //then
+            expect(StatisticsService.processAggregation).toHaveBeenCalledWith(datasetId, null, null, column, aggregation);
+        }));
+
+        it('should do nothing if the current histogram is already the wanted aggregation', inject(function(StatisticsService, PlaygroundService, PreparationService, RecipeService) {
+            //given
+            var column = {id: '0001'};
+            var aggregation = {name: 'MAX'};
+
+            spyOn(StatisticsService, 'processAggregation').and.returnValue();
+            StatisticsService.histogram = {
+                aggregation: aggregation,
+                aggregationColumn: column
+            };
+
+            var ctrl = createController();
+
+
+            //when
+            ctrl.changeAggregation(column, aggregation);
+
+            //then
+            expect(StatisticsService.processAggregation).not.toHaveBeenCalled();
+        }));
+    });
 });

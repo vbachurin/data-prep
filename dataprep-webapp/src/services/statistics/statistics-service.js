@@ -10,27 +10,27 @@
      * @requires data-prep.services.utils.service:TextFormatService
      * @requires data-prep.services.statistics.service:StatisticsRestService
      */
-    function StatisticsService($q, $timeout, DatagridService, FilterService, ConverterService, StatisticsRestService, TextFormatService) {
+    function StatisticsService($q, $timeout, $filter, $cacheFactory, DatagridService, FilterService, ConverterService, TextFormatService, StatisticsRestService) {
 
-        var suggestionsCache = [];
-        var selectedColumn;
+        var aggregationCache = $cacheFactory('aggregationStatistics', {capacity: 5});
+        var aggregationColumnsCache = $cacheFactory('aggregationColumns', {capacity: 5});
 
         var service = {
-            boxplotData: null,
-            data: null,
+            boxPlot: null,
+            histogram: null,
             stateDistribution: null,
             statistics: null,
 
             processData: processData,
+            processAggregation: processAggregation,
+
             addFilter: addFilter,
             resetCharts: resetCharts,
+            getAggregationColumns: getAggregationColumns,
 
             //TODO temporary method to be replaced with new geo chart
-            getGeoDistribution: getGeoDistribution,
+            getGeoDistribution: getGeoDistribution
 
-            processVisuDataAggregation: processVisuDataAggregation,
-            invalidateCache: invalidateCache,
-            processNonMapData: processNonMapData
         };
 
         return service;
@@ -100,31 +100,57 @@
          * @description Adapt the numeric range data to fit histogram format
          */
         function initRangeHistogram(histoData) {
-            var concatData = [];
-            _.each(histoData, function (histDatum) {
-                concatData.push({
+            var rangeData = _.map(histoData, function (histDatum) {
+                return {
                     'data': histDatum.range.min + ' ... ' + histDatum.range.max,
-                    'formattedValue': TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(histDatum.range.min + ' ... ' + histDatum.range.max),
                     'occurrences': histDatum.occurrences
-                });
+                };
             });
 
-            service.data = concatData;
+            initClassicHistogram('occurrences', 'Occurrences', rangeData);
         }
 
         /**
          * @ngdoc method
          * @name initClassicHistogram
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {Array} frequencyTable The frequency table
-         * @description Set the frequency table that fit the historgram format
+         * @param {string} key The value key
+         * @param {string} label The value label
+         * @param {Array} dataTable The table to display
+         * @description Set the frequency table that fit the histogram format
          */
-        function initClassicHistogram(frequencyTable) {
-            service.data = _.map(frequencyTable,function(rec){
-                //The formatted Data which will be shown and not filtered
-                rec.formattedValue = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(rec.data);
-                return rec;
-            });
+        function initClassicHistogram(key, label, dataTable) {
+            service.histogram = {
+                data: _.map(dataTable, function (rec) {
+                    rec.formattedValue = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(rec.data);
+                    return rec;
+                }),
+                key: key,
+                label: label,
+                column: service.selectedColumn
+            };
+        }
+
+        /**
+         * @ngdoc method
+         * @name getAggregationData
+         * @methodOf data-prep.services.statistics.service:StatisticsCacheService
+         * @param {object} aggregationParameters The aggregation parameters
+         * @description Get aggregations from cache if present, from REST call otherwise.
+         */
+        function getAggregationData(aggregationParameters) {
+            var cacheKey = JSON.stringify(aggregationParameters);
+            var aggregationData = aggregationCache.get(cacheKey);
+
+            if(aggregationData) {
+                return $q.when(aggregationData);
+            }
+
+            return StatisticsRestService.getAggregations(aggregationParameters)
+                .then(function(response) {
+                    aggregationCache.put(cacheKey, response);
+                    return response;
+                });
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -144,12 +170,12 @@
 
         /**
          * @ngdoc method
-         * @name initStatistics
+         * @name initStatisticsValues
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @param {object} column The target column
          * @description Initialize the statistics to display in the values TAB of the stats part
          */
-        function initValuesStatistics(column) {
+        function initStatisticsValues(column) {
             if (!column.statistics) {
                 return;
             }
@@ -208,14 +234,14 @@
          * @ngdoc method
          * @name updateBoxplotData
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @description Gathers the boxplot data from the specific stats of the columns having a 'number' type
+         * @description Gathers the boxPlot data from the specific stats of the columns having a 'number' type
          */
         function updateBoxplotData() {
             var specStats = service.statistics.specific;
 
             //waiting for DQ to process negative values
             if (specStats.LOWER_QUANTILE) {
-                service.boxplotData = {
+                service.boxPlot = {
                     min: specStats.MIN,
                     max: specStats.MAX,
                     q1: specStats.LOWER_QUANTILE,
@@ -226,12 +252,114 @@
                 };
             }
             else {
-                service.boxplotData = null;
+                service.boxPlot = null;
             }
         }
 
         //--------------------------------------------------------------------------------------------------------------
         //-------------------------------------------------COMMON-------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+
+        /**
+         * @ngdoc method
+         * @name processMapData
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {object} column The column to visualize
+         * @description Remove the previous charts data and set the map chart
+         */
+        function processMapData(column) {
+            service.stateDistribution = column;
+        }
+
+        /**
+         * @ngdoc method
+         * @name processNonMapData
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {object} column The column to visualize
+         * @description Reset the map chart and calculate the needed data for visualization
+         */
+        function processNonMapData(column) {
+            switch (ConverterService.simplifyType(column.type)) {
+                case 'number':
+                    initRangeHistogram(column.statistics.histogram);
+                    updateBoxplotData();
+                    break;
+                case 'text':
+                case 'boolean':
+                    initClassicHistogram('occurrences', 'Occurrences', column.statistics.frequencyTable);
+                    break;
+                default :
+                    console.log('nor a number neither a boolean neither a string');
+            }
+        }
+
+        /**
+         * @ngdoc method
+         * @name processData
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {object} column The column to visualize
+         * @description Processes the statistics data for visualization on the provided column
+         */
+        function processData(column) {
+            service.selectedColumn = column;
+            resetCharsWithoutCache();
+            initStatisticsValues(column);
+
+            //TODO replace with new geo chart
+            if (column.domain.indexOf('STATE_CODE') !== -1) {
+                processMapData(column);
+            }
+            //TODO Coming soon after the integration of the globe map : reset charts and init localization chart data
+            // else if (column.domain === 'LOCALIZATION') {
+            //    processLocalizationMapData(column);
+            //}
+            else {
+                processNonMapData(column);
+            }
+        }
+
+        /**
+         * @ngdoc method
+         * @name processAggregation
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {string} datasetId The column to visualize
+         * @param {string} preparationId The column to visualize
+         * @param {string} stepId The column to visualize
+         * @param {object} column The column to visualize
+         * @param {object} aggregation The column to visualize
+         * @description Processes the statistics aggregation for visualization
+         */
+        function processAggregation(datasetId, preparationId, stepId, column, aggregation) {
+            if(!aggregation) {
+                return processData(service.selectedColumn);
+            }
+
+            service.boxPlot = null;
+            service.histogram = null;
+            service.stateDistribution = null;
+
+            var aggregationParameters = {
+                datasetId: datasetId,
+                preparationId: preparationId,
+                stepId: stepId,
+                sampleSize: 100,
+                operations: [{
+                    operator: aggregation.id,
+                    columnId: column.id
+                }],
+                groupBy: [service.selectedColumn.id]
+            };
+
+            getAggregationData(aggregationParameters)
+                .then(function(response) {
+                    initClassicHistogram(aggregation.id, $filter('translate')(aggregation.name), response);
+                    service.histogram.aggregationColumn = column;
+                    service.histogram.aggregation = aggregation;
+                });
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        //-------------------------------------------------UTILS--------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
@@ -251,164 +379,17 @@
 
         /**
          * @ngdoc method
-         * @name processMapData
+         * @name resetCharts
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {object} column The column to visualize
-         * @description Remove the previous charts data and set the map chart
+         * @description Removes all the data to disable all visualization (including cache)
          */
-        function processMapData(column) {
-            selectedColumn = column;
-            //remove the boxplot
-            service.boxplotData = null;
-            //remove the barchart
-            service.data = null;
-            //show the map
-            service.stateDistribution = column;
-        }
+        function resetCharts() {
+            //charts data
+            resetCharsWithoutCache();
 
-        /**
-         * @ngdoc method
-         * @name processVisuData
-         * @methodOf data-prep.services.statistics:StatisticsService
-         * @param {object} currentColumn The selected column
-         * @param {object} targetColumn The aggregation target column
-         * @param {object} calculation The selected calculation
-         * @description processes the visualization data according to the clicked column domain
-         */
-        function processVisuDataAggregation(datasetId, currentColumn, targetColumn, calculation) {
-
-            getAggregations(datasetId, currentColumn, targetColumn, calculation)
-                .then(function(aggregationStatistics) {
-                    //processes the visualization data
-                    var aggregationStatisticsArray = aggregationStatistics;
-                    service.stateDistribution = null; //hide the map if the previous column was a state
-
-                    initClassicHistogram(aggregationStatisticsArray);// update charts data
-                });
-        }
-
-        /**
-         * @ngdoc method
-         * @name getAggregations
-         * @methodOf data-prep.services.statistics.service:StatisticsCacheService
-         * @param {object} currentColumn The selected column
-         * @param {object} targetColumn The aggregation target column
-         * @param {object} calculation The selected calculation
-         * @description Get aggregations from cache if present, from REST call otherwise.
-         * It cleans and adapts them.
-         */
-        function getAggregations(datasetId, currentColumn, targetColumn, calculation) {
-            var key = getKey(datasetId, currentColumn, targetColumn, calculation);
-
-            //if cache contains the key, the value is either the values or the fetch promise
-            var aggregation = suggestionsCache[key];
-            if(aggregation) {
-                return $q.when(aggregation);
-            }
-
-            //fetch menus from REST and adapt them. The Promise is put in cache, it is then replaced by the value.
-            var fetchPromise = getAggregationsRest(key)
-                .then(function(aggregation) {
-                    suggestionsCache[key] = aggregation;
-                    return aggregation;
-                });
-
-            suggestionsCache[key] = fetchPromise;
-            return fetchPromise;
-
-        }
-
-        /**
-         * @ngdoc method
-         * @name getAggregations
-         * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {object} stringifiedColumn The aggregation target column as string
-         * @description Get aggregation from REST call, clean and adapt them
-         */
-        function getAggregationsRest(stringifiedColumn) {
-            return StatisticsRestService.getAggregations(stringifiedColumn)
-                .then(function(response) {
-                    return response;
-                });
-        }
-
-
-        /**
-         * @ngdoc method
-         * @name getKey
-         * @methodOf data-prep.services.statistics.service:StatisticsCacheService
-         * @param {object} column The column to set as key
-         * @description [PRIVATE] Generate a unique key for the column.
-         */
-        function getKey(datasetId, currentColumn, targetColumn, calculation) {
-            var keyObj = {
-                datasetId: datasetId,
-                currentColumnId: currentColumn.id,
-                targetColumnId: targetColumn.id,
-                calculationId: calculation.id
-            };
-            return JSON.stringify(keyObj);
-        }
-
-        /**
-         * @ngdoc method
-         * @name invalidateCache
-         * @methodOf data-prep.services.transformation.service:StatisticsCacheService
-         * @description Invalidate all cache entries
-         */
-        function invalidateCache () {
-            suggestionsCache = [];
-        }
-
-        /**
-         * @ngdoc method
-         * @name processNonMapData
-         * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {object} column The column to visualize
-         * @description Reset the map chart and calculate the needed data for visualization
-         */
-        function processNonMapData(column) {
-            service.selectedColumn = column;
-            service.boxplotData = null;
-            service.data = null;
-            service.stateDistribution = null;
-
-            switch (ConverterService.simplifyType(column.type)) {
-                case 'number':
-                    initRangeHistogram(column.statistics.histogram);
-                    updateBoxplotData();
-                    break;
-                case 'text':
-                case 'boolean':
-                    initClassicHistogram(column.statistics.frequencyTable);
-                    break;
-                default :
-                    console.log('nor a number neither a boolean neither a string');
-                    service.boxplotData = null;
-            }
-        }
-
-        /**
-         * @ngdoc method
-         * @name processData
-         * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {object} column The column to visualize
-         * @description Processes the statistics data for visualization on the provided column
-         */
-        function processData(column) {
-            initValuesStatistics(column);
-
-            //TODO replace with new geo chart
-            if (column.domain.indexOf('STATE_CODE') !== -1) {
-                processMapData(column);
-            }
-            //TODO Coming soon after the integration of the globe map : reset charts and init localization chart data
-            // else if (column.domain === 'LOCALIZATION') {
-            //    processLocalizationMapData(column);
-            //}
-            else {
-                processNonMapData(column);
-            }
+            //caches
+            aggregationColumnsCache.removeAll();
+            aggregationCache.removeAll();
         }
 
         /**
@@ -417,11 +398,26 @@
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @description Removes all the data to disable all visualization
          */
-        function resetCharts() {
-            service.boxplotData = null;
-            service.data = null;
+        function resetCharsWithoutCache() {
+            service.boxPlot = null;
+            service.histogram = null;
             service.stateDistribution = null;
             service.statistics = null;
+        }
+
+        /**
+         * @ngdoc method
+         * @name resetCharts
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Removes all the data to disable all visualization
+         */
+        function getAggregationColumns() {
+            var column = service.selectedColumn;
+            var aggregationColumns = aggregationColumnsCache.get(column.id);
+            if(!aggregationColumns) {
+                aggregationColumns = aggregationColumnsCache.put(column.id, DatagridService.getNumericColumns(column));
+            }
+            return aggregationColumns;
         }
     }
 

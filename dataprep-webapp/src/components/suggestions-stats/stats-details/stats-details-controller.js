@@ -36,11 +36,11 @@
         });
 
     Object.defineProperty(StatsDetailsCtrl.prototype,
-        'boxplotData', {
+        'boxPlot', {
             enumerable: true,
             configurable: false,
             get: function () {
-                return this.statisticsService.boxplotData;
+                return this.statisticsService.boxPlot;
             }
         });
 
