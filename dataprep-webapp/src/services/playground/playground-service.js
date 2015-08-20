@@ -7,6 +7,7 @@
      * @description Playground service. This service provides the entry point to load properly the playground
      * @requires data-prep.services.dataset.service:DatasetService
      * @requires data-prep.services.playground.service:DatagridService
+     * @requires data-prep.services.playground.service:PreviewService
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.transformation.service:TransformationCacheService
@@ -16,9 +17,9 @@
      * @requires data-prep.services.statistics:StatisticsService
      * @requires data-prep.services.history:HistoryService
      */
-    function PlaygroundService($rootScope, $q, DatasetService, DatagridService, FilterService, RecipeService,
-                               TransformationCacheService, ColumnSuggestionService, PreparationService, MessageService,
-                               StatisticsService, HistoryService) {
+    function PlaygroundService($rootScope, $q, DatasetService, DatagridService, PreviewService, FilterService,
+                               RecipeService, TransformationCacheService, ColumnSuggestionService, PreparationService,
+                               MessageService, StatisticsService, HistoryService) {
         var service = {
             /**
              * @ngdoc property
@@ -124,6 +125,7 @@
             TransformationCacheService.invalidateCache();
             ColumnSuggestionService.reset();
             HistoryService.clear();
+            PreviewService.reset(false);
         }
 
         function setName(name) {
@@ -291,6 +293,7 @@
                     DatagridService.setDataset(service.currentMetadata, response.data);
                     DatagridService.focusedColumn = focusColumnId;
                     RecipeService.disableStepsAfter(step);
+                    PreviewService.reset(false);
                 })
                 .finally(function() {
                     $rootScope.$emit('talend.loading.stop');
@@ -463,6 +466,7 @@
                 .then(function(response) {
                     DatagridService.focusedColumn = focusColumnId;
                     DatagridService.updateData(response.data);
+                    PreviewService.reset(false);
                 });
         }
 

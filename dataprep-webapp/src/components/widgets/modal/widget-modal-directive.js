@@ -117,13 +117,7 @@
             },
             bindToController: true,
             controllerAs: 'talendModalCtrl',
-            controller: function () {
-                var vm = this;
-
-                vm.hide = function () {
-                    vm.state = false;
-                };
-            },
+            controller: function () {},
             link: {
                 post: function (scope, iElement, iAttrs, ctrl) {
                     var body = angular.element('body').eq(0);
@@ -142,7 +136,7 @@
                             if (hasBeforeEachFn && !ctrl.beforeClose()) {
                                 return;
                             }
-                            ctrl.hide();
+                            ctrl.state = false;
                         });
                     };
 
@@ -239,13 +233,13 @@
                             innerElement.focus();
 
                             //focus on first input (ignore first because it's the state checkbox)
-                            $timeout(function () {
-                                var inputs = iElement.find('input:not(".no-focus")');
-                                if (inputs.length > 1) {
+                            var inputs = iElement.find('input:not(".no-focus")');
+                            if (inputs.length > 1) {
+                                setTimeout(function () {
                                     inputs.eq(1).focus();
                                     inputs.eq(1).select();
-                                }
-                            });
+                                }, 200);
+                            }
                         } else if (oldValue) {
                             ctrl.onClose();
                             deregisterAndFocusOnLastModal(innerElement);

@@ -170,7 +170,7 @@
 
                 //entire row modification preview
                 switch(dataContext.__tdpRowDiff) {
-                    case 'delete': return '<div class="cellDeletedValue"><strike>' + (returnStr ? returnStr : ' ') + '</strike></div>';
+                    case 'delete': return '<div class="cellDeletedValue">' + (returnStr ? returnStr : ' ') + '</div>';
                     case 'new': return '<div class="cellNewValue">' + (returnStr ? returnStr : ' ') + '</div>';
                 }
 

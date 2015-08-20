@@ -106,6 +106,7 @@
             return DatasetListService.datasets;
         }
 
+
         /**
          * @ngdoc method
          * @name consolidatePreparationsAndDatasets
@@ -113,7 +114,7 @@
          * @description [PRIVATE] Refresh the metadata within the preparations
          */
         function consolidatePreparationsAndDatasets(response) {
-            PreparationListService.refreshMetadataInfos(datasetsList())
+            PreparationListService.refreshMetadataInfos(DatasetListService.datasets)
                 .then(DatasetListService.refreshDefaultPreparation);
             return response;
         }
@@ -135,7 +136,7 @@
          * @ngdoc method
          * @name refreshDatasets
          * @methodOf data-prep.services.dataset.service:DatasetService
-         * @description Refresh the dataset list
+         * @description Refresh the dataset list with sorting parameters
          * @returns {promise} The process promise
          */
         function refreshDatasets() {
@@ -180,7 +181,7 @@
          * @returns {object} The dataset
          */
         function getDatasetByName(name) {
-            return _.find(datasetsList(), function(dataset) {
+            return _.find(DatasetListService.datasets, function(dataset) {
                 return dataset.name === name;
             });
         }

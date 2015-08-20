@@ -11,6 +11,14 @@
     function PreviewService($q, DatagridService, PreparationService) {
         /**
          * @ngdoc property
+         * @name reverter
+         * @propertyOf data-prep.services.playground.service:PreviewService
+         * @description [PRIVATE] The revert executor to apply on datagrid to go from current preview to original data
+         */
+        var reverter;
+
+        /**
+         * @ngdoc property
          * @name originalData
          * @propertyOf data-prep.services.playground.service:PreviewService
          * @description [PRIVATE] The original data (columns and records) before switching to preview
@@ -68,6 +76,7 @@
 
             getPreviewDiffRecords: getPreviewDiffRecords,
             getPreviewUpdateRecords: getPreviewUpdateRecords,
+            getPreviewAddRecords: getPreviewAddRecords,
 
             previewInProgress: previewInProgress,
             stopPendingPreview: stopPendingPreview,
@@ -104,18 +113,9 @@
          * </ul>
          */
         function replaceRecords(response) {
-            //copy the original data to avoid modification persistence
-            modifiedRecords = originalData.records.slice(0);
-
-            //insert diff records
-            var previewRecords = response.data.records;
-            var nbRecordsToRemove = endIndex - startIndex + 1;
-            var spliceArgs = [startIndex, nbRecordsToRemove].concat(previewRecords);
-            Array.prototype.splice.apply(modifiedRecords, spliceArgs);
-
-            //update grid
-            var data = {columns: response.data.columns, records: modifiedRecords, preview: true};
-            DatagridService.updateData(data);
+            DatagridService.execute(reverter);
+            var executor = DatagridService.previewDataExecutor(response.data);
+            reverter = DatagridService.execute(executor);
         }
 
         /**
@@ -126,7 +126,10 @@
          */
         function initPreviewIdNeeded() {
             if(!originalData) {
-                originalData = DatagridService.data;
+                originalData = {
+                    columns: DatagridService.data.columns.slice(0),
+                    records: DatagridService.data.records.slice(0)
+                };
                 displayedTdpIds = getDisplayedTdpIds();
                 startIndex = DatagridService.dataView.getIdxById(displayedTdpIds[0]);
                 endIndex = DatagridService.dataView.getIdxById(displayedTdpIds[displayedTdpIds.length - 1]);
@@ -146,7 +149,7 @@
          * It cancel the previous preview first
          */
         function getPreviewDiffRecords(currentStep, previewStep, targetColumnId) {
-            cancelPreview(true, null);
+            stopPendingPreview();
             initPreviewIdNeeded();
 
             PreparationService.getPreviewDiff(currentStep, previewStep, displayedTdpIds, previewCanceler)
@@ -171,12 +174,38 @@
          * It cancel the previous preview first
          */
         function getPreviewUpdateRecords(currentStep, updateStep, newParams) {
-            cancelPreview(true, null);
+            stopPendingPreview();
             initPreviewIdNeeded();
 
             PreparationService.getPreviewUpdate(currentStep, updateStep, newParams, displayedTdpIds, previewCanceler)
                 .then(function(response) {
                     DatagridService.focusedColumn = updateStep.column.id;
+                    return response;
+                })
+                .then(replaceRecords)
+                .finally(function() {
+                    previewCanceler = null;
+                });
+        }
+
+        /**
+         * @ngdoc method
+         * @name getPreviewUpdateRecords
+         * @methodOf data-prep.services.playground.service:PreviewService
+         * @param {object} datasetId The dataset id
+         * @param {object} action The action to append
+         * @param {object} params The action parameters
+         * @description Call the update step preview service and replace records in the grid.
+         * It cancel the previous preview first
+         */
+        function getPreviewAddRecords(datasetId, action, params) {
+            stopPendingPreview();
+            initPreviewIdNeeded();
+
+            PreparationService.getPreviewAdd(datasetId, action, params, displayedTdpIds, previewCanceler)
+                .then(function(response) {
+                    /*jshint camelcase: false */
+                    DatagridService.focusedColumn = params.column_id;
                     return response;
                 })
                 .then(replaceRecords)
@@ -207,31 +236,29 @@
          */
         function reset(restoreOriginalData) {
             if(restoreOriginalData && previewInProgress()) {
-                DatagridService.updateData(originalData);
+                DatagridService.execute(reverter);
             }
             originalData = null;
             modifiedRecords = null;
             displayedTdpIds = null;
             startIndex = null;
             endIndex = null;
+            reverter = null;
         }
 
         /**
          * @ngdoc method
          * @name cancelPreview
-         * @param {boolean} partial If true, we cancel pending preview but we do NOT reset/restore the original data
          * @param {string} focusedColId The column id where to set the grid focus
          * @methodOf data-prep.services.playground.service:PreviewService
          * @description Cancel the current preview or the pending preview (resolving the cancel promise).
          * The original records is set back into the datagrid
          */
-        function cancelPreview(partial, focusedColId) {
+        function cancelPreview(focusedColId) {
             stopPendingPreview();
 
-            if(!partial && originalData) {
-                DatagridService.focusedColumn = focusedColId;
-                reset(true);
-            }
+            DatagridService.focusedColumn = focusedColId;
+            reset(true);
         }
 
         /**

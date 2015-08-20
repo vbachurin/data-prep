@@ -25,8 +25,8 @@ import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataquality.statistics.inference.quality.ValueQuality;
-import org.talend.dataquality.statistics.inference.quality.ValueQualityAnalyzer;
+import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
+import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.datascience.common.inference.type.DataType;
 
 @Component
@@ -70,40 +70,7 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
                     return; // no acknowledge to allow re-poll.
                 }
 
-                // Compute valid / invalid / empty count, need data types for analyzer first
-                DataType.Type[] types = TypeUtils.convert(metadata.getRow().getColumns());
-                // Run analysis
-                LOGGER.info("Analyzing quality of dataset #{}...", dataSetId);
-                ValueQualityAnalyzer analyzer = new ValueQualityAnalyzer(types);
-                analyzer.setStoreInvalidValues(true);
-                stream.map(row -> {
-                    final Map<String, Object> rowValues = row.values();
-                    final List<String> strings = stream(rowValues.values().spliterator(), false) //
-                            .map(String::valueOf) //
-                            .collect(Collectors.<String> toList());
-                    return strings.toArray(new String[strings.size()]);
-                }).forEach(analyzer::analyze);
-
-                // Determine content size
-                final List<ValueQuality> analyzerResult = analyzer.getResult();
-                final Iterator<ColumnMetadata> iterator = metadata.getRow().getColumns().iterator();
-                for (ValueQuality valueQuality : analyzerResult) {
-                    if (!iterator.hasNext()) {
-                        LOGGER.warn("More quality information than number of columns in data set #{}.", dataSetId);
-                        break;
-                    }
-                    final Quality quality = iterator.next().getQuality();
-                    quality.setEmpty((int) valueQuality.getEmptyCount());
-                    quality.setValid((int) valueQuality.getValidCount());
-                    quality.setInvalid((int) valueQuality.getInvalidCount());
-                    quality.setInvalidValues(valueQuality.getInvalidValues());
-                    metadata.getContent().setNbRecords((int) valueQuality.getCount());
-                }
-
-                // If there are columns remaining, warn for missing information
-                while (iterator.hasNext()) {
-                    LOGGER.warn("No quality information returned for {} in data set #{}.", iterator.next().getId(), dataSetId);
-                }
+                computeQuality(metadata, stream);
 
                 // ... all quality is now analyzed, mark it so.
                 metadata.getLifecycle().qualityAnalyzed(true);
@@ -118,8 +85,55 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
         }
     }
 
+    /**
+     * @see SynchronousDataSetAnalyzer#order()
+     */
     @Override
     public int order() {
         return 3;
+    }
+
+    /**
+     * Compute the quality (count, valid, invalid and empty) of the given dataset.
+     *
+     * @param dataset the dataset metadata.
+     * @param records the dataset records
+     */
+    public void computeQuality(DataSetMetadata dataset, Stream<DataSetRow> records) {
+
+        // Compute valid / invalid / empty count, need data types for analyzer first
+        DataType.Type[] types = TypeUtils.convert(dataset.getRow().getColumns());
+        // Run analysis
+        LOGGER.info("Analyzing quality of dataset #{}...", dataset.getId());
+        ValueQualityAnalyzer analyzer = new ValueQualityAnalyzer(types);
+        analyzer.setStoreInvalidValues(true);
+        records.map(row -> {
+            final Map<String, Object> rowValues = row.values();
+            final List<String> strings = stream(rowValues.values().spliterator(), false) //
+                    .map(String::valueOf) //
+                    .collect(Collectors.<String> toList());
+            return strings.toArray(new String[strings.size()]);
+        }).forEach(analyzer::analyze);
+
+        // Determine content size
+        final List<ValueQualityStatistics> analyzerResult = analyzer.getResult();
+        final Iterator<ColumnMetadata> iterator = dataset.getRow().getColumns().iterator();
+        for (ValueQualityStatistics valueQuality : analyzerResult) {
+            if (!iterator.hasNext()) {
+                LOGGER.warn("More quality information than number of columns in data set #{}.", dataset.getId());
+                break;
+            }
+            final Quality quality = iterator.next().getQuality();
+            quality.setEmpty((int) valueQuality.getEmptyCount());
+            quality.setValid((int) valueQuality.getValidCount());
+            quality.setInvalid((int) valueQuality.getInvalidCount());
+            quality.setInvalidValues(valueQuality.getInvalidValues());
+            dataset.getContent().setNbRecords((int) valueQuality.getCount());
+        }
+
+        // If there are columns remaining, warn for missing information
+        while (iterator.hasNext()) {
+            LOGGER.warn("No quality information returned for {} in data set #{}.", iterator.next().getId(), dataset.getId());
+        }
     }
 }

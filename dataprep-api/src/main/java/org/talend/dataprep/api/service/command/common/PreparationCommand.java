@@ -16,8 +16,8 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.api.service.command.dataset.DataSetGet;
-import org.talend.dataprep.preparation.store.ContentCache;
-import org.talend.dataprep.preparation.store.ContentCacheKey;
+import org.talend.dataprep.cache.ContentCache;
+import org.talend.dataprep.cache.ContentCacheKey;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -56,7 +56,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
     }
 
     /**
-     * Call Preparation Service to get preparation details
+     * Call Preparation Service to get preparation.
      *
      * @param preparationId - the preparation id
      * @return the resulting Json node object
@@ -159,8 +159,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
             InputStream content = client.execute(actionsRetrieval).getEntity().getContent();
             return builder
                     .build()
-                    .reader(new TypeReference<List<Action>>() {
-                    })
+                    .reader(new TypeReference<List<Action>>() {})
                     .readValue(content);
         } finally {
             actionsRetrieval.releaseConnection();
@@ -196,7 +195,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         ctx.preparation = preparation;
         ctx.version = version;
         // Direct try on cache at given version
-        ContentCacheKey key = new ContentCacheKey(preparationId, version, sample);
+        ContentCacheKey key = new ContentCacheKey(preparation, version, sample);
         if (contentCache.has(key)) {
             ctx.content = contentCache.get(key);
             ctx.actions = Collections.emptyList();
@@ -212,7 +211,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
             final List<String> preparationSteps = preparation.getSteps();
             for (String step : preparationSteps) {
                 transformationStartStep = step;
-                key = new ContentCacheKey(preparationId, step, sample);
+                key = new ContentCacheKey(preparation, step, sample);
                 if (contentCache.has(key)) {
                     ctx.content = contentCache.get(key);
                     break;
@@ -220,7 +219,6 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
             }
             // Did not find any cache for retrieve preparation details, starts over from original dataset
             if (Step.ROOT_STEP.id().equals(transformationStartStep)) {
-
                 ctx.content = getDatasetContent(preparation.getDataSetId(), false, true, sample);
             }
         } else {
@@ -239,34 +237,57 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         return ctx;
     }
 
+    /**
+     * Internal class that holds the preparation context.
+     */
     public class PreparationContext {
 
+        /** True if the preparation content comes from the cache. */
         boolean fromCache;
 
+        /** The preparation content (may be the dataset one if no action is performed). */
         InputStream content;
 
+        /** The list of actions performed in the preparation. */
         List<Action> actions;
 
+        /** The actual preparation. */
         Preparation preparation;
 
+        /** The preparation version (step). */
         String version;
 
+        /**
+         * @return the preparation content.
+         */
         public InputStream getContent() {
             return content;
         }
 
+        /**
+         * @return the preparation actions.
+         */
         public List<Action> getActions() {
             return actions;
         }
 
+        /**
+         * @return the actual preparation.
+         */
         public Preparation getPreparation() {
             return preparation;
         }
 
+        /**
+         * @return the preparation version.
+         */
         public String getVersion() {
             return version;
         }
 
+        /**
+         * @return true if the preparation comes from the cache.
+         */
         public boolean fromCache() {
             return fromCache;
         }

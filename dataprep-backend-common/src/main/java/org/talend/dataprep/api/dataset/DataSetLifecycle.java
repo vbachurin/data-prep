@@ -1,5 +1,7 @@
 package org.talend.dataprep.api.dataset;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -80,4 +82,23 @@ public class DataSetLifecycle {
         return importing;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        DataSetLifecycle that = (DataSetLifecycle) o;
+        return Objects.equals(importing, that.importing) && //
+                Objects.equals(contentAnalyzed, that.contentAnalyzed) && //
+                Objects.equals(schemaAnalyzed, that.schemaAnalyzed) && //
+                Objects.equals(qualityAnalyzed, that.qualityAnalyzed);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(importing, contentAnalyzed, schemaAnalyzed, qualityAnalyzed);
+    }
 }

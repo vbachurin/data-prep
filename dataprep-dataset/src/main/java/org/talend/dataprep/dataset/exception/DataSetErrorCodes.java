@@ -54,7 +54,19 @@ public enum DataSetErrorCodes implements ErrorCode {
      * Error returned in case user tries to access to a column that does not exist (or no longer exists) for a data set .
      * @see org.talend.dataprep.dataset.service.DataSetService#updateDataSet(String, DataSetMetadata)
      */
-    COLUMN_DOES_NOT_EXIST(400, "id");
+    COLUMN_DOES_NOT_EXIST(400, "id"),
+    /**
+     * Error returned when the order is not supported.
+     *
+     * @see org.talend.dataprep.dataset.service.DataSetService#list(String, String)
+     */
+    ILLEGAL_ORDER_FOR_LIST(400, "order"),
+    /**
+     * Error returned when the sort is not supported.
+     *
+     * @see org.talend.dataprep.dataset.service.DataSetService#list(String, String)
+     */
+    ILLEGAL_SORT_FOR_LIST(400, "sort");
 
     /** The http status to use. */
     private int httpStatus;

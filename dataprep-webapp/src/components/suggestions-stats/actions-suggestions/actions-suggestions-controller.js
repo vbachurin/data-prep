@@ -6,9 +6,17 @@
      * @name data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
      * @description Actions suggestion controller
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
+     * @requires data-prep.services.transformation.service:TransformationService
      * @requires data-prep.services.playground.service:PlaygroundService
+     * @requires data-prep.services.playground.service:PreviewService
+     * @requires data-prep.services.preparation.service:PreparationService
+     * @requires data-prep.services.recipe.service:RecipeService
      */
-    function ActionsSuggestionsCtrl(ColumnSuggestionService, PlaygroundService, TransformationService, PreparationService) {
+    function ActionsSuggestionsCtrl($timeout, ColumnSuggestionService, TransformationService, PlaygroundService, PreviewService, PreparationService, RecipeService) {
+        var previewTimeout;
+        var previewCancelerTimeout;
+        var previewDisabled = false;
+
         var vm = this;
         vm.columnSuggestionService = ColumnSuggestionService;
 
@@ -140,6 +148,8 @@
         vm.transformClosure = function transform(transfo, transfoScope) {
             /*jshint camelcase: false */
             return function(params) {
+                previewDisabled = true;
+
                 params = params || {};
                 params.scope = transfoScope;
                 params.column_id = vm.column.id;
@@ -148,8 +158,63 @@
                 PlaygroundService.appendStep(transfo.name, params)
                     .then(function() {
                         vm.showDynamicModal = false;
+                    })
+                    .finally(function() {
+                        setTimeout(function() {
+                            previewDisabled = false;
+                        }, 500);
                     });
             };
+        };
+
+        /**
+         * @ngdoc method
+         * @name earlyPreview
+         * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
+         * @param {object} transformation The transformation
+         * @param {string} transfoScope The transformation scope
+         * @description Perform an early preview (preview before transformation application) after a 200ms delay
+         */
+        vm.earlyPreview = function earlyPreview(transformation, transfoScope) {
+            /*jshint camelcase: false */
+            return function(params) {
+                if(previewDisabled) {
+                    return;
+                }
+
+                $timeout.cancel(previewTimeout);
+                $timeout.cancel(previewCancelerTimeout);
+
+                previewTimeout = $timeout(function() {
+                    params.scope = transfoScope;
+                    params.column_id = vm.column.id;
+                    params.column_name = vm.column.name;
+
+                    var datasetId = PlaygroundService.currentMetadata.id;
+
+                    RecipeService.earlyPreview(vm.column, transformation, params);
+                    PreviewService.getPreviewAddRecords(datasetId, transformation.name, params);
+                }, 300);
+            };
+        };
+
+        /**
+         * @ngdoc method
+         * @name cancelEarlyPreview
+         * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
+         * @description Cancel any current or pending early preview
+         */
+        vm.cancelEarlyPreview = function cancelEarlyPreview() {
+            if(previewDisabled) {
+                return;
+            }
+
+            $timeout.cancel(previewTimeout);
+
+            previewCancelerTimeout = $timeout(function() {
+                RecipeService.cancelEarlyPreview();
+                PreviewService.cancelPreview();
+            }, 100);
         };
     }
 

@@ -3,27 +3,20 @@ package org.talend.dataprep.api.service.command.dataset;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
-import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.api.service.command.CloneInputStream;
 import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCode;
-import org.talend.dataprep.preparation.store.ContentCache;
-import org.talend.dataprep.preparation.store.ContentCacheKey;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
@@ -34,9 +27,6 @@ import com.netflix.hystrix.HystrixCommand;
 @Component
 @Scope("request")
 public class DataSetGet extends DataPrepCommand<InputStream> {
-
-    @Autowired
-    ContentCache contentCache;
 
     /** The dataset id. */
     private final String dataSetId;
@@ -85,20 +75,13 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
      */
     @Override
     protected InputStream run() throws Exception {
-        // Look if initial data set content was previously cached
-        final Preparation preparation = Preparation.defaultPreparation(dataSetId);
-        ContentCacheKey key = new ContentCacheKey(preparation.id(), Step.ROOT_STEP.id(), sample);
-        if (contentCache.has(key)) {
-            return contentCache.get(key);
-        }
-
-        String url = datasetServiceUrl + "/datasets/" + dataSetId + "/content/?metadata=" + metadata + "&columns=" + columns;
+        String url = datasetServiceUrl + "/datasets/" + dataSetId + "/content?metadata=" + metadata + "&columns=" + columns;
         if (sample != null) {
             url += "&sample=" + sample;
         }
         final HttpGet contentRetrieval = new HttpGet(url);
         final HttpResponse response = client.execute(contentRetrieval);
-        return handleResponse(response, contentRetrieval, preparation);
+        return handleResponse(response, contentRetrieval);
     }
 
     /**
@@ -109,7 +92,7 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
      * @return the dataset content.
      * @throws IOException if an error occurs.
      */
-    private InputStream handleResponse(final HttpResponse response, final HttpGet contentRetrieval, Preparation preparation)
+    private InputStream handleResponse(final HttpResponse response, final HttpGet contentRetrieval)
             throws IOException {
         int statusCode = response.getStatusLine().getStatusCode();
         // No cache, query the data set service for content
@@ -118,11 +101,7 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
             contentRetrieval.releaseConnection();
             return new ByteArrayInputStream(new byte[0]);
         } else if (statusCode == HttpStatus.SC_OK) {
-            final OutputStream cacheEntry = contentCache.put(new ContentCacheKey(preparation.id(), Step.ROOT_STEP.id(), sample),
-                    ContentCache.TimeToLive.DEFAULT);
-            final InputStream content = response.getEntity().getContent();
-            final InputStream dataSetInput = new ReleasableInputStream(content, contentRetrieval::releaseConnection);
-            return new CloneInputStream(dataSetInput, cacheEntry);
+            return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
         } else if (statusCode >= 400) { // Error (4xx & 5xx codes)
             final ObjectMapper build = builder.build();
             final JsonErrorCode errorCode = build.reader(JsonErrorCode.class).readValue(response.getEntity().getContent());

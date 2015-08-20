@@ -10,7 +10,7 @@ $border-color: #CECECE;
     @include flex-basis(52px);
     border-bottom: 1px solid $border-color;
     font-weight: 300;
-    padding: 25px 5px 5px;
+    padding: 15px 5px 0 0;
     text-align: right;
   }
 

@@ -1,5 +1,27 @@
-<div class="inventory">
-    <div class="inventory-sort">{{ ::'SORTED_BY' | translate }} {{ ::'NAME_SORT' | translate }}</div>
+<div class="inventory dataset">
+    <div class="inventory-sort">
+        <div>{{ ::'SORTED_BY' | translate }}</div>
+        <div class="button-dropdown-shorttext">
+            <talend-button-dropdown button-text="{{datasetListCtrl.sortSelected.name | translate }}">
+                <ul>
+                    <li ng-repeat="sortType in datasetListCtrl.sortList" ng-click="datasetListCtrl.updateSortBy(sortType)">
+                        {{sortType.name | translate}}
+                    </li>
+                </ul>
+            </talend-button-dropdown>
+        </div>
+        <div> {{ ::'SORT_IN' | translate }} </div>
+        <div class="button-dropdown-longtext">
+            <talend-button-dropdown button-text="{{datasetListCtrl.sortOrderSelected.name | translate }}">
+                <ul>
+                    <li ng-repeat="orderType in datasetListCtrl.orderList" ng-click="datasetListCtrl.updateSortOrder(orderType)">
+                        {{orderType.name | translate}}
+                    </li>
+                </ul>
+            </talend-button-dropdown>
+        </div>
+        <div> {{ ::'SORT_ORDER' | translate }} </div>
+    </div>
 
     <div class="inventory-entry" ng-repeat="dataset in datasetListCtrl.datasets track by $index" ng-switch="dataset.draft" id="dataset_{{$index}}" >
 
@@ -36,8 +58,9 @@
                     ng-click="datasetListCtrl.delete(dataset)"></a>
             <div class="divider btn-transparent"></div>
             <a data-icon="s" class="btn-icon btn-transparent"
-                    ng-click="datasetListCtrl.processCertification(dataset)"></a>
-            <a data-icon="f" class="btn-icon btn-transparent favorite" ng-class="{'favorite-true':dataset.favorite}" ng-click="datasetListCtrl.toggleFavorite(dataset)"></a>
+                    ng-click="datasetListCtrl.datasetService.processCertification(dataset)"></a>
+            <a data-icon="f" class="btn-icon btn-transparent favorite" ng-class="{'favorite-true':dataset.favorite}"
+                    ng-click="datasetListCtrl.datasetService.toggleFavorite(dataset)"></a>
         </div>
     </div>
 </div>

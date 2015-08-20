@@ -9,6 +9,10 @@
      * {@link data-prep.services.filter.service:FilterService FilterService} must be the only entry point for datagrid filters</b>
      */
     function DatagridService() {
+        var DELETE = 'DELETE';
+        var REPLACE = 'REPLACE';
+        var INSERT = 'INSERT';
+
         var self = this;
 
         /**
@@ -107,6 +111,108 @@
             }
             self.data = data;
             updateDataviewRecords(data.records);
+        };
+
+        //------------------------------------------------------------------------------------------------------
+        //--------------------------------------------------PREVIEW---------------------------------------------
+        //------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name execute
+         * @methodOf data-prep.services.playground.service:DatagridService
+         * @param {Object} executor The infos to apply on the dataset
+         * @description Update the data in the datagrid with a set of instructions and the column list to apply.
+         * This allows to update the dataset, with limited SlickGrid computation, for more performant operations than
+         * setItems which compute everything on the whole dataset.
+         */
+        self.execute = function execute(executor) {
+            if(!executor) {
+                return;
+            }
+
+            var revertInstructions = [];
+
+            self.dataView.beginUpdate();
+            _.forEach(executor.instructions, function(step) {
+                switch(step.type) {
+                    case INSERT:
+                        self.dataView.insertItem(step.index, step.row);
+                        revertInstructions.push({
+                            type: DELETE,
+                            row: step.row
+                        });
+                        break;
+                    case DELETE:
+                        var index = self.dataView.getIdxById(step.row.tdpId);
+                        self.dataView.deleteItem(step.row.tdpId);
+                        revertInstructions.push({
+                            type: INSERT,
+                            row: step.row,
+                            index: index
+                        });
+                        break;
+                    case REPLACE:
+                        var originalRow = self.dataView.getItemById(step.row.tdpId);
+                        self.dataView.updateItem(step.row.tdpId, step.row);
+                        revertInstructions.push({
+                            type: REPLACE,
+                            row: originalRow
+                        });
+                        break;
+                }
+            });
+            self.dataView.endUpdate();
+
+            var reverter = {
+                instructions: revertInstructions,
+                preview: self.data.preview,
+                columns: self.data.columns
+            };
+
+            self.data = {
+                columns: executor.columns,
+                records: self.data.records,
+                preview: executor.preview
+            };
+
+            return reverter;
+        };
+
+        /**
+         * @ngdoc method
+         * @name previewDataExecutor
+         * @methodOf data-prep.services.playground.service:DatagridService
+         * @param {Object} data The new preview data to insert
+         * @description Create an executor that reflect the provided preview data, in order to update the current dataset
+         */
+        self.previewDataExecutor = function previewDataExecutor(data) {
+            var executor = {
+                columns: data.columns,
+                instructions: [],
+                preview: true
+            };
+
+            var nextInsertionIndex = self.dataView.getIdxById(data.records[0].tdpId);
+            _.forEach(data.records, function(row) {
+                if(row.__tdpRowDiff || row.__tdpDiff) {
+                    if(row.__tdpRowDiff === 'new') {
+                        executor.instructions.push({
+                            type: INSERT,
+                            row: row,
+                            index: nextInsertionIndex
+                        });
+                    }
+                    else {
+                        executor.instructions.push({
+                            type: REPLACE,
+                            row: row
+                        });
+                    }
+                }
+                nextInsertionIndex++;
+            });
+
+            return executor;
         };
 
         //------------------------------------------------------------------------------------------------------
