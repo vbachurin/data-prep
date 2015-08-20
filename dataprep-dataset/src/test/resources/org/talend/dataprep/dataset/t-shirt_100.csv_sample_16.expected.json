@@ -237,8 +237,8 @@
           }
         ],
         "quantiles": {
-          "median": 71.0,
-          "lowerQuantile": 53.0,
+          "median": 70.5,
+          "lowerQuantile": 47.75,
           "upperQuantile": 75.0
         },
         "histogram": [
@@ -704,9 +704,9 @@
           }
         ],
         "quantiles": {
-          "median": 25.0,
-          "lowerQuantile": 19.0,
-          "upperQuantile": 71.0
+          "median": 19.9,
+          "lowerQuantile": 16.7,
+          "upperQuantile": 33.4
         },
         "histogram": [
           {
@@ -832,7 +832,7 @@
         "quantiles": {
           "median": 1.0,
           "lowerQuantile": 1.0,
-          "upperQuantile": 3.0
+          "upperQuantile": 2.0
         },
         "histogram": [
           {
@@ -956,9 +956,9 @@
           }
         ],
         "quantiles": {
-          "median": 19.0,
-          "lowerQuantile": 16.0,
-          "upperQuantile": 25.0
+          "median": 19.9,
+          "lowerQuantile": 16.7,
+          "upperQuantile": 19.9
         },
         "histogram": [
           {
