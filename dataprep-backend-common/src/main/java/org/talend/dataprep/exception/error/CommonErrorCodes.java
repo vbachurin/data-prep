@@ -19,6 +19,7 @@ public enum CommonErrorCodes implements ErrorCode {
     UNSUPPORTED_ACTION_SCOPE(400),
     MISSING_ACTION_SCOPE(400),
                                                    MISSING_ACTION_SCOPE_PARAMETER(400),
+                                                   BAD_AGGREGATION_PARAMETERS(400),
                                                    UNABLE_TO_AGGREGATE(500);
 
     /** The http status to use. */

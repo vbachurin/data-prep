@@ -78,7 +78,8 @@ public class TransformationService {
      * {@link ActionMetadata} with parameters.
      *
      * To prevent the actions to exceed URL length limit, everything is shipped within via the multipart request body.
-     * Operation allows client to customize the output format (see {@link ExportType available export types}).
+     * AggregationOperation allows client to customize the output format (see {@link ExportType available export types}
+     * ).
      *
      * To prevent the actions to exceed URL length limit, everything is shipped within via the multipart request body.
      *
@@ -290,18 +291,26 @@ public class TransformationService {
     @RequestMapping(value = "/aggregate", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation(value = "Compute the aggregation according to the request body parameters", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @VolumeMetered
-    public void aggregate(@ApiParam(value = "The aggregation parameters in json")
-    @RequestPart(value = "parameters", required = true)
-    final Part parameters, //
-            @ApiParam(value = "Content to apply the aggregation on")
-    @RequestPart(value = "content", required = true)
-    final Part content, //
+    // @formatter:off
+    public void aggregate(
+            @ApiParam(value = "The aggregation parameters in json") @RequestPart(value = "parameters", required = true) final Part parameters,
+            @ApiParam(value = "Content to apply the aggregation on") @RequestPart(value = "content", required = true) final Part content,
             final HttpServletResponse response) {
+    // @formatter:on
+
+        // parse the parameters
+        AggregationParameters params;
         try {
-            AggregationParameters params = builder.build().reader(AggregationParameters.class)
-                    .readValue(parameters.getInputStream());
-            LOG.debug("Aggregation requested {}", params);
-            response.getWriter().write("TDD");
+            params = builder.build().reader(AggregationParameters.class).readValue(parameters.getInputStream());
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.BAD_AGGREGATION_PARAMETERS, e);
+        }
+
+        LOG.debug("Aggregation requested {}", params);
+
+        // perform the aggregation
+        try {
+            response.getWriter().write("TDD development");
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_AGGREGATE, e);
         }

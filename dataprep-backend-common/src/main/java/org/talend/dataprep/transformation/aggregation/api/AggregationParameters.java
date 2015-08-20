@@ -21,7 +21,7 @@ public class AggregationParameters {
     private List<String> groupBy;
 
     /** List of aggregation operations to apply. */
-    private List<Operation> operations;
+    private List<AggregationOperation> operations;
 
     /** Optional sample size (null for the whole thing). */
     private Long sampleSize;
@@ -93,14 +93,14 @@ public class AggregationParameters {
     /**
      * @return the Operations
      */
-    public List<Operation> getOperations() {
+    public List<AggregationOperation> getOperations() {
         return operations;
     }
 
     /**
      * @param operations the operations to set.
      */
-    public void setOperations(List<Operation> operations) {
+    public void setOperations(List<AggregationOperation> operations) {
         this.operations = operations;
     }
 
@@ -128,49 +128,4 @@ public class AggregationParameters {
                 + sampleSize + '}';
     }
 
-    /** An aggregation operation is to apply an operator on a column. */
-    public class Operation {
-
-        /** The operation column. */
-        private String columnId;
-
-        /** The operation operator. */
-        private Operator operator;
-
-        /**
-         * @return the ColumnId
-         */
-        public String getColumnId() {
-            return columnId;
-        }
-
-        /**
-         * @param columnId the columnId to set.
-         */
-        public void setColumnId(String columnId) {
-            this.columnId = columnId;
-        }
-
-        /**
-         * @return the Operator
-         */
-        public Operator getOperator() {
-            return operator;
-        }
-
-        /**
-         * @param operator the operator to set.
-         */
-        public void setOperator(Operator operator) {
-            this.operator = operator;
-        }
-
-        /**
-         * @see Object#toString()
-         */
-        @Override
-        public String toString() {
-            return "Operation{" + "columnId='" + columnId + '\'' + ", operator=" + operator + '}';
-        }
-    }
 }
