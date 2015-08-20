@@ -7,10 +7,11 @@
 	 * @description This directive renders the rangeSlider.
 	 * @restrict E
 	 * @usage
-	 *     <range-slider id="barChart"
+	 *     <range-slider
 	 *             width="250"
 	 *             height="100"
 	 *             range-limits="statsDetailsCtrl.rangeLimits"
+	 *             on-brush-end="statsDetailsCtrl.onBrushEndFn"
 	 *             id="domId"
 	 *         ></range-slider>
 	 * */
@@ -22,7 +23,9 @@
 				rangeLimits: '=',
 				onBrushEnd: '&'
 			},
-			link: function (scope, element, attrs) {
+			controller: 'RangeSliderCtrl',
+			controllerAs: 'rangeSliderCtrl',
+			link: function (scope, element, attrs, ctrl) {
 				var h = attrs.height;
 				var w = attrs.width;
 				var container = attrs.id;
@@ -34,30 +37,6 @@
 					var minBrush = typeof rangeLimits.minBrush !== 'undefined' ? rangeLimits.minBrush : minimum;
 					var maxBrush = typeof rangeLimits.maxBrush !== 'undefined' ? rangeLimits.maxBrush : maximum;
 
-					var toNumber = function toNumber (value) {
-						if(/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/.test(value)){
-							return Number(value.trim());
-						}
-						return null;
-					};
-
-					var checkCommaExistence = function checkCommaExistence (){
-						var minAndMax = document.getElementsByName('minRange')[0].value + document.getElementsByName('maxRange')[0].value;
-						return minAndMax.indexOf(',') !== -1 ? true : false;
-					};
-
-					var showMsgErr = function showMsgErr(){
-						var msgErr = 'Invalid Entered Value';
-						var finalMsgErr = checkCommaExistence()? msgErr + ': Use "." instead of ","' : msgErr;
-						d3.select('text.invalid-value-msg')
-							.text(finalMsgErr);
-					};
-
-					var hideMsgErr = function hideMsgErr(){
-						d3.select('text.invalid-value-msg')
-							.text('');
-					};
-
 					var nbDecimals = d3.max([decimalPlaces(minBrush), decimalPlaces(maxBrush)]);
 					var margin = {top: 25, right: 25, bottom: 80, left: 10},
 						width = w - margin.left - margin.right,
@@ -67,14 +46,9 @@
 						.domain([minimum, maximum])
 						.range([0, width]);
 
-					var centerValue = (minBrush + maxBrush)/2;
+					ctrl.setCenterValue(minBrush, maxBrush);
 
-					var brush = d3.svg.brush()
-						.x(x)
-						.extent([centerValue, centerValue])
-						.on('brushstart', brushstart)
-						.on('brush', brushmove)
-						.on('brushend', brushend);
+					ctrl.initBrush(x);
 
 					var svg = d3.select('#'+container).append('svg')
 						.attr('width', width + margin.left + margin.right)
@@ -116,12 +90,11 @@
 					var brushg = svg.append('g')
 						.attr('transform', 'translate(0,' + (height - 10)+ ')')
 						.attr('class', 'brush')
-						.call(brush);
+						.call(ctrl.brush);
 
-					brushg.call(brush.event)
+					brushg.call(ctrl.brush.event)
 						.transition().duration(400)
-						.call(brush.extent([minBrush, maxBrush]))
-						.call(brush.event);
+						.call(ctrl.brush.extent([minBrush, maxBrush]));
 
 					brushg.selectAll('.resize').append('rect')
 						.attr('transform', function(d,i){return i?'translate(-10, 0)':'translate(0,0)';})
@@ -134,6 +107,10 @@
 						.attr('height', 14)
 						.attr('transform', 'translate(0,3)');
 
+					ctrl.brush
+						.on('brushstart', brushstart)
+						.on('brush', brushmove)
+						.on('brushend', brushend);
 
 					function brushstart() {
 						//on brush start code goes here
@@ -141,30 +118,22 @@
 
 					function brushmove() {
 						var newExtent = fillInputs();
-						if (brush.empty()) {
+						if (ctrl.brush.empty()) {
 							var exp = '1e-' + (nbDecimals + 1);
-							svg.select('.brush').call(brush.clear().extent([newExtent[0], newExtent[1] + Number(exp)]));
+							svg.select('.brush').call(ctrl.brush.clear().extent([newExtent[0], newExtent[1] + Number(exp)]));
 						}
 					}
 
 					function brushend() {
-						// only transition after input
-						if (!d3.event.sourceEvent) {
-							return;
-						}
-						var extent1 = brush.extent();
-
-						d3.select(this).transition().duration(400)
-							.call(brush.extent(extent1));
 						//trigger filter process in the datagrid
-						scope.onBrushEnd()(brush.extent().map(function(n){return +n.toFixed(nbDecimals);}));
+						scope.onBrushEnd()(ctrl.brush.extent().map(function(n){return +n.toFixed(nbDecimals);}));
 					}
 
 					fillInputs();
 
 					function fillInputs(){
-						hideMsgErr();
-						var s = brush.extent();
+						ctrl.hideMsgErr(d3.select('text.invalid-value-msg'));
+						var s = ctrl.brush.extent();
 						document.getElementsByName('minRange')[0].value = s[0] > 1e4 || s[0] < -1e4 ? d3.format('e')(s[0].toFixed(nbDecimals)) : s[0].toFixed(nbDecimals);
 						document.getElementsByName('maxRange')[0].value = s[1] > 1e4 || s[1] < -1e4 ? d3.format('e')(s[1].toFixed(nbDecimals)) : s[1].toFixed(nbDecimals);
 						return s;
@@ -172,8 +141,8 @@
 
 					function adjustBrush(){
 
-						var enteredMax = toNumber(document.getElementsByName('maxRange')[0].value);
-						var enteredMin = toNumber(document.getElementsByName('minRange')[0].value);
+						var enteredMax = ctrl.toNumber(document.getElementsByName('maxRange')[0].value);
+						var enteredMin = ctrl.toNumber(document.getElementsByName('minRange')[0].value);
 
 						if(enteredMax === null || enteredMin === null){
 							return;
@@ -205,11 +174,11 @@
 							finalExtent = [enteredMin, enteredMax];
 						}
 						brushg.transition()
-							.call(brush.extent(finalExtent));
+							.call(ctrl.brush.extent(finalExtent));
 						//should be after brush update
 						fillInputs();
 						//trigger filter process in the datagrid
-						scope.onBrushEnd()(brush.extent().map(function(n){return +n.toFixed(nbDecimals);}));
+						scope.onBrushEnd()(ctrl.brush.extent().map(function(n){return +n.toFixed(nbDecimals);}));
 					}
 
 					function decimalPlaces(num) {
@@ -236,53 +205,55 @@
 					};
 
 					document.getElementsByName('minRange')[0].onkeyup = function(e){
-						if(e.which !== 13 && e.which !== 27){
-							minCorrectness = toNumber(this.value);
+						if(e.keyCode !== 13 && e.keyCode !== 27){
+							minCorrectness = ctrl.toNumber(this.value);
 							if(minCorrectness === null || maxCorrectness === null){
-								showMsgErr();
+								var minMaxStr = document.getElementsByName('minRange')[0].value + document.getElementsByName('maxRange')[0].value;
+								ctrl.showMsgErr(minMaxStr);
 							}
 							else{
-								hideMsgErr();
+								ctrl.hideMsgErr(d3.select('text.invalid-value-msg'));
 							}
 						}
 
-						if(e.which === 13 || e.which === 9){
+						if(e.keyCode === 13 || e.keyCode === 9){
 							if(minCorrectness !== null && maxCorrectness !== null){
 								adjustBrush();
 							}
 							else{
 								fillInputs();
-								hideMsgErr();
+								ctrl.hideMsgErr(d3.select('text.invalid-value-msg'));
 							}
 						}
 
-						if(e.which === 27){
+						if(e.keyCode === 27){
 							fillInputs();
 						}
 					};
 
 					document.getElementsByName('maxRange')[0].onkeyup = function(e){
-						if(e.which !== 13 && e.which !== 27){
-							maxCorrectness = toNumber(this.value);
+						if(e.keyCode !== 13 && e.keyCode !== 27){
+							maxCorrectness = ctrl.toNumber(this.value);
 							if(minCorrectness === null || maxCorrectness === null){
-								showMsgErr();
+								var minMaxStr = document.getElementsByName('minRange')[0].value + document.getElementsByName('maxRange')[0].value;
+								ctrl.showMsgErr(minMaxStr);
 							}
 							else{
-								hideMsgErr();
+								ctrl.hideMsgErr(d3.select('text.invalid-value-msg'));
 							}
 						}
 
-						if(e.which === 13 || e.which === 9){
+						if(e.keyCode === 13 || e.keyCode === 9){
 							if(minCorrectness !== null && maxCorrectness !== null){
 								adjustBrush();
 							}
 							else{
 								fillInputs();
-								hideMsgErr();
+								ctrl.hideMsgErr(d3.select('text.invalid-value-msg'));
 							}
 						}
 
-						if(e.which === 27){
+						if(e.keyCode === 27){
 							fillInputs();
 						}
 					};

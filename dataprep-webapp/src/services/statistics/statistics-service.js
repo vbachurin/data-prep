@@ -253,7 +253,8 @@
         function addRangeFilter(interval) {
             var column = service.selectedColumn;
             var filterFn = FilterService.addFilter.bind(null, 'inside_range', column.id, column.name, {phrase: interval});
-
+            service.rangeLimits.minBrush = interval[0];
+            service.rangeLimits.maxBrush = interval[1];
             $timeout(filterFn);
         }
 

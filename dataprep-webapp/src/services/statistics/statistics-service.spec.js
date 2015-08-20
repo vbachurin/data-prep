@@ -231,13 +231,22 @@ describe('Statistics service', function () {
             StatisticsService.selectedColumn = {};
             StatisticsService.selectedColumn.id = '0000';
             spyOn(FilterService, 'addFilter').and.returnValue();
-
+            StatisticsService.rangeLimits = {
+                min : -5,
+                max : 25
+            };
             //when
             StatisticsService.addRangeFilter([0,22]);
             $timeout.flush();
 
             //then
             expect(FilterService.addFilter).toHaveBeenCalledWith('inside_range', '0000', undefined, {phrase:[0,22]});
+            expect(StatisticsService.rangeLimits).toEqual({
+                min : -5,
+                minBrush : 0,
+                max : 25,
+                maxBrush : 22
+            });
         }));
     });
 
