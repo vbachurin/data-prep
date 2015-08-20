@@ -267,8 +267,7 @@ public class HDFSContentCacheTest {
         final RemoteIterator<LocatedFileStatus> files = fileSystem.listFiles(new Path("cache/datasets/"), true);
         while (files.hasNext()) {
             final Path file = files.next().getPath();
-            final String suffix = StringUtils.substringAfterLast(file.getName(), ".");
-            if (!StringUtils.startsWith(suffix, "nfs")) {
+            if (!StringUtils.contains(file.getName(), ".nfs")) {
                 fail("file " + file.getName() + " was not cleaned by the janitor");
             }
         }

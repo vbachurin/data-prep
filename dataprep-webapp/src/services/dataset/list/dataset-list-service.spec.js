@@ -363,4 +363,46 @@ describe('Dataset List Service', function () {
         //then
         expect(result).toEqual(datasets);
     }));
+
+    it('should call REST WS if datasetsPromise and datasets are null', inject(function ($q, DatasetRestService, DatasetListService) {
+
+        //given
+        DatasetListService.datasets = null;
+
+        //when
+        DatasetListService.getDatasetsPromise();
+
+        //then
+        expect(DatasetRestService.getDatasets).toHaveBeenCalled();
+    }));
+
+    it('should return datasets if datasetsPromise is null and datasets is not null', inject(function ($q, $rootScope, DatasetListService) {
+
+        //given
+        DatasetListService.datasets = datasets;
+        var result = [];
+
+        //when
+        DatasetListService.getDatasetsPromise().then(function (promiseResult) {
+            result = promiseResult;
+        });
+        $rootScope.$apply();
+
+        //then
+        expect(result).toBe(datasets);
+    }));
+
+    it('should return datasetsPromise when datasetsPromise is not null', inject(function ($q, DatasetRestService, DatasetListService) {
+
+        //given
+        DatasetListService.datasets = null;
+
+        //when
+        DatasetListService.getDatasetsPromise();
+        DatasetListService.getDatasetsPromise();
+
+        //then
+        expect(DatasetRestService.getDatasets.calls.count()).toBe(1);
+    }));
+
 });
