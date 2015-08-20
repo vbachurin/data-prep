@@ -9,8 +9,9 @@
      * @requires data-prep.services.dataset.service:DatasetService
      * @requires data-prep.services.dataset.service:ColumnTypesService
      * @requires data-prep.services.utils.service:ConverterService
+     * @requires data-prep.services.preparation.service:PreparationService
      */
-    function TypeTransformMenuCtrl(PlaygroundService, DatasetService, ColumnTypesService, ConverterService) {
+    function TypeTransformMenuCtrl(PlaygroundService, DatasetService, ColumnTypesService, ConverterService, PreparationService) {
         var vm = this;
 
         /**
@@ -36,10 +37,14 @@
          */
         vm.changeDomain = function changeDomain(domain) {
             var originalDomain = getOriginalDomain();
+            /*
             setColumnDomainAndType(domain, null);
 
             DatasetService.updateColumn(PlaygroundService.currentMetadata.id, vm.column.id, {domain: domain.id})
                 .catch(setColumnDomainAndType.bind(vm, originalDomain));
+            */
+            //PreparationService.appendStep
+            console.log('changeDomain');
         };
 
         /**
@@ -50,12 +55,15 @@
          * @param {object} type The new type information
          */
         vm.changeType = function changeType(type) {
+            /*
             var originalType = vm.column.type;
             var originalDomain = getOriginalDomain();
             setColumnDomainAndType({id: '', label: '', frequency: 0}, type.id);
 
             DatasetService.updateColumn(PlaygroundService.currentMetadata.id, vm.column.id, {type: type.id, domain: ''})
                 .catch(setColumnDomainAndType.bind(vm, originalDomain, originalType));
+                */
+            console.log('changeType');
         };
 
         /**
