@@ -6,18 +6,18 @@ import java.util.Collections;
 import java.util.List;
 
 public enum CommonErrorCodes implements ErrorCode {
-    UNEXPECTED_EXCEPTION(500),
-    UNABLE_TO_PARSE_JSON(500),
-    UNABLE_TO_WRITE_JSON(500),
-    UNABLE_TO_SERIALIZE_TO_JSON(500),
-    UNABLE_TO_COMPUTE_ID(500),
-    UNABLE_TO_PRINT_PREPARATION(500),
-    UNABLE_TO_READ_CONTENT(500),
-    UNABLE_TO_PARSE_ACTIONS(500),
-    UNABLE_TO_PARSE_REQUEST(400), // e.g IllegalArgumentException
-    UNABLE_TO_CONNECT_TO_HDFS(500, "location"),
-    UNSUPPORTED_ACTION_SCOPE(400),
-    MISSING_ACTION_SCOPE(400),
+                                                   UNEXPECTED_EXCEPTION(500),
+                                                   UNABLE_TO_PARSE_JSON(500),
+                                                   UNABLE_TO_WRITE_JSON(500),
+                                                   UNABLE_TO_SERIALIZE_TO_JSON(500),
+                                                   UNABLE_TO_COMPUTE_ID(500),
+                                                   UNABLE_TO_PRINT_PREPARATION(500),
+                                                   UNABLE_TO_READ_CONTENT(500),
+                                                   UNABLE_TO_PARSE_ACTIONS(500),
+                                                   UNABLE_TO_PARSE_REQUEST(400), // e.g IllegalArgumentException
+                                                   UNABLE_TO_CONNECT_TO_HDFS(500, "location"),
+                                                   UNSUPPORTED_ACTION_SCOPE(400),
+                                                   MISSING_ACTION_SCOPE(400),
                                                    MISSING_ACTION_SCOPE_PARAMETER(400),
                                                    BAD_AGGREGATION_PARAMETERS(400),
                                                    UNABLE_TO_AGGREGATE(500);

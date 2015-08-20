@@ -15,7 +15,6 @@ import org.apache.http.client.HttpClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.command.aggregation.Aggregate;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -47,7 +46,7 @@ public class AggregationAPI extends APIService {
 
         // validate input parameters
         if (StringUtils.isEmpty(input.getDatasetId()) && StringUtils.isEmpty(input.getPreparationId())) {
-            throw new TDPException(APIErrorCodes.BAD_AGGREGATION_PARAMETERS);
+            throw new TDPException(CommonErrorCodes.BAD_AGGREGATION_PARAMETERS);
         }
 
         // get the command and execute it

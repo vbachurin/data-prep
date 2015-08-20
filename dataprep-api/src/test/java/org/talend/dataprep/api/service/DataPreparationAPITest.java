@@ -39,6 +39,7 @@ import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.cache.ContentCacheKey;
 import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
+import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -1026,6 +1027,70 @@ public class DataPreparationAPITest {
         request.then()//
                 .statusCode(400)//
                 .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE")) ;
+    }
+
+    @Test
+    public void should_not_aggregate_because_dataset_and_preparation_id_are_missing() throws IOException {
+
+        // given
+        AggregationParameters params = getAggregationParameters("aggregation/aggregation_parameters.json");
+        params.setDatasetId(null);
+        params.setPreparationId(null);
+
+        // when
+        final Response response = given().contentType(ContentType.JSON)//
+                .body(builder.build().writer().writeValueAsString(params))//
+                .when()//
+                .post("/api/aggregate");
+
+        // then
+        assertEquals(response.getStatusCode(), 400);
+    }
+
+    @Test
+    public void should_aggregate_on_dataset() throws IOException {
+
+        // given
+        final String dataSetId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
+
+        AggregationParameters params = getAggregationParameters("aggregation/aggregation_parameters.json");
+        params.setDatasetId(dataSetId);
+        params.setPreparationId(null);
+
+        // when
+        final String response = given().contentType(ContentType.JSON)//
+                .body(builder.build().writer().writeValueAsString(params))//
+                .when()//
+                .post("/api/aggregate").asString();
+
+        // then
+        assertEquals(response, "TDD development");
+    }
+
+    @Test
+    public void should_aggregate_on_preparatin() throws IOException {
+
+        // given
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparationContentGet", "text/csv");
+
+        AggregationParameters params = getAggregationParameters("aggregation/aggregation_parameters.json");
+        params.setDatasetId(null);
+        params.setPreparationId(preparationId);
+        params.setStepId(null);
+
+        // when
+        final String response = given().contentType(ContentType.JSON)//
+                .body(builder.build().writer().writeValueAsString(params))//
+                .when()//
+                .post("/api/aggregate").asString();
+
+        // then
+        assertEquals(response, "TDD development");
+    }
+
+    private AggregationParameters getAggregationParameters(String input) throws IOException {
+        InputStream parametersInput = this.getClass().getResourceAsStream(input);
+        return builder.build().reader(AggregationParameters.class).readValue(parametersInput);
     }
 
     private String createDataset(final String file, final String name, final String type) throws IOException {

@@ -1,6 +1,5 @@
 package org.talend.dataprep.api.service.command.aggregation;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.lang.StringUtils;
@@ -14,19 +13,13 @@ import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIErrorCodes;
-import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.api.service.command.dataset.DataSetGet;
-import org.talend.dataprep.api.service.command.preparation.PreparationGet;
 import org.talend.dataprep.api.service.command.preparation.PreparationGetContent;
-import org.talend.dataprep.cache.ContentCache;
-import org.talend.dataprep.cache.ContentCacheKey;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCode;
@@ -47,10 +40,6 @@ public class Aggregate extends DataPrepCommand<InputStream> {
     /** The aggregation parameters. */
     private AggregationParameters parameters;
 
-    /** The content cache to get preparation content faster, if available. */
-    @Autowired
-    protected ContentCache contentCache;
-
     /**
      * Default constructor.
      *
@@ -68,11 +57,13 @@ public class Aggregate extends DataPrepCommand<InputStream> {
     protected InputStream run() throws Exception {
 
         // get the content to work on
-        InputStream content = null;
+        InputStream content;
         if (parameters.getDatasetId() != null) {
             content = getDataSetContent(client, parameters.getDatasetId(), parameters.getSampleSize());
         } else {
-            content = getPreparationContent(client, parameters.getPreparationId(), parameters.getStepId(),
+            content = getPreparationContent(client, //
+                    parameters.getPreparationId(), //
+                    parameters.getStepId(), //
                     parameters.getSampleSize());
         }
 
@@ -115,9 +106,10 @@ public class Aggregate extends DataPrepCommand<InputStream> {
     /**
      * Return the content of the wanted preparation as input stream.
      *
-     * @param preparationId the preparation
-     * @param stepId
-     * @return
+     * @param client the http client to use.
+     * @param preparationId the preparation id.
+     * @param stepId the step id.
+     * @return the preparation content.
      */
     private InputStream getPreparationContent(HttpClient client, String preparationId, String stepId, Long sampleSize) {
 
@@ -127,35 +119,9 @@ public class Aggregate extends DataPrepCommand<InputStream> {
             step = "head"; //$NON-NLS-1$
         }
 
-        // get the preparation first
-        final Preparation preparation = getPreparation(preparationId);
-
-        // get it from the cache if it's available
-        ContentCacheKey cacheKey = new ContentCacheKey(preparation, step, sampleSize);
-        if (contentCache.has(cacheKey)) {
-            return contentCache.get(cacheKey);
-        }
-
         // call the preparation service
         PreparationGetContent command = context.getBean(PreparationGetContent.class, client, preparationId, step, sampleSize);
         return command.execute();
-    }
-
-    /**
-     * Return the preparation from the preparation service.
-     *
-     * @param preparationId the wanted preparation.
-     * @return the preparation.
-     */
-    private Preparation getPreparation(String preparationId) {
-
-        final PreparationGet getPreparation = context.getBean(PreparationGet.class, client, preparationId);
-        try {
-            InputStream temp = getPreparation.execute();
-            return builder.build().reader(Preparation.class).readValue(temp);
-        } catch (IOException e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_GET_PREPARATION_DETAILS, e);
-        }
     }
 
     /**

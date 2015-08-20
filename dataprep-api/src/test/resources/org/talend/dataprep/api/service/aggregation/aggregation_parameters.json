@@ -1,0 +1,19 @@
+{
+  "preparationId": 12345,
+  "stepId": 756984,
+  "groupBy": [
+    "0003",
+    "0004"
+  ],
+  "operations": [
+    {
+      "columnId": "0012",
+      "operator": "SUM"
+    },
+    {
+      "columnId": "0018",
+      "operator": "MIN"
+    }
+  ],
+  "sampleSize": 520
+}
