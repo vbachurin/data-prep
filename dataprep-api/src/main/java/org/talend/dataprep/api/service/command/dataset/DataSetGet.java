@@ -95,7 +95,6 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
     private InputStream handleResponse(final HttpResponse response, final HttpGet contentRetrieval)
             throws IOException {
         int statusCode = response.getStatusLine().getStatusCode();
-        // No cache, query the data set service for content
         if (statusCode == HttpStatus.SC_NO_CONTENT) {
             // Immediately release connection
             contentRetrieval.releaseConnection();

@@ -16,6 +16,8 @@ import javax.servlet.http.Part;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
@@ -31,6 +33,7 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
+import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
 import org.talend.dataprep.transformation.api.action.dynamic.DynamicType;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.parameters.GenericParameter;
@@ -50,17 +53,25 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
 public class TransformationService {
 
+    /** This class' logger. */
+    private static final Logger LOG = LoggerFactory.getLogger(TransformationService.class);
+
+    /** The Spring application context. */
     @Autowired
     private ApplicationContext context;
 
+    /** The dataprep ready to use jackson object builder. */
     @Autowired(required = true)
     private Jackson2ObjectMapperBuilder builder;
 
+    /** All available transformation actions. */
     @Autowired
     private ActionMetadata[] allActions;
 
+    /** The transformer factory. */
     @Autowired
     private TransformerFactory factory;
+
 
     /**
      * Apply all <code>actions</code> to <code>content</code>. Actions is a Base64-encoded JSON list of
@@ -268,4 +279,32 @@ public class TransformationService {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
+
+    /**
+     * Compute the given aggregation.
+     *
+     * @param parameters the aggregation parameters.
+     * @param content the content to compute the aggregation on.
+     * @param response the http response.
+     */
+    @RequestMapping(value = "/aggregate", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value = "Compute the aggregation according to the request body parameters", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @VolumeMetered
+    public void aggregate(@ApiParam(value = "The aggregation parameters in json")
+    @RequestPart(value = "parameters", required = true)
+    final Part parameters, //
+            @ApiParam(value = "Content to apply the aggregation on")
+    @RequestPart(value = "content", required = true)
+    final Part content, //
+            final HttpServletResponse response) {
+        try {
+            AggregationParameters params = builder.build().reader(AggregationParameters.class)
+                    .readValue(parameters.getInputStream());
+            LOG.debug("Aggregation requested {}", params);
+            response.getWriter().write("TDD");
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_AGGREGATE, e);
+        }
+    }
+
 }

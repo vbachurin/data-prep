@@ -18,7 +18,8 @@ public enum CommonErrorCodes implements ErrorCode {
     UNABLE_TO_CONNECT_TO_HDFS(500, "location"),
     UNSUPPORTED_ACTION_SCOPE(400),
     MISSING_ACTION_SCOPE(400),
-    MISSING_ACTION_SCOPE_PARAMETER(400);
+                                                   MISSING_ACTION_SCOPE_PARAMETER(400),
+                                                   UNABLE_TO_AGGREGATE(500);
 
     /** The http status to use. */
     private int httpStatus;
