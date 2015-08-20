@@ -7,26 +7,18 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Unit test for the ChangeDatePattern action.
@@ -68,7 +60,7 @@ public class ChangeDatePatternTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void should_check_column_id_parameter_when_dealing_with_row_metadata() {
-        action.beforeApply(new HashMap<>());
+        action.applyOnColumn(new DataSetRow(new HashMap<>()), new TransformationContext(), new HashMap<>(), "");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -79,7 +71,7 @@ public class ChangeDatePatternTest {
         missingParameters.put(ChangeDatePattern.NEW_PATTERN, "toto");
 
         //when
-        action.beforeApply(missingParameters);
+        action.applyOnColumn(new DataSetRow(new HashMap<>()), new TransformationContext(), missingParameters, "");
     }
 
     @Test
@@ -94,7 +86,7 @@ public class ChangeDatePatternTest {
         insufficientParams.put("column_id", "0000");
 
         //when
-        action.beforeApply(insufficientParams);
+        action.applyOnColumn(new DataSetRow(new HashMap<>()), new TransformationContext(), insufficientParams, "");
     }
 
     @Test
@@ -113,7 +105,6 @@ public class ChangeDatePatternTest {
         expectedValues.put("0002", "tata");
 
         // when
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         // then
@@ -136,7 +127,6 @@ public class ChangeDatePatternTest {
         expectedValues.put("0002", "tata");
 
         // when
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         // then
@@ -159,7 +149,6 @@ public class ChangeDatePatternTest {
         expectedValues.put("0002", "tata");
 
         // when
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         // then
@@ -177,7 +166,6 @@ public class ChangeDatePatternTest {
         setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
 
         // when
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         // then (values should be unchanged)

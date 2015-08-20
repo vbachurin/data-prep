@@ -6,12 +6,10 @@ import static org.talend.dataprep.api.type.Type.INTEGER;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalUnit;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -55,16 +53,6 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
     private static final Logger LOGGER = LoggerFactory.getLogger(ComputeTimeSince.class);
 
     /**
-     * Temporal unit to use. This must be set before transformation
-     */
-    private TemporalUnit unit;
-
-    /**
-     * Actual time. This must be set before transformation
-     */
-    private Temporal now;
-
-    /**
      * @see ActionMetadata#getName()
      */
     @Override
@@ -86,21 +74,19 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
         return new Item[] { new Item(TIME_UNIT_PARAMETER, "categ", values) };
     }
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
-        now = (unit == HOURS ? LocalDateTime.now() : LocalDate.now());
-    }
-
     /**
      * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
      */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+
+        TemporalUnit unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
+        Temporal now = (unit == HOURS ? LocalDateTime.now() : LocalDate.now());
+
         final ColumnMetadata column = row.getRowMetadata().getById(columnId);
 
         // create the new column and add the new column after the current one
-        final ColumnMetadata newColumnMetadata = createNewColumn(column);
+        final ColumnMetadata newColumnMetadata = createNewColumn(column, unit);
         row.getRowMetadata().insertAfter(columnId, newColumnMetadata);
 
         // parse the date
@@ -123,7 +109,7 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
      * @param column the original column metadata
      * @return the new column metadata
      */
-    private ColumnMetadata createNewColumn(ColumnMetadata column) {
+    private ColumnMetadata createNewColumn(ColumnMetadata column, TemporalUnit unit) {
         return ColumnMetadata.Builder //
                 .column() //
                 .copy(column)//

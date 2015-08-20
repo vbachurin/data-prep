@@ -2,10 +2,7 @@ package org.talend.dataprep.transformation.api.action.metadata.date;
 
 import static org.talend.dataprep.api.type.Type.BOOLEAN;
 
-import java.text.ParsePosition;
 import java.time.DateTimeException;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.util.HashMap;
@@ -26,10 +23,6 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Change the date pattern on a 'date' column.

@@ -12,9 +12,7 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import static java.time.temporal.ChronoUnit.DAYS;
-import static java.time.temporal.ChronoUnit.HOURS;
-import static java.time.temporal.ChronoUnit.YEARS;
+import static java.time.temporal.ChronoUnit.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
@@ -38,8 +36,6 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -49,7 +45,6 @@ import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.column.CopyColumnMetadata;
 
 /**
  * Test class for Split action. Creates one consumer, and test it.
@@ -104,7 +99,6 @@ public class ComputeTimeSinceTest {
         expectedValues.put("0002", "Bacon");
 
         //when
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         //then
@@ -127,7 +121,6 @@ public class ComputeTimeSinceTest {
         expectedValues.put("0002", "Bacon");
 
         //when
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         //then
@@ -150,7 +143,6 @@ public class ComputeTimeSinceTest {
         expectedValues.put("0002", "Bacon");
 
         //when
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         //then
@@ -178,7 +170,6 @@ public class ComputeTimeSinceTest {
         parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
 
         //when
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         //then
@@ -206,7 +197,6 @@ public class ComputeTimeSinceTest {
         parameters.put(TIME_UNIT_PARAMETER, HOURS.name());
 
         //when
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         //then
@@ -232,7 +222,6 @@ public class ComputeTimeSinceTest {
         parameters.put(TIME_UNIT_PARAMETER, HOURS.name());
 
         //when
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
@@ -259,11 +248,9 @@ public class ComputeTimeSinceTest {
 
         //when
         parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         parameters.put(TIME_UNIT_PARAMETER, HOURS.name());
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         //then
@@ -285,7 +272,6 @@ public class ComputeTimeSinceTest {
         expected.add(createMetadata("0002", "steps"));
 
         //when
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         //then
@@ -308,7 +294,6 @@ public class ComputeTimeSinceTest {
         expected.add(createMetadata("0002", "steps"));
 
         //when
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
@@ -333,11 +318,9 @@ public class ComputeTimeSinceTest {
 
         //when
         parameters.put(TIME_UNIT_PARAMETER, YEARS.name());
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         //then

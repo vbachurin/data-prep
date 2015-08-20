@@ -12,7 +12,6 @@ import java.util.*;
 
 import javax.annotation.Nonnull;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -30,6 +29,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -57,16 +57,6 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
      * The parameter object for the custom new pattern.
      */
     private static final Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, STRING.getName(), EMPTY);
-
-    /**
-     * The date formatter to use. It must be init before the transformation
-     */
-    private DateTimeFormatter newDateFormat;
-
-    /**
-     * The new pattern to use. It must be init before the transformation
-     */
-    private String newPattern;
 
     /**
      * @see ActionMetadata#getName()
@@ -98,17 +88,16 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
         return new Item[] { new Item(NEW_PATTERN, "patterns", values.toArray(new Item.Value[values.size()])) };
     }
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        newPattern = getNewPattern(parameters);
-        newDateFormat = getDateFormat(newPattern);
-    }
 
     /**
      * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
      */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+
+        String newPattern = getNewPattern(parameters);
+        DateTimeFormatter newDateFormat = getDateFormat(newPattern);
+
         // checks for fail fast
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
