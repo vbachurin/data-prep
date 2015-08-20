@@ -345,7 +345,7 @@
                 stepId: stepId,
                 sampleSize: sampleSize,
                 operations: [{
-                    operator: aggregation.id,
+                    operator: aggregation,
                     columnId: column.id
                 }],
                 groupBy: [service.selectedColumn.id]
@@ -353,7 +353,7 @@
 
             getAggregationData(aggregationParameters)
                 .then(function(response) {
-                    initClassicHistogram(aggregation.id, $filter('translate')(aggregation.name), response);
+                    initClassicHistogram(aggregation, $filter('translate')(aggregation), response);
                     service.histogram.aggregationColumn = column;
                     service.histogram.aggregation = aggregation;
                 });

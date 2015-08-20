@@ -60,7 +60,7 @@ describe('ColumnProfile controller', function () {
             //given
             var ctrl = createController();
             StatisticsService.histogram = {
-                aggregation: {name: 'MAX'}
+                aggregation: 'MAX'
             };
 
             //when

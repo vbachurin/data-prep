@@ -617,7 +617,7 @@ describe('Statistics service', function () {
         var stepId = '9878645468';                          // the currently viewed step id
         var sampleSize = 500;                               // the sample size
         var column = {'id': '0002', 'name': 'state'};       // the column where to perform the aggregation
-        var aggregation = {'id': 'max', 'name': 'MAX'};     // the aggregation operation
+        var aggregation = 'MAX';                            // the aggregation operation
 
         var getAggregationsResponse = [                     // the REST aggregation GET result
             {'data': 'Lansing', 'max': 15},
@@ -668,7 +668,7 @@ describe('Statistics service', function () {
                 preparationId: '2132548345365',
                 stepId: '9878645468',
                 sampleSize: 500,
-                operations: [{operator: 'max', columnId: '0002'}],
+                operations: [{operator: 'MAX', columnId: '0002'}],
                 groupBy: ['0001']
             });
             expect(StatisticsService.histogram).toEqual({
@@ -679,7 +679,7 @@ describe('Statistics service', function () {
                     {'data': 'Annapolis', 'max': 4, 'formattedValue': 'Annapolis'},
                     {'data': 'Pierre', 'max': 104, 'formattedValue': 'Pierre'}
                 ],
-                key: 'max',
+                key: 'MAX',
                 label: 'MAX',
                 column: StatisticsService.selectedColumn,
                 aggregationColumn: column,
@@ -711,7 +711,7 @@ describe('Statistics service', function () {
                     {'data': 'Annapolis', 'max': 4, 'formattedValue': 'Annapolis'},
                     {'data': 'Pierre', 'max': 104, 'formattedValue': 'Pierre'}
                 ],
-                key: 'max',
+                key: 'MAX',
                 label: 'MAX',
                 column: StatisticsService.selectedColumn,
                 aggregationColumn: column,

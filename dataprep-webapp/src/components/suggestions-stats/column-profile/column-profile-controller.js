@@ -20,14 +20,7 @@
          * @description The list of possible aggregations
          * @type {array}
          */
-        vm.aggregations =  [
-            {id: 'sum', name: 'SUM'},
-            {id: 'max', name: 'MAX'},
-            {id: 'min', name: 'MIN'},
-            {id: 'count', name: 'COUNT'},
-            {id: 'average', name: 'AVERAGE'},
-            {id: 'median', name: 'MEDIAN'}
-        ];
+        vm.aggregations =  ['SUM', 'MAX', 'MIN', 'COUNT', 'AVERAGE', 'MEDIAN'];
 
         /**
          * @ngdoc method
@@ -38,7 +31,7 @@
          */
         vm.getCurrentAggregation = function getCurrentAggregation() {
             return StatisticsService.histogram && StatisticsService.histogram.aggregation ?
-                StatisticsService.histogram.aggregation.name:
+                StatisticsService.histogram.aggregation:
                 'LINE_COUNT';
         };
 
