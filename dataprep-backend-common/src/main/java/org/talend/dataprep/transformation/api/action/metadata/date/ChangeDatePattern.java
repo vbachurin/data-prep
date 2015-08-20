@@ -13,6 +13,8 @@ import java.util.*;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -25,7 +27,6 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ColumnActio
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,25 +39,21 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Component(ChangeDatePattern.ACTION_BEAN_PREFIX + ChangeDatePattern.ACTION_NAME)
 public class ChangeDatePattern extends AbstractDate implements ColumnAction {
 
-    /**
-     * Action name.
-     */
+    /** Action name. */
     public static final String ACTION_NAME = "change_date_pattern"; //$NON-NLS-1$
 
-    /**
-     * Name of the new date pattern parameter.
-     */
+    /** Name of the new date pattern parameter. */
     protected static final String NEW_PATTERN = "new_pattern"; //$NON-NLS-1$
 
-    /**
-     * The parameter object for the custom new pattern.
-     */
+    /** The parameter object for the custom new pattern. */
     private static final String CUSTOM_PATTERN = "custom_date_pattern"; //$NON-NLS-1$
 
-    /**
-     * The parameter object for the custom new pattern.
-     */
+    /** The parameter object for the custom new pattern. */
     private static final Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, STRING.getName(), EMPTY);
+
+    /** DataPrep ready jackson builder object. */
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
 
     /**
      * @see ActionMetadata#getName()
@@ -106,8 +103,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
         }
 
         // parse and checks the new date pattern
-        final JsonFactory jsonFactory = new JsonFactory();
-        final ObjectMapper mapper = new ObjectMapper(jsonFactory);
+        final ObjectMapper mapper = builder.build();
 
         // register the new pattern in column stats, to be able to process date action later
         final JsonNode rootNode = getStatisticsNode(mapper, column);
@@ -132,7 +128,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
 
                 // save all the json tree in the stats column
                 final StringWriter temp = new StringWriter(1000);
-                final JsonGenerator generator = jsonFactory.createGenerator(temp);
+                final JsonGenerator generator = mapper.getFactory().createGenerator(temp);
                 mapper.writeTree(generator, rootNode);
                 column.setStatistics(temp.toString());
             }

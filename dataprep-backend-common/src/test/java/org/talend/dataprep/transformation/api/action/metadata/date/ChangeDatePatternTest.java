@@ -13,6 +13,13 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -25,17 +32,21 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
  *
  * @see ChangeDatePattern
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = ChangeDatePatternTest.class)
+@Configuration
+@ComponentScan(basePackages = "org.talend.dataprep")
+@EnableAutoConfiguration
 public class ChangeDatePatternTest {
 
     /** The action to test. */
+    @Autowired
     private ChangeDatePattern action;
 
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        action = new ChangeDatePattern();
-
         parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 ChangeDatePatternTest.class.getResourceAsStream("changeDatePatternAction.json"));
@@ -72,11 +83,6 @@ public class ChangeDatePatternTest {
 
         //when
         action.applyOnColumn(new DataSetRow(new HashMap<>()), new TransformationContext(), missingParameters, "");
-    }
-
-    @Test
-    public void toto() {
-        action.getItems();
     }
 
     @Test(expected = IllegalArgumentException.class)
