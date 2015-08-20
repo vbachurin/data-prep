@@ -39,4 +39,8 @@ public class FillWithDateIfInvalid
         return Type.DATE.equals( type );
     }
 
+    public boolean isDate(){
+        return true;
+    }
+
 }
