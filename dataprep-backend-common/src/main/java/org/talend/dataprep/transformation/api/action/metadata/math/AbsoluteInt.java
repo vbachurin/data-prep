@@ -46,10 +46,6 @@ public class AbsoluteInt extends AbstractAbsolute implements ColumnAction {
         return Type.INTEGER.equals(Type.get(column.getType()));
     }
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        // nothing to do here
-    }
 
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
