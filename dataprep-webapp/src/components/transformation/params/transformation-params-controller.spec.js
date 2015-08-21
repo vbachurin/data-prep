@@ -38,33 +38,10 @@ describe('Transform params controller', function () {
         ctrl.transformation.parameters[1].value = 4;
 
         //when
-        ctrl.transformWithParam(false);
+        ctrl.transformWithParam();
 
         //then
         expect(extractedParams).toEqual({ param1: 'param1Value', param2: 4 });
-    });
-
-
-    it('should NOT extract param', function() {
-
-        //given
-        transformation = {
-            name: 'uppercase',
-            category: 'case',
-            parameters: [
-                {name: 'param1', type: 'text', default: ''},
-                {name: 'param2', type: 'integer', default: '5'}
-            ]
-        };
-        var ctrl = createController(transformation);
-        ctrl.transformation.parameters[0].value = 'param1Value';
-        ctrl.transformation.parameters[1].value = 4;
-
-        //when
-        ctrl.transformWithParam(true);
-
-        //then
-        expect(extractedParams).not.toEqual({ param1: 'param1Value', param2: 4 });
     });
 
     it('should extract simple choice param', function() {
@@ -84,7 +61,7 @@ describe('Transform params controller', function () {
         ctrl.transformation.items[0].selectedValue = ctrl.transformation.items[0].values[1];
 
         //when
-        ctrl.transformWithParam(false);
+        ctrl.transformWithParam();
 
         //then
         expect(extractedParams).toEqual({ mode: 'index'});
@@ -113,7 +90,7 @@ describe('Transform params controller', function () {
         ctrl.transformation.items[0].selectedValue = ctrl.transformation.items[0].values[0];
 
         //when
-        ctrl.transformWithParam(false);
+        ctrl.transformWithParam();
 
         //then
         expect(extractedParams).toEqual({ mode: 'regex', regex: 'param1Value', comment: 'my comment'});
@@ -148,7 +125,7 @@ describe('Transform params controller', function () {
         ctrl.transformation.parameters[1].value = 4;
 
         //when
-        ctrl.transformWithParam(false);
+        ctrl.transformWithParam();
 
         //then
         expect(extractedParams).toEqual({ mode: 'regex', regex: 'param1Value', comment: 'my comment', param1: 'param1Value', param2: 4});
@@ -257,7 +234,7 @@ describe('Transform params controller', function () {
         ctrl.transformation.cluster.clusters[1].replace.value = 'Toto';
 
         //when
-        ctrl.transformWithParam(false);
+        ctrl.transformWithParam();
 
         //then
         expect(extractedParams).toEqual({

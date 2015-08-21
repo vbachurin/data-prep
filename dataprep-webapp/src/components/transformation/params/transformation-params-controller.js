@@ -98,11 +98,9 @@
          * @param {boolean} invalid validity of the form
          * @description Gather params and perform a transformation on the column if the form is valid
          */
-        vm.transformWithParam = function (invalid) {
-            if(!invalid) {
-                var transformationParams = gatherParams();
-                vm.onSubmit({params: transformationParams});
-            }
+        vm.transformWithParam = function () {
+            var transformationParams = gatherParams();
+            vm.onSubmit({params: transformationParams});
         };
 
         /**

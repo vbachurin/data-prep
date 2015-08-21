@@ -988,7 +988,8 @@
         "implicit": false,
         "description": "The new column name",
         "label": "New name",
-        "default": null
+        "default": null,
+        "canBeBlank": false
       }
     ],
     "category": "columns",

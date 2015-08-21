@@ -89,7 +89,7 @@
     You've transformed your dataset in a preparation that can be saved in order to be re-used next time.<br/>
     Do you want to save it ?
     <br/><br/>
-    <form name="savePreparationForm" ng-submit="playgroundCtrl.confirmSaveOnClose()">
+    <form name="savePreparationForm" ng-submit="savePreparationForm.$valid && playgroundCtrl.confirmSaveOnClose()">
 
         <div class="modal-form-row">
             <div class="param-name">Preparation Name: </div>
@@ -97,7 +97,7 @@
                    class="param-input"
                    placeholder="{{::'ENTER_PREPARATION_NAME' | translate}}"
                    ng-model="playgroundCtrl.preparationName"
-                   not-blank-validation="false"/>
+                   can-be-blank="false"/>
         </div>
 
         <div class="modal-buttons">

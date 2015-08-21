@@ -10,10 +10,9 @@
         <div class="param-input" ng-if="::(!simpleParamsCtrl.editableSelect)">
             <input name="{{::(param.name + $index)}}"
                    type="{{::param.inputType}}"
-                   ng-trim="false"
                    ng-model="param.value"
-                   type-validation="{{::param.type}}"
-                   not-blank-validation="{{::param.nullable}}"/>
+                   is-type="{{::param.type}}"
+                   can-be-blank="{{::param.canBeBlank}}"/>
             <span ng-if="::(param.type === 'boolean')">{{param.name}}</span>
         </div>
 
@@ -23,7 +22,7 @@
              ng-if="::(simpleParamsCtrl.tooltip !== 'false')"/>
 
         <div class="param-error error"
-             ng-if="paramCtrl.paramForm[param.name + $index].$error.typeValidation || paramsCtrl.paramForm[param.name + $index].$error.number">
+             ng-if="paramCtrl.paramForm[param.name + $index].$error.isTypeValidation || paramsCtrl.paramForm[param.name + $index].$error.number">
             This must be a {{::param.type}}
         </div>
     </div>

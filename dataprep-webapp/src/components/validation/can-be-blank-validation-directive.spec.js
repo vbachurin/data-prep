@@ -8,16 +8,16 @@ describe('Not Blank Validation directive', function() {
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function(directiveScope) {
-            var element = angular.element('<form name="myForm"><input name="myInput" ng-model="myInput" not-blank-validation="{{nullable}}" /></form>');
+            var element = angular.element('<form name="myForm"><input name="myInput" ng-model="myInput" can-be-blank="{{canBeBlank}}" /></form>');
             $compile(element)(directiveScope);
             directiveScope.$digest();
             return element;
         };
     }));
 
-    it('should validate empty input', function() {
+    it('should validate empty input when it can be blank', function() {
         //given
-        scope.nullable = true;
+        scope.canBeBlank = true;
         scope.myInput = '';
 
         //when
@@ -27,9 +27,9 @@ describe('Not Blank Validation directive', function() {
         expect(scope.myForm.$invalid).toBeFalsy();
     });
 
-    it('should not validate input when nullable is not authorized and input is empty', function() {
+    it('should invalidate input when it cannot be blank and input is empty', function() {
         //given
-        scope.nullable = false;
+        scope.canBeBlank = false;
         scope.myInput = '';
 
         //when
@@ -40,9 +40,9 @@ describe('Not Blank Validation directive', function() {
 
     });
 
-    it('should validate input when nullable is not authorized and input is not empty', function() {
+    it('should validate input when it cannot be blank and input is not empty', function() {
         //given
-        scope.nullable = false;
+        scope.canBeBlank = false;
         scope.myInput = 'city';
 
         //when
