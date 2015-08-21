@@ -98,7 +98,7 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
             row.set(newColumnMetadata.getId(), newValue + "");
         } catch (DateTimeException e) {
             // Nothing to do: in this case, temporalAccessor is left null
-            LOGGER.debug("Unable to parse date {}.", value, e);
+            LOGGER.debug("Unable to parse date {} for {} @ {}", value, columnId, row.getTdpId(), e);
             row.set(newColumnMetadata.getId(), "");
         }
     }

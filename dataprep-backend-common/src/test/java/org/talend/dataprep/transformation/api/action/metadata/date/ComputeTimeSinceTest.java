@@ -203,6 +203,7 @@ public class ComputeTimeSinceTest {
         assertEquals(expectedValues, row.values());
     }
 
+
     @Test
     public void should_compute_hours_twice() throws IOException {
         //given
@@ -254,6 +255,29 @@ public class ComputeTimeSinceTest {
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         //then
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
+     * @see ComputeTimeSince#create(Map)
+     */
+    @Test
+    public void should_deal_with_null_value() throws IOException {
+        final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
+        row.set("0001", null);
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", null);
+        expectedValues.put("0003", "");
+        expectedValues.put("0002", "Bacon");
+
+        parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        // then
         assertEquals(expectedValues, row.values());
     }
 
@@ -351,6 +375,7 @@ public class ComputeTimeSinceTest {
     String computeTimeSince(String date, String pattern, ChronoUnit unit) {
 
         Temporal now = (unit == ChronoUnit.HOURS ? LocalDateTime.now() : LocalDate.now());
+        // Temporal now = LocalDateTime.now();
 
         DateTimeFormatter format = DateTimeFormatter.ofPattern(pattern);
         TemporalAccessor start = format.parse(date, new ParsePosition(0));

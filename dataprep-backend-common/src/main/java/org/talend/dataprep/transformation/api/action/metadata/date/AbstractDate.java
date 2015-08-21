@@ -57,6 +57,11 @@ public abstract class AbstractDate extends AbstractActionMetadata {
      * @throws DateTimeException if none of the formats can match text
      */
     protected TemporalAccessor superParse(String value, Set<DateTimeFormatter> formatters) throws DateTimeException {
+        // take care of the null value
+        if (value == null) {
+            throw new DateTimeException("cannot parse null");
+        }
+
         for (DateTimeFormatter formatToTest : formatters) {
             try {
                 return formatToTest.parse(value);
