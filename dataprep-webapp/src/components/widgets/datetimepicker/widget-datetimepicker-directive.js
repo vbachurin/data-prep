@@ -15,7 +15,7 @@
     function TalendDatetimePicker($timeout) {
 
         return {
-            restrict: 'EA',
+            restrict: 'E',
             replace: true,
             transclude: true,
             templateUrl: 'components/widgets/datetimepicker/datetimepicker.html',
