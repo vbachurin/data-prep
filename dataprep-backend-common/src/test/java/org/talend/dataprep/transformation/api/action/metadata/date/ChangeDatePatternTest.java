@@ -7,43 +7,46 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Unit test for the ChangeDatePattern action.
  *
  * @see ChangeDatePattern
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = ChangeDatePatternTest.class)
+@Configuration
+@ComponentScan(basePackages = "org.talend.dataprep")
+@EnableAutoConfiguration
 public class ChangeDatePatternTest {
 
     /** The action to test. */
+    @Autowired
     private ChangeDatePattern action;
 
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        action = new ChangeDatePattern();
-
         parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 ChangeDatePatternTest.class.getResourceAsStream("changeDatePatternAction.json"));
@@ -68,7 +71,7 @@ public class ChangeDatePatternTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void should_check_column_id_parameter_when_dealing_with_row_metadata() {
-        action.beforeApply(new HashMap<>());
+        action.applyOnColumn(new DataSetRow(new HashMap<>()), new TransformationContext(), new HashMap<>(), "");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -79,31 +82,7 @@ public class ChangeDatePatternTest {
         missingParameters.put(ChangeDatePattern.NEW_PATTERN, "toto");
 
         //when
-        action.beforeApply(missingParameters);
-    }
-
-    @Test
-    public void should_change_column_metadata() throws IOException {
-        // given
-        String statistics = IOUtils.toString(ChangeDatePatternTest.class.getResourceAsStream("statistics_yyyy-MM-dd.json"));
-        ColumnMetadata column = ColumnMetadata.Builder.column().id(1).name("due_date").statistics(statistics).type(Type.DATE)
-                .build();
-        RowMetadata rowMetadata = new RowMetadata(Collections.singletonList(column));
-
-        // when
-        action.beforeApply(parameters);
-        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
-
-        // then
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-        JsonNode rootNode = mapper.readTree(column.getStatistics());
-        String actualPattern = rootNode.get("patternFrequencyTable").get(0).get("pattern").textValue();
-        assertEquals("dd - MMM - yyyy", actualPattern);
-    }
-
-    @Test
-    public void toto() {
-        action.getItems();
+        action.applyOnColumn(new DataSetRow(new HashMap<>()), new TransformationContext(), missingParameters, "");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -113,7 +92,7 @@ public class ChangeDatePatternTest {
         insufficientParams.put("column_id", "0000");
 
         //when
-        action.beforeApply(insufficientParams);
+        action.applyOnColumn(new DataSetRow(new HashMap<>()), new TransformationContext(), insufficientParams, "");
     }
 
     @Test
@@ -132,7 +111,6 @@ public class ChangeDatePatternTest {
         expectedValues.put("0002", "tata");
 
         // when
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         // then
@@ -140,21 +118,47 @@ public class ChangeDatePatternTest {
     }
 
     @Test
-    public void should_process_row_when_value_does_not_match_pattern() throws Exception {
+    public void should_process_row_when_value_does_not_match_most_frequent_pattern() throws Exception {
         // given
         Map<String, String> values = new HashMap<>();
         values.put("0000", "toto");
-        values.put("0001", "05.28.99");
+        values.put("0001", "04-25-09");
         values.put("0002", "tata");
         DataSetRow row = new DataSetRow(values);
         setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
 
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "toto");
+        expectedValues.put("0001", "25 - Apr - 2009");
+        expectedValues.put("0002", "tata");
+
         // when
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
-        // then (values should be unchanged)
-        assertEquals(values, row.values());
+        // then
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
+    public void should_process_row_when_value_does_not_match_any_pattern() throws Exception {
+        // given
+        Map<String, String> values = new HashMap<>();
+        values.put("0000", "toto");
+        values.put("0001", "NA");
+        values.put("0002", "tata");
+        DataSetRow row = new DataSetRow(values);
+        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "toto");
+        expectedValues.put("0001", "NA");
+        expectedValues.put("0002", "tata");
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        // then
+        assertEquals(expectedValues, row.values());
     }
 
     @Test
@@ -168,7 +172,6 @@ public class ChangeDatePatternTest {
         setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
 
         // when
-        action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         // then (values should be unchanged)

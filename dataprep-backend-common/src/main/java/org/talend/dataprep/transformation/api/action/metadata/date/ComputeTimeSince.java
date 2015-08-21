@@ -3,11 +3,9 @@ package org.talend.dataprep.transformation.api.action.metadata.date;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static org.talend.dataprep.api.type.Type.INTEGER;
 
-import java.text.ParsePosition;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAccessor;
@@ -25,10 +23,6 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component(ComputeTimeSince.ACTION_BEAN_PREFIX + ComputeTimeSince.TIME_SINCE_ACTION_NAME)
 public class ComputeTimeSince extends AbstractDate implements ColumnAction {
@@ -59,16 +53,6 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
     private static final Logger LOGGER = LoggerFactory.getLogger(ComputeTimeSince.class);
 
     /**
-     * Temporal unit to use. This must be set before transformation
-     */
-    private TemporalUnit unit;
-
-    /**
-     * Actual time. This must be set before transformation
-     */
-    private Temporal now;
-
-    /**
      * @see ActionMetadata#getName()
      */
     @Override
@@ -90,32 +74,29 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
         return new Item[] { new Item(TIME_UNIT_PARAMETER, "categ", values) };
     }
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
-        now = (unit == HOURS ? LocalDateTime.now() : LocalDate.now());
-    }
-
     /**
      * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
      */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+
+        TemporalUnit unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
+        Temporal now = (unit == HOURS ? LocalDateTime.now() : LocalDate.now());
+
         final ColumnMetadata column = row.getRowMetadata().getById(columnId);
 
         // create the new column and add the new column after the current one
-        final ColumnMetadata newColumnMetadata = createNewColumn(column);
+        final ColumnMetadata newColumnMetadata = createNewColumn(column, unit);
         row.getRowMetadata().insertAfter(columnId, newColumnMetadata);
 
         // parse the date
-        final DateTimeFormatter dtf = getCurrentDatePatternFormatter(column);
         final String value = row.get(columnId);
         try {
-            final TemporalAccessor temporalAccessor = dtf.parse(value, new ParsePosition(0));
+            final TemporalAccessor temporalAccessor = superParse(value, row, columnId);
             final Temporal valueAsDate = unit == HOURS ? LocalDateTime.from(temporalAccessor) : LocalDate.from(temporalAccessor);
             final long newValue = unit.between(valueAsDate, now);
             row.set(newColumnMetadata.getId(), newValue + "");
-        } catch (DateTimeParseException e) {
+        } catch (DateTimeException e) {
             // Nothing to do: in this case, temporalAccessor is left null
             LOGGER.debug("Unable to parse date {}.", value, e);
             row.set(newColumnMetadata.getId(), "");
@@ -128,7 +109,7 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
      * @param column the original column metadata
      * @return the new column metadata
      */
-    private ColumnMetadata createNewColumn(ColumnMetadata column) {
+    private ColumnMetadata createNewColumn(ColumnMetadata column, TemporalUnit unit) {
         return ColumnMetadata.Builder //
                 .column() //
                 .copy(column)//
@@ -137,25 +118,6 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
                 .statistics("{}") // clear the statistics
                 .type(INTEGER)//
                 .build();
-    }
-
-    /**
-     * Get the current date pattern
-     *
-     * @param column the column metadata
-     * @return a new date formatter that fit the current pattern
-     */
-    private DateTimeFormatter getCurrentDatePatternFormatter(final ColumnMetadata column) {
-        // json reader to parse statistics as JSON format
-        final JsonFactory jsonFactory = new JsonFactory();
-        final ObjectMapper mapper = new ObjectMapper(jsonFactory);
-
-        // get date pattern from statistics
-        final JsonNode rootNode = getStatisticsNode(mapper, column);
-        final JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
-        final String datePattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
-
-        return DateTimeFormatter.ofPattern(datePattern);
     }
 
 }

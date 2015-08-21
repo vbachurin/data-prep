@@ -41,6 +41,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public abstract class AbstractActionMetadata implements ActionMetadata {
 
+
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractActionMetadata.class);
 
@@ -114,21 +115,11 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Initialisation before transformation execution loop
-     *
-     * @param parameters The transformation parameters
-     */
-    protected void beforeApply(final Map<String, String> parameters) {
-        // default empty implementation
-    }
-
-    /**
      * @see ActionMetadata#create(Map)
      */
     @Override
     public final Action create(final Map<String, String> parameters) {
         validator.checkScopeConsistency(this, parameters);
-        beforeApply(parameters);
 
         final Long rowId = getRowId(parameters);
         final String columnId = getColumnId(parameters);

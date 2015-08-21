@@ -5,13 +5,16 @@ import static org.talend.dataprep.api.type.Type.STRING;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -24,10 +27,10 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ColumnActio
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -36,30 +39,21 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Component(ChangeDatePattern.ACTION_BEAN_PREFIX + ChangeDatePattern.ACTION_NAME)
 public class ChangeDatePattern extends AbstractDate implements ColumnAction {
 
-    /**
-     * Action name.
-     */
+    /** Action name. */
     public static final String ACTION_NAME = "change_date_pattern"; //$NON-NLS-1$
 
-    /**
-     * Name of the new date pattern parameter.
-     */
+    /** Name of the new date pattern parameter. */
     protected static final String NEW_PATTERN = "new_pattern"; //$NON-NLS-1$
 
-    /**
-     * The parameter object for the custom new pattern.
-     */
+    /** The parameter object for the custom new pattern. */
     private static final String CUSTOM_PATTERN = "custom_date_pattern"; //$NON-NLS-1$
 
-    /**
-     * The parameter object for the custom new pattern.
-     */
+    /** The parameter object for the custom new pattern. */
     private static final Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, STRING.getName(), EMPTY);
 
-    /**
-     * The date formatter to use. It must be init before the transformation
-     */
-    private SimpleDateFormat newDateFormat;
+    /** DataPrep ready jackson builder object. */
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
 
     /**
      * @see ActionMetadata#getName()
@@ -88,19 +82,19 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
         values.add(new Item.Value("custom", CUSTOM_PATTERN_PARAMETER));
         values.get(0).setDefault(true);
 
-        return new Item[]{new Item(NEW_PATTERN, "patterns", values.toArray(new Item.Value[values.size()]))};
+        return new Item[] { new Item(NEW_PATTERN, "patterns", values.toArray(new Item.Value[values.size()])) };
     }
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        newDateFormat = getDateFormat(getNewPattern(parameters));
-    }
 
     /**
      * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
      */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+
+        String newPattern = getNewPattern(parameters);
+        DateTimeFormatter newDateFormat = getDateFormat(newPattern);
+
         // checks for fail fast
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
@@ -109,23 +103,36 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
         }
 
         // parse and checks the new date pattern
-        final String newPattern = newDateFormat.toPattern();
-        final JsonFactory jsonFactory = new JsonFactory();
-        final ObjectMapper mapper = new ObjectMapper(jsonFactory);
+        final ObjectMapper mapper = builder.build();
 
-        // store the current pattern in the context
+        // register the new pattern in column stats, to be able to process date action later
         final JsonNode rootNode = getStatisticsNode(mapper, column);
-        final JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
-        final String futureExPattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
-
-        // update the pattern in the column
+        final JsonNode patternFrequencyTable = rootNode.get("patternFrequencyTable"); //$NON-NLS-1$
         try {
-            ((ObjectNode) mostUsedPatternNode).put("pattern", newPattern); //$NON-NLS-1$
-            final StringWriter temp = new StringWriter(1000);
+            boolean isNewPatternRegistered = false;
+            // loop on the existing pattern to see if thenew one is already present or not:
+            for (int i = 0; i < patternFrequencyTable.size(); i++) {
+                String pattern = patternFrequencyTable.get(i).get("pattern").asText(); //$NON-NLS-1$
+                if (pattern.equals(newPattern)) {
+                    isNewPatternRegistered = true;
+                }
+            }
 
-            final JsonGenerator generator = jsonFactory.createGenerator(temp);
-            mapper.writeTree(generator, rootNode);
-            column.setStatistics(temp.toString());
+            // if the new pattern is not yet present (ie: we're probably working on the first line)
+            if (!isNewPatternRegistered) {
+                JsonNode newPatternNode = mapper.createObjectNode();
+                // creates a new json node with the new pattern to register, no need of occurence here
+                ((ObjectNode) newPatternNode).put("pattern", newPattern);
+                // add a new node, with our new pattern
+                ((ArrayNode) patternFrequencyTable).add(newPatternNode);
+
+                // save all the json tree in the stats column
+                final StringWriter temp = new StringWriter(1000);
+                final JsonGenerator generator = mapper.getFactory().createGenerator(temp);
+                mapper.writeTree(generator, rootNode);
+                column.setStatistics(temp.toString());
+            }
+
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_WRITE_JSON, e);
         }
@@ -135,11 +142,10 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
         if (value == null) {
             return;
         }
-        final SimpleDateFormat currentDateFormat = getDateFormat(futureExPattern);
         try {
-            final Date date = currentDateFormat.parse(value);
+            final TemporalAccessor date = superParse(value, row, columnId);
             row.set(columnId, newDateFormat.format(date));
-        } catch (ParseException e) {
+        } catch (DateTimeException e) {
             // cannot parse the date, let's leave it as is
         }
     }
@@ -148,12 +154,12 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
      * @param pattern the date pattern.
      * @return the simple date format out of the parameters.
      */
-    private SimpleDateFormat getDateFormat(String pattern) {
+    private DateTimeFormatter getDateFormat(String pattern) {
         try {
             if (StringUtils.isEmpty(pattern)) {
                 throw new IllegalArgumentException();
             }
-            return new SimpleDateFormat(pattern, Locale.ENGLISH);
+            return DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH);
         } catch (IllegalArgumentException iae) {
             throw new IllegalArgumentException("pattern '" + pattern + "' is not a valid date pattern", iae);
         }
