@@ -9,9 +9,8 @@
      * @requires data-prep.services.dataset.service:DatasetService
      * @requires talend.widget.service:TalendConfirmService
      * @requires data-prep.services.uploadWorkflowService.service:UploadWorkflowService
-     * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function HomeCtrl(UploadWorkflowService, MessageService, DatasetService, TalendConfirmService, PlaygroundService) {
+    function HomeCtrl(UploadWorkflowService, MessageService, DatasetService, TalendConfirmService) {
         var vm = this;
 
         /**
@@ -266,10 +265,8 @@
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                     MessageService.success('DATASET_UPDATE_SUCCESS_TITLE', 'DATASET_UPDATE_SUCCESS', {dataset: dataset.name});
 
-                    //Force the update currentMetadata of the dataset
-                    PlaygroundService.currentMetadata = null;
+                    //open the updated dataset
                     DatasetService.getDatasetById(dataset.id).then(UploadWorkflowService.openDataset);
-
                 })
                 .catch(function() {
                     dataset.error = true;

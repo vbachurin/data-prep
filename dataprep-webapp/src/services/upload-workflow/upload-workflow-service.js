@@ -8,8 +8,9 @@
      * @requires data-prep.services.dataset.service:DatasetService
      * @requires data-prep.services.utils.service:MessageService
      * @requires data-prep.services.dataset.service:DatasetSheetPreviewService
+     * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function UploadWorkflowService($state, DatasetSheetPreviewService, MessageService, DatasetService) {
+    function UploadWorkflowService($state, DatasetSheetPreviewService, MessageService, DatasetService, PlaygroundService) {
         var self = this;
 
         /**
@@ -46,6 +47,9 @@
          * @param {object} dataset The dataset to open
          */
         this.openDataset = function openDataset(dataset) {
+            //Force the playground reset
+            PlaygroundService.currentMetadata = null;
+
             if (dataset.draft) {
                 self.openDraft(dataset);
             }

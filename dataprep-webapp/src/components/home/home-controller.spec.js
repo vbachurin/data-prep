@@ -249,7 +249,7 @@ describe('Home controller', function() {
                 expect(DatasetService.createDatasetInfo).toHaveBeenCalledWith(ctrl.datasetFile[0], 'my cool dataset (1)');
             }));
 
-            it('should update existing dataset', inject(function (MessageService, TalendConfirmService, DatasetService, PlaygroundService) {
+            it('should update existing dataset', inject(function (MessageService, TalendConfirmService, DatasetService) {
                 //given
                 ctrl.uploadDatasetName();
 
@@ -265,9 +265,6 @@ describe('Home controller', function() {
                 expect(ctrl.uploadingDatasets.length).toBe(0);
                 expect(MessageService.success).toHaveBeenCalledWith('DATASET_UPDATE_SUCCESS_TITLE', 'DATASET_UPDATE_SUCCESS', {dataset : 'my cool dataset'});
                 expect(DatasetService.getDatasetById).toHaveBeenCalled();
-                expect(PlaygroundService.currentMetadata).toBeFalsy();
-
-
             }));
 
             it('should set error flag and show error toast on update error', inject(function (MessageService, TalendConfirmService, DatasetService) {
