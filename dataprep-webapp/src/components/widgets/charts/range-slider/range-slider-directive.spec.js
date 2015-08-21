@@ -4,6 +4,7 @@ describe('rangeSlider directive', function () {
 	var createElement, element, scope, rangeLimits;
 
 	beforeEach(module('data-prep.rangeSlider'));
+
 	beforeEach(inject(function ($rootScope, $compile) {
 		rangeLimits = {min:0,
 			max:20,
@@ -15,15 +16,13 @@ describe('rangeSlider directive', function () {
 
 			scope = $rootScope.$new();
 			scope.rangeLimits = null;
-			scope.onBrushEnd = function(interval){
-				console.log(interval);
-			};
+			scope.spy = jasmine.createSpy('spy');
 
 			element = angular.element('<range-slider id="barChart"'+
 				'width="250"'+
 				'height="100"'+
 				'range-limits = "rangeLimits"'+
-				'on-brush-end = "onBrushEnd"'+
+				'on-brush-end = "spy"'+
 				'id="domId"'+
 				'></range-slider>');
 
@@ -191,13 +190,9 @@ describe('rangeSlider directive', function () {
 		expect(document.getElementsByName('maxRange')[0].value).toBe('20');
 	});
 
-	it('should set a new range manually', function () {
+	it('should set the new typed range manually and submit with Enter', function () {
 		//given
 		createElement();
-		var margins= {
-			left: 25,
-			right:10
-		};
 
 		//when
 		scope.rangeLimits = {
@@ -209,32 +204,139 @@ describe('rangeSlider directive', function () {
 		scope.$digest();
 		jasmine.clock().tick(100);
 
-		var flushAllD3Transitions = function() {
-			var now = Date.now;
-			Date.now = function() { return Infinity; };
-			d3.timer.flush();
-			Date.now = now;
-		};
-		flushAllD3Transitions();
-
-		var x = d3.scale.linear()
-			.domain([scope.rangeLimits.min, scope.rangeLimits.max])
-			.range([0, (250-(margins.left+margins.right))]);
-
 		var ctrl = element.controller('rangeSlider');
-		//expect(d3.select('.extent').attr('width')).toBe(''+(x(scope.rangeLimits.max) - x(scope.rangeLimits.min)));
-
-		//then
-
-		//var event = new angular.element.Event('keyup');
-		//event.keyCode = 104;//8
-		////when
-		//element.find('input').eq(0).trigger(event);
+		//when
+		element.find('input').eq(1)[0].value = 10;
 		element.find('input').eq(0)[0].value = 8;
 		var event2 = new angular.element.Event('keyup');
 		event2.keyCode = 13;
-		//when
 		element.find('input').eq(0).trigger(event2);
-		console.log(ctrl.brush.extent(),"+++++++++");
+		//then
+		expect(ctrl.brush.extent()).toEqual([8,10]);
+	});
+
+	it('should set the new typed range manually and submit with Blur', function () {
+		//given
+		createElement();
+
+		//when
+		scope.rangeLimits = {
+			min:0,
+			max:20,
+			minBrush:5,
+			maxBrush:15
+		};
+		scope.$digest();
+		jasmine.clock().tick(100);
+
+		var ctrl = element.controller('rangeSlider');
+
+		//when
+		element.find('input').eq(0)[0].value = 7;
+		var event2 = new angular.element.Event('blur');
+		element.find('input').eq(0).trigger(event2);
+
+		//then
+		expect(ctrl.brush.extent()).toEqual([7,15]);
+	});
+
+	it('should cancel the new typed range manually and submit with Esc', function () {
+		//given
+		createElement();
+
+		//when
+		scope.rangeLimits = {
+			min:0,
+			max:20,
+			minBrush:5,
+			maxBrush:15
+		};
+		scope.$digest();
+		jasmine.clock().tick(100);
+
+		var ctrl = element.controller('rangeSlider');
+		//when
+		element.find('input').eq(0)[0].value = 7;
+		var event2 = new angular.element.Event('keyup');
+		event2.keyCode = 27;
+		element.find('input').eq(0).trigger(event2);
+		//then
+		expect(ctrl.brush.extent()).toEqual([5,15]);
+		expect(element.find('input').eq(0)[0].value).toBe('5');
+	});
+
+	it('should cancel the new incorrect typed range and gets back to the initial value after Enter Hit and hide the error message', function () {
+		//given
+		createElement();
+
+		//when
+		scope.rangeLimits = {
+			min:0,
+			max:20,
+			minBrush:5,
+			maxBrush:15
+		};
+		scope.$digest();
+		jasmine.clock().tick(100);
+
+		var ctrl = element.controller('rangeSlider');
+		//when
+		element.find('input').eq(0)[0].value = 'kjhfkjfkl';
+		var event2 = new angular.element.Event('keyup');
+		event2.keyCode = 13;
+		element.find('input').eq(0).trigger(event2);
+		//then
+		expect(ctrl.brush.extent()).toEqual([5,15]);
+		expect(element.find('text.invalid-value-msg').eq(0).text()).toBe('');//'Invalid Entered Value'
+		//expect(element.find('input').eq(0)[0].value).toBe('5');
+	});
+
+	it('should show error message', function () {
+		//given
+		createElement();
+
+		//when
+		scope.rangeLimits = {
+			min:0,
+			max:20,
+			minBrush:5,
+			maxBrush:15
+		};
+		scope.$digest();
+		jasmine.clock().tick(100);
+
+		var ctrl = element.controller('rangeSlider');
+		//when
+		element.find('input').eq(0)[0].value = 'kjhfkjfkl';
+		var event2 = new angular.element.Event('keyup');
+		event2.keyCode = 104;//8
+		element.find('input').eq(0).trigger(event2);
+		//then
+		expect(ctrl.brush.extent()).toEqual([5,15]);
+		expect(element.find('text.invalid-value-msg').eq(0).text()).toBe('Invalid Entered Value');
+	});
+
+	it('should check if the filter was propagated to the StatsDetailsCtrl controller', function () {
+		//given
+		createElement();
+
+		//when
+		scope.rangeLimits = {
+			min:0,
+			max:20,
+			minBrush:5,
+			maxBrush:15
+		};
+		scope.$digest();
+		jasmine.clock().tick(100);
+
+		//when
+		element.find('input').eq(0)[0].value = 7;
+		var event2 = new angular.element.Event('blur');
+		event2.keyCode = 13;
+		element.find('input').eq(0).trigger(event2);
+
+		//then
+		expect(scope.spy).toHaveBeenCalledWith([7,15]);
 	});
 });

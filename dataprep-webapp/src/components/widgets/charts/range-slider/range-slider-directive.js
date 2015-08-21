@@ -34,9 +34,57 @@
 				function renderRangerSlider(rangeLimits){
 					var minimum = rangeLimits.min;
 					var maximum = rangeLimits.max;
+
+					/**
+					 * @ngdoc property
+					 * @name minBrush
+					 * @methodOf data-prep.rangeSlider.directive:RangeSlider
+					 * @description shows the message Error with details on comma existence
+					 * @type Number
+					 **/
 					var minBrush = typeof rangeLimits.minBrush !== 'undefined' ? rangeLimits.minBrush : minimum;
+
+					/**
+					 * @ngdoc property
+					 * @name maxBrush
+					 * @methodOf data-prep.rangeSlider.directive:RangeSlider
+					 * @description the value of the right brush handler
+					 * @type Number
+					 **/
 					var maxBrush = typeof rangeLimits.maxBrush !== 'undefined' ? rangeLimits.maxBrush : maximum;
 
+					/**
+					 * @ngdoc method
+					 * @name showMsgErr
+					 * @methodOf data-prep.rangeSlider.directive:RangeSlider
+					 * @description shows the message Error with details on comma existence
+					 **/
+					var showMsgErr = function showMsgErr(){
+						var msgErr = 'Invalid Entered Value';
+						var minMaxStr = document.getElementsByName('minRange')[0].value + document.getElementsByName('maxRange')[0].value;
+						var finalMsgErr = ctrl.checkCommaExistence(minMaxStr)? msgErr + ': Use "." instead of ","' : msgErr;
+						d3.select('text.invalid-value-msg').text(finalMsgErr);
+					};
+
+					/**
+					 * @ngdoc method
+					 * @name hideMsgErr
+					 * @methodOf data-prep.rangeSlider.directive:RangeSlider
+					 * @description hides the message Error
+					 **/
+					var hideMsgErr = function hideMsgErr(){
+						d3.select('text.invalid-value-msg').text('');
+					};
+
+					/**
+					 * @ngdoc property
+					 * @name nbDecimals
+					 * @methodOf data-prep.rangeSlider.directive:RangeSlider
+					 * @description the number of the decimals for precision purposes, by default it has the max of decimals
+					 * of both the min and max, then it's updated once the user changes the number of decimals manually
+					 * It plays an important role to create a brush while having an empty extent (when the user simply clicks without dragging)
+					 * @type Integer
+					 **/
 					var nbDecimals = d3.max([decimalPlaces(minBrush), decimalPlaces(maxBrush)]);
 					var margin = {top: 25, right: 25, bottom: 80, left: 10},
 						width = w - margin.left - margin.right,
@@ -116,6 +164,13 @@
 						//on brush start code goes here
 					}
 
+					/**
+					 * @ngdoc method
+					 * @name brushmove
+					 * @methodOf data-prep.rangeSlider.directive:RangeSlider
+					 * @description It will update the min and max inputs, and create a brush on a single value when
+					 * the user clics on the slider without making a drag( the created brush will be empty )
+					 */
 					function brushmove() {
 						var newExtent = fillInputs();
 						if (ctrl.brush.empty()) {
@@ -124,6 +179,13 @@
 						}
 					}
 
+					/**
+					 * @ngdoc method
+					 * @name brushend
+					 * @methodOf data-prep.rangeSlider.directive:RangeSlider
+					 * @description It will propagate the new filter limits to the rest of the app, it's triggered when
+					 * the user finishes a brush
+					 */
 					function brushend() {
 						//trigger filter process in the datagrid
 						scope.onBrushEnd()(ctrl.brush.extent().map(function(n){return +n.toFixed(nbDecimals);}));
@@ -131,16 +193,28 @@
 
 					fillInputs();
 
+					/**
+					 * @ngdoc method
+					 * @name fillInputs
+					 * @methodOf data-prep.rangeSlider.directive:RangeSlider
+					 * @description It will update Min and Max inputs with the correspondent brush extents
+					 * @return {Array} the brush interval
+					 */
 					function fillInputs(){
-						ctrl.hideMsgErr(d3.select('text.invalid-value-msg'));
+						hideMsgErr();
 						var s = ctrl.brush.extent();
 						document.getElementsByName('minRange')[0].value = s[0] > 1e4 || s[0] < -1e4 ? d3.format('e')(s[0].toFixed(nbDecimals)) : s[0].toFixed(nbDecimals);
 						document.getElementsByName('maxRange')[0].value = s[1] > 1e4 || s[1] < -1e4 ? d3.format('e')(s[1].toFixed(nbDecimals)) : s[1].toFixed(nbDecimals);
 						return s;
 					}
 
+					/**
+					 * @ngdoc method
+					 * @name adjustBrush
+					 * @methodOf data-prep.rangeSlider.directive:RangeSlider
+					 * @description It will update the brush handlers position and propagate the filter
+					 */
 					function adjustBrush(){
-
 						var enteredMax = ctrl.toNumber(document.getElementsByName('maxRange')[0].value);
 						var enteredMin = ctrl.toNumber(document.getElementsByName('minRange')[0].value);
 
@@ -208,11 +282,10 @@
 						if(e.keyCode !== 13 && e.keyCode !== 27){
 							minCorrectness = ctrl.toNumber(this.value);
 							if(minCorrectness === null || maxCorrectness === null){
-								var minMaxStr = document.getElementsByName('minRange')[0].value + document.getElementsByName('maxRange')[0].value;
-								ctrl.showMsgErr(minMaxStr);
+								showMsgErr();
 							}
 							else{
-								ctrl.hideMsgErr(d3.select('text.invalid-value-msg'));
+								hideMsgErr();
 							}
 						}
 
@@ -222,7 +295,7 @@
 							}
 							else{
 								fillInputs();
-								ctrl.hideMsgErr(d3.select('text.invalid-value-msg'));
+								hideMsgErr();
 							}
 						}
 
@@ -235,11 +308,10 @@
 						if(e.keyCode !== 13 && e.keyCode !== 27){
 							maxCorrectness = ctrl.toNumber(this.value);
 							if(minCorrectness === null || maxCorrectness === null){
-								var minMaxStr = document.getElementsByName('minRange')[0].value + document.getElementsByName('maxRange')[0].value;
-								ctrl.showMsgErr(minMaxStr);
+								showMsgErr();
 							}
 							else{
-								ctrl.hideMsgErr(d3.select('text.invalid-value-msg'));
+								hideMsgErr();
 							}
 						}
 
@@ -249,7 +321,7 @@
 							}
 							else{
 								fillInputs();
-								ctrl.hideMsgErr(d3.select('text.invalid-value-msg'));
+								hideMsgErr();
 							}
 						}
 
