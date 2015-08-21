@@ -56,7 +56,7 @@
      * @description Filter service. This service holds the filters list and provide the entry point to datagrid filters
      * @requires data-prep.services.playground.service:DatagridService
      */
-    function FilterService(DatagridService) {
+    function FilterService(DatagridService, NumbersValidityService) {
         var self = this;
 
         /**
@@ -175,7 +175,7 @@
          */
         var createRangeFilterFn = function(colId, values) {
             return function(item) {
-                return +item[colId] >= values[0] && +item[colId] <= values[1];
+                return NumbersValidityService.toNumber(item[colId]) >= values[0] && NumbersValidityService.toNumber(item[colId]) <= values[1];
             };
         };
 

@@ -249,8 +249,8 @@ describe('Filter service', function() {
         expect(filterInfo.value).toBe('in [0 ... 22]');
         expect(filterInfo.editable).toBe(false);
         expect(filterInfo.args).toEqual({phrase: [0, 22]});
-        expect(filterInfo.filterFn({col1:5})).toBeTruthy();
-        expect(filterInfo.filterFn({col1:-5})).toBeFalsy();
+        expect(filterInfo.filterFn({col1:'5'})).toBeTruthy();
+        expect(filterInfo.filterFn({col1:'-5'})).toBeFalsy();
 
         expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
 
@@ -261,8 +261,8 @@ describe('Filter service', function() {
         expect(filterInfo2.value).toBe('in [0e+0 ... 1e+6]');
         expect(filterInfo2.editable).toBe(false);
         expect(filterInfo2.args).toEqual({phrase:  [0, 1000000]});
-        expect(filterInfo2.filterFn({col2: 1000})).toBeTruthy();
-        expect(filterInfo2.filterFn({col2: -5})).toBeFalsy();
+        expect(filterInfo2.filterFn({col2: '1000'})).toBeTruthy();
+        expect(filterInfo2.filterFn({col2: '-5'})).toBeFalsy();
 
         expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo2.filterFn);
     }));
@@ -276,7 +276,7 @@ describe('Filter service', function() {
 
         var filterInfo1 = FilterService.filters[0];
         //before the brush 4 in [0 ... 22]
-        expect(filterInfo1.filterFn({col1: 4})).toBeTruthy();
+        expect(filterInfo1.filterFn({col1: '4'})).toBeTruthy();
         //on brush end the range of the slider was reduced from [0...22] to [5...10]
         FilterService.addFilter('inside_range', 'col1', 'column name', {phrase: [5, 10]});
 
@@ -290,8 +290,8 @@ describe('Filter service', function() {
         expect(filterInfo2.value).toBe('in [5 ... 10]');
         expect(filterInfo2.editable).toBe(false);
         expect(filterInfo2.args).toEqual({phrase:  [5, 10]});
-        expect(filterInfo2.filterFn({col1: 8})).toBeTruthy();
+        expect(filterInfo2.filterFn({col1: '8'})).toBeTruthy();
         //the 4 is no more inside the brush range
-        expect(filterInfo2.filterFn({col1: 4})).toBeFalsy();
+        expect(filterInfo2.filterFn({col1: '4'})).toBeFalsy();
     }));
 });

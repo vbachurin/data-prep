@@ -42,32 +42,6 @@ describe('rangeSlider directive', function () {
 		element.remove();
 	});
 
-	it('should render the rangeSlider after a 100ms delay', function () {
-		//given
-		createElement();
-
-		//when
-		scope.rangeLimits = rangeLimits;
-		scope.$digest();
-		jasmine.clock().tick(100);
-
-		//then
-		expect(element.find('rect').length).toBe(6);
-		expect(element.find('input').length).toBe(2);
-		expect(element.find('.range-slider-cls').length).toBe(1);
-		expect(element.find('.resize').length).toBe(2);
-		expect(element.find('.extent').length).toBe(1);
-
-		//given
-		//distance between the rangeSlider limits and the brush position
-		var x = d3.scale.linear()
-			.domain([scope.rangeLimits.min, scope.rangeLimits.max])
-			.range([0, 250]);
-
-		var minPixelsDiff = x(scope.rangeLimits.minBrush) - x(scope.rangeLimits.min);
-		expect(minPixelsDiff).toBe(x(scope.rangeLimits.minBrush - scope.rangeLimits.min));
-	});
-
 	it('should calculate the right positions of the brush handlers compared to the rangeSlider limits when there is NO brush', function () {
 		//given
 		createElement();
@@ -104,7 +78,7 @@ describe('rangeSlider directive', function () {
 		expect(d3.select('.extent').attr('x')).toBe(''+x(scope.rangeLimits.min));
 	});
 
-	it('should calculate the right positions of the brush handlers compared to the rangeSlider limits when there is NO brush', function () {
+	it('should calculate the right positions of the brush handlers compared to the rangeSlider limits when there is a brush', function () {
 		//given
 		createElement();
 		var margins= {

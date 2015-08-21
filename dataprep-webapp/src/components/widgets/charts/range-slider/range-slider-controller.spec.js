@@ -17,7 +17,7 @@ describe('RangeSlider controller', function () {
 
 	}));
 
-	it('should init step index', inject(function () {
+	it('should check numbers validity', inject(function () {
 		//given
 		var ctrl = createController();
 
