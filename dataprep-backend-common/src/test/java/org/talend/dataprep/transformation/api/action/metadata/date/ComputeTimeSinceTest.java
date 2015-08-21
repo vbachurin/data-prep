@@ -258,7 +258,7 @@ public class ComputeTimeSinceTest {
     public void should_compute_twice_diff_units() throws IOException {
         //given
         final String date = "07/16/2015 12:00";
-        final String resultInHours = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.HOURS);
+        final String resultInMonth = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.MONTHS);
         final String resultInDays = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.DAYS);
 
         final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
@@ -267,7 +267,7 @@ public class ComputeTimeSinceTest {
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", date);
-        expectedValues.put("0004", resultInHours);
+        expectedValues.put("0004", resultInMonth);
         expectedValues.put("0003", resultInDays);
         expectedValues.put("0002", "Bacon");
 
@@ -275,7 +275,7 @@ public class ComputeTimeSinceTest {
         parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
-        parameters.put(TIME_UNIT_PARAMETER, HOURS.name());
+        parameters.put(TIME_UNIT_PARAMETER, MONTHS.name());
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         //then
