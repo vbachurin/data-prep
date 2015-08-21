@@ -28,8 +28,8 @@ import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 import org.talend.dataquality.semantic.recognizer.CategoryRecognizerBuilder;
-import org.talend.dataquality.statistics.inference.quality.ValueQuality;
-import org.talend.dataquality.statistics.inference.quality.ValueQualityAnalyzer;
+import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
+import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.semantic.SemanticAnalyzer;
@@ -158,7 +158,7 @@ class SimpleTransformer implements Transformer {
                     final Analyzers.Result result = results.get(i);
                     final ColumnMetadata metadata = dataSetColumns.get(i);
                     // Value quality
-                    final ValueQuality column = result.get(ValueQuality.class);
+                    final ValueQualityStatistics column = result.get(ValueQualityStatistics.class);
                     final Quality quality = metadata.getQuality();
                     quality.setEmpty((int) column.getEmptyCount());
                     quality.setInvalid((int) column.getInvalidCount());
