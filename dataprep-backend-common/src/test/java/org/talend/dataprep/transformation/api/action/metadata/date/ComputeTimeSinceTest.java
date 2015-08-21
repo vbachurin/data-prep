@@ -26,10 +26,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -257,22 +254,22 @@ public class ComputeTimeSinceTest {
     @Test
     public void should_compute_twice_diff_units() throws IOException {
         //given
-        final String date = "07/16/2015 12:00";
+        final String date = "07/16/2014 12:00";
         final String resultInMonth = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.MONTHS);
-        final String resultInDays = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.DAYS);
+        final String resultInYears = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.YEARS);
 
         final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
         row.set("0001", date);
 
-        final Map<String, String> expectedValues = new HashMap<>();
+        final Map<String, String> expectedValues = new TreeMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", date);
         expectedValues.put("0004", resultInMonth);
-        expectedValues.put("0003", resultInDays);
+        expectedValues.put("0003", resultInYears);
         expectedValues.put("0002", "Bacon");
 
         //when
-        parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
+        parameters.put(TIME_UNIT_PARAMETER, YEARS.name());
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         parameters.put(TIME_UNIT_PARAMETER, MONTHS.name());

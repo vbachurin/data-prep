@@ -4,14 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
@@ -33,33 +29,9 @@ public class PreparationJsonSerializer extends JsonSerializer<Preparation> {
     @Autowired(required = false)
     private PreparationRepository versionRepository;
 
-    /** Spring application context. */
-    @Autowired
-    private ApplicationContext applicationContext;
-
     /** The list of actions to apply in preparations. */
-    // Cannot be Autowired (see init() method)
+    @Autowired
     private Collection<ActionMetadata> actionMetadata;
-
-    /**
-     * Init the list of action metadata.
-     *
-     * @see org.talend.dataprep.configuration.Serialization#modules
-     * @see PreparationJsonSerializer
-     * @see org.talend.dataprep.transformation.api.action.metadata.date.ChangeDatePattern#builder
-     */
-    @PostConstruct
-    private void init() {
-
-        // @formatter:off
-        // Initialization of actionMetadata needs to be done in a @PostConstruct method in order to prevent the
-        // following circular dependency :
-        // Serialization#modules -> PreparationJsonSerializer#actionMetadata[] -> ChangeDatePattern#builder -> Serialization
-        // @formatter:on
-
-        final Map<String, ActionMetadata> beans = applicationContext.getBeansOfType(ActionMetadata.class);
-        actionMetadata = beans.values();
-    }
 
     /**
      * @see JsonSerializer#serialize(Object, JsonGenerator, SerializerProvider)
