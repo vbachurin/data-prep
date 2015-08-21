@@ -1,0 +1,22 @@
+{
+  "actions": [
+    {
+      "action": "change_date_pattern",
+      "parameters": {
+        "column_id": "0004",
+        "column_name": "date-of-birth",
+        "new_pattern": "dd-MM-yyyy",
+        "scope": "column"
+      }
+    },
+    {
+      "action": "compute_time_since",
+      "parameters": {
+        "column_id": "0004",
+        "column_name": "date-of-birth",
+        "time_unit": "Years",
+        "scope": "column"
+      }
+    }
+  ]
+}

@@ -25,8 +25,8 @@ import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataquality.statistics.inference.quality.ValueQuality;
-import org.talend.dataquality.statistics.inference.quality.ValueQualityAnalyzer;
+import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
+import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.datascience.common.inference.type.DataType;
 
 @Component
@@ -116,9 +116,9 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
         }).forEach(analyzer::analyze);
 
         // Determine content size
-        final List<ValueQuality> analyzerResult = analyzer.getResult();
+        final List<ValueQualityStatistics> analyzerResult = analyzer.getResult();
         final Iterator<ColumnMetadata> iterator = dataset.getRow().getColumns().iterator();
-        for (ValueQuality valueQuality : analyzerResult) {
+        for (ValueQualityStatistics valueQuality : analyzerResult) {
             if (!iterator.hasNext()) {
                 LOGGER.warn("More quality information than number of columns in data set #{}.", dataset.getId());
                 break;

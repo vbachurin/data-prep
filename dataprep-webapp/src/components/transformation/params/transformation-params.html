@@ -1,5 +1,5 @@
 <div class="transformation-params">
-    <form ng-submit="paramsCtrl.transformWithParam()" name="paramsCtrl.paramForm">
+    <form ng-submit="paramsCtrl.paramForm.$valid && paramsCtrl.transformWithParam()" name="paramsCtrl.paramForm">
         <!-- Menu item param -->
         <transform-simple-params
                 ng-if="paramsCtrl.transformation.parameters.length"

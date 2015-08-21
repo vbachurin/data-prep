@@ -14,7 +14,8 @@
             "implicit": false,
             "description": "parameter.MASSACHUSSETTS.desc",
             "label": "parameter.MASSACHUSSETTS.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "MASACHUSSETS",
@@ -22,7 +23,8 @@
             "implicit": false,
             "description": "parameter.MASACHUSSETS.desc",
             "label": "parameter.MASACHUSSETS.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "MASSACHUSETTS",
@@ -30,7 +32,8 @@
             "implicit": false,
             "description": "parameter.MASSACHUSETTS.desc",
             "label": "parameter.MASSACHUSETTS.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "MASSACHUSETS",
@@ -38,7 +41,8 @@
             "implicit": false,
             "description": "parameter.MASSACHUSETS.desc",
             "label": "parameter.MASSACHUSETS.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "MASACHUSETTS",
@@ -46,7 +50,8 @@
             "implicit": false,
             "description": "parameter.MASACHUSETTS.desc",
             "label": "parameter.MASACHUSETTS.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           }
         ],
         "replace": {
@@ -55,7 +60,8 @@
           "implicit": false,
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
-          "default": "MASSACHUSETTS"
+          "default": "MASSACHUSETTS",
+          "canBeBlank":true
         }
       },
       {
@@ -66,7 +72,8 @@
             "implicit": false,
             "description": "parameter.TEXAS.desc",
             "label": "parameter.TEXAS.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "TIXASS",
@@ -74,7 +81,8 @@
             "implicit": false,
             "description": "parameter.TIXASS.desc",
             "label": "parameter.TIXASS.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           }
         ],
         "replace": {
@@ -83,7 +91,8 @@
           "implicit": false,
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
-          "default": "TIXASS"
+          "default": "TIXASS",
+          "canBeBlank":true
         }
       }
     ]
