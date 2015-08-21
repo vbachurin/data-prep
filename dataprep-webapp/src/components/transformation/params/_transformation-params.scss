@@ -22,6 +22,8 @@
       @include flex-wrap(wrap);
       @include align-items(center);
 
+      margin-bottom: 15px;
+
       .param-name {
         @include flex-basis(150px);
         @include flex-grow(1);
