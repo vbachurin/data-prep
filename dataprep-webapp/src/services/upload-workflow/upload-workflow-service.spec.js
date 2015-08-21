@@ -10,18 +10,6 @@ describe('UploadWorkflow Service', function () {
         spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.when(true));
     }));
 
-    it('should reset playground current metadata to force a playground reset/refresh', inject(function (UploadWorkflowService, PlaygroundService) {
-        //given
-        var dataset = {name: 'Customers (50 lines)', id: 'aA2bc348e933bc2'};
-        PlaygroundService.currentMetadata = {};
-
-        //when
-        UploadWorkflowService.openDataset(dataset);
-
-        //then
-        expect(PlaygroundService.currentMetadata).toBeFalsy();
-    }));
-
     it('should redirect to dataset playground when dataset is not a draft', inject(function (UploadWorkflowService, $state) {
         //given
         var dataset = {name: 'Customers (50 lines)', id: 'aA2bc348e933bc2'};
