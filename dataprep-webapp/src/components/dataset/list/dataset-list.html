@@ -1,5 +1,23 @@
-<div class="inventory">
-    <div class="inventory-sort">{{ ::'SORTED_BY' | translate }} {{ ::'NAME_SORT' | translate }}</div>
+<div class="inventory dataset">
+    <div class="inventory-sort">
+        <div>{{ ::'SORTED_BY' | translate }}</div>
+        <div class="button-switch">
+            <talend-button-switch
+                    button-values="datasetListCtrl.sortList"
+                    button-current-obj="datasetListCtrl.sortSelected"
+                    button-action="datasetListCtrl.updateSortBy(param)">
+            </talend-button-switch>
+        </div>
+        <div> {{ ::'SORT_IN' | translate }} </div>
+        <div class="button-switch">
+            <talend-button-switch
+                    button-values="datasetListCtrl.orderList"
+                    button-current-obj="datasetListCtrl.sortOrderSelected"
+                    button-action="datasetListCtrl.updateSortOrder(param)">
+            </talend-button-switch>
+        </div>
+        <div> {{ ::'SORT_ORDER' | translate }} </div>
+    </div>
 
     <div class="inventory-entry" ng-repeat="dataset in datasetListCtrl.datasets track by $index" ng-switch="dataset.draft" id="dataset_{{$index}}" >
 
@@ -36,8 +54,9 @@
                     ng-click="datasetListCtrl.delete(dataset)"></a>
             <div class="divider btn-transparent"></div>
             <a data-icon="s" class="btn-icon btn-transparent"
-                    ng-click="datasetListCtrl.processCertification(dataset)"></a>
-            <a data-icon="f" class="btn-icon btn-transparent favorite" ng-class="{'favorite-true':dataset.favorite}" ng-click="datasetListCtrl.toggleFavorite(dataset)"></a>
+                    ng-click="datasetListCtrl.datasetService.processCertification(dataset)"></a>
+            <a data-icon="f" class="btn-icon btn-transparent favorite" ng-class="{'favorite-true':dataset.favorite}"
+                    ng-click="datasetListCtrl.datasetService.toggleFavorite(dataset)"></a>
         </div>
     </div>
 </div>

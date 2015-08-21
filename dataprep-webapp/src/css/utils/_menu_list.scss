@@ -14,7 +14,6 @@
     position: relative;
     white-space: nowrap;
     color: #333;
-
     text-transform: none;
     font-weight: normal;
     font-size: 0.8em;
@@ -67,6 +66,10 @@
       overflow: hidden;
       background-color: #e5e5e5;
       padding: 0;
+    }
+
+    .itemText{
+      float: left;
     }
   }
 }

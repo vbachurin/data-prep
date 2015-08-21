@@ -101,11 +101,27 @@
          * @ngdoc method
          * @name getDatasets
          * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @param {string} sortType Sort by specified type
+         * @param {string} sortOrder Sort in specified order
+         * @param {Promise} deferredAbort abort request when resolved
          * @description Get the dataset list
-         * @returns {Promise} - the GET call promise
+         * @returns {Promise} The GET call promise
          */
-        function getDatasets() {
-            return $http.get(RestURLs.datasetUrl);
+        function getDatasets(sortType, sortOrder, deferredAbort) {
+            var url = RestURLs.datasetUrl;
+
+            if(sortType) {
+                url += '?sort=' + sortType;
+            }
+            if(sortOrder) {
+                url += (sortType ? '&' : '?') + 'order=' + sortOrder;
+            }
+
+            return $http({
+                url: url,
+                method: 'GET',
+                timeout: deferredAbort.promise
+            });
         }
 
         /**

@@ -101,6 +101,13 @@ $invalid_records-color: rgb(247, 168, 0);
     text-transform: uppercase;
   }
 
+  .textEllipsis {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   input[type="text"] {
     margin: 0;
     padding: 2px;

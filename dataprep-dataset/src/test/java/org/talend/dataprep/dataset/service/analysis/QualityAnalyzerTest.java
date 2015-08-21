@@ -68,9 +68,10 @@ public class QualityAnalyzerTest {
         schemaAnalysis.analyze("1234");
         // Analyze quality
         qualityAnalysis.analyze("1234");
-        assertThat(metadata.getLifecycle().qualityAnalyzed(), is(true));
-        assertThat(metadata.getContent().getNbRecords(), is(5));
-        for (ColumnMetadata column : metadata.getRow().getColumns()) {
+        final DataSetMetadata actual = repository.get("1234");
+        assertThat(actual.getLifecycle().qualityAnalyzed(), is(true));
+        assertThat(actual.getContent().getNbRecords(), is(5));
+        for (ColumnMetadata column : actual.getRow().getColumns()) {
             final Quality quality = column.getQuality();
             assertThat(quality.getValid(), is(5));
             assertThat(quality.getInvalid(), is(0));
@@ -88,10 +89,11 @@ public class QualityAnalyzerTest {
         schemaAnalysis.analyze(dsId);
         // Analyze quality
         qualityAnalysis.analyze(dsId);
-        assertThat(metadata.getLifecycle().qualityAnalyzed(), is(true));
-        assertThat(metadata.getContent().getNbRecords(), is(9));
-        assertThat(metadata.getRow().getColumns().size(), is(2));
-        ColumnMetadata secondColumn = metadata.getRow().getColumns().get(1);
+        final DataSetMetadata actual = repository.get(dsId);
+        assertThat(actual.getLifecycle().qualityAnalyzed(), is(true));
+        assertThat(actual.getContent().getNbRecords(), is(9));
+        assertThat(actual.getRow().getColumns().size(), is(2));
+        ColumnMetadata secondColumn = actual.getRow().getColumns().get(1);
         Quality quality = secondColumn.getQuality();
         assertThat(quality.getValid(), is(6));
         assertThat(quality.getInvalid(), is(2));
