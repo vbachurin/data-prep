@@ -6,8 +6,8 @@ import static org.talend.dataprep.api.type.Type.STRING;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.DateTimeException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 import javax.annotation.Nonnull;
@@ -143,7 +143,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
             return;
         }
         try {
-            final TemporalAccessor date = superParse(value, row, columnId);
+            final LocalDateTime date = superParse(value, row, columnId);
             row.set(columnId, newDateFormat.format(date));
         } catch (DateTimeException e) {
             // cannot parse the date, let's leave it as is

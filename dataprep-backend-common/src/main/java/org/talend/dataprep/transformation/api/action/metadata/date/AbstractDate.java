@@ -3,9 +3,10 @@ package org.talend.dataprep.transformation.api.action.metadata.date;
 import static org.talend.dataprep.api.type.Type.DATE;
 
 import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -48,34 +49,42 @@ public abstract class AbstractDate extends AbstractActionMetadata {
         return DATE.equals(Type.get(column.getType())) || SemanticCategoryEnum.DATE.name().equals(domain);
     }
 
+    protected LocalDateTime superParse(String value, DataSetRow row, String columnId) throws DateTimeException {
+        return superParse(value, computePatterns(row, columnId));
+    }
+
     /**
      * Almost like DateTimeFormatter.parse(), but tries all the DateTimeFormatter given as parameters. The result is
      * returned once the first matching pattern is found.
-     * 
+     *
      * @param value the text to parse
      * @return the parsed date-time
      * @throws DateTimeException if none of the formats can match text
      */
-    protected TemporalAccessor superParse(String value, Set<DateTimeFormatter> formatters) throws DateTimeException {
+    protected LocalDateTime superParse(String value, Set<DateTimeFormatter> formatters) throws DateTimeException {
         // take care of the null value
         if (value == null) {
             throw new DateTimeException("cannot parse null");
         }
 
-        for (DateTimeFormatter formatToTest : formatters) {
+        LocalDateTime result;
+        for (DateTimeFormatter formatter : formatters) {
+            // first try to parse directly as LocalDateTime
             try {
-                return formatToTest.parse(value);
+                return LocalDateTime.parse(value, formatter);
             } catch (DateTimeException e) {
-                // Nothing to do, just try value against next pattern
+                // if it fails, let's try the LocalDate first
+                try {
+                    LocalDate temp = LocalDate.parse(value, formatter);
+                    return temp.atStartOfDay();
+                } catch (DateTimeException e2) {
+                    // nothing to do here, just try the next formatter
+                }
             }
         }
         throw new DateTimeException("Test [" + value + "] does not match any known pattern");
     }
 
-
-    protected TemporalAccessor superParse(String value, DataSetRow row, String columnId) throws DateTimeException {
-        return superParse(value, computePatterns(row, columnId));
-    }
 
     /**
      * Utility method to read all of the presents date pattern in this column, looking in the DQ stats.

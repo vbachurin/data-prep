@@ -21,13 +21,11 @@ import static org.talend.dataprep.transformation.api.action.metadata.date.Comput
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParsePosition;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -203,6 +201,32 @@ public class ComputeTimeSinceTest {
         assertEquals(expectedValues, row.values());
     }
 
+    /**
+     * @see ComputeTimeSince#create(Map)
+     */
+    @Test
+    public void should_compute_hours_on_date_without_hours() throws IOException {
+        // given
+        final String date = "07/16/2015";
+        final String result = computeTimeSince(date, "MM/dd/yyyy", ChronoUnit.HOURS);
+
+        final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
+        row.set("0001", date);
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", date);
+        expectedValues.put("0003", result);
+        expectedValues.put("0002", "Bacon");
+
+        parameters.put(TIME_UNIT_PARAMETER, HOURS.name());
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
 
     @Test
     public void should_compute_hours_twice() throws IOException {
@@ -234,7 +258,7 @@ public class ComputeTimeSinceTest {
     public void should_compute_twice_diff_units() throws IOException {
         //given
         final String date = "07/16/2015 12:00";
-        final String resultInHours = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.HOURS);
+        final String resultInMonth = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.MONTHS);
         final String resultInDays = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.DAYS);
 
         final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
@@ -243,7 +267,7 @@ public class ComputeTimeSinceTest {
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", date);
-        expectedValues.put("0004", resultInHours);
+        expectedValues.put("0004", resultInMonth);
         expectedValues.put("0003", resultInDays);
         expectedValues.put("0002", "Bacon");
 
@@ -251,7 +275,7 @@ public class ComputeTimeSinceTest {
         parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
-        parameters.put(TIME_UNIT_PARAMETER, HOURS.name());
+        parameters.put(TIME_UNIT_PARAMETER, MONTHS.name());
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         //then
@@ -374,11 +398,20 @@ public class ComputeTimeSinceTest {
      */
     String computeTimeSince(String date, String pattern, ChronoUnit unit) {
 
-        Temporal now = (unit == ChronoUnit.HOURS ? LocalDateTime.now() : LocalDate.now());
-        // Temporal now = LocalDateTime.now();
+        Temporal now = LocalDateTime.now();
 
         DateTimeFormatter format = DateTimeFormatter.ofPattern(pattern);
-        TemporalAccessor start = format.parse(date, new ParsePosition(0));
+        LocalDateTime start;
+        try {
+            start = LocalDateTime.parse(date, format);
+        } catch (Exception e) {
+            start = null;
+        }
+
+        if (start == null) {
+            LocalDate temp = LocalDate.parse(date, format);
+            start = temp.atStartOfDay();
+        }
 
         Temporal result = (unit == ChronoUnit.HOURS ? LocalDateTime.from(start) : LocalDate.from(start));
         return String.valueOf(unit.between(result, now));
