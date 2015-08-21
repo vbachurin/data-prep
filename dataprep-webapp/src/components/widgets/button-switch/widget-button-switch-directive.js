@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     /**
@@ -27,21 +27,25 @@
             restrict: 'E',
             templateUrl: 'components/widgets/button-switch/button-switch.html',
             scope: {
-                buttonCurrentObj: '=',
-                buttonValues: '=',
-                buttonAction: '&'
+                currentValue: '=',
+                displayKey: '@',
+                values: '=',
+                changeAction: '&'
             },
             bindToController: true,
             controller: function () {},
             controllerAs: 'buttonSwitchCtrl',
-            link: function (scope, iElement, attrs, buttonSwitchCtrl) {
-                iElement.find('.button-action')
-                    .on('click', function () {
-                        //angular directive pass argument "param" to function specified in the button-action
-                        buttonSwitchCtrl.buttonAction({param: _.find(buttonSwitchCtrl.buttonValues,
-                            function(valueObj){ return valueObj.id !== buttonSwitchCtrl.buttonCurrentObj.id;})
-                        });
-                    });
+            link: function (scope, iElement, attrs, ctrl) {
+                function next() {
+                    var index = ctrl.values.indexOf(ctrl.currentValue);
+                    return (index === -1 || index >= ctrl.values.length - 1) ?
+                        ctrl.values[0] :
+                        ctrl.values[index + 1];
+                }
+
+                iElement.on('click', function () {
+                    ctrl.changeAction({selected: next()});
+                });
             }
         };
     }
