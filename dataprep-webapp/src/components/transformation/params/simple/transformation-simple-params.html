@@ -1,5 +1,5 @@
 <div class="param">
-    <div class="param-row" ng-repeat="param in simpleParamsCtrl.parameters track by $index">
+    <div class="param-row" ng-repeat="param in simpleParamsCtrl.parameters track by $index" title="{{::param.description}}">
         <div class="param-name" ng-if="::(simpleParamsCtrl.label !== 'false')">{{simpleParamsCtrl.label}}{{::param.label}}:</div>
 
         <div class="param-input" ng-if="::(simpleParamsCtrl.editableSelect)">
@@ -15,11 +15,6 @@
                    type-validation="{{::param.type}}"/>
             <span ng-if="::(param.type === 'boolean')">{{param.name}}</span>
         </div>
-
-        <img src="assets/images/information.png"
-             title="{{::param.description}}"
-             class="param-desc-icon"
-             ng-if="::(simpleParamsCtrl.tooltip !== 'false')"/>
 
         <div class="param-error error"
              ng-if="paramCtrl.paramForm[param.name + $index].$error.typeValidation || paramsCtrl.paramForm[param.name + $index].$error.number">
