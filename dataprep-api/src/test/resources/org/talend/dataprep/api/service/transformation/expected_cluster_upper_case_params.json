@@ -13,21 +13,24 @@
             "type": "boolean",
             "description": "parameter.TIXASS.desc",
             "label": "parameter.TIXASS.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "TEXAS",
             "type": "boolean",
             "description": "parameter.TEXAS.desc",
             "label": "parameter.TEXAS.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "TIXASS",
             "type": "boolean",
             "description": "parameter.TIXASS.desc",
             "label": "parameter.TIXASS.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           }
         ],
         "replace": {
@@ -35,7 +38,8 @@
           "type": "string",
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
-          "default": "TIXASS"
+          "default": "TIXASS",
+          "canBeBlank":true
         }
       },
       {
@@ -45,35 +49,40 @@
             "type": "boolean",
             "description": "parameter.MASSACHUSETS.desc",
             "label": "parameter.MASSACHUSETS.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "MASACHUSSETS",
             "type": "boolean",
             "description": "parameter.MASACHUSSETS.desc",
             "label": "parameter.MASACHUSSETS.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "MASACHUSETTS",
             "type": "boolean",
             "description": "parameter.MASACHUSETTS.desc",
             "label": "parameter.MASACHUSETTS.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "MASSACHUSSETTS",
             "type": "boolean",
             "description": "parameter.MASSACHUSSETTS.desc",
             "label": "parameter.MASSACHUSSETTS.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "MASSACHUSETTS",
             "type": "boolean",
             "description": "parameter.MASSACHUSETTS.desc",
             "label": "parameter.MASSACHUSETTS.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           }
         ],
         "replace": {
@@ -81,7 +90,8 @@
           "type": "string",
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
-          "default": "MASSACHUSETTS"
+          "default": "MASSACHUSETTS",
+          "canBeBlank":true
         }
       }
     ]

@@ -229,7 +229,8 @@
         "implicit": false,
         "description": "The new column name",
         "label": "New name",
-        "default": "firstname"
+        "default": "firstname",
+        "canBeBlank": false
       }
     ],
     "category": "columns",

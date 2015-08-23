@@ -21,10 +21,6 @@ public abstract class AbstractFillIfInvalid extends AbstractActionMetadata imple
     }
 
     @Override
-    protected void beforeApply(Map<String, String> parameters) {
-    }
-
-    @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final String value = row.get(columnId);
         final ColumnMetadata colMetadata = row.getRowMetadata().getById(columnId);

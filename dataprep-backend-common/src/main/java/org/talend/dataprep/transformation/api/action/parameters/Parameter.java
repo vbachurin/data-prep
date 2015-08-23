@@ -14,6 +14,8 @@ public class Parameter implements Serializable {
 
     private final boolean implicit;
 
+    private final boolean canBeBlank;
+
     public Parameter(String name, String type) {
         this(name, type, null, false);
     }
@@ -23,10 +25,15 @@ public class Parameter implements Serializable {
     }
 
     public Parameter(final String name, final String type, final String defaultValue, final boolean implicit) {
+        this(name, type, defaultValue, implicit, true);
+    }
+
+    public Parameter(final String name, final String type, final String defaultValue, final boolean implicit, final boolean canBeBlank) {
         this.name = name;
         this.type = type;
         this.defaultValue = defaultValue;
         this.implicit = implicit;
+        this.canBeBlank = canBeBlank;
     }
 
     /**
@@ -69,5 +76,12 @@ public class Parameter implements Serializable {
      */
     public boolean isImplicit() {
         return implicit;
+    }
+
+    /**
+     * indicates if the parameter value can be blank
+     */
+    public boolean isCanBeBlank() {
+        return canBeBlank;
     }
 }

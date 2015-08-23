@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     /**
@@ -9,8 +9,9 @@
      * @requires data-prep.services.dataset.service:DatasetService
      * @requires talend.widget.service:TalendConfirmService
      * @requires data-prep.services.uploadWorkflowService.service:UploadWorkflowService
+     * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function HomeCtrl(UploadWorkflowService, MessageService, DatasetService, TalendConfirmService) {
+    function HomeCtrl(UploadWorkflowService, MessageService, DatasetService, TalendConfirmService, PlaygroundService) {
         var vm = this;
 
         /**
@@ -50,7 +51,7 @@
          * @methodOf data-prep.home.controller:HomeCtrl
          * @description Toggle the right panel containing inventory data
          */
-        vm.toggleRightPanel = function() {
+        vm.toggleRightPanel = function () {
             vm.showRightPanel = !vm.showRightPanel;
         };
 
@@ -60,7 +61,7 @@
          * @methodOf data-prep.home.controller:HomeCtrl
          * @description Start the default import process of a dataset.
          */
-        vm.startDefaultImport = function() {
+        vm.startDefaultImport = function () {
             var defaultExportType = _.find(vm.importTypes, 'id', 'local');
             vm.startImport(defaultExportType);
         };
@@ -72,8 +73,8 @@
          * @description Start the import process of a dataset. Route the call to the right import method
          * (local or remote) depending on the import type user choice.
          */
-        vm.startImport = function(importType) {
-            switch(importType.id) {
+        vm.startImport = function (importType) {
+            switch (importType.id) {
                 case 'local':
                     document.getElementById('datasetFile').click();
                     break;
@@ -95,7 +96,7 @@
          * @methodOf data-prep.home.controller:HomeCtrl
          * @description Import a remote http dataset.
          */
-        vm.importHttpDataSet = function() {
+        vm.importHttpDataSet = function () {
             var importParameters = {
                 type: 'http',
                 name: vm.datasetName,
@@ -106,11 +107,11 @@
             vm.uploadingDatasets.push(dataset);
 
             DatasetService.import(importParameters)
-                .then(function(event) {
+                .then(function (event) {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                     DatasetService.getDatasetById(event.data).then(UploadWorkflowService.openDataset);
                 })
-                .catch(function() {
+                .catch(function () {
                     dataset.error = true;
                     MessageService.error('IMPORT_ERROR_TITLE', 'IMPORT_ERROR');
                 });
@@ -122,7 +123,7 @@
          * @methodOf data-prep.home.controller:HomeCtrl
          * @description Import a remote hdfs dataset.
          */
-        vm.importHdfsDataSet = function() {
+        vm.importHdfsDataSet = function () {
             var importParameters = {
                 type: 'hdfs',
                 name: vm.datasetName,
@@ -133,11 +134,11 @@
             vm.uploadingDatasets.push(dataset);
 
             DatasetService.import(importParameters)
-                .then(function(event) {
+                .then(function (event) {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                     DatasetService.getDatasetById(event.data).then(UploadWorkflowService.openDataset);
                 })
-                .catch(function() {
+                .catch(function () {
                     dataset.error = true;
                     MessageService.error('IMPORT_ERROR_TITLE', 'IMPORT_ERROR');
                 });
@@ -150,7 +151,7 @@
          * @description Upload dataset : Step 1 - file selected. It takes the file name, and display the dataset name
          * change modal
          */
-        vm.uploadDatasetFile = function() {
+        vm.uploadDatasetFile = function () {
             var file = vm.datasetFile[0];
 
             // remove file extension and ask final name
@@ -168,24 +169,24 @@
          * @description Upload dataset : Step 2 - name entered. It ask for override if a dataset with the same name
          * exists, and trigger the upload
          */
-        vm.uploadDatasetName = function() {
+        vm.uploadDatasetName = function () {
             var file = vm.datasetFile[0];
             var name = vm.datasetName;
 
             // if the name exists, ask for update or creation
             vm.existingDatasetFromName = DatasetService.getDatasetByName(name);
-            if(vm.existingDatasetFromName) {
+            if (vm.existingDatasetFromName) {
                 TalendConfirmService.confirm(null, ['UPDATE_EXISTING_DATASET'], {dataset: vm.datasetName})
                     .then(
-                        function() {
-                            vm.updateExistingDataset();
-                        },
-                        function(cause) {
-                            if(cause !== 'dismiss') {
-                                vm.createDatasetFromExistingName();
-                            }
+                    function () {
+                        vm.updateExistingDataset();
+                    },
+                    function (cause) {
+                        if (cause !== 'dismiss') {
+                            vm.createDatasetFromExistingName();
                         }
-                    );
+                    }
+                );
             }
             // create with requested name
             else {
@@ -199,7 +200,7 @@
          * @methodOf data-prep.home.controller:HomeCtrl
          * @description Upload dataset : Step 3 - Create a new dataset with a unique name (add (n)).
          */
-        vm.createDatasetFromExistingName = function() {
+        vm.createDatasetFromExistingName = function () {
             var file = vm.datasetFile[0];
             var name = vm.datasetName;
             name = DatasetService.getUniqueName(name);
@@ -212,7 +213,7 @@
          * @methodOf data-prep.home.controller:HomeCtrl
          * @description Upload dataset : Step 3 bis - Update existing dataset
          */
-        vm.updateExistingDataset = function() {
+        vm.updateExistingDataset = function () {
             var file = vm.datasetFile[0];
             var existingDataset = vm.existingDatasetFromName;
 
@@ -227,19 +228,19 @@
          * @param {string} name - the dataset name
          * @description [PRIVATE] Create a new dataset
          */
-        var createDataset = function(file, name) {
+        var createDataset = function (file, name) {
             var dataset = DatasetService.createDatasetInfo(file, name);
             vm.uploadingDatasets.push(dataset);
 
             DatasetService.create(dataset)
-                .progress(function(event) {
+                .progress(function (event) {
                     dataset.progress = parseInt(100.0 * event.loaded / event.total);
                 })
-                .then(function(event) {
+                .then(function (event) {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                     DatasetService.getDatasetById(event.data).then(UploadWorkflowService.openDataset);
                 })
-                .catch(function() {
+                .catch(function () {
                     dataset.error = true;
                     MessageService.error('UPLOAD_ERROR_TITLE', 'UPLOAD_ERROR');
                 });
@@ -253,19 +254,24 @@
          * @param {object} existingDataset - the existing dataset
          * @description [PRIVATE] Update existing dataset
          */
-        var updateDataset = function(file, existingDataset) {
+        var updateDataset = function (file, existingDataset) {
             var dataset = DatasetService.createDatasetInfo(file, existingDataset.name, existingDataset.id);
             vm.uploadingDatasets.push(dataset);
 
             DatasetService.update(dataset)
-                .progress(function(event) {
+                .progress(function (event) {
                     dataset.progress = parseInt(100.0 * event.loaded / event.total);
                 })
-                .then(function() {
+                .then(function () {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                     MessageService.success('DATASET_UPDATE_SUCCESS_TITLE', 'DATASET_UPDATE_SUCCESS', {dataset: dataset.name});
+
+                    //Force the update currentMetadata of the dataset
+                    PlaygroundService.currentMetadata = null;
+                    DatasetService.getDatasetById(dataset.id).then(UploadWorkflowService.openDataset);
+
                 })
-                .catch(function() {
+                .catch(function () {
                     dataset.error = true;
                     MessageService.error('UPLOAD_ERROR_TITLE', 'UPLOAD_ERROR');
                 });
