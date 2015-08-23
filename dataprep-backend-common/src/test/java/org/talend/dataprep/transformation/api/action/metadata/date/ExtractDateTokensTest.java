@@ -18,13 +18,10 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.column.CopyColumnMetadata;
 
 /**
  * Unit test for the ChangeDatePattern action.
@@ -80,8 +77,8 @@ public class ExtractDateTokensTest {
         expectedValues.put("0001", "04/25/1999");
         expectedValues.put("0003", "1999");
         expectedValues.put("0004", "4");
-        expectedValues.put("0005", "");
-        expectedValues.put("0006", "");
+        expectedValues.put("0005", "0");
+        expectedValues.put("0006", "0");
         expectedValues.put("0002", "tata");
 
         //when
@@ -117,19 +114,51 @@ public class ExtractDateTokensTest {
         assertEquals(expectedValues, row.values());
     }
 
+    /**
+     * To test with a date that does not match the most frequent pattern, but match another one present in the stats
+     */
     @Test
     public void should_process_row_wrong_pattern() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "toto");
-        values.put("0001", "25-04-1999");
+        values.put("0001", "04-25-09");
         values.put("0002", "tata");
         final DataSetRow row = new DataSetRow(values);
         setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "toto");
-        expectedValues.put("0001", "25-04-1999");
+        expectedValues.put("0001", "04-25-09");
+        expectedValues.put("0003", "2009");
+        expectedValues.put("0004", "4");
+        expectedValues.put("0005", "0");
+        expectedValues.put("0006", "0");
+        expectedValues.put("0002", "tata");
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
+     * To test with a date that does not match any of the pattern present in the stats
+     */
+    @Test
+    public void should_process_row_very_wrong_pattern() throws Exception {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "toto");
+        values.put("0001", "NA");
+        values.put("0002", "tata");
+        final DataSetRow row = new DataSetRow(values);
+        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "toto");
+        expectedValues.put("0001", "NA");
         expectedValues.put("0003", "");
         expectedValues.put("0004", "");
         expectedValues.put("0005", "");

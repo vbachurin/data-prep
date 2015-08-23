@@ -162,6 +162,7 @@ $datagrid-cell-font-size: .80em;
         height: auto !important;
         padding: 0 0 0 2px;
         margin: 0;
+        min-width: 280px;
 
         font-family: $monospace;
       }
@@ -172,6 +173,7 @@ $datagrid-cell-font-size: .80em;
         margin-top: -5px;
         text-align: center;
         white-space: pre-line;
+        min-width: 280px;
 
         input[type="checkbox"] {
           vertical-align: middle;

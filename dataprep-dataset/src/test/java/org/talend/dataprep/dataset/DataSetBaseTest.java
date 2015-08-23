@@ -1,6 +1,7 @@
 package org.talend.dataprep.dataset;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
@@ -76,6 +77,7 @@ public abstract class DataSetBaseTest {
         waitForQueue(Destinations.STATISTICS_ANALYSIS, dataSetId);
         // Asserts on metadata status
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
+        assertNotNull(metadata);
         DataSetLifecycle lifecycle = metadata.getLifecycle();
         assertThat(lifecycle.contentIndexed(), is(true));
         assertThat(lifecycle.schemaAnalyzed(), is(true));

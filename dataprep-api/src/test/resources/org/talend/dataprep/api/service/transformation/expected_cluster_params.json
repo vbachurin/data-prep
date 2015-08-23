@@ -13,14 +13,16 @@
             "type": "boolean",
             "description": "parameter.t@t@.desc",
             "label": "parameter.t@t@.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "T@T@",
             "type": "boolean",
             "description": "parameter.T@T@.desc",
             "label": "parameter.T@T@.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           }
         ],
         "replace": {
@@ -28,7 +30,8 @@
           "type": "string",
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
-          "default": "t@t@"
+          "default": "t@t@",
+          "canBeBlank":true
         }
       },
       {
@@ -38,14 +41,16 @@
             "type": "boolean",
             "description": "parameter.tata.desc",
             "label": "parameter.tata.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "Tata",
             "type": "boolean",
             "description": "parameter.Tata.desc",
             "label": "parameter.Tata.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           }
         ],
         "replace": {
@@ -53,7 +58,8 @@
           "type": "string",
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
-          "default": "tata"
+          "default": "tata",
+          "canBeBlank":true
         }
       }
     ]
