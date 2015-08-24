@@ -12,7 +12,7 @@
      * @restrict EA
      * @usage
      */
-    function TalendDatetimePicker($timeout) {
+    function TalendDatetimePicker() {
 
         return {
             restrict: 'E',
@@ -28,19 +28,23 @@
             controller: function () {
             },
             controllerAs: 'ctrl',
-            link: function () {
+            link: function (scope, element, attributes) {
               Date.parseDate = function( input, format ){
                 return moment(input,format).toDate();
               };
               Date.prototype.dateFormat = function( format ){
                 return moment(this).format(format);
               };
-              //FIXME make this configurable
+
+              var format = attributes.format?attributes.format:'DD/MM/YYYY hh:mm:ss';
+              var formatTime = attributes.formatTime?attributes.formatTime:'hh:mm:ss';
+              var formatDate = attributes.formatDate?attributes.formatDate:'DD/MM/YYYY';
+
               var dateInput = angular.element('.datetimepicker');
               dateInput.datetimepicker({
-                    format:'DD/MM/YYYY hh:mm:ss',
-                    formatTime:'hh:mm:ss',
-                    formatDate:'DD/MM/YYYY'
+                    format: format,
+                    formatTime: formatTime,
+                    formatDate:formatDate
                   }
               );
 

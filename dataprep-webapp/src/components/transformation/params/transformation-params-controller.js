@@ -76,12 +76,6 @@
             return params;
         };
 
-        var getDateParams = function() {
-            var params = {};
-
-            return params;
-        };
-
         /**
          * @ngdoc method
          * @name gatherParams
