@@ -20,6 +20,7 @@
             var params = {};
             if (vm.transformation.parameters) {
                 _.forEach(vm.transformation.parameters, function (paramItem) {
+                    console.log("getParams name/value:"+paramItem.name+"/"+paramItem.value);
                     params[paramItem.name] = paramItem.value;
                 });
             }
@@ -76,6 +77,12 @@
             return params;
         };
 
+        var getDateParams = function() {
+            var params = {};
+
+            return params;
+        };
+
         /**
          * @ngdoc method
          * @name gatherParams
@@ -87,8 +94,9 @@
             var params = getParams();
             var choiceParams = getChoiceParams();
             var clusterParams = getClusterParams();
-
             return _.merge(_.merge(params, choiceParams), clusterParams);
+            //var dateParams = getDateParams();
+            //return _.merge(_.merge(_.merge(params, choiceParams), clusterParams),dateParams);
         };
 
         /**

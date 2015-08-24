@@ -10,8 +10,6 @@
     function TransformDateParamsCtrl(ConverterService) {
         var vm = this;
 
-
-
         /**
          * @ngdoc method
          * @name initParamsValues
@@ -20,7 +18,6 @@
          */
         var initParamsValues = function () {
             _.forEach(vm.parameters, function (param) {
-
                 if(param.initialValue) {
                     param.initialValue = ConverterService.adaptValue(param.type, param.initialValue);
                 }

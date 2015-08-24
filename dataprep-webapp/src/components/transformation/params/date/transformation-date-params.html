@@ -1,8 +1,15 @@
 <div class="param">
+
     <div class="param-row" ng-repeat="param in dateParamsCtrl.parameters track by $index">
         <div class="param-name" ng-if="::(dateParamsCtrl.label !== 'false')">Date: {{dateParamsCtrl.label}}{{::param.label}}:</div>
 
-        <talend-datetime-picker ng-model="param.value"></talend-datetime-picker>
+        <talend-datetime-picker ng-model="param.value"
+                                name="{{::(param.name + $index)}}"
+                                type="{{::param.inputType}}"
+                                ng-model="param.value"
+                                is-type="{{::param.type}}"
+                                can-be-blank="{{::param.canBeBlank}}">
+        </talend-datetime-picker>
 
         <img src="assets/images/information.png"
              title="{{::param.description}}"

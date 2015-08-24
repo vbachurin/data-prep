@@ -451,7 +451,7 @@
         "implicit": false,
         "description": "The value to set in invalid cells",
         "label": "Value",
-        "default": "0"
+        "default": "01/01/1970 10:00"
       }
     ],
     "category": "quickfix",
