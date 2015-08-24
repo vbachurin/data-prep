@@ -1,6 +1,7 @@
 package org.talend.dataprep.api.service.command.preparation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.InputStream;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -14,12 +15,9 @@ import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCode;
 
-import java.io.InputStream;
-
-import static org.talend.dataprep.api.APIErrorCodes.UNABLE_TO_ACTIONS_TO_PREPARATION;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 @Scope("request")
@@ -60,4 +58,5 @@ public class PreparationAddAction extends DataPrepCommand<Void> {
             actionAppend.releaseConnection();
         }
     }
+
 }

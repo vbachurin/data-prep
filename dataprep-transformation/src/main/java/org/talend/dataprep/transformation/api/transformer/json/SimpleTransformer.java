@@ -163,6 +163,7 @@ class SimpleTransformer implements Transformer {
                     quality.setEmpty((int) column.getEmptyCount());
                     quality.setInvalid((int) column.getInvalidCount());
                     quality.setValid((int) column.getValidCount());
+                    quality.setInvalidValues(column.getInvalidValues());
                     // Semantic types
                     final SemanticType semanticType = result.get(SemanticType.class);
                     metadata.setDomain(semanticType.getSuggestedCategory());
