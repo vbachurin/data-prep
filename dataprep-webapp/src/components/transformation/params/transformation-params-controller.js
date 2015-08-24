@@ -20,7 +20,6 @@
             var params = {};
             if (vm.transformation.parameters) {
                 _.forEach(vm.transformation.parameters, function (paramItem) {
-                    console.log("getParams name/value:"+paramItem.name+"/"+paramItem.value);
                     params[paramItem.name] = paramItem.value;
                 });
             }
