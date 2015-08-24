@@ -35,10 +35,11 @@
               Date.prototype.dateFormat = function( format ){
                 return moment(this).format(format);
               };
+              //FIXME make this configurable
               var dateInput = angular.element('.datetimepicker');
               dateInput.datetimepicker({
-                    format:'DD/MM/YYYY hh:mm',
-                    formatTime:'hh:mm',
+                    format:'DD/MM/YYYY hh:mm:ss',
+                    formatTime:'hh:mm:ss',
                     formatDate:'DD/MM/YYYY'
                   }
               );

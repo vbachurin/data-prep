@@ -34,7 +34,7 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
 
     public static final String FILL_INVALID_ACTION_NAME = "fillinvalidwithdefaultdate"; //$NON-NLS-1$
 
-    private static final String DATE_PATTERN = "dd/MM/yyyy HH:mm";
+    private static final String DATE_PATTERN = "dd/MM/yyyy HH:mm:ss";
 
     private static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
