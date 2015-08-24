@@ -3,7 +3,7 @@
 
     /**
      * @ngdoc directive
-     * @name data-prep.boxplotChart.directive:boxplotChart
+     * @name talend.widget.directive:boxplotChart
      * @description This directive renders the boxplot chart.
      * @restrict E
      * @usage
@@ -326,6 +326,6 @@
         };
     }
 
-    angular.module('data-prep.boxplotChart')
+    angular.module('talend.widget')
         .directive('boxplotChart', BoxplotChart);
 })();

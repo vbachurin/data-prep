@@ -3,7 +3,7 @@
 
     /**
      * @ngdoc directive
-     * @name data-prep.horizontalBarchart.directive:horizontalBarchart
+     * @name talend.widget.directive:horizontalBarchart
      * @description This directive renders the horizontal bar chart.
      * @restrict E
      * @usage
@@ -152,6 +152,6 @@
         };
     }
 
-    angular.module('data-prep.horizontalBarchart')
+    angular.module('talend.widget')
         .directive('horizontalBarchart', HorizontalBarchart);
 })();
