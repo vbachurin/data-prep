@@ -1,5 +1,5 @@
 <div class="param">
-    <div class="param-row" ng-repeat="param in simpleParamsCtrl.parameters track by $index" title="{{::param.description}}">
+    <div class="param-row" ng-repeat="param in simpleParamsCtrl.parameters track by $index" valuetooltip="{{::param.description}}">
         <div class="param-name" ng-if="::(simpleParamsCtrl.label !== 'false')">{{simpleParamsCtrl.label}}{{::param.label}}:</div>
 
         <div class="param-input" ng-if="::(simpleParamsCtrl.editableSelect)">

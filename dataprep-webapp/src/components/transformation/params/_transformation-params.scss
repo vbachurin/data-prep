@@ -14,27 +14,23 @@
     @include justify-content(flex-start);
     @include align-items(stretch);
 
-    [title]{
-      position:relative;
+    div:hover {
+      position: relative;
     }
-    [title]:after{
-      content:attr(title);
-      color:$white;
+    div[valuetooltip]:hover:after {
+      content: attr(valuetooltip);
+      padding: 4px 8px;
+      color: $white;
+      position: absolute;
+      left: 0;
+      top: 100%;
+      z-index: 1000;
       background-color:$background;
       box-shadow: $box-shadow;
-      padding:5px;
-      position:absolute;
-      left:-9999px;
-      opacity:0;
-      bottom:100%;
-      -webkit-transition:0.25s linear opacity;
-    }
-    [title]:hover:after{
-      left:5px;
-      opacity:1;
-      max-width: 200px;
       display: table-cell;
+      max-width: 200px;
     }
+
 
     padding: 10px;
     &.param-no-space {
