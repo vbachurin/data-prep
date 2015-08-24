@@ -9,10 +9,17 @@
         <talend-tabs-item tab-title="Line">Coming soon ...</talend-tabs-item>
         <talend-tabs-item tab-title="Column" default="true">
             <talend-accordions class="menu">
-                <talend-accordions-item ng-switch="!!(transfo.parameters || transfo.items)" ng-repeat="transfo in actionsSuggestionsCtrl.columnSuggestions">
-                    <!--no static parameters-->
+                <talend-accordions-item ng-switch="!!(transfo.parameters || transfo.items)" ng-repeat="transfo in actionsSuggestionsCtrl.columnSuggestions track by transfo.name">
+                    <!--with dynamic parameters-->
                     <a class="trigger"
                        ng-switch-when="false"
+                       ng-if="transfo.dynamic"
+                       ng-click="actionsSuggestionsCtrl.select(transfo, 'column')">{{transfo.label}}</a>
+
+                    <!--no parameters-->
+                    <a class="trigger"
+                       ng-switch-when="false"
+                       ng-if="!transfo.dynamic"
                        ng-click="actionsSuggestionsCtrl.select(transfo, 'column')"
                        ng-mouseenter="actionsSuggestionsCtrl.earlyPreview(transfo, 'column')({})"
                        ng-mouseleave="actionsSuggestionsCtrl.cancelEarlyPreview()">{{transfo.label}}</a>

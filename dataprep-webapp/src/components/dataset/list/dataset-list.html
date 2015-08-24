@@ -3,17 +3,19 @@
         <div>{{ ::'SORTED_BY' | translate }}</div>
         <div class="button-switch">
             <talend-button-switch
-                    button-values="datasetListCtrl.sortList"
-                    button-current-obj="datasetListCtrl.sortSelected"
-                    button-action="datasetListCtrl.updateSortBy(param)">
+                    values="datasetListCtrl.sortList"
+                    current-value="datasetListCtrl.sortSelected"
+                    display-key="name"
+                    change-action="datasetListCtrl.updateSortBy(selected)">
             </talend-button-switch>
         </div>
         <div> {{ ::'SORT_IN' | translate }} </div>
         <div class="button-switch">
             <talend-button-switch
-                    button-values="datasetListCtrl.orderList"
-                    button-current-obj="datasetListCtrl.sortOrderSelected"
-                    button-action="datasetListCtrl.updateSortOrder(param)">
+                    values="datasetListCtrl.orderList"
+                    current-value="datasetListCtrl.sortOrderSelected"
+                    display-key="name"
+                    change-action="datasetListCtrl.updateSortOrder(selected)">
             </talend-button-switch>
         </div>
         <div> {{ ::'SORT_ORDER' | translate }} </div>

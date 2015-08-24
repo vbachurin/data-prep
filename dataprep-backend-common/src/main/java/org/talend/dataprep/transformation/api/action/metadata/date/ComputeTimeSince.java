@@ -4,11 +4,9 @@ import static java.time.temporal.ChronoUnit.HOURS;
 import static org.talend.dataprep.api.type.Type.INTEGER;
 
 import java.time.DateTimeException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalUnit;
 import java.util.Map;
 
@@ -81,7 +79,7 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
 
         TemporalUnit unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
-        Temporal now = (unit == HOURS ? LocalDateTime.now() : LocalDate.now());
+        Temporal now = LocalDateTime.now();
 
         final ColumnMetadata column = row.getRowMetadata().getById(columnId);
 
@@ -92,13 +90,13 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
         // parse the date
         final String value = row.get(columnId);
         try {
-            final TemporalAccessor temporalAccessor = superParse(value, row, columnId);
-            final Temporal valueAsDate = unit == HOURS ? LocalDateTime.from(temporalAccessor) : LocalDate.from(temporalAccessor);
+            final LocalDateTime temporalAccessor = superParse(value, row, columnId);
+            final Temporal valueAsDate = LocalDateTime.from(temporalAccessor);
             final long newValue = unit.between(valueAsDate, now);
             row.set(newColumnMetadata.getId(), newValue + "");
         } catch (DateTimeException e) {
             // Nothing to do: in this case, temporalAccessor is left null
-            LOGGER.debug("Unable to parse date {}.", value, e);
+            LOGGER.debug("Unable to parse date {} for {} @ {}", value, columnId, row.getTdpId(), e);
             row.set(newColumnMetadata.getId(), "");
         }
     }

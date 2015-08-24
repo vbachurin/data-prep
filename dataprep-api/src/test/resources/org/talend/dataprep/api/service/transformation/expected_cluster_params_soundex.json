@@ -14,7 +14,8 @@
             "implicit": false,
             "description": "parameter.tata.desc",
             "label": "parameter.tata.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "Tata",
@@ -22,7 +23,8 @@
             "implicit": false,
             "description": "parameter.Tata.desc",
             "label": "parameter.Tata.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           }
         ],
         "replace": {
@@ -31,7 +33,8 @@
           "implicit": false,
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
-          "default": "tata"
+          "default": "tata",
+          "canBeBlank":true
         }
       },
       {
@@ -42,7 +45,8 @@
             "implicit": false,
             "description": "parameter.t@t@.desc",
             "label": "parameter.t@t@.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "T@T@",
@@ -50,7 +54,8 @@
             "implicit": false,
             "description": "parameter.T@T@.desc",
             "label": "parameter.T@T@.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           }
         ],
         "replace": {
@@ -59,7 +64,8 @@
           "implicit": false,
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
-          "default": "t@t@"
+          "default": "t@t@",
+          "canBeBlank":true
         }
       },
       {
@@ -70,7 +76,8 @@
             "implicit": false,
             "description": "parameter.Massachussetts.desc",
             "label": "parameter.Massachussetts.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "Masachussets",
@@ -78,7 +85,8 @@
             "implicit": false,
             "description": "parameter.Masachussets.desc",
             "label": "parameter.Masachussets.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "Massachusetts",
@@ -86,7 +94,8 @@
             "implicit": false,
             "description": "parameter.Massachusetts.desc",
             "label": "parameter.Massachusetts.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "Masachusetts",
@@ -94,7 +103,8 @@
             "implicit": false,
             "description": "parameter.Masachusetts.desc",
             "label": "parameter.Masachusetts.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "Massachusets",
@@ -102,7 +112,8 @@
             "implicit": false,
             "description": "parameter.Massachusets.desc",
             "label": "parameter.Massachusets.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           }
         ],
         "replace": {
@@ -111,7 +122,8 @@
           "implicit": false,
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
-          "default": "Massachusetts"
+          "default": "Massachusetts",
+          "canBeBlank":true
         }
       },
       {
@@ -122,7 +134,8 @@
             "implicit": false,
             "description": "parameter.Texas.desc",
             "label": "parameter.Texas.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           },
           {
             "name": "Tixass",
@@ -130,7 +143,8 @@
             "implicit": false,
             "description": "parameter.Tixass.desc",
             "label": "parameter.Tixass.label",
-            "default": null
+            "default": null,
+            "canBeBlank":true
           }
         ],
         "replace": {
@@ -139,7 +153,8 @@
           "implicit": false,
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
-          "default": "Tixass"
+          "default": "Tixass",
+          "canBeBlank":true
         }
       }
     ]

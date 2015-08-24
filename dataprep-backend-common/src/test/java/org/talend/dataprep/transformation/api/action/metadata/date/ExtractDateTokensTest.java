@@ -77,8 +77,8 @@ public class ExtractDateTokensTest {
         expectedValues.put("0001", "04/25/1999");
         expectedValues.put("0003", "1999");
         expectedValues.put("0004", "4");
-        expectedValues.put("0005", "");
-        expectedValues.put("0006", "");
+        expectedValues.put("0005", "0");
+        expectedValues.put("0006", "0");
         expectedValues.put("0002", "tata");
 
         //when
@@ -132,8 +132,8 @@ public class ExtractDateTokensTest {
         expectedValues.put("0001", "04-25-09");
         expectedValues.put("0003", "2009");
         expectedValues.put("0004", "4");
-        expectedValues.put("0005", "");
-        expectedValues.put("0006", "");
+        expectedValues.put("0005", "0");
+        expectedValues.put("0006", "0");
         expectedValues.put("0002", "tata");
 
         // when
