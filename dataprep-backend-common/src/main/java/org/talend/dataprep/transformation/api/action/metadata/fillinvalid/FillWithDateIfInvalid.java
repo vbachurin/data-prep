@@ -1,7 +1,9 @@
 package org.talend.dataprep.transformation.api.action.metadata.fillinvalid;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +34,11 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
 
     public static final String FILL_INVALID_ACTION_NAME = "fillinvalidwithdefaultdate"; //$NON-NLS-1$
 
-    private static final String DATE_PATTERN = "DD/MM/YYYY hh:mm";
+    private static final String DATE_PATTERN = "dd/MM/yyyy HH:mm";
 
-    private static final String DEFAULT_DATE_VALUE = new SimpleDateFormat(DATE_PATTERN).format(new Date(0));
+    private static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
+
+    private static final String DEFAULT_DATE_VALUE = DEFAULT_FORMATTER.format( LocalDateTime.of( 1970, Month.JANUARY, 1, 10, 0 ) );
 
     @Override
     public String getName() {
@@ -65,14 +69,15 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
                 // we assume all controls have been made in the ui.
                 String newDateStr = parameters.get(DEFAULT_VALUE_PARAMETER);
 
-                Date newDateValue = new SimpleDateFormat(DATE_PATTERN).parse(newDateStr);
-
                 // we search the most used pattern
                 String mostUsedPattern = findMostUsedDatePattern(column);
 
-                row.set(columnId, new SimpleDateFormat(mostUsedPattern).format(newDateValue));
+                String newDateWithFormat = DateTimeFormatter.ofPattern(mostUsedPattern) //
+                        .format(LocalDateTime.parse(newDateStr, DEFAULT_FORMATTER));
+
+                row.set(columnId, newDateWithFormat);
             }
-        } catch (ParseException e) {
+        } catch (Exception e) {
             LOGGER.warn("skip error parsing date", e);
         }
     }
