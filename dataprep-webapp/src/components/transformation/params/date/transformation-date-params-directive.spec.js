@@ -22,16 +22,8 @@ describe('Transformation date params directive', function () {
             {
                 'name': 'param1',
                 'label': 'Param 1',
-                'type': 'string',
-                'inputType': 'text',
-                'default': '.'
-            },
-            {
-                'name': 'param2',
-                'label': 'Param 2',
-                'type': 'integer',
-                'inputType': 'number',
-                'default': '5'
+                'type': 'date',
+                'default': '14/06/1973 10:00:12'
             }
         ];
 
@@ -39,11 +31,8 @@ describe('Transformation date params directive', function () {
         var element = createElement();
 
         //then
-        expect(element.find('.param-name').length).toBe(2);
+        expect(element.find('.param-name').length).toBe(1);
         expect(element.find('.param-name').eq(0).text().trim()).toBe('Param 1:');
-        expect(element.find('.param-name').eq(1).text().trim()).toBe('Param 2:');
-        expect(element.find('.param-input').length).toBe(2);
-        expect(element.find('.param-input').eq(0).find('input[type="text"]').length).toBe(1);
-        expect(element.find('.param-input').eq(1).find('input[type="number"]').length).toBe(1);
+        expect(element.find('.datetimepicker').length).toBe(1);
     });
 });

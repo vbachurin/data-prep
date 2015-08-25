@@ -1,7 +1,7 @@
 <div class="param">
 
     <div class="param-row" ng-repeat="param in dateParamsCtrl.parameters track by $index">
-        <div class="param-name" ng-if="::(dateParamsCtrl.label !== 'false')">Date: {{dateParamsCtrl.label}}{{::param.label}}:</div>
+        <div class="param-name" ng-if="::(dateParamsCtrl.label !== 'false')">{{dateParamsCtrl.label}}{{::param.label}}:</div>
 
         <talend-datetime-picker ng-model="param.value"
                                 name="{{::(param.name + $index)}}"

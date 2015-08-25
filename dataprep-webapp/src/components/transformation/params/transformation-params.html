@@ -12,17 +12,17 @@
                 choices="paramsCtrl.transformation.parameters">
         </transform-choice-params>
 
-        <!-- Date -->
-        <transform-date-params
-                ng-if="paramsCtrl.transformation.date"
-                parameters="paramsCtrl.transformation.parameters">
-        </transform-date-params>
-
         <!-- Cluster -->
         <transform-cluster-params
                 ng-if="paramsCtrl.transformation.cluster"
                 details="paramsCtrl.transformation.cluster">
         </transform-cluster-params>
+
+        <!-- Date -->
+        <transform-date-params
+            ng-if="paramsCtrl.transformation.date"
+            parameters="paramsCtrl.transformation.parameters">
+        </transform-date-params>
     </form>
 
     <div class="param-buttons">
