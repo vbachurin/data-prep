@@ -20,6 +20,7 @@ describe('Datagrid external service', function () {
 
         spyOn(gridMock.onActiveCellChanged, 'subscribe').and.returnValue();
         spyOn(gridMock.onHeaderClick, 'subscribe').and.returnValue();
+        spyOn(gridMock.onHeaderContextMenu, 'subscribe').and.returnValue();
         spyOn(gridMock.onScroll, 'subscribe').and.returnValue();
 
         spyOn(StatisticsService, 'processData').and.returnValue();
@@ -48,6 +49,14 @@ describe('Datagrid external service', function () {
 
             //then
             expect(gridMock.onHeaderClick.subscribe).toHaveBeenCalled();
+        }));
+
+        it('should add header right click listener', inject(function (DatagridExternalService) {
+            //when
+            DatagridExternalService.init(gridMock);
+
+            //then
+            expect(gridMock.onHeaderContextMenu.subscribe).toHaveBeenCalled();
         }));
 
         it('should add scroll listener', inject(function (DatagridExternalService) {
@@ -162,6 +171,27 @@ describe('Datagrid external service', function () {
             expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
         }));
 
+        it('should update playground right panel on header right click after a 200ms delay', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+            //given
+            DatagridExternalService.init(gridMock);
+            var args = {
+                column: {id: '0001'}
+            };
+            var columnMetadata = gridColumns[1].tdpColMetadata;
+
+            //when
+            var onHeaderContextMenu = gridMock.onHeaderContextMenu.subscribe.calls.argsFor(0)[0];
+            onHeaderContextMenu(null, args);
+
+            expect(StatisticsService.processData).not.toHaveBeenCalled();
+            expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
+            jasmine.clock().tick(200);
+
+            //then
+            expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
+            expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
+        }));
+
         it('should NOT update playground right panel on header click when column is the same', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
             //given
             DatagridExternalService.init(gridMock);
@@ -178,6 +208,31 @@ describe('Datagrid external service', function () {
 
             //when
             onHeaderClick(null, args);
+            jasmine.clock().tick(200);
+
+            //then
+            expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
+        }));
+
+
+
+        it('should NOT update playground right panel on header right click when column is the same', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+            //given
+            DatagridExternalService.init(gridMock);
+            var args = {
+                column: {id: '0001'}
+            };
+
+            var onHeaderContextMenu = gridMock.onHeaderContextMenu.subscribe.calls.argsFor(0)[0];
+            onHeaderContextMenu(null, args);
+            jasmine.clock().tick(200);
+
+            expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
+
+            //when
+            onHeaderContextMenu(null, args);
             jasmine.clock().tick(200);
 
             //then

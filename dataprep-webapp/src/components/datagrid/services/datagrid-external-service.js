@@ -66,21 +66,29 @@
 
         /**
          * @ngdoc method
+         * @name attachColumnCallback
+         * @methodOf data-prep.datagrid.service:DatagridExternalService
+         * @description attachColumnListeners callback
+         */
+        function attachColumnCallback(args) {
+            var columnId = args.column.id;
+            var column = _.find(grid.getColumns(), {id: columnId});
+            updateSuggestionPanel(column);
+        }
+
+        /**
+         * @ngdoc method
          * @name attachColumnListeners
          * @methodOf data-prep.datagrid.service:DatagridExternalService
          * @description Attach header selection listeners on right click or left click
          */
         function attachColumnListeners() {
             grid.onHeaderContextMenu.subscribe(function(e, args) {
-                var columnId = args.column.id;
-                var column = _.find(grid.getColumns(), {id: columnId});
-                updateSuggestionPanel(column);
+                attachColumnCallback(args);
             });
 
             grid.onHeaderClick.subscribe(function(e, args) {
-                var columnId = args.column.id;
-                var column = _.find(grid.getColumns(), {id: columnId});
-                updateSuggestionPanel(column);
+                attachColumnCallback(args);
             });
         }
 

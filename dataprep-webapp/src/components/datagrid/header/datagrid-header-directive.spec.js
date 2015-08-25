@@ -227,4 +227,47 @@ describe('Dataset column header directive', function () {
         expect(event.isPropagationStopped()).toBe(true);
         expect(event.isDefaultPrevented()).toBe(true);
     });
+
+
+    it('should remove show-menu class on left click on grid-header', function () {
+        //given
+        createElement();
+        element.find('.dropdown-menu').addClass('show-menu');
+
+        //when
+        var event = angular.element.Event('mousedown');
+        event.which = 1;
+        element.find('.grid-header').eq(0).trigger(event);
+
+        //then
+        expect(element.find('.dropdown-menu').hasClass('show-menu')).toBeFalsy();
+    });
+
+    it('should add show-menu class on right click on grid-header if show-menu class is not added', function () {
+        //given
+        createElement();
+        element.find('.dropdown-menu').removeClass('show-menu');
+
+        //when
+        var event = angular.element.Event('mousedown');
+        event.which = 3;
+        element.find('.grid-header').eq(0).trigger(event);
+
+        //then
+        expect(element.find('.dropdown-menu').hasClass('show-menu')).toBeTruthy();
+    });
+
+    it('should remove show-menu class on right click on grid-header if show-menu class is already added', function () {
+        //given
+        createElement();
+        element.find('.dropdown-menu').addClass('show-menu');
+
+        //when
+        var event = angular.element.Event('mousedown');
+        event.which = 3;
+        element.find('.grid-header').eq(0).trigger(event);
+
+        //then
+        expect(element.find('.dropdown-menu').hasClass('show-menu')).toBeFalsy();
+    });
 });
