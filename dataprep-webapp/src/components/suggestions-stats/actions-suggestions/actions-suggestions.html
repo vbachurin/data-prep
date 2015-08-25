@@ -8,34 +8,33 @@
         <talend-tabs-item tab-title="Cell">Coming soon ...</talend-tabs-item>
         <talend-tabs-item tab-title="Line">Coming soon ...</talend-tabs-item>
         <talend-tabs-item tab-title="Column" default="true">
-            <div ng-repeat="transfo in actionsSuggestionsCtrl.columnSuggestions track by transfo.name">
-                <talend-accordions class="menu">
-                    <talend-accordions-item ng-switch="!!(transfo.parameters || transfo.items)">
-                        <!--with dynamic parameters-->
-                        <a class="trigger"
-                           ng-switch-when="false"
-                           ng-if="transfo.dynamic"
-                           ng-click="actionsSuggestionsCtrl.select(transfo, 'column')">{{transfo.label}}</a>
+            <talend-accordions class="menu">
+                <talend-accordions-item ng-switch="!!(transfo.parameters || transfo.items)"
+                                        ng-repeat="transfo in actionsSuggestionsCtrl.columnSuggestions track by transfo.name">
+                    <!--with dynamic parameters-->
+                    <a class="trigger"
+                       ng-switch-when="false"
+                       ng-if="transfo.dynamic"
+                       ng-click="actionsSuggestionsCtrl.select(transfo, 'column')">{{transfo.label}}</a>
 
-                        <!--no parameters-->
-                        <a class="trigger"
-                           ng-switch-when="false"
-                           ng-if="!transfo.dynamic"
-                           ng-click="actionsSuggestionsCtrl.select(transfo, 'column')"
-                           ng-mouseenter="actionsSuggestionsCtrl.earlyPreview(transfo, 'column')({})"
-                           ng-mouseleave="actionsSuggestionsCtrl.cancelEarlyPreview()">{{transfo.label}}</a>
+                    <!--no parameters-->
+                    <a class="trigger"
+                       ng-switch-when="false"
+                       ng-if="!transfo.dynamic"
+                       ng-click="actionsSuggestionsCtrl.select(transfo, 'column')"
+                       ng-mouseenter="actionsSuggestionsCtrl.earlyPreview(transfo, 'column')({})"
+                       ng-mouseleave="actionsSuggestionsCtrl.cancelEarlyPreview()">{{transfo.label}}</a>
 
-                        <!--with static parameters-->
-                        <a class="trigger" ng-switch-when="true">{{transfo.label}}</a>
-                        <ul class="content" ng-switch-when="true">
-                            <transform-params transformation="transfo"
-                                              on-submit="actionsSuggestionsCtrl.transformClosure(transfo, 'column')(params)"
-                                              on-submit-hover-on="actionsSuggestionsCtrl.earlyPreview(transfo, 'column')(params)"
-                                              on-submit-hover-off="actionsSuggestionsCtrl.cancelEarlyPreview(params)"></transform-params>
-                        </ul>
-                    </talend-accordions-item>
-                </talend-accordions>
-            </div>
+                    <!--with static parameters-->
+                    <a class="trigger" ng-switch-when="true">{{transfo.label}}</a>
+                    <ul class="content" ng-switch-when="true">
+                        <transform-params transformation="transfo"
+                                          on-submit="actionsSuggestionsCtrl.transformClosure(transfo, 'column')(params)"
+                                          on-submit-hover-on="actionsSuggestionsCtrl.earlyPreview(transfo, 'column')(params)"
+                                          on-submit-hover-off="actionsSuggestionsCtrl.cancelEarlyPreview(params)"></transform-params>
+                    </ul>
+                </talend-accordions-item>
+            </talend-accordions>
         </talend-tabs-item>
 
         <talend-tabs-item tab-title="Table">
