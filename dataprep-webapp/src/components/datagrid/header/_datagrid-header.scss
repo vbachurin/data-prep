@@ -46,6 +46,9 @@
   .grid-header-menu {
     @include menu-list;
     font-family: $base-font-family;
+    li {
+      height: 18px;
+    }
   }
 
   .dropdown-menu,

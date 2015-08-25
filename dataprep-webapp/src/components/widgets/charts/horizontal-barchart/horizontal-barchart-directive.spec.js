@@ -3,7 +3,7 @@ describe('horizontalBarchart directive', function () {
 
     var createElement, element, scope, statsData;
 
-    beforeEach(module('data-prep.horizontalBarchart'));
+    beforeEach(module('talend.widget'));
     beforeEach(inject(function ($rootScope, $compile) {
         statsData = [
             {'data': 'Johnson', 'occurrences': 9},

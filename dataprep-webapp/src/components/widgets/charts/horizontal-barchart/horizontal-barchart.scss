@@ -1,47 +1,65 @@
-svg{
+.horizontal-barchart-cls{
   font-family: $inconsolota;
+  .bg-rect{
+    fill:$medium-gray;
+    cursor:pointer
+  }
+
+  .bar rect {
+    fill: $dark-blue;
+  }
+
+  .bar text.value {
+    font-size: .8em;
+    fill: $dark-green;
+  }
+
+  .axis {
+    shape-rendering: crispEdges;
+  }
+
+  .axis path {
+    fill: none;
+  }
+
+  .x.axis line {
+    stroke: #fff;
+    //stroke-opacity: .2;
+    stroke-opacity: .0;
+  }
+
+  .x.axis text {
+    font-size: .8em;
+    fill: $medium-gray;
+  }
+
+  .y.axis path {
+    stroke: $shadow-gray;
+  }
+
+  .y.axis text {
+    display: none;
+  }
+
+  .hiddenChars {
+    background-color: #E9E9E9;
+    border: 1px dotted #BABABA;
+    white-space: pre;
+  }
+
+  .foreign-object-body{
+    background-color: rgba(255, 255, 255, 0);
+    font-size: .8em;
+    color: $dark-green;
+    padding-top:3px;
+    padding-left:10px;
+    font-family: $inconsolota;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 }
 
-.bg-rect{
-  fill:$medium-gray;
-  cursor:pointer
-}
-
-.bar rect {
-  fill: $dark-blue;
-}
-
-.bar text.value {
-  font-size: .8em;
-  fill: $dark-green;
-}
-
-.axis {
-  shape-rendering: crispEdges;
-}
-
-.axis path {
-  fill: none;
-}
-
-.x.axis line {
-  stroke: #fff;
-  //stroke-opacity: .2;
-  stroke-opacity: .0;
-}
-
-.x.axis text {
-  font-size: .8em;
-  fill: $medium-gray;
-}
-
-.y.axis path {
-  stroke: $shadow-gray;
-}
-
-.y.axis text {
-  display: none;
-}
 
 .d3-tip {
   line-height: 1;
@@ -73,22 +91,4 @@ svg{
   margin: -1px 0 0 0;
   top: 100%;
   left: 0;
-}
-
-.hiddenChars {
-  background-color: #E9E9E9;
-  border: 1px dotted #BABABA;
-  white-space: pre;
-}
-
-.foreign-object-body{
-  background-color: rgba(255, 255, 255, 0);
-  font-size: .8em;
-  color: $dark-green;
-  padding-top:3px;
-  padding-left:10px;
-  font-family: $inconsolota;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
 }

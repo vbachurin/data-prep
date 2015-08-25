@@ -284,7 +284,8 @@
         "implicit": false,
         "description": "The new column name",
         "label": "New name",
-        "default": "id"
+        "default": "id",
+        "canBeBlank": false
       }
     ],
     "category": "columns",

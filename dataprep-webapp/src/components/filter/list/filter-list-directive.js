@@ -6,15 +6,17 @@
      * @name data-prep.filter-list.directive:FilterList
      * @description This directive display the filter list as badges. It consumes the filter list from {@link data-prep.services.filter.service:FilterService FilterService}
      * @restrict E
+     * @requires data-prep.services.filter.service:FilterService
      */
-    function FilterList() {
+    function FilterList(FilterService) {
         return {
             restrict: 'E',
             replace: true,
             templateUrl: 'components/filter/list/filter-list.html',
-            bindToController: true,
             controllerAs: 'filterCtrl',
-            controller: 'FilterListCtrl'
+            controller: function() {
+                this.filterService = FilterService;
+            }
         };
     }
 

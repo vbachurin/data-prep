@@ -21,12 +21,15 @@
             stateDistribution: null,
             statistics: null,
 
+            //filters
+            addFilter: addFilter,
+            addRangeFilter: addRangeFilter,
+
+            //statistics entry points
             processData: processData,
             processAggregation: processAggregation,
-
-            addFilter: addFilter,
-            resetCharts: resetCharts,
             getAggregationColumns: getAggregationColumns,
+            resetCharts: resetCharts,
 
             //TODO temporary method to be replaced with new geo chart
             getGeoDistribution: getGeoDistribution
@@ -128,6 +131,26 @@
                 key: key,
                 label: label,
                 column: service.selectedColumn
+            };
+        }
+
+        /**
+         * @ngdoc method
+         * @name initRangeLimits
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Set the range slider limits
+         */
+        function initRangeLimits() {
+            var column = service.selectedColumn;
+            var currentRangeFilter = _.find(FilterService.filters, function(filter){
+                return filter.colId === column.id && filter.type === 'inside_range';
+            });
+
+            service.rangeLimits = {
+                min : column.statistics.min,
+                max : column.statistics.max,
+                minBrush : currentRangeFilter ? currentRangeFilter.args.interval[0] : undefined,
+                maxBrush : currentRangeFilter ? currentRangeFilter.args.interval[1] : undefined
             };
         }
 
@@ -257,9 +280,33 @@
         }
 
         //--------------------------------------------------------------------------------------------------------------
-        //-------------------------------------------------COMMON-------------------------------------------------------
+        //-------------------------------------------------FILTER-------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
 
+        /**
+         * @ngdoc method
+         * @name addRangeFilter
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {Array} interval of the filter
+         * @description Adds a rangefilter in the angular context
+         */
+        function addRangeFilter(interval) {
+            var removeFilterFn = function removeFilterFn(filter) {
+                if (service.selectedColumn && filter.colId === service.selectedColumn.id) {
+                    initRangeLimits();
+                }
+            };
+
+            service.rangeLimits.minBrush = interval[0];
+            service.rangeLimits.maxBrush = interval[1];
+            var column = service.selectedColumn;
+            var filterFn = FilterService.addFilter.bind(null, 'inside_range', column.id, column.name, {interval: interval}, removeFilterFn);
+            $timeout(filterFn);
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        //-------------------------------------------------COMMON-------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name processMapData
@@ -283,6 +330,7 @@
                 case 'number':
                     initRangeHistogram(column.statistics.histogram);
                     updateBoxplotData();
+                    initRangeLimits();
                     break;
                 case 'text':
                 case 'boolean':
@@ -402,6 +450,7 @@
         function resetCharsWithoutCache() {
             service.boxPlot = null;
             service.histogram = null;
+            service.rangeLimits = null;
             service.stateDistribution = null;
             service.statistics = null;
         }

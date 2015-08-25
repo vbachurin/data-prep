@@ -1,7 +1,8 @@
 @import "cluster/transformation-cluster-params";
 
 .transformation-params {
-  select {
+  select,
+  input {
     margin: 0;
   }
 
@@ -12,6 +13,11 @@
     @include align-items(stretch);
 
     padding: 10px;
+
+    div:hover {
+      position: relative;
+    }
+
     &.param-no-space {
       padding: 0;
     }
@@ -22,24 +28,16 @@
       @include flex-wrap(wrap);
       @include align-items(center);
 
+      padding: 10px;
+
       .param-name {
-        @include flex-basis(150px);
-        @include flex-grow(1);
+        @include flex-basis(30px);
+        @include flex-grow(2);
       }
 
       .param-input {
-        @include flex-basis(250px);
+        @include flex-basis(120px);
         @include flex-grow(2);
-
-        input {
-          margin: 0;
-        }
-      }
-
-      .param-desc-icon {
-        @include flex-basis(26px);
-        padding: 5px;
-        cursor: pointer;
       }
 
       .param-error {
@@ -50,6 +48,6 @@
 
   .param-buttons{
     text-align: right;
-    padding: 0px 10px 10px 0px;
+    padding: 0 10px 10px 0;
   }
 }

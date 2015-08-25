@@ -8,6 +8,7 @@
      * @requires data-prep.services.playground
      */
     angular.module('data-prep.services.filter', [
-        'data-prep.services.playground'
+        'data-prep.services.playground',
+        'data-prep.services.utils'
     ]);
 })();

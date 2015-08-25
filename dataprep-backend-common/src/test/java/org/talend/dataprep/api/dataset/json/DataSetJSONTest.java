@@ -37,7 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class DataSetJSONTest {
 
     @Autowired
-    Jackson2ObjectMapperBuilder builder;
+    private Jackson2ObjectMapperBuilder builder;
 
     /**
      * @param json A valid JSON stream, may be <code>null</code>.

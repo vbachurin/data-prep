@@ -40,10 +40,6 @@ public abstract class AbstractRound extends AbstractActionMetadata implements Co
     }
 
     @Override
-    protected void beforeApply(Map<String, String> parameters) {
-    }
-
-    @Override
     public void applyOnColumn(final DataSetRow row, final TransformationContext context, final Map<String, String> parameters, final String columnId) {
         final String value = row.get(columnId);
         if (value == null) {

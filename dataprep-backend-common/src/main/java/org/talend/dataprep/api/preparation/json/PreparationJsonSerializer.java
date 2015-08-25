@@ -2,6 +2,7 @@ package org.talend.dataprep.api.preparation.json;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -26,11 +27,11 @@ public class PreparationJsonSerializer extends JsonSerializer<Preparation> {
 
     /** Where to find the preparations. */
     @Autowired(required = false)
-    PreparationRepository versionRepository;
+    private PreparationRepository versionRepository;
 
     /** The list of actions to apply in preparations. */
-    @Autowired(required = false)
-    ActionMetadata[] actionMetadata;
+    @Autowired
+    private Collection<ActionMetadata> actionMetadata;
 
     /**
      * @see JsonSerializer#serialize(Object, JsonGenerator, SerializerProvider)

@@ -8,7 +8,7 @@ describe('Type validation directive', function() {
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function(directiveScope) {
-            var element = angular.element('<form name="myForm"><input id="myInput" ng-model="myInput" type="{{inputType}}" type-validation="{{type}}" /></form>');
+            var element = angular.element('<form name="myForm"><input id="myInput" ng-model="myInput" type="{{inputType}}" is-type="{{type}}" /></form>');
             $compile(element)(directiveScope);
             directiveScope.$digest();
             return element;
@@ -24,7 +24,7 @@ describe('Type validation directive', function() {
         createElement(scope);
 
         //then
-        expect(scope.myForm.$error.typeValidation).toBeFalsy();
+        expect(scope.myForm.$error.isTypeValidation).toBeFalsy();
     });
 
     it('should validate integer type', function() {
@@ -37,7 +37,7 @@ describe('Type validation directive', function() {
         createElement(scope);
 
         //then
-        expect(scope.myForm.$error.typeValidation).toBeFalsy();
+        expect(scope.myForm.$error.isTypeValidation).toBeFalsy();
     });
 
     it('should invalidate integer type with double', function() {
@@ -50,7 +50,7 @@ describe('Type validation directive', function() {
         createElement(scope);
 
         //then
-        expect(scope.myForm.$error.typeValidation).toBeTruthy();
+        expect(scope.myForm.$error.isTypeValidation).toBeTruthy();
     });
 
     it('should invalidate integer type with letter', function() {
@@ -63,7 +63,7 @@ describe('Type validation directive', function() {
         createElement(scope);
 
         //then
-        expect(scope.myForm.$error.typeValidation).toBeTruthy();
+        expect(scope.myForm.$error.isTypeValidation).toBeTruthy();
     });
 
     it('should validate numeric type with integer', function() {
@@ -76,7 +76,7 @@ describe('Type validation directive', function() {
         createElement(scope);
 
         //then
-        expect(scope.myForm.$error.typeValidation).toBeFalsy();
+        expect(scope.myForm.$error.isTypeValidation).toBeFalsy();
     });
 
     it('should validate numeric type with double', function() {
@@ -89,7 +89,7 @@ describe('Type validation directive', function() {
         createElement(scope);
 
         //then
-        expect(scope.myForm.$error.typeValidation).toBeFalsy();
+        expect(scope.myForm.$error.isTypeValidation).toBeFalsy();
     });
 
     it('should invalidate numeric type with letter', function() {
@@ -102,7 +102,7 @@ describe('Type validation directive', function() {
         createElement(scope);
 
         //then
-        expect(scope.myForm.$error.typeValidation).toBeTruthy();
+        expect(scope.myForm.$error.isTypeValidation).toBeTruthy();
     });
 
     it('should validate text type', function() {
@@ -115,6 +115,6 @@ describe('Type validation directive', function() {
         createElement(scope);
 
         //then
-        expect(scope.myForm.$error.typeValidation).toBeFalsy();
+        expect(scope.myForm.$error.isTypeValidation).toBeFalsy();
     });
 });

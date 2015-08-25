@@ -22,11 +22,7 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -43,7 +39,6 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.DataSetBaseTest;
 import org.talend.dataprep.schema.CSVFormatGuess;
-import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -986,9 +981,8 @@ public class DataSetServiceTests extends DataSetBaseTest {
         final ColumnMetadata column = dataSetMetadata.getRow().getById("0001");
 
         assertThat(column.getType(), is("date"));
-        assertThat(column.getDomain(), is(SemanticCategoryEnum.UNKNOWN.getDisplayName()));
-        assertThat(column.getStatistics(), sameJSONAsFile(
-            DataSetServiceTests.class.getResourceAsStream( "../date_time_pattern_expected.json" ) ));
+        assertThat(column.getDomain(), is(""));
+        assertThat(column.getStatistics(), sameJSONAsFile(DataSetServiceTests.class.getResourceAsStream("../date_time_pattern_expected.json")));
 
     }
 
