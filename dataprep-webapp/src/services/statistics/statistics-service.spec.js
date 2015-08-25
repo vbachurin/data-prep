@@ -230,6 +230,7 @@ describe('Statistics service', function () {
 
         it('should add a new "inside_range" filter', inject(function (StatisticsService, FilterService, $timeout) {
             //given
+            StatisticsService.rangeLimits = {};
             StatisticsService.selectedColumn = {id: '0000', statistics: {min: 5, max: 55}};
 
             //when
@@ -244,6 +245,20 @@ describe('Statistics service', function () {
             expect(args[1]).toBe('0000');
             expect(args[2]).not.toBeDefined();
             expect(args[3]).toEqual({interval:[0,22]});
+        }));
+
+        it('should update rangeLimits brush on new "inside_range" filter add', inject(function (StatisticsService, FilterService, $timeout) {
+            //given
+            StatisticsService.rangeLimits = {};
+            StatisticsService.selectedColumn = {id: '0000', statistics: {min: 5, max: 55}};
+
+            //when
+            StatisticsService.addRangeFilter([10,22]);
+            $timeout.flush();
+
+            //then
+            expect(StatisticsService.rangeLimits.minBrush).toBe(10);
+            expect(StatisticsService.rangeLimits.maxBrush).toBe(22);
         }));
 
         it('should reinit range limits on "inside_range" filter remove when the selected column is the same', inject(function (StatisticsService, FilterService, $timeout) {
