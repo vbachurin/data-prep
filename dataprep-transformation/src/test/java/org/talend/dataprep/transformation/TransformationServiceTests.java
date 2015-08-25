@@ -8,7 +8,12 @@ import static org.hamcrest.core.Is.is;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.springframework.http.HttpStatus.OK;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -535,6 +540,42 @@ public class TransformationServiceTests {
 
         // then
         assertEquals(expectedParameters, response, false);
+    }
+
+    @Test
+    public void testDynamicParams_should_throw_error() throws Exception {
+        // when
+        final Response post = given() //
+                .contentType(JSON) //
+                .body("json") //
+                .when() //
+                .post("/transform/suggest/{action}/params?columnId=uglystate", "unkownaction");
+
+        Assert.assertEquals(404, post.getStatusCode());
+
+    }
+
+    // ------------------------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------- Export types
+    // ------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------------
+    @Test
+    public void shouldListExportTypes() throws Exception {
+        String json = when().get("/export/types").asString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode types = mapper.readTree(json);
+
+        assertTrue(types.isArray());
+
+        List<String> actual = new ArrayList<>(types.size());
+        for (int i = 0; i < types.size(); i++) {
+            actual.add(types.get(i).get("id").asText());
+        }
+
+        List<String> expected = Arrays.asList("CSV", "XLS", "TABLEAU");
+        Assert.assertEquals(expected, actual);
+
     }
 
     //------------------------------------------------------------------------------------------------------------------
