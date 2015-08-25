@@ -280,6 +280,8 @@
                 }
             };
 
+            service.rangeLimits.minBrush = interval[0];
+            service.rangeLimits.maxBrush = interval[1];
             var column = service.selectedColumn;
             var filterFn = FilterService.addFilter.bind(null, 'inside_range', column.id, column.name, {interval: interval}, removeFilterFn);
             $timeout(filterFn);
