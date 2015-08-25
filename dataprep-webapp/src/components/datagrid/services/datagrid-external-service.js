@@ -68,7 +68,7 @@
          * @ngdoc method
          * @name attachColumnListeners
          * @methodOf data-prep.datagrid.service:DatagridExternalService
-         * @description Attach header selection listeners
+         * @description Attach header selection listeners on right click or left click
          */
         function attachColumnListeners() {
             grid.onHeaderContextMenu.subscribe(function(e, args) {

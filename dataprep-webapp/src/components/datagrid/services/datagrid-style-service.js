@@ -207,7 +207,7 @@
          * @ngdoc method
          * @name attachColumnHeaderListeners
          * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @description Attach style listener on headers. On header selection we update the column cells style
+         * @description Attach style listener on headers. On header selection (on right click or left click) we update the column cells style
          */
         function attachColumnHeaderListeners() {
 

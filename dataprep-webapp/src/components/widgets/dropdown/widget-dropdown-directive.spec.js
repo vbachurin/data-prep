@@ -57,7 +57,6 @@ describe('Dropdown directive', function () {
 
             //when
             clickDropdownToggle();
-            jasmine.clock().tick(250);
 
             //then
             expect(menu.hasClass('show-menu')).toBe(true);
@@ -72,7 +71,6 @@ describe('Dropdown directive', function () {
 
             //when
             clickDropdownToggle();
-            jasmine.clock().tick(100);
 
             //then
             expect(document.activeElement).not.toBe(element.find('.dropdown-menu').eq(0)[0]);
@@ -85,7 +83,6 @@ describe('Dropdown directive', function () {
 
             //when
             clickDropdownToggle();
-            jasmine.clock().tick(250);
 
             //then
             expect(menu.hasClass('show-menu')).toBe(false);
@@ -98,7 +95,6 @@ describe('Dropdown directive', function () {
 
             //when
             clickDropdownItem();
-            jasmine.clock().tick(250);
 
             //then
             expect(menu.hasClass('show-menu')).toBe(false);
@@ -110,7 +106,6 @@ describe('Dropdown directive', function () {
 
             //when
             clickDropdownToggle();
-            jasmine.clock().tick(250);
 
             //then
             expect($._data(angular.element($window)[0], 'events')).toBeDefined();
@@ -120,12 +115,10 @@ describe('Dropdown directive', function () {
         it('should unregister window scroll on close', inject(function ($window) {
             //given
             clickDropdownToggle();
-            jasmine.clock().tick(250);
             expect($._data(angular.element($window)[0], 'events').scroll.length).toBe(1);
 
             //when
             clickDropdownToggle();
-            jasmine.clock().tick(250);
 
             //then
             expect($._data(angular.element($window)[0], 'events')).not.toBeDefined();
@@ -163,7 +156,6 @@ describe('Dropdown directive', function () {
 
             //when
             element.find('.dropdown-menu').mousedown();
-            jasmine.clock().tick(250);
 
             //then
             expect(bodyMouseDown).toBe(false);
@@ -207,7 +199,6 @@ describe('Dropdown directive', function () {
             expect(document.activeElement).not.toBe(menu[0]);
 
             clickDropdownToggle();
-            jasmine.clock().tick(100);
 
             var event = angular.element.Event('keydown');
             event.keyCode = 27;
@@ -220,19 +211,16 @@ describe('Dropdown directive', function () {
             expect(document.activeElement).toBe(action[0]);
         });
 
-        it('should NOT show menu on double click', function () {
+        it('should show menu on first click then close menu on the second click', function () {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
             expect(menu.hasClass('show-menu')).toBe(false);
 
             //when
             clickDropdownToggle();
-            jasmine.clock().tick(50);
-            expect(menu.hasClass('show-menu')).toBe(false);
+            expect(menu.hasClass('show-menu')).toBe(true);
 
             clickDropdownToggle();
-            jasmine.clock().tick(50);
-
             //then
             expect(menu.hasClass('show-menu')).toBe(false);
         });
@@ -267,7 +255,6 @@ describe('Dropdown directive', function () {
 
             //when
             clickDropdownItem();
-            jasmine.clock().tick(250);
 
             //then
             expect(menu.hasClass('show-menu')).toBe(true);
@@ -305,7 +292,6 @@ describe('Dropdown directive', function () {
 
             //when
             clickDropdownToggle();
-            jasmine.clock().tick(250);
 
             //then
             expect(scope.onOpen).toHaveBeenCalled();

@@ -17,9 +17,7 @@
     </div>
 
     <div class="talend-dropdown-text-div">
-        <div class="grid-header-title" ng-show="!datagridHeaderCtrl.isEditMode" title="{{ datagridHeaderCtrl.column.name }}">
-            {{ datagridHeaderCtrl.column.name }}
-        </div>
+        <div class="grid-header-title" ng-show="!datagridHeaderCtrl.isEditMode" title="{{ datagridHeaderCtrl.column.name }}">{{ datagridHeaderCtrl.column.name }}</div>
         <input class="grid-header-title-input" type="text" ng-show="datagridHeaderCtrl.isEditMode" ng-model="datagridHeaderCtrl.newName"/>
     </div>
 

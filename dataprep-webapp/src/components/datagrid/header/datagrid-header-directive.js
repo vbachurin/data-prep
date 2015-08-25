@@ -33,7 +33,7 @@
             controller: 'DatagridHeaderCtrl',
             link: {
                 post: function (scope, iElement, iAttrs, ctrl) {
-                    var gridHeaderTitle, gridHeaderTitleInput;
+                    var gridHeader, gridHeaderTitle, gridHeaderTitleInput;
 
                     /**
                      * @ngdoc method
@@ -129,20 +129,26 @@
 
 
                     /**
-                     * Mousedown : stop propagation not to hide dropdown and hide/show menu on right click
+                     * @ngdoc method
+                     * @name attachClickListener
+                     * @methodOf data-prep.datagrid-header.directive:DatagridHeader
+                     * @description Attach a 'Click' event listener on grid header
                      */
-                    iElement.find('.grid-header').mousedown(function(event) {
-                        switch (event.which) {
-                            case 1:
-                                angular.element('.dropdown-menu').removeClass('show-menu');
-                                break;
-                            case 3:
-                                event.stopPropagation();
-                                iElement.find('.grid-header').find('.dropdown-action').click();
-                                break;
-                            default:
-                        }
-                    });
+                    function attachClickListener() {
+                        gridHeader.mousedown(function(event) {
+                            switch (event.which) {
+                                case 1:
+                                    angular.element('.dropdown-menu').removeClass('show-menu');
+                                    break;
+                                case 3:
+                                    //stop propagation not to hide dropdown and hide/show menu on right click
+                                    event.stopPropagation();
+                                    gridHeader.find('.dropdown-action').click();
+                                    break;
+                                default:
+                            }
+                        });
+                    }
 
                     /**
                      * Get the title and input elements, attach their listeners
@@ -150,11 +156,13 @@
                     $timeout(function () {
                         gridHeaderTitle = iElement.find('.grid-header-title');
                         gridHeaderTitleInput = iElement.find('.grid-header-title-input').eq(0);
+                        gridHeader= iElement.find('.grid-header');
 
                         attachKeyListener();
                         attachDblClickListener();
                         attachBlurListener();
                         attachDisableInputClick();
+                        attachClickListener();
                     });
 
                     /**
