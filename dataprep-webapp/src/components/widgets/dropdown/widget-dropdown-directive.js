@@ -57,6 +57,7 @@
                     var container = iElement.find('.dropdown-container');
                     var action = iElement.find('.dropdown-action');
                     var menu = iElement.find('.dropdown-menu');
+                    var arrow = iElement.find('.dropdown-button-arrow');
 
                     /**
                      * Set the focus on a specific element
@@ -128,9 +129,9 @@
                     }
 
                     /**
-                     * (Double) click : hide/show menu on single, do nothing on double
+                     * Click : hide/show menu on left click
                      */
-                    action.click(function () {
+                    arrow.click(function () {
                         if (willBeSecondClick) {
                             clearTimeout(timer);
                             willBeSecondClick = false;
@@ -142,6 +143,22 @@
                                 toggleMenu();
                                 willBeSecondClick = false;
                             }, DELAY);
+                        }
+                    });
+
+                    /**
+                     * Mousedown : stop propagation not to hide dropdown and hide/show menu on right click
+                     */
+                    action.mousedown(function(event) {
+                        event.stopPropagation();
+                        switch (event.which) {
+                            case 1:
+                                hideAllDropDowns();
+                                break;
+                            case 3:
+                                toggleMenu();
+                                break;
+                            default:
                         }
                     });
 

@@ -210,6 +210,14 @@
          * @description Attach style listener on headers. On header selection we update the column cells style
          */
         function attachColumnHeaderListeners() {
+
+            grid.onHeaderContextMenu.subscribe(function(e, args) {
+                resetCellStyles();
+                updateColumnClass(grid.getColumns(), args.column);
+                grid.invalidate();
+            });
+
+
             grid.onHeaderClick.subscribe(function(e, args) {
                 resetCellStyles();
                 updateColumnClass(grid.getColumns(), args.column);

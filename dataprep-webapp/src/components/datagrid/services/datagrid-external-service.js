@@ -71,6 +71,12 @@
          * @description Attach header selection listeners
          */
         function attachColumnListeners() {
+            grid.onHeaderContextMenu.subscribe(function(e, args) {
+                var columnId = args.column.id;
+                var column = _.find(grid.getColumns(), {id: columnId});
+                updateSuggestionPanel(column);
+            });
+
             grid.onHeaderClick.subscribe(function(e, args) {
                 var columnId = args.column.id;
                 var column = _.find(grid.getColumns(), {id: columnId});
