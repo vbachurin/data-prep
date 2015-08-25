@@ -3,7 +3,7 @@
         <talend-dropdown on-open="datagridHeaderCtrl.initTransformations()">
             <div class="dropdown-container">
                 <div class="dropdown-action">
-                    <div class="dropdown-button" ng-show="!datagridHeaderCtrl.isEditMode" title="{{ datagridHeaderCtrl.column.name }}"></div>
+                    <div class="dropdown-button" title="{{ datagridHeaderCtrl.column.name }}"></div>
                 </div>
                 <ul class="dropdown-menu grid-header-menu">
                     <li ng-if="datagridHeaderCtrl.initTransformationsInProgress">{{ ::'LOADING' | translate }}...</li>
