@@ -123,7 +123,7 @@
                                         hideMsgErr();
                                     }
                             }
-                        }
+                        };
                     }
 
                     //attach events on inputs

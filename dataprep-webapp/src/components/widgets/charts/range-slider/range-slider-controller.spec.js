@@ -97,7 +97,7 @@ describe('RangeSlider controller', function () {
 
     describe('range value adaptation', function () {
 
-        it('should switch entered min and max to respect min > max', inject(function () {
+        it('should switch entered min and max to respect min < max', inject(function () {
             //given
             var ctrl = createController();
             var enteredMin = 50;
