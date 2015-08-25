@@ -1,6 +1,6 @@
 <div class="param">
     <span ng-repeat="choice in choiceParamsCtrl.choices track by $index">
-        <div class="param-row" valuetooltip="{{::choice.description}}">
+        <div class="param-row" data-prep-tooltip="{{::choice.description}}">
             <div class="param-name">{{choice.label}}:</div>
 
             <div class="param-input">
