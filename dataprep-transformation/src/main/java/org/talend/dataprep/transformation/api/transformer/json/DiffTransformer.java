@@ -124,11 +124,6 @@ class DiffTransformer implements Transformer {
         return rows -> {
             reference.apply(rows[0]);
             preview.apply(rows[1]);
-
-            if (rows[0].getTdpId() == 6) {
-                System.out.println("reference : " + rows[0].get("0009"));
-                System.out.println("preview : " + rows[1].get("0009"));
-            }
             return rows;
         };
     }

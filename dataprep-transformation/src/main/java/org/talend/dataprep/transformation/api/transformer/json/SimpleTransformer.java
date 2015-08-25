@@ -140,7 +140,6 @@ class SimpleTransformer implements Transformer {
             // Column statistics
             if (transformColumns) {
                 // Spark statistics
-                final DataSet statisticsDataSet = new DataSet();
                 final RowMetadata rowMetadata = context.getTransformedRowMetadata();
                 final DataSetMetadata transformedMetadata = new DataSetMetadata("", //
                         "", //
@@ -148,9 +147,9 @@ class SimpleTransformer implements Transformer {
                         0, //
                         rowMetadata);
                 transformedMetadata.getContent().setNbRecords(transformedRows.size());
+                final DataSet statisticsDataSet = new DataSet();
                 statisticsDataSet.setMetadata(transformedMetadata);
                 statisticsDataSet.setRecords(transformedRows.stream());
-                DataSetAnalysis.computeStatistics(statisticsDataSet, sparkContext, builder);
                 // Set new quality information in transformed column metadata
                 final List<Analyzers.Result> results = ((Analyzer<Analyzers.Result>) context.get("analyzer")).getResult();
                 final List<ColumnMetadata> dataSetColumns = rowMetadata.getColumns();
@@ -168,6 +167,8 @@ class SimpleTransformer implements Transformer {
                     final SemanticType semanticType = result.get(SemanticType.class);
                     metadata.setDomain(semanticType.getSuggestedCategory());
                 }
+                // statistics analysis must be performed after quality, otherwise it will not be accurate
+                DataSetAnalysis.computeStatistics(statisticsDataSet, sparkContext, builder);
             }
             writer.endArray();
             // Write columns
