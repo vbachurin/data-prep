@@ -18,9 +18,12 @@
             stateDistribution: null,
             statistics: null,
 
-            processData: processData,
+            //filters
             addFilter: addFilter,
             addRangeFilter: addRangeFilter,
+
+            //statistics entry points
+            processData: processData,
             resetCharts: resetCharts,
 
             //TODO temporary method to be replaced with new geo chart
@@ -119,6 +122,26 @@
                 rec.formattedValue = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(rec.data);
                 return rec;
             });
+        }
+
+        /**
+         * @ngdoc method
+         * @name initRangeLimits
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Set the range slider limits
+         */
+        function initRangeLimits() {
+            var column = service.selectedColumn;
+            var currentRangeFilter = _.find(FilterService.filters, function(filter){
+                return filter.colId === column.id && filter.type === 'inside_range';
+            });
+
+            service.rangeLimits = {
+                min : column.statistics.min,
+                max : column.statistics.max,
+                minBrush : currentRangeFilter ? currentRangeFilter.args.phrase[0] : undefined,
+                maxBrush : currentRangeFilter ? currentRangeFilter.args.phrase[1] : undefined
+            };
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -225,7 +248,7 @@
         }
 
         //--------------------------------------------------------------------------------------------------------------
-        //-------------------------------------------------COMMON-------------------------------------------------------
+        //-------------------------------------------------FILTER-------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
@@ -251,13 +274,20 @@
          * @description Adds a rangefilter in the angular context
          */
         function addRangeFilter(interval) {
+            var removeFilterFn = function removeFilterFn(filter) {
+                if (service.selectedColumn && filter.colId === service.selectedColumn.id) {
+                    initRangeLimits();
+                }
+            };
+
             var column = service.selectedColumn;
-            var filterFn = FilterService.addFilter.bind(null, 'inside_range', column.id, column.name, {phrase: interval});
-            service.rangeLimits.minBrush = interval[0];
-            service.rangeLimits.maxBrush = interval[1];
+            var filterFn = FilterService.addFilter.bind(null, 'inside_range', column.id, column.name, {interval: interval}, removeFilterFn);
             $timeout(filterFn);
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        //-------------------------------------------------COMMON-------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name processMapData
@@ -295,15 +325,7 @@
                 case 'number':
                     initRangeHistogram(column.statistics.histogram);
                     updateBoxplotData();
-                    var currentRangeFilter = _.find(FilterService.filters, function(filter){
-                        return filter.colId === column.id && filter.type === 'inside_range';
-                    });
-                    service.rangeLimits = {
-                        min : column.statistics.min,
-                        max : column.statistics.max,
-                        minBrush : currentRangeFilter ? currentRangeFilter.args.phrase[0] : undefined,
-                        maxBrush : currentRangeFilter ? currentRangeFilter.args.phrase[1] : undefined
-                    };
+                    initRangeLimits();
                     break;
                 case 'text':
                 case 'boolean':

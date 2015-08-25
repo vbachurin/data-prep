@@ -1,9 +1,9 @@
-(function() {
+(function () {
     'use strict';
 
     /**
      * Escape all regexp characters except * wildcard, and adapt * wildcard to regexp (* --> .*)
-     * @param str
+     * @param {string} str The string to escape
      * @returns {*}
      */
     function escapeRegExpExceptStar(str) {
@@ -12,15 +12,16 @@
 
     /**
      * Filter info object
-     * @param type - the filter type
-     * @param colId - the column id
-     * @param colName - the column name
-     * @param editable - true if the filter is editable
-     * @param args - the filter arguments
-     * @param filterFn - the filter function
+     * @param {string} type The filter type
+     * @param {string} colId The column id
+     * @param {string} colName The column name
+     * @param {boolean} editable True if the filter is editable
+     * @param {object} args The filter arguments
+     * @param {function} filterFn The filter function
+     * @param {function} removeFilterFn The remove filter callback
      * @constructor
      */
-    function Filter(type, colId, colName, editable, args, filterFn) {
+    function Filter(type, colId, colName, editable, args, filterFn, removeFilterFn) {
         var self = this;
 
         self.type = type;
@@ -29,8 +30,9 @@
         self.editable = editable;
         self.args = args;
         self.filterFn = filterFn;
-        self.__defineGetter__('value', function(){
-            switch(self.type) {
+        self.removeFilterFn = removeFilterFn;
+        self.__defineGetter__('value', function () {
+            switch (self.type) {
                 case 'contains':
                     return self.args.phrase;
                 case 'invalid_records':
@@ -40,11 +42,11 @@
                 case 'valid_records':
                     return 'valid records';
                 case 'inside_range':
-                    if(args.phrase[0] > 1e4 || args.phrase[1] > 1e4 || args.phrase[0] < -1e4 || args.phrase[1] < -1e4){
-                        return 'in ['+ args.phrase[0].toExponential()+ ' ... ' + args.phrase[1].toExponential()+']';
+                    if (args.interval[0] > 1e4 || args.interval[1] > 1e4 || args.interval[0] < -1e4 || args.interval[1] < -1e4) {
+                        return 'in [' + args.interval[0].toExponential() + ' ... ' + args.interval[1].toExponential() + ']';
                     }
                     else {
-                        return 'in ['+ args.phrase[0]+ ' ... ' + args.phrase[1]+']';
+                        return 'in [' + args.interval[0] + ' ... ' + args.interval[1] + ']';
                     }
             }
         });
@@ -57,25 +59,38 @@
      * @requires data-prep.services.playground.service:DatagridService
      */
     function FilterService(DatagridService, NumbersValidityService) {
-        var self = this;
+        var service = {
+            /**
+             * @ngdoc property
+             * @name filters
+             * @propertyOf data-prep.services.filter.service:FilterService
+             * @description The filters list
+             */
+            filters: [],
 
-        /**
-         * @ngdoc property
-         * @name filters
-         * @propertyOf data-prep.services.filter.service:FilterService
-         * @description the filters list
-         */
-        self.filters = [];
+            //utils
+            getColumnsContaining: getColumnsContaining,
 
+            //life
+            addFilter: addFilter,
+            updateFilter: updateFilter,
+            removeAllFilters: removeAllFilters,
+            removeFilter: removeFilter
+        };
+        return service;
+
+        //--------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------UTILS------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name getColumnsContaining
          * @methodOf data-prep.services.filter.service:FilterService
-         * @param {string} phrase - to match. Wildcard (*) accepted
+         * @param {string} phrase To match. Wildcard (*) accepted
          * @description Return the column with a cell that can match the phrase. It take into account a possible wildcard (*)
-         * @returns {Object[]} - the columns id that contains a matching value (col.id & col.name)
+         * @returns {Object[]} The columns id that contains a matching value (col.id & col.name)
          */
-        self.getColumnsContaining = function(phrase) {
+        function getColumnsContaining(phrase) {
             if (!phrase) {
                 return [];
             }
@@ -85,32 +100,24 @@
             var canBeBoolean = 'true'.match(regexp) || 'false'.match(regexp);
 
             return DatagridService.getColumnsContaining(regexp, canBeNumeric, canBeBoolean);
-        };
+        }
 
-        /**
-         * @ngdoc method
-         * @name removeAllFilters
-         * @methodOf data-prep.services.filter.service:FilterService
-         * @description Remove all the filters and update datagrid filters
-         */
-        self.removeAllFilters = function() {
-            DatagridService.resetFilters();
-            self.filters = [];
-        };
-
+        //--------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------FILTER FNs-------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name createContainFilterFn
          * @methodOf data-prep.services.filter.service:FilterService
-         * @param {string} colId - the column id
-         * @param {string} phrase - the phrase that the item must contain
+         * @param {string} colId The column id
+         * @param {string} phrase The phrase that the item must contain
          * @description [PRIVATE] Create a 'contains' filter function
-         * @returns {function} - the predicated function
+         * @returns {function} The predicate function
          */
-        var createContainFilterFn = function(colId, phrase) {
+        function createContainFilterFn(colId, phrase) {
             var lowerCasePhrase = phrase.toLowerCase();
             var regexp = new RegExp(escapeRegExpExceptStar(lowerCasePhrase));
-            return function(item) {
+            return function (item) {
                 // col could be removed by a step
                 if (item[colId]) {
                     return item[colId].toLowerCase().match(regexp);
@@ -119,162 +126,182 @@
                     return false;
                 }
             };
-        };
+        }
 
         /**
          * @ngdoc method
          * @name createEqualFilterFn
          * @methodOf data-prep.services.filter.service:FilterService
-         * @param {string} colId - the column id
-         * @param {string[]} values - the values to compare the record value against
-         * @description [PRIVATE] Create an 'equals' filter function
-         * @returns {function} - the predicated function
+         * @param {string} colId The column id
+         * @param {string[]} values The invalid values
+         * @description Create an 'equals' filter function
+         * @returns {function} The predicate function
          */
-        var createEqualFilterFn = function(colId, values) {
-            return function(item) {
+        function createEqualFilterFn(colId, values) {
+            return function (item) {
                 return values.indexOf(item[colId]) > -1;
             };
-        };
+        }
 
         /**
          * @ngdoc method
          * @name createValidFilterFn
          * @methodOf data-prep.services.filter.service:FilterService
-         * @param {string} colId - the column id
-         * @description [PRIVATE] Create a 'valid' filter function
-         * @returns {function} - the predicated function
+         * @param {string} colId The column id
+         * @param {string[]} values The invalid values
+         * @description Create a 'valid' filter function
+         * @returns {function} The predicate function
          */
-        var createValidFilterFn = function(colId, values){
-            return function(item) {
-                return values.indexOf(item[colId]) === -1 && item[colId];
+        function createValidFilterFn(colId, values) {
+            return function (item) {
+                return item[colId] && values.indexOf(item[colId]) === -1;
             };
-        };
+        }
 
         /**
          * @ngdoc method
          * @name createEmptyFilterFn
          * @methodOf data-prep.services.filter.service:FilterService
-         * @param {string} colId - the column id
-         * @description [PRIVATE] Create an 'empty' filter function
-         * @returns {function} - the predicated function
+         * @param {string} colId The column id
+         * @description Create an 'empty' filter function
+         * @returns {function} The predicate function
          */
-        var createEmptyFilterFn = function(colId) {
-            return function(item) {
+        function createEmptyFilterFn(colId) {
+            return function (item) {
                 return !item[colId];
             };
-        };
+        }
 
         /**
          * @ngdoc method
          * @name createRangeFilterFn
          * @methodOf data-prep.services.filter.service:FilterService
-         * @param {string} colId - the column id
-         * @param {Array} values - the filter interval
-         * @description [PRIVATE] Create a 'range' filter function
-         * @returns {function} - the predicated function
+         * @param {string} colId The column id
+         * @param {Array} values The filter interval
+         * @description Create a 'range' filter function
+         * @returns {function} The predicate function
          */
-        var createRangeFilterFn = function(colId, values) {
-            return function(item) {
+        function createRangeFilterFn(colId, values) {
+            return function (item) {
                 return NumbersValidityService.toNumber(item[colId]) >= values[0] && NumbersValidityService.toNumber(item[colId]) <= values[1];
             };
-        };
+        }
 
+        //--------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------FILTER LIFE------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name addFilter
          * @methodOf data-prep.services.filter.service:FilterService
-         * @param {string} type - the filter type (ex : contains)
-         * @param {string} colId - the column id
-         * @param {string} colName - the column name
-         * @param {string} args - the filter arguments (ex for 'contains' type : {phrase: 'toto'})
+         * @param {string} type The filter type (ex : contains)
+         * @param {string} colId The column id
+         * @param {string} colName The column name
+         * @param {string} args The filter arguments (ex for 'contains' type : {phrase: 'toto'})
+         * @param {function} removeFilterFn An optional remove callback
          * @description Add a filter and update datagrid filters
          */
-        self.addFilter = function(type, colId, colName, args) {
+        function addFilter(type, colId, colName, args, removeFilterFn) {
             var filterFn;
             var filterInfo;
-            switch(type) {
+            switch (type) {
                 case 'contains':
                     filterFn = createContainFilterFn(colId, args.phrase);
-                    filterInfo = new Filter(type, colId, colName, true, args, filterFn);
+                    filterInfo = new Filter(type, colId, colName, true, args, filterFn, removeFilterFn);
                     break;
                 case 'invalid_records':
                     filterFn = createEqualFilterFn(colId, args.values);
-                    filterInfo = new Filter(type, colId, colName, false, args, filterFn);
+                    filterInfo = new Filter(type, colId, colName, false, args, filterFn, removeFilterFn);
                     break;
                 case 'empty_records':
                     filterFn = createEmptyFilterFn(colId);
-                    filterInfo = new Filter(type, colId, colName, false, args, filterFn);
+                    filterInfo = new Filter(type, colId, colName, false, args, filterFn, removeFilterFn);
                     break;
                 case 'valid_records':
                     filterFn = createValidFilterFn(colId, args.values);
-                    filterInfo = new Filter(type, colId, colName, false, args, filterFn);
+                    filterInfo = new Filter(type, colId, colName, false, args, filterFn, removeFilterFn);
                     break;
                 case 'inside_range':
-                    var existantNumColFilter = _.find(self.filters, function(filter){
+                    var existingNumColFilter = _.find(service.filters, function (filter) {
                         return filter.colId === colId && filter.type === 'inside_range';
                     });
 
-                    if(existantNumColFilter){
-                        self.updateFilter(existantNumColFilter, args.phrase);
+                    if (existingNumColFilter) {
+                        service.updateFilter(existingNumColFilter, args.interval);
                         return;
-                    }else{
-                        filterFn = createRangeFilterFn(colId, args.phrase);
-                        filterInfo = new Filter(type, colId, colName, false, args, filterFn);
+                    }
+                    else {
+                        filterFn = createRangeFilterFn(colId, args.interval);
+                        filterInfo = new Filter(type, colId, colName, false, args, filterFn, removeFilterFn);
                     }
                     break;
             }
             DatagridService.addFilter(filterFn);
-            self.filters.push(filterInfo);
-        };
-
-        /**
-         * @ngdoc method
-         * @name removeFilter
-         * @methodOf data-prep.services.filter.service:FilterService
-         * @param {object} filter - the filter to delete
-         * @description Remove a filter and update datagrid filters
-         */
-        self.removeFilter = function(filter) {
-            var filterIndex = self.filters.indexOf(filter);
-            if(filterIndex > -1) {
-                DatagridService.removeFilter(filter.filterFn);
-                self.filters.splice(filterIndex, 1);
-            }
-        };
+            service.filters.push(filterInfo);
+        }
 
         /**
          * @ngdoc method
          * @name updateFilter
          * @methodOf data-prep.services.filter.service:FilterService
-         * @param {object} oldFilter - the filter to update
-         * @param {object} newValue - the filter update parameters
+         * @param {object} oldFilter The filter to update
+         * @param {object} newValue The filter update parameters
          * @description Update an existing filter and update datagrid filters
          */
-        self.updateFilter = function(oldFilter, newValue) {
-            var index = self.filters.indexOf(oldFilter);
+        function updateFilter(oldFilter, newValue) {
+            var index = service.filters.indexOf(oldFilter);
             var oldFn = oldFilter.filterFn;
 
             var newFilterFn;
             var newFilter;
-            var newArgs = {
-                phrase: newValue
-            };
+            var newArgs = {};
             var editableFilter;
-            switch(oldFilter.type) {
+            switch (oldFilter.type) {
                 case 'contains':
+                    newArgs.phrase = newValue;
                     newFilterFn = createContainFilterFn(oldFilter.colId, newValue);
                     editableFilter = true;
                     break;
                 case 'inside_range':
+                    newArgs.interval = newValue;
                     newFilterFn = createRangeFilterFn(oldFilter.colId, newValue);
                     editableFilter = false;
                     break;
             }
-            newFilter = new Filter(oldFilter.type, oldFilter.colId, oldFilter.colName, editableFilter, newArgs, newFilterFn);
+            newFilter = new Filter(oldFilter.type, oldFilter.colId, oldFilter.colName, editableFilter, newArgs, newFilterFn, oldFilter.removeFilterFn);
 
             DatagridService.updateFilter(oldFn, newFilter.filterFn);
-            self.filters.splice(index, 1, newFilter);
-        };
+            service.filters.splice(index, 1, newFilter);
+        }
+
+        /**
+         * @ngdoc method
+         * @name removeAllFilters
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @description Remove all the filters and update datagrid filters
+         */
+        function removeAllFilters() {
+            DatagridService.resetFilters();
+            service.filters = [];
+        }
+
+        /**
+         * @ngdoc method
+         * @name removeFilter
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {object} filter The filter to delete
+         * @description Remove a filter and update datagrid filters
+         */
+        function removeFilter(filter) {
+            var filterIndex = service.filters.indexOf(filter);
+            if (filterIndex > -1) {
+                DatagridService.removeFilter(filter.filterFn);
+                service.filters.splice(filterIndex, 1);
+            }
+            if(filter.removeFilterFn) {
+                filter.removeFilterFn(filter);
+            }
+        }
     }
 
     angular.module('data-prep.services.filter')

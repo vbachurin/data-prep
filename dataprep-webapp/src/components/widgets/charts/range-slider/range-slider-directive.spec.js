@@ -1,7 +1,7 @@
 describe('rangeSlider directive', function () {
     'use strict';
 
-    var createElement, element, scope, isolateScope, rangeLimits;
+    var createElement, element, scope, isolateScope;
     var margins = {
         left: 25,
         right: 10
