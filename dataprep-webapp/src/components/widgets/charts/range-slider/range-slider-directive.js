@@ -172,6 +172,7 @@
 
                     //It will update the brush handlers position and propagate the filter
                     function adjustBrush() {
+                        scope.oldRangeLimits = scope.brush.extent();
                         var enteredMin = ctrl.toNumber(document.getElementsByName('minRange')[0].value);
                         var enteredMax = ctrl.toNumber(document.getElementsByName('maxRange')[0].value);
 
@@ -187,10 +188,12 @@
 
                         fillInputs(); //should be after brush update
 
-                        //trigger brush end callback
-                        scope.onBrushEnd()(scope.brush.extent().map(function (n) {
-                            return +n.toFixed(nbDecimals);
-                        }));
+                        if(scope.oldRangeLimits[0] !== scope.brush.extent()[0] || scope.oldRangeLimits[1] !== scope.brush.extent()[1]) {
+                            //trigger brush end callback
+                            scope.onBrushEnd()(scope.brush.extent().map(function (n) {
+                                return +n.toFixed(nbDecimals);
+                            }));
+                        }
                     }
 
                     //attach brush listeners
@@ -207,10 +210,16 @@
 
                             //It will propagate the new filter limits to the rest of the app, it's triggered when the user finishes a brush
                             .on('brushend', function brushend() {
-                                //trigger filter process in the datagrid
-                                scope.onBrushEnd()(scope.brush.extent().map(function (n) {
-                                    return +n.toFixed(nbDecimals);
-                                }));
+                                if(scope.oldRangeLimits[0] !== scope.brush.extent()[0] || scope.oldRangeLimits[1] !== scope.brush.extent()[1]){
+                                    //trigger filter process in the datagrid
+                                    scope.onBrushEnd()(scope.brush.extent().map(function (n) {
+                                        return +n.toFixed(nbDecimals);
+                                    }));
+                                }
+                            })
+
+                            .on('brushstart', function brushstart (){
+                                scope.oldRangeLimits = scope.brush.extent();
                             });
                     }
 

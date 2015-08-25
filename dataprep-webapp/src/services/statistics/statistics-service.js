@@ -139,8 +139,8 @@
             service.rangeLimits = {
                 min : column.statistics.min,
                 max : column.statistics.max,
-                minBrush : currentRangeFilter ? currentRangeFilter.args.phrase[0] : undefined,
-                maxBrush : currentRangeFilter ? currentRangeFilter.args.phrase[1] : undefined
+                minBrush : currentRangeFilter ? currentRangeFilter.args.interval[0] : undefined,
+                maxBrush : currentRangeFilter ? currentRangeFilter.args.interval[1] : undefined
             };
         }
 
