@@ -1,17 +1,8 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import static org.talend.dataprep.api.type.Type.DATE;
-
-import java.time.DateTimeException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +14,17 @@ import org.talend.dataprep.transformation.api.action.metadata.common.AbstractAct
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.talend.dataprep.api.type.Type.DATE;
 
 public abstract class AbstractDate extends AbstractActionMetadata {
 
@@ -68,7 +67,6 @@ public abstract class AbstractDate extends AbstractActionMetadata {
             throw new DateTimeException("cannot parse null");
         }
 
-        LocalDateTime result;
         for (DatePattern pattern : patterns) {
             final DateTimeFormatter formatter = pattern.getFormatter();
 
@@ -91,9 +89,8 @@ public abstract class AbstractDate extends AbstractActionMetadata {
 
     /**
      * Utility method to read all of the presents date pattern in this column, looking in the DQ stats.
-     * 
-     * @param row the row to get the patterns from.
      *
+     * @param row the row to get the patterns from.
      */
     protected List<DatePattern> getPatterns(DataSetRow row, String columnId) {
         final ColumnMetadata column = row.getRowMetadata().getById(columnId);
@@ -133,7 +130,7 @@ public abstract class AbstractDate extends AbstractActionMetadata {
     /**
      * Return true if the given pattern is already held in the list of patterns.
      *
-     * @param pattern the pattern to check.
+     * @param pattern  the pattern to check.
      * @param patterns the list of patterns.
      * @return true if the given pattern is already held in the list of patterns.
      */
@@ -143,7 +140,7 @@ public abstract class AbstractDate extends AbstractActionMetadata {
 
     /**
      * Giving a list of potential pattern as strings, validate them, and compute a list of DateTimeFormatter.
-     * 
+     *
      * @param patterns the list of potential patterns
      * @return a list that contains only valid and non null, non empty DateTimeFormatter
      */
