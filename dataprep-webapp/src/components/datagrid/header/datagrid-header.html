@@ -1,23 +1,34 @@
-<talend-dropdown on-open="datagridHeaderCtrl.initTransformations()">
-    <div class="dropdown-container grid-header">
-        <div class="dropdown-action">
-            <div class="grid-header-title dropdown-button" ng-show="!datagridHeaderCtrl.isEditMode" title="{{ datagridHeaderCtrl.column.name }}">
-                <span>{{ datagridHeaderCtrl.column.name }}</span><span class="dropdown-button-arrow"></span>
+<div class="grid-header">
+    <div class="talend-dropdown-div">
+        <talend-dropdown on-open="datagridHeaderCtrl.initTransformations()">
+            <div class="dropdown-container">
+                <div class="dropdown-action">
+                    <div class="dropdown-button" ng-show="!datagridHeaderCtrl.isEditMode" title="{{ datagridHeaderCtrl.column.name }}"></div>
+                </div>
+                <ul class="dropdown-menu grid-header-menu">
+                    <li ng-if="datagridHeaderCtrl.initTransformationsInProgress">{{ ::'LOADING' | translate }}...</li>
+                    <li ng-if="datagridHeaderCtrl.transformations && !datagridHeaderCtrl.transformations.length">{{ ::'NO_TRANSFORMATION' | translate }}</li>
+                    <transform-menu column="datagridHeaderCtrl.column"
+                                    menu-items="datagridHeaderCtrl.transformations"
+                                    ng-if="datagridHeaderCtrl.transformations.length"></transform-menu>
+                </ul>
             </div>
-            <input class="grid-header-title-input" type="text" ng-show="datagridHeaderCtrl.isEditMode" ng-model="datagridHeaderCtrl.newName"/>
-
-            <div class="grid-header-type" ng-if="datagridHeaderCtrl.column.domain">{{ datagridHeaderCtrl.column.domain }}</div>
-            <div class="grid-header-type" ng-if="(!datagridHeaderCtrl.column.domain)">{{ datagridHeaderCtrl.converterService.simplifyType(datagridHeaderCtrl.column.type) }}</div>
-        </div>
-        <ul class="dropdown-menu grid-header-menu">
-            <li ng-if="datagridHeaderCtrl.initTransformationsInProgress">{{ ::'LOADING' | translate }}...</li>
-            <li ng-if="datagridHeaderCtrl.transformations && !datagridHeaderCtrl.transformations.length">{{ ::'NO_TRANSFORMATION' | translate }}</li>
-            <transform-menu column="datagridHeaderCtrl.column"
-                            menu-items="datagridHeaderCtrl.transformations"
-                            ng-if="datagridHeaderCtrl.transformations.length"></transform-menu>
-        </ul>
+        </talend-dropdown>
     </div>
-</talend-dropdown>
+
+    <div class="talend-dropdown-text-div">
+        <div class="grid-header-title" ng-show="!datagridHeaderCtrl.isEditMode" title="{{ datagridHeaderCtrl.column.name }}">
+            {{ datagridHeaderCtrl.column.name }}
+        </div>
+        <input class="grid-header-title-input" type="text" ng-show="datagridHeaderCtrl.isEditMode" ng-model="datagridHeaderCtrl.newName"/>
+    </div>
+
+    <div class="grid-header-type" ng-if="datagridHeaderCtrl.column.domain">{{ datagridHeaderCtrl.column.domain }}</div>
+    <div class="grid-header-type" ng-if="(!datagridHeaderCtrl.column.domain)">{{ datagridHeaderCtrl.converterService.simplifyType(datagridHeaderCtrl.column.type) }}</div>
+
+</div>
+
+
 
 <quality-bar
         quality="datagridHeaderCtrl.column.quality"

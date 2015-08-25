@@ -48,16 +48,12 @@
             controllerAs: 'ctrl',
             link: {
                 post: function (scope, iElement, iAttrs, ctrl) {
-                    var DELAY = 200;
-                    var willBeSecondClick = false;
-                    var timer = null;
 
                     var body = angular.element('body').eq(0);
                     var windowElement = angular.element($window);
                     var container = iElement.find('.dropdown-container');
                     var action = iElement.find('.dropdown-action');
                     var menu = iElement.find('.dropdown-menu');
-                    var arrow = iElement.find('.dropdown-button-arrow');
 
                     /**
                      * Set the focus on a specific element
@@ -131,35 +127,8 @@
                     /**
                      * Click : hide/show menu on left click
                      */
-                    arrow.click(function () {
-                        if (willBeSecondClick) {
-                            clearTimeout(timer);
-                            willBeSecondClick = false;
-                        }
-                        else {
-                            willBeSecondClick = true;
-
-                            timer = setTimeout(function () {
-                                toggleMenu();
-                                willBeSecondClick = false;
-                            }, DELAY);
-                        }
-                    });
-
-                    /**
-                     * Mousedown : stop propagation not to hide dropdown and hide/show menu on right click
-                     */
-                    action.mousedown(function(event) {
-                        event.stopPropagation();
-                        switch (event.which) {
-                            case 1:
-                                hideAllDropDowns();
-                                break;
-                            case 3:
-                                toggleMenu();
-                                break;
-                            default:
-                        }
+                    action.click(function () {
+                        toggleMenu();
                     });
 
                     /**

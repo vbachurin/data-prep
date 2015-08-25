@@ -127,6 +127,23 @@
                         });
                     }
 
+
+                    /**
+                     * Mousedown : stop propagation not to hide dropdown and hide/show menu on right click
+                     */
+                    iElement.find('.grid-header').mousedown(function(event) {
+                        switch (event.which) {
+                            case 1:
+                                angular.element('.dropdown-menu').removeClass('show-menu');
+                                break;
+                            case 3:
+                                event.stopPropagation();
+                                iElement.find('.grid-header').find('.dropdown-action').click();
+                                break;
+                            default:
+                        }
+                    });
+
                     /**
                      * Get the title and input elements, attach their listeners
                      */
