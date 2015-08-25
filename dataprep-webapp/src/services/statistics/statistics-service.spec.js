@@ -757,7 +757,7 @@ describe('Statistics service', function () {
                     }
                 }
             };
-            FilterService.filters = [{colId:'0001', type:'inside_range', args:{phrase:[5,10]}}];
+            FilterService.filters = [{colId:'0001', type:'inside_range', args:{interval:[5,10]}}];
 
             //when
             StatisticsService.processData(col);

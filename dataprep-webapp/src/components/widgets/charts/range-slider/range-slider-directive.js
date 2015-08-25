@@ -199,6 +199,11 @@
                     //attach brush listeners
                     function initBrushListeners() {
                         scope.brush
+                            //Will memorize the ancient extent
+                            .on('brushstart', function brushstart (){
+                                scope.oldRangeLimits = scope.brush.extent();
+                            })
+
                             //It will update the min and max inputs, and create a brush on a single value when the user clics on the slider without making a drag( the created brush will be empty )
                             .on('brush', function brushmove() {
                                 var newExtent = fillInputs();
@@ -216,10 +221,6 @@
                                         return +n.toFixed(nbDecimals);
                                     }));
                                 }
-                            })
-
-                            .on('brushstart', function brushstart (){
-                                scope.oldRangeLimits = scope.brush.extent();
                             });
                     }
 
