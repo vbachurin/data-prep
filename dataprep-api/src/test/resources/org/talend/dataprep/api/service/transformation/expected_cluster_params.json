@@ -14,7 +14,7 @@
             "description": "parameter.t@t@.desc",
             "label": "parameter.t@t@.label",
             "default": null,
-            "canBeBlank":true
+            "canBeBlank": true
           },
           {
             "name": "T@T@",
@@ -22,7 +22,7 @@
             "description": "parameter.T@T@.desc",
             "label": "parameter.T@T@.label",
             "default": null,
-            "canBeBlank":true
+            "canBeBlank": true
           }
         ],
         "replace": {
@@ -31,7 +31,7 @@
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
           "default": "t@t@",
-          "canBeBlank":true
+          "canBeBlank": true
         }
       },
       {
@@ -42,7 +42,7 @@
             "description": "parameter.tata.desc",
             "label": "parameter.tata.label",
             "default": null,
-            "canBeBlank":true
+            "canBeBlank": true
           },
           {
             "name": "Tata",
@@ -50,7 +50,7 @@
             "description": "parameter.Tata.desc",
             "label": "parameter.Tata.label",
             "default": null,
-            "canBeBlank":true
+            "canBeBlank": true
           }
         ],
         "replace": {
@@ -59,7 +59,7 @@
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
           "default": "tata",
-          "canBeBlank":true
+          "canBeBlank": true
         }
       }
     ]
