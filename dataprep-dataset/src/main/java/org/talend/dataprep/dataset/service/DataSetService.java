@@ -672,11 +672,11 @@ public class DataSetService {
     }
 
     /**
-     * Update the column of the data set
+     * Update the column of the data set and computes the
      *
-     * @param dataSetId  the dataset id
-     * @param columnId   the column id
-     * @param parameters the new type and domain
+     * @param dataSetId the dataset id.
+     * @param columnId the column id.
+     * @param parameters the new type and domain.
      */
     @RequestMapping(value = "/datasets/{datasetId}/column/{columnId}", method = POST, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Update a column type and/or domain", consumes = APPLICATION_JSON_VALUE)
@@ -736,6 +736,10 @@ public class DataSetService {
 
             //save
             dataSetMetadataRepository.add(dataSetMetadata);
+
+            // analyze the updated dataset (not all analysis are performed)
+            queueEvents(dataSetId, ContentAnalysis.class, FormatAnalysis.class, SchemaAnalysis.class);
+
         } finally {
             lock.unlock();
         }
