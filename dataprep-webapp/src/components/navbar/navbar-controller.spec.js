@@ -17,7 +17,6 @@ describe('Navbar controller', function () {
             return ctrl;
         };
 
-        spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.when());
         spyOn(OnboardingService, 'startTour').and.returnValue();
     }));
 
@@ -36,14 +35,8 @@ describe('Navbar controller', function () {
             scope.$digest();
 
             //then
-            expect(DatasetService.refreshDatasets).toHaveBeenCalled();
-            expect(OnboardingService.startTour).not.toHaveBeenCalled();
-
-            //when
-            $timeout.flush();
-
-            //then
             expect(OnboardingService.startTour).toHaveBeenCalled();
+
         }));
 
         it('should not start tour on dataset playground page', inject(function (DatasetService, OnboardingService) {
@@ -56,7 +49,6 @@ describe('Navbar controller', function () {
             scope.$digest();
 
             //then
-            expect(DatasetService.refreshDatasets).not.toHaveBeenCalled();
             expect(OnboardingService.startTour).not.toHaveBeenCalled();
         }));
 
@@ -70,7 +62,6 @@ describe('Navbar controller', function () {
             scope.$digest();
 
             //then
-            expect(DatasetService.refreshDatasets).not.toHaveBeenCalled();
             expect(OnboardingService.startTour).not.toHaveBeenCalled();
         }));
     });
@@ -90,7 +81,6 @@ describe('Navbar controller', function () {
             scope.$digest();
 
             //then
-            expect(DatasetService.refreshDatasets).not.toHaveBeenCalled();
             expect(OnboardingService.startTour).not.toHaveBeenCalled();
         }));
     });
