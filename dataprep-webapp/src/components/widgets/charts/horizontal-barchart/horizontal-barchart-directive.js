@@ -3,7 +3,7 @@
 
     /**
      * @ngdoc directive
-     * @name data-prep.horizontalBarchart.directive:horizontalBarchart
+     * @name talend.widget.directive:horizontalBarchart
      * @description This directive renders the horizontal bar chart.
      * @restrict E
      * @usage
@@ -60,7 +60,7 @@
                     xField = scope.keyField;
 
 					tip = d3.tip()
-						.attr('class', 'd3-tip')
+						.attr('class', 'horizontal-barchart-cls d3-tip')
 						.offset([-10, 0])
 						.html(function(d) {
 							return 	'<strong>'+ scope.keyLabel +':</strong> <span style="color:yellow">' + d[xField] + '</span>'+
@@ -70,6 +70,7 @@
 						});
 
                     var svg = d3.select('#' + container).append('svg')
+                        .attr('class', 'horizontal-barchart-cls')
                         .attr('width', w + m[1] + m[3])
                         .attr('height', h + m[0] + m[2])
                         .append('g')
@@ -163,6 +164,6 @@
         };
     }
 
-    angular.module('data-prep.horizontalBarchart')
+    angular.module('talend.widget')
         .directive('horizontalBarchart', HorizontalBarchart);
 })();

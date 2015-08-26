@@ -54,8 +54,9 @@
             var originalDomain = getOriginalDomain();
             setColumnDomainAndType({id: '', label: '', frequency: 0}, type.id);
 
-            DatasetService.updateColumn(PlaygroundService.currentMetadata.id, vm.column.id, {type: type.id, domain: ''})
+            PlaygroundService.updateColumn(vm.column.id, type.id, '')
                 .catch(setColumnDomainAndType.bind(vm, originalDomain, originalType));
+
         };
 
         /**

@@ -1,28 +1,5 @@
 package org.talend.dataprep.dataset.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.restassured.response.Response;
-import org.apache.commons.io.IOUtils;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.springframework.http.HttpStatus;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSet;
-import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
-import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.location.SemanticDomain;
-import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.api.user.UserData;
-import org.talend.dataprep.dataset.DataSetBaseTest;
-import org.talend.dataprep.schema.CSVFormatGuess;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static com.jayway.restassured.http.ContentType.JSON;
@@ -41,6 +18,31 @@ import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
+import org.springframework.http.HttpStatus;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.location.SemanticDomain;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.api.user.UserData;
+import org.talend.dataprep.dataset.DataSetBaseTest;
+import org.talend.dataprep.schema.CSVFormatGuess;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.restassured.response.Response;
 
 public class DataSetServiceTests extends DataSetBaseTest {
 

@@ -181,10 +181,11 @@ public class ColumnMetadata implements Serializable {
     public String toString()
     {
         return "ColumnMetadata{" +
-            "quality=" + quality +
-            ", id='" + id + '\'' +
+ "id='" + id + '\'' +
             ", name='" + name + '\'' +
             ", typeName='" + typeName + '\'' +
+ ", quality="
+                + quality +
             ", headerSize=" + headerSize +
             ", diffFlagValue='" + diffFlagValue + '\'' +
             ", statistics='" + statistics + '\'' +

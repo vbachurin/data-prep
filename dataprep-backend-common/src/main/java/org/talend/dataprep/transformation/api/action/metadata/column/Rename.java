@@ -42,7 +42,7 @@ public class Rename extends AbstractActionMetadata implements ColumnAction {
 
     public Rename(final String defaultName) {
         this.parameters = super.getParameters();
-        this.parameters.add(new Parameter(NEW_COLUMN_NAME_PARAMETER_NAME, Type.STRING.getName(), defaultName));
+        this.parameters.add(new Parameter(NEW_COLUMN_NAME_PARAMETER_NAME, Type.STRING.getName(), defaultName, false, false));
     }
 
     /**

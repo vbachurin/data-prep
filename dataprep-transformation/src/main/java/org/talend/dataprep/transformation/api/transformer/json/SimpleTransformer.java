@@ -28,8 +28,8 @@ import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 import org.talend.dataquality.semantic.recognizer.CategoryRecognizerBuilder;
-import org.talend.dataquality.statistics.inference.quality.ValueQuality;
-import org.talend.dataquality.statistics.inference.quality.ValueQualityAnalyzer;
+import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
+import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.semantic.SemanticAnalyzer;
@@ -140,7 +140,6 @@ class SimpleTransformer implements Transformer {
             // Column statistics
             if (transformColumns) {
                 // Spark statistics
-                final DataSet statisticsDataSet = new DataSet();
                 final RowMetadata rowMetadata = context.getTransformedRowMetadata();
                 final DataSetMetadata transformedMetadata = new DataSetMetadata("", //
                         "", //
@@ -148,9 +147,9 @@ class SimpleTransformer implements Transformer {
                         0, //
                         rowMetadata);
                 transformedMetadata.getContent().setNbRecords(transformedRows.size());
+                final DataSet statisticsDataSet = new DataSet();
                 statisticsDataSet.setMetadata(transformedMetadata);
                 statisticsDataSet.setRecords(transformedRows.stream());
-                DataSetAnalysis.computeStatistics(statisticsDataSet, sparkContext, builder);
                 // Set new quality information in transformed column metadata
                 final List<Analyzers.Result> results = ((Analyzer<Analyzers.Result>) context.get("analyzer")).getResult();
                 final List<ColumnMetadata> dataSetColumns = rowMetadata.getColumns();
@@ -158,15 +157,18 @@ class SimpleTransformer implements Transformer {
                     final Analyzers.Result result = results.get(i);
                     final ColumnMetadata metadata = dataSetColumns.get(i);
                     // Value quality
-                    final ValueQuality column = result.get(ValueQuality.class);
+                    final ValueQualityStatistics column = result.get(ValueQualityStatistics.class);
                     final Quality quality = metadata.getQuality();
                     quality.setEmpty((int) column.getEmptyCount());
                     quality.setInvalid((int) column.getInvalidCount());
                     quality.setValid((int) column.getValidCount());
+                    quality.setInvalidValues(column.getInvalidValues());
                     // Semantic types
                     final SemanticType semanticType = result.get(SemanticType.class);
                     metadata.setDomain(semanticType.getSuggestedCategory());
                 }
+                // statistics analysis must be performed after quality, otherwise it will not be accurate
+                DataSetAnalysis.computeStatistics(statisticsDataSet, sparkContext, builder);
             }
             writer.endArray();
             // Write columns

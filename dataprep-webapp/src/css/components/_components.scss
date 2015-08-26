@@ -13,6 +13,7 @@
 @import "../../components/widgets/tooltip/tooltip";
 @import "../../components/widgets/charts/horizontal-barchart/horizontal-barchart";
 @import "../../components/widgets/charts/boxplot-chart/boxplot-chart";
+@import "../../components/widgets/charts/range-slider/range-slider";
 
 @import "../../components/dataset/list/dataset-list";
 @import "../../components/datagrid/datagrid";
@@ -32,9 +33,12 @@
 @import "../../components/transformation/params/transformation-params";
 
 @import "button";
+@import "charts";
+@import "intro";
 @import "inventory";
 @import "inventory_data";
 @import "progress_bar";
 @import "toaster";
 @import "intro";
 @import "charts";
+@import "tooltips";

@@ -1,5 +1,5 @@
 <div class="param">
-    <div class="param-row" ng-repeat="param in simpleParamsCtrl.parameters track by $index">
+    <div class="param-row" ng-repeat="param in simpleParamsCtrl.parameters track by $index" data-prep-tooltip="{{::param.description}}">
         <div class="param-name" ng-if="::(simpleParamsCtrl.label !== 'false')">{{simpleParamsCtrl.label}}{{::param.label}}:</div>
 
         <div class="param-input" ng-if="::(simpleParamsCtrl.editableSelect)">
@@ -10,19 +10,14 @@
         <div class="param-input" ng-if="::(!simpleParamsCtrl.editableSelect)">
             <input name="{{::(param.name + $index)}}"
                    type="{{::param.inputType}}"
-                   ng-trim="false"
                    ng-model="param.value"
-                   type-validation="{{::param.type}}"/>
+                   is-type="{{::param.type}}"
+                   can-be-blank="{{::param.canBeBlank}}"/>
             <span ng-if="::(param.type === 'boolean')">{{param.name}}</span>
         </div>
 
-        <img src="assets/images/information.png"
-             title="{{::param.description}}"
-             class="param-desc-icon"
-             ng-if="::(simpleParamsCtrl.tooltip !== 'false')"/>
-
         <div class="param-error error"
-             ng-if="paramCtrl.paramForm[param.name + $index].$error.typeValidation || paramsCtrl.paramForm[param.name + $index].$error.number">
+             ng-if="paramCtrl.paramForm[param.name + $index].$error.isTypeValidation || paramsCtrl.paramForm[param.name + $index].$error.number">
             This must be a {{::param.type}}
         </div>
     </div>

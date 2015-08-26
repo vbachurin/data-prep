@@ -39,7 +39,7 @@
          * @returns {string} - the simplified type
          */
         this.simplifyType = function(type) {
-               switch (type) {
+               switch (type.toLowerCase()) {
                    case 'numeric':
                    case 'integer':
                    case 'double':

@@ -47,11 +47,6 @@ public class AbsoluteFloat extends AbstractAbsolute implements ColumnAction {
     }
 
     @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        // nothing to do here
-    }
-
-    @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final String value = row.get(columnId);
         if (value == null) {

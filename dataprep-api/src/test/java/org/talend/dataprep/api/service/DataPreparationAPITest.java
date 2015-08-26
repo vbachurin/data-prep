@@ -164,6 +164,37 @@ public class DataPreparationAPITest {
     }
 
     @Test
+    public void test_TDP_402() throws Exception {
+        // given
+        final String dataSetId = createDataset("dataset/dataset_TDP-402.csv", "testDataset", "text/csv");
+        final String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/TDP-402.json"));
+        final InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("dataset/dataset_TDP-402_expected.json");
+
+        // when
+        final String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
+                .asString();
+
+        // then
+        assertThat(transformed, sameJSONAsFile(expectedContent));
+    }
+
+    @Test
+    public void test_TDP_416() throws Exception {
+        // given
+        final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
+        Thread.sleep(800);
+        final String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/TDP-416.json"));
+        final InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("dataset/dataset_TDP-416_expected.json");
+
+        // when
+        final String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
+                .asString();
+
+        // then
+        assertThat(transformed, sameJSONAsFile(expectedContent));
+    }
+
+    @Test
     public void testDataSetList() throws Exception {
         // given
         final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");

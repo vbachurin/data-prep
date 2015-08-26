@@ -81,6 +81,9 @@
             loadStep: loadStep,
             changeSampleSize: changeSampleSize,
 
+            // dataset
+            updateColumn: updateColumn,
+
             //preparation
             createOrUpdatePreparation: createOrUpdatePreparation,
             appendStep: appendStep,
@@ -360,7 +363,7 @@
             return PreparationService.appendStep(metadata, action, params)
                 .then(function(){
                     /*jshint camelcase: false */
-                    return $q.all([updateRecipe(), updateDatagrid(params.column_id)]);
+                    return $q.all([updateRecipe(), updatePreparationDatagrid(params.column_id)]);
                 })
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');
@@ -423,7 +426,7 @@
         function executeRemoveStep(stepId, focusColumnId) {
             return PreparationService.removeStep(stepId)
                 .then(function() {
-                    return $q.all([updateRecipe(), updateDatagrid(focusColumnId)]);
+                    return $q.all([updateRecipe(), updatePreparationDatagrid(focusColumnId)]);
                 });
         }
 
@@ -451,23 +454,65 @@
 
             return appendStep(action, params);
         }
+
+        //------------------------------------------------------------------------------------------------------
+        //--------------------------------------------------DATASET---------------------------------------------
+        //------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name updateColumn
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {string} columnId The column id to focus update
+         * @param {string} type the new type of the column
+         * @param {string} domain the new domain of the column
+         * @description Perform an datagrid refresh with the preparation head
+         */
+        function updateColumn(columnId, type, domain) {
+
+            return DatasetService.updateColumn(service.currentMetadata.id, columnId, {type: type, domain: domain})
+                .then(function() {
+                    // if preparation
+                    if (PreparationService.currentPreparationId) {
+                        return updatePreparationDatagrid();
+                    }
+                    // dataset
+                    else {
+                        return updateDatasetDatagrid();
+                    }
+                });
+
+        }
+
         //------------------------------------------------------------------------------------------------------
         //---------------------------------------------------UTILS----------------------------------------------
         //------------------------------------------------------------------------------------------------------
 
         /**
          * @ngdoc method
-         * @name updateDatagrid
+         * @name updatePreparationDatagrid
          * @methodOf data-prep.services.playground.service:PlaygroundService
          * @param {string} focusColumnId The column id to focus on
          * @description Perform an datagrid refresh with the preparation head
          */
-        function updateDatagrid(focusColumnId) {
+        function updatePreparationDatagrid(focusColumnId) {
             return PreparationService.getContent('head', service.selectedSampleSize.value)
                 .then(function(response) {
                     DatagridService.focusedColumn = focusColumnId;
                     DatagridService.updateData(response.data);
                     PreviewService.reset(false);
+                });
+        }
+
+        /**
+         * @ngdoc method
+         * @name updateDatasetDatagrid
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @description Perform an datagrid refresh on the current dataset
+         */
+        function updateDatasetDatagrid() {
+            return DatasetService.getContent(service.currentMetadata.id, false, service.selectedSampleSize.value)
+                .then(function(response) {
+                    DatagridService.updateData(response);
                 });
         }
 
