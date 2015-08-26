@@ -25,7 +25,6 @@
                     }
                     var format = attributes.format?attributes.format:'DD/MM/YYYY hh:mm:ss';
                     var valid = moment(modelValue,format,true).isValid();
-                    console.log("validate:"+ valid + ", '" +modelValue+"' with format:"+format);
                     return valid;
                 };
             }

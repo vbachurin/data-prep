@@ -29,7 +29,6 @@ function runTests(singleRun, done, karmaConfPath) {
 
         }))
         .on('error', function (err) {
-            console.log('error');
             // Make sure failed tests cause gulp to exit non-zero
             throw err;
         });

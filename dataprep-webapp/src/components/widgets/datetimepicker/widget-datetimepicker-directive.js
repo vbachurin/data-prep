@@ -28,7 +28,7 @@
             controller: function () {
             },
             controllerAs: 'ctrl',
-            link: function (scope, element, attributes,ctrl) {
+            link: function (scope, element, attributes) {
 
               Date.parseDate = function(input, format ){
                 return moment(input,format).toDate();
