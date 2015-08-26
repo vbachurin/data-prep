@@ -152,7 +152,7 @@ describe('Dropdown directive', function () {
 
             var asset = $._data(angular.element('body')[0], 'events');
             //then
-            expect($._data(angular.element('body')[0], 'events').mousedown.length).toBe(1);
+            expect(asset.mousedown.length).toBe(1);
         });
 
         it('should stop mousedown propagation on dropdown-menu mousedown', function () {
