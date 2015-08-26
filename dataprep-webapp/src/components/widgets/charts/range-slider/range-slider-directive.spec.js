@@ -121,6 +121,44 @@ describe('rangeSlider directive', function () {
         expect(document.getElementsByName('maxRange')[0].value).toBe('20');
     });
 
+    it('should make a brush action programmatically with the same value', function () {
+        //given
+        scope.rangeLimits = {
+            min: 0.000001,
+            max: 20,
+            minBrush: 5.123456,
+            maxBrush: 5.123456
+        };
+        createElement();
+        jasmine.clock().tick(100);
+        flushAllD3Transitions();
+
+        //then
+        expect(isolateScope.brush.extent()).toEqual([5.123456,5.1234561]);
+        expect(document.getElementsByName('minRange')[0].value).toBe('5.123456');
+        expect(document.getElementsByName('maxRange')[0].value).toBe('5.123456');
+    });
+
+    it('should make a brush action programmatically with the same value in case of extent outside the range limits', function () {
+        //given
+        scope.rangeLimits = {
+            min: 0.000001,
+            max: 20,
+            minBrush: 5.123456,
+            maxBrush: 5.123456,
+            minFilterVal: 14,
+            maxFilterVal: 16
+        };
+        createElement();
+        jasmine.clock().tick(100);
+        flushAllD3Transitions();
+
+        //then
+        expect(isolateScope.brush.extent()).toEqual([5.123456,5.1234561]);
+        expect(document.getElementsByName('minRange')[0].value).toBe('14');
+        expect(document.getElementsByName('maxRange')[0].value).toBe('16');
+    });
+
     it('should set the new typed range manually and submit with Enter', function () {
         //given
         createElement();
