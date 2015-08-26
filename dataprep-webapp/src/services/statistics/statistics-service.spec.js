@@ -198,11 +198,14 @@ describe('Statistics service', function () {
     }));
 
     describe('filters', function () {
+        beforeEach(inject(function(FilterService) {
+            spyOn(FilterService, 'addFilter').and.returnValue();
+        }));
+
         it('should add a new "contains" filter', inject(function (StatisticsService, FilterService, $timeout) {
             //given
             StatisticsService.selectedColumn = {};
             StatisticsService.selectedColumn.id = 'toto';
-            spyOn(FilterService, 'addFilter').and.returnValue();
 
             //when
             StatisticsService.addFilter('volvo');
@@ -216,7 +219,6 @@ describe('Statistics service', function () {
             //given
             StatisticsService.selectedColumn = {};
             StatisticsService.selectedColumn.id = 'toto';
-            spyOn(FilterService, 'addFilter').and.returnValue();
 
             //when
             StatisticsService.addFilter('');
@@ -224,6 +226,85 @@ describe('Statistics service', function () {
 
             //then
             expect(FilterService.addFilter).toHaveBeenCalledWith('empty_records', 'toto', undefined, {});
+        }));
+
+        it('should add a new "inside_range" filter', inject(function (StatisticsService, FilterService, $timeout) {
+            //given
+            StatisticsService.rangeLimits = {};
+            StatisticsService.selectedColumn = {id: '0000', statistics: {min: 5, max: 55}};
+
+            //when
+            StatisticsService.addRangeFilter([0,22]);
+            $timeout.flush();
+
+            //then
+            expect(FilterService.addFilter).toHaveBeenCalled();
+
+            var args = FilterService.addFilter.calls.argsFor(0);
+            expect(args[0]).toBe('inside_range');
+            expect(args[1]).toBe('0000');
+            expect(args[2]).not.toBeDefined();
+            expect(args[3]).toEqual({interval:[0,22]});
+        }));
+
+        it('should update rangeLimits brush on new "inside_range" filter add', inject(function (StatisticsService, FilterService, $timeout) {
+            //given
+            StatisticsService.rangeLimits = {};
+            StatisticsService.selectedColumn = {id: '0000', statistics: {min: 5, max: 55}};
+
+            //when
+            StatisticsService.addRangeFilter([10,22]);
+            $timeout.flush();
+
+            //then
+            expect(StatisticsService.rangeLimits.minBrush).toBe(10);
+            expect(StatisticsService.rangeLimits.maxBrush).toBe(22);
+        }));
+
+        it('should reinit range limits on "inside_range" filter remove when the selected column is the same', inject(function (StatisticsService, FilterService, $timeout) {
+            //given
+            var originalRangeLimits = {};
+            StatisticsService.rangeLimits = originalRangeLimits;
+            StatisticsService.selectedColumn = {id: '0000', statistics: {min: 5, max: 55}};
+
+            StatisticsService.addRangeFilter([0,22]);
+            $timeout.flush();
+
+            expect(StatisticsService.rangeLimits).toBe(originalRangeLimits);
+            expect(FilterService.addFilter).toHaveBeenCalled();
+            var removeCallback = FilterService.addFilter.calls.argsFor(0)[4];
+
+            //when
+            removeCallback({colId: '0000'});
+
+            //then
+            expect(StatisticsService.rangeLimits).not.toBe(originalRangeLimits);
+            expect(StatisticsService.rangeLimits).toEqual({
+                min: 5,
+                max: 55,
+                minBrush: undefined,
+                maxBrush: undefined
+            });
+        }));
+
+        it('should do nothing on "inside_range" filter remove when the selected column is NOT the same', inject(function (StatisticsService, FilterService, $timeout) {
+            //given
+            var originalRangeLimits = {};
+            StatisticsService.rangeLimits = originalRangeLimits;
+            StatisticsService.selectedColumn = {id: '0000', statistics: {min: 5, max: 55}};
+
+            StatisticsService.addRangeFilter([0,22]);
+            $timeout.flush();
+
+            expect(StatisticsService.rangeLimits).toBe(originalRangeLimits);
+            expect(FilterService.addFilter).toHaveBeenCalled();
+            var removeCallback = FilterService.addFilter.calls.argsFor(0)[4];
+
+            //when
+            removeCallback({colId: '0001'});
+
+            //then
+            expect(StatisticsService.rangeLimits).toBe(originalRangeLimits);
         }));
     });
 
@@ -614,5 +695,80 @@ describe('Statistics service', function () {
         expect(StatisticsService.data).toBeFalsy();
         expect(StatisticsService.stateDistribution).toBeFalsy();
         expect(StatisticsService.statistics).toBeFalsy();
+        expect(StatisticsService.rangeLimits).toBeFalsy();
     }));
+
+    describe('The range slider', function() {
+        it('should set range and brush limits to the min and max of the column', inject(function (StatisticsService, FilterService) {
+            //given
+            var col = {
+                'id': '0001',
+                type: 'integer',
+                domain: 'city name',
+                statistics: {
+                    count: 4,
+                    distinctCount: 5,
+                    duplicateCount: 6,
+                    empty: 7,
+                    invalid: 8,
+                    valid: 9,
+                    min: 10,
+                    max: 11,
+                    mean: 12,
+                    variance: 13,
+                    quantiles: {
+                        lowerQuantile: 'NaN'
+                    }
+                }
+            };
+            FilterService.filters = [];
+
+            //when
+            StatisticsService.processData(col);
+
+            //then
+            expect(StatisticsService.rangeLimits).toEqual({
+                min : 10,
+                max : 11,
+                minBrush : undefined,
+                maxBrush : undefined
+            });
+        }));
+
+        it('should update the brush limits to the existent ones', inject(function (StatisticsService, FilterService) {
+            //given
+            var col = {
+                'id': '0001',
+                type: 'integer',
+                domain: 'city name',
+                statistics: {
+                    count: 4,
+                    distinctCount: 5,
+                    duplicateCount: 6,
+                    empty: 7,
+                    invalid: 8,
+                    valid: 9,
+                    min: 0,
+                    max: 11,
+                    mean: 12,
+                    variance: 13,
+                    quantiles: {
+                        lowerQuantile: 'NaN'
+                    }
+                }
+            };
+            FilterService.filters = [{colId:'0001', type:'inside_range', args:{interval:[5,10]}}];
+
+            //when
+            StatisticsService.processData(col);
+
+            //then
+            expect(StatisticsService.rangeLimits).toEqual({
+                min : 0,
+                max : 11,
+                minBrush :5,
+                maxBrush :10
+            });
+        }));
+    });
 });
