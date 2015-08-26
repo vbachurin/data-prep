@@ -349,6 +349,24 @@ describe('Actions suggestions-stats controller', function () {
             expect(PreviewService.cancelPreview).toHaveBeenCalled();
         }));
 
+        it('should cancel pending early preview on step append', inject(function ($timeout, PreviewService) {
+            //given
+            var transformation = {name: 'tolowercase'};
+            var transfoScope = 'column';
+            var params = {param: 'value'};
+            var ctrl = createController();
+
+            ctrl.earlyPreview(transformation, transfoScope)(params);
+
+            //when
+            var closure = ctrl.transformClosure(transformation, transfoScope);
+            closure(params);
+
+            //then : preview should be disabled
+            $timeout.flush();
+            expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
+        }));
+
         it('should disable early preview on step append', inject(function ($timeout, PreviewService) {
             //given
             var transformation = {name: 'tolowercase'};
