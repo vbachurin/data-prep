@@ -3,7 +3,7 @@
 
     /**
      * @ngdoc directive
-     * @name data-prep.boxplotChart.directive:boxplotChart
+     * @name talend.widget.directive:boxplotChart
      * @description This directive renders the boxplot chart.
      * @restrict E
      * @usage
@@ -27,16 +27,6 @@
                 var h = +attrs.height;
 
                 function renderBoxplotchart(boxValues) {
-                    //To be deleted after boxplot UI discussions (just for proof)
-                    /*boxValues = {
-                     min:0,
-                     max:10000,
-                     mean:9975,
-                     q1:9870,
-                     q2:9980,
-                     median:9979
-                     };*/
-
                     var margin = {top: 30, right: 80, bottom: 70, left: 80};
                     var width = w - margin.left - margin.right;
                     var height = h - margin.top - margin.bottom;
@@ -89,9 +79,6 @@
                         .attr('width', width)
                         .attr('height', function () {
                             return vScale(boxValues.q2);
-                        })
-                        .on('click', function (d) {
-                            console.log([d[1], d[2]]);
                         });
 
                     boxTop.transition()
@@ -112,9 +99,6 @@
                         .attr('width', width)
                         .attr('height', function (d) {
                             return vScale(d[0]) - vScale(d[2]);
-                        })
-                        .on('click', function (d) {
-                            console.log([d[0], d[1]]);
                         });
 
                     boxBottom.transition()
@@ -342,6 +326,6 @@
         };
     }
 
-    angular.module('data-prep.boxplotChart')
+    angular.module('talend.widget')
         .directive('boxplotChart', BoxplotChart);
 })();

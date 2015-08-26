@@ -3,7 +3,7 @@ describe('boxplot chart directive', function () {
 
 	var createElement, element, scope, boxValues;
 
-	beforeEach(module('data-prep.boxplotChart'));
+	beforeEach(module('talend.widget'));
 	beforeEach(inject(function ($rootScope, $compile) {
 		boxValues = {
 			min:0,
