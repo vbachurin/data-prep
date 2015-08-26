@@ -149,6 +149,7 @@
             /*jshint camelcase: false */
             return function(params) {
                 previewDisabled = true;
+                cancelPendingPreview();
 
                 params = params || {};
                 params.scope = transfoScope;
@@ -182,8 +183,7 @@
                     return;
                 }
 
-                $timeout.cancel(previewTimeout);
-                $timeout.cancel(previewCancelerTimeout);
+                cancelPendingPreview();
 
                 previewTimeout = $timeout(function() {
                     params.scope = transfoScope;
@@ -209,13 +209,18 @@
                 return;
             }
 
-            $timeout.cancel(previewTimeout);
+            cancelPendingPreview();
 
             previewCancelerTimeout = $timeout(function() {
                 RecipeService.cancelEarlyPreview();
                 PreviewService.cancelPreview();
             }, 100);
         };
+
+        function cancelPendingPreview() {
+            $timeout.cancel(previewTimeout);
+            $timeout.cancel(previewCancelerTimeout);
+        }
     }
 
     /**
