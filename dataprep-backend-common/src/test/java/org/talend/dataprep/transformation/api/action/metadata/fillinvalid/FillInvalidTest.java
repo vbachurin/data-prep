@@ -4,7 +4,6 @@ import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,14 +36,14 @@ public class FillInvalidTest {
         row.setRowMetadata(rowMetadata);
 
 
-        FillWithIntegerIfInvalid fillWithIntegerIfInvalid  = new FillWithIntegerIfInvalid();
+        FillWithNumericIfInvalid fillWithNumericIfInvalid = new FillWithNumericIfInvalid();
 
-        Map<String, String>  parameters = ActionMetadataTestUtils.parseParameters(fillWithIntegerIfInvalid, //
+        Map<String, String>  parameters = ActionMetadataTestUtils.parseParameters( fillWithNumericIfInvalid, //
                                                                         FillInvalidTest.class.getResourceAsStream("fillInvalidIntegerAction.json"));
 
 
         // when
-        fillWithIntegerIfInvalid.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+        fillWithNumericIfInvalid.applyOnColumn(row, new TransformationContext(), parameters, "0002");
 
         // then
         assertEquals("25", row.get("0002"));
