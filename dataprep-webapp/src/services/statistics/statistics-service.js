@@ -136,12 +136,45 @@
                 return filter.colId === column.id && filter.type === 'inside_range';
             });
 
-            service.rangeLimits = {
-                min : column.statistics.min,
-                max : column.statistics.max,
-                minBrush : currentRangeFilter ? currentRangeFilter.args.interval[0] : undefined,
-                maxBrush : currentRangeFilter ? currentRangeFilter.args.interval[1] : undefined
-            };
+            if(currentRangeFilter){
+                if(currentRangeFilter.args.interval[0] < column.statistics.min){
+                    service.rangeLimits = {
+                        min : column.statistics.min,
+                        max : column.statistics.max,
+                        minBrush : column.statistics.min,
+                        maxBrush : column.statistics.min,
+                        minFilterVal : currentRangeFilter.args.interval[0],
+                        maxFilterVal : currentRangeFilter.args.interval[1]
+                    };
+                }
+                else if(currentRangeFilter.args.interval[1] > column.statistics.max){
+                    service.rangeLimits = {
+                        min : column.statistics.min,
+                        max : column.statistics.max,
+                        minBrush : column.statistics.max,
+                        maxBrush : column.statistics.max,
+                        minFilterVal : currentRangeFilter.args.interval[0],
+                        maxFilterVal : currentRangeFilter.args.interval[1]
+                    };
+                }
+                else {
+                    service.rangeLimits = {
+                        min : column.statistics.min,
+                        max : column.statistics.max,
+                        minBrush : currentRangeFilter.args.interval[0],
+                        maxBrush : currentRangeFilter.args.interval[1]
+                    };
+                }
+            }
+            else {
+                service.rangeLimits = {
+                    min : column.statistics.min,
+                    max : column.statistics.max,
+                    minBrush : undefined,
+                    maxBrush : undefined
+                };
+            }
+
         }
 
         //--------------------------------------------------------------------------------------------------------------
