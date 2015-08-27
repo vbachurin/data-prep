@@ -65,6 +65,6 @@ public class CountTest {
         NumberContext context = (NumberContext) result.get("toto");
         Assert.assertNotNull(context);
 
-        Assert.assertEquals(context.getValue(), 1, 0);
+        Assert.assertEquals(context.getValue(), 0, 0);
     }
 }
