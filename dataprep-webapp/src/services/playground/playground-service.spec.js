@@ -985,4 +985,52 @@ describe('Playground Service', function () {
             expect(DatasetService.getContent).toHaveBeenCalledWith(PlaygroundService.currentMetadata.id, true, 'full');
         }));
     });
+
+    describe('change column type', function() {
+
+        beforeEach(inject(function($q, DatasetService, PreparationService, DatagridService) {
+            spyOn(DatasetService, 'updateColumn').and.returnValue($q.when({}));
+            spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: {}}));
+            spyOn(DatagridService, 'updateData').and.returnValue();
+        }));
+
+        it('should get preparation content', inject(function($rootScope, PlaygroundService, PreparationService, DatasetService, PreviewService) {
+            //given
+            PlaygroundService.currentMetadata = {id: 'gfkjqghflqsdgf'};
+            PreparationService.currentPreparationId = 1324;
+            PlaygroundService.selectedSampleSize = {value:500};
+
+            var columnId = '0001';
+            var type = 'date';
+            var domain = '';
+
+            //when
+            PlaygroundService.updateColumn(columnId, type, domain);
+            $rootScope.$digest();
+
+            //then
+            expect(DatasetService.updateColumn).toHaveBeenCalledWith(PlaygroundService.currentMetadata.id, columnId, {type: type, domain: domain});
+            expect(PreparationService.getContent).toHaveBeenCalledWith('head', PlaygroundService.selectedSampleSize.value);
+            expect(PreviewService.reset).toHaveBeenCalledWith(false);
+        }));
+
+        it('should get dataset content', inject(function($rootScope, PlaygroundService, PreparationService, DatasetService) {
+            //given
+            PlaygroundService.currentMetadata = {id: 'gfkjqghflqsdgf'};
+            PreparationService.currentPreparationId = null;
+            PlaygroundService.selectedSampleSize = {value:500};
+
+            var columnId = '0001';
+            var type = 'date';
+            var domain = '';
+
+            //when
+            PlaygroundService.updateColumn(columnId, type, domain);
+            $rootScope.$digest();
+
+            //then
+            expect(DatasetService.updateColumn).toHaveBeenCalledWith(PlaygroundService.currentMetadata.id, columnId, {type: type, domain: domain});
+            expect(DatasetService.getContent).toHaveBeenCalledWith(PlaygroundService.currentMetadata.id, false, PlaygroundService.selectedSampleSize.value);
+        }));
+    });
 });
