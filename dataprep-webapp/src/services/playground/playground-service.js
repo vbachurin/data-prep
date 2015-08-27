@@ -124,7 +124,6 @@
             FilterService.removeAllFilters();
             RecipeService.refresh();
             StatisticsService.resetCharts();
-            StatisticsService.invalidateCache();
             DatagridService.setDataset(dataset, data);
             TransformationCacheService.invalidateCache();
             ColumnSuggestionService.reset();

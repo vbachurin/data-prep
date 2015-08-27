@@ -14,7 +14,7 @@ describe('Datagrid external service', function () {
     beforeEach(module('data-prep.datagrid'));
     beforeEach(module('data-prep.suggestions-stats'));
 
-    beforeEach(inject(function (StatisticsService, ColumnSuggestionService, SuggestionsStatsAggregationsService) {
+    beforeEach(inject(function (StatisticsService, ColumnSuggestionService) {
         /*global SlickGridMock:false */
         gridMock = new SlickGridMock();
         gridMock.initColumnsMock(gridColumns);
@@ -25,8 +25,6 @@ describe('Datagrid external service', function () {
 
         spyOn(StatisticsService, 'processData').and.returnValue();
         spyOn(ColumnSuggestionService, 'setColumn').and.returnValue();
-        spyOn(SuggestionsStatsAggregationsService, 'updateAggregations').and.returnValue();
-
     }));
 
     beforeEach(function () {
@@ -63,7 +61,7 @@ describe('Datagrid external service', function () {
     });
 
     describe('on event', function () {
-        it('should update playground right panel on active cell changed', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService, SuggestionsStatsAggregationsService) {
+        it('should update playground right panel on active cell changed', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
             //given
             DatagridExternalService.init(gridMock);
             var args = {cell: 1};
@@ -80,7 +78,6 @@ describe('Datagrid external service', function () {
             //then
             expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
             expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
-            expect(SuggestionsStatsAggregationsService.updateAggregations).toHaveBeenCalledWith(columnMetadata);
         }));
 
         it('should NOT update playground right panel on active cell changed if column is the same', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
@@ -132,7 +129,7 @@ describe('Datagrid external service', function () {
             expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(secondCallColumnMetadata);
         }));
         
-        it('should do nothing when no cell is active', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService, SuggestionsStatsAggregationsService) {
+        it('should do nothing when no cell is active', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
             //given
             DatagridExternalService.init(gridMock);
 
@@ -143,7 +140,6 @@ describe('Datagrid external service', function () {
             //then
             expect(StatisticsService.processData).not.toHaveBeenCalled();
             expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
-            expect(SuggestionsStatsAggregationsService.updateAggregations).not.toHaveBeenCalledWith();
         }));
 
         it('should update playground right panel on header click after a 200ms delay', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {

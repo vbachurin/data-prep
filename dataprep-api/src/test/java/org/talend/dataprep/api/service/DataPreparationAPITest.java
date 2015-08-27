@@ -4,6 +4,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.api.type.ExportType.CSV;
@@ -1097,7 +1098,7 @@ public class DataPreparationAPITest {
                 .post("/api/aggregate").asString();
 
         // then
-        assertEquals(response, "TDD development");
+        assertThat(response, is("[{\"data\":\"Lansing\",\"MAX\":15},{\"data\":\"Helena\",\"MAX\":5},{\"data\":\"Baton Rouge\",\"MAX\":64},{\"data\":\"Annapolis\",\"MAX\":4},{\"data\":\"Pierre\",\"MAX\":104}]"));
     }
 
     @Test
@@ -1118,7 +1119,7 @@ public class DataPreparationAPITest {
                 .post("/api/aggregate").asString();
 
         // then
-        assertEquals(response, "TDD development");
+        assertThat(response, is("[{\"data\":\"Lansing\",\"MAX\":15},{\"data\":\"Helena\",\"MAX\":5},{\"data\":\"Baton Rouge\",\"MAX\":64},{\"data\":\"Annapolis\",\"MAX\":4},{\"data\":\"Pierre\",\"MAX\":104}]"));
     }
 
     private AggregationParameters getAggregationParameters(String input) throws IOException {

@@ -38,10 +38,10 @@ describe('Stats-details controller', function () {
         var data = {};
 
         //when
-        StatisticsService.boxplotData = data;
+        StatisticsService.boxPlot = data;
 
         //then
-        expect(ctrl.boxplotData).toBe(data);
+        expect(ctrl.boxPlot).toBe(data);
     }));
 
     it('should bind rangeLimits getter to StatisticsService.rangeLimits', inject(function (StatisticsService) {

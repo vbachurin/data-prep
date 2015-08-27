@@ -1,11 +1,14 @@
 package org.talend.dataprep.transformation.api;
 
 import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.talend.dataprep.transformation.Application;
 
@@ -45,7 +48,7 @@ public class AggregationTests extends TransformationServiceBaseTests {
                 .asString();
 
         // then
-        assertEquals(actual, "TDD development");
+        assertThat(actual, is("[{\"data\":\"Lansing\",\"MAX\":15},{\"data\":\"Helena\",\"MAX\":5},{\"data\":\"Baton Rouge\",\"MAX\":64},{\"data\":\"Annapolis\",\"MAX\":4},{\"data\":\"Pierre\",\"MAX\":104}]"));
     }
 
 }

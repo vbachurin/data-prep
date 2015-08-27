@@ -3,6 +3,7 @@ package org.talend.dataprep.transformation.service;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.talend.dataprep.transformation.aggregation.api.Operator.MAX;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +35,7 @@ import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
+import org.talend.dataprep.transformation.aggregation.api.Operator;
 import org.talend.dataprep.transformation.api.action.dynamic.DynamicType;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.parameters.GenericParameter;
@@ -289,7 +291,7 @@ public class TransformationService {
     @ApiOperation(value = "Compute the aggregation according to the request body parameters", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @VolumeMetered
     // @formatter:off
-    public void aggregate(
+    public List<Map<Object, Object>> aggregate(
             @ApiParam(value = "The aggregation parameters in json") @RequestPart(value = "parameters", required = true) final Part parameters,
             @ApiParam(value = "Content to apply the aggregation on") @RequestPart(value = "content", required = true) final Part content,
             final HttpServletResponse response) {
@@ -306,11 +308,20 @@ public class TransformationService {
         LOG.debug("Aggregation requested {}", params);
 
         // perform the aggregation
-        try {
-            response.getWriter().write("TDD development");
-        } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_AGGREGATE, e);
-        }
+        final List<Map<Object, Object>> mock = new ArrayList<>();
+        mock.add(createMockedValue("Lansing", 15));
+        mock.add(createMockedValue("Helena", 5));
+        mock.add(createMockedValue("Baton Rouge", 64));
+        mock.add(createMockedValue("Annapolis", 4));
+        mock.add(createMockedValue("Pierre", 104));
+        return mock;
+    }
+
+    private Map<Object, Object> createMockedValue(final String data, final int max) {
+        final Map<Object, Object> item = new HashMap<>(2);
+        item.put("data", data);
+        item.put(MAX, max);
+        return item;
     }
 
 }
