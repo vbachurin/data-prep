@@ -4,13 +4,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.setStatistics;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -38,11 +37,6 @@ public class ChangeDatePatternTest {
         parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 ChangeDatePatternTest.class.getResourceAsStream("changeDatePatternAction.json"));
-    }
-
-    private static void setStatistics(DataSetRow row, String columnId, InputStream statisticsContent) throws IOException {
-        String statistics = IOUtils.toString(statisticsContent);
-        row.getRowMetadata().getById(columnId).setStatistics(statistics);
     }
 
     @Test

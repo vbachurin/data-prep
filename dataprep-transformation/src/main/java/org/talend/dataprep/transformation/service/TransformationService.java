@@ -203,9 +203,6 @@ public class TransformationService {
     @ApiOperation(value = "Suggest actions for a given data set metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
     @ResponseBody
     public List<ActionMetadata> suggest(DataSetMetadata dataSetMetadata) {
-        if (dataSetMetadata == null) {
-            return Collections.emptyList();
-        }
         return Collections.emptyList();
     }
 
@@ -239,8 +236,8 @@ public class TransformationService {
                                           @ApiParam(value = "Data set content as JSON") final InputStream content) {
         final DynamicType actionType = DynamicType.fromAction(action);
         if (actionType == null) {
-            final TDPExceptionContext context = TDPExceptionContext.build().put("name", action);
-            throw new TDPException(TransformationErrorCodes.UNKNOWN_DYNAMIC_ACTION, context);
+            final TDPExceptionContext exceptionContext = TDPExceptionContext.build().put("name", action);
+            throw new TDPException(TransformationErrorCodes.UNKNOWN_DYNAMIC_ACTION, exceptionContext);
         }
         final ObjectMapper mapper = builder.build();
         try (JsonParser parser = mapper.getFactory().createParser(content)) {

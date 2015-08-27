@@ -6,6 +6,12 @@
         <talend-tabs-item tab-title="_"></talend-tabs-item>
         <talend-tabs-item tab-title="Viz" default="true">
             <column-profile></column-profile>
+            <range-slider id="rangeSliderId"
+                          width="310"
+                          height="120"
+                          range-limits="statsDetailsCtrl.rangeLimits"
+                          on-brush-end="statsDetailsCtrl.statisticsService.addRangeFilter" >
+            </range-slider>
         </talend-tabs-item>
         <talend-tabs-item tab-title="Value">
             <table class="stat-table">
@@ -23,12 +29,13 @@
         </talend-tabs-item>
         <talend-tabs-item tab-title="Pattern">
             <horizontal-barchart id="patternBarChart"
-                                 width="250"
+                                 width="310"
                                  height="400"
                                  on-click="statsDetailsCtrl.addPatternFilter"
                                  visu-data="statsDetailsCtrl.patternFrequencyTable"
                                  key-field="occurrences"
-                                 value-field="pattern">
+                                 value-field="pattern"
+                                 raw-data="statsDetailsCtrl.patternFrequencyTable">
             </horizontal-barchart>
         </talend-tabs-item>
         <talend-tabs-item tab-title="Others">
