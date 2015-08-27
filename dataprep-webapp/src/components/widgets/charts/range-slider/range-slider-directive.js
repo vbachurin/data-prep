@@ -75,7 +75,7 @@
                     //--------------------------------------------------------------------------------------------------
                     svg.append('g').append('foreignObject')
                         .attr('width', width)
-                        .attr('height', 30)
+                        .attr('height', 40)
                         .attr('transform', 'translate(0,' + (height - 45) + ')')
                         .append('xhtml:div')
                         .html('<span><b>Min </b><input type="text" name="minRange"></span> <span style="float:right;"><b>Max </b> <input type="text" name="maxRange"/></span>');

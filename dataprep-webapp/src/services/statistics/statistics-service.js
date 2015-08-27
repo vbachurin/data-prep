@@ -10,7 +10,6 @@
      * @requires data-prep.services.utils.service:TextFormatService
      */
     function StatisticsService($timeout, DatagridService, FilterService, ConverterService, TextFormatService) {
-        var selectedColumn;
 
         var service = {
             boxplotData: null,
@@ -315,6 +314,10 @@
 
             service.rangeLimits.minBrush = interval[0];
             service.rangeLimits.maxBrush = interval[1];
+            //empty the minFilterVal and the maxFilterVal because otherwise it will show them once we get back to the VIZ tab
+            service.rangeLimits.minFilterVal = undefined;
+            service.rangeLimits.maxFilterVal = undefined;
+
             var column = service.selectedColumn;
             var filterFn = FilterService.addFilter.bind(null, 'inside_range', column.id, column.name, {interval: interval}, removeFilterFn);
             $timeout(filterFn);
@@ -331,7 +334,7 @@
          * @description Remove the previous charts data and set the map chart
          */
         function processMapData(column) {
-            selectedColumn = column;
+            service.selectedColumn = column;
             //remove the boxplot
             service.boxplotData = null;
             //remove the barchart
