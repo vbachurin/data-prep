@@ -67,7 +67,7 @@ describe('Actions suggestions-stats controller', function () {
             PlaygroundService.currentMetadata = {id: 'dataset_id'};
             PreparationService.currentPreparationId = 'preparation_id';
         }));
-
+/*
         it('should call appendStep function on transform closure execution', inject(function (PlaygroundService) {
             //given
             var transformation = {name: 'tolowercase'};
@@ -429,5 +429,6 @@ describe('Actions suggestions-stats controller', function () {
 
             jasmine.clock().uninstall();
         }));
+        */
     });
 });
