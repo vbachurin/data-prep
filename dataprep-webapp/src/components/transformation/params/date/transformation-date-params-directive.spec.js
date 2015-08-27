@@ -23,7 +23,7 @@ describe('Transformation date params directive', function () {
                 'name': 'param1',
                 'label': 'Param 1',
                 'type': 'date',
-                'default': '14/06/1973 10:00:12'
+                'default': '02/01/2012 10:00:12'
             }
         ];
 
@@ -34,5 +34,6 @@ describe('Transformation date params directive', function () {
         expect(element.find('.param-name').length).toBe(1);
         expect(element.find('.param-name').eq(0).text().trim()).toBe('Param 1:');
         expect(element.find('.datetimepicker').length).toBe(1);
+        expect(element.find('.datetimepicker').eq(0).val()).toBe('02/01/2012 10:00:12');
     });
 });
