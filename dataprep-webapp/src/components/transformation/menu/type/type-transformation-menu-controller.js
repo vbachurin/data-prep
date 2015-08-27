@@ -37,14 +37,14 @@
          */
         vm.changeDomain = function changeDomain(domain) {
             var originalDomain = getOriginalDomain();
-            /*
-            setColumnDomainAndType(domain, null);
 
+            setColumnDomainAndType(domain, null);
+            /*
             DatasetService.updateColumn(PlaygroundService.currentMetadata.id, vm.column.id, {domain: domain.id})
                 .catch(setColumnDomainAndType.bind(vm, originalDomain));
             */
-            //PreparationService.appendStep
-            console.log('changeDomain');
+            PlaygroundService.appendStep("domain_change",
+                {"scope":"column","column_id":"0002","NEW_DOMAIN":"ANY"});
         };
 
         /**
@@ -55,15 +55,16 @@
          * @param {object} type The new type information
          */
         vm.changeType = function changeType(type) {
-            /*
+
             var originalType = vm.column.type;
             var originalDomain = getOriginalDomain();
             setColumnDomainAndType({id: '', label: '', frequency: 0}, type.id);
-
+            /*
             PlaygroundService.updateColumn(vm.column.id, type.id, '')
                 .catch(setColumnDomainAndType.bind(vm, originalDomain, originalType));
                 */
-            console.log('changeType');
+            PlaygroundService.appendStep("domain_change",
+                {"scope":"column","column_id":"0002","NEW_DOMAIN":"ANY"});
         };
 
         /**
