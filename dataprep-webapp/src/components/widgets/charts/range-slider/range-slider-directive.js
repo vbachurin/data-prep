@@ -248,7 +248,7 @@
                         .attr('y', margin.top + 5)
                         .attr('text-anchor', 'start')
                         .attr('fill', 'grey')
-                        .text(minimum+' <');
+                        .text(minimum);
 
                     svg.append('g').append('text')
                         .attr('class', 'the-maximum-label')
@@ -256,7 +256,7 @@
                         .attr('y', margin.top + 5)
                         .attr('text-anchor', 'end')
                         .attr('fill', 'grey')
-                        .text('< '+maximum);
+                        .text(maximum);
                     //--------------------------------------------------------------------------------------------------
                     //--------------------------------------------ERROR TEXT--------------------------------------------
                     //--------------------------------------------------------------------------------------------------
