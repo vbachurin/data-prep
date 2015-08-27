@@ -10,15 +10,16 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.preparation.service:PreparationService
      */
-    function ActionsSuggestionsCtrl(ColumnSuggestionService, TransformationService, PlaygroundService, PreparationService, TransformationApplicationService) {
+    function ActionsSuggestionsCtrl(ColumnSuggestionService, TransformationService, PlaygroundService, PreparationService, TransformationApplicationService, EarlyPreviewService) {
 
 
         var vm = this;
         vm.columnSuggestionService = ColumnSuggestionService;
+        vm.earlyPreviewService = EarlyPreviewService;
         vm.transformationApplicationService = TransformationApplicationService;
         vm.transformClosure = vm.transformationApplicationService.transformClosure;
-        vm.earlyPreview = vm.transformationApplicationService.earlyPreview;
-        vm.cancelEarlyPreview = vm.transformationApplicationService.cancelEarlyPreview;
+        vm.earlyPreview = vm.earlyPreviewService.earlyPreview;
+        vm.cancelEarlyPreview = vm.earlyPreviewService.cancelEarlyPreview;
 
         /**
          * @ngdoc property
@@ -42,7 +43,7 @@
          * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
          * @description Flag that change the dynamic parameters modal display
          */
-        vm.showDynamicModal = vm.transformationApplicationService.showDynamicModal;
+        vm.showDynamicModal = vm.earlyPreviewService.showDynamicModal;
 
         /**
          * @ngdoc method

@@ -169,17 +169,6 @@
             });
             vm.transformationApplicationService.transformClosure(actionToApply, 'column')();
         };
-
-        vm.applyEarlyPreview = function applyEarlyPreview (actionType){
-            var actionToApplyPrev = _.find(ColumnSuggestionService.transformations, function(transfo){
-                return transfo.name === actionType;
-            });
-            vm.transformationApplicationService.earlyPreview(actionToApplyPrev, 'column')({});
-        };
-
-        vm.applyCancelEarlyPreview = function applyCancelEarlyPreview (){
-            vm.transformationApplicationService.cancelEarlyPreview()();
-        };
     }
 
     angular.module('data-prep.quality-bar')
