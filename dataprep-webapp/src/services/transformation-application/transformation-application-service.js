@@ -12,8 +12,6 @@
 	 * @requires data-prep.services.playground.service:PlaygroundService
 	 */
 	function TransformationApplicationService($timeout, PlaygroundService, ColumnSuggestionService, RecipeService, PreviewService, EarlyPreviewService) {
-		var self = this;
-
 		/**
 		 * @ngdoc method??????????????????????????????
 		 * @name transformClosure??????????????????????????????
@@ -33,13 +31,9 @@
 				params.column_name = currentCol.name;
 
 				PlaygroundService.appendStep(transfo.name, params)
-					.then(function() {
-						EarlyPreviewService.deactivateDynamicModal();
-					})
+					.then(EarlyPreviewService.deactivateDynamicModal)
 					.finally(function() {
-						setTimeout(function() {
-							self.previewDisabled = false;
-						}, 500);
+						setTimeout(EarlyPreviewService.activatePreview, 500);
 					});
 			};
 		};
