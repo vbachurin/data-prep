@@ -91,10 +91,28 @@ public class AggregationParameters {
     }
 
     /**
+     * Add the given group by.
+     * 
+     * @param groupBy the group by to add.
+     */
+    public void addGroupBy(String groupBy) {
+        this.groupBy.add(groupBy);
+    }
+
+    /**
      * @return the Operations
      */
     public List<AggregationOperation> getOperations() {
         return operations;
+    }
+
+    /**
+     * Add the given operation to the parameters.
+     * 
+     * @param operation the operatio to add.
+     */
+    public void addOperation(AggregationOperation operation) {
+        this.operations.add(operation);
     }
 
     /**
@@ -127,5 +145,6 @@ public class AggregationParameters {
                 + ", stepId='" + stepId + '\'' + ", groupBy=" + groupBy + ", operations=" + operations + ", sampleSize="
                 + sampleSize + '}';
     }
+
 
 }

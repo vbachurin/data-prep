@@ -7,7 +7,6 @@ public class AggregationOperation {
 
     /** The operation column. */
     private String columnId;
-
     /** The operation operator. */
     private Operator operator;
 
