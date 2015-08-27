@@ -8,5 +8,12 @@ public enum Operator {
                       MIN,
                       MAX,
                       AVERAGE,
-                      SUM,
+                      SUM;
+
+    /**
+     * @return the Operator display string.
+     */
+    public String display() {
+        return this.name().toLowerCase();
+    }
 }
