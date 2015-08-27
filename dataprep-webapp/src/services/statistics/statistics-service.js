@@ -316,8 +316,8 @@
             service.rangeLimits.minBrush = interval[0];
             service.rangeLimits.maxBrush = interval[1];
             //empty the minFilterVal and the maxFilterVal because otherwise it will show them once we get back to the VIZ tab
-            service.rangeLimits = _.omit(service.rangeLimits, 'minFilterVal');
-            service.rangeLimits = _.omit(service.rangeLimits, 'maxFilterVal');
+            service.rangeLimits.minFilterVal = undefined;
+            service.rangeLimits.maxFilterVal = undefined;
 
             var column = service.selectedColumn;
             var filterFn = FilterService.addFilter.bind(null, 'inside_range', column.id, column.name, {interval: interval}, removeFilterFn);
