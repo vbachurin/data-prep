@@ -248,7 +248,9 @@
                         .attr('y', margin.top + 5)
                         .attr('text-anchor', 'start')
                         .attr('fill', 'grey')
-                        .text(minimum);
+                        .text(function(){
+                            return minimum < -1e4 || minimum > 1e4 ? d3.format('e')(minimum): d3.format(',')(minimum);
+                        });
 
                     svg.append('g').append('text')
                         .attr('class', 'the-maximum-label')
@@ -256,7 +258,9 @@
                         .attr('y', margin.top + 5)
                         .attr('text-anchor', 'end')
                         .attr('fill', 'grey')
-                        .text(maximum);
+                        .text(function(){
+                            return maximum < -1e4 || maximum > 1e4 ? d3.format('e')(maximum): d3.format(',')(maximum);
+                        });
                     //--------------------------------------------------------------------------------------------------
                     //--------------------------------------------ERROR TEXT--------------------------------------------
                     //--------------------------------------------------------------------------------------------------
