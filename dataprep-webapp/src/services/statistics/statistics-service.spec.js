@@ -270,7 +270,7 @@ describe('Statistics service', function () {
             StatisticsService.addRangeFilter([0,22]);
             $timeout.flush();
 
-            expect(StatisticsService.rangeLimits).toBe(originalRangeLimits);
+            expect(StatisticsService.rangeLimits).toEqual(originalRangeLimits);
             expect(FilterService.addFilter).toHaveBeenCalled();
             var removeCallback = FilterService.addFilter.calls.argsFor(0)[4];
 
@@ -296,7 +296,7 @@ describe('Statistics service', function () {
             StatisticsService.addRangeFilter([0,22]);
             $timeout.flush();
 
-            expect(StatisticsService.rangeLimits).toBe(originalRangeLimits);
+            expect(StatisticsService.rangeLimits).toEqual(originalRangeLimits);
             expect(FilterService.addFilter).toHaveBeenCalled();
             var removeCallback = FilterService.addFilter.calls.argsFor(0)[4];
 
@@ -304,7 +304,7 @@ describe('Statistics service', function () {
             removeCallback({colId: '0001'});
 
             //then
-            expect(StatisticsService.rangeLimits).toBe(originalRangeLimits);
+            expect(StatisticsService.rangeLimits).toEqual(originalRangeLimits);
         }));
     });
 
