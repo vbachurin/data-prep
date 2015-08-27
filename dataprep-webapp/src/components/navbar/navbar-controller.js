@@ -1,11 +1,11 @@
 (function () {
     'use strict';
 
-    function NavbarCtrl($state, $timeout, DatasetService, OnboardingService) {
+    function NavbarCtrl($state, OnboardingService, $timeout, DatasetService) {
         this.startTour = OnboardingService.startTour;
 
         if ($state.current.name === 'nav.home.datasets' && !$state.params.datasetid && OnboardingService.shouldStartTour()) {
-            DatasetService.refreshDatasets().then(function () {
+            DatasetService.getDatasets().then(function () {
                 $timeout(OnboardingService.startTour);
             });
         }

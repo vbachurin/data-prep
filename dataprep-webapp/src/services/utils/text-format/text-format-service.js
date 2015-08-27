@@ -14,7 +14,7 @@
 		 * @description split the string value into leading chars, text and trailing char and create html element using
 		 * the class hiddenChars to specify the hiddenChars.If the text contains break lines, the class
 		 * hiddenCharsBreakLine is used to notice it.
-		 * @param {string} value The string value to adapt
+		 * @param {string} type - value The string value to adapt
 		 */
 		this.computeHTMLForLeadingOrTrailingHiddenChars = function computeHTMLForLeadingOrTrailingHiddenChars(value){
 			if(!value) {

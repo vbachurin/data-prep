@@ -1,0 +1,35 @@
+.range-slider-cls{
+  font-size: .8em;
+
+  .resize rect {
+    fill: #666;
+    fill-opacity: 0.7;
+    stroke: #000;
+    stroke-width: 1px;
+    shape-rendering:crispEdges;
+  }
+
+  .axis path {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .x.axis line {
+    fill: none;
+    stroke: #000;
+    stroke-opacity: 1;
+  }
+
+  .brush .extent {
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+  }
+
+  input[type="text"] {
+    width:112px;
+    display: inline-block;
+    border: solid 1.5px;
+    border-radius: 15px;
+  }
+}

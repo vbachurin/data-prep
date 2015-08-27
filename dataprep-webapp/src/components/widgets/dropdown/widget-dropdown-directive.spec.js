@@ -138,13 +138,14 @@ describe('Dropdown directive', function () {
 
         it('should unregister body mousedown on element remove', function () {
             //given
-            expect($._data(angular.element('body')[0], 'events').mousedown.length).toBe(1);
+            expect($._data(angular.element('body')[0], 'events').mousedown.length).toBe(2);
 
             //when
             element.remove();
 
+            var asset = $._data(angular.element('body')[0], 'events');
             //then
-            expect($._data(angular.element('body')[0], 'events')).not.toBeDefined();
+            expect(asset.mousedown.length).toBe(1);
         });
 
         it('should stop mousedown propagation on dropdown-menu mousedown', function () {

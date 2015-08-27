@@ -45,6 +45,15 @@
         });
 
     Object.defineProperty(StatsDetailsCtrl.prototype,
+        'rangeLimits', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.statisticsService.rangeLimits;
+            }
+        });
+
+    Object.defineProperty(StatsDetailsCtrl.prototype,
         'patternFrequencyTable', {
             enumerable: true,
             configurable: false,

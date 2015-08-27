@@ -112,34 +112,32 @@ describe('Dataset Service', function () {
         expect(uniqueName).toBe('my second dataset (3)');
     }));
 
-    it('should get a promise that resolve the existing datasets if already fetched', inject(function ($rootScope, DatasetService) {
+    it('should get a promise that resolve the existing datasets if already fetched', inject(function ($q, $rootScope, DatasetService, DatasetListService) {
         //given
+        spyOn(DatasetListService, 'hasDatasetsPromise').and.returnValue(true);
+        spyOn(DatasetListService, 'getDatasetsPromise').and.returnValue($q.when(true));
+        //when
+        DatasetService.getDatasets();
+
+        //then
+        expect(DatasetListService.getDatasetsPromise).toHaveBeenCalled();
+    }));
+
+    it('should refresh datasets if datasets are not fetched', inject(function ($q, $rootScope, DatasetService, DatasetListService) {
+        //given
+        spyOn(DatasetListService, 'hasDatasetsPromise').and.returnValue(false);
         var results = null;
+
         //when
         DatasetService.getDatasets()
             .then(function(response) {
                 results = response;
             });
+
         $rootScope.$digest();
 
         //then
         expect(results).toBe(datasets);
-    }));
-
-    it('should not consolidate preparations and datasets if datasets are already fetched', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
-        //given
-        var results = null;
-
-        //when
-        DatasetService.getDatasets()
-            .then(function(response) {
-                results = response;
-            });
-        $rootScope.$digest();
-
-        //then
-        expect(PreparationListService.refreshMetadataInfos).not.toHaveBeenCalled();
-        expect(DatasetListService.refreshDefaultPreparation).not.toHaveBeenCalled();
     }));
 
     it('should get a promise that fetch datasets', inject(function ($rootScope, DatasetService, DatasetListService) {
@@ -372,53 +370,42 @@ describe('Dataset Service', function () {
         expect(actual).toBeUndefined();
     }));
 
-    it('should find dataset by id', inject(function ($rootScope, DatasetService, DatasetListService) {
+    it('should find dataset by id', inject(function ($q, $rootScope, DatasetService, DatasetListService) {
         //given
-        DatasetListService.datasets = datasets;
+        spyOn(DatasetListService, 'getDatasetsPromise').and.returnValue($q.when(datasets));
 
         var actual;
 
         //when
-        DatasetService.getDatasetById(datasets[2].id).then(function(dataset) {
-                                                        actual = dataset;
-                                                      });
+        DatasetService.getDatasetById(datasets[2].id)
+            .then(function(dataset) {
+                actual = dataset;
+        });
+
         $rootScope.$digest();
 
         //then
         expect(actual).toBe(datasets[2]);
     }));
 
-    it('should not find dataset by id', inject(function ($rootScope, DatasetService, DatasetListService) {
+    it('should not find dataset by id', inject(function ($q, $rootScope, DatasetService, DatasetListService) {
         //given
-        DatasetListService.datasets = datasets;
+        spyOn(DatasetListService, 'getDatasetsPromise').and.returnValue($q.when(datasets));
 
         var actual;
 
         //when
-        DatasetService.getDatasetById('not to be found').then(function(dataset) {
-                                                        actual = dataset;
-                                                      });
-        $rootScope.$digest();
-
-        //then
-        expect(actual).toBeUndefined();
-    }));
-
-    it('should not find dataset by id', inject(function ($rootScope, DatasetService, DatasetListService) {
-        //given
-        DatasetListService.datasets = datasets;
-
-        var actual;
-
-        //when
-        DatasetService.getDatasetById('not to be found').then(function(dataset) {
+        DatasetService.getDatasetById('not to be found')
+            .then(function(dataset) {
             actual = dataset;
         });
+
         $rootScope.$digest();
 
         //then
         expect(actual).toBeUndefined();
     }));
+
 
     it('should toggle favorite in a dataset', inject(function ($rootScope, DatasetService, DatasetListService, DatasetRestService) {
         //given

@@ -17,7 +17,7 @@ describe('Navbar controller', function () {
             return ctrl;
         };
 
-        spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.when());
+        spyOn(DatasetService, 'getDatasets').and.returnValue($q.when());
         spyOn(OnboardingService, 'startTour').and.returnValue();
     }));
 
@@ -36,7 +36,7 @@ describe('Navbar controller', function () {
             scope.$digest();
 
             //then
-            expect(DatasetService.refreshDatasets).toHaveBeenCalled();
+            expect(DatasetService.getDatasets).toHaveBeenCalled();
             expect(OnboardingService.startTour).not.toHaveBeenCalled();
 
             //when
@@ -56,7 +56,7 @@ describe('Navbar controller', function () {
             scope.$digest();
 
             //then
-            expect(DatasetService.refreshDatasets).not.toHaveBeenCalled();
+            expect(DatasetService.getDatasets).not.toHaveBeenCalled();
             expect(OnboardingService.startTour).not.toHaveBeenCalled();
         }));
 
@@ -70,7 +70,7 @@ describe('Navbar controller', function () {
             scope.$digest();
 
             //then
-            expect(DatasetService.refreshDatasets).not.toHaveBeenCalled();
+            expect(DatasetService.getDatasets).not.toHaveBeenCalled();
             expect(OnboardingService.startTour).not.toHaveBeenCalled();
         }));
     });
@@ -90,7 +90,7 @@ describe('Navbar controller', function () {
             scope.$digest();
 
             //then
-            expect(DatasetService.refreshDatasets).not.toHaveBeenCalled();
+            expect(DatasetService.getDatasets).not.toHaveBeenCalled();
             expect(OnboardingService.startTour).not.toHaveBeenCalled();
         }));
     });

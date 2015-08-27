@@ -364,11 +364,7 @@ describe('Dataset List Service', function () {
         expect(result).toEqual(datasets);
     }));
 
-    it('should call REST WS if datasetsPromise and datasets are null', inject(function ($q, DatasetRestService, DatasetListService) {
-
-        //given
-        DatasetListService.datasets = null;
-
+    it('should call refreshDatasets when datasetsPromise is false', inject(function ($q, DatasetRestService, DatasetListService) {
         //when
         DatasetListService.getDatasetsPromise();
 
@@ -376,23 +372,8 @@ describe('Dataset List Service', function () {
         expect(DatasetRestService.getDatasets).toHaveBeenCalled();
     }));
 
-    it('should return datasets if datasetsPromise is null and datasets is not null', inject(function ($q, $rootScope, DatasetListService) {
 
-        //given
-        DatasetListService.datasets = datasets;
-        var result = [];
-
-        //when
-        DatasetListService.getDatasetsPromise().then(function (promiseResult) {
-            result = promiseResult;
-        });
-        $rootScope.$apply();
-
-        //then
-        expect(result).toBe(datasets);
-    }));
-
-    it('should return datasetsPromise when datasetsPromise is not null', inject(function ($q, DatasetRestService, DatasetListService) {
+    it('should return datasetsPromise when datasetsPromise is not false', inject(function ($q, DatasetRestService, DatasetListService) {
 
         //given
         DatasetListService.datasets = null;
@@ -403,6 +384,14 @@ describe('Dataset List Service', function () {
 
         //then
         expect(DatasetRestService.getDatasets.calls.count()).toBe(1);
+    }));
+
+    it('should return datasetsPromise', inject(function ($q, DatasetRestService, DatasetListService) {
+        //when
+        var datasetsPromise = DatasetListService.hasDatasetsPromise();
+
+        //then
+        expect(datasetsPromise).toBeFalsy();
     }));
 
 });

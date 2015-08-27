@@ -1,17 +1,9 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import static org.talend.dataprep.api.type.Type.DATE;
-
-import java.time.DateTimeException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -22,9 +14,17 @@ import org.talend.dataprep.transformation.api.action.metadata.common.AbstractAct
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.talend.dataprep.api.type.Type.DATE;
 
 public abstract class AbstractDate extends AbstractActionMetadata {
 
@@ -50,7 +50,7 @@ public abstract class AbstractDate extends AbstractActionMetadata {
     }
 
     protected LocalDateTime superParse(String value, DataSetRow row, String columnId) throws DateTimeException {
-        return superParse(value, computePatterns(row, columnId));
+        return superParse(value, getPatterns(row, columnId));
     }
 
     /**
@@ -61,14 +61,15 @@ public abstract class AbstractDate extends AbstractActionMetadata {
      * @return the parsed date-time
      * @throws DateTimeException if none of the formats can match text
      */
-    protected LocalDateTime superParse(String value, Set<DateTimeFormatter> formatters) throws DateTimeException {
+    protected LocalDateTime superParse(String value, List<DatePattern> patterns) throws DateTimeException {
         // take care of the null value
         if (value == null) {
             throw new DateTimeException("cannot parse null");
         }
 
-        LocalDateTime result;
-        for (DateTimeFormatter formatter : formatters) {
+        for (DatePattern pattern : patterns) {
+            final DateTimeFormatter formatter = pattern.getFormatter();
+
             // first try to parse directly as LocalDateTime
             try {
                 return LocalDateTime.parse(value, formatter);
@@ -88,8 +89,10 @@ public abstract class AbstractDate extends AbstractActionMetadata {
 
     /**
      * Utility method to read all of the presents date pattern in this column, looking in the DQ stats.
+     *
+     * @param row the row to get the patterns from.
      */
-    protected Set<DateTimeFormatter> computePatterns(DataSetRow row, String columnId) {
+    protected List<DatePattern> getPatterns(DataSetRow row, String columnId) {
         final ColumnMetadata column = row.getRowMetadata().getById(columnId);
 
         // parse and checks the new date pattern
@@ -100,43 +103,70 @@ public abstract class AbstractDate extends AbstractActionMetadata {
         final JsonNode rootNode = getStatisticsNode(mapper, column);
         final JsonNode patternFrequencyTable = rootNode.get("patternFrequencyTable"); //$NON-NLS-1$
 
-        List<String> toReturn = new ArrayList<>();
+        List<DatePattern> patterns = new ArrayList<>();
 
         for (int i = 0; i < patternFrequencyTable.size(); i++) {
             String pattern = patternFrequencyTable.get(i).get("pattern").asText(); //$NON-NLS-1$
-
-            toReturn.add(pattern);
+            // skip empty patterns
+            if (StringUtils.isEmpty(pattern)) {
+                continue;
+            }
+            // skip existing patterns
+            if (contains(pattern, patterns)) {
+                continue;
+            }
+            final JsonNode occurrencesNode = patternFrequencyTable.get(i).get("occurrences"); //$NON-NLS-1$
+            Integer occurrences = 0;
+            if (occurrencesNode != null) {
+                occurrences = occurrencesNode.asInt();
+            }
+            patterns.add(new DatePattern(occurrences, pattern));
         }
-        return computePatterns(toReturn);
+
+        Collections.sort(patterns);
+        return computeDateTimeFormatter(patterns);
+    }
+
+    /**
+     * Return true if the given pattern is already held in the list of patterns.
+     *
+     * @param pattern  the pattern to check.
+     * @param patterns the list of patterns.
+     * @return true if the given pattern is already held in the list of patterns.
+     */
+    private boolean contains(String pattern, List<DatePattern> patterns) {
+        return patterns.stream().anyMatch(p -> StringUtils.equals(pattern, p.getPattern()));
     }
 
     /**
      * Giving a list of potential pattern as strings, validate them, and compute a list of DateTimeFormatter.
-     * 
+     *
      * @param patterns the list of potential patterns
      * @return a list that contains only valid and non null, non empty DateTimeFormatter
      */
-    protected Set<DateTimeFormatter> computePatterns(List<String> patterns) {
-        Set<DateTimeFormatter> computedFormatters = new HashSet<>();
+    protected List<DatePattern> computeDateTimeFormatter(List<DatePattern> patterns) {
+
         DateTimeFormatterBuilder dtfb = new DateTimeFormatterBuilder();
 
-        // We will store here valid patterns as String, to avoid duplication, as a workaround of no equals() implemented
-        // in DateTimeFormatter
-        List<String> validPatterns = new ArrayList<>();
-
-        for (String pattern : patterns) {
-            if (pattern != null && pattern.length() > 1 && !validPatterns.contains(pattern)) {
-                try {
-                    dtfb.appendPattern(pattern);
-                    validPatterns.add(pattern);
-                    computedFormatters.add(DateTimeFormatter.ofPattern(pattern));
-                } catch (IllegalArgumentException e) {
-                    // Nothing to do, this pattern is invalid
-                }
+        final Iterator<DatePattern> iterator = patterns.iterator();
+        while (iterator.hasNext()) {
+            final DatePattern nextPattern = iterator.next();
+            String pattern = nextPattern.getPattern();
+            // remove empty patterns
+            if (StringUtils.isEmpty(pattern)) {
+                iterator.remove();
+                continue;
+            }
+            try {
+                dtfb.appendPattern(pattern);
+                nextPattern.setFormatter(DateTimeFormatter.ofPattern(pattern));
+            } catch (IllegalArgumentException e) {
+                // remove invalid patterns
+                iterator.remove();
             }
         }
 
-        return computedFormatters;
+        return patterns;
     }
 
 }

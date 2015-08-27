@@ -43,6 +43,48 @@
     "label": "Delete lines that match..."
   },
   {
+    "name": "fillinvalidwithdefaultnumeric",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      },
+      {
+        "name": "invalid_default_value",
+        "type": "integer",
+        "implicit": false,
+        "description": "The value to set in invalid cells",
+        "label": "Value",
+        "default": "0"
+      }
+    ],
+    "category": "quickfix",
+    "items": [],
+    "dynamic": false,
+    "description": "Fill invalid cells of this column with given value",
+    "label": "Fill invalid cells with value..."
+  },
+  {
     "name": "delete_invalid",
     "category": "cleansing",
     "items": [
