@@ -2,6 +2,7 @@ package org.talend.dataprep.transformation.aggregation.operation;
 
 import java.util.function.BiConsumer;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.aggregation.api.AggregationResult;
 
@@ -27,7 +28,7 @@ public class Count extends AbstractAggregator implements Aggregator {
     public void accept(DataSetRow row, AggregationResult result) {
         final String key = row.get(groupBy);
         // skip value not found
-        if (key != null) {
+        if (StringUtils.isEmpty(key)) {
             return;
         }
 

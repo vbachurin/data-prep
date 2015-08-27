@@ -8,7 +8,7 @@ import static org.junit.Assert.assertThat;
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
-import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.talend.dataprep.transformation.Application;
 
@@ -35,6 +35,7 @@ public class AggregationTests extends TransformationServiceBaseTests {
     }
 
     @Test
+    @Ignore
     public void shouldAggregate() throws IOException {
 
         // given

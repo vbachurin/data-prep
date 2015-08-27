@@ -2,6 +2,7 @@ package org.talend.dataprep.transformation.aggregation.operation;
 
 import java.util.function.BiConsumer;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.aggregation.api.AggregationResult;
 import org.talend.dataprep.transformation.aggregation.api.WorkingContext;
@@ -62,8 +63,8 @@ public class Average extends AbstractAggregator implements Aggregator {
          * @param value the row value to process.
          */
         void process(String value) {
-            // skip null value
-            if (value == null) {
+            // skip null or empty value
+            if (StringUtils.isEmpty(value)) {
                 return;
             }
 
@@ -75,7 +76,7 @@ public class Average extends AbstractAggregator implements Aggregator {
                 return;
             }
 
-            sum = +newAmount;
+            sum += newAmount;
             count++;
         }
 
