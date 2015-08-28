@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api;
+package org.talend.dataprep.transformation.service;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;

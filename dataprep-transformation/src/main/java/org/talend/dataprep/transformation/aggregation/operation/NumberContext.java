@@ -15,7 +15,7 @@ public class NumberContext implements WorkingContext {
      * 
      * @param value the initialization value.
      */
-    NumberContext(double value) {
+    public NumberContext(double value) {
         this.value = value;
     }
 

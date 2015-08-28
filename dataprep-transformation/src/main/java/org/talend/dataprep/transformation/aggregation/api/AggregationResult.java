@@ -66,9 +66,9 @@ public class AggregationResult {
     }
 
     /**
-     * @return the keys.
+     * @return the result entries.
      */
-    public Set<String> keys() {
-        return results.keySet();
+    public Set<Map.Entry<String, WorkingContext>> entries() {
+        return results.entrySet();
     }
 }

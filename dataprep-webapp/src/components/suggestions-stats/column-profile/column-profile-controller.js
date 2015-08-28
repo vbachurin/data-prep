@@ -20,7 +20,7 @@
          * @description The list of possible aggregations
          * @type {array}
          */
-        vm.aggregations =  ['SUM', 'MAX', 'MIN', 'COUNT', 'AVERAGE', 'MEDIAN'];
+        vm.aggregations =  ['SUM', 'MAX', 'MIN', 'COUNT', 'AVERAGE'];
 
         /**
          * @ngdoc method

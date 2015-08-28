@@ -10,5 +10,5 @@
       "operator": "COUNT"
     }
   ],
-  "sampleSize": 100
+  "sampleSize": 5000
 }

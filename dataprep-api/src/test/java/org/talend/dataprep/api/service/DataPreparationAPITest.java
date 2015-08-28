@@ -2,7 +2,8 @@ package org.talend.dataprep.api.service;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
@@ -1098,11 +1099,11 @@ public class DataPreparationAPITest {
                 .post("/api/aggregate").asString();
 
         // then
-        assertThat(response, is("[{\"data\":\"Lansing\",\"MAX\":15},{\"data\":\"Helena\",\"MAX\":5},{\"data\":\"Baton Rouge\",\"MAX\":64},{\"data\":\"Annapolis\",\"MAX\":4},{\"data\":\"Pierre\",\"MAX\":104}]"));
+        assertThat(response, sameJSONAsFile(this.getClass().getResourceAsStream("aggregation/aggregation_exected.json")));
     }
 
     @Test
-    public void should_aggregate_on_preparatin() throws IOException {
+    public void should_aggregate_on_preparation() throws IOException {
 
         // given
         final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparationContentGet", "text/csv");
@@ -1119,7 +1120,7 @@ public class DataPreparationAPITest {
                 .post("/api/aggregate").asString();
 
         // then
-        assertThat(response, is("[{\"data\":\"Lansing\",\"MAX\":15},{\"data\":\"Helena\",\"MAX\":5},{\"data\":\"Baton Rouge\",\"MAX\":64},{\"data\":\"Annapolis\",\"MAX\":4},{\"data\":\"Pierre\",\"MAX\":104}]"));
+        assertThat(response, sameJSONAsFile(this.getClass().getResourceAsStream("aggregation/aggregation_exected.json")));
     }
 
     private AggregationParameters getAggregationParameters(String input) throws IOException {

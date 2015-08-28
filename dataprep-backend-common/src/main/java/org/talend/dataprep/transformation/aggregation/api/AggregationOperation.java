@@ -11,6 +11,23 @@ public class AggregationOperation {
     private Operator operator;
 
     /**
+     * Default empty constructor needed for json serialization.
+     */
+    public AggregationOperation() {
+    }
+
+    /**
+     * Create an aggregation operation with the given parameters.
+     *
+     * @param columnId the column id to aggregate.
+     * @param operator the operator to performed.
+     */
+    public AggregationOperation(String columnId, Operator operator) {
+        this.columnId = columnId;
+        this.operator = operator;
+    }
+
+    /**
      * @return the ColumnId
      */
     public String getColumnId() {

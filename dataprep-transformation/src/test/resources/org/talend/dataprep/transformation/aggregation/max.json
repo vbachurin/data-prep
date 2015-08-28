@@ -7,8 +7,8 @@
   "operations": [
     {
       "columnId": "0003",
-      "operator": "COUNT"
+      "operator": "MAX"
     }
   ],
-  "sampleSize": 100
+  "sampleSize": 5000
 }

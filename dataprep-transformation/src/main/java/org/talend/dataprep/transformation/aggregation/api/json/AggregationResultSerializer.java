@@ -1,9 +1,13 @@
 package org.talend.dataprep.transformation.aggregation.api.json;
 
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.talend.dataprep.transformation.aggregation.api.AggregationResult;
+import org.talend.dataprep.transformation.aggregation.api.WorkingContext;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -18,17 +22,24 @@ public class AggregationResultSerializer extends JsonSerializer<AggregationResul
      * @see JsonSerializer#serialize(Object, JsonGenerator, SerializerProvider)
      */
     @Override
-    public void serialize(AggregationResult value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+    public void serialize(AggregationResult result, JsonGenerator gen, SerializerProvider provider) throws IOException {
 
+        // sort the results first
+        Comparator<Map.Entry<String, WorkingContext>> comparator = (e1, e2) -> Double.compare(e2.getValue().getValue(),
+                e1.getValue().getValue());
+        final List<Map.Entry<String, WorkingContext>> entries = result.entries().stream().sorted(comparator)
+                .collect(Collectors.toList());
+
+        // then write it
         gen.writeStartArray();
-        final Iterator<String> keys = value.keys().iterator();
-        while (keys.hasNext()) {
-            String key = keys.next();
+        for (Map.Entry<String, WorkingContext> entry : entries) {
+            String key = entry.getKey();
             gen.writeStartObject();
             gen.writeStringField("data", key);
-            gen.writeNumberField(value.getOperator().name(), value.get(key).getValue());
+            gen.writeNumberField(result.getOperator().name(), entry.getValue().getValue());
             gen.writeEndObject();
         }
         gen.writeEndArray();
     }
+
 }

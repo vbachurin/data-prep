@@ -20,8 +20,7 @@ public class AggregatorFactory {
 
         // return empty aggregator if empty
         if (parameters.getOperations().isEmpty() || parameters.getGroupBy().isEmpty()) {
-            return (k, o) -> {
-            };
+            throw new IllegalArgumentException("Invalid aggregation parameters");
         }
 
         final AggregationOperation operation = parameters.getOperations().get(0);
@@ -32,9 +31,14 @@ public class AggregatorFactory {
             return new Count(groupBy, operation.getColumnId());
         case AVERAGE:
             return new Average(groupBy, operation.getColumnId());
+        case MIN:
+            return new Min(groupBy, operation.getColumnId());
+        case MAX:
+            return new Max(groupBy, operation.getColumnId());
+        case SUM:
+            return new Sum(groupBy, operation.getColumnId());
         default:
-            return (k, o) -> {
-            };
+            throw new IllegalArgumentException("Operation '" + operation.getOperator() + "' not supported");
         }
     }
 }

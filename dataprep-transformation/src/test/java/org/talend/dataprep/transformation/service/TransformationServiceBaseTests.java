@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api;
+package org.talend.dataprep.transformation.service;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;

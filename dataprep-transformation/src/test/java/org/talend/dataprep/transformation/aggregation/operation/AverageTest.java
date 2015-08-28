@@ -2,13 +2,7 @@ package org.talend.dataprep.transformation.aggregation.operation;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Test;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.aggregation.api.AggregationOperation;
-import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
 import org.talend.dataprep.transformation.aggregation.api.AggregationResult;
 import org.talend.dataprep.transformation.aggregation.api.Operator;
 
@@ -17,24 +11,13 @@ import org.talend.dataprep.transformation.aggregation.api.Operator;
  * 
  * @see Average
  */
-public class AverageTest {
-
-    /** The aggregator to test. */
-    private Average aggregator;
+public class AverageTest extends OperationBaseTest {
 
     /**
      * Init the unit test.
      */
     public AverageTest() {
-        AggregationParameters parameters = new AggregationParameters();
-        AggregationOperation operation = new AggregationOperation();
-        operation.setColumnId("0001");
-        operation.setOperator(Operator.AVERAGE);
-        parameters.addOperation(operation);
-        parameters.addGroupBy("0000");
-
-        AggregatorFactory factory = new AggregatorFactory();
-        aggregator = (Average) factory.get(parameters);
+        super(Operator.AVERAGE);
     }
 
     @Test
@@ -59,11 +42,5 @@ public class AverageTest {
 
     }
 
-    private DataSetRow getRow(String groupBy, String value) {
-        Map<String, String> values = new HashMap<>();
-        values.put("0000", groupBy);
-        values.put("0001", value);
-        return new DataSetRow(values);
-    }
 
 }
