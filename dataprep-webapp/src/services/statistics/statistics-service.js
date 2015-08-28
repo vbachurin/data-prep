@@ -146,12 +146,45 @@
                 return filter.colId === column.id && filter.type === 'inside_range';
             });
 
-            service.rangeLimits = {
-                min : column.statistics.min,
-                max : column.statistics.max,
-                minBrush : currentRangeFilter ? currentRangeFilter.args.interval[0] : undefined,
-                maxBrush : currentRangeFilter ? currentRangeFilter.args.interval[1] : undefined
-            };
+            if(currentRangeFilter){
+                if(currentRangeFilter.args.interval[0] < column.statistics.min){
+                    service.rangeLimits = {
+                        min : column.statistics.min,
+                        max : column.statistics.max,
+                        minBrush : column.statistics.min,
+                        maxBrush : column.statistics.min,
+                        minFilterVal : currentRangeFilter.args.interval[0],
+                        maxFilterVal : currentRangeFilter.args.interval[1]
+                    };
+                }
+                else if(currentRangeFilter.args.interval[1] > column.statistics.max){
+                    service.rangeLimits = {
+                        min : column.statistics.min,
+                        max : column.statistics.max,
+                        minBrush : column.statistics.max,
+                        maxBrush : column.statistics.max,
+                        minFilterVal : currentRangeFilter.args.interval[0],
+                        maxFilterVal : currentRangeFilter.args.interval[1]
+                    };
+                }
+                else {
+                    service.rangeLimits = {
+                        min : column.statistics.min,
+                        max : column.statistics.max,
+                        minBrush : currentRangeFilter.args.interval[0],
+                        maxBrush : currentRangeFilter.args.interval[1]
+                    };
+                }
+            }
+            else {
+                service.rangeLimits = {
+                    min : column.statistics.min,
+                    max : column.statistics.max,
+                    minBrush : undefined,
+                    maxBrush : undefined
+                };
+            }
+
         }
 
         /**
@@ -299,6 +332,10 @@
 
             service.rangeLimits.minBrush = interval[0];
             service.rangeLimits.maxBrush = interval[1];
+            //empty the minFilterVal and the maxFilterVal because otherwise it will show them once we get back to the VIZ tab
+            service.rangeLimits.minFilterVal = undefined;
+            service.rangeLimits.maxFilterVal = undefined;
+
             var column = service.selectedColumn;
             var filterFn = FilterService.addFilter.bind(null, 'inside_range', column.id, column.name, {interval: interval}, removeFilterFn);
             $timeout(filterFn);

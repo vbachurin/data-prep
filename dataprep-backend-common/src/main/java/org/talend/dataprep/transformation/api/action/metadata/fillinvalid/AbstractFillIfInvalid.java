@@ -25,6 +25,8 @@ public abstract class AbstractFillIfInvalid extends AbstractActionMetadata imple
         final String value = row.get(columnId);
         final ColumnMetadata colMetadata = row.getRowMetadata().getById(columnId);
         final Set<String> invalidValues = colMetadata.getQuality().getInvalidValues();
+        // olamy do we really consider null as a valid value?
+        // note we don't for Date see @FillWithDateIfInvalid
         if (value == null) {
             return;
         }

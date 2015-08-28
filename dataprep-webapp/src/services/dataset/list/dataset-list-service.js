@@ -14,16 +14,20 @@
         var deferredCancel;
         var datasetsPromise;
 
-        var self = this;
+        var service = {
+            refreshDatasets : refreshDatasets,
+            create : create,
+            importRemoteDataset : importRemoteDataset,
+            update : update,
+            processCertification : processCertification,
+            delete : deleteDataset,
+            refreshDefaultPreparation : refreshDefaultPreparation,
+            getDatasetsPromise : getDatasetsPromise,
+            hasDatasetsPromise: hasDatasetsPromise,
+            datasets: null
+        };
 
-        /**
-         * @ngdoc property
-         * @name datasets
-         * @propertyOf data-prep.services.dataset.service:DatasetListService
-         * @description the dataset list
-         */
-        this.datasets = null;
-
+        return service;
 
         /**
          * @ngdoc method
@@ -45,7 +49,7 @@
          * @description Refresh datasets list
          * @returns {promise} The pending GET promise
          */
-        var refreshDatasets = function refreshDatasets() {
+        function refreshDatasets() {
             cancelPendingGetRequest();
             var sort = DatasetListSortService.getSort();
             var order = DatasetListSortService.getOrder();
@@ -53,12 +57,11 @@
             deferredCancel = $q.defer();
             datasetsPromise = DatasetRestService.getDatasets(sort, order, deferredCancel)
                 .then(function(res) {
-                    self.datasets = res.data;
-                    datasetsPromise = null;
-                    return self.datasets;
+                    service.datasets = res.data;
+                    return service.datasets;
                 });
             return datasetsPromise;
-        };
+        }
 
         /**
          * @ngdoc method
@@ -68,7 +71,7 @@
          * @description Create a dataset from backend and refresh its internal list
          * @returns {promise} The pending POST promise
          */
-        var create = function create(dataset) {
+        function create(dataset) {
             var promise = DatasetRestService.create(dataset);
 
             //The appended promise is not returned because DatasetRestService.create return a $upload object with progress function
@@ -78,7 +81,7 @@
             });
 
             return promise;
-        };
+        }
 
         /**
          * @ngdoc method
@@ -88,7 +91,7 @@
          * @description Import a remote dataset from backend and refresh its internal list
          * @returns {promise} The pending POST promise
          */
-        var importRemoteDataset = function importRemoteDataset(parameters) {
+        function importRemoteDataset(parameters) {
             var promise = DatasetRestService.import(parameters);
 
             //The appended promise is not returned because DatasetRestService.import return a $upload object with progress function
@@ -98,7 +101,7 @@
             });
 
             return promise;
-        };
+        }
 
         /**
          * @ngdoc method
@@ -107,7 +110,7 @@
          * @param {object} dataset The dataset to delete         * @description Update a dataset from backend and refresh its internal list
          * @returns {promise} The pending POST promise
          */
-        var update = function update(dataset) {
+        function update(dataset) {
             var promise = DatasetRestService.update(dataset);
 
             //The appended promise is not returned because DatasetRestService.import return a $upload object with progress function
@@ -117,7 +120,7 @@
             });
 
             return promise;
-        };
+        }
 
         /**
          * @ngdoc method
@@ -127,12 +130,12 @@
          * @description Ask certification for a dataset and refresh its internal list
          * @returns {promise} The pending PUT promise
          */
-        var processCertification = function processCertification(dataset) {
+        function processCertification(dataset) {
             return DatasetRestService.processCertification(dataset.id)
                 .then(function (){
                     refreshDatasets();
                 });
-        };
+        }
 
         /**
          * @ngdoc method
@@ -142,13 +145,13 @@
          * @description Delete a dataset from backend and from its internal list
          * @returns {promise} The pending DELETE promise
          */
-        var deleteDataset = function deleteDataset(dataset) {
+        function deleteDataset(dataset) {
             return DatasetRestService.delete(dataset)
                 .then(function() {
-                    var index = self.datasets.indexOf(dataset);
-                    self.datasets.splice(index, 1);
+                    var index = service.datasets.indexOf(dataset);
+                    service.datasets.splice(index, 1);
                 });
-        };
+        }
 
         /**
          * @ngdoc method
@@ -158,46 +161,46 @@
          * @description [PRIVATE] Set the default preparation to each dataset
          * @returns {promise} The process promise
          */
-        var refreshDefaultPreparation = function refreshDefaultPreparation(preparations) {
+        function refreshDefaultPreparation(preparations) {
             return getDatasetsPromise()
                 .then(function(datasets) {
-                    // group preparation per dataset
-                    var datasetPreps = _.groupBy(preparations, function(preparation){
-                        return preparation.dataSetId;
-                    });
+                        // group preparation per dataset
+                        var datasetPreps = _.groupBy(preparations, function(preparation){
+                            return preparation.dataSetId;
+                        });
 
-                    // reset default preparation for all datasets
-                    _.forEach(datasets, function(dataset){
-                        var preparations = datasetPreps[dataset.id];
-                        dataset.defaultPreparation = preparations && preparations.length === 1 ?  preparations[0] : null;
-                    });
+                        // reset default preparation for all datasets
+                        _.forEach(datasets, function(dataset){
+                            var preparations = datasetPreps[dataset.id];
+                            dataset.defaultPreparation = preparations && preparations.length === 1 ?  preparations[0] : null;
+                        });
 
-                    return datasets;
+                        return datasets;
                 });
-        };
+        }
 
         /**
          * @ngdoc method
          * @name getDatasetsPromise
          * @methodOf data-prep.services.dataset.service:DatasetListService
-         * @description [PRIVATE] Return a promise that resolves the datasets list
-         * @returns {promise} The pending GET or resolved promise
+         * @description Return resolved or unresolved promise that returns the most updated datasetsList
+         * @returns {promise} Promise that resolves datasetsList
          */
-        var getDatasetsPromise = function getDatasetsPromise() {
-            if(datasetsPromise) {
-                return datasetsPromise;
-            }
-            return self.datasets === null ? refreshDatasets() : $q.when(self.datasets);
-        };
+        function getDatasetsPromise() {
+            return datasetsPromise ? datasetsPromise : refreshDatasets();
+        }
 
-        this.refreshDatasets = refreshDatasets;
-        this.create = create;
-        this.importRemoteDataset = importRemoteDataset;
-        this.update = update;
-        this.processCertification = processCertification;
-        this.delete = deleteDataset;
-        this.refreshDefaultPreparation = refreshDefaultPreparation;
-        this.getDatasetsPromise = getDatasetsPromise;
+        /**
+         * @ngdoc method
+         * @name hasDatasetsPromise
+         * @methodOf data-prep.services.dataset.service:DatasetListService
+         * @description Check if datasetsPromise is true or not
+         * @returns {promise} datasetsPromise
+         */
+        function hasDatasetsPromise() {
+            return datasetsPromise;
+        }
+
     }
 
     angular.module('data-prep.services.dataset')

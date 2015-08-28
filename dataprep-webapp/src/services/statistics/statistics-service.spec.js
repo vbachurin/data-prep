@@ -885,6 +885,83 @@ describe('Statistics service', function () {
                 maxBrush :10
             });
         }));
+
+        it('should update the brush limits to the minimum', inject(function (StatisticsService, FilterService) {
+            //given
+            var col = {
+                'id': '0001',
+                type: 'integer',
+                domain: 'city name',
+                statistics: {
+                    count: 4,
+                    distinctCount: 5,
+                    duplicateCount: 6,
+                    empty: 7,
+                    invalid: 8,
+                    valid: 9,
+                    min: 0,
+                    max: 11,
+                    mean: 12,
+                    variance: 13,
+                    quantiles: {
+                        lowerQuantile: 'NaN'
+                    }
+                }
+            };
+            // -5 < 0(minimum)
+            FilterService.filters = [{colId:'0001', type:'inside_range', args:{interval:[-5,10]}}];
+
+            //when
+            StatisticsService.processData(col);
+
+            //then
+            expect(StatisticsService.rangeLimits).toEqual({
+                min : 0,
+                max : 11,
+                minBrush :0,
+                maxBrush :0,
+                minFilterVal: -5,
+                maxFilterVal: 10
+            });
+        }));
+
+        it('should update the brush limits to the maximum', inject(function (StatisticsService, FilterService) {
+            //given
+            var col = {
+                'id': '0001',
+                type: 'integer',
+                domain: 'city name',
+                statistics: {
+                    count: 4,
+                    distinctCount: 5,
+                    duplicateCount: 6,
+                    empty: 7,
+                    invalid: 8,
+                    valid: 9,
+                    min: 0,
+                    max: 11,
+                    mean: 12,
+                    variance: 13,
+                    quantiles: {
+                        lowerQuantile: 'NaN'
+                    }
+                }
+            };
+            FilterService.filters = [{colId:'0001', type:'inside_range', args:{interval:[5,30]}}];
+
+            //when
+            StatisticsService.processData(col);
+
+            //then
+            expect(StatisticsService.rangeLimits).toEqual({
+                min : 0,
+                max : 11,
+                minBrush :11,
+                maxBrush :11,
+                minFilterVal: 5,
+                maxFilterVal: 30
+            });
+        }));
     });
 
     describe('utils', function() {
