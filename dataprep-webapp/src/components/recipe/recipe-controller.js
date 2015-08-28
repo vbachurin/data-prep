@@ -75,7 +75,7 @@
          * @description Show a popup to confirm the removal and remove it when user confirm
          */
         vm.remove = function remove(step) {
-            TalendConfirmService.confirm({disableEnter: true}, ['DELETE_STEP'])
+            TalendConfirmService.confirm({disableEnter: true}, ['DELETE_STEP_CASCADE_MODE'])
                 .then(function() {
                     PlaygroundService.removeStep(step, 'cascade');
                 });

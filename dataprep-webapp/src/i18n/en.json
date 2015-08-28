@@ -26,7 +26,6 @@
   "SORT_ORDER": "order",
   "UPLOAD_ERROR": "Upload error",
 
-
   "_comment": "Preparations",
   "LAST_MODIFICATION": "last change",
   "OWNED_BY": "owned by",
@@ -59,7 +58,6 @@
   "ENTER_DATASET_URL": "Enter the dataset url",
   "IMPORT_HDFS_DATASET": "Import HDFS DataSet",
 
-
   "_comment": "Common",
   "LOADING": "Loading",
   "PROCESSING": "Processing",
@@ -68,7 +66,9 @@
   "DELETE_PERMANENTLY": "You are going to permanently delete the {{type}} \"{{name}}\".",
   "ENTER_DATASET_NAME": "Enter the dataset name",
   "NO_UNDONE_CONFIRM": "This operation cannot be undone. Are you sure ?",
+  "DELETE_STEP_CASCADE_MODE": "You are going to remove all actions from the selected one to the end. Are you sure ?",
   "UPDATE_EXISTING_DATASET": "Do you want to update existing \"{{dataset}}\" dataset ?",
+
   "_comment": "import remote dataset",
   "ENTER_HTTP_DATASET_URL": "Enter the HTTP dataset url",
 

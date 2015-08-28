@@ -9,11 +9,11 @@
 
             <i data-icon="e" ng-click="recipeCtrl.remove(step)"></i>
             {{$index + 1}}.
-            <span class="recipe-description">{{step.transformation.label}}</span>
+            <span class="recipe-description">{{::step.transformation.label}}</span>
 
             <span ng-switch-when="column">
                 {{::'RECIPE_ITEM_ON_COL' | translate}}
-                <span class="recipe-description recipe-column-name">{{step.column.name}}</span>
+                <span class="recipe-description recipe-column-name">{{::step.column.name}}</span>
             </span>
             <span ng-switch-when="cell">
                 {{::'RECIPE_ITEM_ON_CELL' | translate}}
@@ -22,19 +22,19 @@
             <recipe-bullet class="step-trigger" step="step" ></recipe-bullet>
         </div>
 
-        <div class="content" ng-if="recipeCtrl.hasParameters(step)">
-            <transform-params ng-if="recipeCtrl.hasStaticParams(step)"
+        <div class="content" ng-if="::recipeCtrl.hasParameters(step)">
+            <transform-params ng-if="::recipeCtrl.hasStaticParams(step)"
                               transformation="step.transformation"
                               on-submit="recipeCtrl.stepUpdateClosure(step)(params)"
                               on-submit-hover-on="recipeCtrl.previewUpdateClosure(step)(params)"
                               on-submit-hover-off="recipeCtrl.cancelPreview()"></transform-params>
 
-            <talend-modal ng-if="recipeCtrl.hasDynamicParams(step)"
+            <talend-modal ng-if="::recipeCtrl.hasDynamicParams(step)"
                           fullscreen="false"
                           state="recipeCtrl.showModal[$index]"
                           close-button="true">
-                <div class="modal-title">{{ step.transformation.label }}</div>
-                <div class="modal-subtitle">{{ step.transformation.description }}</div>
+                <div class="modal-title">{{ ::step.transformation.label }}</div>
+                <div class="modal-subtitle">{{ ::step.transformation.description }}</div>
 
                 <transform-params transformation="step.transformation"
                                   on-submit="recipeCtrl.stepUpdateClosure(step)(params)"></transform-params>
