@@ -7,7 +7,7 @@
      * @description Tabs directive. This is paired with tabs item directive.
      * @restrict E
      * @usage
-     <talend-tabs>
+     <talend-tabs tab="selectedTab">
         <talend-tabs-item tab-title="tab 1 title">
             Content tab 1
         </talend-tabs-item>
@@ -20,6 +20,7 @@
      </talend-tabs>
      * @param {string} title The tab title to display
      * @param {boolean} default The default tab to select
+     * @param {string} selectedTab The tab title to be updated
      */
     function TalendTabs() {
         return {
