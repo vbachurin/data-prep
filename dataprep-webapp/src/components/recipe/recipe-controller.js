@@ -9,8 +9,9 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.playground.service:PreviewService
      * @requires data-prep.services.preparation.service:PreparationService
+     * @requires talend.widget.service:TalendConfirmService
      */
-    function RecipeCtrl(RecipeService, PlaygroundService, PreparationService, PreviewService) {
+    function RecipeCtrl(RecipeService, PlaygroundService, PreparationService, PreviewService, TalendConfirmService) {
         var vm = this;
         vm.recipeService = RecipeService;
 
@@ -25,7 +26,7 @@
         vm.resetParams = RecipeService.resetParams;
 
         //---------------------------------------------------------------------------------------------
-        //------------------------------------------Params update--------------------------------------
+        //------------------------------------------UPDATE STEP----------------------------------------
         //---------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
@@ -35,7 +36,7 @@
          * @description Create a closure function that call the step update with the provided step id
          * @returns {Function} The function closure binded with the provided step id
          */
-        vm.stepUpdateClosure = function(step) {
+        vm.stepUpdateClosure = function stepUpdateClosure(step) {
             return function(newParams) {
                 vm.updateStep(step, newParams);
             };
@@ -49,7 +50,7 @@
          * @param {object} newParams the new step parameters
          * @description Update a step parameters in the loaded preparation
          */
-        vm.updateStep = function(step, newParams) {
+        vm.updateStep = function updateStep(step, newParams) {
             PreviewService.cancelPreview();
             PreparationService.copyImplicitParameters(newParams, step.actionParameters.parameters);
 
@@ -64,6 +65,60 @@
         };
 
         //---------------------------------------------------------------------------------------------
+        //------------------------------------------DELETE STEP----------------------------------------
+        //---------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name remove
+         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @param {object} step The step to remove
+         * @description Show a popup to confirm the removal and remove it when user confirm
+         */
+        vm.remove = function remove(step) {
+            TalendConfirmService.confirm({disableEnter: true}, ['DELETE_STEP'])
+                .then(function() {
+                    PlaygroundService.removeStep(step, 'cascade');
+                });
+        };
+
+        //---------------------------------------------------------------------------------------------
+        //------------------------------------------PARAMETERS-----------------------------------------
+        //---------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name hasParameters
+         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @param {object} step The step to test
+         * @description Return if the step has parameters
+         */
+        vm.hasParameters = function hasParameters(step) {
+            return vm.hasStaticParams(step) || vm.hasDynamicParams(step);
+        };
+
+        /**
+         * @ngdoc method
+         * @name hasStaticParams
+         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @param {object} step The step to test
+         * @description Return if the step has static parameters
+         */
+        vm.hasStaticParams = function hasStaticParams(step) {
+            return (step.transformation.parameters && step.transformation.parameters.length) ||
+                (step.transformation.items && step.transformation.items.length);
+        };
+
+        /**
+         * @ngdoc method
+         * @name hasDynamicParams
+         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @param {object} step The step to test
+         * @description Return if the step has dynamic parameters
+         */
+        vm.hasDynamicParams = function hasDynamicParams(step) {
+            return step.transformation.cluster;
+        };
+
+        //---------------------------------------------------------------------------------------------
         //---------------------------------------------Preview-----------------------------------------
         //---------------------------------------------------------------------------------------------
 
@@ -75,7 +130,7 @@
          * @param {object} params The new step params
          * @description [PRIVATE] Call the preview service to display the diff between the original steps and the updated steps
          */
-        var updatePreview = function(updateStep, params) {
+        var updatePreview = function updatePreview(updateStep, params) {
             var originalParameters = updateStep.actionParameters.parameters;
             PreparationService.copyImplicitParameters(params, originalParameters);
 
@@ -95,7 +150,7 @@
          * @param {object} step The step to update
          * @description [PRIVATE] Create a closure with a target step that call the update preview on execution
          */
-        vm.previewUpdateClosure = function(step) {
+        vm.previewUpdateClosure = function previewUpdateClosure(step) {
             return function(params) {
                 updatePreview(step, params);
             };

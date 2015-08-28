@@ -562,27 +562,6 @@ public class DataPreparationAPITest {
         applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
 
         List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
-        final String firstStep = steps.get(1);
-
-        // when : delete (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") cascading upper_case_firstname
-        given().delete("/api/preparations/{preparation}/actions/{action}", preparationId, firstStep)
-               .then()
-               .statusCode(is(200));
-
-        // then : Steps id should have changed due to update
-        steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
-        assertThat(steps.size(), is(1));
-        assertThat(steps.get(0), is(ROOT_STEP.id()));
-    }
-
-    @Test
-    public void testPreparationDeleteAction() throws Exception {
-        // given
-        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
-        applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
-        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
-
-        List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(3));
         assertThat(steps.get(0), is(ROOT_STEP.id()));
         assertThat(steps.get(1), is("c713d4988879e2aaab916853b45e4ddf9debe303")); // <- transformation/upper_case_lastname
@@ -600,6 +579,49 @@ public class DataPreparationAPITest {
         assertThat(steps.get(0), is(ROOT_STEP.id()));
         assertThat(steps.get(1), is("cd3cefd02aa2eec8755bd6fdd77934a6ae958414"));
         assertThat(steps.get(2), is("1e76900b00817d10f81084b71dc97d023085a49b"));
+    }
+
+    @Test
+    public void testPreparationDeleteActionInCascadeMode() throws Exception {
+        // given
+        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+        applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
+        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
+
+        List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        final String firstStep = steps.get(1);
+
+        // when : delete (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") cascading upper_case_firstname
+        given().delete("/api/preparations/{preparation}/actions/{action}", preparationId, firstStep)
+                .then()
+                .statusCode(is(200));
+
+        // then : Steps id should have changed due to update
+        steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        assertThat(steps.size(), is(1));
+        assertThat(steps.get(0), is(ROOT_STEP.id()));
+    }
+
+    @Test
+    public void testPreparationDeleteActionInSingleMode() throws Exception {
+        // given
+        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+        applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
+        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
+
+        List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        final String firstStep = steps.get(1);
+
+        // when : delete (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") only, it will rewrite upper_case_firstname id
+        given().delete("/api/preparations/{preparation}/actions/{action}?single=true", preparationId, firstStep)
+                .then()
+                .statusCode(is(200));
+
+        // then : Steps id should have changed due to update
+        steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        assertThat(steps.size(), is(2));
+        assertThat(steps.get(0), is(ROOT_STEP.id()));
+        assertThat(steps.get(1), is("3c7b40baca3680c22f8bd7142c95697f7424e37f"));
     }
 
     @Test

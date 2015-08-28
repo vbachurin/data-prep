@@ -85,6 +85,7 @@
             createOrUpdatePreparation: createOrUpdatePreparation,
             appendStep: appendStep,
             updateStep: updateStep,
+            removeStep: removeStep,
             editCell: editCell
         };
         return service;
@@ -329,17 +330,17 @@
          * @name appendStep
          * @methodOf data-prep.services.playground.service:PlaygroundService
          * @param {string} action The action name
-         * @param {object} params The transformation params
+         * @param {object} parameters The transformation parameters
          * @description Call an execution of a transformation on the column in the current preparation and add an entry
          * in actions history
          */
-        function appendStep(action, params) {
-            var append = executeAppendStep.bind(service, service.currentMetadata, action, params);
+        function appendStep(action, parameters) {
+            var append = executeAppendStep.bind(service, service.currentMetadata, {action: action, parameters: parameters});
 
             return append().then(function() {
                 var lastStepId = RecipeService.getLastStep().transformation.stepId;
                 /*jshint camelcase: false */
-                var cancelAppend = executeRemoveStep.bind(service, lastStepId, params.column_id);
+                var cancelAppend = executeRemoveStep.bind(service, lastStepId, false, parameters.column_id);
                 HistoryService.addAction(cancelAppend, append);
             });
         }
@@ -349,17 +350,18 @@
          * @name executeAppendStep
          * @methodOf data-prep.services.playground.service:PlaygroundService
          * @param {object} metadata The dataset metadata
-         * @param {string} action The action name
-         * @param {object} params The transformation params
+         * @param {object | array} actionParams The transformation(s) configuration {action: string, parameters: {object}}
+         * @param {string} insertionStepId The insertion point step id. (Head = 'head' | falsy | head_step_id)
          * @description Perform a transformation on the column in the current preparation, refresh the recipe and the
          * data. If there is no preparation yet, PreparationService create it.
          */
-        function executeAppendStep(metadata, action, params) {
+        function executeAppendStep(metadata, actionParams, insertionStepId) {
             $rootScope.$emit('talend.loading.start');
-            return PreparationService.appendStep(metadata, action, params)
+            return PreparationService.appendStep(metadata, actionParams, insertionStepId)
                 .then(function(){
                     /*jshint camelcase: false */
-                    return $q.all([updateRecipe(), updateDatagrid(params.column_id)]);
+                    var columnToFocus = actionParams instanceof Array ? null : actionParams.parameters.column_id;
+                    return $q.all([updateRecipe(), updateDatagrid(columnToFocus)]);
                 })
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');
@@ -413,16 +415,53 @@
 
         /**
          * @ngdoc method
+         * @name removeStep
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {object} step The step to delete
+         * @param {string} mode The delete mode (single|cascade)
+         * @description Call an execution of a transformation on the column in the current preparation and add an entry
+         * in actions history
+         */
+        function removeStep(step, mode) {
+            mode = mode || 'cascade';
+            var metadata = service.currentMetadata;
+            var cancelRemove;
+            switch(mode) {
+                case 'single' :
+                    var insertionStepId = RecipeService.getPreviousStep(step).transformation.stepId;
+                    var actionParams = step.actionParameters;
+                    cancelRemove = executeAppendStep.bind(service, metadata, actionParams, insertionStepId);
+                    break;
+                case 'cascade':
+                    var actionParamsList = RecipeService.getAllActionsFrom(step);
+                    cancelRemove = executeAppendStep.bind(service, metadata, actionParamsList);
+                    break;
+            }
+
+            var remove = executeRemoveStep.bind(service, step.transformation.stepId, mode === 'single');
+
+            return remove().then(function() {
+                HistoryService.addAction(cancelRemove, remove);
+            });
+        }
+
+        /**
+         * @ngdoc method
          * @name executeRemoveStep
          * @methodOf data-prep.services.playground.service:PlaygroundService
          * @param {string} stepId The step id to remove
+         * @param {boolean} singleMode Delete only the target step if true, all steps from target otherwise
          * @param {string} focusColumnId The column id to focus on
          * @description Perform a transformation removal identified by the step id
          */
-        function executeRemoveStep(stepId, focusColumnId) {
-            return PreparationService.removeStep(stepId)
+        function executeRemoveStep(stepId, singleMode, focusColumnId) {
+            $rootScope.$emit('talend.loading.start');
+            return PreparationService.removeStep(stepId, singleMode)
                 .then(function() {
                     return $q.all([updateRecipe(), updateDatagrid(focusColumnId)]);
+                })
+                .finally(function () {
+                    $rootScope.$emit('talend.loading.stop');
                 });
         }
 

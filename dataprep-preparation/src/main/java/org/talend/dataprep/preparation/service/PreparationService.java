@@ -11,9 +11,7 @@ import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,18 +32,10 @@ import org.talend.dataprep.preparation.api.AppendStep;
 import org.talend.dataprep.preparation.exception.PreparationErrorCodes;
 import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
-import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.*;
+import java.util.stream.Collectors;
 
 @RestController
 @Api(value = "preparations", basePath = "/preparations", description = "Operations on preparations")
@@ -144,103 +134,154 @@ public class PreparationService {
         return PreparationUtils.listSteps(step, preparationRepository);
     }
 
+    /**
+     * Append step(s) in a preparation. There is 2 modes : insert after head or insert after a specific step.<br/><br/>
+     * <b>After head Strategy</b><br/>
+     * Just append the new actions after the current preparation head. One step is created by action.
+     *
+     * <br/><br/>
+     *
+     * <b>After a non head step Strategy</b><br/>
+     * The goal here is to rewrite the preparation history from the insertion step to the head, with the appended actions.
+     * <ul>
+     *     <li>1. Extract the actions from insertion step (excluded) to the head</li>
+     *     <li>2. Insert the new actions before the other extracted actions</li>
+     *     <li>3. Set preparation head to insertion step</li>
+     *     <li>4. Append each action (one step is created by action) after the new preparation head</li>
+     * </ul>
+     */
     @RequestMapping(value = "/preparations/{id}/actions", method = POST, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Adds an action to a preparation", notes = "Append an action at end of the preparation with given id.")
     @Timed
-    public void append(@PathVariable("id") final String id, //
-                       @RequestBody final AppendStep step) {
-        checkActionStepConsistency(step);
+    public void appendSteps(@PathVariable("id") final String id, //
+                       @RequestBody final AppendStep stepsToAppend) {
+        checkActionStepConsistency(stepsToAppend);
 
-        LOGGER.debug("Adding actions to preparation #{}", id);
+        final String insertionStepId = stepsToAppend.getInsertionStepId();
+        LOGGER.debug("Adding actions to preparation #{} after step #{}", id, (insertionStepId == null ? "head" : insertionStepId));
+
         final Preparation preparation = getPreparation(id);
+        LOGGER.debug("Current head for preparation #{}: {}", id, preparation.getStep());
 
-        final Step head = preparation.getStep();
-        LOGGER.debug("Current head for preparation #{}: {}", id, head);
+        List<AppendStep> actionsSteps;
 
-        // Add new actions
-        final PreparationActions headContent = preparationRepository.get(head.getContent(), PreparationActions.class);
-        final PreparationActions newContent = headContent.append(step.getActions());
-        preparationRepository.add(newContent);
+        //try to insert step after a specific one (insertionStepId)
+        if(! isPreparationHead(preparation, insertionStepId)) {
+            //get steps from insertion point to head
+            final List<String> steps = extractSteps(preparation, insertionStepId); // throws an exception if stepId is not in the preparation
+            LOGGER.debug("Rewriting history for {} steps.", steps.size());
 
-        // Create new step from new content
-        final Step newStep = new Step(head.id(), newContent.id());
-        preparationRepository.add(newStep);
+            // before : ... - (insertion point) - (step after insertion point) - ...
+            // extract actions AFTER insertion point and add the steps to append before
+            // after : ... - (insertion point) - (steps to append) - (step after insertion point) - ...
+            actionsSteps = extractActionsAfterStep(steps, insertionStepId);
+            actionsSteps.add(0, stepsToAppend);
+        }
+        //insert after current head
+        else {
+            actionsSteps = new ArrayList<>(1);
+            actionsSteps.add(stepsToAppend);
+        }
 
-        // Update preparation head step
-        setPreparationHead(preparation, newStep);
-        LOGGER.debug("Added head to preparation #{}: head is now {}", id, newStep.id());
+        //rebuild history from insertion point (or head)
+        replaceHistory(preparation, insertionStepId, actionsSteps);
+        LOGGER.debug("Added head to preparation #{}: head is now {}", id, preparation.getStep().id());
     }
 
-    @RequestMapping(value = "/preparations/{id}/actions/{action}", method = PUT, consumes = APPLICATION_JSON_VALUE)
+    /**
+     * Update a step in a preparation
+     * <b>Strategy</b><br/>
+     * The goal here is to rewrite the preparation history from 'the step to modify' (STM) to the head, with STM containing the new action.<br/>
+     * <ul>
+     *     <li>1. Extract the actions from STM (excluded) to the head</li>
+     *     <li>2. Insert the new actions before the other extracted actions. The actions list contains all the actions from the <b>NEW</b> STM to the head</li>
+     *     <li>3. Set preparation head to STM's parent, so STM will be excluded</li>
+     *     <li>4. Append each action (one step is created by action) after the new preparation head</li>
+     * </ul>
+     */
+    @RequestMapping(value = "/preparations/{id}/actions/{stepId}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Updates an action in a preparation", notes = "Modifies an action in preparation's steps.")
     @Timed
     public void updateAction(@PathVariable("id") final String id, //
-                             @PathVariable("action") final String action, //
-                             @RequestBody final AppendStep step) {
-        checkActionStepConsistency(step);
+                             @PathVariable("stepId") final String stepToModifyId, //
+                             @RequestBody final AppendStep newStep) {
+        checkActionStepConsistency(newStep);
 
         LOGGER.debug("Modifying actions in preparation #{}", id);
         final Preparation preparation = getPreparation(id);
+        LOGGER.debug("Current head for preparation #{}: {}", id, preparation.getStep());
 
-        // Get steps from modified to the head
-        final Step head = preparation.getStep();
-        LOGGER.debug("Current head for preparation #{}: {}", id, head);
-        final List<String> steps = PreparationUtils.listSteps(head, action, preparationRepository);
+        // Get steps from "step to modify" to the head
+        final List<String> steps = extractSteps(preparation, stepToModifyId); // throws an exception if stepId is not in the preparation
         LOGGER.debug("Rewriting history for {} steps.", steps.size());
 
         // Build list of actions from modified one to the head
-        List<AppendStep> appends = new ArrayList<>(steps.size());
-        appends.add(step);
-        for (int i = 1; i < steps.size(); ++i) {
-            final List<Action> previous = getActions(steps.get(i - 1));
-            final List<Action> current = getActions(steps.get(i));
-            final AppendStep appendStep = new AppendStep();
-            appendStep.setActions(current.subList(previous.size(), current.size()));
-            appends.add(appendStep);
-        }
+        final List<AppendStep> actionsSteps = extractActionsAfterStep(steps, stepToModifyId);
+        actionsSteps.add(0, newStep);
 
-        // Rebuild history from modified step : needed because the ids will be regenerated at each step
-        final Step modifiedStep = preparationRepository.get(steps.get(0), Step.class);
-        final Step previousStep = preparationRepository.get(modifiedStep.getParent(), Step.class);
-        setPreparationHead(preparation, previousStep);
-        for (AppendStep append : appends) {
-            append(preparation.getId(), append);
-        }
-        final Step newHead = preparationRepository.get(id, Preparation.class).getStep();
-        LOGGER.debug("Modified head of preparation #{}: head is now {}", newHead.getId());
-
-        //TODO JSO : what to do with the old steps that are deleted but still in repository ?
+        // Rebuild history from modified step
+        final Step stepToModify = preparationRepository.get(stepToModifyId, Step.class);
+        replaceHistory(preparation, stepToModify.getParent(), actionsSteps);
+        LOGGER.debug("Modified head of preparation #{}: head is now {}", preparation.getStep().getId());
     }
 
-    @RequestMapping(value = "/preparations/{id}/actions/{action}", method = DELETE)
+    /**
+     * Delete a step in a preparation. 2 modes : single or cascade.<br/>
+     * STD : Step To Delete
+     * <br/><br/>
+     *
+     * <b>Cascade Strategy</b><br/>
+     * This mode is easy, we just replace the preparation head to STD's parent.
+     *
+     * <b>Single Strategy</b><br/>
+     * The goal here is to rewrite the preparation history from 'the step to delete' (STD) to the head, STD excluded<br/>
+     * <ul>
+     *     <li>1. Extract the actions from STD (excluded) to the head. The actions list contains all the actions from the STD's child to the head.</li>
+     *     <li>2. Set preparation head to STD's parent, so STD will be excluded</li>
+     *     <li>3. Append each action (one step is created by action) after the new preparation head</li>
+     * </ul>
+     */
+    @RequestMapping(value = "/preparations/{id}/actions/{stepId}", method = DELETE)
     @ApiOperation(value = "Delete an action in a preparation", notes = "Delete a step and all following steps from a preparation")
     @Timed
     public void deleteAction(@PathVariable("id") final String id, //
-                             @PathVariable("action") final String action) throws TDPException {
-        if (ROOT_STEP.getId().equals(action)) {
-            throw new TDPException(PREPARATION_ROOT_STEP_CANNOT_BE_CHANGED);
+                             @PathVariable("stepId") final String stepToDeleteId,
+                             @RequestParam(value = "single", defaultValue = "false") final boolean single) throws TDPException {
+        if (ROOT_STEP.getId().equals(stepToDeleteId)) {
+            throw new TDPException(PREPARATION_ROOT_STEP_CANNOT_BE_DELETED);
         }
 
-        LOGGER.debug("Deleting actions in preparation #{}", id);
+        // get steps from 'step to delete' to head
         final Preparation preparation = getPreparation(id);
+        final List<String> steps = extractSteps(preparation, stepToDeleteId); // throws an exception if stepId is not in the preparation
 
-        // Get all steps
-        final Step head = preparation.getStep();
-        LOGGER.debug("Current head for preparation #{}: {}", id, head);
-        final List<String> steps = PreparationUtils.listSteps(head, ROOT_STEP.getId(), preparationRepository);
-        if (!steps.contains(action)) {
-            throw new TDPException(PREPARATION_STEP_DOES_NOT_EXIST,
-                    TDPExceptionContext.build()
-                            .put("id", id)
-                            .put("stepId", action));
+        LOGGER.debug("Deleting actions in preparation #{} at step #{} with single mode '{}'", id, stepToDeleteId, single);
+
+        // single mode : delete a single step
+        if(single) {
+            final List<AppendStep> actions = extractActionsAfterStep(steps, stepToDeleteId);
+
+            // check that no step after StepId uses the same column
+            final List<Action> stepToDeleteActions = getActions(stepToDeleteId);
+            final String stepToDeleteColumnId = stepToDeleteActions.get(stepToDeleteActions.size() - 1).getParameters().get("column_id");
+
+            //TODO JSO : pb when action to delete create a column how can we test if an action transform the new created column ?
+            if(actionsTransformColumn(actions, stepToDeleteColumnId)) {
+                throw new TDPException(PREPARATION_STEP_CANNOT_BE_DELETED_IN_SINGLE_MODE,
+                        TDPExceptionContext.build()
+                                .put("id", id)
+                                .put("stepId", stepToDeleteId));
+            }
+            final Step stepToDelete = preparationRepository.get(stepToDeleteId, Step.class);
+            replaceHistory(preparation, stepToDelete.getParent(), actions);
         }
-
-        // Replace head by the step before the deleted one
-        final Step stepToDelete = preparationRepository.get(action, Step.class);
-        final Step newHead = preparationRepository.get(stepToDelete.getParent(), Step.class);
-        setPreparationHead(preparation, newHead);
-
-        //TODO JSO : what to do with the deleted step and the following steps that are deleted but still in repository ?
+        // cascade mode : delete cascading from step
+        else {
+            // Replace head by the step before the deleted one
+            final Step stepToDelete = preparationRepository.get(stepToDeleteId, Step.class);
+            final Step newHead = preparationRepository.get(stepToDelete.getParent(), Step.class);
+            setPreparationHead(preparation, newHead);
+        }
     }
 
     @RequestMapping(value = "/preparations/{id}/actions/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
@@ -278,9 +319,11 @@ public class PreparationService {
         }
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------GETTERS/EXTRACTORS------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
     /**
      * Get user name from Spring Security context
-     *
      * @return "anonymous" if no user is currently logged in, the user name otherwise.
      */
     private static String getUserName() {
@@ -293,7 +336,6 @@ public class PreparationService {
 
     /**
      * Get the actual step id by converting "head" and "origin" to the hash
-     *
      * @param version     The version to convert to step id
      * @param preparation The preparation
      * @return The converted step Id
@@ -309,7 +351,6 @@ public class PreparationService {
 
     /**
      * Get actions list from root to the provided step
-     *
      * @param stepId The limit step id
      * @return The list of actions
      */
@@ -320,7 +361,6 @@ public class PreparationService {
 
     /**
      * Get preparation from id
-     *
      * @param id The preparation id.
      * @return The preparation with the provided id
      * @throws TDPException when no preparation has the provided id
@@ -335,8 +375,91 @@ public class PreparationService {
     }
 
     /**
+     * Extract all actions after a provided step
+     * @param steps The steps list
+     * @param afterStep The (excluded) step id where to start the extraction
+     * @return The actions after 'afterStep' to the end of the list
+     */
+    private List<AppendStep> extractActionsAfterStep(final List<String> steps, final String afterStep) {
+        final int stepIndex = steps.indexOf(afterStep);
+        if(stepIndex == -1) {
+            return Collections.emptyList();
+        }
+
+        final List<AppendStep> actions = new ArrayList<>(steps.size());
+        for (int i = stepIndex + 1; i < steps.size(); ++i) {
+            final List<Action> previous = getActions(steps.get(i - 1));
+            final List<Action> current = getActions(steps.get(i));
+            final AppendStep appendStep = new AppendStep();
+            appendStep.setActions(current.subList(previous.size(), current.size()));
+            actions.add(appendStep);
+        }
+        return actions;
+    }
+
+    /**
+     * Get the steps ids from a specific step to the head. The specific step MUST be defined as an existing step of the preparation
+     * @param preparation The preparation
+     * @param fromStepId The starting step id
+     * @return The steps ids from 'fromStepId' to the head
+     * @throws TDPException If 'fromStepId' is not a step of the provided preparation
+     */
+    private List<String> extractSteps(final Preparation preparation, final String fromStepId) {
+        final List<String> steps = PreparationUtils.listSteps(preparation.getStep(), fromStepId, preparationRepository);
+        if(!fromStepId.equals(steps.get(0))) {
+            throw new TDPException(PREPARATION_STEP_DOES_NOT_EXIST,
+                    TDPExceptionContext.build()
+                            .put("id", preparation.getId())
+                            .put("stepId", fromStepId));
+        }
+        return steps;
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------CHECKERS-----------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
+    /**
+     * Test if the stepId is the preparation head.
+     * Null, "head", "origin" and the actual step id are considered to be the head
+     * @param preparation The preparation to test
+     * @param stepId The step id to test
+     * @return True if 'stepId' is considered as the preparation head
+     */
+    private boolean isPreparationHead(final Preparation preparation, final String stepId) {
+        return stepId == null || "head".equals(stepId) || "origin".equals(stepId) || preparation.getStep().getId().equals(stepId);
+    }
+
+    /**
+     * Check if the action list affect a column
+     * @param actions The list of actions
+     * @param columnId The columnId th check
+     * @return True if one of the actions affect the column
+     */
+    private boolean actionsTransformColumn(final List<AppendStep> actions, final String columnId) {
+        for(final AppendStep nextStep: actions) {
+            final String nextStepColumnId = nextStep.getActions().get(0).getParameters().get("column_id");
+            if(columnId.equals(nextStepColumnId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check the action parameters consistency
+     * @param step the step to check
+     */
+    private void checkActionStepConsistency(final AppendStep step) {
+        for (final Action stepAction : step.getActions()) {
+            validator.checkScopeConsistency(stepAction.getAction(), stepAction.getParameters());
+        }
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------HISTORY------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
+    /**
      * Update the head step of a preparation
-     *
      * @param preparation The preparation to update
      * @param head        The head step
      */
@@ -347,13 +470,67 @@ public class PreparationService {
     }
 
     /**
-     * Check the action parameters consistency
-     *
-     * @param step the step to check
+     * Rewrite the preparation history from a specific step, with the provided actions
+     * @param preparation The preparation
+     * @param startStepId The step id to start the (re)write. The following steps will be erased
+     * @param actionsSteps The actions to perform
      */
-    private void checkActionStepConsistency(final AppendStep step) {
-        for (final Action stepAction : step.getActions()) {
-            validator.checkScopeConsistency(stepAction.getAction(), stepAction.getParameters());
+    private void replaceHistory(final Preparation preparation, final String startStepId, final List<AppendStep> actionsSteps) {
+        //move preparation head to the starting step
+        if(! isPreparationHead(preparation, startStepId)) {
+            final Step startingStep = preparationRepository.get(startStepId, Step.class);
+            setPreparationHead(preparation, startingStep);
         }
+
+        //extract steps actions
+        final List<Action> actions = actionsSteps
+                .stream()
+                .flatMap((step) -> step.getActions().stream())
+                .collect(toList());
+
+        //append each action to the current preparation head
+        appendMultipleStepsToHead(preparation, actions);
+    }
+
+    /**
+     * Append Multiple steps (1 per action) after the preparation head
+     * @param preparation The preparation
+     * @param actions The actions list to apply
+     */
+    private void appendMultipleStepsToHead(final Preparation preparation, final List<Action> actions) {
+        for(final Action action : actions) {
+            appendSingleStepToHead(preparation, action);
+        }
+    }
+
+    /**
+     * Append a single step (a single action) after the preparation head
+     * @param preparation The preparation
+     * @param action The action to apply
+     */
+    private void appendSingleStepToHead(final Preparation preparation, final Action action) {
+        final List<Action> actions = new ArrayList<>(1);
+        actions.add(action);
+        appendSingleStepToHead(preparation, actions);
+    }
+
+    /**
+     * Append a single step after the preparation head
+     * @param preparation The preparation
+     * @param actions The actions to apply as 1 step
+     */
+    private void appendSingleStepToHead(final Preparation preparation, final List<Action> actions) {
+        // Add new actions after head
+        final Step head = preparation.getStep();
+        final PreparationActions headContent = preparationRepository.get(head.getContent(), PreparationActions.class);
+        final PreparationActions newContent = headContent.append(actions);
+        preparationRepository.add(newContent);
+
+        // Create new step from new content
+        final Step newStep = new Step(head.id(), newContent.id());
+        preparationRepository.add(newStep);
+
+        // Update preparation head step
+        setPreparationHead(preparation, newStep);
     }
 }

@@ -7,6 +7,7 @@
              ng-click="recipeCtrl.showModal[$index] = !!step.transformation.cluster"
              ng-switch="step.actionParameters.parameters.scope">
 
+            <i data-icon="e" ng-click="recipeCtrl.remove(step)"></i>
             {{$index + 1}}.
             <span class="recipe-description">{{step.transformation.label}}</span>
 
@@ -21,24 +22,22 @@
             <recipe-bullet class="step-trigger" step="step" ></recipe-bullet>
         </div>
 
-        <div class="content">
-            <transform-params ng-if="(step.transformation.parameters.length || step.transformation.items.length)"
+        <div class="content" ng-if="recipeCtrl.hasParameters(step)">
+            <transform-params ng-if="recipeCtrl.hasStaticParams(step)"
                               transformation="step.transformation"
                               on-submit="recipeCtrl.stepUpdateClosure(step)(params)"
                               on-submit-hover-on="recipeCtrl.previewUpdateClosure(step)(params)"
                               on-submit-hover-off="recipeCtrl.cancelPreview()"></transform-params>
 
-            <talend-modal ng-if="step.transformation.cluster"
+            <talend-modal ng-if="recipeCtrl.hasDynamicParams(step)"
                           fullscreen="false"
                           state="recipeCtrl.showModal[$index]"
                           close-button="true">
-
                 <div class="modal-title">{{ step.transformation.label }}</div>
                 <div class="modal-subtitle">{{ step.transformation.description }}</div>
 
                 <transform-params transformation="step.transformation"
                                   on-submit="recipeCtrl.stepUpdateClosure(step)(params)"></transform-params>
-
             </talend-modal>
         </div>
     </talend-accordions-item>

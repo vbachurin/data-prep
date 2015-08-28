@@ -230,4 +230,177 @@ describe('Recipe controller', function() {
         //then
         expect(PreviewService.getPreviewUpdateRecords).toHaveBeenCalledWith(lastActiveStep, step, {pattern: '--', column_id: '0', column_name: 'state', scope: 'column'});
     }));
+
+    describe('step parameters', function () {
+        it('should return that step has dynamic parameters when it has cluster', function() {
+            //given
+            var ctrl = createController();
+            var step = {
+                transformation: {
+                    cluster: {}
+                }
+            };
+
+            //when
+            var hasDynamicParams = ctrl.hasDynamicParams(step);
+
+            //then
+            expect(hasDynamicParams).toBeTruthy();
+        });
+
+        it('should return that step has NO dynamic parameters', function() {
+            //given
+            var ctrl = createController();
+            var step = {
+                transformation: {}
+            };
+
+            //when
+            var hasDynamicParams = ctrl.hasDynamicParams(step);
+
+            //then
+            expect(hasDynamicParams).toBeFalsy();
+        });
+
+        it('should return that step has static parameters when it has simple params', function() {
+            //given
+            var ctrl = createController();
+            var step = {
+                transformation: {
+                    parameters: [{}]
+                }
+            };
+
+            //when
+            var hasStaticParams = ctrl.hasStaticParams(step);
+
+            //then
+            expect(hasStaticParams).toBeTruthy();
+        });
+
+        it('should return that step has static parameters when it has choice params', function() {
+            //given
+            var ctrl = createController();
+            var step = {
+                transformation: {
+                    items: [{}]
+                }
+            };
+
+            //when
+            var hasStaticParams = ctrl.hasStaticParams(step);
+
+            //then
+            expect(hasStaticParams).toBeTruthy();
+        });
+
+        it('should return that step has NO static parameters', function() {
+            //given
+            var ctrl = createController();
+            var step = {
+                transformation: {}
+            };
+
+            //when
+            var hasStaticParams = ctrl.hasStaticParams(step);
+
+            //then
+            expect(hasStaticParams).toBeFalsy();
+        });
+
+        it('should return that step has parameters when it has static params', function() {
+            //given
+            var ctrl = createController();
+            var step = {
+                transformation: {
+                    parameters: [{}]
+                }
+            };
+
+            //when
+            var hasParams = ctrl.hasParameters(step);
+
+            //then
+            expect(hasParams).toBeTruthy();
+        });
+
+        it('should return that step has parameters when it has dybamic params', function() {
+            //given
+            var ctrl = createController();
+            var step = {
+                transformation: {
+                    cluster: []
+                }
+            };
+
+            //when
+            var hasParams = ctrl.hasParameters(step);
+
+            //then
+            expect(hasParams).toBeTruthy();
+        });
+
+        it('should return that step has NO parameters', function() {
+            //given
+            var ctrl = createController();
+            var step = {
+                transformation: {}
+            };
+
+            //when
+            var hasParams = ctrl.hasParameters(step);
+
+            //then
+            expect(hasParams).toBeFalsy();
+        });
+    });
+
+    describe('remove step', function() {
+        beforeEach(inject(function(PlaygroundService) {
+            spyOn(PlaygroundService, 'removeStep').and.returnValue();
+        }));
+
+        it('should prompt a confirm popup', inject(function($q, TalendConfirmService) {
+            //given
+            spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when());
+            var ctrl = createController();
+            var step = {};
+
+            expect(TalendConfirmService.confirm).not.toHaveBeenCalled();
+
+            //when
+            ctrl.remove(step);
+
+            //then
+            expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, ['DELETE_STEP']);
+        }));
+
+        it('should remove step in cascade mode on user confirmation', inject(function($q, PlaygroundService, TalendConfirmService) {
+            //given
+            spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when());
+            var ctrl = createController();
+            var step = {};
+
+            //when
+            ctrl.remove(step);
+            scope.$digest();
+
+            //then
+            expect(PlaygroundService.removeStep).toHaveBeenCalledWith(step, 'cascade');
+        }));
+
+        it('should NOT remove step on user dismiss', inject(function($q, PlaygroundService, TalendConfirmService) {
+            //given
+            spyOn(TalendConfirmService, 'confirm').and.returnValue($q.reject());
+            var ctrl = createController();
+            var step = {};
+
+            //when
+            ctrl.remove(step);
+            scope.$digest();
+
+            //then
+            expect(PlaygroundService.removeStep).not.toHaveBeenCalled();
+        }));
+    });
 });
