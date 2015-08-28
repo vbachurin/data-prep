@@ -28,7 +28,8 @@ public class Parameter implements Serializable {
         this(name, type, defaultValue, implicit, true);
     }
 
-    public Parameter(final String name, final String type, final String defaultValue, final boolean implicit, final boolean canBeBlank) {
+    public Parameter(final String name, final String type, final String defaultValue, final boolean implicit,
+            final boolean canBeBlank) {
         this.name = name;
         this.type = type;
         this.defaultValue = defaultValue;

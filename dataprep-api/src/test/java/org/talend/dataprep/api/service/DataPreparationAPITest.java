@@ -2,8 +2,10 @@ package org.talend.dataprep.api.service;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.api.type.ExportType.CSV;
@@ -39,6 +41,7 @@ import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.cache.ContentCacheKey;
 import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
+import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -167,7 +170,8 @@ public class DataPreparationAPITest {
         // given
         final String dataSetId = createDataset("dataset/dataset_TDP-402.csv", "testDataset", "text/csv");
         final String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/TDP-402.json"));
-        final InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("dataset/dataset_TDP-402_expected.json");
+        final InputStream expectedContent = DataPreparationAPITest.class
+                .getResourceAsStream("dataset/dataset_TDP-402_expected.json");
 
         // when
         final String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
@@ -183,7 +187,8 @@ public class DataPreparationAPITest {
         final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
         Thread.sleep(800);
         final String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/TDP-416.json"));
-        final InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("dataset/dataset_TDP-416_expected.json");
+        final InputStream expectedContent = DataPreparationAPITest.class
+                .getResourceAsStream("dataset/dataset_TDP-416_expected.json");
 
         // when
         final String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
@@ -1079,6 +1084,70 @@ public class DataPreparationAPITest {
         request.then()//
                 .statusCode(400)//
                 .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE")) ;
+    }
+
+    @Test
+    public void should_not_aggregate_because_dataset_and_preparation_id_are_missing() throws IOException {
+
+        // given
+        AggregationParameters params = getAggregationParameters("aggregation/aggregation_parameters.json");
+        params.setDatasetId(null);
+        params.setPreparationId(null);
+
+        // when
+        final Response response = given().contentType(ContentType.JSON)//
+                .body(builder.build().writer().writeValueAsString(params))//
+                .when()//
+                .post("/api/aggregate");
+
+        // then
+        assertEquals(response.getStatusCode(), 400);
+    }
+
+    @Test
+    public void should_aggregate_on_dataset() throws IOException {
+
+        // given
+        final String dataSetId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
+
+        AggregationParameters params = getAggregationParameters("aggregation/aggregation_parameters.json");
+        params.setDatasetId(dataSetId);
+        params.setPreparationId(null);
+
+        // when
+        final String response = given().contentType(ContentType.JSON)//
+                .body(builder.build().writer().writeValueAsString(params))//
+                .when()//
+                .post("/api/aggregate").asString();
+
+        // then
+        assertThat(response, sameJSONAsFile(this.getClass().getResourceAsStream("aggregation/aggregation_exected.json")));
+    }
+
+    @Test
+    public void should_aggregate_on_preparation() throws IOException {
+
+        // given
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparationContentGet", "text/csv");
+
+        AggregationParameters params = getAggregationParameters("aggregation/aggregation_parameters.json");
+        params.setDatasetId(null);
+        params.setPreparationId(preparationId);
+        params.setStepId(null);
+
+        // when
+        final String response = given().contentType(ContentType.JSON)//
+                .body(builder.build().writer().writeValueAsString(params))//
+                .when()//
+                .post("/api/aggregate").asString();
+
+        // then
+        assertThat(response, sameJSONAsFile(this.getClass().getResourceAsStream("aggregation/aggregation_exected.json")));
+    }
+
+    private AggregationParameters getAggregationParameters(String input) throws IOException {
+        InputStream parametersInput = this.getClass().getResourceAsStream(input);
+        return builder.build().reader(AggregationParameters.class).readValue(parametersInput);
     }
 
     private String createDataset(final String file, final String name, final String type) throws IOException {

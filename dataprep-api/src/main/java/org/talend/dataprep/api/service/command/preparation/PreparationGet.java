@@ -38,10 +38,8 @@ public class PreparationGet extends DataPrepCommand<InputStream> {
         case SC_ACCEPTED:
             contentRetrieval.releaseConnection();
             return new ByteArrayInputStream(new byte[0]);
-
         case SC_OK:
             return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
-
         default:
             contentRetrieval.releaseConnection();
             throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_PREPARATION_LIST);

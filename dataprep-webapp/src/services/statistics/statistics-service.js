@@ -8,12 +8,16 @@
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.utils.service:TextFormatService
+     * @requires data-prep.services.statistics.service:StatisticsRestService
      */
-    function StatisticsService($timeout, DatagridService, FilterService, ConverterService, TextFormatService) {
+    function StatisticsService($q, $timeout, $filter, $cacheFactory, DatagridService, FilterService, ConverterService, TextFormatService, StatisticsRestService) {
+
+        var aggregationCache = $cacheFactory('aggregationStatistics', {capacity: 5});
+        var aggregationColumnsCache = $cacheFactory('aggregationColumns', {capacity: 5});
 
         var service = {
-            boxplotData: null,
-            data: null,
+            boxPlot: null,
+            histogram: null,
             stateDistribution: null,
             statistics: null,
 
@@ -23,10 +27,13 @@
 
             //statistics entry points
             processData: processData,
+            processAggregation: processAggregation,
+            getAggregationColumns: getAggregationColumns,
             resetCharts: resetCharts,
 
             //TODO temporary method to be replaced with new geo chart
             getGeoDistribution: getGeoDistribution
+
         };
 
         return service;
@@ -96,31 +103,35 @@
          * @description Adapt the numeric range data to fit histogram format
          */
         function initRangeHistogram(histoData) {
-            var concatData = [];
-            _.each(histoData, function (histDatum) {
-                concatData.push({
+            var rangeData = _.map(histoData, function (histDatum) {
+                return {
                     'data': histDatum.range.min + ' ... ' + histDatum.range.max,
-                    'formattedValue': TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(histDatum.range.min + ' ... ' + histDatum.range.max),
                     'occurrences': histDatum.occurrences
-                });
+                };
             });
 
-            service.data = concatData;
+            initClassicHistogram('occurrences', 'Occurrences', rangeData);
         }
 
         /**
          * @ngdoc method
          * @name initClassicHistogram
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {Array} frequencyTable The frequency table
-         * @description Set the frequency table that fit the historgram format
+         * @param {string} key The value key
+         * @param {string} label The value label
+         * @param {Array} dataTable The table to display
+         * @description Set the frequency table that fit the histogram format
          */
-        function initClassicHistogram(frequencyTable) {
-            service.data = _.map(frequencyTable,function(rec){
-                //The formatted Data which will be shown and not filtered
-                rec.formattedValue = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(rec.data);
-                return rec;
-            });
+        function initClassicHistogram(key, label, dataTable) {
+            service.histogram = {
+                data: _.map(dataTable, function (rec) {
+                    rec.formattedValue = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(rec.data);
+                    return rec;
+                }),
+                key: key,
+                label: label,
+                column: service.selectedColumn
+            };
         }
 
         /**
@@ -176,6 +187,28 @@
 
         }
 
+        /**
+         * @ngdoc method
+         * @name getAggregationData
+         * @methodOf data-prep.services.statistics.service:StatisticsCacheService
+         * @param {object} aggregationParameters The aggregation parameters
+         * @description Get aggregations from cache if present, from REST call otherwise.
+         */
+        function getAggregationData(aggregationParameters) {
+            var cacheKey = JSON.stringify(aggregationParameters);
+            var aggregationData = aggregationCache.get(cacheKey);
+
+            if(aggregationData) {
+                return $q.when(aggregationData);
+            }
+
+            return StatisticsRestService.getAggregations(aggregationParameters)
+                .then(function(response) {
+                    aggregationCache.put(cacheKey, response);
+                    return response;
+                });
+        }
+
         //--------------------------------------------------------------------------------------------------------------
         //-------------------------------------------------2- Values----------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
@@ -193,12 +226,12 @@
 
         /**
          * @ngdoc method
-         * @name initStatistics
+         * @name initStatisticsValues
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @param {object} column The target column
          * @description Initialize the statistics to display in the values TAB of the stats part
          */
-        function initValuesStatistics(column) {
+        function initStatisticsValues(column) {
             if (!column.statistics) {
                 return;
             }
@@ -257,14 +290,14 @@
          * @ngdoc method
          * @name updateBoxplotData
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @description Gathers the boxplot data from the specific stats of the columns having a 'number' type
+         * @description Gathers the boxPlot data from the specific stats of the columns having a 'number' type
          */
         function updateBoxplotData() {
             var specStats = service.statistics.specific;
 
             //waiting for DQ to process negative values
             if (specStats.LOWER_QUANTILE) {
-                service.boxplotData = {
+                service.boxPlot = {
                     min: specStats.MIN,
                     max: specStats.MAX,
                     q1: specStats.LOWER_QUANTILE,
@@ -275,28 +308,13 @@
                 };
             }
             else {
-                service.boxplotData = null;
+                service.boxPlot = null;
             }
         }
 
         //--------------------------------------------------------------------------------------------------------------
         //-------------------------------------------------FILTER-------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
-        /**
-         * @ngdoc method
-         * @name addFilter
-         * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {string} value The phrase to filter
-         * @description Add a filter in the angular context
-         */
-        function addFilter(value) {
-            var column = service.selectedColumn;
-            var filterFn = value ?
-                FilterService.addFilter.bind(null, 'contains', column.id, column.name, {phrase: value}) :
-                FilterService.addFilter.bind(null, 'empty_records', column.id, column.name, {});
-
-            $timeout(filterFn);
-        }
 
         /**
          * @ngdoc method
@@ -334,14 +352,6 @@
          * @description Remove the previous charts data and set the map chart
          */
         function processMapData(column) {
-            service.selectedColumn = column;
-            //remove the boxplot
-            service.boxplotData = null;
-            //remove the barchart
-            service.data = null;
-            //remove range slider
-            service.rangeLimits = null;
-            //show the map
             service.stateDistribution = column;
         }
 
@@ -353,12 +363,6 @@
          * @description Reset the map chart and calculate the needed data for visualization
          */
         function processNonMapData(column) {
-            service.selectedColumn = column;
-            service.boxplotData = null;
-            service.data = null;
-            service.stateDistribution = null;
-            service.rangeLimits = null;
-
             switch (ConverterService.simplifyType(column.type)) {
                 case 'number':
                     initRangeHistogram(column.statistics.histogram);
@@ -367,11 +371,10 @@
                     break;
                 case 'text':
                 case 'boolean':
-                    initClassicHistogram(column.statistics.frequencyTable);
+                    initClassicHistogram('occurrences', 'Occurrences', column.statistics.frequencyTable);
                     break;
                 default :
                     console.log('nor a number neither a boolean neither a string');
-                    service.boxplotData = null;
             }
         }
 
@@ -383,7 +386,9 @@
          * @description Processes the statistics data for visualization on the provided column
          */
         function processData(column) {
-            initValuesStatistics(column);
+            service.selectedColumn = column;
+            resetCharsWithoutCache();
+            initStatisticsValues(column);
 
             //TODO replace with new geo chart
             if (column.domain.indexOf('STATE_CODE') !== -1) {
@@ -400,16 +405,106 @@
 
         /**
          * @ngdoc method
+         * @name processAggregation
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {string} datasetId The column to visualize
+         * @param {string} preparationId The column to visualize
+         * @param {string} stepId The column to visualize
+         * @param {number} sampleSize The sample size
+         * @param {object} column The column to visualize
+         * @param {object} aggregation The column to visualize
+         * @description Processes the statistics aggregation for visualization
+         */
+        function processAggregation(datasetId, preparationId, stepId, sampleSize, column, aggregation) {
+            if(!aggregation) {
+                return processData(service.selectedColumn);
+            }
+
+            service.boxPlot = null;
+            service.histogram = null;
+            service.stateDistribution = null;
+
+            var aggregationParameters = {
+                datasetId: datasetId,
+                preparationId: preparationId,
+                stepId: stepId,
+                sampleSize: sampleSize,
+                operations: [{
+                    operator: aggregation,
+                    columnId: column.id
+                }],
+                groupBy: [service.selectedColumn.id]
+            };
+
+            getAggregationData(aggregationParameters)
+                .then(function(response) {
+                    initClassicHistogram(aggregation, $filter('translate')(aggregation), response);
+                    service.histogram.aggregationColumn = column;
+                    service.histogram.aggregation = aggregation;
+                });
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        //-------------------------------------------------UTILS--------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name addFilter
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {string} value The phrase to filter
+         * @description Add a filter in the angular context
+         */
+        function addFilter(value) {
+            var column = service.selectedColumn;
+            var filterFn = value ?
+                FilterService.addFilter.bind(null, 'contains', column.id, column.name, {phrase: value}) :
+                FilterService.addFilter.bind(null, 'empty_records', column.id, column.name, {});
+
+            $timeout(filterFn);
+        }
+
+        /**
+         * @ngdoc method
+         * @name resetCharts
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Removes all the data to disable all visualization (including cache)
+         */
+        function resetCharts() {
+            //charts data
+            resetCharsWithoutCache();
+
+            //caches
+            aggregationColumnsCache.removeAll();
+            aggregationCache.removeAll();
+        }
+
+        /**
+         * @ngdoc method
          * @name resetCharts
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @description Removes all the data to disable all visualization
          */
-        function resetCharts() {
-            service.boxplotData = null;
-            service.data = null;
+        function resetCharsWithoutCache() {
+            service.boxPlot = null;
+            service.histogram = null;
+            service.rangeLimits = null;
             service.stateDistribution = null;
             service.statistics = null;
-            service.rangeLimits = null;
+        }
+
+        /**
+         * @ngdoc method
+         * @name resetCharts
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Removes all the data to disable all visualization
+         */
+        function getAggregationColumns() {
+            var column = service.selectedColumn;
+            var aggregationColumns = aggregationColumnsCache.get(column.id);
+            if(!aggregationColumns) {
+                aggregationColumns = aggregationColumnsCache.put(column.id, DatagridService.getNumericColumns(column));
+            }
+            return aggregationColumns;
         }
     }
 

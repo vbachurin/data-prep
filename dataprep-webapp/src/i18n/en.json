@@ -137,5 +137,11 @@
   "AVG_LENGTH_WITH_BLANK": "Avg length with blank",
   "MAX_LENGTH": "Max length",
   "MIN_LENGTH": "Min length",
-  "MIN_LENGTH_WITH_BLANK": "Min length with blank"
+  "MIN_LENGTH_WITH_BLANK": "Min length with blank",
+  "LINE_COUNT": "Line Count",
+  "SUM": "Sum",
+  "AVERAGE": "Average",
+  "GROUP_BY": "group by "
+
+
 }
