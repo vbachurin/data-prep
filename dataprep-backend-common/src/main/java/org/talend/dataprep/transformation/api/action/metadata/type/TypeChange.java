@@ -15,8 +15,8 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 /**
- * Change the type of a column
- * <b>This action is not displayed in the UI it's here to ease recording it as a Step It's available from column headers</b>
+ * Change the type of a column <b>This action is not displayed in the UI it's here to ease recording it as a Step It's
+ * available from column headers</b>
  */
 @Component(TypeChange.ACTION_BEAN_PREFIX + TypeChange.TYPE_CHANGE_ACTION_NAME)
 public class TypeChange extends AbstractActionMetadata implements ColumnAction {
@@ -71,6 +71,10 @@ public class TypeChange extends AbstractActionMetadata implements ColumnAction {
 
         if (StringUtils.isNotEmpty(newType)) {
             columnMetadata.setType(newType);
+            // erase domain
+            columnMetadata.setDomain("");
+            columnMetadata.setDomainLabel("");
+            columnMetadata.setDomainFrequency(0);
         }
     }
 

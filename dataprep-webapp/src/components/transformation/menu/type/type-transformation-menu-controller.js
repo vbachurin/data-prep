@@ -44,7 +44,7 @@
                 .catch(setColumnDomainAndType.bind(vm, originalDomain));
             */
             PlaygroundService.appendStep('domain_change',
-                {'scope':'column','column_id': vm.column.id,'NEW_DOMAIN':domain.id});
+                {'scope':'column','column_id': vm.column.id,'NEW_DOMAIN_ID':domain.id,'NEW_DOMAIN_LABEL': domain.label,'NEW_DOMAIN_FREQUENCY': domain.frequency});
         };
 
         /**
