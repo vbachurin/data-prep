@@ -11,7 +11,7 @@ describe('Early Preview Service', function () {
 
 	beforeEach(module('data-prep.services.playground'));
 
-	beforeEach(inject(function(ColumnSuggestionService, PlaygroundService, PreviewService, RecipeService) {
+	beforeEach(inject(function(ColumnSuggestionService, PlaygroundService, PreviewService, RecipeService, EarlyPreviewService) {
 		ColumnSuggestionService.currentColumn = column;
 		PlaygroundService.currentMetadata = currentMetadata;
 
@@ -28,9 +28,25 @@ describe('Early Preview Service', function () {
 		spyOn(RecipeService, 'cancelEarlyPreview').and.returnValue();
 		spyOn(PreviewService, 'getPreviewAddRecords').and.returnValue();
 		spyOn(PreviewService, 'cancelPreview').and.returnValue();
+		spyOn(EarlyPreviewService, 'cancelPendingPreview').and.callThrough();
 	}));
 
-	it('should trigger grid preview after a 300ms delay', inject(function ($timeout, PreviewService, EarlyPreviewService) {
+	it('should NOT trigger grid preview', inject(function ($timeout, PreviewService, EarlyPreviewService, RecipeService) {
+		//given
+		EarlyPreviewService.previewDisabled = true;
+
+		//when
+		EarlyPreviewService.earlyPreview(transformation, transfoScope)(params);
+		$timeout.flush(300);
+
+		//then
+		expect(RecipeService.earlyPreview).not.toHaveBeenCalled();
+		expect(EarlyPreviewService.cancelPendingPreview).not.toHaveBeenCalled();
+		expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
+
+	}));
+
+	it('should trigger grid preview after a 300ms delay', inject(function ($timeout, PreviewService, EarlyPreviewService, RecipeService) {
 		//given
 
 		//when
@@ -39,6 +55,17 @@ describe('Early Preview Service', function () {
 		$timeout.flush(300);
 
 		//then
+		expect(RecipeService.earlyPreview).toHaveBeenCalledWith(
+			column,
+			transformation,
+			{
+				value: 'James',
+				replace: 'Jimmy',
+				scope: transfoScope,
+				column_id: column.id,
+				column_name: column.name
+			}
+		);
 		expect(PreviewService.getPreviewAddRecords).toHaveBeenCalledWith(
 			currentMetadata.id,
 			'replace_on_value',
@@ -81,4 +108,17 @@ describe('Early Preview Service', function () {
 		expect(PreviewService.cancelPreview).toHaveBeenCalled();
 	}));
 
+
+	it('should NOT cancel current early preview even after a 100ms delay', inject(function ($timeout, RecipeService, EarlyPreviewService, PreviewService) {
+		//given
+		EarlyPreviewService.previewDisabled = true;
+
+		//when
+		EarlyPreviewService.cancelEarlyPreview();
+		$timeout.flush(100);
+
+		//then
+		expect(RecipeService.cancelEarlyPreview).not.toHaveBeenCalled();
+		expect(PreviewService.cancelPreview).not.toHaveBeenCalled();
+	}));
 });

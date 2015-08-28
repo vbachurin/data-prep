@@ -1,22 +1,23 @@
 /*jshint camelcase: false */
 
-describe('Transformation Application Service service', function () {
+describe('Transformation Application Service', function () {
 	'use strict';
 
 
 	beforeEach(module('data-prep.services.transformationApplication'));
 
-	beforeEach(inject(function ($q, PlaygroundService, ColumnSuggestionService, EarlyPreviewService, PreviewService) {
+	beforeEach(inject(function ($q, PlaygroundService, ColumnSuggestionService, EarlyPreviewService, PreviewService, RecipeService) {
 		spyOn(EarlyPreviewService, 'deactivatePreview').and.returnValue();
-		spyOn(EarlyPreviewService, 'deactivateDynamicModal').and.callThrough();
+		spyOn(EarlyPreviewService, 'deactivateDynamicModal').and.returnValue();
+		spyOn(EarlyPreviewService, 'cancelPendingPreview').and.returnValue();
+		spyOn(EarlyPreviewService, 'activatePreview').and.returnValue();
+
 		spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when());
 		ColumnSuggestionService.currentColumn = {id:'0001', name:'firstname'};
-		spyOn(PreviewService, 'getPreviewAddRecords').and.returnValue();
-		spyOn(PreviewService, 'cancelPreview').and.returnValue();
 	}));
 
-	describe('refresh', function () {
-		it('should call appendStep function on transform closure execution', inject(function (TransformationApplicationService, PlaygroundService, ColumnSuggestionService) {
+	describe('Appending Steps', function () {
+		it('should call appendStep function on transform closure execution', inject(function (TransformationApplicationService, PlaygroundService, EarlyPreviewService) {
 			///given
 			var transformation = {name: 'tolowercase'};
 			var transfoScope = 'column';
@@ -35,6 +36,8 @@ describe('Transformation Application Service service', function () {
 				column_id: column.id,
 				column_name: column.name
 			};
+			expect(EarlyPreviewService.deactivatePreview).toHaveBeenCalled();
+			expect(EarlyPreviewService.cancelPendingPreview).toHaveBeenCalledWith();
 			expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
 
 		}));
@@ -44,35 +47,18 @@ describe('Transformation Application Service service', function () {
 			var transformation = {name: 'tolowercase'};
 			var transfoScope = 'column';
 			var params = {param: 'value'};
-			EarlyPreviewService.showDynamicModal = true;
+			jasmine.clock().install();
 
 			//when
 			var closure = TransformationApplicationService.transformClosure(transformation, transfoScope);
 			closure(params);
 			$rootScope.$digest();
+			jasmine.clock().tick(500);
 
 			//then
 			expect(EarlyPreviewService.deactivateDynamicModal).toHaveBeenCalled();
-			expect(EarlyPreviewService.showDynamicModal).toBe(false);
+			expect(EarlyPreviewService.activatePreview).toHaveBeenCalled();
+			jasmine.clock().uninstall();
 		}));
-
-		it('should cancel pending early preview on step append', inject(function ($timeout, PreviewService, EarlyPreviewService, TransformationApplicationService, PlaygroundService) {
-			//given
-			var transformation = {name: 'tolowercase'};
-			var transfoScope = 'column';
-			var params = {param: 'value'};
-			PlaygroundService.currentMetadata = {id : '0004'}
-
-			EarlyPreviewService.earlyPreview(transformation, transfoScope)(params);
-
-			//when
-			var closure = TransformationApplicationService.transformClosure(transformation, transfoScope);
-			closure(params);
-
-			//then : preview should be disabled
-			$timeout.flush();
-			expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
-		}));
-
 	});
 });
