@@ -165,41 +165,41 @@ public class PreparationAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Adding action to preparation (pool: {} )...", getConnectionManager().getTotalStats());
         }
-        HttpClient client = getClient();
-        HystrixCommand<Void> command = getCommand(PreparationAddAction.class, client, preparationId, body);
+        final HttpClient client = getClient();
+        final HystrixCommand<Void> command = getCommand(PreparationAddAction.class, client, preparationId, body);
         command.execute();
         LOG.debug("Added action to preparation (pool: {} )...", getConnectionManager().getTotalStats());
     }
 
-    @RequestMapping(value = "/api/preparations/{id}/actions/{action}", method = PUT, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/api/preparations/{preparationId}/actions/{stepId}", method = PUT, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Updates an action in the preparation.", notes = "Does not return any value, client may expect successful operation based on HTTP status code.")
     @Timed
     public void updatePreparationAction(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
-            @PathVariable(value = "action") @ApiParam(name = "action", value = "Step id in the preparation.") String stepId,
+            @PathVariable(value = "preparationId") @ApiParam(name = "preparationId", value = "Preparation id.") final String preparationId,
+            @PathVariable(value = "stepId") @ApiParam(name = "stepId", value = "Step id in the preparation.") final String stepId,
             @ApiParam("New content for the action.") InputStream body) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Updating preparation action at step #{} (pool: {} )...", stepId,
                     getConnectionManager().getTotalStats());
         }
-        HttpClient client = getClient();
-        HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationId, stepId, body);
+        final HttpClient client = getClient();
+        final HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationId, stepId, body);
         command.execute();
         LOG.debug("Updated preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
     }
 
-    @RequestMapping(value = "/api/preparations/{id}/actions/{action}", method = DELETE, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/api/preparations/{id}/actions/{stepId}", method = DELETE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Delete an action in the preparation.", notes = "Does not return any value, client may expect successful operation based on HTTP status code.")
     @Timed
     public void deletePreparationAction(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
-            @PathVariable(value = "action") @ApiParam(name = "action", value = "Step id in the preparation.") String stepId) {
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") final String preparationId,
+            @PathVariable(value = "stepId") @ApiParam(name = "stepId", value = "Step id to delete.") final String stepId,
+            @RequestParam(value = "single", defaultValue = "false") @ApiParam(name = "single", value = "Remove only the targeted step if 'true'. Else delete cascade from step to the head") final boolean single) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Deleting preparation action at step #{} (pool: {} )...", stepId,
-                    getConnectionManager().getTotalStats());
+            LOG.debug("Deleting preparation action at step #{} (pool: {} ) with single mode '{}'...", stepId, getConnectionManager().getTotalStats(), single);
         }
-        HttpClient client = getClient();
-        HystrixCommand<Void> command = getCommand(PreparationDeleteAction.class, client, preparationId, stepId);
+        final HttpClient client = getClient();
+        final HystrixCommand<Void> command = getCommand(PreparationDeleteAction.class, client, preparationId, stepId, single);
         command.execute();
         LOG.debug("Deleting preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
     }

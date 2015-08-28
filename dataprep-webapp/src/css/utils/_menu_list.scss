@@ -18,6 +18,9 @@
     font-weight: normal;
     font-size: 0.8em;
 
+    min-height: 18px;
+    min-width: 90px;
+
     &:hover {
       background-color: $menus-hover;
 
@@ -60,6 +63,7 @@
     }
 
     &.divider {
+      min-height: 1px;
       height: 1px;
       width: 100%;
       margin: 9px 0;

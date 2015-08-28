@@ -102,7 +102,7 @@ public class ComputeTimeSinceTest {
 
     @Test
     public void should_compute_years_alternative_pattern() throws IOException {
-        //given
+        // given
         final String date = "01-01-10";
         final String result = computeTimeSince(date, "MM-dd-yy", YEARS);
 
@@ -115,16 +115,16 @@ public class ComputeTimeSinceTest {
         expectedValues.put("0003", result);
         expectedValues.put("0002", "Bacon");
 
-        //when
+        // when
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
-        //then
+        // then
         assertEquals(expectedValues, row.values());
     }
 
     @Test
     public void should_compute_years_wrong_pattern() throws IOException {
-        //given
+        // given
         final String date = "NA";
         final String result = "";
 
@@ -137,10 +137,10 @@ public class ComputeTimeSinceTest {
         expectedValues.put("0003", result);
         expectedValues.put("0002", "Bacon");
 
-        //when
+        // when
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
-        //then
+        // then
         assertEquals(expectedValues, row.values());
     }
 

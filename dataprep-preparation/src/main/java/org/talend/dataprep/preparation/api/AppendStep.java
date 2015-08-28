@@ -6,6 +6,7 @@ import java.util.List;
 import org.talend.dataprep.api.preparation.Action;
 
 public class AppendStep {
+    private String insertionStepId;
 
     private List<Action> actions = new ArrayList<>(1);
 
@@ -15,5 +16,13 @@ public class AppendStep {
 
     public void setActions(List<Action> actions) {
         this.actions = actions;
+    }
+
+    public String getInsertionStepId() {
+        return insertionStepId;
+    }
+
+    public void setInsertionStepId(String insertionStepId) {
+        this.insertionStepId = insertionStepId;
     }
 }

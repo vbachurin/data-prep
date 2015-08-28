@@ -52,6 +52,7 @@
             //step utils
             getActiveThresholdStep: getActiveThresholdStep,
             getActiveThresholdStepIndex: getActiveThresholdStepIndex,
+            getAllActionsFrom: getAllActionsFrom,
             getLastActiveStep: getLastActiveStep,
             getLastStep: getLastStep,
             getPreviousStep: getPreviousStep,
@@ -224,6 +225,32 @@
          */
         function getLastStep() {
             return recipe[recipe.length - 1];
+        }
+
+        /**
+         * @ngdoc method
+         * @name getAllStepsFrom
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @description Get all steps from provided step to the head
+         * @param {object} step The starting step
+         * @returns {object} The sublist from 'step' to head
+         */
+        function getAllStepsFrom(step) {
+            var index = getStepIndex(step);
+            return recipe.slice(index);
+        }
+
+        /**
+         * @ngdoc method
+         * @name getAllActionsFrom
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @description Get all actions from provided step to the head
+         * @param {object} step The starting step
+         * @returns {object} The actions array
+         */
+        function getAllActionsFrom(step) {
+            var steps = getAllStepsFrom(step);
+            return _.map(steps, 'actionParameters');
         }
 
         //--------------------------------------------------------------------------------------------------------------

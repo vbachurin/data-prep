@@ -1,12 +1,38 @@
 <div class="column-profile">
+
+    <div class="column-profile-aggregation" ng-if="columnProfileCtrl.histogram || columnProfileCtrl.stateDistribution">
+        <talend-button-dropdown button-text="{{ columnProfileCtrl.getCurrentAggregation() | translate }} {{columnProfileCtrl.histogram.aggregationColumn.name}}">
+            <ul class="column-profile-aggregation-list">
+                <li ng-click="columnProfileCtrl.changeAggregation()">
+                    <div>{{ ::'LINE_COUNT' | translate }}</div>
+                </li>
+                <li ng-repeat="column in columnProfileCtrl.aggregationColumns track by column.id" class="more">
+                    <div class="moreText" title="{{column.name}}">{{column.name}}</div>
+                    <ul class="submenu">
+                        <li ng-repeat="aggregation in columnProfileCtrl.aggregations track by $index" ng-click="columnProfileCtrl.changeAggregation(column, aggregation)" title="{{ ::aggregation | translate }}">
+                            <div class="moreText">{{ ::aggregation | translate }}</div>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </talend-button-dropdown>
+
+        <div ng-if="columnProfileCtrl.histogram.aggregation" class="column-profile-aggregation-description">
+            <span>{{columnProfileCtrl.histogram.aggregation | translate}}</span>
+            <span class="highlight">{{columnProfileCtrl.histogram.aggregationColumn.name}}</span>
+            <span>{{ 'GROUP_BY' | translate }} </span>
+            <span class="highlight">{{columnProfileCtrl.histogram.column.name}}</span>
+        </div>
+    </div>
+
     <horizontal-barchart id="barChart"
-                width="310"
+                         width="310"
                 height="400"
                 on-click="columnProfileCtrl.barchartClickFn"
-                visu-data="columnProfileCtrl.processedData"
-                key-field="occurrences"
+                visu-data="columnProfileCtrl.histogram.data"
                 value-field="formattedValue"
-               ></horizontal-barchart>
+                key-field="{{columnProfileCtrl.histogram.key}}"
+                key-label="{{columnProfileCtrl.histogram.label}}"></horizontal-barchart>
 
     <highchart id="geochart"
                ng-if="columnProfileCtrl.stateDistribution"

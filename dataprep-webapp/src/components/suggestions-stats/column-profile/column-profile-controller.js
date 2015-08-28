@@ -1,19 +1,65 @@
 (function() {
     'use strict';
 
-    function ColumnProfileCtrl($scope, DatagridService, StatisticsService) {
+    function ColumnProfileCtrl($scope, StatisticsService, PlaygroundService, PreparationService, RecipeService) {
         var vm = this;
-        vm.datasetGridService = DatagridService;
         vm.statisticsService = StatisticsService;
-
         vm.chartConfig = {};
 
         vm.barchartClickFn = function barchartClickFn (item){
             return StatisticsService.addFilter(item.data);
         };
+        
+        //------------------------------------------------------------------------------------------------------
+        //----------------------------------------------AGGREGATION---------------------------------------------
+        //------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc property
+         * @name aggregations
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @description The list of possible aggregations
+         * @type {array}
+         */
+        vm.aggregations =  ['SUM', 'MAX', 'MIN', 'COUNT', 'AVERAGE'];
+
+        /**
+         * @ngdoc method
+         * @name getCurrentAggregation
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @description The current aggregations
+         * @return {string} The current aggregation name
+         */
+        vm.getCurrentAggregation = function getCurrentAggregation() {
+            return StatisticsService.histogram && StatisticsService.histogram.aggregation ?
+                StatisticsService.histogram.aggregation:
+                'LINE_COUNT';
+        };
+
+        /**
+         * @ngdoc method
+         * @name changeAggregation
+         * @methodOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @param {object} column The column to aggregate
+         * @param {object} aggregation The aggregation to perform
+         * @description Trigger a new aggregation graph
+         */
+        vm.changeAggregation = function changeAggregation(column, aggregation) {
+            if(StatisticsService.histogram &&
+                StatisticsService.histogram.aggregationColumn === column &&
+                StatisticsService.histogram.aggregation === aggregation) {
+                return;
+            }
+
+            var datasetId = PlaygroundService.currentMetadata.id;
+            var sampleSize = PlaygroundService.selectedSampleSize.value;
+            var preparationId = PreparationService.currentPreparationId;
+            var stepId = preparationId ? RecipeService.getLastActiveStep().id : null;
+
+            StatisticsService.processAggregation(datasetId, preparationId, stepId, sampleSize, column, aggregation);
+        };
 
         //------------------------------------------------------------------------------------------------------
-        //----------------------------------------------CHARTS OPTIONS------------------------------------------
+        //----------------------------------------------GEO CHARTS ---------------------------------------------
         //------------------------------------------------------------------------------------------------------
         /**
          * Common highcharts options
@@ -73,9 +119,6 @@
             return options;
         };
 
-        //------------------------------------------------------------------------------------------------------
-        //-----------------------------------------------CHARTS BUILD-------------------------------------------
-        //------------------------------------------------------------------------------------------------------
         /**
          * Init a geo distribution chart
          * @param column
@@ -129,23 +172,38 @@
                 }
             }
         );
+
     }
 
+    /**
+     * @ngdoc property
+     * @name processedData
+     * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+     * @description The data to display
+     * This is bound to {@link data-prep.statistics:StatisticsService StatisticsService}.histogram
+     */
     Object.defineProperty(ColumnProfileCtrl.prototype,
-        'selectedColumn', {
+        'histogram', {
             enumerable: true,
             configurable: false,
             get: function () {
-                return this.datasetGridService.selectedColumn;
+                return this.statisticsService.histogram;
             }
         });
 
+    /**
+     * @ngdoc property
+     * @name aggregationColumns
+     * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+     * @description The numeric columns list of the dataset.
+     * This is bound to {@link data-prep.statistics:StatisticsService StatisticsService}.getAggregationColumns()
+     */
     Object.defineProperty(ColumnProfileCtrl.prototype,
-        'processedData', {
+        'aggregationColumns', {
             enumerable: true,
-            configurable: false,
+            configurable: true,
             get: function () {
-                return this.statisticsService.data;
+                return this.statisticsService.getAggregationColumns();
             }
         });
 
