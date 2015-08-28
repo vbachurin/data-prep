@@ -255,6 +255,22 @@
             }
         });
 
+    /**
+     * @ngdoc property
+     * @name tab
+     * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
+     * @description The new selected action tab
+     * This is bound to {@link data-prep.services.transformation:ColumnSuggestionService ColumnSuggestionService}.tab
+     */
+    Object.defineProperty(ActionsSuggestionsCtrl.prototype,
+        'tab', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.columnSuggestionService.tab;
+            }
+        });
+
     angular.module('data-prep.actions-suggestions')
         .controller('ActionsSuggestionsCtrl', ActionsSuggestionsCtrl);
 })();

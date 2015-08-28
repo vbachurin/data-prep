@@ -2,7 +2,7 @@
     <div class="title">Actions{{ actionsSuggestionsCtrl.column.name ? ': ' + actionsSuggestionsCtrl.column.name : '' }}</div>
     <div class="Description" ng-if="! actionsSuggestionsCtrl.columnSuggestions">Select a column to display its actions</div>
     
-    <talend-tabs ng-if="actionsSuggestionsCtrl.columnSuggestions">
+    <talend-tabs tab="actionsSuggestionsCtrl.tab" ng-if="actionsSuggestionsCtrl.columnSuggestions">
         <talend-tabs-item tab-title="_"></talend-tabs-item>
         <talend-tabs-item tab-title="Text">Coming soon ...</talend-tabs-item>
         <talend-tabs-item tab-title="Cell">Coming soon ...</talend-tabs-item>

@@ -27,7 +27,24 @@
             transclude : true,
             templateUrl: 'components/widgets/tabs/tabs.html',
             controller: 'TalendTabsCtrl',
-            controllerAs: 'tabsCtrl'
+            controllerAs: 'tabsCtrl',
+            bindToController: true,
+            scope: {
+                tab: '='
+            },
+            link: function (scope, iElement, iAttrs, ctrl) {
+            scope.$watch(
+                function () {
+                    return ctrl.tab;
+                },
+                function () {
+                    if (ctrl.tab) {
+                        ctrl.updateTab(ctrl.tab);
+                    }
+                }
+
+            );
+        }
         };
     }
 

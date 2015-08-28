@@ -57,6 +57,7 @@
                 if(angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
                     updateSuggestionPanel(column);
+                    ColumnSuggestionService.selectTab('Cell');
                 }
                 else {
                     lastSelectedColumn = null;
@@ -74,6 +75,7 @@
             var columnId = args.column.id;
             var column = _.find(grid.getColumns(), {id: columnId});
             updateSuggestionPanel(column);
+            ColumnSuggestionService.selectTab('Column');
         }
 
         /**

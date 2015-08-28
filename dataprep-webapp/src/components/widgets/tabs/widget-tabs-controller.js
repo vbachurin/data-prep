@@ -46,6 +46,21 @@
 
         /**
          * @ngdoc method
+         * @name updateTab
+         * @methodOf talend.widget.controller:TalendTabsCtrl
+         * @description Update selected tab
+         */
+        vm.updateTab = function select(tabTitle) {
+            _.forEach(vm.tabs, function(tabToDeactivate) {
+                tabToDeactivate.active = false;
+            });
+
+            var tabToActivate = _.findWhere(vm.tabs, {tabTitle: tabTitle});
+            tabToActivate.active = true;
+        };
+
+        /**
+         * @ngdoc method
          * @name unregister
          * @methodOf talend.widget.controller:TalendTabsCtrl
          * @param {object} tab The tab to delete

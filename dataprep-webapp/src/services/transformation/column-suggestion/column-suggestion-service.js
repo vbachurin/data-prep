@@ -8,7 +8,7 @@
      * @requires data-prep.services.transformation.service:TransformationCacheService
      * @requires data-prep.services.utils.service:ConverterService
      */
-    function ColumnSuggestionService(TransformationCacheService) {
+    function ColumnSuggestionService($rootScope, TransformationCacheService) {
         var COLUMN_CATEGORY = 'columns';
         var self = this;
 
@@ -38,6 +38,16 @@
          * @type {Object}
          */
         self.statistics = null;
+
+
+        /**
+         * @ngdoc property
+         * @name tab
+         * @propertyOf data-prep.services.transformation.service:ColumnSuggestionService
+         * @description The currently selected tab
+         * @type {Object}
+         */
+        self.tab = null;
 
         /**
          * @ngdoc method
@@ -100,6 +110,19 @@
         this.reset = function reset() {
             self.currentColumn = null;
             self.transformations = null;
+        };
+
+
+        /**
+         * @ngdoc method
+         * @name selectTab
+         * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
+         * @param {String} tab The new selected tab title
+         * @description Set the selected tab
+         */
+        this.selectTab = function setColumn(tab) {
+            self.tab = tab;
+            $rootScope.$digest();
         };
     }
 
