@@ -66,7 +66,8 @@
   "DELETE_PERMANENTLY": "You are going to permanently delete the {{type}} \"{{name}}\".",
   "ENTER_DATASET_NAME": "Enter the dataset name",
   "NO_UNDONE_CONFIRM": "This operation cannot be undone. Are you sure ?",
-  "DELETE_STEP_CASCADE_MODE": "You are going to remove all actions from the selected one to the end. Are you sure ?",
+  "DELETE_STEP": "You are going to remove this action : \"{{action}}\" on \"{{column}}\".",
+  "DELETE_STEP_CASCADE_MODE_WARNING": "WARNING : all actions from the selected one to the end will be removed in this mode. If this is not what you want, try to remove a single action instead.",
   "UPDATE_EXISTING_DATASET": "Do you want to update existing \"{{dataset}}\" dataset ?",
 
   "_comment": "import remote dataset",

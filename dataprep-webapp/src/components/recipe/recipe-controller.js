@@ -72,12 +72,23 @@
          * @name remove
          * @methodOf data-prep.recipe.controller:RecipeCtrl
          * @param {object} step The step to remove
+         * @param {string} mode The removal mode ('cascade' | 'single')
          * @description Show a popup to confirm the removal and remove it when user confirm
          */
-        vm.remove = function remove(step) {
-            TalendConfirmService.confirm({disableEnter: true}, ['DELETE_STEP_CASCADE_MODE'])
+        vm.remove = function remove(step, mode) {
+            var confirmationText = ['DELETE_STEP'];
+            if(mode !== 'single') {
+                confirmationText[1] = 'DELETE_STEP_CASCADE_MODE_WARNING';
+            }
+            var args = {
+                action: step.transformation.label,
+                /*jshint camelcase: false */
+                column: step.actionParameters.parameters.column_name
+            };
+
+            TalendConfirmService.confirm({disableEnter: true}, confirmationText, args)
                 .then(function() {
-                    PlaygroundService.removeStep(step, 'cascade');
+                    PlaygroundService.removeStep(step, mode);
                 });
         };
 
