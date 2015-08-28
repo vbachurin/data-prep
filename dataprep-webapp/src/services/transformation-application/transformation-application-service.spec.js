@@ -6,7 +6,7 @@ describe('Transformation Application Service', function () {
 
 	beforeEach(module('data-prep.services.transformationApplication'));
 
-	beforeEach(inject(function ($q, PlaygroundService, ColumnSuggestionService, EarlyPreviewService, PreviewService, RecipeService) {
+	beforeEach(inject(function ($q, PlaygroundService, ColumnSuggestionService, EarlyPreviewService) {
 		spyOn(EarlyPreviewService, 'deactivatePreview').and.returnValue();
 		spyOn(EarlyPreviewService, 'deactivateDynamicModal').and.returnValue();
 		spyOn(EarlyPreviewService, 'cancelPendingPreview').and.returnValue();

@@ -2,11 +2,10 @@
 	'use strict';
 
 	/**
-	 * @ngdoc ???????????????
-	 * @name data-prep.services.???????????????
-	 * @description This module contains the services to manipulate ???????????????
-	 * @requires data-prep.services.???????????????
-	 * @requires data-prep.services.transformation.service:ColumnSuggestionService
+	 * @ngdoc object
+	 * @name data-prep.services.transformationApplication
+	 * @description applies a given transformation on a given scope
+	 * @requires data-prep.services.playground.service
 	 */
 	angular.module('data-prep.services.transformationApplication', [
 		'data-prep.services.playground'

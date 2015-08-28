@@ -6,7 +6,7 @@ describe('Actions suggestions-stats controller', function () {
 
     beforeEach(module('data-prep.actions-suggestions'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService, RecipeService, PreviewService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -65,7 +65,7 @@ describe('Actions suggestions-stats controller', function () {
             spyOn(TransformationApplicationService, 'transformClosure').and.returnValue(function(){});
         }));
 
-        it('should append new step on static transformation selection', inject(function (TransformationApplicationService, PlaygroundService) {
+        it('should append new step on static transformation selection', inject(function (TransformationApplicationService) {
             //given
             var transformation = {name: 'tolowercase'};
             var transfoScope = 'column';
