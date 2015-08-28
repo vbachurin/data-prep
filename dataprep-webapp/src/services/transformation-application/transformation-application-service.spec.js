@@ -6,29 +6,23 @@ describe('Transformation Application Service service', function () {
 
 	beforeEach(module('data-prep.services.transformationApplication'));
 
-	beforeEach(inject(function ($q, PlaygroundService, ColumnSuggestionService, EarlyPreviewService) {
+	beforeEach(inject(function ($q, PlaygroundService, ColumnSuggestionService, EarlyPreviewService, PreviewService) {
 		spyOn(EarlyPreviewService, 'deactivatePreview').and.returnValue();
-		spyOn(EarlyPreviewService, 'deactivateDynamicModal').and.returnValue();
+		spyOn(EarlyPreviewService, 'deactivateDynamicModal').and.callThrough();
 		spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when());
-		//spyOn(PreparationService, 'getDetails').and.returnValue($q.when({
-		//	data: preparationDetails()
-		//}));
-		//spyOn(TransformationService, 'resetParamValue').and.returnValue();
-		//spyOn(TransformationService, 'initDynamicParameters').and.callFake(function (transformation) {
-		//	transformation.cluster = initialCluster();
-		//	return $q.when(transformation);
-		//});
-		//spyOn(TransformationService, 'initParamsValues').and.callThrough();
+		ColumnSuggestionService.currentColumn = {id:'0001', name:'firstname'};
+		spyOn(PreviewService, 'getPreviewAddRecords').and.returnValue();
+		spyOn(PreviewService, 'cancelPreview').and.returnValue();
 	}));
 
 	describe('refresh', function () {
-		it('should reset recipe item list when no preparation is loaded', inject(function (TransformationApplicationService, PlaygroundService, ColumnSuggestionService) {
+		it('should call appendStep function on transform closure execution', inject(function (TransformationApplicationService, PlaygroundService, ColumnSuggestionService) {
 			///given
 			var transformation = {name: 'tolowercase'};
 			var transfoScope = 'column';
 			var params = {param: 'value'};
 			var column = {id: '0001', name: 'firstname'};
-			ColumnSuggestionService.currentColumn = {id:'0001', name:'firstname'};
+
 
 			//when
 			var closure = TransformationApplicationService.transformClosure(transformation, transfoScope);
@@ -45,15 +39,40 @@ describe('Transformation Application Service service', function () {
 
 		}));
 
-		it('should get recipe with no params when a preparation is loaded', inject(function ($rootScope, RecipeService, PreparationService) {
+		it('should hide modal after step append', inject(function ($rootScope, TransformationApplicationService, EarlyPreviewService) {
 			//given
-
+			var transformation = {name: 'tolowercase'};
+			var transfoScope = 'column';
+			var params = {param: 'value'};
+			EarlyPreviewService.showDynamicModal = true;
 
 			//when
-
+			var closure = TransformationApplicationService.transformClosure(transformation, transfoScope);
+			closure(params);
+			$rootScope.$digest();
 
 			//then
-
+			expect(EarlyPreviewService.deactivateDynamicModal).toHaveBeenCalled();
+			expect(EarlyPreviewService.showDynamicModal).toBe(false);
 		}));
+
+		it('should cancel pending early preview on step append', inject(function ($timeout, PreviewService, EarlyPreviewService, TransformationApplicationService, PlaygroundService) {
+			//given
+			var transformation = {name: 'tolowercase'};
+			var transfoScope = 'column';
+			var params = {param: 'value'};
+			PlaygroundService.currentMetadata = {id : '0004'}
+
+			EarlyPreviewService.earlyPreview(transformation, transfoScope)(params);
+
+			//when
+			var closure = TransformationApplicationService.transformClosure(transformation, transfoScope);
+			closure(params);
+
+			//then : preview should be disabled
+			$timeout.flush();
+			expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
+		}));
+
 	});
 });

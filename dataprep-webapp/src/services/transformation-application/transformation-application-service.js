@@ -24,6 +24,7 @@
 			var currentCol = ColumnSuggestionService.currentColumn;
 			return function(params) {
 				EarlyPreviewService.deactivatePreview();
+				EarlyPreviewService.cancelPendingPreview();
 
 				params = params || {};
 				params.scope = transfoScope;

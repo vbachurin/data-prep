@@ -19,16 +19,21 @@
 		var previewCancelerTimeout;
 
 
-		this.deactivatePreview = function activatePreview (){
+		self.deactivatePreview = function activatePreview (){
 			self.previewDisabled = true;
 		};
 
-		this.activatePreview = function activatePreview (){
+		self.activatePreview = function activatePreview (){
 			self.previewDisabled = false;
 		};
 
-		this.deactivateDynamicModal = function activatePreview (){
+		self.deactivateDynamicModal = function activatePreview (){
 			self.showDynamicModal = false;
+		};
+
+		self.cancelPendingPreview = function cancelPendingPreview() {
+			$timeout.cancel(previewTimeout);
+			$timeout.cancel(previewCancelerTimeout);
 		};
 
 		/**??????????????????????????????
@@ -39,7 +44,7 @@
 		 * @param {string} transfoScope The transformation scope??????????????????????????????
 		 * @description Perform an early preview (preview before transformation application) after a 200ms delay??????????????????????????????
 		 */
-		this.earlyPreview = function earlyPreview(transformation, transfoScope) {
+		self.earlyPreview = function earlyPreview(transformation, transfoScope) {
 			/*jshint camelcase: false */
 			var currentCol = ColumnSuggestionService.currentColumn;
 			return function(params) {
@@ -47,8 +52,7 @@
 					return;
 				}
 
-				$timeout.cancel(previewTimeout);
-				$timeout.cancel(previewCancelerTimeout);
+				self.cancelPendingPreview();
 
 				previewTimeout = $timeout(function() {
 					params.scope = transfoScope;
@@ -69,12 +73,12 @@
 		 * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl???????????????????????????
 		 * @description Cancel any current or pending early preview???????????????????????????
 		 */
-		this.cancelEarlyPreview = function cancelEarlyPreview() {
+		self.cancelEarlyPreview = function cancelEarlyPreview() {
 			if(self.previewDisabled) {
 				return;
 			}
 
-			$timeout.cancel(previewTimeout);
+			self.cancelPendingPreview();
 
 			previewCancelerTimeout = $timeout(function() {
 				RecipeService.cancelEarlyPreview();

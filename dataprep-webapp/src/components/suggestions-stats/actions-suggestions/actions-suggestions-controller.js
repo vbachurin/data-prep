@@ -15,11 +15,9 @@
 
         var vm = this;
         vm.columnSuggestionService = ColumnSuggestionService;
-        vm.earlyPreviewService = EarlyPreviewService;
-        vm.transformationApplicationService = TransformationApplicationService;
-        vm.transformClosure = vm.transformationApplicationService.transformClosure;
-        vm.earlyPreview = vm.earlyPreviewService.earlyPreview;
-        vm.cancelEarlyPreview = vm.earlyPreviewService.cancelEarlyPreview;
+        vm.transformClosure = TransformationApplicationService.transformClosure;
+        vm.earlyPreview = EarlyPreviewService.earlyPreview;
+        vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
 
         /**
          * @ngdoc property
@@ -43,7 +41,7 @@
          * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
          * @description Flag that change the dynamic parameters modal display
          */
-        vm.showDynamicModal = vm.earlyPreviewService.showDynamicModal;
+        vm.showDynamicModal = EarlyPreviewService.showDynamicModal;
 
         /**
          * @ngdoc method
@@ -60,7 +58,6 @@
             };
             return TransformationService.initDynamicParameters(transfo, infos);
         };
-
 
         /**
          * @ngdoc property

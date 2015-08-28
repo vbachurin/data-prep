@@ -18,10 +18,10 @@ describe('Actions suggestions-stats controller', function () {
 
         spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when());
         spyOn(TransformationService, 'initDynamicParameters').and.returnValue($q.when());
-        spyOn(RecipeService, 'earlyPreview').and.returnValue();
-        spyOn(RecipeService, 'cancelEarlyPreview').and.returnValue();
-        spyOn(PreviewService, 'getPreviewAddRecords').and.returnValue();
-        spyOn(PreviewService, 'cancelPreview').and.returnValue();
+        spyOn(RecipeService, 'earlyPreview').and.returnValue();//?????????????is it important
+        spyOn(RecipeService, 'cancelEarlyPreview').and.returnValue();//?????????????is it important
+        spyOn(PreviewService, 'getPreviewAddRecords').and.returnValue();//????????????????????????? is it importnat
+        spyOn(PreviewService, 'cancelPreview').and.returnValue();//????????????????????????? is it importnat
     }));
 
     it('should init vars and flags', inject(function () {
@@ -62,51 +62,14 @@ describe('Actions suggestions-stats controller', function () {
     describe('with initiated state', function () {
         var column = {id: '0001', name: 'col1'};
 
-        beforeEach(inject(function (ColumnSuggestionService, PlaygroundService, PreparationService) {
+        beforeEach(inject(function ($q, ColumnSuggestionService, PlaygroundService, PreparationService, TransformationApplicationService) {
             ColumnSuggestionService.currentColumn = column;
             PlaygroundService.currentMetadata = {id: 'dataset_id'};
             PreparationService.currentPreparationId = 'preparation_id';
-        }));
-/*
-        it('should call appendStep function on transform closure execution', inject(function (PlaygroundService) {
-            //given
-            var transformation = {name: 'tolowercase'};
-            var transfoScope = 'column';
-            var params = {param: 'value'};
-            var ctrl = createController();
-
-            //when
-            var closure = ctrl.transformClosure(transformation, transfoScope);
-            closure(params);
-
-            //then
-            var expectedParams = {
-                param: 'value',
-                scope: transfoScope,
-                column_id: column.id,
-                column_name: column.name
-            };
-            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
+            spyOn(TransformationApplicationService, 'transformClosure').and.returnValue(function(){});
         }));
 
-        it('should hide modal after step append', inject(function ($rootScope) {
-            //given
-            var transformation = {name: 'tolowercase'};
-            var transfoScope = 'column';
-            var params = {param: 'value'};
-            var ctrl = createController();
-            ctrl.showDynamicModal = true;
-
-            //when
-            var closure = ctrl.transformClosure(transformation, transfoScope);
-            closure(params);
-            $rootScope.$digest();
-
-            //then
-            expect(ctrl.showDynamicModal).toBe(false);
-        }));
-
-        it('should append new step on static transformation selection', inject(function (PlaygroundService) {
+        it('should append new step on static transformation selection', inject(function (TransformationApplicationService, PlaygroundService) {
             //given
             var transformation = {name: 'tolowercase'};
             var transfoScope = 'column';
@@ -114,14 +77,7 @@ describe('Actions suggestions-stats controller', function () {
 
             //when
             ctrl.select(transformation, transfoScope);
-
-            //then
-            var expectedParams = {
-                scope: transfoScope,
-                column_id: column.id,
-                column_name: column.name
-            };
-            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
+            expect(TransformationApplicationService.transformClosure).toHaveBeenCalledWith(transformation, transfoScope);
         }));
 
         it('should set current dynamic transformation and scope on dynamic transformation selection', inject(function () {
@@ -294,78 +250,7 @@ describe('Actions suggestions-stats controller', function () {
             );
         }));
 
-        it('should trigger grid preview after a 300ms delay', inject(function ($timeout, PreviewService) {
-            //given
-            var ctrl = createController();
-
-            //when
-            ctrl.earlyPreview(transformation, transfoScope)(params);
-            expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
-            $timeout.flush(300);
-
-            //then
-            expect(PreviewService.getPreviewAddRecords).toHaveBeenCalledWith(
-                currentMetadata.id,
-                'replace_on_value',
-                {
-                    value: 'James',
-                    replace: 'Jimmy',
-                    scope: transfoScope,
-                    column_id: column.id,
-                    column_name: column.name
-                }
-            );
-        }));
-
-        it('should cancel pending early preview', inject(function ($timeout, RecipeService, PreviewService) {
-            //given
-            var ctrl = createController();
-
-            ctrl.earlyPreview(transformation, transfoScope)(params);
-            expect(RecipeService.earlyPreview).not.toHaveBeenCalled();
-            expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
-
-            //when
-            ctrl.cancelEarlyPreview();
-            $timeout.flush();
-
-            //then
-            expect(RecipeService.earlyPreview).not.toHaveBeenCalled();
-            expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
-        }));
-
-        it('should cancel current early preview after a 100ms delay', inject(function ($timeout, RecipeService, PreviewService) {
-            //given
-            var ctrl = createController();
-
-            //when
-            ctrl.cancelEarlyPreview();
-            expect(RecipeService.cancelEarlyPreview).not.toHaveBeenCalled();
-            expect(PreviewService.cancelPreview).not.toHaveBeenCalled();
-            $timeout.flush(100);
-
-            //then
-            expect(RecipeService.cancelEarlyPreview).toHaveBeenCalled();
-            expect(PreviewService.cancelPreview).toHaveBeenCalled();
-        }));
-
-        it('should cancel pending early preview on step append', inject(function ($timeout, PreviewService) {
-            //given
-            var transformation = {name: 'tolowercase'};
-            var transfoScope = 'column';
-            var params = {param: 'value'};
-            var ctrl = createController();
-
-            ctrl.earlyPreview(transformation, transfoScope)(params);
-
-            //when
-            var closure = ctrl.transformClosure(transformation, transfoScope);
-            closure(params);
-
-            //then : preview should be disabled
-            $timeout.flush();
-            expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
-        }));
+        /*
 
         it('should disable early preview on step append', inject(function ($timeout, PreviewService) {
             //given
@@ -428,7 +313,6 @@ describe('Actions suggestions-stats controller', function () {
             expect(PreviewService.getPreviewAddRecords).toHaveBeenCalled();
 
             jasmine.clock().uninstall();
-        }));
-        */
+        }));*/
     });
 });
