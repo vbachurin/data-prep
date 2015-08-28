@@ -75,7 +75,7 @@
                     //--------------------------------------------------------------------------------------------------
                     svg.append('g').append('foreignObject')
                         .attr('width', width)
-                        .attr('height', 30)
+                        .attr('height', 40)
                         .attr('transform', 'translate(0,' + (height - 45) + ')')
                         .append('xhtml:div')
                         .html('<span><b>Min </b><input type="text" name="minRange"></span> <span style="float:right;"><b>Max </b> <input type="text" name="maxRange"/></span>');
@@ -248,7 +248,9 @@
                         .attr('y', margin.top + 5)
                         .attr('text-anchor', 'start')
                         .attr('fill', 'grey')
-                        .text(minimum+' <');
+                        .text(function(){
+                            return minimum < -1e4 || minimum > 1e4 ? d3.format('e')(minimum): d3.format(',')(minimum);
+                        });
 
                     svg.append('g').append('text')
                         .attr('class', 'the-maximum-label')
@@ -256,7 +258,9 @@
                         .attr('y', margin.top + 5)
                         .attr('text-anchor', 'end')
                         .attr('fill', 'grey')
-                        .text('< '+maximum);
+                        .text(function(){
+                            return maximum < -1e4 || maximum > 1e4 ? d3.format('e')(maximum): d3.format(',')(maximum);
+                        });
                     //--------------------------------------------------------------------------------------------------
                     //--------------------------------------------ERROR TEXT--------------------------------------------
                     //--------------------------------------------------------------------------------------------------

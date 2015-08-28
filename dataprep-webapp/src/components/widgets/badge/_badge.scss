@@ -5,6 +5,7 @@ $error-color: #fbe3e4 !default;
 $success-color: #e6efc2 !default;
 
 $contains-color: $dark-blue;
+$inside_range-color: $blue;
 $empty_records-color: $white;
 $valid_records-color: $color-ok;
 $invalid_records-color: rgb(247, 168, 0);
@@ -67,6 +68,14 @@ $invalid_records-color: rgb(247, 168, 0);
 
   &.contains {
     @include badge($contains-color);
+
+    .badge-close {
+      color: $white;
+    }
+  }
+
+  &.inside_range {
+    @include badge($inside_range-color);
 
     .badge-close {
       color: $white;
