@@ -8,7 +8,7 @@
      * @requires data-prep.services.transformation.service:TransformationCacheService
      * @requires data-prep.services.utils.service:ConverterService
      */
-    function ColumnSuggestionService($rootScope, TransformationCacheService) {
+    function ColumnSuggestionService($timeout, TransformationCacheService) {
         var COLUMN_CATEGORY = 'columns';
         var self = this;
 
@@ -44,7 +44,7 @@
          * @ngdoc property
          * @name tab
          * @propertyOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @description The currently selected tab
+         * @description The currently Actions selected tab
          * @type {Object}
          */
         self.tab = null;
@@ -117,12 +117,13 @@
          * @ngdoc method
          * @name selectTab
          * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @param {String} tab The new selected tab title
-         * @description Set the selected tab
+         * @param {String} tab The new Actions selected tab title
+         * @description Set the Actions selected tab
          */
         this.selectTab = function setColumn(tab) {
-            self.tab = tab;
-            $rootScope.$digest();
+            $timeout(function(){
+                self.tab = tab;
+            });
         };
     }
 

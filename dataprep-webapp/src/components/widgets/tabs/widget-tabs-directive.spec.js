@@ -14,8 +14,10 @@ describe('Tabs directive', function () {
     beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
 
+        scope.selectedTab = 'Cell';
+
         createElement = function () {
-            var template = '<talend-tabs>' +
+            var template = '<talend-tabs tab="selectedTab">' +
                 '   <talend-tabs-item tab-title="tab 1 title">' +
                 '       <div id="tab1Content">Content tab 1</div>' +
                 '   </talend-tabs-item>' +
@@ -80,4 +82,28 @@ describe('Tabs directive', function () {
         //then
         expect(element.controller('talendTabs').tabs.length).toBe(0);
     });
+
+    it('should call setSelectedTab when scope.tab changes', inject(function ($rootScope) {
+        //given
+        createElement();
+        spyOn(element.controller('talendTabs'), 'setSelectedTab');
+
+        //when
+        scope.selectedTab = 'Column';
+        $rootScope.$digest();
+        //then
+        expect(element.controller('talendTabs').setSelectedTab).toHaveBeenCalled();
+    }));
+
+    it('should NOT call setSelectedTab if scope.tab is null', inject(function ($rootScope) {
+        //given
+        createElement();
+        spyOn(element.controller('talendTabs'), 'setSelectedTab');
+
+        //when
+        scope.selectedTab = null;
+        $rootScope.$digest();
+        //then
+        expect(element.controller('talendTabs').setSelectedTab).not.toHaveBeenCalled();
+    }));
 });

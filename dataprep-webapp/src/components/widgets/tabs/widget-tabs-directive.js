@@ -39,7 +39,7 @@
                 },
                 function () {
                     if (ctrl.tab) {
-                        ctrl.updateTab(ctrl.tab);
+                        ctrl.setSelectedTab(ctrl.tab);
                     }
                 }
 

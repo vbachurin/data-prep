@@ -46,17 +46,23 @@
 
         /**
          * @ngdoc method
-         * @name updateTab
+         * @name setSelectedTab
          * @methodOf talend.widget.controller:TalendTabsCtrl
-         * @description Update selected tab
+         * @description Set selected tab
          */
-        vm.updateTab = function select(tabTitle) {
-            _.forEach(vm.tabs, function(tabToDeactivate) {
-                tabToDeactivate.active = false;
-            });
+        vm.setSelectedTab = function select(tabTitle) {
 
             var tabToActivate = _.findWhere(vm.tabs, {tabTitle: tabTitle});
-            tabToActivate.active = true;
+
+            if(tabToActivate){
+
+                _.forEach(vm.tabs, function(tabToDeactivate) {
+                    tabToDeactivate.active = false;
+                });
+
+                tabToActivate.active = true;
+            }
+
         };
 
         /**

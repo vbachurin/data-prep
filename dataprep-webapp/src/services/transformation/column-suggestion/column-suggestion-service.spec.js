@@ -100,4 +100,16 @@ describe('Column suggestion service', function () {
         //then
         expect(ColumnSuggestionService.transformations).toBe(null);
     }));
+
+    it('should update the actions selected tab ', inject(function ($rootScope, ColumnSuggestionService, $timeout) {
+        //given
+        ColumnSuggestionService.tab = 'Cell';
+
+        //when
+        ColumnSuggestionService.selectTab('Column');
+        $timeout.flush();
+
+        //then
+        expect(ColumnSuggestionService.tab).toBe('Column');
+    }));
 });

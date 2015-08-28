@@ -25,6 +25,7 @@ describe('Datagrid external service', function () {
 
         spyOn(StatisticsService, 'processData').and.returnValue();
         spyOn(ColumnSuggestionService, 'setColumn').and.returnValue();
+        spyOn(ColumnSuggestionService, 'selectTab').and.returnValue();
     }));
 
     beforeEach(function () {
@@ -81,11 +82,13 @@ describe('Datagrid external service', function () {
 
             expect(StatisticsService.processData).not.toHaveBeenCalled();
             expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
+
             jasmine.clock().tick(200);
 
             //then
             expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
             expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
+            expect(ColumnSuggestionService.selectTab).toHaveBeenCalledWith('Cell');
         }));
 
         it('should NOT update playground right panel on active cell changed if column is the same', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
@@ -130,6 +133,7 @@ describe('Datagrid external service', function () {
             jasmine.clock().tick(1);
             expect(StatisticsService.processData).not.toHaveBeenCalled();
             expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
+
             jasmine.clock().tick(200);
 
             //then
@@ -148,6 +152,7 @@ describe('Datagrid external service', function () {
             //then
             expect(StatisticsService.processData).not.toHaveBeenCalled();
             expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
+            expect(ColumnSuggestionService.selectTab).not.toHaveBeenCalled();
         }));
 
         it('should update playground right panel on header click after a 200ms delay', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
@@ -164,11 +169,13 @@ describe('Datagrid external service', function () {
 
             expect(StatisticsService.processData).not.toHaveBeenCalled();
             expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
+
             jasmine.clock().tick(200);
 
             //then
             expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
             expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
+            expect(ColumnSuggestionService.selectTab).toHaveBeenCalledWith('Column');
         }));
 
         it('should update playground right panel on header right click after a 200ms delay', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
@@ -185,11 +192,13 @@ describe('Datagrid external service', function () {
 
             expect(StatisticsService.processData).not.toHaveBeenCalled();
             expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
+
             jasmine.clock().tick(200);
 
             //then
             expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
             expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
+            expect(ColumnSuggestionService.selectTab).toHaveBeenCalledWith('Column');
         }));
 
         it('should NOT update playground right panel on header click when column is the same', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
