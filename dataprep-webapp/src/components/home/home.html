@@ -3,15 +3,18 @@
         <ul id="help-dataset-nav">
             <li class="primary">
 
-                <talend-button-dropdown button-icon="m"
-                                        button-text="{{ ::'IMPORT_DATASET' | translate }}"
-                                        button-action="homeCtrl.startDefaultImport()">
-                    <ul>
-                        <li ng-repeat="importType in homeCtrl.importTypes" ng-click="homeCtrl.startImport(importType)">
-                            {{importType.name}}
-                        </li>
-                    </ul>
-                </talend-button-dropdown>
+                <div id="help-import-local">
+                    <talend-button-dropdown button-icon="m"
+                                            button-text="{{ ::'IMPORT_DATASET' | translate }}"
+                                            button-action="homeCtrl.startDefaultImport()"
+                            >
+                        <ul>
+                            <li ng-repeat="importType in homeCtrl.importTypes" ng-click="homeCtrl.startImport(importType)">
+                                {{importType.name}}
+                            </li>
+                        </ul>
+                    </talend-button-dropdown>
+                </div>
 
                 <input type="file"
                        id="datasetFile"

@@ -9,7 +9,7 @@
      * @requires data-prep.services.dataset.service:DatasetRestService
      * @requires data-prep.services.preparation.service:PreparationListService
      */
-    function DatasetService($q, DatasetListService, DatasetRestService, PreparationListService) {
+    function DatasetService(DatasetListService, DatasetRestService, PreparationListService) {
         return {
             import: importRemoteDataset,
             create: create,
@@ -127,9 +127,9 @@
          * @returns {promise} The pending GET or resolved promise
          */
         function getDatasets() {
-            return datasetsList() ?
-                $q.when(datasetsList()) :
-                DatasetListService.refreshDatasets().then(consolidatePreparationsAndDatasets);
+            return DatasetListService.hasDatasetsPromise() ?
+                DatasetListService.getDatasetsPromise() :
+                refreshDatasets();
         }
 
         /**
@@ -195,7 +195,7 @@
          * @returns {promise} The dataset
          */
         function getDatasetById(datasetId) {
-            return DatasetListService.getDatasetsPromise().then( function(datasetList) {
+            return DatasetListService.getDatasetsPromise().then(function(datasetList) {
                 return _.find(datasetList, function(dataset) {
                     return dataset.id === datasetId;
                 });
@@ -216,7 +216,7 @@
          * @returns {Object} - the adapted dataset infos {name: string, progress: number, file: *, error: boolean}
          */
         function createDatasetInfo(file, name, id) {
-            var info = {
+            return {
                 name: name,
                 progress: 0,
                 file: file,
@@ -224,8 +224,6 @@
                 id: id,
                 type: file === null ? 'remote' : 'file'
             };
-
-            return info;
         }
 
         /**
@@ -269,6 +267,7 @@
          * @ngdoc method
          * @name setDatasetSheet
          * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {object} metadata The dataset metadata
          * @param {string} sheetName The sheet name
          * @description Set the selected sheet to the dataset
          * @returns {Promise} The process Promise
