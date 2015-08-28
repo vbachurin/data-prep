@@ -63,8 +63,8 @@
             PlaygroundService.updateColumn(vm.column.id, type.id, '')
                 .catch(setColumnDomainAndType.bind(vm, originalDomain, originalType));
                 */
-            PlaygroundService.appendStep('domain_change',
-                {'scope':'column','column_id': vm.column.id,'NEW_DOMAIN':type.id});
+            PlaygroundService.appendStep('type_change',
+                {'scope':'column','column_id': vm.column.id,'NEW_TYPE':type.id});
         };
 
         /**

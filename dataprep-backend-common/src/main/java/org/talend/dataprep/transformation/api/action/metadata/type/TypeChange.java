@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.action.metadata.domain;
+package org.talend.dataprep.transformation.api.action.metadata.type;
 
 import java.util.Map;
 
@@ -15,27 +15,27 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 /**
- * Change the domain of a column.
+ * Change the type of a column
  * <b>This action is not displayed in the UI it's here to ease recording it as a Step It's available from column headers</b>
  */
-@Component(DomainChange.ACTION_BEAN_PREFIX + DomainChange.DOMAIN_CHANGE_ACTION_NAME)
-public class DomainChange extends AbstractActionMetadata implements ColumnAction {
+@Component(TypeChange.ACTION_BEAN_PREFIX + TypeChange.TYPE_CHANGE_ACTION_NAME)
+public class TypeChange extends AbstractActionMetadata implements ColumnAction {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DomainChange.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TypeChange.class);
 
     /**
      * The action name.
      */
-    public static final String DOMAIN_CHANGE_ACTION_NAME = "domain_change"; //$NON-NLS-1$
+    public static final String TYPE_CHANGE_ACTION_NAME = "type_change"; //$NON-NLS-1$
 
-    public static final String NEW_DOMAIN_PARAMETER_KEY = "NEW_DOMAIN";
+    public static final String NEW_TYPE_PARAMETER_KEY = "NEW_TYPE";
 
     /**
      * @see ActionMetadata#getName()
      */
     @Override
     public String getName() {
-        return DOMAIN_CHANGE_ACTION_NAME;
+        return TYPE_CHANGE_ACTION_NAME;
     }
 
     /**
@@ -67,12 +67,11 @@ public class DomainChange extends AbstractActionMetadata implements ColumnAction
             // FIXME exception?
             return;
         }
-        String newDomain = parameters.get(NEW_DOMAIN_PARAMETER_KEY);
+        String newType = parameters.get(NEW_TYPE_PARAMETER_KEY);
 
-        if (StringUtils.isNotEmpty(newDomain)) {
-            columnMetadata.setDomain(newDomain);
+        if (StringUtils.isNotEmpty(newType)) {
+            columnMetadata.setType(newType);
         }
-
     }
 
 }
