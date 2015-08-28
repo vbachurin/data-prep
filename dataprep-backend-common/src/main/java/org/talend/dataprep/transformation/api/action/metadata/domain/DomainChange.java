@@ -2,6 +2,7 @@ package org.talend.dataprep.transformation.api.action.metadata.domain;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -58,16 +59,21 @@ public class DomainChange extends AbstractActionMetadata implements ColumnAction
 
         LOGGER.debug("applyOnColumn for columnId {} with parameters {} ", columnId, parameters);
 
-        ColumnMetadata columnMetadata = row.getRowMetadata().getById( columnId );
-        if (columnMetadata == null){
+        ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
+        if (columnMetadata == null) {
             // FIXME exception?
             return;
         }
-        String newDomain = parameters.get( "NEW_DOMAIN" );
-        columnMetadata.setDomain( newDomain );
+        String newDomain = parameters.get("NEW_DOMAIN");
+        String newType = parameters.get("NEW_TYPE");
 
+        if (StringUtils.isNotEmpty(newDomain)) {
+            columnMetadata.setDomain(newDomain);
+        }
 
-
+        if (StringUtils.isNotEmpty(newType)) {
+            columnMetadata.setType(newType);
+        }
     }
 
 }

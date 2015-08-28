@@ -43,8 +43,8 @@
             DatasetService.updateColumn(PlaygroundService.currentMetadata.id, vm.column.id, {domain: domain.id})
                 .catch(setColumnDomainAndType.bind(vm, originalDomain));
             */
-            PlaygroundService.appendStep("domain_change",
-                {"scope":"column","column_id":"0002","NEW_DOMAIN":"ANY"});
+            PlaygroundService.appendStep('domain_change',
+                {'scope':'column','column_id': vm.column.id,'NEW_DOMAIN':domain.id});
         };
 
         /**
@@ -63,8 +63,8 @@
             PlaygroundService.updateColumn(vm.column.id, type.id, '')
                 .catch(setColumnDomainAndType.bind(vm, originalDomain, originalType));
                 */
-            PlaygroundService.appendStep("domain_change",
-                {"scope":"column","column_id":"0002","NEW_DOMAIN":"ANY"});
+            PlaygroundService.appendStep('domain_change',
+                {'scope':'column','column_id': vm.column.id,'NEW_DOMAIN':type.id});
         };
 
         /**
