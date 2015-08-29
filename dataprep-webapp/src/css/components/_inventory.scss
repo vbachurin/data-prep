@@ -1,10 +1,17 @@
 $hover-color: #c9d7e4;
 $border-color: #CECECE;
 
+$inventory-sort-height: 50px;
+
 .inventory {
 
   @include flex-column();
   font-size: 0.9em;
+
+  .inventory-datasets {
+    @include calc(height, "100vh - 2 * " + $header-height + " - " + $footer-height + " - " + $inventory-sort-height);
+    overflow-y: auto;
+  }
 
   .inventory-sort {
     @include flex-basis(52px);
@@ -12,11 +19,11 @@ $border-color: #CECECE;
     font-weight: 300;
     padding: 15px 5px 0 0;
     text-align: right;
+    height: $inventory-sort-height;
   }
 
   .inventory-entry {
     @include flex-basis(72px);
-
     @include flex-row();
     @include align-items(center);
 

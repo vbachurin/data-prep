@@ -32,15 +32,15 @@
             create: create,
             delete: deletePreparation,
             deleteCurrentPreparation: deleteCurrentPreparation,
-
-            //update preparation
             setName: setName,
-            updateStep: updateStep,
+
+            //preparation steps lifecycle
             copyImplicitParameters: copyImplicitParameters,
+            paramsHasChanged: paramsHasChanged,
             appendStep: appendStep,
             executeAppendStep: executeAppendStep,
+            updateStep: updateStep,
             removeStep: removeStep,
-            paramsHasChanged: paramsHasChanged,
 
             //preview
             getPreviewDiff: getPreviewDiff,
@@ -202,19 +202,6 @@
 
         /**
          * @ngdoc method
-         * @name updateStep
-         * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {object} step The step to update
-         * @param {object} parameters The new action parameters
-         * @description Update a step with new parameters
-         * @returns {promise} The PUT promise
-         */
-        function updateStep(step, parameters) {
-            return PreparationRestService.updateStep(service.currentPreparationId, step.transformation.stepId, step.transformation.name, parameters);
-        }
-
-        /**
-         * @ngdoc method
          * @name copyImplicitParameters
          * @methodOf data-prep.services.preparation.service:PreparationService
          * @param {object} parameters The parameters to copy into
@@ -243,16 +230,16 @@
          * @name appendStep
          * @methodOf data-prep.services.preparation.service:PreparationService
          * @param {object} metadata The target metadata
-         * @param {object} action The action name
-         * @param {object} parameters The new action parameters
+         * @param {object | array} actionParams The transformation(s) configuration {action: string, parameters: {object}}
+         * @param {string} insertionStepId The insertion point step id. (Head = 'head' | falsy | head_step_id)
          * @description Append a step. If the preparation does not exists, it is created
          * @returns {promise} The PUT promise
          */
-        function appendStep(metadata, action, parameters) {
+        function appendStep(metadata, actionParams, insertionStepId) {
             var promise = service.currentPreparationId ? $q.when(service.currentPreparationId) : create(metadata, 'Preparation draft');
 
             return promise.then(function() {
-                return PreparationRestService.appendStep(service.currentPreparationId, action, parameters);
+                return PreparationRestService.appendStep(service.currentPreparationId, actionParams, insertionStepId);
             });
         }
 
@@ -272,16 +259,33 @@
             });
         }
 
+
+        /**
+         * @ngdoc method
+         * @name updateStep
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @param {object} step The step to update
+         * @param {object} parameters The new action parameters
+         * @description Update a step with new parameters
+         * @returns {promise} The PUT promise
+         */
+        function updateStep(step, parameters) {
+          return PreparationRestService.updateStep( service.currentPreparationId, step.transformation.stepId,
+              {action: step.transformation.name, parameters: parameters} );
+        }
+
+
         /**
          * @ngdoc method
          * @name removeStep
          * @methodOf data-prep.services.preparation.service:PreparationService
          * @param {object} stepId The step to delete
+         * @param {boolean} singleMode Delete only the target step if true, all steps from target otherwise
          * @description Delete a step.
          * @returns {promise} The DELETE promise
          */
-        function removeStep(stepId) {
-            return PreparationRestService.removeStep(service.currentPreparationId, stepId);
+        function removeStep(stepId, singleMode) {
+            return PreparationRestService.removeStep(service.currentPreparationId, stepId, singleMode);
         }
 
         /**

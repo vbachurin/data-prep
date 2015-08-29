@@ -36,6 +36,7 @@
         }
       }
     }
+
     &:hover{
       background-color: $light-gray;
     }
@@ -61,5 +62,16 @@
     &:hover {
       background: darken($background, 10%);
     }
+  }
+
+  .action-icon {
+    display: none;
+    margin-right: 5px;
+  }
+
+  .step-description:hover .action-icon {
+    animation: fadeInLeft 0.25s;
+    display: block;
+    float: left;
   }
 }

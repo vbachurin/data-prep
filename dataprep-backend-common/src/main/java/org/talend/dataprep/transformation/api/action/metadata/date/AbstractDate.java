@@ -1,18 +1,6 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
+import static org.talend.dataprep.api.type.Type.DATE;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -24,7 +12,20 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.talend.dataprep.api.type.Type.DATE;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class AbstractDate extends AbstractActionMetadata {
 
@@ -86,7 +87,6 @@ public abstract class AbstractDate extends AbstractActionMetadata {
         throw new DateTimeException("Test [" + value + "] does not match any known pattern");
     }
 
-
     /**
      * Utility method to read all of the presents date pattern in this column, looking in the DQ stats.
      *
@@ -130,7 +130,7 @@ public abstract class AbstractDate extends AbstractActionMetadata {
     /**
      * Return true if the given pattern is already held in the list of patterns.
      *
-     * @param pattern  the pattern to check.
+     * @param pattern the pattern to check.
      * @param patterns the list of patterns.
      * @return true if the given pattern is already held in the list of patterns.
      */

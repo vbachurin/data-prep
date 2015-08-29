@@ -26,6 +26,7 @@ public class AbstractDateTest {
     @Before
     public void init() throws IOException {
         action = new AbstractDate() {
+
             @Override
             public String getName() {
                 return null;

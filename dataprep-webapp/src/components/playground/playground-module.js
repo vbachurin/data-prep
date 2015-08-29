@@ -16,6 +16,7 @@
      * @requires data-prep.services.preparation
      * @requires data-prep.services.playground
      * @requires data-prep.services.recipe
+     * @requires data-prep.services.transformationApplication
      */
     angular.module('data-prep.playground', [
         'ui.router',
@@ -30,6 +31,7 @@
         'data-prep.suggestions-stats',
         'data-prep.services.preparation',
         'data-prep.services.playground',
-        'data-prep.services.recipe'
+        'data-prep.services.recipe',
+        'data-prep.services.transformationApplication'
     ]);
 })();

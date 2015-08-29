@@ -1,0 +1,13 @@
+{
+  "insertionStepId": "a41184275b046d86c8d98d413ed019bc0a7f3c49",
+  "actions": [
+    {
+      "action": "compute_length",
+      "parameters": {
+        "column_name": "lastname",
+        "column_id": "0001",
+        "scope": "column"
+      }
+    }
+  ]
+}
