@@ -1,7 +1,6 @@
 package org.talend.dataprep.api.service.command.preparation;
 
 import java.io.IOException;
-import java.io.StringWriter;
 
 import javax.annotation.PostConstruct;
 
@@ -9,7 +8,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.ByteArrayEntity;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -19,15 +18,13 @@ import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @Component
 @Scope("request")
 public class PreparationCreate extends DataPrepCommand<String> {
 
     private final Preparation preparation;
 
-    private String preparationJSONValue;
+    private byte[] preparationJSONValue;
 
     private PreparationCreate(HttpClient client, Preparation preparation) {
         super(APIService.PREPARATION_GROUP, client);
@@ -37,10 +34,7 @@ public class PreparationCreate extends DataPrepCommand<String> {
     @PostConstruct
     public void prepare() {
         try {
-            ObjectMapper mapper = builder.build();
-            StringWriter json = new StringWriter();
-            mapper.writer().writeValue(json, preparation);
-            preparationJSONValue = json.toString();
+            preparationJSONValue = getJsonWriter().writeValueAsBytes(preparation);
         } catch (IOException e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_CREATE_PREPARATION, e);
         }
@@ -52,7 +46,7 @@ public class PreparationCreate extends DataPrepCommand<String> {
         try {
             // Serialize preparation using configured serialization
             preparationCreation.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-            preparationCreation.setEntity(new StringEntity(preparationJSONValue));
+            preparationCreation.setEntity(new ByteArrayEntity(preparationJSONValue));
             HttpResponse response = client.execute(preparationCreation);
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == 200) {

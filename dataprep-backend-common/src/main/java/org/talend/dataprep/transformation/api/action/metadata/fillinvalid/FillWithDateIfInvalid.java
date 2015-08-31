@@ -34,6 +34,12 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
 
     public static final String FILL_INVALID_ACTION_NAME = "fillinvalidwithdefaultdate"; //$NON-NLS-1$
 
+    /**
+     * if changing pattern you must change the pattern in the ui as well
+     * dataprep-webapp/src/components/transformation/params/date/transformation-date-params.html
+     * Yup as usual those bloody Javascript hipsters reinvented the wheel and didn't want to use
+     * same pattern as the old school Java guys!!
+     */
     private static final String DATE_PATTERN = "dd/MM/yyyy HH:mm:ss";
 
     private static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);

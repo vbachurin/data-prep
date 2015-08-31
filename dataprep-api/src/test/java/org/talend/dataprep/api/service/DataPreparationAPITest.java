@@ -1111,7 +1111,7 @@ public class DataPreparationAPITest {
                 .post("/api/aggregate");
 
         // then
-        assertEquals(response.getStatusCode(), 400);
+        assertEquals(400, response.getStatusCode());
     }
 
     @Test
