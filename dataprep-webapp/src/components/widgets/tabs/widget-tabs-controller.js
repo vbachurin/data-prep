@@ -50,19 +50,11 @@
          * @methodOf talend.widget.controller:TalendTabsCtrl
          * @description Set selected tab
          */
-        vm.setSelectedTab = function select(tabTitle) {
-
-            var tabToActivate = _.findWhere(vm.tabs, {tabTitle: tabTitle});
-
-            if(tabToActivate){
-
-                _.forEach(vm.tabs, function(tabToDeactivate) {
-                    tabToDeactivate.active = false;
-                });
-
-                tabToActivate.active = true;
+        vm.setSelectedTab = function select(index) {
+            var tabToSelect = vm.tabs[index];
+            if(tabToSelect) {
+                vm.select(tabToSelect);
             }
-
         };
 
         /**

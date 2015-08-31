@@ -228,8 +228,7 @@ describe('Dataset column header directive', function () {
         expect(event.isDefaultPrevented()).toBe(true);
     });
 
-
-    it('should remove show-menu class on left click on grid-header', function () {
+    it('should hide menu on left click on grid-header', function () {
         //given
         createElement();
         element.find('.dropdown-menu').addClass('show-menu');
@@ -243,7 +242,7 @@ describe('Dataset column header directive', function () {
         expect(element.find('.dropdown-menu').hasClass('show-menu')).toBeFalsy();
     });
 
-    it('should add show-menu class on right click on grid-header if show-menu class is not added', function () {
+    it('should show menu on right click on grid-header if menu is hidden', function () {
         //given
         createElement();
         element.find('.dropdown-menu').removeClass('show-menu');
@@ -257,7 +256,7 @@ describe('Dataset column header directive', function () {
         expect(element.find('.dropdown-menu').hasClass('show-menu')).toBeTruthy();
     });
 
-    it('should remove show-menu class on right click on grid-header if show-menu class is already added', function () {
+    it('should hide menu on right click if menu is visible', function () {
         //given
         createElement();
         element.find('.dropdown-menu').addClass('show-menu');

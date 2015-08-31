@@ -117,14 +117,16 @@ describe('Tabs widget controller', function () {
         ctrl.register(tab4);
 
         //when
-        ctrl.setSelectedTab('my tab 3');
+        ctrl.setSelectedTab(2);
 
         //then
         expect(ctrl.tabs[0].active).toBeFalsy();
+        expect(ctrl.tabs[1].active).toBeFalsy();
         expect(ctrl.tabs[2].active).toBeTruthy();
+        expect(ctrl.tabs[3].active).toBeFalsy();
     });
 
-    it('should NOT update selected tab if argument is false', function() {
+    it('should NOT change tab selection when wanted tab does not exist', function() {
         //given
         var ctrl = createController();
         var tab = {active : true, tabTitle: 'my tab 1'};
@@ -138,10 +140,12 @@ describe('Tabs widget controller', function () {
         ctrl.register(tab4);
 
         //when
-        ctrl.setSelectedTab('my tab 5');
+        ctrl.setSelectedTab(4);
 
         //then
         expect(ctrl.tabs[0].active).toBeTruthy();
+        expect(ctrl.tabs[1].active).toBeFalsy();
         expect(ctrl.tabs[2].active).toBeFalsy();
+        expect(ctrl.tabs[3].active).toBeFalsy();
     });
 });

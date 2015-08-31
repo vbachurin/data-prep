@@ -14,8 +14,6 @@ describe('Tabs directive', function () {
     beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
 
-        scope.selectedTab = 'Cell';
-
         createElement = function () {
             var template = '<talend-tabs tab="selectedTab">' +
                 '   <talend-tabs-item tab-title="tab 1 title">' +
@@ -83,27 +81,31 @@ describe('Tabs directive', function () {
         expect(element.controller('talendTabs').tabs.length).toBe(0);
     });
 
-    it('should call setSelectedTab when scope.tab changes', inject(function ($rootScope) {
+    it('should call setSelectedTab when tab changes', inject(function ($rootScope) {
         //given
         createElement();
-        spyOn(element.controller('talendTabs'), 'setSelectedTab');
+        var ctrl = element.controller('talendTabs');
+        spyOn(ctrl, 'setSelectedTab');
 
         //when
-        scope.selectedTab = 'Column';
+        scope.selectedTab = 1;
         $rootScope.$digest();
+
         //then
-        expect(element.controller('talendTabs').setSelectedTab).toHaveBeenCalled();
+        expect(ctrl.setSelectedTab).toHaveBeenCalled();
     }));
 
-    it('should NOT call setSelectedTab if scope.tab is null', inject(function ($rootScope) {
+    it('should NOT call setSelectedTab if tab is not defined', inject(function ($rootScope) {
         //given
         createElement();
-        spyOn(element.controller('talendTabs'), 'setSelectedTab');
+        var ctrl = element.controller('talendTabs');
+        spyOn(ctrl, 'setSelectedTab');
 
         //when
-        scope.selectedTab = null;
+        scope.selectedTab = undefined;
         $rootScope.$digest();
+
         //then
-        expect(element.controller('talendTabs').setSelectedTab).not.toHaveBeenCalled();
+        expect(ctrl.setSelectedTab).not.toHaveBeenCalled();
     }));
 });

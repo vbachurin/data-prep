@@ -14,7 +14,7 @@ describe('Datagrid external service', function () {
     beforeEach(module('data-prep.datagrid'));
     beforeEach(module('data-prep.suggestions-stats'));
 
-    beforeEach(inject(function (StatisticsService, ColumnSuggestionService) {
+    beforeEach(inject(function (StatisticsService, SuggestionService) {
         /*global SlickGridMock:false */
         gridMock = new SlickGridMock();
         gridMock.initColumnsMock(gridColumns);
@@ -25,13 +25,14 @@ describe('Datagrid external service', function () {
         spyOn(gridMock.onScroll, 'subscribe').and.returnValue();
 
         spyOn(StatisticsService, 'processData').and.returnValue();
-        spyOn(ColumnSuggestionService, 'setColumn').and.returnValue();
-        spyOn(ColumnSuggestionService, 'selectTab').and.returnValue();
+        spyOn(SuggestionService, 'setColumn').and.returnValue();
+        spyOn(SuggestionService, 'selectTab').and.returnValue();
     }));
 
     beforeEach(function () {
         jasmine.clock().install();
     });
+
     afterEach(function () {
         jasmine.clock().uninstall();
     });
@@ -70,8 +71,8 @@ describe('Datagrid external service', function () {
         }));
     });
 
-    describe('on event', function () {
-        it('should update playground right panel on active cell changed', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+    describe('on active cell event', function () {
+        it('should update playground right panel on active cell changed after a 200ms delay', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
             //given
             DatagridExternalService.init(gridMock);
             var args = {cell: 1};
@@ -82,38 +83,63 @@ describe('Datagrid external service', function () {
             onActiveCellChanged(null, args);
 
             expect(StatisticsService.processData).not.toHaveBeenCalled();
-            expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
+            expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+            expect(SuggestionService.selectTab).not.toHaveBeenCalled();
 
-            jasmine.clock().tick(200);
+            $timeout.flush(200);
 
             //then
             expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
-            expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
-            expect(ColumnSuggestionService.selectTab).toHaveBeenCalledWith('Cell');
+            expect(SuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
+            expect(SuggestionService.selectTab).toHaveBeenCalledWith('CELL');
         }));
 
-        it('should NOT update playground right panel on active cell changed if column is the same', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+        it('should NOT update playground right panel on active cell changed if column and tab are the same', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
             //given
             DatagridExternalService.init(gridMock);
             var args = {cell: 1};
 
             var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
             onActiveCellChanged(null, args);
-            jasmine.clock().tick(200);
+            $timeout.flush(200);
 
             expect(StatisticsService.processData.calls.count()).toBe(1);
-            expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
+            expect(SuggestionService.setColumn.calls.count()).toBe(1);
+            expect(SuggestionService.selectTab.calls.count()).toBe(1);
 
             //when
             onActiveCellChanged(null, args);
-            jasmine.clock().tick(200);
+            $timeout.flush(200);
 
             //then
             expect(StatisticsService.processData.calls.count()).toBe(1);
-            expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
+            expect(SuggestionService.setColumn.calls.count()).toBe(1);
+            expect(SuggestionService.selectTab.calls.count()).toBe(1);
         }));
 
-        it('should cancel the pending right panel update and schedule a new one', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+        it('should NOT change suggestion tab on active cell changed if wanted tab is the same', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
+            //given
+            DatagridExternalService.init(gridMock);
+
+            var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
+            onActiveCellChanged(null, {cell: 1});
+            $timeout.flush();
+
+            expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(SuggestionService.setColumn.calls.count()).toBe(1);
+            expect(SuggestionService.selectTab.calls.count()).toBe(1);
+
+            //when : same event that want to show CELL tab
+            onActiveCellChanged(null, {cell: 2});
+            $timeout.flush();
+
+            //then : only stats and suggestions are updated, NOT selected tab
+            expect(StatisticsService.processData.calls.count()).toBe(2);
+            expect(SuggestionService.setColumn.calls.count()).toBe(2);
+            expect(SuggestionService.selectTab.calls.count()).toBe(1);
+        }));
+
+        it('should cancel the pending right panel update and schedule a new one', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
             //given
             DatagridExternalService.init(gridMock);
             var firstCallArgs = {cell: 1};
@@ -123,40 +149,52 @@ describe('Datagrid external service', function () {
             var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
             onActiveCellChanged(null, firstCallArgs);
 
-            jasmine.clock().tick(199);
+            $timeout.flush(199);
 
             expect(StatisticsService.processData).not.toHaveBeenCalled();
-            expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
+            expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+            expect(SuggestionService.selectTab).not.toHaveBeenCalled();
 
             //when
             onActiveCellChanged(null, secondCallArgs);
 
-            jasmine.clock().tick(1);
+            $timeout.flush(1);
             expect(StatisticsService.processData).not.toHaveBeenCalled();
-            expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
+            expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+            expect(SuggestionService.selectTab).not.toHaveBeenCalled();
 
-            jasmine.clock().tick(200);
+            $timeout.flush(200);
 
             //then
             expect(StatisticsService.processData).toHaveBeenCalledWith(secondCallColumnMetadata);
-            expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(secondCallColumnMetadata);
+            expect(SuggestionService.setColumn).toHaveBeenCalledWith(secondCallColumnMetadata);
+            expect(SuggestionService.selectTab).toHaveBeenCalledWith('CELL');
         }));
         
-        it('should do nothing when no cell is active', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+        it('should do nothing when no cell is active', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
             //given
             DatagridExternalService.init(gridMock);
 
             //when
             var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
             onActiveCellChanged(null, {});
+            try{
+                $timeout.flush();
+            }
 
             //then
-            expect(StatisticsService.processData).not.toHaveBeenCalled();
-            expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
-            expect(ColumnSuggestionService.selectTab).not.toHaveBeenCalled();
+            catch(error) {
+                expect(StatisticsService.processData).not.toHaveBeenCalled();
+                expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+                expect(SuggestionService.selectTab).not.toHaveBeenCalled();
+                return;
+            }
+            throw new Error('should have thrown exception because there is nothing to flush');
         }));
+    });
 
-        it('should update playground right panel on header click after a 200ms delay', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+    describe('on header click event', function () {
+        it('should update playground right panel on header click after a 200ms delay', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
             //given
             DatagridExternalService.init(gridMock);
             var args = {
@@ -169,17 +207,17 @@ describe('Datagrid external service', function () {
             onHeaderClick(null, args);
 
             expect(StatisticsService.processData).not.toHaveBeenCalled();
-            expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
+            expect(SuggestionService.setColumn).not.toHaveBeenCalled();
 
-            jasmine.clock().tick(200);
+            $timeout.flush(200);
 
             //then
             expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
-            expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
-            expect(ColumnSuggestionService.selectTab).toHaveBeenCalledWith('Column');
+            expect(SuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
+            expect(SuggestionService.selectTab).toHaveBeenCalledWith('COLUMN');
         }));
 
-        it('should update playground right panel on header right click after a 200ms delay', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+        it('should update playground right panel on header right click after a 200ms delay', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
             //given
             DatagridExternalService.init(gridMock);
             var args = {
@@ -192,17 +230,18 @@ describe('Datagrid external service', function () {
             onHeaderContextMenu(null, args);
 
             expect(StatisticsService.processData).not.toHaveBeenCalled();
-            expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
+            expect(SuggestionService.setColumn).not.toHaveBeenCalled();
+            expect(SuggestionService.selectTab).not.toHaveBeenCalled();
 
-            jasmine.clock().tick(200);
+            $timeout.flush(200);
 
             //then
             expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
-            expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
-            expect(ColumnSuggestionService.selectTab).toHaveBeenCalledWith('Column');
+            expect(SuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
+            expect(SuggestionService.selectTab).toHaveBeenCalledWith('COLUMN');
         }));
 
-        it('should NOT update playground right panel on header click when column is the same', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+        it('should NOT update playground right panel on header click when column and tab are the same', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
             //given
             DatagridExternalService.init(gridMock);
             var args = {
@@ -211,23 +250,23 @@ describe('Datagrid external service', function () {
 
             var onHeaderClick = gridMock.onHeaderClick.subscribe.calls.argsFor(0)[0];
             onHeaderClick(null, args);
-            jasmine.clock().tick(200);
+            $timeout.flush(200);
 
             expect(StatisticsService.processData.calls.count()).toBe(1);
-            expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
+            expect(SuggestionService.setColumn.calls.count()).toBe(1);
+            expect(SuggestionService.selectTab.calls.count()).toBe(1);
 
             //when
             onHeaderClick(null, args);
-            jasmine.clock().tick(200);
+            $timeout.flush(200);
 
             //then
             expect(StatisticsService.processData.calls.count()).toBe(1);
-            expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
+            expect(SuggestionService.setColumn.calls.count()).toBe(1);
+            expect(SuggestionService.selectTab.calls.count()).toBe(1);
         }));
 
-
-
-        it('should NOT update playground right panel on header right click when column is the same', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+        it('should NOT update playground right panel on header right click when column and tab are the same', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
             //given
             DatagridExternalService.init(gridMock);
             var args = {
@@ -236,20 +275,53 @@ describe('Datagrid external service', function () {
 
             var onHeaderContextMenu = gridMock.onHeaderContextMenu.subscribe.calls.argsFor(0)[0];
             onHeaderContextMenu(null, args);
-            jasmine.clock().tick(200);
+            $timeout.flush(200);
 
             expect(StatisticsService.processData.calls.count()).toBe(1);
-            expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
+            expect(SuggestionService.setColumn.calls.count()).toBe(1);
+            expect(SuggestionService.selectTab.calls.count()).toBe(1);
 
             //when
             onHeaderContextMenu(null, args);
-            jasmine.clock().tick(200);
+            $timeout.flush(200);
 
             //then
             expect(StatisticsService.processData.calls.count()).toBe(1);
-            expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
+            expect(SuggestionService.setColumn.calls.count()).toBe(1);
+            expect(SuggestionService.selectTab.calls.count()).toBe(1);
         }));
 
+        it('should NOT suggestions and stats when column is the same', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
+            //given : active cell will update suggestions + stats for column 1, and set tab to CELL
+            DatagridExternalService.init(gridMock);
+            var activeCellArgs = {cell: 1};
+
+            var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
+            onActiveCellChanged(null, activeCellArgs);
+            $timeout.flush(200);
+
+            expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(SuggestionService.setColumn.calls.count()).toBe(1);
+            expect(SuggestionService.selectTab.calls.count()).toBe(1);
+
+            var headerClickArgs = {
+                column: {id: '0001'}
+            };
+
+            //when
+            var onHeaderClick = gridMock.onHeaderClick.subscribe.calls.argsFor(0)[0];
+            onHeaderClick(null, headerClickArgs);
+
+            $timeout.flush(200);
+
+            //then : only tab is updated, NOT stats or suggestions
+            expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(SuggestionService.setColumn.calls.count()).toBe(1);
+            expect(SuggestionService.selectTab.calls.count()).toBe(2);
+        }));
+    });
+
+    describe('on scroll event', function () {
         it('should update preview range on scroll after a 200ms delay', inject(function (DatagridExternalService, PreviewService) {
             //given
             DatagridExternalService.init(gridMock);
@@ -268,5 +340,4 @@ describe('Datagrid external service', function () {
             expect(PreviewService.gridRangeIndex).toBe(range);
         }));
     });
-
 });

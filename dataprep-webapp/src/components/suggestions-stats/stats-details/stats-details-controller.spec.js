@@ -9,10 +9,9 @@ describe('Stats-details controller', function () {
         scope = $rootScope.$new();
 
         createController = function () {
-            var ctrl = $controller('StatsDetailsCtrl', {
+            return $controller('StatsDetailsCtrl', {
                 $scope: scope
             });
-            return ctrl;
         };
     }));
 
@@ -58,7 +57,7 @@ describe('Stats-details controller', function () {
         expect(ctrl.rangeLimits).toBe(rangeLimits);
     }));
 
-    it('should bind patternFrequencyTable getter to ColumnSuggestionService.currentColumn.patternFrequencyTable', inject(function (ColumnSuggestionService) {
+    it('should bind patternFrequencyTable getter to SuggestionService.currentColumn.patternFrequencyTable', inject(function (SuggestionService) {
         //given
         var ctrl = createController();
         expect(ctrl.patternFrequencyTable).toBeFalsy();
@@ -66,7 +65,7 @@ describe('Stats-details controller', function () {
         var patternFrequencyTable = {};
 
         //when
-        ColumnSuggestionService.currentColumn = {statistics: {patternFrequencyTable: patternFrequencyTable}};
+        SuggestionService.currentColumn = {statistics: {patternFrequencyTable: patternFrequencyTable}};
 
         //then
         expect(ctrl.patternFrequencyTable).toBe(patternFrequencyTable);

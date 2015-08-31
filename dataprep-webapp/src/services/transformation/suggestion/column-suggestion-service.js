@@ -8,18 +8,9 @@
      * @requires data-prep.services.transformation.service:TransformationCacheService
      * @requires data-prep.services.utils.service:ConverterService
      */
-    function ColumnSuggestionService($timeout, TransformationCacheService) {
+    function ColumnSuggestionService(TransformationCacheService) {
         var COLUMN_CATEGORY = 'columns';
         var self = this;
-
-        /**
-         * @ngdoc property
-         * @name currentColumn
-         * @propertyOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @description The currently selected column
-         * @type {Object}
-         */
-        self.currentColumn = null;
 
         /**
          * @ngdoc property
@@ -29,25 +20,6 @@
          * @type {Object}
          */
         self.transformations = null;
-
-        /**
-         * @ngdoc property
-         * @name statistics
-         * @propertyOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @description The currently selected column statistics
-         * @type {Object}
-         */
-        self.statistics = null;
-
-
-        /**
-         * @ngdoc property
-         * @name tab
-         * @propertyOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @description The currently Actions selected tab
-         * @type {Object}
-         */
-        self.tab = null;
 
         /**
          * @ngdoc method
@@ -75,30 +47,12 @@
          * @param {object} column The target column
          * @description Get and preparation the transformations from backend
          */
-        function initTransformations(column) {
+        this.initTransformations = function initTransformations(column) {
+            self.transformations = null;
             TransformationCacheService.getTransformations(column)
                 .then(function (transformations) {
-                    if (self.currentColumn === column) {
-                        self.transformations = filterAndGroup(transformations);
-                    }
+                    self.transformations = filterAndGroup(transformations);
                 });
-        }
-
-        /**
-         * @ngdoc method
-         * @name setColumn
-         * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @param {object} column The new selected column
-         * @description Set the selected column and init its suggested transformations and statistics
-         */
-        this.setColumn = function setColumn(column) {
-            if (column === self.currentColumn) {
-                return;
-            }
-
-            self.currentColumn = column;
-            self.transformations = null;
-            initTransformations(column);
         };
 
         /**
@@ -108,22 +62,7 @@
          * @description Reset the current column and the transformations
          */
         this.reset = function reset() {
-            self.currentColumn = null;
             self.transformations = null;
-        };
-
-
-        /**
-         * @ngdoc method
-         * @name selectTab
-         * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @param {String} tab The new Actions selected tab title
-         * @description Set the Actions selected tab
-         */
-        this.selectTab = function setColumn(tab) {
-            $timeout(function(){
-                self.tab = tab;
-            });
         };
     }
 

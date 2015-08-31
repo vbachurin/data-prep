@@ -12,18 +12,17 @@
      * @restrict EA
      * @usage
      <talend-dropdown close-on-select="false" on-open="onOpen()">
-     <div class="dropdown-container">
-     <div class="dropdown-action">
-     <div class="dropdown-button">{{ column.id }}</div>
-     <div>{{ column.type }}</div>
-     </div>
-     <ul class="dropdown-menu">
-     <li><a href="#">Hide Column {{ column.id | uppercase }}</a></li>
-     <li class="divider"></li>
-     <li<a href="#">Split first Space</a></li>
-     <li><a href="#">Uppercase</a></li>
-     </ul>
-     </div>
+         <div class="dropdown-container">
+             <div class="dropdown-action">
+             <div class="dropdown-button">{{ column.id }}</div>
+             <div>{{ column.type }}</div>
+         </div>
+         <ul class="dropdown-menu">
+             <li><a href="#">Hide Column {{ column.id | uppercase }}</a></li>
+             <li class="divider"></li>
+             <li<a href="#">Split first Space</a></li>
+             <li><a href="#">Uppercase</a></li>
+         </ul>
      </talend-dropdown>
      * @param {boolean} closeOnSelect Default `true`. If set to false, dropdown will not close on inner item click
      * @param {function} onOpen The callback to execute on dropdown open
@@ -127,9 +126,7 @@
                     /**
                      * Click : hide/show menu on left click
                      */
-                    action.click(function () {
-                        toggleMenu();
-                    });
+                    action.click(toggleMenu);
 
                     /**
                      * Click : hide menu on item select if 'closeOnSelect' is not false

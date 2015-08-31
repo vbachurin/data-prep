@@ -142,6 +142,34 @@ describe('Playground controller', function() {
             //then
             expect(PlaygroundService.showRecipe).toBe(true);
         }));
+
+        it('should bind selectedSampleSize getter to PlaygroundService', inject(function(PlaygroundService) {
+            //given
+            var ctrl = createController();
+            expect(ctrl.selectedSampleSize).toEqual({ display: '100', value: 100 });
+
+            var newSize = { display: '500', value: 500 };
+
+            //when
+            PlaygroundService.selectedSampleSize = newSize;
+
+            //then
+            expect(ctrl.selectedSampleSize).toBe(newSize);
+        }));
+
+        it('should bind showRecipe setter to PlaygroundService', inject(function(PlaygroundService) {
+            //given
+            var ctrl = createController();
+            expect(PlaygroundService.selectedSampleSize).toEqual({ display: '100', value: 100 });
+
+            var newSize = { display: '500', value: 500 };
+
+            //when
+            ctrl.selectedSampleSize = newSize;
+
+            //then
+            expect(PlaygroundService.selectedSampleSize).toBe(newSize);
+        }));
     });
 
     describe('recipe header', function() {
@@ -341,13 +369,4 @@ describe('Playground controller', function() {
             expect(ctrl.showPlayground).toBe(false);
         });
     });
-
-    it('should init sample size to full dataset', inject(function(PlaygroundService) {
-        //given
-        var ctrl = createController();
-        //when
-        PlaygroundService.show();
-        //then
-        expect(ctrl.selectedSampleSize.value).toBe(100);
-    }));
 });
