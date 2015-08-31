@@ -2,7 +2,6 @@ describe('Column suggestion service', function () {
     'use strict';
 
     var firstSelectedColumn = {id: '0001', name: 'col1'};
-    var secondSelectedColumn = {id: '0002', name: 'col2'};
 
     beforeEach(module('data-prep.services.transformation'));
     beforeEach(inject(function ($q, TransformationCacheService) {
