@@ -342,7 +342,6 @@ public class DataPreparationAPITest {
         assertThat(records.size(), is(16));
     }
 
-
     @Test
     public void testDataSetGetWithSampleZeroOrFull() throws Exception {
         // given
@@ -587,7 +586,7 @@ public class DataPreparationAPITest {
     }
 
     @Test
-    public void testPreparationDeleteActionInCascadeMode() throws Exception {
+    public void should_delete_preparation_action_in_cascade_mode() throws Exception {
         // given
         final String preparationId = createPreparationFromDataset("1234", "testPreparation");
         applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
@@ -608,7 +607,18 @@ public class DataPreparationAPITest {
     }
 
     @Test
-    public void testPreparationDeleteActionInSingleMode() throws Exception {
+    public void should_delete_preparation_action_in_single_mode() throws Exception {
+        // when : delete unknown preparation action
+        final Response response = given().delete("/api/preparations/{preparation}/actions/{action}?single=true", "unknown_prep", "unkown_step");
+
+        //then : should have preparation service error
+        response.then()
+                .statusCode(is(400))
+                .body("code", is("TDP_PS_PREPARATION_DOES_NOT_EXIST"));
+    }
+
+    @Test
+    public void should_redirect_delete_error_properly() throws Exception {
         // given
         final String preparationId = createPreparationFromDataset("1234", "testPreparation");
         applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");

@@ -1,11 +1,19 @@
 package org.talend.dataprep.api.preparation;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.path.json.JsonPath;
-import com.jayway.restassured.response.Response;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.Matchers.*;
+import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -21,19 +29,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.preparation.Application;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.Matchers.*;
-import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
-import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
-import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.path.json.JsonPath;
+import com.jayway.restassured.response.Response;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -112,6 +113,18 @@ public class PreparationServiceTest {
         Preparation preparation = repository.listAll(Preparation.class).iterator().next();
         assertThat(preparation.id(), is("170e086992df1848b8fc9459d87938af6be78720"));
         assertThat(preparation.getName(), is("test_name"));
+    }
+
+    @Test
+    public void createWithSpecialCharacters() throws Exception {
+        assertThat(repository.listAll(Preparation.class).size(), is(0));
+        String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"éàçè\", \"dataSetId\": \"1234\"}".getBytes("UTF-8"))
+                .when().put("/preparations").asString();
+        assertThat(preparationId, is("f7c4550ce8f9e7071c638b71e2930e3dd65ac3c0"));
+        assertThat(repository.listAll(Preparation.class).size(), is(1));
+        Preparation preparation = repository.listAll(Preparation.class).iterator().next();
+        assertThat(preparation.id(), is("f7c4550ce8f9e7071c638b71e2930e3dd65ac3c0"));
+        assertThat(preparation.getName(), is("éàçè"));
     }
 
     @Test
