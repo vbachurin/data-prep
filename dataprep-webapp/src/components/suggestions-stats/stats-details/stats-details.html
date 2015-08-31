@@ -10,7 +10,7 @@
                           width="310"
                           height="120"
                           range-limits="statsDetailsCtrl.rangeLimits"
-                          on-brush-end="statsDetailsCtrl.statisticsService.addRangeFilter" >
+                          on-brush-end="statsDetailsCtrl.statisticsService.addRangeFilter">
             </range-slider>
         </talend-tabs-item>
         <talend-tabs-item tab-title="Value">
@@ -43,7 +43,7 @@
                     id="boxplotId"
                     width="330"
                     height="400"
-                    boxplot-data="statsDetailsCtrl.boxplotData"
+                    boxplot-data="statsDetailsCtrl.boxPlot"
             ></boxplot-chart>
         </talend-tabs-item>
     </talend-tabs>

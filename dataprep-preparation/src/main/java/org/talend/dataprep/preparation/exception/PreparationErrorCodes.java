@@ -12,7 +12,8 @@ import org.talend.dataprep.exception.error.ErrorCode;
 public enum PreparationErrorCodes implements ErrorCode {
     PREPARATION_DOES_NOT_EXIST(400, "id"),
     PREPARATION_STEP_DOES_NOT_EXIST(400, "id", "stepId"),
-    PREPARATION_ROOT_STEP_CANNOT_BE_CHANGED(400),
+    PREPARATION_STEP_CANNOT_BE_DELETED_IN_SINGLE_MODE(403, "id", "stepId"),
+    PREPARATION_ROOT_STEP_CANNOT_BE_DELETED(403, "id", "stepId"),
     UNABLE_TO_SERVE_PREPARATION_CONTENT(400, "id", "version");
 
     /** The http status to use. */

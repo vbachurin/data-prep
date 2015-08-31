@@ -885,6 +885,27 @@ describe('Recipe service', function () {
             //then
             expect(isLast).toBe(false);
         }));
+
+        it('should return all actions from step', inject(function(RecipeService) {
+            //given
+            var recipe = [
+                {transformation: {stepId: '0'}, actionParameters: {action: 'action0'}},
+                {transformation: {stepId: '1'}, actionParameters: {action: 'action1'}},
+                {transformation: {stepId: '2'}, actionParameters: {action: 'action2'}},
+                {transformation: {stepId: '3'}, actionParameters: {action: 'action3'}}
+            ];
+            RecipeService.getRecipe().push(recipe[0], recipe[1], recipe[2], recipe[3]);
+
+            //when
+            var actions = RecipeService.getAllActionsFrom(recipe[1]);
+
+            //then
+            expect(actions).toEqual([
+                recipe[1].actionParameters,
+                recipe[2].actionParameters,
+                recipe[3].actionParameters
+            ]);
+        }));
     });
 
     describe('early preview', function() {

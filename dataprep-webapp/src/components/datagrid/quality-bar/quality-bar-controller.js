@@ -6,11 +6,13 @@
      * @name data-prep.quality-bar.controller:QualityBarCtrl
      * @description Quality bar controller
      * @requires data-prep.services.filter.service:FilterService
+     * @requires data-prep.services.transformation.service:ColumnSuggestionService
+     * @requires data-prep.services.transformationApplication.service:TransformationApplicationService
      */
-    function QualityBarCtrl(FilterService) {
+    function QualityBarCtrl(FilterService, TransformationApplicationService, ColumnSuggestionService) {
         var MIN_QUALITY_WIDTH = 10;
         var vm = this;
-
+        vm.transformationApplicationService = TransformationApplicationService;
         /**
          * @ngdoc method
          * @name getMinimalPercent
@@ -159,6 +161,13 @@
          */
         vm.filterEmptyRecords = function(column) {
             FilterService.addFilter('empty_records', column.id, column.name, {});
+        };
+
+        vm.applyActionOnColumn = function(actionType){
+            var actionToApply = _.find(ColumnSuggestionService.transformations, function(transfo){
+             return transfo.name === actionType;
+            });
+            vm.transformationApplicationService.transformClosure(actionToApply, 'column')();
         };
     }
 

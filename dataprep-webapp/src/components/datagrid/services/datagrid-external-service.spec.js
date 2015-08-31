@@ -12,6 +12,7 @@ describe('Datagrid external service', function () {
     ];
 
     beforeEach(module('data-prep.datagrid'));
+    beforeEach(module('data-prep.suggestions-stats'));
 
     beforeEach(inject(function (StatisticsService, ColumnSuggestionService) {
         /*global SlickGridMock:false */
@@ -70,7 +71,7 @@ describe('Datagrid external service', function () {
     });
 
     describe('on event', function () {
-        it('should update playground right panel on active cell changed after a 200ms delay', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+        it('should update playground right panel on active cell changed', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
             //given
             DatagridExternalService.init(gridMock);
             var args = {cell: 1};
@@ -140,7 +141,7 @@ describe('Datagrid external service', function () {
             expect(StatisticsService.processData).toHaveBeenCalledWith(secondCallColumnMetadata);
             expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(secondCallColumnMetadata);
         }));
-
+        
         it('should do nothing when no cell is active', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
             //given
             DatagridExternalService.init(gridMock);

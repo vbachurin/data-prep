@@ -15,7 +15,7 @@
             "description": "parameter.tata.desc",
             "label": "parameter.tata.label",
             "default": null,
-            "canBeBlank":true
+            "canBeBlank": true
           },
           {
             "name": "Tata",
@@ -24,7 +24,7 @@
             "description": "parameter.Tata.desc",
             "label": "parameter.Tata.label",
             "default": null,
-            "canBeBlank":true
+            "canBeBlank": true
           }
         ],
         "replace": {
@@ -34,7 +34,7 @@
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
           "default": "tata",
-          "canBeBlank":true
+          "canBeBlank": true
         }
       },
       {
@@ -46,7 +46,7 @@
             "description": "parameter.t@t@.desc",
             "label": "parameter.t@t@.label",
             "default": null,
-            "canBeBlank":true
+            "canBeBlank": true
           },
           {
             "name": "T@T@",
@@ -55,7 +55,7 @@
             "description": "parameter.T@T@.desc",
             "label": "parameter.T@T@.label",
             "default": null,
-            "canBeBlank":true
+            "canBeBlank": true
           }
         ],
         "replace": {
@@ -65,7 +65,7 @@
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
           "default": "t@t@",
-          "canBeBlank":true
+          "canBeBlank": true
         }
       },
       {
@@ -77,7 +77,7 @@
             "description": "parameter.Massachussetts.desc",
             "label": "parameter.Massachussetts.label",
             "default": null,
-            "canBeBlank":true
+            "canBeBlank": true
           },
           {
             "name": "Masachussets",
@@ -86,7 +86,7 @@
             "description": "parameter.Masachussets.desc",
             "label": "parameter.Masachussets.label",
             "default": null,
-            "canBeBlank":true
+            "canBeBlank": true
           },
           {
             "name": "Massachusetts",
@@ -95,7 +95,7 @@
             "description": "parameter.Massachusetts.desc",
             "label": "parameter.Massachusetts.label",
             "default": null,
-            "canBeBlank":true
+            "canBeBlank": true
           },
           {
             "name": "Masachusetts",
@@ -104,7 +104,7 @@
             "description": "parameter.Masachusetts.desc",
             "label": "parameter.Masachusetts.label",
             "default": null,
-            "canBeBlank":true
+            "canBeBlank": true
           },
           {
             "name": "Massachusets",
@@ -113,7 +113,7 @@
             "description": "parameter.Massachusets.desc",
             "label": "parameter.Massachusets.label",
             "default": null,
-            "canBeBlank":true
+            "canBeBlank": true
           }
         ],
         "replace": {
@@ -123,7 +123,7 @@
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
           "default": "Massachusetts",
-          "canBeBlank":true
+          "canBeBlank": true
         }
       },
       {
@@ -135,7 +135,7 @@
             "description": "parameter.Texas.desc",
             "label": "parameter.Texas.label",
             "default": null,
-            "canBeBlank":true
+            "canBeBlank": true
           },
           {
             "name": "Tixass",
@@ -144,7 +144,7 @@
             "description": "parameter.Tixass.desc",
             "label": "parameter.Tixass.label",
             "default": null,
-            "canBeBlank":true
+            "canBeBlank": true
           }
         ],
         "replace": {
@@ -154,7 +154,7 @@
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
           "default": "Tixass",
-          "canBeBlank":true
+          "canBeBlank": true
         }
       }
     ]

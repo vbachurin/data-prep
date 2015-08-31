@@ -315,82 +315,6 @@ describe('Preparation Service', function () {
             expect(newParams).toEqual({value: 'tata', scope: 'cell'});
         }));
 
-        it('should delete step', inject(function ($q, PreparationService, PreparationRestService) {
-            //given
-            var preparationId = '6cd546546548a745';
-            var stepId = '45ed65cf48981b51';
-            PreparationService.currentPreparationId = preparationId;
-
-            //when
-            PreparationService.removeStep(stepId);
-
-            //then
-            expect(PreparationRestService.removeStep).toHaveBeenCalledWith(preparationId, stepId);
-        }));
-
-        it('should update a preparation step with provided parameters', inject(function ($rootScope, PreparationService, PreparationRestService) {
-            //given
-            PreparationService.currentPreparationId = '6cd546546548a745';
-            var step = {
-                transformation: {
-                    stepId : '867654ab15edf576844c4',
-                    name: 'deletematch'
-                },
-                column: {id: '1', name:'firstname'}
-            };
-            var parameters = {value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column'};
-
-            //when
-            PreparationService.updateStep(step, parameters);
-            $rootScope.$digest();
-
-            //then
-            expect(PreparationRestService.updateStep).toHaveBeenCalledWith(
-                '6cd546546548a745', //prep id
-                '867654ab15edf576844c4',  //step id
-                'deletematch', //step name
-                {value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column'}); //params
-        }));
-
-        it('should append step to current preparation with completed parameters (add column id)', inject(function ($rootScope, PreparationService, PreparationRestService) {
-            //given
-            PreparationService.currentPreparationId = '6cd546546548a745';
-            var metadata = {id: '2430e5df845ab6034c85'};
-            var action = 'cut';
-            var parameters = {
-                value: 'Toto',
-                scope: 'column',
-                column_name: 'firstname',
-                column_id: '1'
-            };
-
-            //when
-            PreparationService.appendStep(metadata, action, parameters);
-            $rootScope.$digest();
-
-            //then
-            expect(PreparationRestService.appendStep).toHaveBeenCalledWith('6cd546546548a745', 'cut', parameters);
-        }));
-
-        it('should create a new preparation with generic name on append step if no preparation is loaded', inject(function ($rootScope, PreparationService, PreparationListService) {
-            //given
-            PreparationService.currentPreparationId = null;
-            var metadata = {id: '2430e5df845ab6034c85'};
-            var action = 'uppercase';
-            var parameters = {
-                scope: 'column',
-                column_name: 'firstname',
-                column_id: '1'
-            };
-
-            //when
-            PreparationService.appendStep(metadata, action, parameters);
-            $rootScope.$digest();
-
-            //then
-            expect(PreparationListService.create).toHaveBeenCalledWith('2430e5df845ab6034c85', 'Preparation draft');
-        }));
-
         it('should return true if the parameters are different', inject(function (PreparationService) {
             //given
             var step = {
@@ -429,6 +353,93 @@ describe('Preparation Service', function () {
 
             //then
             expect(result).toBe(false);
+        }));
+
+        it('should append step to current preparation with completed parameters (add column id)', inject(function ($rootScope, PreparationService, PreparationRestService) {
+            //given
+            PreparationService.currentPreparationId = '6cd546546548a745';
+            var metadata = {id: '2430e5df845ab6034c85'};
+            var actionParams = {
+                action: 'cut',
+                parameters: {
+                    value: 'Toto',
+                    scope: 'column',
+                    column_name: 'firstname',
+                    column_id: '1'
+                }
+            };
+            var insertionPoint = '79c452a31354ef3514';
+
+            //when
+            PreparationService.appendStep(metadata, actionParams, insertionPoint);
+            $rootScope.$digest();
+
+            //then
+            expect(PreparationRestService.appendStep).toHaveBeenCalledWith('6cd546546548a745', actionParams, insertionPoint);
+        }));
+
+        it('should create a new preparation with generic name on append step if no preparation is loaded', inject(function ($rootScope, PreparationService, PreparationListService) {
+            //given
+            PreparationService.currentPreparationId = null;
+            var metadata = {id: '2430e5df845ab6034c85'};
+            var actionParams = {
+                action: 'cut',
+                parameters: {
+                    value: 'Toto',
+                    scope: 'column',
+                    column_name: 'firstname',
+                    column_id: '1'
+                }
+            };
+            var insertionPoint = '79c452a31354ef3514';
+
+            //when
+            PreparationService.appendStep(metadata, actionParams, insertionPoint);
+            $rootScope.$digest();
+
+            //then
+            expect(PreparationListService.create).toHaveBeenCalledWith('2430e5df845ab6034c85', 'Preparation draft');
+        }));
+
+        it('should update a preparation step with provided parameters', inject(function ($rootScope, PreparationService, PreparationRestService) {
+            //given
+            PreparationService.currentPreparationId = '6cd546546548a745';
+            var step = {
+                transformation: {
+                    stepId : '867654ab15edf576844c4',
+                    name: 'deletematch'
+                },
+                column: {id: '1', name:'firstname'}
+            };
+            var parameters = {value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column'};
+
+            //when
+            PreparationService.updateStep(step, parameters);
+            $rootScope.$digest();
+
+            //then
+            expect(PreparationRestService.updateStep).toHaveBeenCalledWith(
+                '6cd546546548a745', //prep id
+                '867654ab15edf576844c4',  //step id
+                {
+                    action: 'deletematch', //step name
+                    parameters: {value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column'} //params
+                }
+            );
+        }));
+
+        it('should remove step', inject(function ($q, PreparationService, PreparationRestService) {
+            //given
+            var preparationId = '6cd546546548a745';
+            var stepId = '45ed65cf48981b51';
+            var singleMode = true;
+            PreparationService.currentPreparationId = preparationId;
+
+            //when
+            PreparationService.removeStep(stepId, singleMode);
+
+            //then
+            expect(PreparationRestService.removeStep).toHaveBeenCalledWith(preparationId, stepId, singleMode);
         }));
     });
 

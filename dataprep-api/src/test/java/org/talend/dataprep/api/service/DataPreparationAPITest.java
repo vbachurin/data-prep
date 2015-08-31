@@ -2,8 +2,10 @@ package org.talend.dataprep.api.service;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.api.type.ExportType.CSV;
@@ -39,6 +41,7 @@ import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.cache.ContentCacheKey;
 import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
+import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -167,7 +170,8 @@ public class DataPreparationAPITest {
         // given
         final String dataSetId = createDataset("dataset/dataset_TDP-402.csv", "testDataset", "text/csv");
         final String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/TDP-402.json"));
-        final InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("dataset/dataset_TDP-402_expected.json");
+        final InputStream expectedContent = DataPreparationAPITest.class
+                .getResourceAsStream("dataset/dataset_TDP-402_expected.json");
 
         // when
         final String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
@@ -183,7 +187,8 @@ public class DataPreparationAPITest {
         final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
         Thread.sleep(800);
         final String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/TDP-416.json"));
-        final InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("dataset/dataset_TDP-416_expected.json");
+        final InputStream expectedContent = DataPreparationAPITest.class
+                .getResourceAsStream("dataset/dataset_TDP-416_expected.json");
 
         // when
         final String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
@@ -336,7 +341,6 @@ public class DataPreparationAPITest {
         JsonNode records = rootNode.findPath("records");
         assertThat(records.size(), is(16));
     }
-
 
     @Test
     public void testDataSetGetWithSampleZeroOrFull() throws Exception {
@@ -562,27 +566,6 @@ public class DataPreparationAPITest {
         applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
 
         List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
-        final String firstStep = steps.get(1);
-
-        // when : delete (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") cascading upper_case_firstname
-        given().delete("/api/preparations/{preparation}/actions/{action}", preparationId, firstStep)
-               .then()
-               .statusCode(is(200));
-
-        // then : Steps id should have changed due to update
-        steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
-        assertThat(steps.size(), is(1));
-        assertThat(steps.get(0), is(ROOT_STEP.id()));
-    }
-
-    @Test
-    public void testPreparationDeleteAction() throws Exception {
-        // given
-        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
-        applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
-        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
-
-        List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(3));
         assertThat(steps.get(0), is(ROOT_STEP.id()));
         assertThat(steps.get(1), is("c713d4988879e2aaab916853b45e4ddf9debe303")); // <- transformation/upper_case_lastname
@@ -600,6 +583,60 @@ public class DataPreparationAPITest {
         assertThat(steps.get(0), is(ROOT_STEP.id()));
         assertThat(steps.get(1), is("cd3cefd02aa2eec8755bd6fdd77934a6ae958414"));
         assertThat(steps.get(2), is("1e76900b00817d10f81084b71dc97d023085a49b"));
+    }
+
+    @Test
+    public void should_delete_preparation_action_in_cascade_mode() throws Exception {
+        // given
+        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+        applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
+        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
+
+        List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        final String firstStep = steps.get(1);
+
+        // when : delete (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") cascading upper_case_firstname
+        given().delete("/api/preparations/{preparation}/actions/{action}", preparationId, firstStep)
+                .then()
+                .statusCode(is(200));
+
+        // then : Steps id should have changed due to update
+        steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        assertThat(steps.size(), is(1));
+        assertThat(steps.get(0), is(ROOT_STEP.id()));
+    }
+
+    @Test
+    public void should_delete_preparation_action_in_single_mode() throws Exception {
+        // when : delete unknown preparation action
+        final Response response = given().delete("/api/preparations/{preparation}/actions/{action}?single=true", "unknown_prep", "unkown_step");
+
+        //then : should have preparation service error
+        response.then()
+                .statusCode(is(400))
+                .body("code", is("TDP_PS_PREPARATION_DOES_NOT_EXIST"));
+    }
+
+    @Test
+    public void should_redirect_delete_error_properly() throws Exception {
+        // given
+        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+        applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
+        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
+
+        List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        final String firstStep = steps.get(1);
+
+        // when : delete (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") only, it will rewrite upper_case_firstname id
+        given().delete("/api/preparations/{preparation}/actions/{action}?single=true", preparationId, firstStep)
+                .then()
+                .statusCode(is(200));
+
+        // then : Steps id should have changed due to update
+        steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        assertThat(steps.size(), is(2));
+        assertThat(steps.get(0), is(ROOT_STEP.id()));
+        assertThat(steps.get(1), is("3c7b40baca3680c22f8bd7142c95697f7424e37f"));
     }
 
     @Test
@@ -1057,6 +1094,70 @@ public class DataPreparationAPITest {
         request.then()//
                 .statusCode(400)//
                 .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE")) ;
+    }
+
+    @Test
+    public void should_not_aggregate_because_dataset_and_preparation_id_are_missing() throws IOException {
+
+        // given
+        AggregationParameters params = getAggregationParameters("aggregation/aggregation_parameters.json");
+        params.setDatasetId(null);
+        params.setPreparationId(null);
+
+        // when
+        final Response response = given().contentType(ContentType.JSON)//
+                .body(builder.build().writer().writeValueAsString(params))//
+                .when()//
+                .post("/api/aggregate");
+
+        // then
+        assertEquals(response.getStatusCode(), 400);
+    }
+
+    @Test
+    public void should_aggregate_on_dataset() throws IOException {
+
+        // given
+        final String dataSetId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
+
+        AggregationParameters params = getAggregationParameters("aggregation/aggregation_parameters.json");
+        params.setDatasetId(dataSetId);
+        params.setPreparationId(null);
+
+        // when
+        final String response = given().contentType(ContentType.JSON)//
+                .body(builder.build().writer().writeValueAsString(params))//
+                .when()//
+                .post("/api/aggregate").asString();
+
+        // then
+        assertThat(response, sameJSONAsFile(this.getClass().getResourceAsStream("aggregation/aggregation_exected.json")));
+    }
+
+    @Test
+    public void should_aggregate_on_preparation() throws IOException {
+
+        // given
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparationContentGet", "text/csv");
+
+        AggregationParameters params = getAggregationParameters("aggregation/aggregation_parameters.json");
+        params.setDatasetId(null);
+        params.setPreparationId(preparationId);
+        params.setStepId(null);
+
+        // when
+        final String response = given().contentType(ContentType.JSON)//
+                .body(builder.build().writer().writeValueAsString(params))//
+                .when()//
+                .post("/api/aggregate").asString();
+
+        // then
+        assertThat(response, sameJSONAsFile(this.getClass().getResourceAsStream("aggregation/aggregation_exected.json")));
+    }
+
+    private AggregationParameters getAggregationParameters(String input) throws IOException {
+        InputStream parametersInput = this.getClass().getResourceAsStream(input);
+        return builder.build().reader(AggregationParameters.class).readValue(parametersInput);
     }
 
     private String createDataset(final String file, final String name, final String type) throws IOException {

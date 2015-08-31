@@ -36,6 +36,9 @@
                     if(rejection.data.code === 'TDP_API_DATASET_STILL_IN_USE') {
                         MessageService.error('SERVER_ERROR_TITLE', 'DELETE_DATASET_ERROR');
                     }
+                    else if(rejection.data.code === 'TDP_PS_PREPARATION_STEP_CANNOT_BE_DELETED_IN_SINGLE_MODE') {
+                        MessageService.error('PREPARATION_STEP_DELETE_MODE_NOT_AUTHORIZED_TITLE', 'PREPARATION_STEP_DELETE_MODE_NOT_AUTHORIZED');
+                    }
                     else {
                         MessageService.error('SERVER_ERROR_TITLE', 'GENERIC_ERROR');
                     }

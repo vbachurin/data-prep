@@ -7,6 +7,7 @@ describe('Datagrid grid service', function () {
     var realSlickGrid = Slick;
 
     beforeEach(module('data-prep.datagrid'));
+    beforeEach(module('data-prep.suggestions-stats'));
 
     beforeEach(inject(function (DatagridColumnService, DatagridStyleService, DatagridSizeService,
                                 DatagridExternalService, DatagridTooltipService, DatagridService) {
