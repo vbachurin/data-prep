@@ -48,7 +48,7 @@ public class TransformAPI extends APIService {
         LOG.debug("Transforming dataset id #{} (pool: {})...", dataSetId, getConnectionManager().getTotalStats());
         try {
             // Configure transformation flow
-            response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            response.setHeader( "Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             HttpClient client = getClient();
 
             InputStream contentRetrieval = getCommand(DataSetGet.class, client, dataSetId, false, true).execute();
@@ -91,6 +91,8 @@ public class TransformAPI extends APIService {
         HystrixCommand<InputStream> getSuggestedActions = getCommand(SuggestColumnActions.class, client, body);
         // Returns actions
         try {
+            // olamy: this is weird to have to configure that manually whereas there is an annotation for the method!!
+            response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
             outputStream.flush();
@@ -127,6 +129,8 @@ public class TransformAPI extends APIService {
             final HystrixCommand<InputStream> getActionDynamicParams = getCommand(SuggestActionParams.class, getClient(),
                     inputData, action, dynamicParamsInput.getColumnId());
 
+
+            response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             // trigger calls and return last call content
             final ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(getActionDynamicParams.execute(), outputStream);

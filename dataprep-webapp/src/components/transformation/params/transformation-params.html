@@ -2,7 +2,7 @@
     <form ng-submit="paramsCtrl.paramForm.$valid && paramsCtrl.transformWithParam()" name="paramsCtrl.paramForm">
         <!-- Menu item param -->
         <transform-simple-params
-                ng-if="paramsCtrl.transformation.parameters.length"
+                ng-if="paramsCtrl.transformation.parameters.length && !paramsCtrl.transformation.date"
                 parameters="paramsCtrl.transformation.parameters">
         </transform-simple-params>
 
@@ -17,6 +17,12 @@
                 ng-if="paramsCtrl.transformation.cluster"
                 details="paramsCtrl.transformation.cluster">
         </transform-cluster-params>
+
+        <!-- Date -->
+        <transform-date-params
+            ng-if="paramsCtrl.transformation.date"
+            parameters="paramsCtrl.transformation.parameters">
+        </transform-date-params>
     </form>
 
     <div class="param-buttons">

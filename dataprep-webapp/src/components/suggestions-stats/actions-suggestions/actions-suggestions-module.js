@@ -9,11 +9,13 @@
      * @requires data-prep.services.transformation
      * @requires data-prep.services.playground
      * @requires data-prep.services.preparation
+     * @requires data-prep.services.transformationApplication.service:TransformationApplicationService
      */
     angular.module('data-prep.actions-suggestions', [
         'talend.widget',
         'data-prep.services.transformation',
         'data-prep.services.playground',
-        'data-prep.services.preparation'
+        'data-prep.services.preparation',
+        'data-prep.services.transformationApplication'
     ]);
 })();

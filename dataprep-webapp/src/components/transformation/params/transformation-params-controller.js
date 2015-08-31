@@ -87,8 +87,9 @@
             var params = getParams();
             var choiceParams = getChoiceParams();
             var clusterParams = getClusterParams();
-
             return _.merge(_.merge(params, choiceParams), clusterParams);
+            //var dateParams = getDateParams();
+            //return _.merge(_.merge(_.merge(params, choiceParams), clusterParams),dateParams);
         };
 
         /**

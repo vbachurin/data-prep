@@ -28,7 +28,7 @@
             //preview
             getPreviewDiff: getPreviewDiff,
             getPreviewUpdate: getPreviewUpdate,
-            getPreviewAdd: getPreviewAdd,
+            getPreviewAdd: getPreviewAdd
         };
 
         //---------------------------------------------------------------------------------
@@ -141,17 +141,15 @@
          * @ngdoc method
          * @name adaptTransformAction
          * @methodOf data-prep.services.preparation.service:PreparationRestService
-         * @param {string} action - the action to adapt
-         * @param {object} parameters - the action parameters
-         * @description [PRIVATE] Adapt transformation action to api
+         * @param {object | array} actionParams The transformation(s) configuration {action: string, parameters: {object}}
+         * @param {string} insertionStepId The insertion point step id. (Head = 'head' | falsy | head_step_id)
+         * @description Adapt transformation action to api
          * @returns {object} - the adapted action
          */
-        function adaptTransformAction (action, parameters) {
+        function adaptTransformAction (actionParams, insertionStepId) {
             return {
-                actions: [{
-                    action: action,
-                    parameters: parameters
-                }]
+                insertionStepId: insertionStepId,
+                actions: actionParams instanceof Array ? actionParams : [actionParams]
             };
         }
 
@@ -160,13 +158,13 @@
          * @name appendStep
          * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @param {object} preparationId The preparation id
-         * @param {string} action - the action to append
-         * @param {object} parameters - the action parameters
+         * @param {object | array} actionParams The transformation(s) configuration {action: string, parameters: {object}}
+         * @param {string} insertionStepId The insertion point step id. (Head = 'head' | falsy | head_step_id)
          * @description Append a new transformation in the current preparation.
          * @returns {promise} - the POST promise
          */
-        function appendStep(preparationId, action, parameters) {
-            var actionParam = adaptTransformAction(action, parameters);
+        function appendStep(preparationId, actionParams, insertionStepId) {
+            var actionParam = adaptTransformAction(actionParams, insertionStepId);
             var request = {
                 method: 'POST',
                 url: RestURLs.preparationUrl + '/' + preparationId + '/actions',
@@ -185,20 +183,18 @@
          * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @param {string} preparationId The preaparation id to update
          * @param {string} stepId The step to update
-         * @param {string} action The action name
-         * @param {object} parameters The new action parameters
+         * @param {object | array} actionParams The transformation(s) configuration {action: string, parameters: {object}}
          * @description Update a step with new parameters
          * @returns {promise} The PUT promise
          */
-        function updateStep(preparationId, stepId, action, parameters) {
-            var actionParam = adaptTransformAction(action, parameters);
+        function updateStep(preparationId, stepId, actionParams) {
             var request = {
                 method: 'PUT',
                 url: RestURLs.preparationUrl + '/' + preparationId + '/actions/' + stepId,
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                data: actionParam
+                data: {actions: [actionParams]}
             };
 
             return $http(request);
@@ -210,11 +206,13 @@
          * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @param {string} preparationId The preaparation id to update
          * @param {string} stepId The step to delete
+         * @param {boolean} singleMode Delete only the target step if true, all steps from target otherwise
          * @description Delete a step
          * @returns {promise} The DELETE promise
          */
-        function removeStep(preparationId, stepId) {
-            return $http.delete(RestURLs.preparationUrl + '/' + preparationId + '/actions/' + stepId);
+        function removeStep(preparationId, stepId, singleMode) {
+            var url = RestURLs.preparationUrl + '/' + preparationId + '/actions/' + stepId + (singleMode ? '?single=true' : '');
+            return $http.delete(url);
         }
 
         //---------------------------------------------------------------------------------

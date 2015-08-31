@@ -92,6 +92,19 @@ describe('Rest message interceptor factory', function () {
         expect(MessageService.error).toHaveBeenCalledWith('SERVER_ERROR_TITLE', 'DELETE_DATASET_ERROR');
     }));
 
+    it('should show expected error message when step deletion cannot be done in single mode', inject(function ($rootScope, $http, MessageService) {
+        //given
+        $httpBackend.expectGET('testService').respond(403, {code:'TDP_PS_PREPARATION_STEP_CANNOT_BE_DELETED_IN_SINGLE_MODE'});
+
+        //when
+        $http.get('testService');
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(MessageService.error).toHaveBeenCalledWith('PREPARATION_STEP_DELETE_MODE_NOT_AUTHORIZED_TITLE', 'PREPARATION_STEP_DELETE_MODE_NOT_AUTHORIZED');
+    }));
+
     it('should show generic message when code is unknown', inject(function ($rootScope, $http, MessageService) {
         //given
         $httpBackend.expectGET('testService').respond(400, {code:'TDP_XXXXX'});

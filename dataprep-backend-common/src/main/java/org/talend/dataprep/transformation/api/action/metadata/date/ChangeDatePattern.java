@@ -46,6 +46,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
 
     /** The parameter object for the custom new pattern. */
     private static final String CUSTOM_PATTERN = "custom_date_pattern"; //$NON-NLS-1$
+
     /** The parameter object for the custom new pattern. */
     private static final Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, STRING.getName(), EMPTY);
 

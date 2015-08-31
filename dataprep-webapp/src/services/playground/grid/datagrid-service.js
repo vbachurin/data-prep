@@ -7,8 +7,9 @@
      * @description Datagrid service. This service holds the datagrid (SlickGrid) view and the (SlickGrid) filters<br/>
      * <b style="color: red;">WARNING : do NOT use this service directly for FILTERS.
      * {@link data-prep.services.filter.service:FilterService FilterService} must be the only entry point for datagrid filters</b>
+     * @requires data-prep.services.utils.service:ConverterService
      */
-    function DatagridService() {
+    function DatagridService(ConverterService) {
         var DELETE = 'DELETE';
         var REPLACE = 'REPLACE';
         var INSERT = 'INSERT';
@@ -77,10 +78,10 @@
          * @description Set dataview records and metadata to the datagrid
          */
         self.setDataset = function (metadata, data) {
-            updateDataviewRecords(data.records);
             self.metadata = metadata;
             self.data = data;
             self.focusedColumn = null;
+            updateDataviewRecords(data.records);
         };
 
         /**
@@ -228,12 +229,11 @@
          * @returns {Object[]} - the column list that match the desired filters (id & name)
          */
         self.getColumns = function(excludeNumeric, excludeBoolean) {
-            var numericTypes = ['numeric', 'integer', 'float', 'double'];
             var cols = self.data.columns;
 
             if(excludeNumeric) {
                 cols = _.filter(cols, function (col) {
-                    return numericTypes.indexOf(col.type) === -1;
+                    return ConverterService.simplifyType(col.type) !== 'number';
                 });
             }
             if(excludeBoolean) {
@@ -304,6 +304,25 @@
             }
 
             return config;
+        };
+
+        /**
+         * @ngdoc method
+         * @name getNumericColumns
+         * @methodOf data-prep.services.playground.service:DatagridService
+         * @param {object} columnToSkip The column to skip
+         * @description Filter numeric columns
+         * @returns {array} The numeric columns
+         */
+        self.getNumericColumns = function getNumericColumns(columnToSkip) {
+            return _.chain(self.data.columns)
+                .filter(function(column) {
+                    return !columnToSkip || column.id !== columnToSkip.id;
+                })
+                .filter(function(column) {
+                    return ConverterService.simplifyType(column.type) === 'number';
+                })
+                .value();
         };
 
         //------------------------------------------------------------------------------------------------------

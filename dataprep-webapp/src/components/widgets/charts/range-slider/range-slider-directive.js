@@ -34,7 +34,7 @@
                 var renderTimeout;
                 var container = attrs.id;
 
-                var margin = {top: 25, right: 25, bottom: 80, left: 10};
+                var margin = {top: 5, right: 25, bottom: 10, left: 10};
                 var width = attrs.width - margin.left - margin.right;
                 var height = attrs.height - margin.top - margin.bottom;
 
@@ -76,7 +76,7 @@
                     svg.append('g').append('foreignObject')
                         .attr('width', width)
                         .attr('height', 40)
-                        .attr('transform', 'translate(0,' + (height + 30) + ')')
+                        .attr('transform', 'translate(0,' + (height - 45) + ')')
                         .append('xhtml:div')
                         .html('<span><b>Min </b><input type="text" name="minRange"></span> <span style="float:right;"><b>Max </b> <input type="text" name="maxRange"/></span>');
 
@@ -148,7 +148,7 @@
                         .extent([centerValue, centerValue]);
 
                     var brushg = svg.append('g')
-                        .attr('transform', 'translate(0,' + (height - 10) + ')')
+                        .attr('transform', 'translate(0,' + (margin.top + 10) + ')')
                         .attr('class', 'brush')
                         .call(scope.brush);
 
@@ -229,7 +229,7 @@
                     //--------------------------------------------------------------------------------------------------
                     svg.append('g')
                         .attr('class', 'x axis')
-                        .attr('transform', 'translate(0,' + height + ')')
+                        .attr('transform', 'translate(0,' + (margin.top + 20) + ')')
                         .call(d3.svg.axis().scale(scale).orient('bottom').ticks(Math.abs(scale.range()[1] - scale.range()[0]) / 50)
                             .tickFormat(function (d) {
                                 if (d > 1e4 || d < -1e4) {
@@ -242,13 +242,32 @@
                         )
                         .selectAll('text').attr('y', 13);
 
+                    svg.append('g').append('text')
+                        .attr('class', 'the-minimum-label')
+                        .attr('x', -10)
+                        .attr('y', margin.top + 5)
+                        .attr('text-anchor', 'start')
+                        .attr('fill', 'grey')
+                        .text(function(){
+                            return minimum < -1e4 || minimum > 1e4 ? d3.format('e')(minimum): d3.format(',')(minimum);
+                        });
+
+                    svg.append('g').append('text')
+                        .attr('class', 'the-maximum-label')
+                        .attr('x', width+10)
+                        .attr('y', margin.top + 5)
+                        .attr('text-anchor', 'end')
+                        .attr('fill', 'grey')
+                        .text(function(){
+                            return maximum < -1e4 || maximum > 1e4 ? d3.format('e')(maximum): d3.format(',')(maximum);
+                        });
                     //--------------------------------------------------------------------------------------------------
                     //--------------------------------------------ERROR TEXT--------------------------------------------
                     //--------------------------------------------------------------------------------------------------
                     svg.append('g').append('text')
                         .attr('class', 'invalid-value-msg')
                         .attr('x', width / 2)
-                        .attr('y', height + 75)
+                        .attr('y', height)
                         .attr('text-anchor', 'middle')
                         .attr('fill', 'red');
 
@@ -271,6 +290,18 @@
                     fillInputs();
                     initRangeInputsListeners();
                     initBrushListeners();
+
+                    //In case of a single value filter
+                    if (scope.brush.empty()) {
+                        var exp = '1e-' + (nbDecimals + 1);
+                        svg.select('.brush').call(scope.brush.clear().extent([minBrush, maxBrush + Number(exp)]));
+
+                        //the case where there is a filter not responding to the range limits -- caused by sample size change
+                        if (scope.rangeLimits.minFilterVal && scope.rangeLimits.maxFilterVal){
+                            document.getElementsByName('minRange')[0].value = scope.rangeLimits.minFilterVal;
+                            document.getElementsByName('maxRange')[0].value = scope.rangeLimits.maxFilterVal;
+                        }
+                    }
                 }
 
                 scope.$watch('rangeLimits',

@@ -1,9 +1,10 @@
 @import "menu";
 @import "subheader";
 
+$header-height: 56px;
+$footer-height: 50px;
+
 .home {
-  $header-height: 56px;
-  $footer-height: 50px;
 
   @include calc(height, "100vh - 2 * " + $header-height + " - " + $footer-height);
   width: 1140px;

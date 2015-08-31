@@ -97,9 +97,9 @@ describe('Type transform menu controller', function () {
         expect(ctrl.currentSimplifiedDomain).toBe('CITY');
     }));
 
-    it('should change type and clear domain locally and call backend', inject(function ($q, DatasetService) {
+    it('should change type and clear domain locally and call backend', inject(function ($q, PlaygroundService) {
         //given
-        spyOn(DatasetService, 'updateColumn').and.returnValue($q.when(null));
+        spyOn(PlaygroundService, 'updateColumn').and.returnValue($q.when(null));
         var ctrl = createController();
         var newType = {
             id: 'integer'
@@ -115,15 +115,12 @@ describe('Type transform menu controller', function () {
         expect(ctrl.column.domainFrequency).toBe(0);
         expect(ctrl.currentDomain).toBe('INTEGER');
         expect(ctrl.currentSimplifiedDomain).toBe('number');
-        expect(DatasetService.updateColumn).toHaveBeenCalledWith(currentMetadata.id, '0001', {
-            type: 'integer',
-            domain: ''
-        });
+        expect(PlaygroundService.updateColumn).toHaveBeenCalledWith('0001', 'integer', '');
     }));
 
-    it('should revert type and domain when backend return error', inject(function ($q, DatasetService) {
+    it('should revert type and domain when backend return error', inject(function ($q, PlaygroundService) {
         //given
-        spyOn(DatasetService, 'updateColumn').and.returnValue($q.reject(null));
+        spyOn(PlaygroundService, 'updateColumn').and.returnValue($q.reject(null));
         var ctrl = createController();
         var newType = {
             id: 'integer'

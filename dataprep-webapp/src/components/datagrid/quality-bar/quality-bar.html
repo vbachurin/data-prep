@@ -33,6 +33,17 @@
                 <li class="divider"></li>
                 <li role="presentation"><a role="menuitem">Fill Empty records with Top adjacent value</a></li>
                 <li role="presentation"><a role="menuitem">Fill Empty records with Bottom adjacent value</a></li>
+
+                <li role="presentation"
+                    ng-click="qualityBarCtrl.applyActionOnColumn('delete_empty')"
+                >
+                    <a role="menuitem">Delete lines with Empty cell</a>
+                </li>
+                <!--<li role="presentation"
+                    ng-click="qualityBarCtrl.applyActionOnColumn('fillemptywithdefaultinteger')"
+                >
+                    <a role="menuitem">Fill Empty with value ...</a>
+                </li>-->
             </ul>
         </div>
     </div>
@@ -53,6 +64,14 @@
                 <li class="divider"></li>
                 <li role="presentation"><a role="menuitem">Replace Invalid Records with Top adjacent value</a></li>
                 <li role="presentation"><a role="menuitem">Replace Invalid Records with Bottom adjacent value</a></li>
+                <li role="presentation"
+                    ng-click="qualityBarCtrl.applyActionOnColumn('delete_invalid')"
+                >
+                    <a role="menuitem">Delete lines with Invalid cell</a>
+                </li>
+                <!--<li role="presentation">
+                    <a role="menuitem" ng-click="qualityBarCtrl.applyActionOnColumn('fillinvalidwithdefaultinteger')">Fill Invalid cells with value ...</a>
+                </li>-->
             </ul>
         </div>
     </div>
