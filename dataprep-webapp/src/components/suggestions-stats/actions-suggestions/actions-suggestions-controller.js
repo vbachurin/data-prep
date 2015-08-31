@@ -5,16 +5,19 @@
      * @ngdoc controller
      * @name data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
      * @description Actions suggestion controller
+     * @requires data-prep.services.transformation.service:SuggestionService
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.transformation.service:TransformationService
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.preparation.service:PreparationService
      */
-    function ActionsSuggestionsCtrl(ColumnSuggestionService, TransformationService, PlaygroundService, PreparationService, TransformationApplicationService, EarlyPreviewService) {
+    function ActionsSuggestionsCtrl(SuggestionService, ColumnSuggestionService, TransformationService, PlaygroundService,
+                                    PreparationService, TransformationApplicationService, EarlyPreviewService) {
 
 
         var vm = this;
         vm.columnSuggestionService = ColumnSuggestionService;
+        vm.suggestionService = SuggestionService;
         vm.transformClosure = TransformationApplicationService.transformClosure;
         vm.earlyPreview = EarlyPreviewService.earlyPreview;
         vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
@@ -139,22 +142,6 @@
 
     /**
      * @ngdoc property
-     * @name column
-     * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
-     * @description The transformations column.
-     * This is bound to {@link data-prep.services.transformation:ColumnSuggestionService ColumnSuggestionService}.currentColumn
-     */
-    Object.defineProperty(ActionsSuggestionsCtrl.prototype,
-        'column', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.columnSuggestionService.currentColumn;
-            }
-        });
-
-    /**
-     * @ngdoc property
      * @name suggestions
      * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
      * @description The suggested transformations list.
@@ -166,6 +153,38 @@
             configurable: false,
             get: function () {
                 return this.columnSuggestionService.transformations;
+            }
+        });
+
+    /**
+     * @ngdoc property
+     * @name column
+     * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
+     * @description The transformations column.
+     * This is bound to {@link data-prep.services.transformation:SuggestionService SuggestionService}.currentColumn
+     */
+    Object.defineProperty(ActionsSuggestionsCtrl.prototype,
+        'column', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.suggestionService.currentColumn;
+            }
+        });
+
+    /**
+     * @ngdoc property
+     * @name tab
+     * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
+     * @description The new selected action tab
+     * This is bound to {@link data-prep.services.transformation:SuggestionService SuggestionService}.tab
+     */
+    Object.defineProperty(ActionsSuggestionsCtrl.prototype,
+        'tab', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.suggestionService.tab;
             }
         });
 

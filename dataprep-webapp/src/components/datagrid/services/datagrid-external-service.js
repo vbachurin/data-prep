@@ -6,14 +6,16 @@
      * @name data-prep.datagrid.service:DatagridExternalService
      * @description Datagrid private service that manage the selected column action to the outer world (non dratagrid)
      * @requires data-prep.services.statistics.service:StatisticsService
+     * @requires data-prep.services.transformation.service:SuggestionService
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.playground.service:PreviewService
      */
-    function DatagridExternalService(StatisticsService, ColumnSuggestionService, PreviewService) {
+    function DatagridExternalService($timeout, StatisticsService, SuggestionService, PreviewService) {
         var grid;
         var suggestionTimeout;
         var scrollTimeout;
         var lastSelectedColumn;
+        var lastSelectedTab;
 
         return {
             init: init,
@@ -27,21 +29,31 @@
          * @name updateSuggestionPanel
          * @methodOf data-prep.datagrid.service:DatagridExternalService
          * @param {string} column The selected column
+         * @param {string} tab The suggestion tab to select
          * @description Set the selected column into external services. This will trigger actions that use this property
          * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
          */
-        function updateSuggestionPanel(column) {
-            if(column.tdpColMetadata === lastSelectedColumn) {
+        function updateSuggestionPanel(column, tab) {
+            var tabHasChanged = tab !== lastSelectedTab;
+            var columnHasChanged = column.tdpColMetadata !== lastSelectedColumn;
+
+            if(!tabHasChanged && !columnHasChanged) {
                 return;
             }
 
-            clearTimeout(suggestionTimeout);
-            lastSelectedColumn = column.tdpColMetadata;
+            $timeout.cancel(suggestionTimeout);
 
-            suggestionTimeout = setTimeout(function() {
-                var columnMetadata = column.tdpColMetadata;
-                StatisticsService.processData(columnMetadata);
-                ColumnSuggestionService.setColumn(columnMetadata); // this will trigger a digest after REST call
+            suggestionTimeout = $timeout(function() {
+                lastSelectedColumn = column.tdpColMetadata;
+                lastSelectedTab = tab;
+
+                if(tabHasChanged) {
+                    SuggestionService.selectTab(lastSelectedTab);
+                }
+                if(columnHasChanged) {
+                    StatisticsService.processData(lastSelectedColumn);
+                    SuggestionService.setColumn(lastSelectedColumn);
+                }
             }, 200);
         }
 
@@ -56,10 +68,7 @@
             grid.onActiveCellChanged.subscribe(function(e,args) {
                 if(angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
-                    updateSuggestionPanel(column);
-                }
-                else {
-                    lastSelectedColumn = null;
+                    updateSuggestionPanel(column, 'CELL');
                 }
             });
         }
@@ -68,13 +77,21 @@
          * @ngdoc method
          * @name attachColumnListeners
          * @methodOf data-prep.datagrid.service:DatagridExternalService
-         * @description Attach header selection listeners
+         * @description Attach header selection listeners on right click or left click
          */
         function attachColumnListeners() {
-            grid.onHeaderClick.subscribe(function(e, args) {
+            function attachColumnCallback(args) {
                 var columnId = args.column.id;
                 var column = _.find(grid.getColumns(), {id: columnId});
-                updateSuggestionPanel(column);
+                updateSuggestionPanel(column, 'COLUMN');
+            }
+
+            grid.onHeaderContextMenu.subscribe(function(e, args) {
+                attachColumnCallback(args);
+            });
+
+            grid.onHeaderClick.subscribe(function(e, args) {
+                attachColumnCallback(args);
             });
         }
 

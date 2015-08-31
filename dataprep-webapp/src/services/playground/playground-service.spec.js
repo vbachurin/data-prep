@@ -7,7 +7,7 @@ describe('Playground Service', function () {
     beforeEach(module('data-prep.services.playground'));
 
     beforeEach(inject(function ($injector, $q, DatasetService, FilterService, RecipeService, DatagridService,
-                                PreparationService, TransformationCacheService, ColumnSuggestionService,
+                                PreparationService, TransformationCacheService, SuggestionService,
                                 HistoryService, StatisticsService, PreviewService) {
         spyOn(DatasetService, 'getContent').and.returnValue($q.when(datasetContent));
         spyOn(FilterService, 'removeAllFilters').and.returnValue();
@@ -16,7 +16,7 @@ describe('Playground Service', function () {
         spyOn(PreparationService, 'create').and.returnValue($q.when(true));
         spyOn(PreparationService, 'setName').and.returnValue($q.when(true));
         spyOn(TransformationCacheService, 'invalidateCache').and.returnValue();
-        spyOn(ColumnSuggestionService, 'reset').and.returnValue();
+        spyOn(SuggestionService, 'reset').and.returnValue();
         spyOn(HistoryService, 'clear').and.returnValue();
         spyOn(PreviewService, 'reset').and.returnValue();
         spyOn(StatisticsService, 'resetCharts').and.returnValue();
@@ -99,14 +99,14 @@ describe('Playground Service', function () {
         var dataset = {id: 'e85afAa78556d5425bc2'};
         var assertNewPreparationInitialization, assertNewPreparationNotInitialized;
 
-        beforeEach(inject(function(PlaygroundService, DatasetService, FilterService, RecipeService, DatagridService, TransformationCacheService, ColumnSuggestionService, HistoryService, StatisticsService, PreviewService) {
+        beforeEach(inject(function(PlaygroundService, DatasetService, FilterService, RecipeService, DatagridService, TransformationCacheService, SuggestionService, HistoryService, StatisticsService, PreviewService) {
             assertNewPreparationInitialization = function() {
                 expect(PlaygroundService.currentMetadata).toEqual(dataset);
                 expect(FilterService.removeAllFilters).toHaveBeenCalled();
                 expect(RecipeService.refresh).toHaveBeenCalled();
                 expect(DatagridService.setDataset).toHaveBeenCalledWith(dataset, datasetContent);
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
-                expect(ColumnSuggestionService.reset).toHaveBeenCalled();
+                expect(SuggestionService.reset).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
                 expect(StatisticsService.resetCharts).toHaveBeenCalled();
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
@@ -116,7 +116,7 @@ describe('Playground Service', function () {
                 expect(RecipeService.refresh).not.toHaveBeenCalled();
                 expect(DatagridService.setDataset).not.toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).not.toHaveBeenCalled();
-                expect(ColumnSuggestionService.reset).not.toHaveBeenCalled();
+                expect(SuggestionService.reset).not.toHaveBeenCalled();
                 expect(HistoryService.clear).not.toHaveBeenCalled();
                 expect(StatisticsService.resetCharts).not.toHaveBeenCalled();
                 expect(PreviewService.reset).not.toHaveBeenCalled();
@@ -210,7 +210,7 @@ describe('Playground Service', function () {
         };
         var assertDatasetLoadInitialized, assertDatasetLoadNotInitialized;
 
-        beforeEach(inject(function($rootScope, $q, PreparationService, RecipeService, PlaygroundService, FilterService, DatagridService, TransformationCacheService, ColumnSuggestionService, HistoryService, StatisticsService, PreviewService) {
+        beforeEach(inject(function($rootScope, $q, PreparationService, RecipeService, PlaygroundService, FilterService, DatagridService, TransformationCacheService, SuggestionService, HistoryService, StatisticsService, PreviewService) {
             spyOn($rootScope, '$emit').and.callThrough();
             spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: data}));
             spyOn(RecipeService, 'disableStepsAfter').and.callFake(function() {});
@@ -221,7 +221,7 @@ describe('Playground Service', function () {
                 expect(RecipeService.refresh).toHaveBeenCalled();
                 expect(DatagridService.setDataset).toHaveBeenCalledWith(metadata, data);
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
-                expect(ColumnSuggestionService.reset).toHaveBeenCalled();
+                expect(SuggestionService.reset).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
                 expect(StatisticsService.resetCharts).toHaveBeenCalled();
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
@@ -232,7 +232,7 @@ describe('Playground Service', function () {
                 expect(RecipeService.refresh).not.toHaveBeenCalled();
                 expect(DatagridService.setDataset).not.toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).not.toHaveBeenCalled();
-                expect(ColumnSuggestionService.reset).not.toHaveBeenCalled();
+                expect(SuggestionService.reset).not.toHaveBeenCalled();
                 expect(HistoryService.clear).not.toHaveBeenCalled();
                 expect(StatisticsService.resetCharts).not.toHaveBeenCalled();
                 expect(PreviewService.reset).not.toHaveBeenCalled();

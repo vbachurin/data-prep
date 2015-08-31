@@ -227,4 +227,46 @@ describe('Dataset column header directive', function () {
         expect(event.isPropagationStopped()).toBe(true);
         expect(event.isDefaultPrevented()).toBe(true);
     });
+
+    it('should hide menu on left click on grid-header', function () {
+        //given
+        createElement();
+        element.find('.dropdown-menu').addClass('show-menu');
+
+        //when
+        var event = angular.element.Event('mousedown');
+        event.which = 1;
+        element.find('.grid-header').eq(0).trigger(event);
+
+        //then
+        expect(element.find('.dropdown-menu').hasClass('show-menu')).toBeFalsy();
+    });
+
+    it('should show menu on right click on grid-header if menu is hidden', function () {
+        //given
+        createElement();
+        element.find('.dropdown-menu').removeClass('show-menu');
+
+        //when
+        var event = angular.element.Event('mousedown');
+        event.which = 3;
+        element.find('.grid-header').eq(0).trigger(event);
+
+        //then
+        expect(element.find('.dropdown-menu').hasClass('show-menu')).toBeTruthy();
+    });
+
+    it('should hide menu on right click if menu is visible', function () {
+        //given
+        createElement();
+        element.find('.dropdown-menu').addClass('show-menu');
+
+        //when
+        var event = angular.element.Event('mousedown');
+        event.which = 3;
+        element.find('.grid-header').eq(0).trigger(event);
+
+        //then
+        expect(element.find('.dropdown-menu').hasClass('show-menu')).toBeFalsy();
+    });
 });

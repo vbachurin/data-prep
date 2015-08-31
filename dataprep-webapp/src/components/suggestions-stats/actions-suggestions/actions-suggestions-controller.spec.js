@@ -31,35 +31,49 @@ describe('Actions suggestions-stats controller', function () {
         expect(ctrl.showDynamicModal).toBe(false);
     }));
 
-    it('should bind "column" getter to ColumnSuggestionService.currentColumn', inject(function (ColumnSuggestionService) {
-        //given
-        var ctrl = createController();
-        var column = {id: '0001', name: 'col1'};
+    describe('bindings', function() {
+        it('should bind "column" getter to SuggestionService.currentColumn', inject(function (SuggestionService) {
+            //given
+            var ctrl = createController();
+            var column = {id: '0001', name: 'col1'};
 
-        //when
-        ColumnSuggestionService.currentColumn = column;
+            //when
+            SuggestionService.currentColumn = column;
 
-        //then
-        expect(ctrl.column).toBe(column);
-    }));
+            //then
+            expect(ctrl.column).toBe(column);
+        }));
 
-    it('should bind "suggestions-stats" getter to ColumnSuggestionService.transformations', inject(function (ColumnSuggestionService) {
-        //given
-        var ctrl = createController();
-        var transformations = [{name: 'tolowercase'}, {name: 'touppercase'}];
+        it('should bind "suggestions-stats" getter to SuggestionService.transformations', inject(function (ColumnSuggestionService) {
+            //given
+            var ctrl = createController();
+            var transformations = [{name: 'tolowercase'}, {name: 'touppercase'}];
 
-        //when
-        ColumnSuggestionService.transformations = transformations;
+            //when
+            ColumnSuggestionService.transformations = transformations;
 
-        //then
-        expect(ctrl.columnSuggestions).toBe(transformations);
-    }));
+            //then
+            expect(ctrl.columnSuggestions).toBe(transformations);
+        }));
+
+        it('should bind "tab" getter to SuggestionService.tab', inject(function (SuggestionService) {
+            //given
+            var ctrl = createController();
+            var tab = 1;
+
+            //when
+            SuggestionService.tab = tab;
+
+            //then
+            expect(ctrl.tab).toBe(tab);
+        }));
+    });
 
     describe('with initiated state', function () {
         var column = {id: '0001', name: 'col1'};
 
-        beforeEach(inject(function ($q, ColumnSuggestionService, PlaygroundService, PreparationService, TransformationApplicationService) {
-            ColumnSuggestionService.currentColumn = column;
+        beforeEach(inject(function ($q, SuggestionService, PlaygroundService, PreparationService, TransformationApplicationService) {
+            SuggestionService.currentColumn = column;
             PlaygroundService.currentMetadata = {id: 'dataset_id'};
             PreparationService.currentPreparationId = 'preparation_id';
             spyOn(TransformationApplicationService, 'transformClosure').and.returnValue(function(){});

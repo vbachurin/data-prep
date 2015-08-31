@@ -5,11 +5,11 @@
 	 * @ngdoc service
 	 * @name TransformationApplicationService
 	 * @description applies a transformation on the given data
-	 * @requires data-prep.services.playground.service: PlaygroundService
-	 * @requires data-prep.services.transformation.service: ColumnSuggestionService
-	 * @requires data-prep.services.playground.service: EarlyPreviewService
+	 * @requires data-prep.services.playground.service:PlaygroundService
+	 * @requires data-prep.services.transformation.service:SuggestionService
+	 * @requires data-prep.services.playground.service:EarlyPreviewService
 	 */
-	function TransformationApplicationService(PlaygroundService, ColumnSuggestionService, EarlyPreviewService) {
+	function TransformationApplicationService(PlaygroundService, SuggestionService, EarlyPreviewService) {
 		/**
 		 * @ngdoc method
 		 * @name transformClosure
@@ -19,7 +19,7 @@
 		 */
 		this.transformClosure = function transformClosure(transfo, transfoScope) {
 			/*jshint camelcase: false */
-			var currentCol = ColumnSuggestionService.currentColumn;
+			var currentCol = SuggestionService.currentColumn;
 			return function(params) {
 				EarlyPreviewService.deactivatePreview();
 				EarlyPreviewService.cancelPendingPreview();

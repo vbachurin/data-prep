@@ -6,14 +6,14 @@ describe('Transformation Application Service', function () {
 
 	beforeEach(module('data-prep.services.transformationApplication'));
 
-	beforeEach(inject(function ($q, PlaygroundService, ColumnSuggestionService, EarlyPreviewService) {
+	beforeEach(inject(function ($q, PlaygroundService, SuggestionService, EarlyPreviewService) {
 		spyOn(EarlyPreviewService, 'deactivatePreview').and.returnValue();
 		spyOn(EarlyPreviewService, 'deactivateDynamicModal').and.returnValue();
 		spyOn(EarlyPreviewService, 'cancelPendingPreview').and.returnValue();
 		spyOn(EarlyPreviewService, 'activatePreview').and.returnValue();
 
 		spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when());
-		ColumnSuggestionService.currentColumn = {id:'0001', name:'firstname'};
+		SuggestionService.currentColumn = {id:'0001', name:'firstname'};
 	}));
 
 	describe('Appending Steps', function () {
