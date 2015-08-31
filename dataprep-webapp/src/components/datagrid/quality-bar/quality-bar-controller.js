@@ -163,6 +163,13 @@
             FilterService.addFilter('empty_records', column.id, column.name, {});
         };
 
+        /**
+         * @ngdoc method
+         * @name applyActionOnColumn
+         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @description applies a given transformation on the current column
+         * @param {String} actionType - the type of the action to apply
+         */
         vm.applyActionOnColumn = function(actionType){
             var actionToApply = _.find(ColumnSuggestionService.transformations, function(transfo){
              return transfo.name === actionType;
