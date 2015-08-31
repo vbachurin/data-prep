@@ -1,16 +1,19 @@
 package org.talend.dataprep.api.service.api;
 
-import org.talend.dataprep.api.preparation.Action;
-import org.talend.dataprep.api.service.validation.OneNotBlank;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
+
+import org.hibernate.validator.constraints.NotEmpty;
+import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.validation.OneNotBlank;
 
 @OneNotBlank({"preparationId", "datasetId"})
 public class PreviewAddInput {
     @NotNull
     private Action action;
-    @NotNull
+
+    @NotEmpty
     private List<Integer> tdpIds;
     private String datasetId;
     private String preparationId;
