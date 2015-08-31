@@ -24,6 +24,7 @@
                 previousValue = currentValue;
             }
 
+
             function init() {
                 $container = $('<div></div>')
                     .appendTo(args.container);
