@@ -1,7 +1,5 @@
 package org.talend.dataprep.api.service.command.preparation;
 
-import static org.talend.dataprep.api.APIErrorCodes.UNABLE_TO_DELETE_ACTION_IN_PREPARATION;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -11,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCode;
 
 @Component
