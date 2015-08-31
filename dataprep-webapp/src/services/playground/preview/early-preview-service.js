@@ -5,12 +5,12 @@
 	 * @ngdoc service
 	 * @name EarlyPreviewService
 	 * @description launches a preview before the application of the transformation
-	 * @requires data-prep.services.transformation.service:ColumnSuggestionService
+	 * @requires data-prep.services.transformation.service:SuggestionService
 	 * @requires data-prep.services.recipe.service:RecipeService
 	 * @requires data-prep.services.playground.service:PreviewService
 	 * @requires data-prep.services.playground.service:PlaygroundService
 	 */
-	function EarlyPreviewService($timeout, PlaygroundService, ColumnSuggestionService, RecipeService, PreviewService) {
+	function EarlyPreviewService($timeout, PlaygroundService, SuggestionService, RecipeService, PreviewService) {
 		var self = this;
 		self.previewDisabled = false;
 		self.showDynamicModal = false;
@@ -68,7 +68,7 @@
 		 */
 		self.earlyPreview = function earlyPreview(transformation, transfoScope) {
 			/*jshint camelcase: false */
-			var currentCol = ColumnSuggestionService.currentColumn;
+			var currentCol = SuggestionService.currentColumn;
 			return function(params) {
 				if(self.previewDisabled) {
 					return;

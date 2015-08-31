@@ -22,9 +22,9 @@ describe('stats details directive', function () {
         element.remove();
     });
 
-    it('should set "Action" in title when no column is selected', inject(function (ColumnSuggestionService) {
+    it('should set "Action" in title when no column is selected', inject(function (SuggestionService) {
         //given
-        ColumnSuggestionService.currentColumn = null;
+        SuggestionService.currentColumn = null;
 
         //when
         createElement();

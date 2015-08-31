@@ -11,8 +11,8 @@ describe('Early Preview Service', function () {
 
 	beforeEach(module('data-prep.services.playground'));
 
-	beforeEach(inject(function(ColumnSuggestionService, PlaygroundService, PreviewService, RecipeService, EarlyPreviewService) {
-		ColumnSuggestionService.currentColumn = column;
+	beforeEach(inject(function(SuggestionService, PlaygroundService, PreviewService, RecipeService, EarlyPreviewService) {
+		SuggestionService.currentColumn = column;
 		PlaygroundService.currentMetadata = currentMetadata;
 
 		transfoScope = 'column';
