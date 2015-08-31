@@ -30,7 +30,7 @@ public class AggregationParameters {
     private List<AggregationOperation> operations;
 
     /** Optional sample size (null for the whole thing). */
-    private Long sampleSize;
+    private String sampleSize;
 
     /**
      * Default empty constructor.
@@ -132,13 +132,18 @@ public class AggregationParameters {
      * @return the SampleSize
      */
     public Long getSampleSize() {
-        return sampleSize;
+        try {
+            return Long.parseLong(sampleSize);
+        } catch (NumberFormatException e) {
+
+            return null;
+        }
     }
 
     /**
      * @param sampleSize the sampleSize to set.
      */
-    public void setSampleSize(Long sampleSize) {
+    public void setSampleSize(String sampleSize) {
         this.sampleSize = sampleSize;
     }
 
