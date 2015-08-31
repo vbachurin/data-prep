@@ -4,8 +4,8 @@ import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
-import org.talend.dataprep.api.service.validation.OneNotBlank;
 import org.talend.dataprep.api.type.ExportType;
+import org.talend.dataprep.validation.OneNotBlank;
 
 /**
  * Parameter for dataset/preparation export
