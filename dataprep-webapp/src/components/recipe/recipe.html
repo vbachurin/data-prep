@@ -4,7 +4,7 @@
                             default="$index === (recipeCtrl.recipe.length - 1)"
                             ng-class="::{'preview': step.preview}">
         <div class="trigger step-description"
-             ng-click="recipeCtrl.showModal[$index] = !!step.transformation.cluster"
+             ng-click="recipeCtrl.showModal[$index] = !!recipeCtrl.hasDynamicParams(step)"
              ng-switch="step.actionParameters.parameters.scope">
 
             <i data-icon="e" ng-click="recipeCtrl.remove(step, 'single')" style="color: #8abc00;" class="action-icon animated"></i>
@@ -23,14 +23,14 @@
             <recipe-bullet class="step-trigger" step="step" ></recipe-bullet>
         </div>
 
-        <div class="content" ng-if="::recipeCtrl.hasParameters(step)">
-            <transform-params ng-if="::recipeCtrl.hasStaticParams(step)"
+        <div class="content" ng-if="recipeCtrl.hasParameters(step)">
+            <transform-params ng-if="recipeCtrl.hasStaticParams(step)"
                               transformation="step.transformation"
                               on-submit="recipeCtrl.stepUpdateClosure(step)(params)"
                               on-submit-hover-on="recipeCtrl.previewUpdateClosure(step)(params)"
                               on-submit-hover-off="recipeCtrl.cancelPreview()"></transform-params>
 
-            <talend-modal ng-if="::recipeCtrl.hasDynamicParams(step)"
+            <talend-modal ng-if="recipeCtrl.hasDynamicParams(step)"
                           fullscreen="false"
                           state="recipeCtrl.showModal[$index]"
                           close-button="true">

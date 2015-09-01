@@ -12,6 +12,7 @@
      * @requires data-prep.services.utils
      * @requires data-prep.services.statistics
      * @requires data-prep.services.history
+     * @requires data-prep.services.state
      */
     angular.module('data-prep.services.playground', [
         'data-prep.services.dataset',
@@ -20,6 +21,7 @@
         'data-prep.services.recipe',
         'data-prep.services.utils',
         'data-prep.services.statistics',
-        'data-prep.services.history'
+        'data-prep.services.history',
+        'data-prep.services.state'
     ]);
 })();
