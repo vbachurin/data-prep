@@ -35,6 +35,8 @@
          */
         vm.isEditMode = false;
 
+
+        vm.rawTransformations = [];
         /**
          * @ngdoc method
          * @name initTransformations
@@ -48,6 +50,7 @@
 
                 TransformationCacheService.getTransformations(vm.column)
                     .then(function(menus) {
+                        vm.rawTransformations = _.cloneDeep(menus);
                         vm.transformations = _.filter(menus, function(menu) {
                             return menu.category === COLUMN_CATEGORY;
                         });
@@ -58,6 +61,14 @@
                     .finally(function() {
                         vm.initTransformationsInProgress = false;
                     });
+            }
+            else{// reset the parameters to the initial ones
+                _.map(vm.transformations, function(menuWithParam){
+                    var theTransfoToReset = _.find(vm.rawTransformations, function(rawTransfo){
+                        return menuWithParam.name === rawTransfo.name;
+                    });
+                    menuWithParam.parameters = theTransfoToReset.parameters;
+                });
             }
         };
 
