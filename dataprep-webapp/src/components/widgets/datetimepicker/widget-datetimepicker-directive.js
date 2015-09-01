@@ -55,8 +55,8 @@
                * @methodOf talend.widget.directive:TalendDatetimePicker
                * @description [PRIVATE] hide calendar widget
                */
-              function hideCalendar(){
-                dateInput.datetimepicker("hide");
+              var hideCalendar = function(){
+                dateInput.datetimepicker('hide4');
               };
 
               /**
@@ -68,14 +68,14 @@
                *     <li>ESC : hide the calendar</li>
                * </ul>
                */
-               function attachKeyMap() {
-                dateInput.bind('keydown', function (event) {
+               var attachKeyMap = function() {
+                 dateInput.bind('keydown', function (event) {
 
                   // hide calendar on 'ESC' keydown
-                  if (event.keyCode === 27) {
-                    hideCalendar();
-                    event.stopPropagation();
-                  }
+                   if (event.keyCode === 27) {
+                     hideCalendar();
+                     event.stopPropagation();
+                   }
                 });
               };
 
