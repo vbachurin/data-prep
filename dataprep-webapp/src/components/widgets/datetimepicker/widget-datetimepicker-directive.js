@@ -49,6 +49,38 @@
                   }
               );
 
+              /**
+               * @ngdoc method
+               * @name hideCalendar
+               * @methodOf talend.widget.directive:TalendDatetimePicker
+               * @description [PRIVATE] hide calendar widget
+               */
+              var hideCalendar = function(){
+                dateInput.datetimepicker("hide");
+              };
+
+              /**
+               * @ngdoc method
+               * @name attachKeyMap
+               * @methodOf talend.widget.directive:TalendDatetimePicker
+               * @description [PRIVATE] Attach ESC actions
+               * <ul>
+               *     <li>ESC : hide the calendar</li>
+               * </ul>
+               */
+              var attachKeyMap = function () {
+                dateInput.bind('keydown', function (event) {
+
+                  // hide calendar on 'ESC' keydown
+                  if (event.keyCode === 27) {
+                    hideCalendar();
+                    event.stopPropagation();
+                  }
+                });
+              };
+
+              attachKeyMap();
+
             }
         };
 
