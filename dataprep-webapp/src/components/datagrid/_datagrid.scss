@@ -15,6 +15,10 @@ $datagrid-cell-font-size: .80em;
   padding: 1px 4px 2px;
 }
 
+.index-column {
+  background-color: #555964 !important;
+  color: $white !important;
+}
 .tooltip-ruler {
   font-size: $datagrid-cell-font-size;
   font-family: $monospace;

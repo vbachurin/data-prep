@@ -113,9 +113,14 @@
          */
         function updateColumnClass(columns, selectedCol) {
             _.forEach(columns, function(column) {
-                column.cssClass = null;
-                updateSelectionClass(column, selectedCol);
-                updateNumbersClass(column);
+                if(column.field === 'colIndex'){
+                    column.cssClass = 'index-column';
+                } else {
+                    column.cssClass = null;
+                    updateSelectionClass(column, selectedCol);
+                    updateNumbersClass(column);
+                }
+
             });
 
             if(selectedCol) {

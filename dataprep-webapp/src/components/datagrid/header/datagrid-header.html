@@ -1,4 +1,4 @@
-<div class="grid-header">
+<div class="grid-header" ng-if="datagridHeaderCtrl.column.name !=='#'">
     <div class="talend-dropdown-div">
         <talend-dropdown on-open="datagridHeaderCtrl.initTransformations()">
             <div class="dropdown-container">
@@ -24,6 +24,10 @@
     <div class="grid-header-type" ng-if="datagridHeaderCtrl.column.domain">{{ datagridHeaderCtrl.column.domain }}</div>
     <div class="grid-header-type" ng-if="(!datagridHeaderCtrl.column.domain)">{{ datagridHeaderCtrl.converterService.simplifyType(datagridHeaderCtrl.column.type) }}</div>
 
+</div>
+
+<div class="grid-header" ng-if="datagridHeaderCtrl.column.name ==='#'">
+    <div class="grid-header-title-index">{{ datagridHeaderCtrl.column.name }}</div>
 </div>
 
 <quality-bar

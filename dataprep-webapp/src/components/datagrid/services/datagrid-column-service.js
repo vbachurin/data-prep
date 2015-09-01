@@ -87,13 +87,18 @@
          * the same as before, or a new created one otherwise.</li>
          * </ul>
          */
+
+        function formatterIndex(row, cell, value, columnDef, dataContext) {
+            return '<div style="text-align: right">' + value + '</div>';
+        }
+
         function createColumns(columnsMetadata, preview) {
             //create new SlickGrid columns
-            var colsArray =[] ;
-            colsArray.push({id: "tdpId", name: "", field: "tdpId", behavior: "select", cssClass: "cell-selection", cannotTriggerInsert: true, resizable: false, selectable: false, tdpColMetadata: {type: "integer", name: "#"}});
-            debugger;
+            var colIndexArray =[] ;
 
-            return _.union(colsArray, _.map(columnsMetadata, function (col) {
+            colIndexArray.push({id: "colIndex", name: "", field: "colIndex", formatter: formatterIndex,  resizable : false, selectable: false, tdpColMetadata: {type: "integer", name: "#"}});
+
+            return _.union(colIndexArray, _.map(columnsMetadata, function (col) {
                 return createColumnDefinition(col, preview);
             }));
 
