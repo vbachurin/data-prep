@@ -13,7 +13,6 @@
     function StatisticsService($q, $timeout, $filter, $cacheFactory, DatagridService, FilterService, ConverterService, TextFormatService, StatisticsRestService) {
 
         var aggregationCache = $cacheFactory('aggregationStatistics', {capacity: 5});
-        var aggregationColumnsCache = $cacheFactory('aggregationColumns', {capacity: 5});
 
         var service = {
             boxPlot: null,
@@ -474,7 +473,6 @@
             resetCharsWithoutCache();
 
             //caches
-            aggregationColumnsCache.removeAll();
             aggregationCache.removeAll();
         }
 
@@ -500,11 +498,8 @@
          */
         function getAggregationColumns() {
             var column = service.selectedColumn;
-            var aggregationColumns = aggregationColumnsCache.get(column.id);
-            if(!aggregationColumns) {
-                aggregationColumns = aggregationColumnsCache.put(column.id, DatagridService.getNumericColumns(column));
-            }
-            return aggregationColumns;
+            //TODO JSO : put a cache again that is invalidated when one of the columns change
+            return DatagridService.getNumericColumns(column);
         }
     }
 
