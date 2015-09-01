@@ -55,13 +55,9 @@ public class DataSetAnalysis {
                 LOGGER.error("No column found at index {}, ignoring result", index);
                 continue;
             }
-
-            // Get the statistics from the returned JSON
-            final JsonNode statistics = column.get("statistics"); //$NON-NLS-1$
-
             // Keeps the statistics as returned by statistics library.
             final ColumnMetadata schemaColumn = schemaColumns.get(index);
-            schemaColumn.setStatistics(statistics.toString());
+            schemaColumn.setStatistics(schemaColumn.getStatistics());
         }
     }
 

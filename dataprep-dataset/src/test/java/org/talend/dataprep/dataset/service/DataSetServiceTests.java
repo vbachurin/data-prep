@@ -5,6 +5,7 @@ import static com.jayway.restassured.RestAssured.when;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static com.jayway.restassured.path.json.JsonPath.from;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.fail;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -982,7 +983,8 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         assertThat(column.getType(), is("date"));
         assertThat(column.getDomain(), is(""));
-        assertThat(column.getStatistics(), sameJSONAsFile(DataSetServiceTests.class.getResourceAsStream("../date_time_pattern_expected.json")));
+        fail("Change expectations");
+        // assertThat(column.getStatistics(), sameJSONAsFile(DataSetServiceTests.class.getResourceAsStream("../date_time_pattern_expected.json")));
 
     }
 

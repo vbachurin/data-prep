@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
@@ -113,7 +114,7 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
                 .copy(column)//
                 .name(PREFIX + column.getName() + SUFFIX + unit.toString().toLowerCase()) //
                 .computedId(null) // remove the id
-                .statistics("{}") // clear the statistics
+                .statistics(new Statistics()) // clear the statistics
                 .type(INTEGER)//
                 .build();
     }

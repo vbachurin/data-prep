@@ -28,12 +28,13 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.*;
 
-import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
@@ -439,7 +440,8 @@ public class ComputeTimeSinceTest {
 
         List<ColumnMetadata> columns = new ArrayList<>(3);
         columns.add(ColumnMetadata.Builder.column().name("recipe").type(Type.STRING).build());
-        String statistics = IOUtils.toString(ComputeTimeSinceTest.class.getResourceAsStream(statisticsFileName));
+        ObjectMapper mapper = new ObjectMapper();
+        final Statistics statistics = mapper.reader(Statistics.class).readValue(ComputeTimeSinceTest.class.getResourceAsStream(statisticsFileName));
         columns.add(ColumnMetadata.Builder.column().name("last update").type(Type.DATE).statistics(statistics).build());
         columns.add(ColumnMetadata.Builder.column().name("steps").type(Type.STRING).build());
 
@@ -456,7 +458,8 @@ public class ComputeTimeSinceTest {
 
     private ColumnMetadata createMetadata(String id, String name, Type type, String statisticsFileName) throws IOException {
         ColumnMetadata column = createMetadata(id, name, type);
-        String statistics = IOUtils.toString(ComputeTimeSinceTest.class.getResourceAsStream(statisticsFileName));
+        ObjectMapper mapper = new ObjectMapper();
+        final Statistics statistics = mapper.reader(Statistics.class).readValue(ComputeTimeSinceTest.class.getResourceAsStream(statisticsFileName));
         column.setStatistics(statistics);
         return column;
     }

@@ -1,5 +1,10 @@
 package org.talend.dataprep.dataset.service.analysis;
 
+import static java.util.stream.StreamSupport.stream;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.jms.JMSException;
@@ -16,15 +21,26 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
-import org.talend.dataprep.api.dataset.DataSet;
-import org.talend.dataprep.api.dataset.DataSetAnalysis;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataquality.statistics.cardinality.CardinalityAnalyzer;
+import org.talend.dataquality.statistics.cardinality.CardinalityHLLAnalyzer;
+import org.talend.dataquality.statistics.frequency.FrequencyAnalyzer;
+import org.talend.dataquality.statistics.frequency.PatternFrequencyAnalyzer;
+import org.talend.dataquality.statistics.numeric.histogram.HistogramAnalyzer;
+import org.talend.dataquality.statistics.numeric.quantile.QuantileAnalyzer;
+import org.talend.dataquality.statistics.numeric.quantile.TDigestAnalyzer;
+import org.talend.dataquality.statistics.numeric.summary.SummaryAnalyzer;
+import org.talend.dataquality.statistics.text.TextLengthAnalyzer;
+import org.talend.datascience.common.inference.Analyzer;
+import org.talend.datascience.common.inference.Analyzers;
+import org.talend.datascience.common.inference.type.DataType;
 
 @Component
 @ConditionalOnProperty("dataset.spark.master")
@@ -77,10 +93,29 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
                         return; // no acknowledge to allow re-poll.
                     }
                     // Create a content with the expected format for the StatisticsClientJson class
-                    DataSet dataSet = new DataSet();
-                    dataSet.setMetadata(metadata);
-                    dataSet.setRecords(stream);
-                    DataSetAnalysis.computeStatistics(dataSet, sparkContext, builder);
+                    DataType.Type[] types = TypeUtils.convert(metadata.getRow().getColumns());
+                    Analyzer[] allAnalyzers = new Analyzer[] {
+                            new CardinalityAnalyzer(),
+                            new FrequencyAnalyzer(),
+                            new CardinalityHLLAnalyzer(),
+                            new PatternFrequencyAnalyzer(),
+                            new QuantileAnalyzer(types),
+                            new SummaryAnalyzer(types),
+                            new TDigestAnalyzer(types),
+                            new HistogramAnalyzer(types),
+                            new TextLengthAnalyzer()
+                    };
+                    final Analyzer<Analyzers.Result> analyzer = Analyzers.with(allAnalyzers);
+                    stream.map(row -> {
+                        final Map<String, Object> rowValues = row.values();
+                        final List<String> strings = stream(rowValues.values().spliterator(), false) //
+                                .map(String::valueOf) //
+                                .collect(Collectors.<String> toList());
+                        return strings.toArray(new String[strings.size()]);
+                    }).forEach(analyzer::analyze);
+                    // TODO Store results back in data set
+
+                    // Tag data set quality: now analyzed
                     metadata.getLifecycle().qualityAnalyzed(true);
                     repository.add(metadata);
                 } else {

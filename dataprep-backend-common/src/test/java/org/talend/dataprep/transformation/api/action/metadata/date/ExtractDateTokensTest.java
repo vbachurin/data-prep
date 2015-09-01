@@ -12,12 +12,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
@@ -175,8 +176,8 @@ public class ExtractDateTokensTest {
         input.add(createMetadata("0001"));
         input.add(createMetadata("0002"));
         final RowMetadata rowMetadata = new RowMetadata(input);
-
-        final String statistics = IOUtils.toString(ChangeDatePatternTest.class.getResourceAsStream("statistics_yyyy-MM-dd.json"));
+        ObjectMapper mapper = new ObjectMapper();
+        final Statistics statistics = mapper.reader(Statistics.class).readValue(ChangeDatePatternTest.class.getResourceAsStream("statistics_yyyy-MM-dd.json"));
         input.get(1).setStatistics(statistics);
 
         // when
