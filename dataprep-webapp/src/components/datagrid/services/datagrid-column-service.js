@@ -88,9 +88,14 @@
          */
         function createColumns(columnsMetadata, preview) {
             //create new SlickGrid columns
-            return _.map(columnsMetadata, function (col) {
+            var colsArray =[] ;
+            colsArray.push({id: "tdpId", name: "", field: "tdpId", behavior: "select", cssClass: "cell-selection", cannotTriggerInsert: true, resizable: false, selectable: false, tdpColMetadata: {type: "integer", name: "#"}});
+            debugger;
+
+            return _.union(colsArray, _.map(columnsMetadata, function (col) {
                 return createColumnDefinition(col, preview);
-            });
+            }));
+
         }
 
         //------------------------------------------------------------------------------------------------------
