@@ -69,7 +69,7 @@
             grid.onActiveCellChanged.subscribe(function(e,args) {
                 if(angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
-                    updateSuggestionPanel(column, 'CELL');
+                    updateSuggestionPanel(column, 'COLUMN'); //TODO : change this to CELL when cell actions are supported
                 }
             });
         }
