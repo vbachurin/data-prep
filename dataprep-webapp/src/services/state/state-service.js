@@ -26,5 +26,11 @@
 
     angular.module('data-prep.services.state')
         .service('StateService', StateService)
-        .constant('state', state);
+        .provider('State', function () {
+            return {
+                $get: function () {
+                    return state;
+                }
+            };
+        });
 })();
