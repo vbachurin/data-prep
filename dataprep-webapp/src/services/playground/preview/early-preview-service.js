@@ -1,114 +1,109 @@
-(function() {
-	'use strict';
+(function () {
+    'use strict';
 
-	/**
-	 * @ngdoc service
-	 * @name EarlyPreviewService
-	 * @description launches a preview before the application of the transformation
-	 * @requires data-prep.services.transformation.service:ColumnSuggestionService
-	 * @requires data-prep.services.recipe.service:RecipeService
-	 * @requires data-prep.services.playground.service:PreviewService
-	 * @requires data-prep.services.playground.service:PlaygroundService
-	 */
-	function EarlyPreviewService($timeout, PlaygroundService, ColumnSuggestionService, RecipeService, PreviewService) {
-		var self = this;
-		self.previewDisabled = false;
-		self.showDynamicModal = false;
-		var previewTimeout;
-		var previewCancelerTimeout;
+    /**
+     * @ngdoc service
+     * @name EarlyPreviewService
+     * @description Launches a preview before the transformation application
+     * @requires data-prep.services.playground.service:PlaygroundService
+     * @requires data-prep.services.recipe.service:RecipeService
+     * @requires data-prep.services.playground.service:PreviewService
+     */
+    function EarlyPreviewService($timeout, state, PlaygroundService, RecipeService, PreviewService) {
+        var previewDisabled = false;
+        var previewTimeout;
+        var previewCancelerTimeout;
 
-		/**
-		 * @ngdoc method
-		 * @name deactivatePreview
-		 * @methodOf data-prep.services.playground.service:EarlyPreviewService
-		 * @description deactivates the preview
-		 */
-		self.deactivatePreview = function deactivatePreview (){
-			self.previewDisabled = true;
-		};
+        return {
+            activatePreview: activatePreview,
+            deactivatePreview: deactivatePreview,
 
-		/**
-		 * @ngdoc method
-		 * @name activatePreview
-		 * @methodOf data-prep.services.playground.service:EarlyPreviewService
-		 * @description activates the preview
-		 */
-		self.activatePreview = function activatePreview (){
-			self.previewDisabled = false;
-		};
+            cancelPendingPreview: cancelPendingPreview,
+            earlyPreview: earlyPreview,
+            cancelEarlyPreview: cancelEarlyPreview
+        };
 
-		/**
-		 * @ngdoc method
-		 * @name deactivateDynamicModal
-		 * @methodOf data-prep.services.playground.service:EarlyPreviewService
-		 * @description hides the dynamic modal
-		 */
-		self.deactivateDynamicModal = function activatePreview (){
-			self.showDynamicModal = false;
-		};
+        /**
+         * @ngdoc method
+         * @name deactivatePreview
+         * @methodOf data-prep.services.playground.service:EarlyPreviewService
+         * @description deactivates the preview
+         */
+        function deactivatePreview() {
+            previewDisabled = true;
+        }
 
-		/**
-		 * @ngdoc method
-		 * @name cancelPendingPreview
-		 * @methodOf data-prep.services.playground.service:EarlyPreviewService
-		 * @description disables the pending previews
-		 */
-		self.cancelPendingPreview = function cancelPendingPreview() {
-			$timeout.cancel(previewTimeout);
-			$timeout.cancel(previewCancelerTimeout);
-		};
+        /**
+         * @ngdoc method
+         * @name activatePreview
+         * @methodOf data-prep.services.playground.service:EarlyPreviewService
+         * @description activates the preview
+         */
+        function activatePreview() {
+            previewDisabled = false;
+        }
 
-		/**
-		 * @ngdoc method
-		 * @name earlyPreview
-		 * @methodOf data-prep.services.playground.service:EarlyPreviewService
-		 * @param {object} transformation The transformation
-		 * @param {string} transfoScope The transformation scope
-		 * @description Perform an early preview (preview before transformation application) after a 200ms delay
-		 */
-		self.earlyPreview = function earlyPreview(transformation, transfoScope) {
-			/*jshint camelcase: false */
-			var currentCol = ColumnSuggestionService.currentColumn;
-			return function(params) {
-				if(self.previewDisabled) {
-					return;
-				}
+        /**
+         * @ngdoc method
+         * @name cancelPendingPreview
+         * @methodOf data-prep.services.playground.service:EarlyPreviewService
+         * @description disables the pending previews
+         */
+        function cancelPendingPreview() {
+            $timeout.cancel(previewTimeout);
+            $timeout.cancel(previewCancelerTimeout);
+        }
 
-				self.cancelPendingPreview();
+        /**
+         * @ngdoc method
+         * @name earlyPreview
+         * @methodOf data-prep.services.playground.service:EarlyPreviewService
+         * @param {object} action The transformation
+         * @param {string} scope The transformation scope
+         * @description Perform an early preview (preview before transformation application) after a 200ms delay
+         */
+        function earlyPreview(action, scope) {
+            /*jshint camelcase: false */
+            return function (params) {
+                if (previewDisabled) {
+                    return;
+                }
 
-				previewTimeout = $timeout(function() {
-					params.scope = transfoScope;
-					params.column_id = currentCol.id;
-					params.column_name = currentCol.name;
+                cancelPendingPreview();
 
-					var datasetId = PlaygroundService.currentMetadata.id;
+                previewTimeout = $timeout(function () {
+                    params.scope = scope;
+                    params.column_id = state.column.id;
+                    params.column_name = state.column.name;
 
-					RecipeService.earlyPreview(currentCol, transformation, params);
-					PreviewService.getPreviewAddRecords(datasetId, transformation.name, params);
-				}, 300);
-			};
-		};
+                    var datasetId = PlaygroundService.currentMetadata.id;
 
-		/**
-		 * @ngdoc method
-		 * @name cancelEarlyPreview
-		 * @methodOf data-prep.services.playground.service:EarlyPreviewService
-		 * @description Cancel any current or pending early preview
-		 */
-		self.cancelEarlyPreview = function cancelEarlyPreview() {
-			if(self.previewDisabled) {
-				return;
-			}
+                    RecipeService.earlyPreview(state.column, action, params);
+                    PreviewService.getPreviewAddRecords(datasetId, action.name, params);
+                }, 300);
+            };
+        }
 
-			self.cancelPendingPreview();
+        /**
+         * @ngdoc method
+         * @name cancelEarlyPreview
+         * @methodOf data-prep.services.playground.service:EarlyPreviewService
+         * @description Cancel any current or pending early preview
+         */
+        function cancelEarlyPreview() {
+            if (previewDisabled) {
+                return;
+            }
 
-			previewCancelerTimeout = $timeout(function() {
-				RecipeService.cancelEarlyPreview();
-				PreviewService.cancelPreview();
-			}, 100);
-		};
-	}
+            cancelPendingPreview();
 
-	angular.module('data-prep.services.playground')
-		.service('EarlyPreviewService', EarlyPreviewService);
+            previewCancelerTimeout = $timeout(function () {
+                RecipeService.cancelEarlyPreview();
+                PreviewService.cancelPreview();
+            }, 100);
+        }
+    }
+
+    angular.module('data-prep.services.playground')
+        .service('EarlyPreviewService', EarlyPreviewService);
 })();

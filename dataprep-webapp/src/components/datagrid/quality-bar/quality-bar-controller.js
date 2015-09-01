@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     /**
@@ -7,26 +7,26 @@
      * @description Quality bar controller
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
-     * @requires data-prep.services.transformationApplication.service:TransformationApplicationService
+     * @requires data-prep.services.transformation.service:TransformationApplicationService
      */
     function QualityBarCtrl(FilterService, TransformationApplicationService, ColumnSuggestionService) {
         var MIN_QUALITY_WIDTH = 10;
         var vm = this;
-        vm.transformationApplicationService = TransformationApplicationService;
+
         /**
          * @ngdoc method
          * @name getMinimalPercent
          * @methodOf data-prep.quality-bar.controller:QualityBarCtrl
-         * @param {number} percent The real width
+         * @param {string} type The bar type
          * @description [PRIVATE] Return the adapted width to have a min value if the real value is greater than 0
          */
         var getMinimalPercent = function getMinimalPercent(type) {
-            if(vm.quality[type] <= 0) {
+            if (vm.quality[type] <= 0) {
                 return 0;
             }
 
             var percent = vm.percent[type];
-            if(percent < MIN_QUALITY_WIDTH) {
+            if (percent < MIN_QUALITY_WIDTH) {
                 return MIN_QUALITY_WIDTH;
             }
             return percent;
@@ -44,11 +44,11 @@
             return _.chain(Object.keys(widthObject))
                 //filter : only keep values > min width.
                 //those with min width are not reducable
-                .filter(function(key) {
+                .filter(function (key) {
                     return widthObject[key] > MIN_QUALITY_WIDTH;
                 })
                 //sort by width value in reverse order
-                .sortBy(function(key) {
+                .sortBy(function (key) {
                     return widthObject[key];
                 })
                 .reverse()
@@ -64,12 +64,12 @@
          * @description [PRIVATE] Reduce the bars width to fit 100%. The amount value is removed.
          */
         var reduce = function reduce(widthObject, amount) {
-            if(amount <= 0) {
+            if (amount <= 0) {
                 return;
             }
 
             var orderedKeys = getOrderedModifiableKeys(widthObject);
-            if(amount <= 2) {
+            if (amount <= 2) {
                 widthObject[orderedKeys[0]] -= amount;
                 return;
             }
@@ -97,7 +97,7 @@
             };
 
             var diff = (widthObject.invalid + widthObject.empty + widthObject.valid) - 100;
-            if(diff > 0) {
+            if (diff > 0) {
                 reduce(widthObject, diff);
             }
 
@@ -137,7 +137,7 @@
          * @description Create a filter for all valid records on the given column.
          * @param {object} column - the column to filter
          */
-        vm.filterValidRecords = function(column) {
+        vm.filterValidRecords = function (column) {
             FilterService.addFilter('valid_records', column.id, column.name, {values: column.quality.invalidValues});
         };
 
@@ -148,7 +148,7 @@
          * @description Create a filter for invalid records on the given column.
          * @param {object} column - the column to filter
          */
-        vm.filterInvalidRecords = function(column) {
+        vm.filterInvalidRecords = function (column) {
             FilterService.addFilter('invalid_records', column.id, column.name, {values: column.quality.invalidValues});
         };
 
@@ -159,15 +159,22 @@
          * @description Create a filter for empty records on the given column.
          * @param {object} column - the column to filter
          */
-        vm.filterEmptyRecords = function(column) {
+        vm.filterEmptyRecords = function (column) {
             FilterService.addFilter('empty_records', column.id, column.name, {});
         };
 
-        vm.applyActionOnColumn = function(actionType){
-            var actionToApply = _.find(ColumnSuggestionService.transformations, function(transfo){
-             return transfo.name === actionType;
+        /**
+         * @ngdoc method
+         * @name applyActionOnColumn
+         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @description Apply a given transformation on the current column
+         * @param {String} actionName The action name
+         */
+        vm.applyActionOnColumn = function applyActionOnColumn(actionName) {
+            var actionToApply = _.find(ColumnSuggestionService.transformations, function (action) {
+                return action.name === actionName;
             });
-            vm.transformationApplicationService.transformClosure(actionToApply, 'column')();
+            TransformationApplicationService.append(actionToApply, 'column');
         };
     }
 

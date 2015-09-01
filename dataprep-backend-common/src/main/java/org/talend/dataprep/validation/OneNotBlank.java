@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.service.validation;
+package org.talend.dataprep.validation;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;

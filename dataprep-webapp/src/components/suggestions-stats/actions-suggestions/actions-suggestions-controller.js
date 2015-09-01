@@ -5,17 +5,19 @@
      * @ngdoc controller
      * @name data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
      * @description Actions suggestion controller
+     * @requires data-prep.services.transformation.service:SuggestionService
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.transformation.service:TransformationService
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.preparation.service:PreparationService
      */
-    function ActionsSuggestionsCtrl(ColumnSuggestionService, TransformationService, PlaygroundService, PreparationService, TransformationApplicationService, EarlyPreviewService) {
-
+    function ActionsSuggestionsCtrl(SuggestionService, ColumnSuggestionService, TransformationService, PlaygroundService,
+                                    PreparationService, TransformationApplicationService, EarlyPreviewService) {
 
         var vm = this;
         vm.columnSuggestionService = ColumnSuggestionService;
-        vm.transformClosure = TransformationApplicationService.transformClosure;
+        vm.suggestionService = SuggestionService;
+
         vm.earlyPreview = EarlyPreviewService.earlyPreview;
         vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
 
@@ -41,7 +43,15 @@
          * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
          * @description Flag that change the dynamic parameters modal display
          */
-        vm.showDynamicModal = EarlyPreviewService.showDynamicModal;
+        vm.showDynamicModal = false;
+
+        /**
+         * @ngdoc property
+         * @name showModalContent
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
+         * @description show/hides the dynamic transformation or the alert message
+         */
+        vm.showModalContent = null;
 
         /**
          * @ngdoc method
@@ -58,14 +68,6 @@
             };
             return TransformationService.initDynamicParameters(transfo, infos);
         };
-
-        /**
-         * @ngdoc property
-         * @name showModalContent
-         * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
-         * @description show/hides the dynamic transformation or the alert message
-         */
-        vm.showModalContent = null;
 
         /**
          * @ngdoc method
@@ -132,26 +134,31 @@
                 });
             }
             else {
-                vm.transformClosure(transfo, transfoScope)();
+                vm.transform(transfo, transfoScope)();
             }
         };
-    }
 
-    /**
-     * @ngdoc property
-     * @name column
-     * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
-     * @description The transformations column.
-     * This is bound to {@link data-prep.services.transformation:ColumnSuggestionService ColumnSuggestionService}.currentColumn
-     */
-    Object.defineProperty(ActionsSuggestionsCtrl.prototype,
-        'column', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.columnSuggestionService.currentColumn;
-            }
-        });
+        /**
+         * @ngdoc method
+         * @name transform
+         * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
+         * @description Apply a transformation
+         */
+        vm.transform = function transform(action, scope) {
+            return function(params) {
+                EarlyPreviewService.deactivatePreview();
+                EarlyPreviewService.cancelPendingPreview();
+
+                TransformationApplicationService.append(action, scope, params)
+                    .then(function() {
+                        vm.showDynamicModal = false;
+                    })
+                    .finally(function() {
+                        setTimeout(EarlyPreviewService.activatePreview, 500);
+                    });
+            };
+        };
+    }
 
     /**
      * @ngdoc property
@@ -166,6 +173,38 @@
             configurable: false,
             get: function () {
                 return this.columnSuggestionService.transformations;
+            }
+        });
+
+    /**
+     * @ngdoc property
+     * @name column
+     * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
+     * @description The transformations column.
+     * This is bound to {@link data-prep.services.transformation:SuggestionService SuggestionService}.currentColumn
+     */
+    Object.defineProperty(ActionsSuggestionsCtrl.prototype,
+        'column', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.suggestionService.currentColumn;
+            }
+        });
+
+    /**
+     * @ngdoc property
+     * @name tab
+     * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
+     * @description The new selected action tab
+     * This is bound to {@link data-prep.services.transformation:SuggestionService SuggestionService}.tab
+     */
+    Object.defineProperty(ActionsSuggestionsCtrl.prototype,
+        'tab', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.suggestionService.tab;
             }
         });
 

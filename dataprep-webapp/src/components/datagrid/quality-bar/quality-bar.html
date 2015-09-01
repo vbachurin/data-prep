@@ -9,8 +9,8 @@
         <div class="dropdown-container">
             <div class="dropdown-action"></div>
             <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu">
-                <li role="presentation" ng-click="qualityBarCtrl.filterValidRecords(qualityBarCtrl.column)">
-                    <a role="menuitem">Select Valid Records for {{ qualityBarCtrl.column.name | uppercase }}</a>
+                <li ng-click="qualityBarCtrl.filterValidRecords(qualityBarCtrl.column)">
+                    <a>Select Valid Records for {{ qualityBarCtrl.column.name | uppercase }}</a>
                 </li>
             </ul>
         </div>
@@ -26,24 +26,17 @@
         <div class="dropdown-container">
             <div class="dropdown-action"></div>
             <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu" >
-                <li role="presentation" ng-click="qualityBarCtrl.filterEmptyRecords(qualityBarCtrl.column)">
-                    <a role="menuitem">Select Empty Records for {{ qualityBarCtrl.column.name | uppercase
+                <li ng-click="qualityBarCtrl.filterEmptyRecords(qualityBarCtrl.column)">
+                    <a>Select Empty Records for {{ qualityBarCtrl.column.name | uppercase
                         }}</a>
                 </li>
                 <li class="divider"></li>
-                <li role="presentation"><a role="menuitem">Fill Empty records with Top adjacent value</a></li>
-                <li role="presentation"><a role="menuitem">Fill Empty records with Bottom adjacent value</a></li>
+                <li><a>Fill Empty records with Top adjacent value</a></li>
+                <li><a>Fill Empty records with Bottom adjacent value</a></li>
 
-                <li role="presentation"
-                    ng-click="qualityBarCtrl.applyActionOnColumn('delete_empty')"
-                >
-                    <a role="menuitem">Delete lines with Empty cell</a>
+                <li ng-click="qualityBarCtrl.applyActionOnColumn('delete_empty')">
+                    <a>Delete lines with Empty cell</a>
                 </li>
-                <!--<li role="presentation"
-                    ng-click="qualityBarCtrl.applyActionOnColumn('fillemptywithdefaultinteger')"
-                >
-                    <a role="menuitem">Fill Empty with value ...</a>
-                </li>-->
             </ul>
         </div>
     </div>
@@ -57,21 +50,17 @@
         <div class="dropdown-container">
             <div class="dropdown-action"></div>
             <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu" >
-                <li role="presentation" ng-click="qualityBarCtrl.filterInvalidRecords(qualityBarCtrl.column)">
-                    <a role="menuitem">Select Invalid Records for {{ qualityBarCtrl.column.name | uppercase
+                <li ng-click="qualityBarCtrl.filterInvalidRecords(qualityBarCtrl.column)">
+                    <a>Select Invalid Records for {{ qualityBarCtrl.column.name | uppercase
                         }}</a>
                 </li>
                 <li class="divider"></li>
-                <li role="presentation"><a role="menuitem">Replace Invalid Records with Top adjacent value</a></li>
-                <li role="presentation"><a role="menuitem">Replace Invalid Records with Bottom adjacent value</a></li>
-                <li role="presentation"
-                    ng-click="qualityBarCtrl.applyActionOnColumn('delete_invalid')"
-                >
-                    <a role="menuitem">Delete lines with Invalid cell</a>
+                <li><a>Replace Invalid Records with Top adjacent value</a></li>
+                <li><a>Replace Invalid Records with Bottom adjacent value</a></li>
+                
+                <li ng-click="qualityBarCtrl.applyActionOnColumn('delete_invalid')">
+                    <a>Delete lines with Invalid cell</a>
                 </li>
-                <!--<li role="presentation">
-                    <a role="menuitem" ng-click="qualityBarCtrl.applyActionOnColumn('fillinvalidwithdefaultinteger')">Fill Invalid cells with value ...</a>
-                </li>-->
             </ul>
         </div>
     </div>

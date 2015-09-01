@@ -8,9 +8,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,20 +34,16 @@ public class AggregationAPI extends APIService {
     /**
      * Compute an aggregation according to the given parameters.
      *
-     * @param input The aggredation parameters.
+     * @param input The aggregation parameters.
      * @param response The HTTP response.
      */
     @RequestMapping(value = "/api/aggregate", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Compute aggregation", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE, notes = "Compute aggregation according to the given parameters")
     public void compute(@RequestBody
+    @Valid
     final AggregationParameters input, final HttpServletResponse response) {
 
         LOG.debug("Aggregation computation requested (pool: {} )...", getConnectionManager().getTotalStats());
-
-        // validate input parameters
-        if (StringUtils.isEmpty(input.getDatasetId()) && StringUtils.isEmpty(input.getPreparationId())) {
-            throw new TDPException(CommonErrorCodes.BAD_AGGREGATION_PARAMETERS);
-        }
 
         // get the command and execute it
         HttpClient client = getClient();
@@ -55,7 +51,6 @@ public class AggregationAPI extends APIService {
 
         // copy the content to the http response
         try (InputStream result = command.execute()) {
-            response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             OutputStream output = response.getOutputStream();
             IOUtils.copyLarge(result, output);
             output.flush();

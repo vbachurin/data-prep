@@ -3,7 +3,7 @@
 
     Slick.Editors.TalendEditor = TalendEditor;
 
-    function TalendEditor(validationFn) {
+    function TalendEditor(validationFn, translatedMsg) {
 
         return function TalendEditorClosure(args) {
             var $container, $input, $checkboxContainer, $checkbox;
@@ -61,7 +61,7 @@
                     .focus()
                     .select();
 
-                $checkboxContainer = $('<div class="checkboxContainer"><input type="checkbox">Apply to all cells with this value</div>')
+                $checkboxContainer = $('<div class="checkboxContainer"><input type="checkbox">'+translatedMsg+'</div>')
                     .appendTo($container);
                 $checkbox = $checkboxContainer.find('input[type="checkbox"]');
             }

@@ -26,6 +26,7 @@ describe('Datagrid style service', function () {
 
         spyOn(gridMock.onClick, 'subscribe').and.returnValue();
         spyOn(gridMock.onHeaderClick, 'subscribe').and.returnValue();
+        spyOn(gridMock.onHeaderContextMenu, 'subscribe').and.returnValue();
         spyOn(gridMock.onActiveCellChanged, 'subscribe').and.returnValue();
         spyOn(gridMock, 'resetActiveCell').and.returnValue();
         spyOn(gridMock, 'invalidate').and.returnValue();
@@ -38,6 +39,14 @@ describe('Datagrid style service', function () {
 
             //then
             expect(gridMock.onHeaderClick.subscribe).toHaveBeenCalled();
+        }));
+
+        it('should add header right click listener', inject(function (DatagridStyleService) {
+            //when
+            DatagridStyleService.init(gridMock);
+
+            //then
+            expect(gridMock.onHeaderContextMenu.subscribe).toHaveBeenCalled();
         }));
 
         it('should add cell click listener', inject(function (DatagridStyleService) {
@@ -101,6 +110,57 @@ describe('Datagrid style service', function () {
             //when
             var onHeaderClick = gridMock.onHeaderClick.subscribe.calls.argsFor(0)[0];
             onHeaderClick(null, args);
+
+            //then
+            expect(gridMock.invalidate).toHaveBeenCalled();
+        }));
+    });
+
+
+    describe('on header right click event', function () {
+        it('should set reset cell styles', inject(function (DatagridStyleService) {
+            //given
+            DatagridStyleService.init(gridMock);
+            gridMock.setCellCssStyles('highlight', {'2': {'0000': 'highlight'}});
+
+            var args = {column: gridColumns[1]};
+
+            //when
+            var onHeaderContextMenu = gridMock.onHeaderContextMenu.subscribe.calls.argsFor(0)[0];
+            onHeaderContextMenu(null, args);
+
+            //then
+            expect(gridMock.resetActiveCell).toHaveBeenCalled();
+            expect(gridMock.cssStyleConfig.highlight).toEqual({});
+        }));
+
+        it('should set selected column class', inject(function (DatagridStyleService) {
+            //given
+            DatagridStyleService.init(gridMock);
+            var args = {column: gridColumns[1]};
+
+            assertColumnsHasNoStyles();
+
+            //when
+            var onHeaderContextMenu = gridMock.onHeaderContextMenu.subscribe.calls.argsFor(0)[0];
+            onHeaderContextMenu(null, args);
+
+            //then
+            expect(gridColumns[0].cssClass).toBeFalsy();
+            expect(gridColumns[1].cssClass.indexOf('selected') > -1).toBe(true);
+            expect(gridColumns[2].cssClass).toBeFalsy();
+            expect(gridColumns[3].cssClass).toBeFalsy();
+            expect(gridColumns[4].cssClass).toBeFalsy();
+        }));
+
+        it('should invalidate grid', inject(function (DatagridStyleService) {
+            //given
+            DatagridStyleService.init(gridMock);
+            var args = {column: gridColumns[1]};
+
+            //when
+            var onHeaderContextMenu = gridMock.onHeaderContextMenu.subscribe.calls.argsFor(0)[0];
+            onHeaderContextMenu(null, args);
 
             //then
             expect(gridMock.invalidate).toHaveBeenCalled();

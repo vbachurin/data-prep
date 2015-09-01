@@ -15,7 +15,7 @@ describe('Tabs directive', function () {
         scope = $rootScope.$new();
 
         createElement = function () {
-            var template = '<talend-tabs>' +
+            var template = '<talend-tabs tab="selectedTab">' +
                 '   <talend-tabs-item tab-title="tab 1 title">' +
                 '       <div id="tab1Content">Content tab 1</div>' +
                 '   </talend-tabs-item>' +
@@ -80,4 +80,32 @@ describe('Tabs directive', function () {
         //then
         expect(element.controller('talendTabs').tabs.length).toBe(0);
     });
+
+    it('should call setSelectedTab when tab changes', inject(function ($rootScope) {
+        //given
+        createElement();
+        var ctrl = element.controller('talendTabs');
+        spyOn(ctrl, 'setSelectedTab');
+
+        //when
+        scope.selectedTab = 1;
+        $rootScope.$digest();
+
+        //then
+        expect(ctrl.setSelectedTab).toHaveBeenCalled();
+    }));
+
+    it('should NOT call setSelectedTab if tab is not defined', inject(function ($rootScope) {
+        //given
+        createElement();
+        var ctrl = element.controller('talendTabs');
+        spyOn(ctrl, 'setSelectedTab');
+
+        //when
+        scope.selectedTab = undefined;
+        $rootScope.$digest();
+
+        //then
+        expect(ctrl.setSelectedTab).not.toHaveBeenCalled();
+    }));
 });

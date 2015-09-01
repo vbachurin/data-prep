@@ -6,7 +6,8 @@ describe('Actions suggestions-stats controller', function () {
 
     beforeEach(module('data-prep.actions-suggestions'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService,
+                                EarlyPreviewService, TransformationApplicationService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -18,6 +19,10 @@ describe('Actions suggestions-stats controller', function () {
 
         spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when());
         spyOn(TransformationService, 'initDynamicParameters').and.returnValue($q.when());
+        spyOn(TransformationApplicationService, 'append').and.returnValue($q.when());
+        spyOn(EarlyPreviewService, 'activatePreview').and.returnValue();
+        spyOn(EarlyPreviewService, 'deactivatePreview').and.returnValue();
+        spyOn(EarlyPreviewService, 'cancelPendingPreview').and.returnValue();
     }));
 
     it('should init vars and flags', inject(function () {
@@ -31,52 +36,141 @@ describe('Actions suggestions-stats controller', function () {
         expect(ctrl.showDynamicModal).toBe(false);
     }));
 
-    it('should bind "column" getter to ColumnSuggestionService.currentColumn', inject(function (ColumnSuggestionService) {
-        //given
-        var ctrl = createController();
-        var column = {id: '0001', name: 'col1'};
+    describe('bindings', function() {
+        it('should bind "column" getter to SuggestionService.currentColumn', inject(function (SuggestionService) {
+            //given
+            var ctrl = createController();
+            var column = {id: '0001', name: 'col1'};
 
-        //when
-        ColumnSuggestionService.currentColumn = column;
+            //when
+            SuggestionService.currentColumn = column;
 
-        //then
-        expect(ctrl.column).toBe(column);
-    }));
+            //then
+            expect(ctrl.column).toBe(column);
+        }));
 
-    it('should bind "suggestions-stats" getter to ColumnSuggestionService.transformations', inject(function (ColumnSuggestionService) {
-        //given
-        var ctrl = createController();
-        var transformations = [{name: 'tolowercase'}, {name: 'touppercase'}];
+        it('should bind "suggestions-stats" getter to SuggestionService.transformations', inject(function (ColumnSuggestionService) {
+            //given
+            var ctrl = createController();
+            var transformations = [{name: 'tolowercase'}, {name: 'touppercase'}];
 
-        //when
-        ColumnSuggestionService.transformations = transformations;
+            //when
+            ColumnSuggestionService.transformations = transformations;
 
-        //then
-        expect(ctrl.columnSuggestions).toBe(transformations);
-    }));
+            //then
+            expect(ctrl.columnSuggestions).toBe(transformations);
+        }));
+
+        it('should bind "tab" getter to SuggestionService.tab', inject(function (SuggestionService) {
+            //given
+            var ctrl = createController();
+            var tab = 1;
+
+            //when
+            SuggestionService.tab = tab;
+
+            //then
+            expect(ctrl.tab).toBe(tab);
+        }));
+    });
 
     describe('with initiated state', function () {
         var column = {id: '0001', name: 'col1'};
 
-        beforeEach(inject(function ($q, ColumnSuggestionService, PlaygroundService, PreparationService, TransformationApplicationService) {
-            ColumnSuggestionService.currentColumn = column;
+        beforeEach(inject(function ($q, SuggestionService, PlaygroundService, PreparationService) {
+            SuggestionService.currentColumn = column;
             PlaygroundService.currentMetadata = {id: 'dataset_id'};
             PreparationService.currentPreparationId = 'preparation_id';
-            spyOn(TransformationApplicationService, 'transformClosure').and.returnValue(function(){});
         }));
 
-        it('should append new step on static transformation selection', inject(function (TransformationApplicationService) {
-            //given
-            var transformation = {name: 'tolowercase'};
-            var transfoScope = 'column';
-            var ctrl = createController();
+        describe('transform', function() {
+            it('should call appendStep function on transform closure execution', inject(function (TransformationApplicationService) {
+                //given
+                var transformation = {name: 'tolowercase'};
+                var transfoScope = 'column';
+                var params = {param: 'value'};
+                var ctrl = createController();
 
-            //when
-            ctrl.select(transformation, transfoScope);
-            expect(TransformationApplicationService.transformClosure).toHaveBeenCalledWith(transformation, transfoScope);
-        }));
+                //when
+                var closure = ctrl.transform(transformation, transfoScope);
+                closure(params);
 
-        it('should set current dynamic transformation and scope on dynamic transformation selection', inject(function () {
+                //then
+                expect(TransformationApplicationService.append).toHaveBeenCalledWith(transformation, transfoScope, params);
+            }));
+
+            it('should hide modal after step append', function () {
+                //given
+                var transformation = {name: 'tolowercase'};
+                var transfoScope = 'column';
+                var params = {param: 'value'};
+                var ctrl = createController();
+                ctrl.showDynamicModal = true;
+
+                //when
+                var closure = ctrl.transform(transformation, transfoScope);
+                closure(params);
+                scope.$digest();
+
+                //then
+                expect(ctrl.showDynamicModal).toBe(false);
+            });
+
+            it('should append new step on static transformation selection', inject(function (TransformationApplicationService) {
+                //given
+                var transformation = {name: 'tolowercase'};
+                var transfoScope = 'column';
+                var ctrl = createController();
+
+                //when
+                ctrl.select(transformation, transfoScope);
+
+                //then
+                expect(TransformationApplicationService.append).toHaveBeenCalledWith(transformation, transfoScope, undefined);
+            }));
+
+            it('should cancel pending preview and disable it', inject(function (EarlyPreviewService) {
+                //given
+                var transformation = {name: 'tolowercase'};
+                var transfoScope = 'column';
+                var params = {param: 'value'};
+                var ctrl = createController();
+                ctrl.showDynamicModal = true;
+
+                //when
+                var closure = ctrl.transform(transformation, transfoScope);
+                closure(params);
+
+                //then
+                expect(EarlyPreviewService.deactivatePreview).toHaveBeenCalled();
+                expect(EarlyPreviewService.cancelPendingPreview).toHaveBeenCalled();
+            }));
+
+            it('should re-enable early preview after 500ms', inject(function (EarlyPreviewService) {
+                //given
+                jasmine.clock().install();
+
+                var transformation = {name: 'tolowercase'};
+                var transfoScope = 'column';
+                var params = {param: 'value'};
+                var ctrl = createController();
+                ctrl.showDynamicModal = true;
+
+                //when
+                var closure = ctrl.transform(transformation, transfoScope);
+                closure(params);
+                scope.$digest();
+
+                expect(EarlyPreviewService.activatePreview).not.toHaveBeenCalled();
+                jasmine.clock().tick(500);
+
+                //then
+                expect(EarlyPreviewService.activatePreview).toHaveBeenCalled();
+                jasmine.clock().uninstall();
+            }));
+        });
+
+        it('should set current dynamic transformation and scope on dynamic transformation selection', function () {
             //given
             var transformation = {name: 'cluster', dynamic: true};
             var ctrl = createController();
@@ -88,7 +182,7 @@ describe('Actions suggestions-stats controller', function () {
             //then
             expect(ctrl.dynamicTransformation).toBe(transformation);
             expect(ctrl.dynamicScope).toBe('column');
-        }));
+        });
 
         it('should init dynamic params on dynamic transformation selection', inject(function (TransformationService) {
             //given
@@ -122,7 +216,7 @@ describe('Actions suggestions-stats controller', function () {
             expect(ctrl.dynamicFetchInProgress).toBe(false);
         }));
 
-        it('should show NO CLUSTERS WERE FOUND message', inject(function () {
+        it('should show NO CLUSTERS WERE FOUND message', function () {
             //given
             var ctrl = createController();
             ctrl.dynamicTransformation = {name: 'cluster', dynamic: true, cluster: {clusters: []}};
@@ -133,9 +227,9 @@ describe('Actions suggestions-stats controller', function () {
             //then
             expect(ctrl.showModalContent).toBe(false);
             expect(ctrl.emptyParamsMsg).toEqual('NO_CLUSTERS_ACTION_MSG');
-        }));
+        });
 
-        it('should show NO CHOICES WERE FOUND message', inject(function () {
+        it('should show NO CHOICES WERE FOUND message', function () {
             //given
             var ctrl = createController();
             ctrl.dynamicTransformation = {name: 'choices', dynamic: true, parameters: []};
@@ -146,9 +240,9 @@ describe('Actions suggestions-stats controller', function () {
             //then
             expect(ctrl.showModalContent).toBe(false);
             expect(ctrl.emptyParamsMsg).toEqual('NO_CHOICES_ACTION_MSG');
-        }));
+        });
 
-        it('should show NO SIMPLE PARAMS WERE FOUND message', inject(function () {
+        it('should show NO SIMPLE PARAMS WERE FOUND message', function () {
             //given
             var ctrl = createController();
             ctrl.dynamicTransformation = {name: 'items', dynamic: true, items: []};
@@ -159,9 +253,9 @@ describe('Actions suggestions-stats controller', function () {
             //then
             expect(ctrl.showModalContent).toBe(false);
             expect(ctrl.emptyParamsMsg).toEqual('NO_PARAMS_ACTION_MSG');
-        }));
+        });
 
-        it('should show dynamic cluster transformation in a modal', inject(function () {
+        it('should show dynamic cluster transformation in a modal', function () {
             //given
             var ctrl = createController();
             ctrl.dynamicTransformation = {
@@ -175,9 +269,9 @@ describe('Actions suggestions-stats controller', function () {
 
             //then
             expect(ctrl.showModalContent).toBe(true);
-        }));
+        });
 
-        it('should show dynamic parameters transformation in a modal', inject(function () {
+        it('should show dynamic parameters transformation in a modal', function () {
             //given
             var ctrl = createController();
             ctrl.dynamicTransformation = {name: 'items', dynamic: true, items: [1, 2]};
@@ -187,9 +281,9 @@ describe('Actions suggestions-stats controller', function () {
 
             //then
             expect(ctrl.showModalContent).toBe(true);
-        }));
+        });
 
-        it('should show dynamic choices transformation in a modal', inject(function () {
+        it('should show dynamic choices transformation in a modal', function () {
             //given
             var ctrl = createController();
             ctrl.dynamicTransformation = {name: 'items', dynamic: true, parameters: [1, 2]};
@@ -199,6 +293,6 @@ describe('Actions suggestions-stats controller', function () {
 
             //then
             expect(ctrl.showModalContent).toBe(true);
-        }));
+        });
     });
 });

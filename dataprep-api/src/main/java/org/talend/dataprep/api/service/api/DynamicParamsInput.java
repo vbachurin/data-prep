@@ -1,7 +1,7 @@
 package org.talend.dataprep.api.service.api;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.talend.dataprep.api.service.validation.OneNotBlank;
+import org.talend.dataprep.validation.OneNotBlank;
 
 @OneNotBlank({ "preparationId", "datasetId" })
 public class DynamicParamsInput {
