@@ -2,10 +2,8 @@ package org.talend.dataprep.dataset.service.analysis;
 
 import static java.util.stream.StreamSupport.stream;
 
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +23,7 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
@@ -117,22 +116,21 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
                         LOGGER.debug("Column {} -> {}", nextColumn.getId(), type.getName());
                         nextColumn.setType(type.getName());
                         nextColumn.setDomain(semanticType.getSuggestedCategory());
-
                         Map<CategoryFrequency, Long> altCategoryCounts = semanticType.getCategoryToCount();
                         if (!altCategoryCounts.isEmpty()) {
                             List<SemanticDomain> semanticDomains = new ArrayList<>(altCategoryCounts.size());
                             for (Map.Entry<CategoryFrequency, Long> entry : altCategoryCounts.entrySet()) {
-                                semanticDomains.add(new SemanticDomain(entry.getKey().getCategoryId(), //
-                                        entry.getKey().getCategoryName(), //
-                                        entry.getKey().getFrequency()));
-
-                                if (StringUtils.equals( nextColumn.getDomain(), entry.getKey().getCategoryId() )){
-                                    nextColumn.setDomainLabel( entry.getKey().getCategoryName() );
-                                    nextColumn.setDomainFrequency( entry.getValue() );
+                                // Find category display name
+                                final String id = entry.getKey().getCategoryId();
+                                final String categoryDisplayName = TypeUtils.getDomainLabel(id);
+                                // Remembers all suggested semantic categories
+                                semanticDomains.add(new SemanticDomain(id, categoryDisplayName, entry.getKey().getFrequency()));
+                                if (StringUtils.equals(nextColumn.getDomain(), id)) {
+                                    nextColumn.setDomainLabel(categoryDisplayName);
+                                    nextColumn.setDomainFrequency(entry.getValue());
                                 }
-
                             }
-                            nextColumn.setSemanticDomains( semanticDomains );
+                            nextColumn.setSemanticDomains(semanticDomains);
                         }
 
                     } else {

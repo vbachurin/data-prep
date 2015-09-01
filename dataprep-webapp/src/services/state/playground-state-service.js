@@ -1,30 +1,40 @@
 (function() {
     'use strict';
 
-    var state = {};
+    var playgroundState = {};
 
-    function StateService() {
+    function PlaygroundStateService(RecipeStateService, recipeState) {
+        playgroundState.recipe = recipeState;
+
         return {
-            setColumn: setColumn,
-            setLine: setLine,
-            resetPlayground: resetPlayground
+            //playground
+            setGridSelection: setGridSelection,
+            show: show,
+            hide: hide,
+
+            //recipe
+            showRecipe: RecipeStateService.show,
+            hideRecipe: RecipeStateService.hide
         };
 
-        function setColumn(column) {
-            state.column = column;
+        //--------------------------------------------------------------------------------------------------------------
+        //--------------------------------------------------PLAYGROUND--------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        function setGridSelection(column, line) {
+            playgroundState.column = column;
+            playgroundState.line = line;
         }
 
-        function setLine(line) {
-            state.line = line;
+        function show() {
+            playgroundState.visible = true;
         }
 
-        function resetPlayground() {
-            state.column = null;
-            state.line = null;
+        function hide() {
+            playgroundState.visible = false;
         }
     }
 
     angular.module('data-prep.services.state')
-        .service('StateService', StateService)
-        .constant('state', state);
+        .service('PlaygroundStateService', PlaygroundStateService)
+        .constant('playgroundState', playgroundState);
 })();

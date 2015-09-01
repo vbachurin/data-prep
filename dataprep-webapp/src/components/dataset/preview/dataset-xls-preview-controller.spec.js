@@ -6,7 +6,7 @@ describe('Dataset xls preview controller', function () {
 
     beforeEach(module('data-prep.dataset-xls-preview'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, DatasetSheetPreviewService, DatasetService, DatasetRestService, PlaygroundService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, DatasetSheetPreviewService, DatasetService, DatasetRestService, PlaygroundService, StateService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -25,7 +25,7 @@ describe('Dataset xls preview controller', function () {
         spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.when(true));
         spyOn(DatasetService, 'getContent').and.returnValue($q.when(content));
         spyOn(PlaygroundService, 'initPlayground').and.callThrough();
-        spyOn(PlaygroundService, 'show').and.callThrough();
+        spyOn(StateService, 'showPlayground').and.returnValue();
     }));
 
     afterEach(function() {
@@ -146,7 +146,7 @@ describe('Dataset xls preview controller', function () {
         expect(DatasetService.getContent).toHaveBeenCalledWith('mqfdg684qfg6q84g8q', false, undefined);
     }));
 
-    it('should open dataset on selected sheet set', inject(function ($rootScope, $timeout, DatasetSheetPreviewService, PlaygroundService) {
+    it('should open dataset on selected sheet set', inject(function ($rootScope, $timeout, DatasetSheetPreviewService, PlaygroundService, StateService) {
         //given
         var ctrl = createController();
         $timeout.flush();
@@ -159,7 +159,7 @@ describe('Dataset xls preview controller', function () {
 
         //then
         expect(PlaygroundService.initPlayground).toHaveBeenCalledWith(DatasetSheetPreviewService.currentMetadata, undefined);
-        expect(PlaygroundService.show).toHaveBeenCalled();
+        expect(StateService.showPlayground).toHaveBeenCalled();
     }));
 
     it('should hide modal on selected sheet set', inject(function ($rootScope, $timeout, DatasetService, DatasetSheetPreviewService) {

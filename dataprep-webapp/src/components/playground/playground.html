@@ -1,5 +1,5 @@
 <talend-modal fullscreen="true"
-              state="playgroundCtrl.showPlayground"
+              state="playgroundCtrl.state.playground.visible"
               close-button="true"
               before-close="playgroundCtrl.beforeClose()"
               on-close="playgroundCtrl.close()">
@@ -33,7 +33,7 @@
     </div>
 
     <div class="modal-body playground">
-        <talend-slidable visible="playgroundCtrl.showRecipe" class="flex-side recipe">
+        <talend-slidable visible="playgroundCtrl.state.playground.recipe.visible" class="flex-side recipe">
             <!-- Recipe Header -->
             <div class="steps-header">
                 <label class="label-switch" ng-show="playgroundCtrl.hasRecipe">

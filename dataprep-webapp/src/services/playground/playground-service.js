@@ -14,20 +14,14 @@
      * @requires data-prep.services.transformation.service:SuggestionService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.utils.service:MessageService
-     * @requires data-prep.services.statistics:StatisticsService
-     * @requires data-prep.services.history:HistoryService
+     * @requires data-prep.services.statistics.service:StatisticsService
+     * @requires data-prep.services.history.service:HistoryService
+     * @requires data-prep.services.state.service:StateService
      */
     function PlaygroundService($rootScope, $q, DatasetService, DatagridService, PreviewService, FilterService,
                                RecipeService, TransformationCacheService, SuggestionService, PreparationService,
-                               MessageService, StatisticsService, HistoryService) {
+                               MessageService, StatisticsService, HistoryService, StateService) {
         var service = {
-            /**
-             * @ngdoc property
-             * @name visible
-             * @propertyOf data-prep.services.playground.service:PlaygroundService
-             * @description the visibility control
-             */
-            visible: false,
             /**
              * @ngdoc property
              * @name currentMetadata
@@ -51,13 +45,6 @@
             preparationName: '',
             /**
              * @ngdoc property
-             * @name showRecipe
-             * @propertyOf data-prep.services.playground.service:PlaygroundService
-             * @description Flag that pilot the recipe panel display
-             */
-            showRecipe: false,
-            /**
-             * @ngdoc property
              * @name preparationNameEditionMode
              * @propertyOf data-prep.services.playground.service:PlaygroundService
              * @description Flag that the name edition mode.
@@ -74,8 +61,6 @@
             selectedSampleSize:{},
 
             //init/load
-            show: show,
-            hide: hide,
             initPlayground: initPlayground,
             load: load,
             loadStep: loadStep,
@@ -92,29 +77,6 @@
             editCell: editCell
         };
         return service;
-
-        //------------------------------------------------------------------------------------------------------
-        //------------------------------------------------VISIBILITY--------------------------------------------
-        //------------------------------------------------------------------------------------------------------
-        /**
-         * @ngdoc method
-         * @name show
-         * @methodOf data-prep.services.playground.service:PlaygroundService
-         * @description Display the playground
-         */
-        function show() {
-            service.visible = true;
-        }
-
-        /**
-         * @ngdoc method
-         * @name hide
-         * @methodOf data-prep.services.playground.service:PlaygroundService
-         * @description Hide the playground
-         */
-        function hide() {
-            service.visible = false;
-        }
 
         //------------------------------------------------------------------------------------------------------
         //-------------------------------------------------INIT/LOAD--------------------------------------------
@@ -163,7 +125,7 @@
 
                         setName('');
                         reset(dataset, data);
-                        service.showRecipe = false;
+                        StateService.hideRecipe();
                         service.preparationNameEditionMode = true;
                     });
             }
@@ -264,7 +226,7 @@
                     .then(function(response) {
                         setName(preparation.name);
                         reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response.data);
-                        service.showRecipe = true;
+                        StateService.showRecipe();
                         service.preparationNameEditionMode = false;
                     })
                     .finally(function() {
@@ -564,7 +526,7 @@
             return RecipeService.refresh()
                 .then(function() {
                     if(RecipeService.getRecipe().length === 1) { //first step append
-                        service.showRecipe = true;
+                        StateService.showRecipe();
                     }
                 });
         }
