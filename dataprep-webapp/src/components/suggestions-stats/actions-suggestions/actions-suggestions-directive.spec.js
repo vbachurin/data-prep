@@ -22,9 +22,9 @@ describe('Actions suggestions-stats directive', function() {
         element.remove();
     });
 
-    it('should set "Action" in title when no column is selected', inject(function(ColumnSuggestionService) {
+    it('should set "Action" in title when no column is selected', inject(function(SuggestionService) {
         //given
-        ColumnSuggestionService.currentColumn = null;
+        SuggestionService.currentColumn = null;
 
         //when
         createElement();
@@ -33,9 +33,9 @@ describe('Actions suggestions-stats directive', function() {
         expect(element.find('.title').text().trim()).toBe('Actions');
     }));
 
-    it('should set column name in title', inject(function(ColumnSuggestionService) {
+    it('should set column name in title', inject(function(SuggestionService) {
         //given
-        ColumnSuggestionService.currentColumn = {name: 'Col 1'};
+        SuggestionService.currentColumn = {name: 'Col 1'};
 
         //when
         createElement();

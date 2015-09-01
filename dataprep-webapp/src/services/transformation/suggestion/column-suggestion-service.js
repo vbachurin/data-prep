@@ -14,30 +14,12 @@
 
         /**
          * @ngdoc property
-         * @name currentColumn
-         * @propertyOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @description The currently selected column
-         * @type {Object}
-         */
-        self.currentColumn = null;
-
-        /**
-         * @ngdoc property
          * @name transformations
          * @propertyOf data-prep.services.transformation.service:ColumnSuggestionService
          * @description The currently selected column transformations
          * @type {Object}
          */
         self.transformations = null;
-
-        /**
-         * @ngdoc property
-         * @name statistics
-         * @propertyOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @description The currently selected column statistics
-         * @type {Object}
-         */
-        self.statistics = null;
 
         /**
          * @ngdoc method
@@ -65,30 +47,12 @@
          * @param {object} column The target column
          * @description Get and preparation the transformations from backend
          */
-        function initTransformations(column) {
+        this.initTransformations = function initTransformations(column) {
+            self.transformations = null;
             TransformationCacheService.getTransformations(column)
                 .then(function (transformations) {
-                    if (self.currentColumn === column) {
-                        self.transformations = filterAndGroup(transformations);
-                    }
+                    self.transformations = filterAndGroup(transformations);
                 });
-        }
-
-        /**
-         * @ngdoc method
-         * @name setColumn
-         * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @param {object} column The new selected column
-         * @description Set the selected column and init its suggested transformations and statistics
-         */
-        this.setColumn = function setColumn(column) {
-            if (column === self.currentColumn) {
-                return;
-            }
-
-            self.currentColumn = column;
-            self.transformations = null;
-            initTransformations(column);
         };
 
         /**
@@ -98,7 +62,6 @@
          * @description Reset the current column and the transformations
          */
         this.reset = function reset() {
-            self.currentColumn = null;
             self.transformations = null;
         };
     }

@@ -141,7 +141,8 @@
   "LINE_COUNT": "Line Count",
   "SUM": "Sum",
   "AVERAGE": "Average",
-  "GROUP_BY": "group by "
+  "GROUP_BY": "group by ",
 
+  "APPLY_TO_ALL_CELLS": "Apply to all cells with this value"
 
 }

@@ -205,15 +205,30 @@
 
         /**
          * @ngdoc method
+         * @name attachColumnHeaderCallback
+         * @methodOf data-prep.datagrid.service:DatagridStyleService
+         * @description attachColumnHeaderListeners callback
+         */
+        function attachColumnHeaderCallback(args) {
+            resetCellStyles();
+            updateColumnClass(grid.getColumns(), args.column);
+            grid.invalidate();
+        }
+
+
+        /**
+         * @ngdoc method
          * @name attachColumnHeaderListeners
          * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @description Attach style listener on headers. On header selection we update the column cells style
+         * @description Attach style listener on headers. On header selection (on right click or left click) we update the column cells style
          */
         function attachColumnHeaderListeners() {
+            grid.onHeaderContextMenu.subscribe(function(e, args) {
+                attachColumnHeaderCallback (args);
+            });
+
             grid.onHeaderClick.subscribe(function(e, args) {
-                resetCellStyles();
-                updateColumnClass(grid.getColumns(), args.column);
-                grid.invalidate();
+                attachColumnHeaderCallback (args);
             });
         }
 

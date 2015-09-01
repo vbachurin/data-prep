@@ -3,9 +3,13 @@ package org.talend.dataprep.transformation.aggregation.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.validator.constraints.NotEmpty;
+import org.talend.dataprep.validation.OneNotBlank;
+
 /**
  * JavaBean used to model aggregation parameters.
  */
+@OneNotBlank({ "preparationId", "datasetId" })
 public class AggregationParameters {
 
     /** The dataset id. */
@@ -18,13 +22,15 @@ public class AggregationParameters {
     private String stepId;
 
     /** List of column ids to group by. */
+    @NotEmpty
     private List<String> groupBy;
 
     /** List of aggregation operations to apply. */
+    @NotEmpty
     private List<AggregationOperation> operations;
 
     /** Optional sample size (null for the whole thing). */
-    private Long sampleSize;
+    private String sampleSize;
 
     /**
      * Default empty constructor.
@@ -126,13 +132,18 @@ public class AggregationParameters {
      * @return the SampleSize
      */
     public Long getSampleSize() {
-        return sampleSize;
+        try {
+            return Long.parseLong(sampleSize);
+        } catch (NumberFormatException e) {
+
+            return null;
+        }
     }
 
     /**
      * @param sampleSize the sampleSize to set.
      */
-    public void setSampleSize(Long sampleSize) {
+    public void setSampleSize(String sampleSize) {
         this.sampleSize = sampleSize;
     }
 

@@ -19,7 +19,7 @@ describe('Tabs widget controller', function () {
     it('should save tab in tabs list', function() {
         //given
         var ctrl = createController();
-        var tab = {active : false, title: 'my tab'};
+        var tab = {active : false, tabTitle: 'my tab'};
 
         //when
         ctrl.register(tab);
@@ -31,7 +31,7 @@ describe('Tabs widget controller', function () {
     it('should set tab active flag on first element', function() {
         //given
         var ctrl = createController();
-        var tab = {active : false, title: 'my tab'};
+        var tab = {active : false, tabTitle: 'my tab'};
 
         //when
         ctrl.register(tab);
@@ -43,8 +43,8 @@ describe('Tabs widget controller', function () {
     it('should NOT set tab active flag on second element', function() {
         //given
         var ctrl = createController();
-        var tab = {active : false, title: 'my tab'};
-        var tab2 = {active : false, title: 'my tab'};
+        var tab = {active : false, tabTitle: 'my tab'};
+        var tab2 = {active : false, tabTitle: 'my tab'};
 
         //when
         ctrl.register(tab);
@@ -57,10 +57,10 @@ describe('Tabs widget controller', function () {
     it('should update active flag on tab selection', function() {
         //given
         var ctrl = createController();
-        var tab = {active : false, title: 'my tab'};
-        var tab2 = {active : false, title: 'my tab'};
-        var tab3 = {active : false, title: 'my tab'};
-        var tab4 = {active : false, title: 'my tab'};
+        var tab = {active : false, tabTitle: 'my tab'};
+        var tab2 = {active : false, tabTitle: 'my tab'};
+        var tab3 = {active : false, tabTitle: 'my tab'};
+        var tab4 = {active : false, tabTitle: 'my tab'};
 
         ctrl.register(tab);
         ctrl.register(tab2);
@@ -85,10 +85,10 @@ describe('Tabs widget controller', function () {
     it('should unregister tabs', function() {
         //given
         var ctrl = createController();
-        var tab = {active : false, title: 'my tab'};
-        var tab2 = {active : false, title: 'my tab'};
-        var tab3 = {active : false, title: 'my tab'};
-        var tab4 = {active : false, title: 'my tab'};
+        var tab = {active : false, tabTitle: 'my tab'};
+        var tab2 = {active : false, tabTitle: 'my tab'};
+        var tab3 = {active : false, tabTitle: 'my tab'};
+        var tab4 = {active : false, tabTitle: 'my tab'};
 
         ctrl.register(tab);
         ctrl.register(tab2);
@@ -100,5 +100,52 @@ describe('Tabs widget controller', function () {
 
         //then
         expect(ctrl.tabs.indexOf(tab2)).toBe(-1);
+    });
+
+
+    it('should update selected tab', function() {
+        //given
+        var ctrl = createController();
+        var tab = {active : true, tabTitle: 'my tab 1'};
+        var tab2 = {active : false, tabTitle: 'my tab 2'};
+        var tab3 = {active : false, tabTitle: 'my tab 3'};
+        var tab4 = {active : false, tabTitle: 'my tab 4'};
+
+        ctrl.register(tab);
+        ctrl.register(tab2);
+        ctrl.register(tab3);
+        ctrl.register(tab4);
+
+        //when
+        ctrl.setSelectedTab(2);
+
+        //then
+        expect(ctrl.tabs[0].active).toBeFalsy();
+        expect(ctrl.tabs[1].active).toBeFalsy();
+        expect(ctrl.tabs[2].active).toBeTruthy();
+        expect(ctrl.tabs[3].active).toBeFalsy();
+    });
+
+    it('should NOT change tab selection when wanted tab does not exist', function() {
+        //given
+        var ctrl = createController();
+        var tab = {active : true, tabTitle: 'my tab 1'};
+        var tab2 = {active : false, tabTitle: 'my tab 2'};
+        var tab3 = {active : false, tabTitle: 'my tab 3'};
+        var tab4 = {active : false, tabTitle: 'my tab 4'};
+
+        ctrl.register(tab);
+        ctrl.register(tab2);
+        ctrl.register(tab3);
+        ctrl.register(tab4);
+
+        //when
+        ctrl.setSelectedTab(4);
+
+        //then
+        expect(ctrl.tabs[0].active).toBeTruthy();
+        expect(ctrl.tabs[1].active).toBeFalsy();
+        expect(ctrl.tabs[2].active).toBeFalsy();
+        expect(ctrl.tabs[3].active).toBeFalsy();
     });
 });
