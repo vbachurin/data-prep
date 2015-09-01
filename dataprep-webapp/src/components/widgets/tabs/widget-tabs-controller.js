@@ -46,6 +46,19 @@
 
         /**
          * @ngdoc method
+         * @name setSelectedTab
+         * @methodOf talend.widget.controller:TalendTabsCtrl
+         * @description Set selected tab
+         */
+        vm.setSelectedTab = function select(index) {
+            var tabToSelect = vm.tabs[index];
+            if(tabToSelect) {
+                vm.select(tabToSelect);
+            }
+        };
+
+        /**
+         * @ngdoc method
          * @name unregister
          * @methodOf talend.widget.controller:TalendTabsCtrl
          * @param {object} tab The tab to delete

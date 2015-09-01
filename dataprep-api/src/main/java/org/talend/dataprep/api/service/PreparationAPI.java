@@ -9,6 +9,7 @@ import java.io.OutputStream;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
@@ -237,7 +238,9 @@ public class PreparationAPI extends APIService {
 
     @RequestMapping(value = "/api/preparations/preview/add", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a preview between the head step and a new appended transformation")
-    public void previewAdd(@RequestBody final PreviewAddInput input, final HttpServletResponse response) {
+    public void previewAdd(@RequestBody
+    @Valid
+    final PreviewAddInput input, final HttpServletResponse response) {
         try {
             final HystrixCommand<InputStream> transformation = getCommand(PreviewAdd.class, getClient(), input);
             final ServletOutputStream outputStream = response.getOutputStream();

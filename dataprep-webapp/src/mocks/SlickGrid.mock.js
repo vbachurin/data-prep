@@ -30,6 +30,7 @@ function SlickGridMock () {
         onMouseEnter: {subscribe: function() {}},
         onMouseLeave: {subscribe: function() {}},
         onScroll: {subscribe: function() {}},
+        onHeaderContextMenu: {subscribe: function() {}},
 
         //slickGrid functions
         autosizeColumns: function() {},

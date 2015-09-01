@@ -1000,27 +1000,6 @@ describe('Statistics service', function () {
             expect(aggregationColumns).toBe(datagridNumericColumns);
             expect(DatagridService.getNumericColumns).toHaveBeenCalledWith(selectedcolumn);
         }));
-
-        it('should keep numeric columns and NOT request them again', inject(function(StatisticsService, DatagridService) {
-            //given
-            StatisticsService.selectedColumn = {id: '0001'};
-
-            var datagridNumericColumns = [
-                {id: '0002'},
-                {id: '0003'}
-            ];
-            spyOn(DatagridService, 'getNumericColumns').and.returnValue(datagridNumericColumns);
-
-            StatisticsService.getAggregationColumns();
-            expect(DatagridService.getNumericColumns.calls.count()).toBe(1);
-
-            //when
-            var aggregationColumns = StatisticsService.getAggregationColumns();
-
-            //then
-            expect(aggregationColumns).toBe(datagridNumericColumns);
-            expect(DatagridService.getNumericColumns.calls.count()).toBe(1);
-        }));
     });
 
 });

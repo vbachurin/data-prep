@@ -179,7 +179,7 @@ describe('Transform menu controller', function () {
         var transfoScope = 'column';
 
         //when
-        var closure = ctrl.transformClosure(menu, transfoScope);
+        var closure = ctrl.appendClosure(menu, transfoScope);
         expect(PlaygroundService.appendStep).not.toHaveBeenCalled();
         closure(params);
 
@@ -202,7 +202,7 @@ describe('Transform menu controller', function () {
         ctrl.showModal = true;
 
         //when
-        ctrl.transformClosure(menu, transfoScope)(params);
+        ctrl.appendClosure(menu, transfoScope)(params);
         scope.$digest();
 
         //then

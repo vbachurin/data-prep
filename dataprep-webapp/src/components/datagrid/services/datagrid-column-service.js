@@ -15,7 +15,7 @@
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function DatagridColumnService($rootScope, $compile, DatagridStyleService, ConverterService, PlaygroundService) {
+    function DatagridColumnService($rootScope, $compile, DatagridStyleService, ConverterService, PlaygroundService, $translate) {
         var grid;
         var availableHeaders = [];
         var renewAllFlag;
@@ -60,6 +60,7 @@
                     simpleType: col.domain ? col.domain : ConverterService.simplifyType(col.type)
                 }) :
                 '';
+            var translatedMsg = $translate.instant('APPLY_TO_ALL_CELLS');
 
             return {
                 id: col.id,
@@ -68,7 +69,7 @@
                 formatter: DatagridStyleService.columnFormatter(col),
                 minWidth: 80,
                 tdpColMetadata: col,
-                editor: preview ? null : Slick.Editors.TalendEditor(PlaygroundService.editCell),
+                editor: preview ? null : Slick.Editors.TalendEditor(PlaygroundService.editCell, translatedMsg),
                 preview: preview
             };
         }

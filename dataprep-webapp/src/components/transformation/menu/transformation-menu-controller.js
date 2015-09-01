@@ -60,7 +60,7 @@
                 vm.selectedScope = scope;
             }
             else {
-                vm.transformClosure(menu, scope)();
+                vm.appendClosure(menu, scope)();
             }
         };
 
@@ -72,7 +72,7 @@
          * @param {object} menu The transformation to perform
          * @param {string} scope The transformation scope to perform
          */
-        vm.transformClosure = function (menu, scope) {
+        vm.appendClosure = function (menu, scope) {
             /*jshint camelcase: false */
             return function (params) {
                 params = params || {};

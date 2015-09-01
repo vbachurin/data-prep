@@ -28,12 +28,11 @@
                 column: '='
             },
             bindToController: true,
-
             controllerAs: 'datagridHeaderCtrl',
             controller: 'DatagridHeaderCtrl',
             link: {
                 post: function (scope, iElement, iAttrs, ctrl) {
-                    var gridHeaderTitle, gridHeaderTitleInput;
+                    var gridHeader, gridHeaderTitle, gridHeaderTitleInput;
 
 
                     console.log(ctrl.column);
@@ -72,9 +71,7 @@
                      * @description Attach a 'Blur' event listener on input. It executes the column rename.
                      */
                     function attachBlurListener() {
-                        gridHeaderTitleInput.on('blur', function () {
-                            executeRenameAction();
-                        });
+                        gridHeaderTitleInput.on('blur', executeRenameAction);
                     }
 
                     /**
@@ -129,17 +126,36 @@
                         });
                     }
 
+
+                    /**
+                     * @ngdoc method
+                     * @name attachClickListener
+                     * @methodOf data-prep.datagrid-header.directive:DatagridHeader
+                     * @description Attach a 'Click' event listener on grid header
+                     */
+                    function attachClickListener() {
+                        gridHeader.mousedown(function(event) {
+                            if (event.which === 3) { //Right click
+                                //stop propagation not to hide dropdown and hide/show menu on right click
+                                event.stopPropagation();
+                                gridHeader.find('.dropdown-action').click();
+                            }
+                        });
+                    }
+
                     /**
                      * Get the title and input elements, attach their listeners
                      */
                     $timeout(function () {
-                        gridHeaderTitle = iElement.find('.grid-header-title');
-                        gridHeaderTitleInput = iElement.find('.grid-header-title-input').eq(0);
+                        gridHeader= iElement.find('.grid-header').eq(0);
+                        gridHeaderTitle = gridHeader.find('.grid-header-title').eq(0);
+                        gridHeaderTitleInput = gridHeader.find('.grid-header-title-input').eq(0);
 
                         attachKeyListener();
                         attachDblClickListener();
                         attachBlurListener();
                         attachDisableInputClick();
+                        attachClickListener();
                     });
 
                     /**
