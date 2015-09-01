@@ -22,33 +22,6 @@ describe('Playground Service', function () {
         spyOn(StatisticsService, 'resetCharts').and.returnValue();
     }));
 
-    it('should init visible flag to false', inject(function(PlaygroundService) {
-        //then
-        expect(PlaygroundService.visible).toBe(false);
-    }));
-
-    it('should set visible flag to true', inject(function(PlaygroundService) {
-        //given
-        PlaygroundService.visible = false;
-
-        //when
-        PlaygroundService.show();
-
-        //then
-        expect(PlaygroundService.visible).toBe(true);
-    }));
-
-    it('should set visible flag to true', inject(function(PlaygroundService) {
-        //given
-        PlaygroundService.visible = true;
-
-        //when
-        PlaygroundService.hide();
-
-        //then
-        expect(PlaygroundService.visible).toBe(false);
-    }));
-
     it('should set new name to a new to the preparation', inject(function($rootScope, PlaygroundService, PreparationService) {
         //given
         var name = 'My preparation';
@@ -125,7 +98,6 @@ describe('Playground Service', function () {
 
         it('should init a new preparation and show playground when there is no loaded data yet', inject(function($rootScope, PlaygroundService, PreparationService) {
             //given
-            expect(PlaygroundService.visible).toBe(false);
             expect(PlaygroundService.currentMetadata).toBeFalsy();
             expect(PreparationService.currentPreparationId).toBeFalsy();
             expect(PreparationService.preparationName).toBeFalsy();
@@ -144,7 +116,6 @@ describe('Playground Service', function () {
             PlaygroundService.currentMetadata = {id : 'e85afAa78556d5425bc2'};
             PreparationService.currentPreparationId = '12342305304543';
 
-            expect(PlaygroundService.visible).toBe(false);
             expect(PlaygroundService.currentMetadata).toBeTruthy();
             expect(PreparationService.currentPreparationId).toBeTruthy();
 
@@ -160,7 +131,6 @@ describe('Playground Service', function () {
             //given
             PlaygroundService.currentMetadata = {id : 'ab45420c09bf98d9a90'};
 
-            expect(PlaygroundService.visible).toBe(false);
             expect(PlaygroundService.currentMetadata).toBeTruthy();
             expect(PreparationService.currentPreparationId).toBeFalsy();
 
@@ -191,7 +161,6 @@ describe('Playground Service', function () {
             var dataset = {id: 'e85afAa78556d5425bc2'};
             PlaygroundService.currentMetadata = dataset;
 
-            expect(PlaygroundService.visible).toBe(false);
             expect(PlaygroundService.currentPreparationId).toBeFalsy();
 
             //when
@@ -1018,7 +987,7 @@ describe('Playground Service', function () {
 
     describe('recipe panel display management', function() {
 
-        beforeEach(inject(function($q, PreparationService, DatagridService, RecipeService) {
+        beforeEach(inject(function($q, PreparationService, DatagridService, RecipeService, StateService) {
             spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: {}}));
             spyOn(PreparationService, 'appendStep').and.callFake(function() {
                 RecipeService.getRecipe().push({});
@@ -1028,24 +997,26 @@ describe('Playground Service', function () {
             spyOn(RecipeService, 'getLastStep').and.returnValue({
                 transformation: {stepId: 'a151e543456413ef51'}
             });
+            spyOn(StateService, 'showRecipe').and.returnValue();
+            spyOn(StateService, 'hideRecipe').and.returnValue();
         }));
 
-        it('should hide recipe on dataset playground init', inject(function($rootScope, PlaygroundService) {
+        it('should hide recipe on dataset playground init', inject(function($rootScope, PlaygroundService, StateService) {
             //given
-            PlaygroundService.showRecipe = true;
             var dataset = {id: '1'};
+            expect(StateService.hideRecipe).not.toHaveBeenCalled();
 
             //when
             PlaygroundService.initPlayground(dataset);
             $rootScope.$digest();
 
             //then
-            expect(PlaygroundService.showRecipe).toBe(false);
+            expect(StateService.hideRecipe).toHaveBeenCalled();
         }));
 
-        it('should show recipe on preparation playground init', inject(function($rootScope, PlaygroundService) {
+        it('should show recipe on preparation playground init', inject(function($rootScope, PlaygroundService, StateService) {
             //given
-            PlaygroundService.showRecipe = false;
+            expect(StateService.showRecipe).not.toHaveBeenCalled();
             var preparation = {
                 id: '6845521254541',
                 dataset: {id: '1'}
@@ -1056,12 +1027,12 @@ describe('Playground Service', function () {
             $rootScope.$digest();
 
             //then
-            expect(PlaygroundService.showRecipe).toBe(true);
+            expect(StateService.showRecipe).toHaveBeenCalled();
         }));
 
-        it('should show recipe on first step append', inject(function($rootScope, PlaygroundService) {
+        it('should show recipe on first step append', inject(function($rootScope, PlaygroundService, StateService) {
             //given
-            PlaygroundService.showRecipe = false;
+            expect(StateService.showRecipe).not.toHaveBeenCalled();
 
             var action = 'uppercase';
             var column = {id: 'firstname'};
@@ -1072,12 +1043,12 @@ describe('Playground Service', function () {
             $rootScope.$digest();
 
             //then
-            expect(PlaygroundService.showRecipe).toBe(true);
+            expect(StateService.showRecipe).toHaveBeenCalled();
         }));
 
-        it('should NOT force recipe display on second step append', inject(function($rootScope, PlaygroundService, RecipeService) {
+        it('should NOT force recipe display on second step append', inject(function($rootScope, PlaygroundService, RecipeService, StateService) {
             //given
-            PlaygroundService.showRecipe = false;
+            expect(StateService.showRecipe).not.toHaveBeenCalled();
             RecipeService.getRecipe().push({});
 
             var action = 'uppercase';
@@ -1089,7 +1060,7 @@ describe('Playground Service', function () {
             $rootScope.$digest();
 
             //then
-            expect(PlaygroundService.showRecipe).toBe(false);
+            expect(StateService.showRecipe).not.toHaveBeenCalled();
         }));
     });
 

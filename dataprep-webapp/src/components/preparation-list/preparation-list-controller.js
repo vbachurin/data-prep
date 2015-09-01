@@ -9,9 +9,10 @@
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.utils.service:MessageService
+     * @requires data-prep.services.state.service:StateService
      * @requires talend.widget.service:TalendConfirmService
      */
-    function PreparationListCtrl($stateParams, PlaygroundService, PreparationService, TalendConfirmService, MessageService) {
+    function PreparationListCtrl($stateParams, PlaygroundService, PreparationService, TalendConfirmService, MessageService, StateService) {
         var vm = this;
         vm.preparationService = PreparationService;
 
@@ -25,7 +26,7 @@
         vm.load = function(preparation) {
             PlaygroundService
                 .load(preparation)
-                .then(PlaygroundService.show);
+                .then(StateService.showPlayground);
         };
 
         /**
