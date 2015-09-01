@@ -262,10 +262,10 @@
 
                     break;
                 case 'text':
-                    specificStats.AVG_LENGTH = clean(stats.textLengthSummary.averageLength);
-                    specificStats.AVG_LENGTH_WITH_BLANK = clean(stats.textLengthSummary.averageLengthWithBlank);
-                    specificStats.MIN_LENGTH = stats.textLengthSummary.minimalLength;
-                    specificStats.MIN_LENGTH_WITH_BLANK = stats.textLengthSummary.minimalLengthWithBlank;
+                    specificStats.AVG_LENGTH = clean(stats.textLengthSummary.averageLengthIgnoreBlank);
+                    specificStats.AVG_LENGTH_WITH_BLANK = clean(stats.textLengthSummary.averageLength);
+                    specificStats.MIN_LENGTH = stats.textLengthSummary.minimalLengthIgnoreBlank;
+                    specificStats.MIN_LENGTH_WITH_BLANK = stats.textLengthSummary.minimalLength;
                     specificStats.MAX_LENGTH = stats.textLengthSummary.maximalLength;
                     break;
             }
