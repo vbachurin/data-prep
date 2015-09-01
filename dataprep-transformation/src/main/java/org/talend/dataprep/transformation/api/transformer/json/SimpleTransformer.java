@@ -165,7 +165,7 @@ class SimpleTransformer implements Transformer {
                     quality.setInvalidValues(column.getInvalidValues());
                     // Semantic types
                     final SemanticType semanticType = result.get(SemanticType.class);
-                    metadata.setDomain(semanticType.getSuggestedCategory());
+                    metadata.setDomain(TypeUtils.getDomainLabel(semanticType));
                 }
                 // statistics analysis must be performed after quality, otherwise it will not be accurate
                 DataSetAnalysis.computeStatistics(statisticsDataSet, sparkContext, builder);

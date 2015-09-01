@@ -33,7 +33,7 @@
   ],
   "patternFrequencyTable": [
     {
-      "pattern": "dd/MM/yyyy HH:mm:ss",
+      "pattern": "d/M/yyyy H:m:s",
       "occurrences": 5
     }
   ],
@@ -45,9 +45,7 @@
   "histogram": [],
   "textLengthSummary": {
     "minimalLength": "NaN",
-    "minimalLengthWithBlank": "NaN",
     "maximalLength": "NaN",
-    "averageLength": "NaN",
-    "averageLengthWithBlank": "NaN"
+    "averageLength": "NaN"
   }
 }
