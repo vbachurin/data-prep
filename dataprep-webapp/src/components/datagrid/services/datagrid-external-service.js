@@ -10,7 +10,7 @@
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.playground.service:PreviewService
      */
-    function DatagridExternalService($timeout, StatisticsService, SuggestionService, PreviewService) {
+    function DatagridExternalService($timeout, StatisticsService, SuggestionService, PreviewService, StateService) {
         var grid;
         var suggestionTimeout;
         var scrollTimeout;
@@ -46,6 +46,7 @@
             suggestionTimeout = $timeout(function() {
                 lastSelectedColumn = column.tdpColMetadata;
                 lastSelectedTab = tab;
+                StateService.setColumn(lastSelectedColumn);
 
                 if(tabHasChanged) {
                     SuggestionService.selectTab(lastSelectedTab);
@@ -68,7 +69,7 @@
             grid.onActiveCellChanged.subscribe(function(e,args) {
                 if(angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
-                    updateSuggestionPanel(column, 'CELL');
+                    updateSuggestionPanel(column, 'COLUMN'); //TODO : change this to CELL when cell actions are supported
                 }
             });
         }

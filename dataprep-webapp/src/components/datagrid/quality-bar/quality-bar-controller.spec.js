@@ -203,20 +203,18 @@ describe('Quality bar controller', function () {
     });
 
     it('should apply selected transformation on the column scope', inject(function(TransformationApplicationService, ColumnSuggestionService) {
-
         //given
         var ctrl = createController();
         var transfo = {name:'delete_empty', parameters:null};
         ColumnSuggestionService.transformations = [];
         ColumnSuggestionService.transformations.push(transfo);
-        spyOn(TransformationApplicationService,'transformClosure').and.returnValue(function(){});
-
+        spyOn(TransformationApplicationService,'append').and.returnValue(function(){});
 
         //when
         ctrl.applyActionOnColumn('delete_empty');
 
         //then
-        expect(TransformationApplicationService.transformClosure).toHaveBeenCalledWith(transfo, 'column');
+        expect(TransformationApplicationService.append).toHaveBeenCalledWith(transfo, 'column');
     }));
 
     describe('when dealing with filters', function() {
