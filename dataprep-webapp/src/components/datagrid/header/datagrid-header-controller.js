@@ -35,8 +35,15 @@
          */
         vm.isEditMode = false;
 
-
+        /**
+         * @ngdoc property
+         * @name rawTransformations
+         * @propertyOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @description a copy of the initial transformations without changed parameters
+         * @type {Array}
+         */
         vm.rawTransformations = [];
+
         /**
          * @ngdoc method
          * @name initTransformations
