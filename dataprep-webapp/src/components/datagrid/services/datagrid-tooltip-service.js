@@ -61,7 +61,7 @@
 
                 var column = grid.getColumns()[cell.cell];
 
-                if (column.id !== 'colIndex') {
+                if (column.id !== 'tdpId') {
                     var value = item[column.id];
                     if (shouldShowTooltip(value, cell)) {
                         tooltipShowPromise = $timeout(function () {

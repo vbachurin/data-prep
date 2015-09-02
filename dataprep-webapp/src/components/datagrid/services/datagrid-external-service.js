@@ -34,7 +34,7 @@
          * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
          */
         function updateSuggestionPanel(column, tab) {
-            if (column.id !== 'colIndex') {
+            if (column.id !== 'tdpId') {
                 var tabHasChanged = tab !== lastSelectedTab;
                 var columnHasChanged = column.tdpColMetadata !== lastSelectedColumn;
 

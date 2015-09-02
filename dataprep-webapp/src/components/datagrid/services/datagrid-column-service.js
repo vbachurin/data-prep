@@ -96,7 +96,8 @@
             //create new SlickGrid columns
             var colIndexArray =[] ;
 
-            colIndexArray.push({id: "colIndex", name: "", field: "colIndex", formatter: formatterIndex,  resizable : false, selectable: false, tdpColMetadata: {type: "integer", name: "#"}});
+            //Add index column
+            colIndexArray.push({id: "tdpId", name: "", field: "tdpId", formatter: formatterIndex,  resizable : false, selectable: false, tdpColMetadata: {type: "integer", name: "#"}});
 
             return _.union(colIndexArray, _.map(columnsMetadata, function (col) {
                 return createColumnDefinition(col, preview);

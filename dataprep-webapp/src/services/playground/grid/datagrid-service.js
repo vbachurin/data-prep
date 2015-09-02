@@ -65,11 +65,6 @@
          */
         var updateDataviewRecords = function (records) {
             self.dataView.beginUpdate();
-
-            for(var i=0; i<records.length; i++) {
-                records[i].colIndex = i+1;
-            }
-
             self.dataView.setItems(records, 'tdpId');
             self.dataView.endUpdate();
         };

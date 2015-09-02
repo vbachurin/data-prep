@@ -113,7 +113,7 @@
          */
         function updateColumnClass(columns, selectedCol) {
             _.forEach(columns, function(column) {
-                if(column.field === 'colIndex'){
+                if(column.field === 'tdpId'){
                     column.cssClass = 'index-column';
                 } else {
                     column.cssClass = null;
