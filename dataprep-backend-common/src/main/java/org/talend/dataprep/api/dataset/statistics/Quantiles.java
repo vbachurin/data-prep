@@ -5,35 +5,35 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Quantiles {
 
     @JsonProperty("median")
-    String median;
+    double median;
 
     @JsonProperty("lowerQuantile")
-    String lowerQuantile;
+    double lowerQuantile;
 
     @JsonProperty("upperQuantile")
-    String upperQuantile;
+    double upperQuantile;
 
-    public String getMedian() {
+    public double getMedian() {
         return median;
     }
 
-    public void setMedian(String median) {
+    public void setMedian(double median) {
         this.median = median;
     }
 
-    public String getLowerQuantile() {
+    public double getLowerQuantile() {
         return lowerQuantile;
     }
 
-    public void setLowerQuantile(String lowerQuantile) {
+    public void setLowerQuantile(double lowerQuantile) {
         this.lowerQuantile = lowerQuantile;
     }
 
-    public String getUpperQuantile() {
+    public double getUpperQuantile() {
         return upperQuantile;
     }
 
-    public void setUpperQuantile(String upperQuantile) {
+    public void setUpperQuantile(double upperQuantile) {
         this.upperQuantile = upperQuantile;
     }
 }

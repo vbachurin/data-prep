@@ -22,16 +22,16 @@ public class Statistics {
     long empty;
 
     @JsonProperty("max")
-    String max = "NaN";
+    double max = 0;
 
     @JsonProperty("min")
-    String min = "NaN";
+    double min = 0;
 
     @JsonProperty("mean")
-    String mean = "NaN";
+    double mean = 0;
 
     @JsonProperty("variance")
-    String variance = "NaN";
+    double variance = 0;
 
     @JsonProperty("duplicateCount")
     long duplicateCount = 0;
@@ -49,7 +49,7 @@ public class Statistics {
     Quantiles quantiles = new Quantiles();
 
     @JsonProperty("histogram")
-    Histogram histogram = new Histogram();
+    List<HistogramRange> histogram = new LinkedList<>();
 
     @JsonProperty("textLengthSummary")
     TextLengthSummary textLengthSummary = new TextLengthSummary();
@@ -86,35 +86,35 @@ public class Statistics {
         this.empty = empty;
     }
 
-    public String getMax() {
+    public double getMax() {
         return max;
     }
 
-    public void setMax(String max) {
+    public void setMax(double max) {
         this.max = max;
     }
 
-    public String getMin() {
+    public double getMin() {
         return min;
     }
 
-    public void setMin(String min) {
+    public void setMin(double min) {
         this.min = min;
     }
 
-    public String getMean() {
+    public double getMean() {
         return mean;
     }
 
-    public void setMean(String mean) {
+    public void setMean(double mean) {
         this.mean = mean;
     }
 
-    public String getVariance() {
+    public double getVariance() {
         return variance;
     }
 
-    public void setVariance(String variance) {
+    public void setVariance(double variance) {
         this.variance = variance;
     }
 
@@ -158,11 +158,11 @@ public class Statistics {
         this.quantiles = quantiles;
     }
 
-    public Histogram getHistogram() {
+    public List<HistogramRange> getHistogram() {
         return histogram;
     }
 
-    public void setHistogram(Histogram histogram) {
+    public void setHistogram(List<HistogramRange> histogram) {
         this.histogram = histogram;
     }
 

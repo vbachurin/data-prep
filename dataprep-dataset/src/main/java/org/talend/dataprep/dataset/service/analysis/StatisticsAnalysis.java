@@ -105,6 +105,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
                     LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 LOGGER.warn("dataset {} generates an error", dataSetId, e);
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
             }
@@ -119,7 +120,20 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
         final List<ColumnMetadata> columns = metadata.getRow().getColumns();
         DataType.Type[] types = TypeUtils.convert(columns);
         final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types);
-        histogramAnalyzer.init(1, 20, 5);
+        // Find global min and max for histogram
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
+        for (ColumnMetadata column : columns) {
+            final Statistics statistics = column.getStatistics();
+            if (statistics.getMax() > max) {
+                max = statistics.getMax();
+            }
+            if (statistics.getMin() < min) {
+                min = statistics.getMin();
+            }
+        }
+        histogramAnalyzer.init(min, max, 8);
+        // Configure all analysis
         Analyzer[] allAnalyzers = new Analyzer[] {
                 new ValueQualityAnalyzer(types),
                 // Cardinality (distinct + duplicate)
@@ -139,7 +153,9 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
         final Analyzer<Analyzers.Result> analyzer = Analyzers.with(allAnalyzers);
         stream.map(row -> {
             final Map<String, Object> rowValues = row.values();
-            final List<String> strings = stream(rowValues.values().spliterator(), false) //
+            final List<String> strings = stream(rowValues.entrySet().spliterator(), false) //
+                    .filter(e -> !DataSetRow.TDP_ID.equals(e.getKey())) // Don't take TDP_ID column
+                    .map(Map.Entry::getValue) //
                     .map(String::valueOf) //
                     .collect(Collectors.<String> toList());
             return strings.toArray(new String[strings.size()]);
@@ -178,23 +194,31 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
             final QuantileStatistics quantileStatistics = result.get(QuantileStatistics.class);
             if (quantileStatistics != null) {
                 final Quantiles quantiles = statistics.getQuantiles();
-                quantiles.setLowerQuantile(String.valueOf(quantileStatistics.getLowerQuantile()));
+                quantiles.setLowerQuantile(quantileStatistics.getLowerQuantile());
                 quantiles.setMedian(quantiles.getMedian());
                 quantiles.setMedian(quantiles.getUpperQuantile());
             }
             // Summary (min, max, mean, variance)
             final SummaryStatistics summaryStatistics = result.get(SummaryStatistics.class);
             if (summaryStatistics != null) {
-                statistics.setMax(String.valueOf(summaryStatistics.getMax()));
-                statistics.setMin(String.valueOf(summaryStatistics.getMin()));
-                statistics.setMean(String.valueOf(summaryStatistics.getMean()));
-                statistics.setVariance(String.valueOf(summaryStatistics.getVariance()));
+                statistics.setMax(summaryStatistics.getMax());
+                statistics.setMin(summaryStatistics.getMin());
+                statistics.setMean(summaryStatistics.getMean());
+                statistics.setVariance(summaryStatistics.getVariance());
             }
             // Histogram
-            /*final HistogramStatistics histogramStatistics = result.get(HistogramStatistics.class);
+            /*
+            final HistogramStatistics histogramStatistics = result.get(HistogramStatistics.class);
             if (histogramStatistics != null) {
-                histogramStatistics.getHistogram().forEach((r, v) -> statistics.getHistogram().getRanges().add(new HistogramRange())); // TODO Check values
-            }*/
+                histogramStatistics.getHistogram().forEach((r, v) -> {
+                    final HistogramRange range = new HistogramRange();
+                    range.getRange().setMax(r.getUpper());
+                    range.getRange().setMin(r.getLower());
+                    range.setOccurrences(v);
+                    statistics.getHistogram().add(range);
+                });
+            }
+            */
             // Text length
             final TextLengthStatistics textLengthStatistics = result.get(TextLengthStatistics.class);
             if (textLengthStatistics != null) {
