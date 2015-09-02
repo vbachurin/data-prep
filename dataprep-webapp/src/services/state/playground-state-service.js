@@ -11,6 +11,9 @@
             setGridSelection: setGridSelection,
             show: show,
             hide: hide,
+            setDataset: setDataset,
+            setPreparation: setPreparation,
+            reset: reset,
 
             //recipe
             showRecipe: RecipeStateService.show,
@@ -25,12 +28,27 @@
             playgroundState.line = line;
         }
 
+        function setDataset(dataset) {
+            playgroundState.dataset = dataset;
+        }
+
+        function setPreparation(preparation) {
+            playgroundState.preparation = preparation;
+        }
+
         function show() {
             playgroundState.visible = true;
         }
 
         function hide() {
             playgroundState.visible = false;
+        }
+
+        function reset() {
+            playgroundState.column = null;
+            playgroundState.line = null;
+            playgroundState.dataset = null;
+            playgroundState.preparation = null;
         }
     }
 

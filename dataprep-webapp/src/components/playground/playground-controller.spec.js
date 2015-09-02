@@ -21,6 +21,10 @@ describe('Playground controller', function() {
 
     }));
 
+    afterEach(inject(function(state) {
+        state.playground.dataset = null;
+    }));
+
     describe('bindings', function() {
         it('should bind editionMode getter with PlaygroundService', inject(function(PlaygroundService) {
             //given
@@ -46,14 +50,14 @@ describe('Playground controller', function() {
             expect(PlaygroundService.preparationNameEditionMode).toBe(false);
         }));
 
-        it('should bind metadata getter with PlaygroundService', inject(function(PlaygroundService) {
+        it('should bind metadata getter with PlaygroundService', inject(function(state) {
             //given
             var metadata = {name: 'my dataset'};
             var ctrl = createController();
             expect(ctrl.metadata).toBeFalsy();
 
             //when
-            PlaygroundService.currentMetadata = metadata;
+            state.playground.dataset = metadata;
 
             //then
             expect(ctrl.metadata).toBe(metadata);

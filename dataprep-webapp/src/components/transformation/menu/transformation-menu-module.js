@@ -11,6 +11,7 @@
      * @requires data-prep.services.preparation
      * @requires data-prep.services.playground
      * @requires data-prep.services.transformation
+     * @requires data-prep.services.state
      */
     angular.module('data-prep.transformation-menu', [
         'talend.widget',
@@ -18,6 +19,7 @@
         'data-prep.type-transformation-menu',
         'data-prep.services.preparation',
         'data-prep.services.playground',
-        'data-prep.services.transformation'
+        'data-prep.services.transformation',
+        'data-prep.services.state'
     ]);
 })();

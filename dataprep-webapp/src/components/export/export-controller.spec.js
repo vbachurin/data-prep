@@ -63,6 +63,10 @@ describe('Export controller', function() {
         spyOn(form, 'submit').and.returnValue();
     }));
 
+    afterEach(inject(function (state) {
+        state.playground.dataset = null;
+    }));
+
     describe('property binding', function() {
         it('should bind preparationId getter to PreparationService', inject(function(PreparationService) {
             //given
@@ -92,13 +96,13 @@ describe('Export controller', function() {
             expect(ctrl.stepId).toBe('48da64513c43a548e678bc99');
         }));
 
-        it('should bind datasetId getter to PlaygroundService', inject(function(PlaygroundService) {
+        it('should bind datasetId getter to PlaygroundService', inject(function(state) {
             //given
             var ctrl = createController();
             expect(ctrl.datasetId).toBeFalsy();
 
             //when
-            PlaygroundService.currentMetadata = {
+            state.playground.dataset = {
                 id: '48da64513c43a548e678bc99'
             };
 

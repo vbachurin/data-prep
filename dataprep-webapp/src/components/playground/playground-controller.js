@@ -201,7 +201,7 @@
             enumerable: true,
             configurable: false,
             get: function () {
-                return this.playgroundService.currentMetadata;
+                return this.state.playground.dataset;
             }
         });
 

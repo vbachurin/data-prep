@@ -77,9 +77,9 @@ describe('Actions suggestions-stats controller', function () {
     describe('with initiated state', function () {
         var column = {id: '0001', name: 'col1'};
 
-        beforeEach(inject(function ($q, SuggestionService, PlaygroundService, PreparationService) {
+        beforeEach(inject(function ($q, state, SuggestionService, PlaygroundService, PreparationService) {
             SuggestionService.currentColumn = column;
-            PlaygroundService.currentMetadata = {id: 'dataset_id'};
+            state.playground.dataset = {id: 'dataset_id'};
             PreparationService.currentPreparationId = 'preparation_id';
         }));
 

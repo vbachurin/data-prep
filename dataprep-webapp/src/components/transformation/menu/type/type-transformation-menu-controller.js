@@ -11,7 +11,8 @@
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.preparation.service:PreparationService
      */
-    function TypeTransformMenuCtrl(PlaygroundService, DatasetService, ColumnTypesService, ConverterService, PreparationService) {
+    function TypeTransformMenuCtrl(state, PlaygroundService, DatasetService, ColumnTypesService, ConverterService, PreparationService) {
+
         var vm = this;
 
         /**
@@ -40,7 +41,7 @@
 
             setColumnDomainAndType(domain, null);
             /*
-            DatasetService.updateColumn(PlaygroundService.currentMetadata.id, vm.column.id, {domain: domain.id})
+            DatasetService.updateColumn(state.playground.dataset.id, vm.column.id, {domain: domain.id})
                 .catch(setColumnDomainAndType.bind(vm, originalDomain));
             */
             PlaygroundService.appendStep('domain_change',
