@@ -88,11 +88,12 @@
          * </ul>
          */
 
-        function formatterIndex(row, cell, value, columnDef, dataContext) {
-            return '<div style="text-align: right">' + value + '</div>';
-        }
-
         function createColumns(columnsMetadata, preview) {
+
+            function formatterIndex(row, cell, value, columnDef, dataContext) {
+                return '<div style="text-align: right">' + value + '</div>';
+            }
+
             //create new SlickGrid columns
             var colIndexArray =[] ;
 
