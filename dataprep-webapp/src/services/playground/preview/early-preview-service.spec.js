@@ -11,12 +11,12 @@ describe('Early Preview Service', function () {
     var params;
 
     beforeEach(module('data-prep.services.playground', function ($provide) {
-        stateMock = {};
+        stateMock = {playground: {}};
         $provide.constant('state', stateMock);
     }));
 
     beforeEach(inject(function (PlaygroundService, PreviewService, RecipeService, EarlyPreviewService) {
-        stateMock.column = column;
+        stateMock.playground.column = column;
         PlaygroundService.currentMetadata = currentMetadata;
 
         transfoScope = 'column';

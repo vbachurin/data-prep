@@ -8,8 +8,9 @@
      * @requires data-prep.services.dataset.service:DatasetSheetPreviewService
      * @requires data-prep.services.dataset.service:DatasetService
      * @requires data-prep.services.playground.service:PlaygroundService
+     * @requires data-prep.services.state.service:StateService
      */
-    function DatasetXlsPreviewCtrl($timeout, DatasetSheetPreviewService, DatasetService, PlaygroundService) {
+    function DatasetXlsPreviewCtrl($timeout, DatasetSheetPreviewService, DatasetService, PlaygroundService, StateService) {
         var vm = this;
         vm.datasetSheetPreviewService = DatasetSheetPreviewService;
 
@@ -56,7 +57,7 @@
                     vm.state = false;
                 })
                 .then(PlaygroundService.initPlayground.bind(null, vm.metadata))
-                .then(PlaygroundService.show);
+                .then(StateService.showPlayground);
         };
 
         $timeout(initGrid);

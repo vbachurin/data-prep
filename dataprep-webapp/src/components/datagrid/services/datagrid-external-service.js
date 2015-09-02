@@ -29,11 +29,12 @@
          * @name updateSuggestionPanel
          * @methodOf data-prep.datagrid.service:DatagridExternalService
          * @param {string} column The selected column
+         * @param {number} row The row number
          * @param {string} tab The suggestion tab to select
          * @description Set the selected column into external services. This will trigger actions that use this property
          * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
          */
-        function updateSuggestionPanel(column, tab) {
+        function updateSuggestionPanel(column, row, tab) {
             var tabHasChanged = tab !== lastSelectedTab;
             var columnHasChanged = column.tdpColMetadata !== lastSelectedColumn;
 
@@ -46,7 +47,7 @@
             suggestionTimeout = $timeout(function() {
                 lastSelectedColumn = column.tdpColMetadata;
                 lastSelectedTab = tab;
-                StateService.setColumn(lastSelectedColumn);
+                StateService.setGridSelection(lastSelectedColumn, row);
 
                 if(tabHasChanged) {
                     SuggestionService.selectTab(lastSelectedTab);
@@ -69,7 +70,7 @@
             grid.onActiveCellChanged.subscribe(function(e,args) {
                 if(angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
-                    updateSuggestionPanel(column, 'CELL');
+                    updateSuggestionPanel(column, args.row, 'COLUMN'); //TODO : change this to CELL when cell actions are supported
                 }
             });
         }
@@ -84,7 +85,7 @@
             function attachColumnCallback(args) {
                 var columnId = args.column.id;
                 var column = _.find(grid.getColumns(), {id: columnId});
-                updateSuggestionPanel(column, 'COLUMN');
+                updateSuggestionPanel(column, null, 'COLUMN');
             }
 
             grid.onHeaderContextMenu.subscribe(function(e, args) {
