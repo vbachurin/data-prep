@@ -126,12 +126,12 @@ describe('Transform menu controller', function () {
     }));
 
 
-    it('should fetch dynamic parameters', inject(function ($rootScope, PlaygroundService, PreparationService, TransformationService) {
+    it('should fetch dynamic parameters', inject(function (state, PlaygroundService, PreparationService, TransformationService) {
         //given
         var ctrl = createController();
         var menu = {name: 'textclustering', category: 'quickfix', dynamic: true};
 
-        PlaygroundService.currentMetadata = {id: '78bae6345aef9965e22b54'};
+        state.playground.dataset = {id: '78bae6345aef9965e22b54'};
         PreparationService.currentPreparationId = '721cd4455fb69e89543d4';
 
         //when
@@ -150,12 +150,12 @@ describe('Transform menu controller', function () {
     }));
 
 
-    it('should display modal and set flags on dynamic params fetch', inject(function ($rootScope, PlaygroundService, PreparationService) {
+    it('should display modal and set flags on dynamic params fetch', inject(function (state, PlaygroundService, PreparationService) {
         //given
         var ctrl = createController();
         var menu = {name: 'textclustering', category: 'quickfix', dynamic: true};
 
-        PlaygroundService.currentMetadata = {id: '78bae6345aef9965e22b54'};
+        state.playground.dataset = {id: '78bae6345aef9965e22b54'};
         PreparationService.currentPreparationId = '721cd4455fb69e89543d4';
 
         //when
@@ -171,7 +171,7 @@ describe('Transform menu controller', function () {
     }));
 
 
-    it('should call playground service to append step and hide modal', inject(function ($rootScope, PlaygroundService) {
+    it('should call playground service to append step and hide modal', inject(function (PlaygroundService) {
         //given
         var ctrl = createController();
         var menu = {name: 'transfo_name', category: 'case', parameters: [{name: 'param1', type: 'text', default: '.'}]};

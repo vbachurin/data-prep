@@ -9,6 +9,7 @@
      * @requires data-prep.services.dataset
      * @requires data-prep.services.playground
      * @requires data-prep.services.utils
+     * @requires data-prep.services.state
      */
     angular.module('data-prep.dataset-xls-preview', [
         'ui.router',
@@ -16,6 +17,7 @@
         'talend.widget',
         'data-prep.services.dataset',
         'data-prep.services.playground',
-        'data-prep.services.utils'
+        'data-prep.services.utils',
+        'data-prep.services.state'
     ]);
 })();

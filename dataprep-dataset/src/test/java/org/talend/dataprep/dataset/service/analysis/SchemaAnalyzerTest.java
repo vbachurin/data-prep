@@ -145,7 +145,7 @@ public class SchemaAnalyzerTest {
         // Gender must be a String with Gender domain
         String[] expectedNames = { "name", "bounty", "gender" };
         Type[] expectedTypes = { Type.STRING, Type.INTEGER, Type.STRING };
-        String[] expectedDomains = { "First Name", "", "Gender" };
+        String[] expectedDomains = { "FIRST_NAME", "", "GENDER" };
         int i = 0;
         for (ColumnMetadata column : actual.getRow().getColumns()) {
             assertThat(column.getName(), is(expectedNames[i]));

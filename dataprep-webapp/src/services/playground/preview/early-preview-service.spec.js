@@ -4,20 +4,21 @@ describe('Early Preview Service', function () {
     'use strict';
 
     var stateMock;
-    var currentMetadata = {id: '123456'};
+    var dataset = {id: '123456'};
     var column = {id: '0001', name: 'firstname'};
     var transfoScope;
     var transformation;
     var params;
 
     beforeEach(module('data-prep.services.playground', function ($provide) {
-        stateMock = {};
+        stateMock = {playground: {
+            dataset: dataset
+        }};
         $provide.constant('state', stateMock);
     }));
 
     beforeEach(inject(function (PlaygroundService, PreviewService, RecipeService, EarlyPreviewService) {
-        stateMock.column = column;
-        PlaygroundService.currentMetadata = currentMetadata;
+        stateMock.playground.column = column;
 
         transfoScope = 'column';
         transformation = {
@@ -54,7 +55,7 @@ describe('Early Preview Service', function () {
             }
         );
         expect(PreviewService.getPreviewAddRecords).toHaveBeenCalledWith(
-            currentMetadata.id,
+            dataset.id,
             'replace_on_value',
             {
                 value: 'James',
@@ -144,7 +145,7 @@ describe('Early Preview Service', function () {
             }
         );
         expect(PreviewService.getPreviewAddRecords).toHaveBeenCalledWith(
-            currentMetadata.id,
+            dataset.id,
             'replace_on_value',
             {
                 value: 'James',

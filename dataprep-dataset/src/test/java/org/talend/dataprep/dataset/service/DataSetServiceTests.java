@@ -895,7 +895,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
             lock.unlock();
         }
 
-        assertThat(column.getDomain(), is("First Name"));
+        assertThat(column.getDomain(), is("FIRST_NAME"));
         assertThat(column.getDomainLabel(), is("First Name"));
         assertThat(column.getDomainFrequency(), is(2.0F));
 
@@ -927,7 +927,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         final ColumnMetadata column = dataSetMetadata.getRow().getById("0002");
 
-        assertThat(column.getDomain(), is("First Name"));
+        assertThat(column.getDomain(), is("FIRST_NAME"));
         assertThat(column.getDomainLabel(), is("First Name"));
         assertThat(column.getDomainFrequency(), is(2.0F));
         assertThat(column.getType(), is("string"));
@@ -942,7 +942,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         //then
         res.then().statusCode(200);
         final ColumnMetadata actual = dataSetMetadataRepository.get(dataSetId).getRow().getById("0002");
-        assertThat(actual.getDomain(), is("First Name"));
+        assertThat(actual.getDomain(), is("FIRST_NAME"));
         assertThat(actual.getDomainLabel(), is("First Name"));
         assertThat(actual.getDomainFrequency(), is(2.0F));
         assertThat(actual.getType(), is("integer"));
@@ -961,7 +961,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         final ColumnMetadata column = dataSetMetadata.getRow().getById("0002");
 
-        assertThat(column.getDomain(), is("First Name"));
+        assertThat(column.getDomain(), is("FIRST_NAME"));
         assertThat(column.getDomainLabel(), is("First Name"));
         assertThat(column.getDomainFrequency(), is(2.0F));
 

@@ -12,6 +12,7 @@
             <input name="{{::(param.name + $index)}}"
                    type="{{::param.inputType}}"
                    ng-model="param.value"
+                   ng-trim="false"
                    is-type="{{::param.type}}"
                    can-be-blank="{{::param.canBeBlank}}"/>
             <span ng-if="::(param.type === 'boolean')">{{param.name}}</span>

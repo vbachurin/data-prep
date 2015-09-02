@@ -5,6 +5,7 @@
         'talend.widget',
         'data-prep.services.utils',
         'data-prep.services.playground',
-        'data-prep.services.export'
+        'data-prep.services.export',
+        'data-prep.services.state'
     ]);
 })();

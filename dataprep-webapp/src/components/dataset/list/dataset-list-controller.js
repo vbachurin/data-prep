@@ -16,10 +16,11 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires talend.widget.service:TalendConfirmService
      * @requires data-prep.services.utils.service:MessageService
-     * @requires data-prep.services.uploadWorkflowService:UploadWorkflowService
+     * @requires data-prep.services.uploadWorkflowService.service:UploadWorkflowService
+     * @requires data-prep.services.state.service:StateService
      */
     function DatasetListCtrl($stateParams, DatasetService, DatasetListSortService, PlaygroundService,
-                             TalendConfirmService, MessageService, UploadWorkflowService) {
+                             TalendConfirmService, MessageService, UploadWorkflowService, StateService) {
         var vm = this;
 
         vm.datasetService = DatasetService;
@@ -116,7 +117,7 @@
          */
         var open = function(dataset) {
             PlaygroundService.initPlayground(dataset)
-                .then(PlaygroundService.show);
+                .then(StateService.showPlayground);
         };
 
         /**

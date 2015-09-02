@@ -8,10 +8,11 @@
      * @requires data-prep.services.transformation.service:SuggestionService
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.transformation.service:TransformationService
-     * @requires data-prep.services.playground.service:PlaygroundService
+     * @requires data-prep.services.transformation.service:TransformationApplicationService
      * @requires data-prep.services.preparation.service:PreparationService
+     * @requires data-prep.services.playground.service:EarlyPreviewService
      */
-    function ActionsSuggestionsCtrl(SuggestionService, ColumnSuggestionService, TransformationService, PlaygroundService,
+    function ActionsSuggestionsCtrl(state, SuggestionService, ColumnSuggestionService, TransformationService,
                                     PreparationService, TransformationApplicationService, EarlyPreviewService) {
 
         var vm = this;
@@ -63,7 +64,7 @@
         var initDynamicParams = function(transfo) {
             var infos = {
                 columnId: vm.column.id,
-                datasetId:  PlaygroundService.currentMetadata.id,
+                datasetId:  state.playground.dataset.id,
                 preparationId:  PreparationService.currentPreparationId
             };
             return TransformationService.initDynamicParameters(transfo, infos);

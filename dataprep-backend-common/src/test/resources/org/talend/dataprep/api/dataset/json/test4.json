@@ -152,10 +152,8 @@
         ],
         "textLengthSummary": {
           "minimalLength": "NaN",
-          "minimalLengthWithBlank": "NaN",
           "maximalLength": "NaN",
-          "averageLength": "NaN",
-          "averageLengthWithBlank": "NaN"
+          "averageLength": "NaN"
         }
       },
       "domain": ""

@@ -12,6 +12,7 @@
      * @requires data-prep.services.utils
      * @requires data-prep.services.uploadWorkflowService
      * @requires data-prep.services.utils
+     * @requires data-prep.services.state
      */
     angular.module('data-prep.dataset-list', [
         'ui.router',
@@ -22,6 +23,7 @@
         'data-prep.services.playground',
         'data-prep.services.utils',
         'data-prep.services.uploadWorkflowService',
-        'data-prep.services.utils'
+        'data-prep.services.utils',
+        'data-prep.services.state'
     ]);
 })();
