@@ -14,15 +14,14 @@ describe('Dataset list controller', function () {
 
     beforeEach(module('data-prep.dataset-list'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, $state, DatasetService, PlaygroundService, MessageService, DatasetListSortService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, $state, DatasetService, PlaygroundService, MessageService, DatasetListSortService, StateService) {
         var datasetsValues = [datasets, refreshedDatasets];
         scope = $rootScope.$new();
 
         createController = function () {
-            var ctrl = $controller('DatasetListCtrl', {
+            return $controller('DatasetListCtrl', {
                 $scope: scope
             });
-            return ctrl;
         };
 
         spyOn(DatasetService, 'processCertification').and.returnValue($q.when(true));
@@ -34,7 +33,7 @@ describe('Dataset list controller', function () {
         spyOn(DatasetListSortService, 'setOrder').and.returnValue();
 
         spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when(true));
-        spyOn(PlaygroundService, 'show').and.callThrough();
+        spyOn(StateService, 'showPlayground').and.callThrough();
         spyOn(MessageService, 'error').and.returnValue(null);
         spyOn($state, 'go').and.returnValue(null);
     }));
@@ -53,7 +52,7 @@ describe('Dataset list controller', function () {
     }));
 
     describe('dataset in query params load', function() {
-        it('should init playground with the provided datasetId from url', inject(function ($stateParams, PlaygroundService) {
+        it('should init playground with the provided datasetId from url', inject(function ($stateParams, PlaygroundService, StateService) {
             //given
             $stateParams.datasetid = 'ab45f893d8e923';
 
@@ -63,10 +62,10 @@ describe('Dataset list controller', function () {
 
             //then
             expect(PlaygroundService.initPlayground).toHaveBeenCalledWith(datasets[1]);
-            expect(PlaygroundService.show).toHaveBeenCalled();
+            expect(StateService.showPlayground).toHaveBeenCalled();
         }));
 
-        it('should show error message when dataset id is not in users dataset', inject(function ($stateParams, PlaygroundService, MessageService) {
+        it('should show error message when dataset id is not in users dataset', inject(function ($stateParams, PlaygroundService, MessageService, StateService) {
             //given
             $stateParams.datasetid = 'azerty';
 
@@ -76,7 +75,7 @@ describe('Dataset list controller', function () {
 
             //then
             expect(PlaygroundService.initPlayground).not.toHaveBeenCalled();
-            expect(PlaygroundService.show).not.toHaveBeenCalled();
+            expect(StateService.showPlayground).not.toHaveBeenCalled();
             expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
         }));
     });

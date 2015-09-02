@@ -22,30 +22,6 @@ describe('Playground controller', function() {
     }));
 
     describe('bindings', function() {
-        it('should bind showPlayground getter with PlaygroundService', inject(function(PlaygroundService) {
-            //given
-            var ctrl = createController();
-            expect(ctrl.showPlayground).toBe(false);
-
-            //when
-            PlaygroundService.show();
-
-            //then
-            expect(ctrl.showPlayground).toBe(true);
-        }));
-
-        it('should bind showPlayground setter with PlaygroundService', inject(function(PlaygroundService) {
-            //given
-            var ctrl = createController();
-            expect(PlaygroundService.visible).toBe(false);
-
-            //when
-            ctrl.showPlayground = true;
-
-            //then
-            expect(PlaygroundService.visible).toBe(true);
-        }));
-
         it('should bind editionMode getter with PlaygroundService', inject(function(PlaygroundService) {
             //given
             var ctrl = createController();
@@ -117,30 +93,6 @@ describe('Playground controller', function() {
 
             //then
             expect(ctrl.previewInProgress).toBe(true);
-        }));
-
-        it('should bind showRecipe getter to PlaygroundService', inject(function(PlaygroundService) {
-            //given
-            var ctrl = createController();
-            expect(ctrl.showRecipe).toBeFalsy();
-
-            //when
-            PlaygroundService.showRecipe = true;
-
-            //then
-            expect(ctrl.showRecipe).toBe(true);
-        }));
-
-        it('should bind showRecipe setter to PlaygroundService', inject(function(PlaygroundService) {
-            //given
-            var ctrl = createController();
-            expect(PlaygroundService.showRecipe).toBeFalsy();
-
-            //when
-            ctrl.showRecipe = true;
-
-            //then
-            expect(PlaygroundService.showRecipe).toBe(true);
         }));
 
         it('should bind selectedSampleSize getter to PlaygroundService', inject(function(PlaygroundService) {
@@ -258,11 +210,12 @@ describe('Playground controller', function() {
     describe('implicit preparation', function() {
         var ctrl;
 
-        beforeEach(inject(function($q, PlaygroundService, PreparationService) {
+        beforeEach(inject(function($q, PlaygroundService, PreparationService, StateService) {
             PlaygroundService.originalPreparationName = '';
             PreparationService.currentPreparationId = '9af874865e42b546';
 
             spyOn(PreparationService, 'deleteCurrentPreparation').and.returnValue($q.when(true));
+            spyOn(StateService, 'hidePlayground').and.returnValue();
 
             ctrl = createController();
         }));
@@ -305,10 +258,10 @@ describe('Playground controller', function() {
             expect(PreparationService.deleteCurrentPreparation).toHaveBeenCalled();
         }));
 
-        it('should hide save/discard and playground modals on save discard', function() {
+        it('should hide save/discard and playground modals on save discard', inject(function(StateService) {
             //given
             ctrl.showNameValidation = true;
-            ctrl.showPlayground = true;
+            expect(StateService.hidePlayground).not.toHaveBeenCalled();
 
             //when
             ctrl.discardSaveOnClose();
@@ -316,8 +269,8 @@ describe('Playground controller', function() {
 
             //then
             expect(ctrl.showNameValidation).toBe(false);
-            expect(ctrl.showPlayground).toBe(false);
-        });
+            expect(StateService.hidePlayground).toHaveBeenCalled();
+        }));
 
         it('should change preparation name on save confirm', inject(function(PlaygroundService) {
             //given
@@ -355,10 +308,10 @@ describe('Playground controller', function() {
             expect(ctrl.saveInProgress).toBe(false);
         });
 
-        it('should hide save/discard and playground modals on save confirm', function() {
+        it('should hide save/discard and playground modals on save confirm', inject(function(StateService) {
             //given
             ctrl.showNameValidation = true;
-            ctrl.showPlayground = true;
+            expect(StateService.hidePlayground).not.toHaveBeenCalled();
 
             //when
             ctrl.confirmSaveOnClose();
@@ -366,7 +319,7 @@ describe('Playground controller', function() {
 
             //then
             expect(ctrl.showNameValidation).toBe(false);
-            expect(ctrl.showPlayground).toBe(false);
-        });
+            expect(StateService.hidePlayground).toHaveBeenCalled();
+        }));
     });
 });

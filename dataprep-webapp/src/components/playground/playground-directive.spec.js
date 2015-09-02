@@ -2,6 +2,7 @@ describe('Playground directive', function () {
     'use strict';
 
     var scope, createElement, element;
+    var stateMock;
 
     var metadata = {
         'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
@@ -11,7 +12,10 @@ describe('Playground directive', function () {
         records: '3'
     };
 
-    beforeEach(module('data-prep.playground'));
+    beforeEach(module('data-prep.playground', function($provide) {
+        stateMock = {playground: {visible: true}};
+        $provide.constant('state', stateMock);
+    }));
     beforeEach(module('htmlTemplates'));
     beforeEach(module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
@@ -251,42 +255,41 @@ describe('Playground directive', function () {
             PlaygroundService.currentMetadata = metadata;
             createElement();
 
-            PlaygroundService.show();
             scope.$apply();
             expect(PreparationService.refreshPreparations).not.toHaveBeenCalled();
         }));
 
-        it('should change route to preparations list on preparation playground hide', inject(function ($state, $stateParams, PlaygroundService) {
+        it('should change route to preparations list on preparation playground hide', inject(function ($state, $stateParams) {
             //given: simulate playground route with preparation id
             $stateParams.prepid = '1234';
 
             //when
-            PlaygroundService.hide();
+            stateMock.playground.visible = false;
             scope.$apply();
 
             //then
             expect($state.go).toHaveBeenCalledWith('nav.home.preparations', {prepid: null});
         }));
 
-        it('should change route to datasets list on dataset playground hide', inject(function ($state, $stateParams, PlaygroundService) {
+        it('should change route to datasets list on dataset playground hide', inject(function ($state, $stateParams) {
             //given: simulate playground route with preparation id
             $stateParams.datasetid = '1234';
 
             //when
-            PlaygroundService.hide();
+            stateMock.playground.visible = false;
             scope.$apply();
 
             //then
             expect($state.go).toHaveBeenCalledWith('nav.home.datasets', {datasetid: null});
         }));
 
-        it('should do nothing if playground is not routed', inject(function ($state, $stateParams, PlaygroundService, PreparationService) {
+        it('should do nothing if playground is not routed', inject(function ($state, $stateParams, PreparationService) {
             //given: simulate no preparation id in route
             $stateParams.prepid = null;
             $stateParams.datasetid = null;
 
             //when
-            PlaygroundService.hide();
+            stateMock.playground.visible = false;
             scope.$apply();
 
             //then
@@ -294,9 +297,9 @@ describe('Playground directive', function () {
             expect($state.go).not.toHaveBeenCalled();
         }));
 
-        it('should refresh preparations on playground hide', inject(function (PlaygroundService, PreparationService) {
+        it('should refresh preparations on playground hide', inject(function (PreparationService) {
             //when
-            PlaygroundService.hide();
+            stateMock.playground.visible = false;
             scope.$apply();
 
             //then

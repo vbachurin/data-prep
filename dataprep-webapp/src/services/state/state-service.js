@@ -3,25 +3,19 @@
 
     var state = {};
 
-    function StateService() {
+    function StateService(PlaygroundStateService, playgroundState) {
+        state.playground = playgroundState;
+
         return {
-            setColumn: setColumn,
-            setLine: setLine,
-            resetPlayground: resetPlayground
+            //playground
+            showPlayground: PlaygroundStateService.show,
+            hidePlayground: PlaygroundStateService.hide,
+            setGridSelection: PlaygroundStateService.setGridSelection,
+
+            //playground - recipe
+            showRecipe: PlaygroundStateService.showRecipe,
+            hideRecipe: PlaygroundStateService.hideRecipe
         };
-
-        function setColumn(column) {
-            state.column = column;
-        }
-
-        function setLine(line) {
-            state.line = line;
-        }
-
-        function resetPlayground() {
-            state.column = null;
-            state.line = null;
-        }
     }
 
     angular.module('data-prep.services.state')

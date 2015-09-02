@@ -72,13 +72,15 @@
                 cancelPendingPreview();
 
                 previewTimeout = $timeout(function () {
+                    var column = state.playground.column;
+
                     params.scope = scope;
-                    params.column_id = state.column.id;
-                    params.column_name = state.column.name;
+                    params.column_id = column.id;
+                    params.column_name = column.name;
 
                     var datasetId = PlaygroundService.currentMetadata.id;
 
-                    RecipeService.earlyPreview(state.column, action, params);
+                    RecipeService.earlyPreview(column, action, params);
                     PreviewService.getPreviewAddRecords(datasetId, action.name, params);
                 }, 300);
             };

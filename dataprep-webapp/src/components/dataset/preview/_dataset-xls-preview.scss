@@ -36,13 +36,16 @@
   }
 
   #datasetSheetPreviewGrid {
-    width: 800px;
-    height: 370px;
+    width: 100%;
+    height: 36%;
 
     margin: 0;
 
-    &.datagrid .slick-header-columns {
-      min-height: 29px;
+    &.datagrid{
+      min-height: 200px;
+      .slick-header-columns {
+        min-height: 29px;
+      }
     }
   }
 }
