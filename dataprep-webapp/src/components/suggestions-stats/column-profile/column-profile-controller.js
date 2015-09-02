@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function ColumnProfileCtrl($scope, StatisticsService, PlaygroundService, PreparationService, RecipeService) {
+    function ColumnProfileCtrl($scope, state, StatisticsService, PlaygroundService, PreparationService, RecipeService) {
         var vm = this;
         vm.statisticsService = StatisticsService;
         vm.chartConfig = {};
@@ -50,7 +50,7 @@
                 return;
             }
 
-            var datasetId = PlaygroundService.currentMetadata.id;
+            var datasetId = state.playground.dataset.id;
             var sampleSize = PlaygroundService.selectedSampleSize.value;
             var preparationId = PreparationService.currentPreparationId;
             var stepId = preparationId ? RecipeService.getLastActiveStep().id : null;

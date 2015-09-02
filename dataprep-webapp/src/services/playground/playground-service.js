@@ -18,17 +18,10 @@
      * @requires data-prep.services.history.service:HistoryService
      * @requires data-prep.services.state.service:StateService
      */
-    function PlaygroundService($rootScope, $q, DatasetService, DatagridService, PreviewService, FilterService,
+    function PlaygroundService($rootScope, $q, state, DatasetService, DatagridService, PreviewService, FilterService,
                                RecipeService, TransformationCacheService, SuggestionService, PreparationService,
                                MessageService, StatisticsService, HistoryService, StateService) {
         var service = {
-            /**
-             * @ngdoc property
-             * @name currentMetadata
-             * @propertyOf data-prep.services.playground.service:PlaygroundService
-             * @description the loaded metadata
-             */
-            currentMetadata: null,
             /**
              * @ngdoc property
              * @name originalPreparationName
@@ -82,7 +75,8 @@
         //-------------------------------------------------INIT/LOAD--------------------------------------------
         //------------------------------------------------------------------------------------------------------
         function reset(dataset, data) {
-            service.currentMetadata = dataset;
+            StateService.resetPlayground();
+            StateService.setCurrentDataset(dataset);
 
             FilterService.removeAllFilters();
             RecipeService.refresh();
@@ -110,7 +104,7 @@
          * @returns {Promise} The process promise
          */
         function initPlayground(dataset) {
-            if(!service.currentMetadata || PreparationService.currentPreparationId || dataset.id !== service.currentMetadata.id) {
+            if(!state.playground.dataset || PreparationService.currentPreparationId || dataset.id !== state.playground.dataset.id) {
                 PreparationService.currentPreparationId = null;
 
                 return DatasetService.getContent(dataset.id, false, service.selectedSampleSize.value)
@@ -169,7 +163,7 @@
 
             return PreparationService.getContent(step.transformation.stepId, service.selectedSampleSize.value)
                 .then(function(response) {
-                    DatagridService.setDataset(service.currentMetadata, response.data);
+                    DatagridService.setDataset(state.playground.dataset, response.data);
                 })
                 .finally(function() {
                     $rootScope.$emit('talend.loading.stop');
@@ -186,7 +180,7 @@
          */
         function changeDataSetSampleSize() {
             $rootScope.$emit('talend.loading.start');
-            return DatasetService.getContent(service.currentMetadata.id, true, service.selectedSampleSize.value)
+            return DatasetService.getContent(state.playground.dataset.id, true, service.selectedSampleSize.value)
                 .then(function (data) {
                     //TODO : temporary fix because asked to.
                     //TODO : when error status during import and get dataset content is managed by backend,
@@ -195,7 +189,7 @@
                         MessageService.error('INVALID_DATASET_TITLE', 'INVALID_DATASET');
                         throw Error('Empty data');
                     }
-                    DatagridService.setDataset(service.currentMetadata, data);
+                    DatagridService.setDataset(state.playground.dataset, data);
                 })
                 .finally(function() {
                     $rootScope.$emit('talend.loading.stop');
@@ -256,7 +250,7 @@
             $rootScope.$emit('talend.loading.start');
             return PreparationService.getContent(step.transformation.stepId, service.selectedSampleSize.value)
                 .then(function(response) {
-                    DatagridService.setDataset(service.currentMetadata, response.data);
+                    DatagridService.setDataset(state.playground.dataset, response.data);
                     DatagridService.focusedColumn = focusColumnId;
                     RecipeService.disableStepsAfter(step);
                     PreviewService.reset(false);
@@ -279,7 +273,7 @@
          */
         function createOrUpdatePreparation(name) {
             if(service.originalPreparationName !== name) {
-                return PreparationService.setName(service.currentMetadata, name)
+                return PreparationService.setName(state.playground.dataset, name)
                     .then(function() {
                         service.originalPreparationName = name;
                         service.preparationName = name;
@@ -300,7 +294,7 @@
          * in actions history
          */
         function appendStep(action, parameters) {
-            var append = executeAppendStep.bind(service, service.currentMetadata, {action: action, parameters: parameters});
+            var append = executeAppendStep.bind(service, state.playground.dataset, {action: action, parameters: parameters});
 
             return append().then(function() {
                 var lastStepId = RecipeService.getLastStep().transformation.stepId;
@@ -389,7 +383,7 @@
          */
         function removeStep(step, mode) {
             mode = mode || 'cascade';
-            var metadata = service.currentMetadata;
+            var metadata = state.playground.dataset;
             var cancelRemove;
             switch(mode) {
                 case 'single' :
@@ -469,7 +463,7 @@
          */
         function updateColumn(columnId, type, domain) {
 
-            return DatasetService.updateColumn(service.currentMetadata.id, columnId, {type: type, domain: domain})
+            return DatasetService.updateColumn(state.playground.dataset.id, columnId, {type: type, domain: domain})
                 .then(function() {
                     // if preparation
                     if (PreparationService.currentPreparationId) {
@@ -510,7 +504,7 @@
          * @description Perform an datagrid refresh on the current dataset
          */
         function updateDatasetDatagrid() {
-            return DatasetService.getContent(service.currentMetadata.id, false, service.selectedSampleSize.value)
+            return DatasetService.getContent(state.playground.dataset.id, false, service.selectedSampleSize.value)
                 .then(function(response) {
                     DatagridService.updateData(response);
                 });

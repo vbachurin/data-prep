@@ -94,7 +94,7 @@ describe('ColumnProfile controller', function () {
             expect(aggregation).toBe('LINE_COUNT');
         }));
 
-        it('should change aggregation chart with preparation and step id', inject(function(StatisticsService, PlaygroundService, PreparationService, RecipeService) {
+        it('should change aggregation chart with preparation and step id', inject(function(state, StatisticsService, PlaygroundService, PreparationService, RecipeService) {
             //given
             spyOn(StatisticsService, 'processAggregation').and.returnValue();
             var ctrl = createController();
@@ -106,7 +106,7 @@ describe('ColumnProfile controller', function () {
             var column = {id: '0001'};
             var aggregation = {name: 'MAX'};
 
-            PlaygroundService.currentMetadata = {id: datasetId};
+            state.playground.dataset = {id: datasetId};
             PlaygroundService.selectedSampleSize = {value: sampleSize};
             PreparationService.currentPreparationId = preparationId;
             spyOn(RecipeService, 'getLastActiveStep').and.returnValue({id: stepId});
@@ -118,7 +118,7 @@ describe('ColumnProfile controller', function () {
             expect(StatisticsService.processAggregation).toHaveBeenCalledWith(datasetId, preparationId, stepId, sampleSize, column, aggregation);
         }));
 
-        it('should change aggregation chart with dataset id (no preparation)', inject(function(StatisticsService, PlaygroundService, PreparationService, RecipeService) {
+        it('should change aggregation chart with dataset id (no preparation)', inject(function(state, StatisticsService, PlaygroundService, PreparationService, RecipeService) {
             //given
             spyOn(StatisticsService, 'processAggregation').and.returnValue();
             var ctrl = createController();
@@ -128,7 +128,7 @@ describe('ColumnProfile controller', function () {
             var sampleSize = 500;
             var aggregation = {name: 'MAX'};
 
-            PlaygroundService.currentMetadata = {id: datasetId};
+            state.playground.dataset = {id: datasetId};
             PlaygroundService.selectedSampleSize = {value: sampleSize};
             PreparationService.currentPreparationId = null;
             spyOn(RecipeService, 'getLastActiveStep').and.callFake(function() {

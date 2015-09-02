@@ -6,9 +6,11 @@ describe('Playground Service', function () {
 
     beforeEach(module('data-prep.services.playground'));
 
-    beforeEach(inject(function ($injector, $q, DatasetService, FilterService, RecipeService, DatagridService,
+    beforeEach(inject(function ($injector, $q, StateService, DatasetService, FilterService, RecipeService, DatagridService,
                                 PreparationService, TransformationCacheService, SuggestionService,
                                 HistoryService, StatisticsService, PreviewService) {
+        spyOn(StateService, 'resetPlayground').and.returnValue();
+        spyOn(StateService, 'setCurrentDataset').and.returnValue();
         spyOn(DatasetService, 'getContent').and.returnValue($q.when(datasetContent));
         spyOn(FilterService, 'removeAllFilters').and.returnValue();
         spyOn(RecipeService, 'refresh').and.returnValue($q.when(true));
@@ -22,7 +24,7 @@ describe('Playground Service', function () {
         spyOn(StatisticsService, 'resetCharts').and.returnValue();
     }));
 
-    it('should set new name to a new to the preparation', inject(function($rootScope, PlaygroundService, PreparationService) {
+    it('should set new name to a new to the preparation', inject(function($rootScope, state, PlaygroundService, PreparationService) {
         //given
         var name = 'My preparation';
         var newName = 'My new preparation name';
@@ -30,7 +32,7 @@ describe('Playground Service', function () {
 
         PlaygroundService.preparationName = name;
         PlaygroundService.originalPreparationName = name;
-        PlaygroundService.currentMetadata = {id: '123d120394ab0c53'};
+        state.playground.dataset = {id: '123d120394ab0c53'};
 
         //when
         PlaygroundService.preparationName = newName;
@@ -72,9 +74,10 @@ describe('Playground Service', function () {
         var dataset = {id: 'e85afAa78556d5425bc2'};
         var assertNewPreparationInitialization, assertNewPreparationNotInitialized;
 
-        beforeEach(inject(function(PlaygroundService, DatasetService, FilterService, RecipeService, DatagridService, TransformationCacheService, SuggestionService, HistoryService, StatisticsService, PreviewService) {
+        beforeEach(inject(function(PlaygroundService, DatasetService, FilterService, RecipeService, DatagridService, TransformationCacheService, SuggestionService, HistoryService, StatisticsService, PreviewService, StateService) {
             assertNewPreparationInitialization = function() {
-                expect(PlaygroundService.currentMetadata).toEqual(dataset);
+                expect(StateService.resetPlayground).toHaveBeenCalled();
+                expect(StateService.setCurrentDataset).toHaveBeenCalledWith(dataset);
                 expect(FilterService.removeAllFilters).toHaveBeenCalled();
                 expect(RecipeService.refresh).toHaveBeenCalled();
                 expect(DatagridService.setDataset).toHaveBeenCalledWith(dataset, datasetContent);
@@ -85,6 +88,8 @@ describe('Playground Service', function () {
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
             };
             assertNewPreparationNotInitialized = function() {
+                expect(StateService.resetPlayground).not.toHaveBeenCalled();
+                expect(StateService.setCurrentDataset).not.toHaveBeenCalled();
                 expect(FilterService.removeAllFilters).not.toHaveBeenCalled();
                 expect(RecipeService.refresh).not.toHaveBeenCalled();
                 expect(DatagridService.setDataset).not.toHaveBeenCalled();
@@ -98,7 +103,6 @@ describe('Playground Service', function () {
 
         it('should init a new preparation and show playground when there is no loaded data yet', inject(function($rootScope, PlaygroundService, PreparationService) {
             //given
-            expect(PlaygroundService.currentMetadata).toBeFalsy();
             expect(PreparationService.currentPreparationId).toBeFalsy();
             expect(PreparationService.preparationName).toBeFalsy();
             expect(PreparationService.originalPreparationName).toBeFalsy();
@@ -111,13 +115,9 @@ describe('Playground Service', function () {
             assertNewPreparationInitialization();
         }));
 
-        it('should init a new preparation and show playground when there is already a created preparation yet', inject(function($rootScope, PlaygroundService, PreparationService) {
+        it('should init a new preparation and show playground when there is already a created preparation yet', inject(function($rootScope, state, PlaygroundService, PreparationService) {
             //given
-            PlaygroundService.currentMetadata = {id : 'e85afAa78556d5425bc2'};
             PreparationService.currentPreparationId = '12342305304543';
-
-            expect(PlaygroundService.currentMetadata).toBeTruthy();
-            expect(PreparationService.currentPreparationId).toBeTruthy();
 
             //when
             PlaygroundService.initPlayground(dataset);
@@ -127,11 +127,9 @@ describe('Playground Service', function () {
             assertNewPreparationInitialization();
         }));
 
-        it('should init a new preparation and show playground when the loaded dataset is not the wanted dataset', inject(function($rootScope, PlaygroundService, PreparationService) {
+        it('should init a new preparation and show playground when the loaded dataset is not the wanted dataset', inject(function($rootScope, state, PlaygroundService, PreparationService) {
             //given
-            PlaygroundService.currentMetadata = {id : 'ab45420c09bf98d9a90'};
-
-            expect(PlaygroundService.currentMetadata).toBeTruthy();
+            state.playground.dataset = {id : 'ab45420c09bf98d9a90'};
             expect(PreparationService.currentPreparationId).toBeFalsy();
 
             //when
@@ -156,10 +154,10 @@ describe('Playground Service', function () {
             expect(PlaygroundService.originalPreparationName).toBeFalsy();
         }));
 
-        it('should init playground when the wanted dataset is loaded and no preparation was created yet', inject(function($rootScope, PlaygroundService) {
+        it('should init playground when the wanted dataset is loaded and no preparation was created yet', inject(function($rootScope, state, PlaygroundService) {
             //given
             var dataset = {id: 'e85afAa78556d5425bc2'};
-            PlaygroundService.currentMetadata = dataset;
+            state.playground.dataset = dataset;
 
             expect(PlaygroundService.currentPreparationId).toBeFalsy();
 
@@ -168,7 +166,6 @@ describe('Playground Service', function () {
             $rootScope.$digest();
 
             //then
-            expect(PlaygroundService.currentMetadata).toBe(dataset);
             assertNewPreparationNotInitialized();
         }));
     });
@@ -179,13 +176,14 @@ describe('Playground Service', function () {
         };
         var assertDatasetLoadInitialized, assertDatasetLoadNotInitialized;
 
-        beforeEach(inject(function($rootScope, $q, PreparationService, RecipeService, PlaygroundService, FilterService, DatagridService, TransformationCacheService, SuggestionService, HistoryService, StatisticsService, PreviewService) {
+        beforeEach(inject(function($rootScope, $q, StateService, PreparationService, RecipeService, PlaygroundService, FilterService, DatagridService, TransformationCacheService, SuggestionService, HistoryService, StatisticsService, PreviewService) {
             spyOn($rootScope, '$emit').and.callThrough();
             spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: data}));
             spyOn(RecipeService, 'disableStepsAfter').and.callFake(function() {});
 
             assertDatasetLoadInitialized = function(metadata, data) {
-                expect(PlaygroundService.currentMetadata).toEqual(metadata);
+                expect(StateService.resetPlayground).toHaveBeenCalled();
+                expect(StateService.setCurrentDataset).toHaveBeenCalledWith(metadata);
                 expect(FilterService.removeAllFilters).toHaveBeenCalled();
                 expect(RecipeService.refresh).toHaveBeenCalled();
                 expect(DatagridService.setDataset).toHaveBeenCalledWith(metadata, data);
@@ -197,6 +195,8 @@ describe('Playground Service', function () {
             };
 
             assertDatasetLoadNotInitialized = function() {
+                expect(StateService.resetPlayground).not.toHaveBeenCalled();
+                expect(StateService.setCurrentDataset).not.toHaveBeenCalled();
                 expect(FilterService.removeAllFilters).not.toHaveBeenCalled();
                 expect(RecipeService.refresh).not.toHaveBeenCalled();
                 expect(DatagridService.setDataset).not.toHaveBeenCalled();
@@ -258,7 +258,7 @@ describe('Playground Service', function () {
         }));
 
         it('should not change playground if the preparation to load is already loaded',
-            inject(function($rootScope, PlaygroundService, PreparationService) {
+            inject(function($rootScope, state, PlaygroundService, PreparationService) {
             //given
             var preparation = {
                 id: '6845521254541',
@@ -267,26 +267,25 @@ describe('Playground Service', function () {
             var oldMetadata = {};
 
             PreparationService.currentPreparationId = '6845521254541';
-            PlaygroundService.currentMetadata = oldMetadata;
+            state.playground.dataset = oldMetadata;
 
             //when
             PlaygroundService.load(preparation);
             $rootScope.$apply();
 
             //then
-            expect(PlaygroundService.currentMetadata).toBe(oldMetadata);
             assertDatasetLoadNotInitialized();
             expect($rootScope.$emit).not.toHaveBeenCalled();
         }));
 
-        it('should load preparation content at a specific step', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatagridService, PreviewService) {
+        it('should load preparation content at a specific step', inject(function($rootScope, state, StateService, PlaygroundService, FilterService, RecipeService, DatagridService, PreviewService) {
             //given
             var step = {
                 column: {id: '0000'},
                 transformation: {stepId: 'a4353089cb0e039ac2'}
             };
             var metadata = {id: '1', name: 'my dataset'};
-            PlaygroundService.currentMetadata = metadata;
+            state.playground.dataset = metadata;
 
             //when
             PlaygroundService.loadStep(step, '0001');
@@ -294,7 +293,8 @@ describe('Playground Service', function () {
             $rootScope.$apply();
 
             //then
-            expect(PlaygroundService.currentMetadata).toBe(metadata);
+            expect(StateService.resetPlayground).not.toHaveBeenCalled();
+            expect(StateService.setCurrentDataset).not.toHaveBeenCalled();
             expect(FilterService.removeAllFilters).not.toHaveBeenCalled();
             expect(RecipeService.refresh).not.toHaveBeenCalled();
             expect(RecipeService.disableStepsAfter).toHaveBeenCalledWith(step);
@@ -356,7 +356,7 @@ describe('Playground Service', function () {
     describe('transformation steps', function() {
         var preparationHeadContent, metadata;
         var lastStepId = 'a151e543456413ef51';
-        beforeEach(inject(function($rootScope, $q, PlaygroundService, PreparationService, DatagridService, RecipeService, HistoryService) {
+        beforeEach(inject(function($rootScope, $q, state, PlaygroundService, PreparationService, DatagridService, RecipeService, HistoryService) {
             preparationHeadContent = {
                 'records': [{
                     'firstname': 'Grover',
@@ -382,7 +382,7 @@ describe('Playground Service', function () {
             };
 
             metadata = {id : 'e85afAa78556d5425bc2'};
-            PlaygroundService.currentMetadata = metadata;
+            state.playground.dataset = metadata;
 
             spyOn($rootScope, '$emit').and.callThrough();
             spyOn(PreparationService, 'appendStep').and.returnValue($q.when(true));
@@ -1107,30 +1107,30 @@ describe('Playground Service', function () {
 
     describe('dataset management when no preparation is done yet', function() {
 
-        it('should load dataset sample when sample size is changed', inject(function(PlaygroundService, PreparationService, DatasetService) {
+        it('should load dataset sample when sample size is changed', inject(function(state, PlaygroundService, PreparationService, DatasetService) {
             //given
             PreparationService.currentPreparationId = null;
-            PlaygroundService.currentMetadata = {id: '123d120394ab0c53'};
+            state.playground.dataset = {id: '123d120394ab0c53'};
 
             //when
             PlaygroundService.selectedSampleSize = {value:50};
             PlaygroundService.changeSampleSize();
 
             //then
-            expect(DatasetService.getContent).toHaveBeenCalledWith(PlaygroundService.currentMetadata.id, true, 50);
+            expect(DatasetService.getContent).toHaveBeenCalledWith('123d120394ab0c53', true, 50);
         }));
 
-        it('should load dataset sample when sample size is changed', inject(function(PlaygroundService, PreparationService, DatasetService) {
+        it('should load dataset sample when sample size is changed', inject(function(state, PlaygroundService, PreparationService, DatasetService) {
             //given
             PreparationService.currentPreparationId = null;
-            PlaygroundService.currentMetadata = {id: '123d120394ab0c53'};
+            state.playground.dataset = {id: '123d120394ab0c53'};
 
             //when
             PlaygroundService.selectedSampleSize = {value:'full'};
             PlaygroundService.changeSampleSize();
 
             //then
-            expect(DatasetService.getContent).toHaveBeenCalledWith(PlaygroundService.currentMetadata.id, true, 'full');
+            expect(DatasetService.getContent).toHaveBeenCalledWith('123d120394ab0c53', true, 'full');
         }));
     });
 
@@ -1142,9 +1142,9 @@ describe('Playground Service', function () {
             spyOn(DatagridService, 'updateData').and.returnValue();
         }));
 
-        it('should get preparation content', inject(function($rootScope, PlaygroundService, PreparationService, DatasetService, PreviewService) {
+        it('should get preparation content', inject(function($rootScope, state, PlaygroundService, PreparationService, DatasetService, PreviewService) {
             //given
-            PlaygroundService.currentMetadata = {id: 'gfkjqghflqsdgf'};
+            state.playground.dataset = {id: 'gfkjqghflqsdgf'};
             PreparationService.currentPreparationId = 1324;
             PlaygroundService.selectedSampleSize = {value:500};
 
@@ -1157,14 +1157,14 @@ describe('Playground Service', function () {
             $rootScope.$digest();
 
             //then
-            expect(DatasetService.updateColumn).toHaveBeenCalledWith(PlaygroundService.currentMetadata.id, columnId, {type: type, domain: domain});
+            expect(DatasetService.updateColumn).toHaveBeenCalledWith('gfkjqghflqsdgf', columnId, {type: type, domain: domain});
             expect(PreparationService.getContent).toHaveBeenCalledWith('head', PlaygroundService.selectedSampleSize.value);
             expect(PreviewService.reset).toHaveBeenCalledWith(false);
         }));
 
-        it('should get dataset content', inject(function($rootScope, PlaygroundService, PreparationService, DatasetService) {
+        it('should get dataset content', inject(function($rootScope, state, PlaygroundService, PreparationService, DatasetService) {
             //given
-            PlaygroundService.currentMetadata = {id: 'gfkjqghflqsdgf'};
+            state.playground.dataset = {id: 'gfkjqghflqsdgf'};
             PreparationService.currentPreparationId = null;
             PlaygroundService.selectedSampleSize = {value:500};
 
@@ -1177,8 +1177,8 @@ describe('Playground Service', function () {
             $rootScope.$digest();
 
             //then
-            expect(DatasetService.updateColumn).toHaveBeenCalledWith(PlaygroundService.currentMetadata.id, columnId, {type: type, domain: domain});
-            expect(DatasetService.getContent).toHaveBeenCalledWith(PlaygroundService.currentMetadata.id, false, PlaygroundService.selectedSampleSize.value);
+            expect(DatasetService.updateColumn).toHaveBeenCalledWith('gfkjqghflqsdgf', columnId, {type: type, domain: domain});
+            expect(DatasetService.getContent).toHaveBeenCalledWith('gfkjqghflqsdgf', false, PlaygroundService.selectedSampleSize.value);
         }));
     });
 });

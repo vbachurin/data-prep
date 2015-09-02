@@ -6,6 +6,7 @@
         'talend.widget',
         'data-prep.services.dataset',
         'data-prep.services.statistics',
-        'data-prep.services.playground'
+        'data-prep.services.playground',
+        'data-prep.services.state'
     ]);
 })();
