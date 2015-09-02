@@ -30,6 +30,8 @@
             controllerAs: 'ctrl',
             link: function (scope, element, attributes) {
 
+              var body = angular.element('body').eq(0);
+
               Date.parseDate = function(input, format ){
                 return moment(input,format).toDate();
               };
@@ -56,7 +58,7 @@
                * @description [PRIVATE] hide calendar widget
                */
               var hideCalendar = function(){
-                dateInput.datetimepicker('hide4');
+                dateInput.datetimepicker('hide');
               };
 
               /**
@@ -78,6 +80,17 @@
                    }
                 });
               };
+
+
+              /**
+               * on element destroy, we destroy the scope which unregister body mousedown
+               */
+              element.on('$destroy', function () {
+                scope.$destroy();
+              });
+              scope.$on('$destroy', function () {
+                dateInput.off('mousedown');
+              });
 
               attachKeyMap();
 

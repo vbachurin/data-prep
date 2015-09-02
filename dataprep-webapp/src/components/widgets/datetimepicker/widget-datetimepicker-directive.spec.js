@@ -6,9 +6,10 @@ describe('Datetimepicker directive', function () {
     beforeEach(module('talend.widget'));
     beforeEach(module('htmlTemplates'));
 
-    var clickCalendarInput = function (elm) {
+    var showCalendarInput = function (elm) {
         elm = elm || element;
-        elm.find('.datetimepicker').eq(0).click();
+        var picker = elm.find('.datetimepicker').eq(0);
+        picker.mousedown();
     };
 
     beforeEach(function () {
@@ -36,11 +37,13 @@ describe('Datetimepicker directive', function () {
             };
 
 
-            html = '<talend-datetime-picker/>';//+
-                //'format="DD/MM/YYYY hh:mm:ss" ' +
-                //'formatTime="hh:mm:ss" ' +
-                //'formatDate="DD/MM/YYY">' +
-                //'</talend-datetime-picker>';
+            html = '<html><body><div>' +
+                '<talend-datetime-picker ' +
+                ' ng-model="param.value" ' +
+                ' format="DD/MM/YYYY hh:mm:ss" ' +
+                ' formatTime="hh:mm:ss" ' +
+                ' formatDate="DD/MM/YYY" />' +
+                '</div></body></html>';
 
             element = $compile(html)(scope);
             scope.$digest();
@@ -49,14 +52,15 @@ describe('Datetimepicker directive', function () {
 
         it('should show datetimepicker on click', function () {
 
-            console.log('html:"'+element.html()+'---');
             var picker = element.find('.datetimepicker');
             expect(picker.length).toBe(1);
 
-            //when
-            clickCalendarInput();
-            jasmine.clock().tick(250);
+            console.log('html:"'+element.html());
 
+            //when
+            showCalendarInput();
+
+            jasmine.clock().tick(500);
             //then
             expect(picker.hasClass('xdsoft_datetimepicker')).toBe(true);
         });
