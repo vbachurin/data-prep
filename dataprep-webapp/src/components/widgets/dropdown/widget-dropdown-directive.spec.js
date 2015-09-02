@@ -140,14 +140,12 @@ describe('Dropdown directive', function () {
             //given
             expect($._data(angular.element('body')[0], 'events').mousedown.length).toBe(1);
 
-            console.log('data:'+$._data(angular.element('body')[0], 'events').mousedown[0]);
-
             //when
             element.remove();
 
             var asset = $._data(angular.element('body')[0], 'events');
             //then
-            expect(asset.mousedown.length).toBe(0);
+            expect($._data(angular.element('body')[0], 'events')).not.toBeDefined();
         });
 
         it('should stop mousedown propagation on dropdown-menu mousedown', function () {
