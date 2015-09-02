@@ -38,15 +38,6 @@
             preparationName: '',
             /**
              * @ngdoc property
-             * @name preparationNameEditionMode
-             * @propertyOf data-prep.services.playground.service:PlaygroundService
-             * @description Flag that the name edition mode.
-             * The edition mode is active when user open an existing preparation, and inactive for a new preparation
-             */
-            preparationNameEditionMode: true,
-
-            /**
-             * @ngdoc property
              * @name selectedSampleSize
              * @methodOf data-prep.services.playground.service:PlaygroundService
              * @description the selected sample size.
@@ -120,7 +111,7 @@
                         setName('');
                         reset(dataset, data);
                         StateService.hideRecipe();
-                        service.preparationNameEditionMode = true;
+                        StateService.setNameEditionMode(true);
                     });
             }
             else {
@@ -221,7 +212,7 @@
                         setName(preparation.name);
                         reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response.data);
                         StateService.showRecipe();
-                        service.preparationNameEditionMode = false;
+                        StateService.setNameEditionMode(false);
                     })
                     .finally(function() {
                         $rootScope.$emit('talend.loading.stop');
