@@ -17,7 +17,8 @@ describe('Datagrid style service', function () {
             {id: '0001', field: 'col1', tdpColMetadata: {id: '0001', name: 'col1', type: 'integer'}},
             {id: '0002', field: 'col2', tdpColMetadata: {id: '0002', name: 'col2', type: 'string'}},
             {id: '0003', field: 'col3', tdpColMetadata: {id: '0003', name: 'col3', type: 'string'}},
-            {id: '0004', field: 'col4', tdpColMetadata: {id: '0004', name: 'col4', type: 'string'}}
+            {id: '0004', field: 'col4', tdpColMetadata: {id: '0004', name: 'col4', type: 'string'}},
+            {id: 'tdpId', field: 'tdpId', tdpColMetadata: {id: 'tdpId', name: '#'}}
         ];
 
         /*global SlickGridMock:false */
@@ -100,6 +101,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
         it('should invalidate grid', inject(function (DatagridStyleService) {
@@ -151,6 +153,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
         it('should invalidate grid', inject(function (DatagridStyleService) {
@@ -223,6 +226,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
         it('should invalidate grid', inject(function (DatagridStyleService) {
@@ -297,6 +301,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
         it('should NOT set "selected" class on active cell column when this is a preview', inject(function (DatagridStyleService) {
@@ -317,6 +322,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
         it('should NOT set "selected" class without active cell', inject(function (DatagridStyleService) {
@@ -337,6 +343,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
         it('should set "number" class on number column on preview mode', inject(function (DatagridStyleService) {
@@ -355,6 +362,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
         it('should set "number" class on number column on NON preview mode with active cell', inject(function (DatagridStyleService) {
@@ -375,6 +383,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
         it('should apply "selected" class to last selected column before preview', inject(function (DatagridStyleService) {
@@ -399,6 +408,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
     });
 

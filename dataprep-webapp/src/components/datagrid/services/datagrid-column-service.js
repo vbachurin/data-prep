@@ -90,15 +90,15 @@
 
         function createColumns(columnsMetadata, preview) {
 
-            function formatterIndex(row, cell, value, columnDef, dataContext) {
-                return '<div style="text-align: right">' + value + '</div>';
+            function formatterIndex(row, cell, value) {
+                return '<div style="text-align: right; font-weight: bold">' + value + '</div>';
             }
 
             //create new SlickGrid columns
             var colIndexArray =[] ;
 
             //Add index column
-            colIndexArray.push({id: "tdpId", name: "", field: "tdpId", formatter: formatterIndex,  resizable : false, selectable: false, tdpColMetadata: {type: "integer", name: "#"}});
+            colIndexArray.push({id: 'tdpId', name: '', field: 'tdpId', formatter: formatterIndex,  resizable : false, selectable: false, tdpColMetadata: {type: 'integer', name: '#'}});
 
             return _.union(colIndexArray, _.map(columnsMetadata, function (col) {
                 return createColumnDefinition(col, preview);

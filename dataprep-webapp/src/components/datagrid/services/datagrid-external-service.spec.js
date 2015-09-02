@@ -8,7 +8,8 @@ describe('Datagrid external service', function () {
         {id: '0001', field: 'col1', tdpColMetadata: {id: '0001', name: 'col1'}},
         {id: '0002', field: 'col2', tdpColMetadata: {id: '0002', name: 'col2'}},
         {id: '0003', field: 'col3', tdpColMetadata: {id: '0003', name: 'col3'}},
-        {id: '0004', field: 'col4', tdpColMetadata: {id: '0004', name: 'col4'}}
+        {id: '0004', field: 'col4', tdpColMetadata: {id: '0004', name: 'col4'}},
+        {id: 'tdpId', field: 'tdpId', tdpColMetadata: {id: 'tdpId', name: 'tdpId'}}
     ];
 
     beforeEach(module('data-prep.datagrid'));
@@ -319,6 +320,24 @@ describe('Datagrid external service', function () {
             expect(SuggestionService.setColumn.calls.count()).toBe(1);
             expect(SuggestionService.selectTab.calls.count()).toBe(2);
         }));
+
+        it('should NOT update suggestions and stats when column is index column', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
+            //given
+            var headerClickArgs = {
+                column: {id: 'tdpId'}
+            };
+            spyOn(StatisticsService, 'resetCharts').and.returnValue();
+            spyOn(SuggestionService, 'reset').and.returnValue();
+
+            //when
+            DatagridExternalService.updateSuggestionPanel(headerClickArgs.column, 'Cell');
+            $timeout.flush();
+
+            //then
+            expect(StatisticsService.resetCharts).toHaveBeenCalled();
+            expect(SuggestionService.reset).toHaveBeenCalled();
+        }));
+
     });
 
     describe('on scroll event', function () {
