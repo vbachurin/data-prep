@@ -48,11 +48,11 @@ public class FileSystemDataSetMetadataRepository implements DataSetMetadataRepos
      */
     @Override
     public void add(DataSetMetadata metadata) {
-        File file = getFile(metadata.getId());
-        try {
-            final ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(file, false));
+
+        final File file = getFile(metadata.getId());
+
+        try (ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(file))) {
             output.writeObject(metadata);
-            output.close();
         } catch (IOException e) {
             LOG.error("Error saving {}", metadata, e);
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_METADATA, e,
@@ -77,11 +77,8 @@ public class FileSystemDataSetMetadataRepository implements DataSetMetadataRepos
             return null;
         }
 
-        try {
-            final ObjectInputStream input = new ObjectInputStream(new FileInputStream(file));
-            DataSetMetadata result = (DataSetMetadata) input.readObject();
-            input.close();
-            return result;
+        try (ObjectInputStream input = new ObjectInputStream(new FileInputStream(file))) {
+            return (DataSetMetadata) input.readObject();
         } catch (ClassNotFoundException | IOException e) {
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_METADATA, TDPExceptionContext.build().put("id", id));
         }
@@ -117,18 +114,14 @@ public class FileSystemDataSetMetadataRepository implements DataSetMetadataRepos
     public Iterable<DataSetMetadata> list() {
         File folder = getRootFolder();
         final Stream<DataSetMetadata> stream = Arrays.stream(folder.listFiles()).map(f -> {
-            try {
-                if (f.canRead()) { // in case file is already in use by another thread
-                    final ObjectInputStream input = new ObjectInputStream(new FileInputStream(f));
-                    DataSetMetadata result = (DataSetMetadata) input.readObject();
-                    input.close();
-                    return result;
-                }
-                return null;
+
+            try (ObjectInputStream input = new ObjectInputStream(new FileInputStream(f))) {
+                return (DataSetMetadata) input.readObject();
             } catch (ClassNotFoundException | IOException e) {
                 LOG.error("error reading metadata file {}", f.getAbsolutePath(), e);
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_METADATA, e);
             }
+
         });
         return stream::iterator;
     }

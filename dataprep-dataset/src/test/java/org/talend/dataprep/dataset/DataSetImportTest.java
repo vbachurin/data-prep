@@ -170,8 +170,8 @@ public class DataSetImportTest {
         Thread creationThread = new Thread(creation);
         creationThread.start();
         // Wait for creation of data set object
-        while (!dataSetMetadataRepository.list().iterator().hasNext()) {
-            TimeUnit.MILLISECONDS.sleep(20);
+        while (dataSetMetadataRepository.size() == 0) {
+            TimeUnit.MILLISECONDS.sleep(50);
         }
         // Find data set being imported...
         final Iterable<DataSetMetadata> list = dataSetMetadataRepository.list();
