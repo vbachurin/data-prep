@@ -5,8 +5,12 @@ import javax.annotation.Nullable;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 
+/**
+ * Interface for all DatasetMetadata repository implementations.
+ */
 public interface DataSetMetadataRepository {
 
+    /** Prefix for the shared lock when working on a dataset. */
     String DATASET_LOCK_PREFIX = "dataset#"; //$NON-NLS-1$
 
     /**

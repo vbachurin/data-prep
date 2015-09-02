@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnProperty("dataset.spark.master")
+@ConditionalOnProperty(value = "dataset.spark.master")
 public class Spark {
 
     @Value("${dataset.spark.master}")

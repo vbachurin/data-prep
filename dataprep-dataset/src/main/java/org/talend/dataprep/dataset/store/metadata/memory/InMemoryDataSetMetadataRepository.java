@@ -21,22 +21,34 @@ import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 
 import com.google.common.base.Defaults;
 
+/**
+ * In memory implementation of the DataSetMetadataRepository.
+ */
 @Component
 @ConditionalOnProperty(name = "dataset.metadata.store", havingValue = "in-memory", matchIfMissing = true)
 public class InMemoryDataSetMetadataRepository implements DataSetMetadataRepository {
 
+    /** This class' logger. */
     private static final Logger LOG = LoggerFactory.getLogger(InMemoryDataSetMetadataRepository.class);
 
+    /** Where the DatasetMetadata is actually stored. */
     private final Map<String, DataSetMetadata> store = new HashMap<>();
 
+    /** Spring application context. */
     @Autowired
     private ApplicationContext appcontext;
 
+    /**
+     * @see DataSetMetadataRepository#list()
+     */
     @Override
     public Iterable<DataSetMetadata> list() {
         return store.values();
     }
 
+    /**
+     * @see DataSetMetadataRepository#add(DataSetMetadata)
+     */
     @Override
     public synchronized void add(DataSetMetadata dataSetMetadata) {
         store.put(dataSetMetadata.getId(), dataSetMetadata);
@@ -44,7 +56,7 @@ public class InMemoryDataSetMetadataRepository implements DataSetMetadataReposit
 
     /**
      * this nullifies and resets transient values that are supposed not to be stored
-     * 
+     *
      * @param zeObject The object where non transient fields will be nullified.
      */
     void resetTransientValues(@Nullable Object zeObject) {
@@ -65,6 +77,9 @@ public class InMemoryDataSetMetadataRepository implements DataSetMetadataReposit
         }// else null so do nothing
     }
 
+    /**
+     * @see DataSetMetadataRepository#clear()
+     */
     @Override
     public void clear() {
         // Remove all data set (but use lock for remaining asynchronous processes).
@@ -80,11 +95,17 @@ public class InMemoryDataSetMetadataRepository implements DataSetMetadataReposit
         }
     }
 
+    /**
+     * @see DataSetMetadataRepository#size()
+     */
     @Override
     public int size() {
         return store.size();
     }
 
+    /**
+     * @see DataSetMetadataRepository#get(String)
+     */
     @Override
     public DataSetMetadata get(String id) {
         DataSetMetadata dataSetMetadata = store.get(id);
@@ -95,11 +116,17 @@ public class InMemoryDataSetMetadataRepository implements DataSetMetadataReposit
         return dataSetMetadata.clone();
     }
 
+    /**
+     * @see DataSetMetadataRepository#remove(String)
+     */
     @Override
     public void remove(String id) {
         store.remove(id);
     }
 
+    /**
+     * @see DataSetMetadataRepository#createDatasetMetadataLock(String)
+     */
     @Override
     public DistributedLock createDatasetMetadataLock(String id) {
         return appcontext.getBean(DistributedLock.class, DATASET_LOCK_PREFIX + id);

@@ -17,4 +17,19 @@ public class LocalStoreLocation implements DataSetLocation {
     public String getLocationType() {
         return NAME;
     }
+
+    /**
+     * @see Object#equals(Object)
+     */
+    @Override
+    public boolean equals(Object o) {
+
+        // since there's no field to compare, the comparison is only performed on the class
+
+        if (this == o) {
+            return true;
+        }
+        return !(o == null || getClass() != o.getClass());
+    }
+
 }

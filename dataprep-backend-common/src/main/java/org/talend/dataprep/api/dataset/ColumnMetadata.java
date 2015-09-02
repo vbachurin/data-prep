@@ -185,8 +185,7 @@ public class ColumnMetadata implements Serializable {
             ", name='" + name + '\'' +
             ", typeName='" + typeName + '\'' +
  ", quality="
-                + quality +
-            ", headerSize=" + headerSize +
+                + quality + '\'' + ", headerSize=" + headerSize + '\'' +
             ", diffFlagValue='" + diffFlagValue + '\'' +
             ", statistics='" + statistics + '\'' +
             ", domain='" + domain + '\'' +

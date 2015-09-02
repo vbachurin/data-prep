@@ -66,7 +66,11 @@ public enum DataSetErrorCodes implements ErrorCode {
      *
      * @see org.talend.dataprep.dataset.service.DataSetService#list(String, String)
      */
-    ILLEGAL_SORT_FOR_LIST(400, "sort");
+    ILLEGAL_SORT_FOR_LIST(400, "sort"),
+                                                    /** Error returned when the dataset metadata could not be saved. */
+    UNABLE_TO_STORE_DATASET_METADATA(500, "id"),
+                                                    /** Error returned when the dataset metadata could not be read. */
+    UNABLE_TO_READ_DATASET_METADATA(500, "id");
 
     /** The http status to use. */
     private int httpStatus;

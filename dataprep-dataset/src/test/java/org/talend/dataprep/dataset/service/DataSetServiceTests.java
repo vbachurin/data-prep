@@ -30,6 +30,7 @@ import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
+import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
@@ -878,10 +879,21 @@ public class DataSetServiceTests extends DataSetBaseTest {
                 .post("/datasets") //
                 .asString();
 
-        final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        final ColumnMetadata column = dataSetMetadata.getRow().getById("0002");
-        final SemanticDomain jsoDomain = new SemanticDomain("JSO", "JSO label", 1.0F);
-        column.getSemanticDomains().add(jsoDomain);
+        final ColumnMetadata column;
+
+        // update the metadata in the repository (lock mechanism is needed otherwise semantic domain will be erased by
+        // analysis)
+        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        lock.lock();
+        try {
+            final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+            column = dataSetMetadata.getRow().getById("0002");
+            final SemanticDomain jsoDomain = new SemanticDomain("JSO", "JSO label", 1.0F);
+            column.getSemanticDomains().add(jsoDomain);
+            dataSetMetadataRepository.add(dataSetMetadata);
+        } finally {
+            lock.unlock();
+        }
 
         assertThat(column.getDomain(), is("First Name"));
         assertThat(column.getDomainLabel(), is("First Name"));
