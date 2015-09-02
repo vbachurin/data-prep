@@ -11,6 +11,9 @@
             showPlayground: PlaygroundStateService.show,
             hidePlayground: PlaygroundStateService.hide,
             setGridSelection: PlaygroundStateService.setGridSelection,
+            setCurrentDataset: PlaygroundStateService.setDataset,
+            setCurrentPreparation: PlaygroundStateService.setPreparation,
+            resetPlayground: PlaygroundStateService.reset,
 
             //playground - recipe
             showRecipe: PlaygroundStateService.showRecipe,

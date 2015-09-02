@@ -24,7 +24,7 @@ describe('Dataset xls preview controller', function () {
         spyOn(DatasetSheetPreviewService, 'setDatasetSheet').and.returnValue($q.when(true));
         spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.when(true));
         spyOn(DatasetService, 'getContent').and.returnValue($q.when(content));
-        spyOn(PlaygroundService, 'initPlayground').and.callThrough();
+        spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when());
         spyOn(StateService, 'showPlayground').and.returnValue();
     }));
 
@@ -130,23 +130,20 @@ describe('Dataset xls preview controller', function () {
         expect(DatasetSheetPreviewService.setDatasetSheet).toHaveBeenCalledWith('my sheet');
     }));
 
-    it('should refresh datasets list on selected sheet set', inject(function ($rootScope, $timeout, DatasetService, DatasetSheetPreviewService) {
+    it('should refresh datasets list on selected sheet set', inject(function ($timeout, DatasetService) {
         //given
         var ctrl = createController();
         $timeout.flush();
-        ctrl.selectedSheetName = 'my sheet';
-        DatasetSheetPreviewService.currentMetadata = {id : 'mqfdg684qfg6q84g8q'};
 
         //when
         ctrl.setDatasetSheet();
-        $rootScope.$digest();
+        scope.$digest();
 
         //then
         expect(DatasetService.refreshDatasets).toHaveBeenCalled();
-        expect(DatasetService.getContent).toHaveBeenCalledWith('mqfdg684qfg6q84g8q', false, undefined);
     }));
 
-    it('should open dataset on selected sheet set', inject(function ($rootScope, $timeout, DatasetSheetPreviewService, PlaygroundService, StateService) {
+    it('should open dataset on selected sheet set', inject(function ($timeout, DatasetSheetPreviewService, PlaygroundService, StateService) {
         //given
         var ctrl = createController();
         $timeout.flush();
@@ -155,27 +152,24 @@ describe('Dataset xls preview controller', function () {
 
         //when
         ctrl.setDatasetSheet();
-        $rootScope.$digest();
+        scope.$digest();
 
         //then
         expect(PlaygroundService.initPlayground).toHaveBeenCalledWith(DatasetSheetPreviewService.currentMetadata, undefined);
         expect(StateService.showPlayground).toHaveBeenCalled();
     }));
 
-    it('should hide modal on selected sheet set', inject(function ($rootScope, $timeout, DatasetService, DatasetSheetPreviewService) {
+    it('should hide modal on selected sheet set', inject(function ($timeout) {
         //given
         var ctrl = createController();
         $timeout.flush();
-        ctrl.selectedSheetName = 'my sheet';
         ctrl.state = true;
-        DatasetSheetPreviewService.currentMetadata = {id : 'mqfdg684qfg6q84g8q'};
 
         //when
         ctrl.setDatasetSheet();
-        $rootScope.$digest();
+        scope.$digest();
 
         //then
         expect(ctrl.state).toBe(false);
-        expect(DatasetService.getContent).toHaveBeenCalledWith('mqfdg684qfg6q84g8q', false, undefined);
     }));
 });
