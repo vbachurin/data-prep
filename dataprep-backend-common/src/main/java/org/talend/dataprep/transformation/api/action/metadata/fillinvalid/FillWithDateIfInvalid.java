@@ -91,7 +91,15 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
         // register the new pattern in column stats, to be able to process date action later
         final Statistics statistics = column.getStatistics();
         final Stream<PatternFrequency> stream = statistics.getPatternFrequencies().stream();
-        final Optional<PatternFrequency> mostUsed = stream.sorted((pf1, pf2) -> pf1.getOccurrences() - pf2.getOccurrences()).findFirst();
+        final Optional<PatternFrequency> mostUsed = stream.sorted((pf1, pf2) -> {
+            if (pf1.getOccurrences() - pf2.getOccurrences() == 0) {
+                return 0;
+            } else if(pf1.getOccurrences() - pf2.getOccurrences() > 0) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }).findFirst();
         return mostUsed.get().getPattern();
     }
 

@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.dataset.statistics;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -39,19 +40,19 @@ public class Statistics {
     long distinctCount = 0;
 
     @JsonProperty("frequencyTable")
-    List<DataFrequency> dataFrequencies;
+    List<DataFrequency> dataFrequencies = new LinkedList<>();
 
     @JsonProperty("patternFrequencyTable")
-    List<PatternFrequency> patternFrequencies;
+    List<PatternFrequency> patternFrequencies = new LinkedList<>();
 
     @JsonProperty("quantiles")
-    Quantiles quantiles;
+    Quantiles quantiles = new Quantiles();
 
     @JsonProperty("histogram")
-    Histogram histogram;
+    Histogram histogram = new Histogram();
 
     @JsonProperty("textLengthSummary")
-    TextLengthSummary textLengthSummary;
+    TextLengthSummary textLengthSummary = new TextLengthSummary();
 
     public long getCount() {
         return count;

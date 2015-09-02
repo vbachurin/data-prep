@@ -109,7 +109,9 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
         analyzer.setStoreInvalidValues(true);
         records.map(row -> {
             final Map<String, Object> rowValues = row.values();
-            final List<String> strings = stream(rowValues.values().spliterator(), false) //
+            final List<String> strings = stream(rowValues.entrySet().spliterator(), false) //
+                    .filter(e -> !DataSetRow.TDP_ID.equals(e.getKey())) // Don't take TDP_ID column
+                    .map(Map.Entry::getValue) //
                     .map(String::valueOf) //
                     .collect(Collectors.<String> toList());
             return strings.toArray(new String[strings.size()]);

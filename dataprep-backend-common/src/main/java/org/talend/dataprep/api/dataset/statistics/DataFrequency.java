@@ -9,4 +9,9 @@ public class DataFrequency {
 
     @JsonProperty("occurrences")
     long occurrences;
+
+    public DataFrequency(String data, long occurrences) {
+        this.data = data;
+        this.occurrences = occurrences;
+    }
 }

@@ -18,7 +18,6 @@ import javax.jms.Message;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.spark.SparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +75,10 @@ public class DataSetService {
     @Autowired
     private QualityAnalysis qualityAnalyzer;
 
+    /** Statistics analyzer needed to compute statistics on dataset sample. */
+    @Autowired
+    private StatisticsAnalysis statisticsAnalysis;
+
     /** JMS template used to call aysnchronous analysers. */
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -103,10 +106,6 @@ public class DataSetService {
     /** DataPrep ready to use jackson object mapper. */
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
-
-    /** Spark context needed for dataset statistics computing in case of samples. */
-    @Autowired
-    private SparkContext sparkContext;
 
     /**
      * Sort the synchronous analyzers.
@@ -752,18 +751,12 @@ public class DataSetService {
      * @param sample the sample size
      */
     private void computeSampleStatistics(DataSetMetadata dataSetMetadata, long sample) {
-        try {
-            // compute statistics on a copy
-            DataSet copy = new DataSet();
-            copy.setMetadata(dataSetMetadata);
-            copy.setColumns(dataSetMetadata.getRow().getColumns());
-            copy.setRecords(contentStore.sampleWithoutId(dataSetMetadata, sample));
-
-            // TODO François, is there a better way to compute quality & statistics like Analyzers.with(...) ?
-            qualityAnalyzer.computeQuality(copy.getMetadata(), contentStore.sampleWithoutId(dataSetMetadata, sample));
-            DataSetAnalysis.computeStatistics(copy, sparkContext, builder);
-        } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
-        }
+        // compute statistics on a copy
+        DataSet copy = new DataSet();
+        copy.setMetadata(dataSetMetadata);
+        copy.setColumns(dataSetMetadata.getRow().getColumns());
+        // Compute quality and statistics on sample only
+        qualityAnalyzer.computeQuality(copy.getMetadata(), contentStore.sample(dataSetMetadata, sample));
+        statisticsAnalysis.computeStatistics(copy.getMetadata(), contentStore.sample(dataSetMetadata, sample));
     }
 }

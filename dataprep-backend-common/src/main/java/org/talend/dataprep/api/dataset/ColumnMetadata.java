@@ -273,7 +273,7 @@ public class ColumnMetadata implements Serializable {
         private String diffFlagValue = null;
 
         /** The column statistics. */
-        private Statistics statistics = null;
+        private Statistics statistics = new Statistics();
 
         /** The invalid values. */
         private Set<String> invalidValues = new HashSet<>();

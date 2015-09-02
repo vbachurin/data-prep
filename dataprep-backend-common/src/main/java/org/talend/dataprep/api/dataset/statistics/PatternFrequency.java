@@ -8,9 +8,9 @@ public class PatternFrequency {
     String pattern;
 
     @JsonProperty("occurrences")
-    int occurrences;
+    long occurrences;
 
-    public PatternFrequency(String pattern, int occurrences) {
+    public PatternFrequency(String pattern, long occurrences) {
         this.pattern = pattern;
         this.occurrences = occurrences;
     }
@@ -23,11 +23,11 @@ public class PatternFrequency {
         this.pattern = pattern;
     }
 
-    public int getOccurrences() {
+    public long getOccurrences() {
         return occurrences;
     }
 
-    public void setOccurrences(int occurrences) {
+    public void setOccurrences(long occurrences) {
         this.occurrences = occurrences;
     }
 }
