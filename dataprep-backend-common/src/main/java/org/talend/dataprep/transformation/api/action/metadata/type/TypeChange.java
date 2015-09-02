@@ -71,6 +71,7 @@ public class TypeChange extends AbstractActionMetadata implements ColumnAction {
 
         if (StringUtils.isNotEmpty(newType)) {
             columnMetadata.setType(newType);
+            columnMetadata.setTypeForced( true );
             // erase domain
             columnMetadata.setDomain("");
             columnMetadata.setDomainLabel("");

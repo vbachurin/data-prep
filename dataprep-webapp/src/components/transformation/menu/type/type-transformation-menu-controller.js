@@ -44,7 +44,13 @@
                 .catch(setColumnDomainAndType.bind(vm, originalDomain));
             */
             PlaygroundService.appendStep('domain_change',
-                {'scope':'column','column_id': vm.column.id,'NEW_DOMAIN_ID':domain.id,'NEW_DOMAIN_LABEL': domain.label,'NEW_DOMAIN_FREQUENCY': domain.frequency})
+                {
+                    'scope':'column',
+                    'column_id': vm.column.id,
+                    'NEW_DOMAIN_ID':domain.id,
+                    'NEW_DOMAIN_LABEL': domain.label,
+                    'NEW_DOMAIN_FREQUENCY': domain.frequency
+                })
                 .catch(setColumnDomainAndType.bind(vm, originalDomain));
         };
 
@@ -64,7 +70,12 @@
             PlaygroundService.updateColumn(vm.column.id, type.id, '')
                 .catch(setColumnDomainAndType.bind(vm, originalDomain, originalType));
                 */
-            PlaygroundService.appendStep('type_change', {'scope':'column','column_id': vm.column.id,'NEW_TYPE':type.id})
+            PlaygroundService.appendStep('type_change',
+                {
+                    'scope':'column',
+                    'column_id': vm.column.id,
+                    'NEW_TYPE':type.id
+                })
                 .catch(setColumnDomainAndType.bind(vm, originalDomain, originalType));
         };
 

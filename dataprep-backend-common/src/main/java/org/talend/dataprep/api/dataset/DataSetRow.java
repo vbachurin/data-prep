@@ -32,7 +32,7 @@ public class DataSetRow implements Cloneable, Serializable {
     private Long tdpId;
 
     /**
-     * Default empty constructor.
+     * Constructor with values.
      */
     public DataSetRow(RowMetadata rowMetadata) {
         this.rowMetadata = rowMetadata;

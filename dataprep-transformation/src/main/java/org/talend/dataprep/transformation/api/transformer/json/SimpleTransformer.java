@@ -16,7 +16,13 @@ import org.apache.spark.SparkContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.*;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.api.dataset.DataSetAnalysis;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.Quality;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ActionParser;
@@ -84,7 +90,8 @@ class SimpleTransformer implements Transformer {
                     try {
                         analyzer = (Analyzer<Analyzers.Result>) context.get("analyzer");
                         if (analyzer == null) {
-                            // Configure quality & semantic analysis (if column metadata information is present in stream).
+                            // Configure quality & semantic analysis (if column metadata information is present in
+                            // stream).
                             final DataType.Type[] types = TypeUtils.convert(context.getTransformedRowMetadata().getColumns());
                             final URI ddPath = this.getClass().getResource("/luceneIdx/dictionary").toURI(); //$NON-NLS-1$
                             final URI kwPath = this.getClass().getResource("/luceneIdx/keyword").toURI(); //$NON-NLS-1$
@@ -163,9 +170,12 @@ class SimpleTransformer implements Transformer {
                     quality.setInvalid((int) column.getInvalidCount());
                     quality.setValid((int) column.getValidCount());
                     quality.setInvalidValues(column.getInvalidValues());
-                    // Semantic types
-                    final SemanticType semanticType = result.get(SemanticType.class);
-                    metadata.setDomain(TypeUtils.getDomainLabel(semanticType));
+                    // we do not change again the domain as it has been maybe override by the user
+                    if (!(metadata.isDomainForced() || metadata.isTypeForced())) {
+                        // Semantic types
+                        final SemanticType semanticType = result.get(SemanticType.class);
+                        metadata.setDomain(TypeUtils.getDomainLabel(semanticType));
+                    }
                 }
                 // statistics analysis must be performed after quality, otherwise it will not be accurate
                 DataSetAnalysis.computeStatistics(statisticsDataSet, sparkContext, builder);

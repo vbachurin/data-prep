@@ -80,6 +80,7 @@ public class DomainChange extends AbstractActionMetadata implements ColumnAction
             columnMetadata.setDomain(newDomainId);
             columnMetadata.setDomainLabel(newDomainLabel);
             columnMetadata.setDomainFrequency(NumberUtils.toFloat(newDomainFrequency, 0));
+            columnMetadata.setDomainForced( true );
         }
 
     }
