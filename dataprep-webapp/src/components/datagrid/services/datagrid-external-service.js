@@ -57,6 +57,11 @@
                         SuggestionService.setColumn(lastSelectedColumn);
                     }
                 }, 200);
+            } else {
+                $timeout(function() {
+                    SuggestionService.reset();
+                    StatisticsService.resetCharts();
+                });
             }
         }
 
