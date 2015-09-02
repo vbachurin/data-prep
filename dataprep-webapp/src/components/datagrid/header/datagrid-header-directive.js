@@ -34,8 +34,6 @@
                 post: function (scope, iElement, iAttrs, ctrl) {
                     var gridHeader, gridHeaderTitle, gridHeaderTitleInput;
 
-
-                    console.log(ctrl.column);
                     /**
                      * @ngdoc method
                      * @name setEditionMode
