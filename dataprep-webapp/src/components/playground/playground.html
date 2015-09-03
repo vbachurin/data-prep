@@ -5,7 +5,7 @@
               on-close="playgroundCtrl.close()">
     <div class="modal-header">
         <ul class="left-header">
-            <li translate="FILE_DETAILS" translate-value-name="{{playgroundCtrl.metadata.name}}" translate-value-records="{{playgroundCtrl.metadata.records}}"></li>
+            <li translate="FILE_DETAILS" translate-value-name="{{playgroundCtrl.state.playground.dataset.name}}" translate-value-records="{{playgroundCtrl.state.playground.dataset.records}}"></li>
             <li>
                 <span>Sample size</span>
                 <select ng-model="playgroundCtrl.selectedSampleSize"
@@ -62,7 +62,7 @@
             </div>
 
             <!-- Recipe -->
-            <recipe metadata="playgroundCtrl.metadata"></recipe>
+            <recipe></recipe>
         </talend-slidable>
 
         <div class="playground-center">

@@ -26,19 +26,6 @@ describe('Playground controller', function() {
     }));
 
     describe('bindings', function() {
-        it('should bind metadata getter with PlaygroundService', function() {
-            //given
-            var metadata = {name: 'my dataset'};
-            var ctrl = createController();
-            expect(ctrl.metadata).toBeFalsy();
-
-            //when
-            stateMock.playground.dataset = metadata;
-
-            //then
-            expect(ctrl.metadata).toBe(metadata);
-        });
-
         it('should bind preparationName getter with PlaygroundService', inject(function(PlaygroundService) {
             //given
             var ctrl = createController();

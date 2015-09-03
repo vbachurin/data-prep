@@ -192,22 +192,6 @@
 
     /**
      * @ngdoc property
-     * @name metadata
-     * @propertyOf data-prep.playground.controller:PlaygroundCtrl
-     * @description The loaded metadata
-     * It is bound to {@link data-prep.services.playground.service:PlaygroundService PlaygroundService} property
-     */
-    Object.defineProperty(PlaygroundCtrl.prototype,
-        'metadata', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.state.playground.dataset;
-            }
-        });
-
-    /**
-     * @ngdoc property
      * @name preparationName
      * @propertyOf data-prep.playground.controller:PlaygroundCtrl
      * @description The preparation name
