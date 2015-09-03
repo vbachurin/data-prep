@@ -10,8 +10,8 @@ describe('Home controller', function () {
         $httpBackend.when('GET', 'i18n/en.json').respond({});
         $httpBackend.when('GET', 'i18n/fr.json').respond({});
 
-        spyOn(MessageService, 'success').and.callThrough();
-        spyOn(MessageService, 'error').and.callThrough();
+        spyOn(MessageService, 'success').and.returnValue();
+        spyOn(MessageService, 'error').and.returnValue();
     }));
 
     beforeEach(inject(function ($rootScope, $controller) {
@@ -150,7 +150,7 @@ describe('Home controller', function () {
 
             beforeEach(inject(function ($rootScope, DatasetService) {
                 spyOn(DatasetService, 'getDatasetByName').and.returnValue(null);
-                spyOn($rootScope, '$emit').and.callThrough();
+                spyOn($rootScope, '$emit').and.returnValue();
             }));
 
             it('should create dataset if name is unique', inject(function ($q, $rootScope, MessageService, DatasetService, UploadWorkflowService) {
@@ -218,7 +218,7 @@ describe('Home controller', function () {
                 spyOn(DatasetService, 'getDatasetByName').and.returnValue(dataset);
                 spyOn(DatasetService, 'getUniqueName').and.returnValue('my cool dataset (1)');
                 spyOn(TalendConfirmService, 'confirm').and.returnValue(confirmDefer.promise);
-                spyOn($rootScope, '$emit').and.callThrough();
+                spyOn($rootScope, '$emit').and.returnValue();
             }));
 
             it('should do nothing on confirm modal dismiss', inject(function (TalendConfirmService, DatasetService) {

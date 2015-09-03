@@ -8,7 +8,7 @@
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.transformation.service:TransformationService
      */
-    function RecipeService(PreparationService, TransformationService) {
+    function RecipeService(state, PreparationService, TransformationService) {
         var choiceType = 'CHOICE';
         var clusterType = 'CLUSTER';
 
@@ -301,7 +301,7 @@
                 else {
                     var infos = {
                         columnId: step.column.id,
-                        preparationId:  PreparationService.currentPreparationId,
+                        preparationId: state.playground.preparation.id,
                         stepId: getPreviousStep(step).transformation.stepId
                     };
                     return TransformationService.initDynamicParameters(step.transformation, infos)
@@ -367,11 +367,11 @@
         function refresh() {
             recipeStateBeforePreview = null;
 
-            if(!PreparationService.currentPreparationId) {
+            if(!state.playground.preparation) {
                 return reset();
             }
 
-            return PreparationService.getDetails()
+            return PreparationService.getDetails(state.playground.preparation.id)
                 .then(function(resp) {
                     //steps ids are in reverse order and the last is the 'no-transformation' id
                     var steps = resp.data.steps.slice(0);

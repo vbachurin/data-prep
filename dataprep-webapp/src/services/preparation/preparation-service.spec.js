@@ -3,7 +3,6 @@
 describe('Preparation Service', function () {
     'use strict';
 
-    //var promiseWithProgress;
     var preparationConsolidation, datasetConsolidation;
     var datasets = [{name: 'my dataset'}, {name: 'my second dataset'}, {name: 'my second dataset (1)'}, {name: 'my second dataset (2)'}];
     var preparations = [{id: '4385fa764bce39593a405d91bc88'}, {id: '58444bce39593a405d9456'}, {id: '2545764bce39593a405d91bc8673'}];
@@ -31,10 +30,6 @@ describe('Preparation Service', function () {
         spyOn(PreparationRestService, 'getPreviewUpdate').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getPreviewAdd').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'removeStep').and.returnValue($q.when(true));
-    }));
-
-    afterEach(inject(function(PreparationListService) {
-        PreparationListService.preparations = null;
     }));
 
     describe('getter/refresher', function() {
@@ -148,51 +143,50 @@ describe('Preparation Service', function () {
         it('should get current preparation content from ListService', inject(function ($rootScope, PreparationService, PreparationRestService) {
             //given
             var version = 'head';
-            PreparationService.currentPreparationId = '4385fa764bce39593a405d91bc88';
+            var preparationId = '4385fa764bce39593a405d91bc88';
 
             //when
-            PreparationService.getContent(version);
+            PreparationService.getContent(preparationId, version);
             $rootScope.$digest();
 
             //then
-            expect(PreparationRestService.getContent).toHaveBeenCalledWith('4385fa764bce39593a405d91bc88', version, undefined);
+            expect(PreparationRestService.getContent).toHaveBeenCalledWith(preparationId, version, undefined);
         }));
 
         it('should get current preparation details from ListService', inject(function ($rootScope, PreparationService, PreparationRestService) {
             //given
-            PreparationService.currentPreparationId = '4385fa764bce39593a405d91bc88';
+            var preparationId = '4385fa764bce39593a405d91bc88';
 
             //when
-            PreparationService.getDetails();
+            PreparationService.getDetails(preparationId);
             $rootScope.$digest();
 
             //then
-            expect(PreparationRestService.getDetails).toHaveBeenCalledWith('4385fa764bce39593a405d91bc88');
+            expect(PreparationRestService.getDetails).toHaveBeenCalledWith(preparationId);
         }));
     });
 
     describe('lifecycle', function() {
         it('should create a new preparation', inject(function ($rootScope, PreparationService, PreparationListService) {
             //given
-            PreparationService.currentPreparationId = null;
-            var metadata = {id: '2430e5df845ab6034c85'};
+            var datasetId = '2430e5df845ab6034c85';
             var name = 'my preparation';
 
             //when
-            PreparationService.create(metadata, name);
+            PreparationService.create(datasetId, name);
             $rootScope.$digest();
 
             //then
-            expect(PreparationListService.create).toHaveBeenCalledWith('2430e5df845ab6034c85', 'my preparation');
+            expect(PreparationListService.create).toHaveBeenCalledWith(datasetId, name);
         }));
 
         it('should consolidate preparations and datasets on creation', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService) {
             //given
             PreparationListService.preparations = preparations;
-            PreparationService.currentPreparationId = null;
+            var datasetId = '2430e5df845ab6034c85';
 
             //when
-            PreparationService.create({id: '2430e5df845ab6034c85'}, 'my preparation');
+            PreparationService.create(datasetId, 'my preparation');
             $rootScope.$digest();
 
             //then
@@ -200,58 +194,32 @@ describe('Preparation Service', function () {
             expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
         }));
 
-        it('should keep created preparation id as current preparation', inject(function ($rootScope, PreparationService) {
-            //given
-            PreparationService.currentPreparationId = null;
-
-            //when
-            PreparationService.create({id: '2430e5df845ab6034c85'}, 'my preparation');
-            $rootScope.$digest();
-
-            //then
-            expect(PreparationService.currentPreparationId).toBe(newPreparationId);
-        }));
-
         it('should update current preparation name', inject(function ($rootScope, PreparationService, PreparationListService) {
             //given
-            PreparationService.currentPreparationId = '6cd546546548a745';
+            var preparationId = '6cd546546548a745';
             var name = 'my preparation';
 
             //when
-            PreparationService.setName(null, name);
+            PreparationService.setName(preparationId, name);
             $rootScope.$digest();
 
             //then
-            expect(PreparationListService.update).toHaveBeenCalledWith('6cd546546548a745', 'my preparation');
+            expect(PreparationListService.update).toHaveBeenCalledWith(preparationId, name);
         }));
 
         it('should consolidate preparations and datasets on name update', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService) {
             //given
             PreparationListService.preparations = preparations;
-            PreparationService.currentPreparationId = '6cd546546548a745';
+            var preparationId = '6cd546546548a745';
             var name = 'my preparation';
 
             //when
-            PreparationService.setName(name);
+            PreparationService.setName(preparationId, name);
             $rootScope.$digest();
 
             //then
             expect(DatasetListService.refreshDefaultPreparation).toHaveBeenCalledWith(preparations);
             expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-        }));
-
-        it('should create a new dataset with provided name if no current preparation is loaded', inject(function ($rootScope, PreparationService, PreparationListService) {
-            //given
-            PreparationService.currentPreparationId = null;
-            var metadata = {id: '2430e5df845ab6034c85'};
-            var name = 'my preparation';
-
-            //when
-            PreparationService.setName(metadata, name);
-            $rootScope.$digest();
-
-            //then
-            expect(PreparationListService.create).toHaveBeenCalledWith('2430e5df845ab6034c85', 'my preparation');
         }));
 
         it('should delete a preparation', inject(function ($rootScope, PreparationService, PreparationListService) {
@@ -274,19 +242,6 @@ describe('Preparation Service', function () {
             //then
             expect(DatasetListService.refreshDefaultPreparation).toHaveBeenCalledWith(preparations);
             expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-        }));
-
-        it('should delete current preparation', inject(function(PreparationListService, PreparationService) {
-            //given
-            var preparationToDelete = preparations[2];
-            PreparationService.currentPreparationId = preparationToDelete.id;
-            PreparationListService.preparations = preparations;
-
-            //when
-            PreparationService.deleteCurrentPreparation();
-
-            //then
-            expect(PreparationListService.delete).toHaveBeenCalledWith(preparationToDelete);
         }));
     });
 
@@ -355,10 +310,9 @@ describe('Preparation Service', function () {
             expect(result).toBe(false);
         }));
 
-        it('should append step to current preparation with completed parameters (add column id)', inject(function ($rootScope, PreparationService, PreparationRestService) {
+        it('should append step to preparation with completed parameters (add column id)', inject(function ($rootScope, PreparationService, PreparationRestService) {
             //given
-            PreparationService.currentPreparationId = '6cd546546548a745';
-            var metadata = {id: '2430e5df845ab6034c85'};
+            var preparationId = '6cd546546548a745';
             var actionParams = {
                 action: 'cut',
                 parameters: {
@@ -371,39 +325,16 @@ describe('Preparation Service', function () {
             var insertionPoint = '79c452a31354ef3514';
 
             //when
-            PreparationService.appendStep(metadata, actionParams, insertionPoint);
+            PreparationService.appendStep(preparationId, actionParams, insertionPoint);
             $rootScope.$digest();
 
             //then
-            expect(PreparationRestService.appendStep).toHaveBeenCalledWith('6cd546546548a745', actionParams, insertionPoint);
-        }));
-
-        it('should create a new preparation with generic name on append step if no preparation is loaded', inject(function ($rootScope, PreparationService, PreparationListService) {
-            //given
-            PreparationService.currentPreparationId = null;
-            var metadata = {id: '2430e5df845ab6034c85'};
-            var actionParams = {
-                action: 'cut',
-                parameters: {
-                    value: 'Toto',
-                    scope: 'column',
-                    column_name: 'firstname',
-                    column_id: '1'
-                }
-            };
-            var insertionPoint = '79c452a31354ef3514';
-
-            //when
-            PreparationService.appendStep(metadata, actionParams, insertionPoint);
-            $rootScope.$digest();
-
-            //then
-            expect(PreparationListService.create).toHaveBeenCalledWith('2430e5df845ab6034c85', 'Preparation draft');
+            expect(PreparationRestService.appendStep).toHaveBeenCalledWith(preparationId, actionParams, insertionPoint);
         }));
 
         it('should update a preparation step with provided parameters', inject(function ($rootScope, PreparationService, PreparationRestService) {
             //given
-            PreparationService.currentPreparationId = '6cd546546548a745';
+            var preparationId = '6cd546546548a745';
             var step = {
                 transformation: {
                     stepId : '867654ab15edf576844c4',
@@ -414,7 +345,7 @@ describe('Preparation Service', function () {
             var parameters = {value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column'};
 
             //when
-            PreparationService.updateStep(step, parameters);
+            PreparationService.updateStep(preparationId, step, parameters);
             $rootScope.$digest();
 
             //then
@@ -433,10 +364,9 @@ describe('Preparation Service', function () {
             var preparationId = '6cd546546548a745';
             var stepId = '45ed65cf48981b51';
             var singleMode = true;
-            PreparationService.currentPreparationId = preparationId;
 
             //when
-            PreparationService.removeStep(stepId, singleMode);
+            PreparationService.removeStep(preparationId, stepId, singleMode);
 
             //then
             expect(PreparationRestService.removeStep).toHaveBeenCalledWith(preparationId, stepId, singleMode);
@@ -446,22 +376,22 @@ describe('Preparation Service', function () {
     describe('preview', function() {
         it('should get diff preview', inject(function ($q, PreparationService, PreparationRestService) {
             //given
-            PreparationService.currentPreparationId = '6cd546546548a745';
+            var preparationId = '6cd546546548a745';
             var currentStep = {id: '86574251524'};
             var previewStep = {id: '65487874887'};
             var recordsTdpId = [1,2,3];
             var canceler = $q.defer();
 
             //when
-            PreparationService.getPreviewDiff(currentStep, previewStep, recordsTdpId, canceler);
+            PreparationService.getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, canceler);
 
             //then
-            expect(PreparationRestService.getPreviewDiff).toHaveBeenCalledWith('6cd546546548a745', currentStep, previewStep, recordsTdpId, canceler);
+            expect(PreparationRestService.getPreviewDiff).toHaveBeenCalledWith(preparationId, currentStep, previewStep, recordsTdpId, canceler);
         }));
 
         it('should get diff preview', inject(function ($q, PreparationService, PreparationRestService) {
             //given
-            PreparationService.currentPreparationId = '6cd546546548a745';
+            var preparationId = '6cd546546548a745';
             var currentStep = {id: '86574251524'};
             var updateStep = {id: '65487874887'};
             var newParams = {value: 'toto'};
@@ -469,15 +399,15 @@ describe('Preparation Service', function () {
             var canceler = $q.defer();
 
             //when
-            PreparationService.getPreviewUpdate(currentStep, updateStep, newParams, recordsTdpId, canceler);
+            PreparationService.getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, canceler);
 
             //then
-            expect(PreparationRestService.getPreviewUpdate).toHaveBeenCalledWith('6cd546546548a745', currentStep, updateStep, newParams, recordsTdpId, canceler);
+            expect(PreparationRestService.getPreviewUpdate).toHaveBeenCalledWith(preparationId, currentStep, updateStep, newParams, recordsTdpId, canceler);
         }));
 
         it('should get add preview', inject(function ($q, PreparationService, PreparationRestService) {
             //given
-            PreparationService.currentPreparationId = '6cd546546548a745';
+            var preparationId = '6cd546546548a745';
             var datasetId = '754a54654fd694e6464';
             var action = 'cut';
             var params = {value: 'toto'};
@@ -485,10 +415,10 @@ describe('Preparation Service', function () {
             var canceler = $q.defer();
 
             //when
-            PreparationService.getPreviewAdd(datasetId, action, params, recordsTdpId, canceler);
+            PreparationService.getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, canceler);
 
             //then
-            expect(PreparationRestService.getPreviewAdd).toHaveBeenCalledWith('6cd546546548a745', datasetId, action, params, recordsTdpId, canceler);
+            expect(PreparationRestService.getPreviewAdd).toHaveBeenCalledWith(preparationId, datasetId, action, params, recordsTdpId, canceler);
         }));
     });
 

@@ -11,7 +11,7 @@
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires talend.widget.service:TalendConfirmService
      */
-    function RecipeCtrl(RecipeService, PlaygroundService, PreparationService, PreviewService, TalendConfirmService) {
+    function RecipeCtrl(state, RecipeService, PlaygroundService, PreparationService, PreviewService, TalendConfirmService) {
         var vm = this;
         vm.recipeService = RecipeService;
 
@@ -151,7 +151,8 @@
             }
 
             var currentStep = RecipeService.getLastActiveStep();
-            PreviewService.getPreviewUpdateRecords(currentStep, updateStep, params);
+            var preparationId = state.playground.preparation.id;
+            PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, params);
         };
 
         /**
