@@ -23,10 +23,8 @@ import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.statistics.DataFrequency;
-import org.talend.dataprep.api.dataset.statistics.Quantiles;
-import org.talend.dataprep.api.dataset.statistics.Statistics;
-import org.talend.dataprep.api.dataset.statistics.TextLengthSummary;
+import org.talend.dataprep.api.dataset.statistics.*;
+import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.Destinations;
@@ -37,8 +35,8 @@ import org.talend.dataquality.statistics.cardinality.CardinalityAnalyzer;
 import org.talend.dataquality.statistics.cardinality.CardinalityStatistics;
 import org.talend.dataquality.statistics.frequency.FrequencyAnalyzer;
 import org.talend.dataquality.statistics.frequency.FrequencyStatistics;
-import org.talend.dataquality.statistics.frequency.PatternFrequencyAnalyzer;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramAnalyzer;
+import org.talend.dataquality.statistics.numeric.histogram.HistogramStatistics;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileAnalyzer;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileStatistics;
 import org.talend.dataquality.statistics.numeric.summary.SummaryAnalyzer;
@@ -133,20 +131,20 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
             }
         }
         histogramAnalyzer.init(min, max, 8);
-        // Configure all analysis
+        // Select all analysis
         Analyzer[] allAnalyzers = new Analyzer[] {
                 new ValueQualityAnalyzer(types),
                 // Cardinality (distinct + duplicate)
                 new CardinalityAnalyzer(),
                 // Frequency analysis (Pattern + data)
                 new FrequencyAnalyzer(),
-                new PatternFrequencyAnalyzer(),
+                // new PatternFrequencyAnalyzer(), // TODO Wait for fix about pattern + data statistics
                 // Quantile analysis
                 new QuantileAnalyzer(types),
                 // Summary (min, max, mean, variance)
                 new SummaryAnalyzer(types),
                 // Histogram
-                // histogramAnalyzer,
+                histogramAnalyzer,
                 // Text length analysis (for applicable columns)
                 new TextLengthAnalyzer()
         };
@@ -165,8 +163,9 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
         final Iterator<ColumnMetadata> columnIterator = columns.iterator();
         for (Analyzers.Result result : analyzer.getResult()) {
             final ColumnMetadata currentColumn = columnIterator.next();
+            final boolean isNumeric = Type.NUMERIC.isAssignableFrom(Type.get(currentColumn.getType()));
             final Statistics statistics = currentColumn.getStatistics();
-            // Already analyzed information
+            // Value quality (empty / invalid / ...)
             final ValueQualityStatistics valueQualityStatistics = result.get(ValueQualityStatistics.class);
             if (valueQualityStatistics != null) {
                 statistics.setCount(valueQualityStatistics.getCount());
@@ -192,7 +191,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
             // TODO Problem here! (PatternFrequencyAnalyzer returns same stat class as FrequencyAnalyzer)
             // Quantiles
             final QuantileStatistics quantileStatistics = result.get(QuantileStatistics.class);
-            if (quantileStatistics != null) {
+            if (quantileStatistics != null && isNumeric) {
                 final Quantiles quantiles = statistics.getQuantiles();
                 quantiles.setLowerQuantile(quantileStatistics.getLowerQuantile());
                 quantiles.setMedian(quantiles.getMedian());
@@ -207,9 +206,8 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
                 statistics.setVariance(summaryStatistics.getVariance());
             }
             // Histogram
-            /*
             final HistogramStatistics histogramStatistics = result.get(HistogramStatistics.class);
-            if (histogramStatistics != null) {
+            if (histogramStatistics != null && isNumeric) {
                 histogramStatistics.getHistogram().forEach((r, v) -> {
                     final HistogramRange range = new HistogramRange();
                     range.getRange().setMax(r.getUpper());
@@ -218,10 +216,9 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
                     statistics.getHistogram().add(range);
                 });
             }
-            */
             // Text length
             final TextLengthStatistics textLengthStatistics = result.get(TextLengthStatistics.class);
-            if (textLengthStatistics != null) {
+            if (textLengthStatistics != null && !isNumeric) {
                 final TextLengthSummary textLengthSummary = statistics.getTextLengthSummary();
                 textLengthSummary.setAverageLength(textLengthStatistics.getAvgTextLength());
                 textLengthSummary.setMinimalLength(textLengthStatistics.getMinTextLength());

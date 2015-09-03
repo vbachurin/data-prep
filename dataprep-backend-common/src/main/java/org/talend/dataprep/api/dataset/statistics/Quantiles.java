@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Quantiles {
 
     @JsonProperty("median")
-    double median;
+    double median = Double.NaN;
 
     @JsonProperty("lowerQuantile")
-    double lowerQuantile;
+    double lowerQuantile = Double.NaN;
 
     @JsonProperty("upperQuantile")
-    double upperQuantile;
+    double upperQuantile = Double.NaN;
 
     public double getMedian() {
         return median;

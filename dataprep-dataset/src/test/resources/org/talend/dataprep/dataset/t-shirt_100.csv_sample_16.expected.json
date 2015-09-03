@@ -176,6 +176,8 @@
         "empty": 1,
         "max": 92.0,
         "min": 13.0,
+        "mean": 63.26666666666667,
+        "variance": 575.9238095238096,
         "duplicateCount": 5,
         "distinctCount": 11,
         "frequencyTable": [
@@ -647,6 +649,8 @@
         "empty": 0,
         "max": 200.0,
         "min": 16.7,
+        "mean": 51.74375,
+        "variance": 3678.941291666667,
         "duplicateCount": 8,
         "distinctCount": 8,
         "frequencyTable": [
@@ -791,6 +795,8 @@
         "empty": 0,
         "max": 8.0,
         "min": 1.0,
+        "mean": 2.3124999999999996,
+        "variance": 5.429166666666666,
         "duplicateCount": 12,
         "distinctCount": 4,
         "frequencyTable": [
@@ -915,6 +921,8 @@
         "empty": 0,
         "max": 25.0,
         "min": 16.7,
+        "mean": 20.425,
+        "variance": 11.121999999999998,
         "duplicateCount": 12,
         "distinctCount": 4,
         "frequencyTable": [

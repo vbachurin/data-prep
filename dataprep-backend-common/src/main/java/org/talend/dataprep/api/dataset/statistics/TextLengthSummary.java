@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TextLengthSummary {
 
     @JsonProperty("minimalLength")
-    double minimalLength = 0d;
+    double minimalLength = Double.NaN;
 
     @JsonProperty("maximalLength")
-    double maximalLength = 0d;
+    double maximalLength = Double.NaN;
 
     @JsonProperty("averageLength")
-    double averageLength = 0d;
+    double averageLength = Double.NaN;
 
     public double getMinimalLength() {
         return minimalLength;

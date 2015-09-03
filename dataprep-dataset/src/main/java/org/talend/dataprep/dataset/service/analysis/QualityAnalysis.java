@@ -104,7 +104,6 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
      * @param records the dataset records
      */
     public void computeQuality(DataSetMetadata dataset, Stream<DataSetRow> records) {
-
         // Compute valid / invalid / empty count, need data types for analyzer first
         DataType.Type[] types = TypeUtils.convert(dataset.getRow().getColumns());
         // Run analysis
@@ -121,7 +120,6 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
                     .collect(Collectors.<String> toList());
             return strings.toArray(new String[strings.size()]);
         }).forEach(analyzer::analyze);
-
         // Determine content size
         final List<Analyzers.Result> result = analyzer.getResult();
         final Iterator<ColumnMetadata> iterator = dataset.getRow().getColumns().iterator();
@@ -146,8 +144,6 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
             currentColumn.getStatistics().setMin(summaryStatistics.getMin());
             currentColumn.getStatistics().setMean(summaryStatistics.getMean());
         }
-
-
         // If there are columns remaining, warn for missing information
         while (iterator.hasNext()) {
             LOGGER.warn("No quality information returned for {} in data set #{}.", iterator.next().getId(), dataset.getId());
