@@ -118,11 +118,9 @@ public class FileSystemPreparationRepository implements PreparationRepository {
         }
 
         // first filter on the class (listAll()) and then second filter on the dataset id
-        return listAll(Preparation.class).stream().filter(preparation -> dataSetId.equals(preparation.getDataSetId())) // filter
-                                                                                                                       // on
-                                                                                                                       // the
-                                                                                                                       // dataset
-                                                                                                                       // id
+        return listAll(Preparation.class) //
+                .stream() //
+                .filter(preparation -> dataSetId.equals(preparation.getDataSetId())) //
                 .collect(Collectors.toList());
     }
 
