@@ -9,7 +9,7 @@
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.transformation.service:TransformationService
      */
-    function TransformMenuCtrl(PlaygroundService, PreparationService, TransformationService) {
+    function TransformMenuCtrl(state, PlaygroundService, PreparationService, TransformationService) {
         var vm = this;
 
         /**
@@ -23,7 +23,7 @@
         var initDynamicParams = function (menu) {
             var infos = {
                 columnId: vm.column.id,
-                datasetId: PlaygroundService.currentMetadata.id,
+                datasetId: state.playground.dataset.id,
                 preparationId: PreparationService.currentPreparationId
             };
             return TransformationService.initDynamicParameters(menu, infos);

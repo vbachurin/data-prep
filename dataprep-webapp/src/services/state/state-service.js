@@ -8,13 +8,19 @@
 
         return {
             //playground
-            showPlayground: PlaygroundStateService.show,
             hidePlayground: PlaygroundStateService.hide,
-            setGridSelection: PlaygroundStateService.setGridSelection,
+            showPlayground: PlaygroundStateService.show,
+            setCurrentDataset: PlaygroundStateService.setDataset,
+            setCurrentPreparation: PlaygroundStateService.setPreparation,
+            setNameEditionMode: PlaygroundStateService.setNameEditionMode,
+            resetPlayground: PlaygroundStateService.reset,
 
             //playground - recipe
             showRecipe: PlaygroundStateService.showRecipe,
-            hideRecipe: PlaygroundStateService.hideRecipe
+            hideRecipe: PlaygroundStateService.hideRecipe,
+
+            //playground - grid
+            setGridSelection: PlaygroundStateService.setGridSelection
         };
     }
 

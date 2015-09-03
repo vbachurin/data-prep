@@ -30,6 +30,8 @@
             controllerAs: 'ctrl',
             link: function (scope, element, attributes) {
 
+              var body = angular.element('body').eq(0);
+
               Date.parseDate = function(input, format ){
                 return moment(input,format).toDate();
               };
@@ -48,6 +50,49 @@
                     formatDate:formatDate
                   }
               );
+
+              /**
+               * @ngdoc method
+               * @name hideCalendar
+               * @methodOf talend.widget.directive:TalendDatetimePicker
+               * @description [PRIVATE] hide calendar widget
+               */
+              var hideCalendar = function(){
+                dateInput.datetimepicker('hide');
+              };
+
+              /**
+               * @ngdoc method
+               * @name attachKeyMap
+               * @methodOf talend.widget.directive:TalendDatetimePicker
+               * @description [PRIVATE] Attach ESC actions
+               * <ul>
+               *     <li>ESC : hide the calendar</li>
+               * </ul>
+               */
+               var attachKeyMap = function() {
+                 dateInput.bind('keydown', function (event) {
+
+                  // hide calendar on 'ESC' keydown
+                   if (event.keyCode === 27) {
+                     hideCalendar();
+                     event.stopPropagation();
+                   }
+                });
+              };
+
+
+              /**
+               * on element destroy, we destroy the scope which unregister body mousedown
+               */
+              element.on('$destroy', function () {
+                scope.$destroy();
+              });
+              scope.$on('$destroy', function () {
+                dateInput.off('mousedown');
+              });
+
+              attachKeyMap();
 
             }
         };

@@ -56,10 +56,12 @@ describe('Export directive', function () {
         ctrl = element.controller('export');
     }));
 
-    afterEach(function () {
+    afterEach(inject(function (state) {
         scope.$destroy();
         element.remove();
-    });
+
+        state.playground.dataset = null;
+    }));
 
     it('should bind preparationId form value to controller', inject(function (PreparationService) {
         //given
@@ -91,13 +93,13 @@ describe('Export directive', function () {
         expect(input.value).toBe('48da64513c43a548e678bc99');
     }));
 
-    it('should bind datasetId form value to controller', inject(function (PlaygroundService) {
+    it('should bind datasetId form value to controller', inject(function (state) {
         //given
         var input = element.find('#exportForm').eq(0)[0].datasetId;
         expect(input.value).toBeFalsy();
 
         //when
-        PlaygroundService.currentMetadata = {
+        state.playground.dataset = {
             id: '48da64513c43a548e678bc99'
         };
         scope.$digest();

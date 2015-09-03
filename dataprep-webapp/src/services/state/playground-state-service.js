@@ -8,13 +8,19 @@
 
         return {
             //playground
-            setGridSelection: setGridSelection,
             show: show,
             hide: hide,
+            setDataset: setDataset,
+            setPreparation: setPreparation,
+            setNameEditionMode: setNameEditionMode,
+            reset: reset,
 
             //recipe
             showRecipe: RecipeStateService.show,
-            hideRecipe: RecipeStateService.hide
+            hideRecipe: RecipeStateService.hide,
+
+            //datagrid
+            setGridSelection: setGridSelection
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -25,12 +31,31 @@
             playgroundState.line = line;
         }
 
+        function setDataset(dataset) {
+            playgroundState.dataset = dataset;
+        }
+
+        function setPreparation(preparation) {
+            playgroundState.preparation = preparation;
+        }
+
+        function setNameEditionMode(editionMode) {
+            playgroundState.nameEditionMode = editionMode;
+        }
+
         function show() {
             playgroundState.visible = true;
         }
 
         function hide() {
             playgroundState.visible = false;
+        }
+
+        function reset() {
+            playgroundState.column = null;
+            playgroundState.line = null;
+            playgroundState.dataset = null;
+            playgroundState.preparation = null;
         }
     }
 
