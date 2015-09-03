@@ -21,7 +21,7 @@
         <div> {{ ::'SORT_ORDER' | translate }} </div>
     </div>
 
-    <div class="inventory-list">
+    <div class="inventory-list" id="datasets-list">
         <div class="inventory-entry" ng-repeat="dataset in datasetListCtrl.datasets track by $index" ng-switch="dataset.draft" id="dataset_{{$index}}" >
 
             <div class="inventory-icon" ng-switch="dataset.type" ng-click="datasetListCtrl.uploadWorkflowService.openDataset(dataset)">
