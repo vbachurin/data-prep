@@ -43,11 +43,11 @@
                     <div class="checkbox"></div>
                 </label>
 
-                <div ng-show="!playgroundCtrl.editionMode">
+                <div ng-show="!playgroundCtrl.state.playground.nameEditionMode">
                     <span class="title">{{playgroundCtrl.preparationName}}</span>
                     <a class="edit-btn" data-icon="a" ng-click="playgroundCtrl.toggleEditionMode()"></a>
                 </div>
-                <div ng-show="playgroundCtrl.editionMode">
+                <div ng-show="playgroundCtrl.state.playground.nameEditionMode">
                     <input id="prepNameInput"
                            type="text"
                            placeholder="{{::'ENTER_PREPARATION_NAME' | translate}}"

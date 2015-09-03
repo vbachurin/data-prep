@@ -3,8 +3,13 @@ describe('Playground Service', function () {
     'use strict';
 
     var datasetContent = {column: [], records: []};
+    var stateMock = {
+        playground: {}
+    };
 
-    beforeEach(module('data-prep.services.playground'));
+    beforeEach(module('data-prep.services.playground', function($provide) {
+        $provide.constant('state', stateMock);
+    }));
 
     beforeEach(inject(function ($injector, $q, StateService, DatasetService, FilterService, RecipeService, DatagridService,
                                 PreparationService, TransformationCacheService, SuggestionService,
@@ -24,7 +29,7 @@ describe('Playground Service', function () {
         spyOn(StatisticsService, 'resetCharts').and.returnValue();
     }));
 
-    it('should set new name to a new to the preparation', inject(function($rootScope, state, PlaygroundService, PreparationService) {
+    it('should set new name to a new to the preparation', inject(function($rootScope, PlaygroundService, PreparationService) {
         //given
         var name = 'My preparation';
         var newName = 'My new preparation name';
@@ -32,7 +37,7 @@ describe('Playground Service', function () {
 
         PlaygroundService.preparationName = name;
         PlaygroundService.originalPreparationName = name;
-        state.playground.dataset = {id: '123d120394ab0c53'};
+        stateMock.playground.dataset = {id: '123d120394ab0c53'};
 
         //when
         PlaygroundService.preparationName = newName;
@@ -115,7 +120,7 @@ describe('Playground Service', function () {
             assertNewPreparationInitialization();
         }));
 
-        it('should init a new preparation and show playground when there is already a created preparation yet', inject(function($rootScope, state, PlaygroundService, PreparationService) {
+        it('should init a new preparation and show playground when there is already a created preparation yet', inject(function($rootScope, PlaygroundService, PreparationService) {
             //given
             PreparationService.currentPreparationId = '12342305304543';
 
@@ -127,9 +132,9 @@ describe('Playground Service', function () {
             assertNewPreparationInitialization();
         }));
 
-        it('should init a new preparation and show playground when the loaded dataset is not the wanted dataset', inject(function($rootScope, state, PlaygroundService, PreparationService) {
+        it('should init a new preparation and show playground when the loaded dataset is not the wanted dataset', inject(function($rootScope, PlaygroundService, PreparationService) {
             //given
-            state.playground.dataset = {id : 'ab45420c09bf98d9a90'};
+            stateMock.playground.dataset = {id : 'ab45420c09bf98d9a90'};
             expect(PreparationService.currentPreparationId).toBeFalsy();
 
             //when
@@ -154,10 +159,10 @@ describe('Playground Service', function () {
             expect(PlaygroundService.originalPreparationName).toBeFalsy();
         }));
 
-        it('should init playground when the wanted dataset is loaded and no preparation was created yet', inject(function($rootScope, state, PlaygroundService) {
+        it('should init playground when the wanted dataset is loaded and no preparation was created yet', inject(function($rootScope, PlaygroundService) {
             //given
             var dataset = {id: 'e85afAa78556d5425bc2'};
-            state.playground.dataset = dataset;
+            stateMock.playground.dataset = dataset;
 
             expect(PlaygroundService.currentPreparationId).toBeFalsy();
 
@@ -258,7 +263,7 @@ describe('Playground Service', function () {
         }));
 
         it('should not change playground if the preparation to load is already loaded',
-            inject(function($rootScope, state, PlaygroundService, PreparationService) {
+            inject(function($rootScope, PlaygroundService, PreparationService) {
             //given
             var preparation = {
                 id: '6845521254541',
@@ -267,7 +272,7 @@ describe('Playground Service', function () {
             var oldMetadata = {};
 
             PreparationService.currentPreparationId = '6845521254541';
-            state.playground.dataset = oldMetadata;
+            stateMock.playground.dataset = oldMetadata;
 
             //when
             PlaygroundService.load(preparation);
@@ -278,14 +283,14 @@ describe('Playground Service', function () {
             expect($rootScope.$emit).not.toHaveBeenCalled();
         }));
 
-        it('should load preparation content at a specific step', inject(function($rootScope, state, StateService, PlaygroundService, FilterService, RecipeService, DatagridService, PreviewService) {
+        it('should load preparation content at a specific step', inject(function($rootScope, StateService, PlaygroundService, FilterService, RecipeService, DatagridService, PreviewService) {
             //given
             var step = {
                 column: {id: '0000'},
                 transformation: {stepId: 'a4353089cb0e039ac2'}
             };
             var metadata = {id: '1', name: 'my dataset'};
-            state.playground.dataset = metadata;
+            stateMock.playground.dataset = metadata;
 
             //when
             PlaygroundService.loadStep(step, '0001');
@@ -356,7 +361,7 @@ describe('Playground Service', function () {
     describe('transformation steps', function() {
         var preparationHeadContent, metadata;
         var lastStepId = 'a151e543456413ef51';
-        beforeEach(inject(function($rootScope, $q, state, PlaygroundService, PreparationService, DatagridService, RecipeService, HistoryService) {
+        beforeEach(inject(function($rootScope, $q, PlaygroundService, PreparationService, DatagridService, RecipeService, HistoryService) {
             preparationHeadContent = {
                 'records': [{
                     'firstname': 'Grover',
@@ -382,7 +387,7 @@ describe('Playground Service', function () {
             };
 
             metadata = {id : 'e85afAa78556d5425bc2'};
-            state.playground.dataset = metadata;
+            stateMock.playground.dataset = metadata;
 
             spyOn($rootScope, '$emit').and.callThrough();
             spyOn(PreparationService, 'appendStep').and.returnValue($q.when(true));
@@ -1066,18 +1071,19 @@ describe('Playground Service', function () {
 
     describe('preparation name edition mode', function() {
 
-        beforeEach(inject(function($q, PreparationService, DatagridService, RecipeService) {
+        beforeEach(inject(function($q, PreparationService, DatagridService, RecipeService, StateService) {
             spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: {}}));
             spyOn(PreparationService, 'appendStep').and.callFake(function() {
                 RecipeService.getRecipe().push({});
                 return $q.when(true);
             });
             spyOn(DatagridService, 'updateData').and.returnValue();
+            spyOn(StateService, 'setNameEditionMode').and.returnValue();
         }));
 
-        it('should turn on edition mode on dataset playground init', inject(function($rootScope, PlaygroundService) {
+        it('should turn on edition mode on dataset playground init', inject(function($rootScope, PlaygroundService, StateService) {
             //given
-            PlaygroundService.preparationNameEditionMode = false;
+            expect(StateService.setNameEditionMode).not.toHaveBeenCalled();
             var dataset = {id: '1'};
 
             //when
@@ -1085,12 +1091,12 @@ describe('Playground Service', function () {
             $rootScope.$digest();
 
             //then
-            expect(PlaygroundService.preparationNameEditionMode).toBe(true);
+            expect(StateService.setNameEditionMode).toHaveBeenCalledWith(true);
         }));
 
-        it('should turn off edition mode playground init', inject(function($rootScope, PlaygroundService) {
+        it('should turn off edition mode playground init', inject(function($rootScope, PlaygroundService, StateService) {
             //given
-            PlaygroundService.preparationNameEditionMode = true;
+            expect(StateService.setNameEditionMode).not.toHaveBeenCalled();
             var preparation = {
                 id: '6845521254541',
                 dataset: {id: '1'}
@@ -1101,16 +1107,16 @@ describe('Playground Service', function () {
             $rootScope.$digest();
 
             //then
-            expect(PlaygroundService.preparationNameEditionMode).toBe(false);
+            expect(StateService.setNameEditionMode).toHaveBeenCalledWith(false);
         }));
     });
 
     describe('dataset management when no preparation is done yet', function() {
 
-        it('should load dataset sample when sample size is changed', inject(function(state, PlaygroundService, PreparationService, DatasetService) {
+        it('should load dataset sample when sample size is changed', inject(function(PlaygroundService, PreparationService, DatasetService) {
             //given
             PreparationService.currentPreparationId = null;
-            state.playground.dataset = {id: '123d120394ab0c53'};
+            stateMock.playground.dataset = {id: '123d120394ab0c53'};
 
             //when
             PlaygroundService.selectedSampleSize = {value:50};
@@ -1120,10 +1126,10 @@ describe('Playground Service', function () {
             expect(DatasetService.getContent).toHaveBeenCalledWith('123d120394ab0c53', true, 50);
         }));
 
-        it('should load dataset sample when sample size is changed', inject(function(state, PlaygroundService, PreparationService, DatasetService) {
+        it('should load dataset sample when sample size is changed', inject(function(PlaygroundService, PreparationService, DatasetService) {
             //given
             PreparationService.currentPreparationId = null;
-            state.playground.dataset = {id: '123d120394ab0c53'};
+            stateMock.playground.dataset = {id: '123d120394ab0c53'};
 
             //when
             PlaygroundService.selectedSampleSize = {value:'full'};
@@ -1142,9 +1148,9 @@ describe('Playground Service', function () {
             spyOn(DatagridService, 'updateData').and.returnValue();
         }));
 
-        it('should get preparation content', inject(function($rootScope, state, PlaygroundService, PreparationService, DatasetService, PreviewService) {
+        it('should get preparation content', inject(function($rootScope, PlaygroundService, PreparationService, DatasetService, PreviewService) {
             //given
-            state.playground.dataset = {id: 'gfkjqghflqsdgf'};
+            stateMock.playground.dataset = {id: 'gfkjqghflqsdgf'};
             PreparationService.currentPreparationId = 1324;
             PlaygroundService.selectedSampleSize = {value:500};
 
@@ -1162,9 +1168,9 @@ describe('Playground Service', function () {
             expect(PreviewService.reset).toHaveBeenCalledWith(false);
         }));
 
-        it('should get dataset content', inject(function($rootScope, state, PlaygroundService, PreparationService, DatasetService) {
+        it('should get dataset content', inject(function($rootScope, PlaygroundService, PreparationService, DatasetService) {
             //given
-            state.playground.dataset = {id: 'gfkjqghflqsdgf'};
+            stateMock.playground.dataset = {id: 'gfkjqghflqsdgf'};
             PreparationService.currentPreparationId = null;
             PlaygroundService.selectedSampleSize = {value:500};
 

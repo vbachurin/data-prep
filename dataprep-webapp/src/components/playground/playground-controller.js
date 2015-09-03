@@ -63,7 +63,8 @@
          * @description Toggle the edition mode flag
          */
         vm.toggleEditionMode = function toggleEditionMode() {
-            vm.editionMode = !vm.editionMode;
+            var editionMode = state.playground.nameEditionMode;
+            StateService.setNameEditionMode(!editionMode);
         };
 
         /**
@@ -293,24 +294,6 @@
                 return firstStep && !firstStep.inactive;
             },
             set: function () {}
-        });
-
-    /**
-     * @name editionMode
-     * @propertyOf data-prep.playground.controller:PlaygroundCtrl
-     * @description The flag that pilots the recipe panel display
-     * It is bound to {@link data-prep.services.playground.service:PlaygroundService PlaygroundService} property
-     */
-    Object.defineProperty(PlaygroundCtrl.prototype,
-        'editionMode', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.playgroundService.preparationNameEditionMode;
-            },
-            set: function(value) {
-                this.playgroundService.preparationNameEditionMode = value;
-            }
         });
 
     angular.module('data-prep.playground')
