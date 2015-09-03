@@ -33,8 +33,10 @@ import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataquality.statistics.cardinality.CardinalityAnalyzer;
 import org.talend.dataquality.statistics.cardinality.CardinalityStatistics;
-import org.talend.dataquality.statistics.frequency.FrequencyAnalyzer;
-import org.talend.dataquality.statistics.frequency.FrequencyStatistics;
+import org.talend.dataquality.statistics.frequency.DataFrequencyAnalyzer;
+import org.talend.dataquality.statistics.frequency.DataFrequencyStatistics;
+import org.talend.dataquality.statistics.frequency.PatternFrequencyAnalyzer;
+import org.talend.dataquality.statistics.frequency.PatternFrequencyStatistics;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramAnalyzer;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramStatistics;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileAnalyzer;
@@ -137,8 +139,8 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
                 // Cardinality (distinct + duplicate)
                 new CardinalityAnalyzer(),
                 // Frequency analysis (Pattern + data)
-                new FrequencyAnalyzer(),
-                // new PatternFrequencyAnalyzer(), // TODO Wait for fix about pattern + data statistics
+                new DataFrequencyAnalyzer(),
+                new PatternFrequencyAnalyzer(),
                 // Quantile analysis
                 new QuantileAnalyzer(types),
                 // Summary (min, max, mean, variance)
@@ -180,22 +182,28 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
                 statistics.setDuplicateCount(cardinalityStatistics.getDuplicateCount());
             }
             // Frequencies (data)
-            final FrequencyStatistics frequencyStatistics = result.get(FrequencyStatistics.class);
-            if (frequencyStatistics != null) {
-                final Map<String, Long> topTerms = frequencyStatistics.getTopK(5);
+            final DataFrequencyStatistics dataFrequencyStatistics = result.get(DataFrequencyStatistics.class);
+            if (dataFrequencyStatistics != null) {
+                final Map<String, Long> topTerms = dataFrequencyStatistics.getTopK(5);
                 if (topTerms != null) {
                     topTerms.forEach((s, o) -> statistics.getDataFrequencies().add(new DataFrequency(s, o)));
                 }
             }
             // Frequencies (pattern)
-            // TODO Problem here! (PatternFrequencyAnalyzer returns same stat class as FrequencyAnalyzer)
+            final PatternFrequencyStatistics patternFrequencyStatistics = result.get(PatternFrequencyStatistics.class);
+            if (patternFrequencyStatistics != null) {
+                final Map<String, Long> topTerms = patternFrequencyStatistics.getTopK(5);
+                if (topTerms != null) {
+                    topTerms.forEach((s, o) -> statistics.getPatternFrequencies().add(new PatternFrequency(s, o)));
+                }
+            }
             // Quantiles
             final QuantileStatistics quantileStatistics = result.get(QuantileStatistics.class);
             if (quantileStatistics != null && isNumeric) {
                 final Quantiles quantiles = statistics.getQuantiles();
                 quantiles.setLowerQuantile(quantileStatistics.getLowerQuantile());
-                quantiles.setMedian(quantiles.getMedian());
-                quantiles.setMedian(quantiles.getUpperQuantile());
+                quantiles.setMedian(quantileStatistics.getMedian());
+                quantiles.setMedian(quantileStatistics.getUpperQuantile());
             }
             // Summary (min, max, mean, variance)
             final SummaryStatistics summaryStatistics = result.get(SummaryStatistics.class);
