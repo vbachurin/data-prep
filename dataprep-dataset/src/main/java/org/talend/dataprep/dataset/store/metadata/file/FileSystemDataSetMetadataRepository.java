@@ -8,15 +8,14 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
+import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepositoryAdapter;
+import org.talend.dataprep.dataset.store.metadata.lock.DistributedLock;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
 
@@ -25,14 +24,10 @@ import org.talend.dataprep.exception.TDPExceptionContext;
  */
 @Component
 @ConditionalOnProperty(name = "dataset.metadata.store", havingValue = "file")
-public class FileSystemDataSetMetadataRepository implements DataSetMetadataRepository {
+public class FileSystemDataSetMetadataRepository extends DataSetMetadataRepositoryAdapter {
 
     /** This class' logger. */
     private static final Logger LOG = LoggerFactory.getLogger(FileSystemDataSetMetadataRepository.class);
-
-    /** Spring application context. */
-    @Autowired
-    private ApplicationContext context;
 
     /** Where to store the dataset metadata */
     @Value("${dataset.metadata.store.file.location}")
@@ -160,11 +155,4 @@ public class FileSystemDataSetMetadataRepository implements DataSetMetadataRepos
         return new File(storeLocation + "/metadata/");
     }
 
-    /**
-     * @see DataSetMetadataRepository#createDatasetMetadataLock(String)
-     */
-    @Override
-    public DistributedLock createDatasetMetadataLock(String id) {
-        return context.getBean(DistributedLock.class, DATASET_LOCK_PREFIX + id);
-    }
 }

@@ -11,13 +11,12 @@ import javax.annotation.Nullable;
 import org.apache.commons.collections.IteratorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
+import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepositoryAdapter;
+import org.talend.dataprep.dataset.store.metadata.lock.DistributedLock;
 
 import com.google.common.base.Defaults;
 
@@ -26,17 +25,13 @@ import com.google.common.base.Defaults;
  */
 @Component
 @ConditionalOnProperty(name = "dataset.metadata.store", havingValue = "in-memory", matchIfMissing = true)
-public class InMemoryDataSetMetadataRepository implements DataSetMetadataRepository {
+public class InMemoryDataSetMetadataRepository extends DataSetMetadataRepositoryAdapter {
 
     /** This class' logger. */
     private static final Logger LOG = LoggerFactory.getLogger(InMemoryDataSetMetadataRepository.class);
 
     /** Where the DatasetMetadata is actually stored. */
     private final Map<String, DataSetMetadata> store = new HashMap<>();
-
-    /** Spring application context. */
-    @Autowired
-    private ApplicationContext appcontext;
 
     /**
      * @see DataSetMetadataRepository#list()
@@ -124,11 +119,4 @@ public class InMemoryDataSetMetadataRepository implements DataSetMetadataReposit
         store.remove(id);
     }
 
-    /**
-     * @see DataSetMetadataRepository#createDatasetMetadataLock(String)
-     */
-    @Override
-    public DistributedLock createDatasetMetadataLock(String id) {
-        return appcontext.getBean(DistributedLock.class, DATASET_LOCK_PREFIX + id);
-    }
 }

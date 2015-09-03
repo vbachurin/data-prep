@@ -4,26 +4,22 @@ import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
+import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepositoryAdapter;
+import org.talend.dataprep.dataset.store.metadata.lock.DistributedLock;
 
 /**
  * MongoDB implementation of the DatasetMetadataRepository.
  */
 @Component
 @ConditionalOnProperty(name = "dataset.metadata.store", havingValue = "mongodb")
-public class MongoDataSetMetadataRepository implements DataSetMetadataRepository {
+public class MongoDataSetMetadataRepository extends DataSetMetadataRepositoryAdapter {
 
     /** Spring Mongo DB repository. */
     @Autowired
-    MongoDBRepository repository;
-
-    /** Spring application context. */
-    @Autowired
-    ApplicationContext appcontext;
+    private MongoDBRepository repository;
 
     /**
      * @see DataSetMetadataRepository#list()
@@ -82,11 +78,4 @@ public class MongoDataSetMetadataRepository implements DataSetMetadataRepository
         repository.delete(id);
     }
 
-    /**
-     * @see DataSetMetadataRepository#createDatasetMetadataLock(String)
-     */
-    @Override
-    public DistributedLock createDatasetMetadataLock(String id) {
-        return appcontext.getBean(DistributedLock.class, DATASET_LOCK_PREFIX + id);
-    }
 }

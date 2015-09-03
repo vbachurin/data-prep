@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -15,6 +16,7 @@ import org.talend.dataprep.dataset.DataSetBaseTest;
 /**
  * Unit/integration test for the file system dataset metadata repository.
  */
+@Ignore
 public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
 
     /** The repository to test. */
