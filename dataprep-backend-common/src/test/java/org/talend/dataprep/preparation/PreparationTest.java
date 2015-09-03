@@ -28,6 +28,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.preparation.*;
+import org.talend.dataprep.preparation.store.PreparationRepository;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

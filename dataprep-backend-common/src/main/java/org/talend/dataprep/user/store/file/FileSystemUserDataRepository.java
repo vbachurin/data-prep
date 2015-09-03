@@ -59,7 +59,6 @@ public class FileSystemUserDataRepository implements UserDataRepository {
         } catch (ClassNotFoundException | IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_USER_DATA, e, TDPExceptionContext.build().put("id", userId));
         }
-
     }
 
     /**

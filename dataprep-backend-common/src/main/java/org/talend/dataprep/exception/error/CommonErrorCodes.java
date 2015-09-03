@@ -22,7 +22,10 @@ public enum CommonErrorCodes implements ErrorCode {
                                                    BAD_AGGREGATION_PARAMETERS(400),
                                                    UNABLE_TO_AGGREGATE(500),
                                                    UNABLE_TO_SAVE_USER_DATA(500),
-                                                   UNABLE_TO_READ_USER_DATA(500, "id");
+                                                   UNABLE_TO_READ_USER_DATA(500, "id"),
+                                                   UNABLE_TO_SAVE_PREPARATION(500, "id"),
+                                                   UNABLE_TO_PREPARATION(500, "id"),
+                                                   UNABLE_TO_READ_PREPARATION(500);
 
     /** The http status to use. */
     private int httpStatus;

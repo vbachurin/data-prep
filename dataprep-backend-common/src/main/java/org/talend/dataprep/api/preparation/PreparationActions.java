@@ -3,6 +3,7 @@ package org.talend.dataprep.api.preparation;
 import static java.util.Collections.unmodifiableList;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +14,7 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class PreparationActions extends Identifiable {
+public class PreparationActions extends Identifiable implements Serializable {
 
     public static final PreparationActions ROOT_CONTENT = new PreparationActions(Collections.<Action>emptyList());
 

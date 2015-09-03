@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.preparation;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
  * Class used to wrap DataSetRowAction into json.
  */
 @JsonRootName("action")
-public class Action {
+public class Action implements Serializable {
 
     /** Default noop action. */
     public static final DataSetRowAction IDLE_ROW_ACTION = (row, context) -> row;

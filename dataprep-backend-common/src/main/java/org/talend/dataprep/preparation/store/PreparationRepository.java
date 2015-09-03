@@ -1,6 +1,10 @@
-package org.talend.dataprep.api.preparation;
+package org.talend.dataprep.preparation.store;
 
 import java.util.Collection;
+
+import org.talend.dataprep.api.preparation.Identifiable;
+import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.Step;
 
 /**
  * Base interface for preparation repositories (mongodb & in memory).

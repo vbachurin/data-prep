@@ -1,5 +1,9 @@
 package org.talend.dataprep.preparation.task;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,13 +14,9 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.preparation.PreparationRepository;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.preparation.Application;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+import org.talend.dataprep.preparation.store.PreparationRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
