@@ -113,7 +113,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         favorites.add(id1);
         favorites.add(id2);
         userData.setFavoritesDatasets(favorites);
-        userDataRepository.setUserData(userData);
+        userDataRepository.save(userData);
 
         favoritesResp = from(when().get("/datasets").asString()).get("favorite"); //$NON-NLS-1$
         assertEquals(2, favoritesResp.size());
@@ -307,7 +307,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         contentStore.storeAsRaw(dataSetMetadata, new ByteArrayInputStream(new byte[0]));
 
         final UserData userData = new UserData("anonymousUser");
-        userDataRepository.setUserData(userData);
+        userDataRepository.save(userData);
         final Set<String> favorites = new HashSet<>();
         favorites.add(datasetId);
 
@@ -316,7 +316,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         // when
         userData.setFavoritesDatasets(favorites);
-        userDataRepository.setUserData(userData);
+        userDataRepository.save(userData);
 
         // then
         isFavorite = from(when().get("/datasets/{id}/content", datasetId).asString()).get("metadata.favorite");
@@ -727,7 +727,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         HashSet<String> favorites = new HashSet<>();
         favorites.add("1234");
         userData.setFavoritesDatasets(favorites);
-        userDataRepository.setUserData(userData);
+        userDataRepository.save(userData);
 
         contentAsString = when().get("/datasets/{id}/metadata", "1234").asString();
         isFavorites = from(contentAsString).get("metadata.favorite");
@@ -820,7 +820,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         favorites.add(dsId1);
         favorites.add(dsId2);
         userData.setFavoritesDatasets(favorites);
-        userDataRepository.setUserData(userData);
+        userDataRepository.save(userData);
         List<String> favoritesResp = from(when().get("/datasets/favorites").asString()).get();
         assertEquals(2, favoritesResp.size());
         assertThat(favoritesResp, hasItems(dsId1, dsId2));

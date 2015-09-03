@@ -20,7 +20,9 @@ public enum CommonErrorCodes implements ErrorCode {
                                                    MISSING_ACTION_SCOPE(400),
                                                    MISSING_ACTION_SCOPE_PARAMETER(400),
                                                    BAD_AGGREGATION_PARAMETERS(400),
-                                                   UNABLE_TO_AGGREGATE(500);
+                                                   UNABLE_TO_AGGREGATE(500),
+                                                   UNABLE_TO_SAVE_USER_DATA(500),
+                                                   UNABLE_TO_READ_USER_DATA(500, "id");
 
     /** The http status to use. */
     private int httpStatus;

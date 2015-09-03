@@ -139,6 +139,7 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
                 lock.unlock();
             }
         }
+        LOG.debug("dataset metadata repository cleared.");
     }
 
     /**

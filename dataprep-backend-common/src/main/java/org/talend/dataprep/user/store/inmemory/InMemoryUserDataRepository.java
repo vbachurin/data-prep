@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.dataprep.user.store.local;
+package org.talend.dataprep.user.store.inmemory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,30 +21,42 @@ import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.user.store.UserDataRepository;
 
 /**
- * created by sgandon on 16 juin 2015 Detailled comment
- *
+ * In Memory user data store implementation. It is mainly targeted for demo and tests.
  */
 @Component
 @ConditionalOnProperty(name = "user.data.store", havingValue = "in-memory", matchIfMissing = false)
 public class InMemoryUserDataRepository implements UserDataRepository {
 
+    /** Where user data is stored. */
     private final Map<String, UserData> store = new HashMap<>();
 
+    /**
+     * @see UserDataRepository#get(String)
+     */
     @Override
-    public UserData getUserData(String userId) {
+    public UserData get(String userId) {
         return store.get(userId);
     }
 
+    /**
+     * @see UserDataRepository#save(UserData)
+     */
     @Override
-    public void setUserData(UserData userData) {
+    public void save(UserData userData) {
         store.put(userData.getUserId(), userData);
     }
 
+    /**
+     * @see UserDataRepository#remove(String)
+     */
     @Override
     public void remove(String userId) {
         store.remove(userId);
     }
 
+    /**
+     * @see UserDataRepository#clear()
+     */
     @Override
     public void clear() {
         store.clear();
