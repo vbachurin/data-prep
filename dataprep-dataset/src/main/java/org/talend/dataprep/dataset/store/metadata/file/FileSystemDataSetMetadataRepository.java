@@ -15,12 +15,15 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepositoryAdapter;
-import org.talend.dataprep.dataset.store.metadata.lock.DistributedLock;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.dataprep.lock.DistributedLock;
 
 /**
  * File system implementation of the DataSetMetadataRepository.
+ *
+ * Unfortunately, json serialization cannot be used because it's too much API oriented and the default jackson setup
+ * ignores RowMetadata from DataSetMetadata. Hence, simple class serialization is performed.
  */
 @Component
 @ConditionalOnProperty(name = "dataset.metadata.store", havingValue = "file")

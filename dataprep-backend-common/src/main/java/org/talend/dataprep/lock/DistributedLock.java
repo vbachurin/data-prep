@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.dataprep.dataset.store.metadata.lock;
+package org.talend.dataprep.lock;
 
 import com.hazelcast.core.ILock;
 

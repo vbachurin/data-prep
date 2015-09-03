@@ -1,8 +1,8 @@
 package org.talend.dataprep.dataset.store.metadata;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.talend.dataprep.dataset.store.metadata.lock.DistributedLock;
-import org.talend.dataprep.dataset.store.metadata.lock.LockFactory;
+import org.talend.dataprep.lock.DistributedLock;
+import org.talend.dataprep.lock.LockFactory;
 
 /**
  * Base class for all DataSetMetadataRepository implementation.

@@ -1,4 +1,4 @@
-package org.talend.dataprep.dataset.store.metadata.lock;
+package org.talend.dataprep.lock;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

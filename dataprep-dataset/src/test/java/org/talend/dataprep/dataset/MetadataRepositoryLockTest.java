@@ -28,7 +28,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
-import org.talend.dataprep.dataset.store.metadata.lock.DistributedLock;
+import org.talend.dataprep.lock.DistributedLock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)

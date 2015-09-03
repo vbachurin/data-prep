@@ -38,7 +38,7 @@ import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.DataSetBaseTest;
-import org.talend.dataprep.dataset.store.metadata.lock.DistributedLock;
+import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.schema.CSVFormatGuess;
 
 import com.fasterxml.jackson.databind.JsonNode;

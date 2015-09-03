@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepositoryAdapter;
-import org.talend.dataprep.dataset.store.metadata.lock.DistributedLock;
+import org.talend.dataprep.lock.DistributedLock;
 
 /**
  * MongoDB implementation of the DatasetMetadataRepository.

@@ -24,7 +24,7 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
-import org.talend.dataprep.dataset.store.metadata.lock.DistributedLock;
+import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.user.store.UserDataRepository;
 

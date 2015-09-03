@@ -3,7 +3,7 @@ package org.talend.dataprep.dataset.store.metadata;
 import javax.annotation.Nullable;
 
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.dataset.store.metadata.lock.DistributedLock;
+import org.talend.dataprep.lock.DistributedLock;
 
 /**
  * Interface for all DatasetMetadata repository implementations.
