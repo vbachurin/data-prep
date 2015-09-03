@@ -771,7 +771,7 @@ public class DataPreparationAPITest {
                 + "   \"preparationId\": \"" + preparationId + "\",\n" //
                 + "   \"currentStepId\": \"" + firstActionStep + "\",\n" // action 1
                 + "   \"previewStepId\": \"" + lastStep + "\",\n" // action 1 + 2 + 3
-                + "   \"tdpIds\": [1, 3, 5]" //
+                + "   \"tdpIds\": [2, 4, 6]" //
                 + "}";
 
         final InputStream expectedDiffStream = DataPreparationAPITest.class
@@ -801,7 +801,7 @@ public class DataPreparationAPITest {
                 + "   \"preparationId\": \"" + preparationId + "\",\n" //
                 + "   \"currentStepId\": \"" + lastStep + "\",\n" // action 1 + 2 + 3
                 + "   \"updateStepId\": \"" + lastStep + "\",\n" // action 3
-                + "   \"tdpIds\": [1, 3, 5]," //
+                + "   \"tdpIds\": [2, 4, 6]," //
                 + "   \"action\": {" //
                 + "       \"action\": \"delete_on_value\",\n"//
                 + "       \"parameters\": {" //
@@ -833,7 +833,7 @@ public class DataPreparationAPITest {
 
         final String input = "{" //
                 + "   \"preparationId\": \"" + preparationId + "\",\n" //
-                + "   \"tdpIds\": [1, 3, 5],\n" //
+                + "   \"tdpIds\": [2, 4, 6],\n" //
                 + "   \"action\": {\n"
                 + "         \"action\": \"uppercase\",\n"
                 + "         \"parameters\": {\n"
@@ -861,7 +861,7 @@ public class DataPreparationAPITest {
 
         final String input = "{" //
                 + "   \"datasetId\": \"" + datasetId + "\",\n" //
-                + "   \"tdpIds\": [1, 3, 5],\n" //
+                + "   \"tdpIds\": [2, 4, 6],\n" //
                 + "   \"action\": {\n"
                 + "         \"action\": \"uppercase\",\n"
                 + "         \"parameters\": {\n"
