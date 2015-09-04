@@ -85,11 +85,6 @@ public class FileSystemPreparationRepository implements PreparationRepository {
             return null;
         }
 
-        if (!from.canRead()) {
-            LOG.info("id #{} not available in file system, it is perhaps used by another thread ?", id);
-            return null;
-        }
-
         try (ObjectInputStream input = new ObjectInputStream(new FileInputStream(from))) {
             final Object result = input.readObject();
 
@@ -164,7 +159,9 @@ public class FileSystemPreparationRepository implements PreparationRepository {
         // clear all files
         final File[] preparations = getRootFolder().listFiles();
         for (File file : preparations) {
-            file.delete();
+            if (!isNFSSpecificFile(file)) {
+                file.delete();
+            }
         }
 
         // add the default files
@@ -172,6 +169,16 @@ public class FileSystemPreparationRepository implements PreparationRepository {
         add(ROOT_STEP);
 
         LOG.debug("preparation repository cleared");
+    }
+
+    /**
+     * Specific operating system NFS files must be left to the OS and cannot be deleted.
+     * 
+     * @param file the file to inspect.
+     * @return True if the given file is NFS specific (starts with ".nfs")
+     */
+    private boolean isNFSSpecificFile(File file) {
+        return file.getName().startsWith(".nfs");
     }
 
     /**
@@ -183,7 +190,7 @@ public class FileSystemPreparationRepository implements PreparationRepository {
             return;
         }
         final File file = getPreparationFile(object.id());
-        if (file.exists()) {
+        if (file.exists() && !isNFSSpecificFile(file)) {
             file.delete();
         }
         LOG.debug("preparation #{} removed", object.id());

@@ -86,7 +86,7 @@ public class DataSetMetadata implements Serializable {
      * Default empty constructor.
      */
     public DataSetMetadata() {
-        // rowMetadata = new RowMetadata();
+        // no op
     }
 
     /**
@@ -282,7 +282,6 @@ public class DataSetMetadata implements Serializable {
         DataSetMetadata that = (DataSetMetadata) o;
         return Objects.equals(creationDate, that.creationDate) && //
                 Objects.equals(draft, that.draft) && //
-        // Objects.equals(favorite, that.favorite) && //
                 Objects.equals(id, that.id) && //
                 Objects.equals(rowMetadata, that.rowMetadata) && //
                 Objects.equals(lifecycle, that.lifecycle) && //

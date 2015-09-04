@@ -49,11 +49,6 @@ public class FileSystemUserDataRepository implements UserDataRepository {
             return null;
         }
 
-        if (!inputFile.canRead()) {
-            LOG.info("user data #{} not available in file system, it is perhaps used by another thread ?", userId);
-            return null;
-        }
-
         try (ObjectInputStream input = new ObjectInputStream(new FileInputStream(inputFile))) {
             return (UserData) input.readObject();
         } catch (ClassNotFoundException | IOException e) {
@@ -88,7 +83,7 @@ public class FileSystemUserDataRepository implements UserDataRepository {
     @Override
     public void remove(String userId) {
         final File userDataFile = getFile(userId);
-        if (userDataFile.exists()) {
+        if (userDataFile.exists() && !isNFSFile(userDataFile)) {
             userDataFile.delete();
         }
         LOG.debug("user data {} successfully deleted", userId);
@@ -102,7 +97,9 @@ public class FileSystemUserDataRepository implements UserDataRepository {
         final File rootFolder = new File(storeLocation);
         final File[] files = rootFolder.listFiles();
         for (File file : files) {
-            file.delete();
+            if (!isNFSFile(file)) {
+                file.delete();
+            }
         }
         LOG.debug("user data repository cleared");
     }
@@ -115,6 +112,16 @@ public class FileSystemUserDataRepository implements UserDataRepository {
      */
     private File getFile(String userId) {
         return new File(storeLocation + '/' + userId);
+    }
+
+    /**
+     * Specific OS NFS files must be not be dealt with.
+     * 
+     * @param file the file to look at.
+     * @return True if the given file is OS NFS specific (starts with ".nfs")
+     */
+    private boolean isNFSFile(File file) {
+        return file.getName().startsWith(".nfs");
     }
 
 }

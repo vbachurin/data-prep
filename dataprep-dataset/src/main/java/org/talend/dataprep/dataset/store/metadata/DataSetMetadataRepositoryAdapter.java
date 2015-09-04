@@ -10,7 +10,7 @@ import org.talend.dataprep.lock.LockFactory;
 public abstract class DataSetMetadataRepositoryAdapter implements DataSetMetadataRepository {
 
     /** Prefix for the shared lock when working on a dataset. */
-    private static String DATASET_LOCK_PREFIX = "dataset#"; //$NON-NLS-1$
+    private static final String DATASET_LOCK_PREFIX = "dataset#"; //$NON-NLS-1$
 
     /** The lock factory. */
     @Autowired
