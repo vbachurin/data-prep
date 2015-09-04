@@ -28,12 +28,11 @@
             '   </div>' +
             '<div class="quality-bar"><div class="record-unknown"></div></div>';
 
-        var service = {
+        return {
             init: init,
             renewAllColumns: renewAllColumns,
             createColumns: createColumns
         };
-        return service;
 
         //------------------------------------------------------------------------------------------------------
         //-----------------------------------------------GRID COLUMNS-------------------------------------------
@@ -55,7 +54,7 @@
          */
         function createColumnDefinition(col, preview) {
             var template = preview ?
-                 _.template(gridHeaderPreviewTemplate)({
+                _.template(gridHeaderPreviewTemplate)({
                     name: col.name,
                     diffClass: DatagridStyleService.getColumnPreviewStyle(col),
                     simpleType: col.domain ? col.domain : ConverterService.simplifyType(col.type)
@@ -90,17 +89,21 @@
          */
 
         function createColumns(columnsMetadata, preview) {
-
-            function formatterIndex(row, cell, value) {
-                return '<div class="formatterIndexColumn">' + value + '</div>';
-            }
-
             //create new SlickGrid columns
-            var colIndexArray =[] ;
+            var colIndexArray = [];
             var colIndexNameTemplate = '<div class="slick-header-column-index">#</div>';
 
             //Add index column
-            colIndexArray.push({id: colIndexName, name: colIndexNameTemplate, field: colIndexName, formatter: formatterIndex,  resizable : false, selectable: false});
+            colIndexArray.push({
+                id: colIndexName,
+                name: colIndexNameTemplate,
+                field: colIndexName,
+                formatter: function formatterIndex(row, cell, value) {
+                    return '<div class="index-cell">' + value + '</div>';
+                },
+                resizable: false,
+                selectable: false
+            });
 
             return _.union(colIndexArray, _.map(columnsMetadata, function (col) {
                 return createColumnDefinition(col, preview);
@@ -133,7 +136,7 @@
         function renewAllColumns(value) {
             renewAllFlag = value;
 
-            if(value) {
+            if (value) {
                 _.forEach(availableHeaders, destroyHeader);
                 availableHeaders = [];
             }
@@ -176,12 +179,12 @@
         function detachAndSaveHeader(event, columnsArgs) {
             //No header to detach on preview
             var columnDef = columnsArgs.column;
-            if(columnDef.preview || columnDef.id === colIndexName) {
+            if (columnDef.preview || columnDef.id === colIndexName) {
                 return;
             }
 
             //Destroy the header if explicitly requested
-            if(renewAllFlag) {
+            if (renewAllFlag) {
                 destroyHeader(columnDef);
             }
             //Detach and save it otherwise
@@ -211,19 +214,19 @@
         function createAndAttachHeader(event, columnsArgs) {
             //No header to append on preview
             var columnDef = columnsArgs.column;
-            if(columnDef.preview || columnDef.id === colIndexName) {
+            if (columnDef.preview || columnDef.id === colIndexName) {
                 return;
             }
 
             //Get existing header and remove it from available headers list
             var headerDefinition = _.find(availableHeaders, {id: columnDef.id});
-            if(headerDefinition) {
+            if (headerDefinition) {
                 var headerIndex = availableHeaders.indexOf(headerDefinition);
                 availableHeaders.splice(headerIndex, 1);
             }
 
             //Create the header if no available created header, update it otherwise
-            if(headerDefinition) {
+            if (headerDefinition) {
                 headerDefinition.scope.column = columnDef.tdpColMetadata;
                 headerDefinition.scope.$digest();
             }
