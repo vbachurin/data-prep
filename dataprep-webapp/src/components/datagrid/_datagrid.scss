@@ -95,11 +95,6 @@ $datagrid-cell-font-size: .80em;
   border: 1px solid $shadow-gray;
 
   //-------------------------------------------------Slickgrid hack-----------------------------------------------------
-  //disable scroll bar on frozen column
-  .slick-viewport-left {
-    overflow: hidden !important;
-  }
-
   //not frozen columns width to fit resizable container
   .slick-pane-right {
     width: calc(100% - 80px) !important;
@@ -112,7 +107,7 @@ $datagrid-cell-font-size: .80em;
 
   //set the reorder placeholder height to fit column height
   .slick-sortable-placeholder {
-    height: 59px;
+    height: 59px !important;
   }
 
   //------------------------------------------------Data prep column----------------------------------------------------

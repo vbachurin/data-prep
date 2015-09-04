@@ -138,45 +138,6 @@
                     }
                 };
 
-
-                /**
-                 * @ngdoc method
-                 * @name initDragDropColumnsHeader
-                 * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @description [PRIVATE] Manage the reordering for index column 'tdpId'
-                 */
-                var initDragDropColumnsHeader = function initDragDropColumnsHeader() {
-
-                    var isDown = false;   // Tracks status of mouse button
-
-                    $('#datagrid').mousedown(function() {
-                        isDown = true;      // When mouse goes down, set isDown to true
-                    }).mouseup(function() {
-                        isDown = false;    // When mouse goes up, set isDown to false
-                    });
-
-                    $('#datagrid').mouseleave(function() {
-                        if(isDown) {
-                            // Triggers mouseup on the body.
-                            var e = $.Event( 'mouseup', { which: 1 } );
-                            $('body').trigger(e);
-                        }
-                    });
-
-                    $('#datagrid').mousemove(function(event) {
-                        if(isDown) {
-                            var parentOffset = $(this).parent().offset();
-                            var relX = event.pageX - parentOffset.left;
-                            if((relX <= 85)) { //tdpId header size
-                                // Triggers mouseup on the body.
-                                var e = $.Event( 'mouseup', { which: 1 } );
-                                $('body').trigger(e);
-                            }
-                        }
-                    });
-                };
-
-
                 //------------------------------------------------------------------------------------------------------
                 //---------------------------------------------------INIT-----------------------------------------------
                 //------------------------------------------------------------------------------------------------------
@@ -193,8 +154,6 @@
                         // the tooltip ruler is used compute a cell text regardless of the font and zoom used.
                         // To do so, the text is put into an invisible span so that the span can be measured.
                         DatagridTooltipService.tooltipRuler = iElement.find('#tooltip-ruler').eq(0);
-
-                        initDragDropColumnsHeader();
                     }
                 };
 
