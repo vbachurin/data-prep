@@ -17,7 +17,7 @@ describe('Disable right click directive', function() {
         createElement();
         var event = angular.element.Event('contextmenu');
 
-        spyOn(event, 'preventDefault').and.callThrough();
+        spyOn(event, 'preventDefault').and.returnValue();
 
         //when
         element.trigger(event);

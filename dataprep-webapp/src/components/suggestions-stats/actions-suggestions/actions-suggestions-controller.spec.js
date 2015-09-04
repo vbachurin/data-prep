@@ -4,17 +4,21 @@ describe('Actions suggestions-stats controller', function () {
 
     var createController, scope;
 
-    beforeEach(module('data-prep.actions-suggestions'));
+    var stateMock;
+
+    beforeEach(module('data-prep.actions-suggestions', function($provide) {
+        stateMock = {playground: {}};
+        $provide.constant('state', stateMock);
+    }));
 
     beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService,
                                 EarlyPreviewService, TransformationApplicationService) {
         scope = $rootScope.$new();
 
         createController = function () {
-            var ctrl = $controller('ActionsSuggestionsCtrl', {
+            return $controller('ActionsSuggestionsCtrl', {
                 $scope: scope
             });
-            return ctrl;
         };
 
         spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when());
@@ -77,10 +81,10 @@ describe('Actions suggestions-stats controller', function () {
     describe('with initiated state', function () {
         var column = {id: '0001', name: 'col1'};
 
-        beforeEach(inject(function ($q, state, SuggestionService, PlaygroundService, PreparationService) {
+        beforeEach(inject(function ($q, SuggestionService) {
             SuggestionService.currentColumn = column;
-            state.playground.dataset = {id: 'dataset_id'};
-            PreparationService.currentPreparationId = 'preparation_id';
+            stateMock.playground.dataset = {id: 'dataset_id'};
+            stateMock.playground.preparation = {id: 'preparation_id'};
         }));
 
         describe('transform', function() {

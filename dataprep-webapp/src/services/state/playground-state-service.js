@@ -8,16 +8,19 @@
 
         return {
             //playground
-            setGridSelection: setGridSelection,
             show: show,
             hide: hide,
             setDataset: setDataset,
             setPreparation: setPreparation,
+            setNameEditionMode: setNameEditionMode,
             reset: reset,
 
             //recipe
             showRecipe: RecipeStateService.show,
-            hideRecipe: RecipeStateService.hide
+            hideRecipe: RecipeStateService.hide,
+
+            //datagrid
+            setGridSelection: setGridSelection
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -34,6 +37,10 @@
 
         function setPreparation(preparation) {
             playgroundState.preparation = preparation;
+        }
+
+        function setNameEditionMode(editionMode) {
+            playgroundState.nameEditionMode = editionMode;
         }
 
         function show() {

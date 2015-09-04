@@ -21,6 +21,8 @@
     function PlaygroundService($rootScope, $q, state, DatasetService, DatagridService, PreviewService, FilterService,
                                RecipeService, TransformationCacheService, SuggestionService, PreparationService,
                                MessageService, StatisticsService, HistoryService, StateService) {
+        var DEFAULT_NAME = 'Preparation draft';
+
         var service = {
             /**
              * @ngdoc property
@@ -36,15 +38,6 @@
              * @description the current preparation
              */
             preparationName: '',
-            /**
-             * @ngdoc property
-             * @name preparationNameEditionMode
-             * @propertyOf data-prep.services.playground.service:PlaygroundService
-             * @description Flag that the name edition mode.
-             * The edition mode is active when user open an existing preparation, and inactive for a new preparation
-             */
-            preparationNameEditionMode: true,
-
             /**
              * @ngdoc property
              * @name selectedSampleSize
@@ -74,9 +67,10 @@
         //------------------------------------------------------------------------------------------------------
         //-------------------------------------------------INIT/LOAD--------------------------------------------
         //------------------------------------------------------------------------------------------------------
-        function reset(dataset, data) {
+        function reset(dataset, data, preparation) {
             StateService.resetPlayground();
             StateService.setCurrentDataset(dataset);
+            StateService.setCurrentPreparation(preparation);
 
             FilterService.removeAllFilters();
             RecipeService.refresh();
@@ -104,8 +98,7 @@
          * @returns {Promise} The process promise
          */
         function initPlayground(dataset) {
-            if(!state.playground.dataset || PreparationService.currentPreparationId || dataset.id !== state.playground.dataset.id) {
-                PreparationService.currentPreparationId = null;
+            if(!state.playground.dataset || state.playground.preparation || dataset.id !== state.playground.dataset.id) {
 
                 return DatasetService.getContent(dataset.id, false, service.selectedSampleSize.value)
                     .then(function(data) {
@@ -120,7 +113,7 @@
                         setName('');
                         reset(dataset, data);
                         StateService.hideRecipe();
-                        service.preparationNameEditionMode = true;
+                        StateService.setNameEditionMode(true);
                     });
             }
             else {
@@ -137,7 +130,7 @@
          */
          function changeSampleSize() {
             // deal with preparation or dataset
-            if (PreparationService.currentPreparationId) {
+            if (state.playground.preparation) {
                 return changePreparationSampleSize();
             }
             else {
@@ -154,14 +147,13 @@
          * @returns {Promise} The process promise
          */
         function changePreparationSampleSize() {
-
             // get the current step
             var index = RecipeService.getActiveThresholdStepIndex();
             var step = RecipeService.getStep(index);
 
             $rootScope.$emit('talend.loading.start');
 
-            return PreparationService.getContent(step.transformation.stepId, service.selectedSampleSize.value)
+            return PreparationService.getContent(state.playground.preparation.id, step.transformation.stepId, service.selectedSampleSize.value)
                 .then(function(response) {
                     DatagridService.setDataset(state.playground.dataset, response.data);
                 })
@@ -211,17 +203,15 @@
          * @returns {Promise} - the process promise
          */
         function load(preparation) {
-            if(PreparationService.currentPreparationId !== preparation.id) {
-                // Update current preparation id before preparation operations
-                PreparationService.currentPreparationId = preparation.id;
+            if(!state.playground.preparation || state.playground.preparation.id !== preparation.id) {
 
                 $rootScope.$emit('talend.loading.start');
-                return PreparationService.getContent('head', service.selectedSampleSize.value)
+                return PreparationService.getContent(preparation.id, 'head', service.selectedSampleSize.value)
                     .then(function(response) {
                         setName(preparation.name);
-                        reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response.data);
+                        reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response.data, preparation);
                         StateService.showRecipe();
-                        service.preparationNameEditionMode = false;
+                        StateService.setNameEditionMode(false);
                     })
                     .finally(function() {
                         $rootScope.$emit('talend.loading.stop');
@@ -248,7 +238,7 @@
             }
 
             $rootScope.$emit('talend.loading.start');
-            return PreparationService.getContent(step.transformation.stepId, service.selectedSampleSize.value)
+            return PreparationService.getContent(state.playground.preparation.id, step.transformation.stepId, service.selectedSampleSize.value)
                 .then(function(response) {
                     DatagridService.setDataset(state.playground.dataset, response.data);
                     DatagridService.focusedColumn = focusColumnId;
@@ -273,14 +263,19 @@
          */
         function createOrUpdatePreparation(name) {
             if(service.originalPreparationName !== name) {
-                return PreparationService.setName(state.playground.dataset, name)
-                    .then(function() {
-                        service.originalPreparationName = name;
-                        service.preparationName = name;
-                    });
+                var promise = state.playground.preparation ?
+                    PreparationService.setName(state.playground.preparation.id, name) :
+                    PreparationService.create(state.playground.dataset.id, name);
+
+                return promise.then(function(preparation) {
+                    StateService.setCurrentPreparation(preparation);
+                    service.originalPreparationName = name;
+                    service.preparationName = name;
+                    return preparation;
+                });
             }
             else {
-                return $q.reject();
+                return $q.reject('name unchanged');
             }
         }
 
@@ -291,32 +286,46 @@
          * @param {string} action The action name
          * @param {object} parameters The transformation parameters
          * @description Call an execution of a transformation on the column in the current preparation and add an entry
-         * in actions history
+         * in actions history. It there is no preparation yet, it is created first and tagged as draft.
          */
         function appendStep(action, parameters) {
-            var append = executeAppendStep.bind(service, state.playground.dataset, {action: action, parameters: parameters});
+            var prepCreation = state.playground.preparation ?
+                $q.when(state.playground.preparation) :
+                createOrUpdatePreparation(DEFAULT_NAME)
+                    .then(function(preparation) {
+                        preparation.draft = true;
+                        setName('');
+                        return preparation;
+                    });
 
-            return append().then(function() {
-                var lastStepId = RecipeService.getLastStep().transformation.stepId;
-                /*jshint camelcase: false */
-                var cancelAppend = executeRemoveStep.bind(service, lastStepId, false, parameters.column_id);
-                HistoryService.addAction(cancelAppend, append);
-            });
+            var append;
+
+            return prepCreation
+                .then(function(preparation) {
+                    append = executeAppendStep.bind(service, preparation.id, {action: action, parameters: parameters});
+                    return append();
+                })
+                .then(function() {
+                    var lastStepId = RecipeService.getLastStep().transformation.stepId;
+                    /*jshint camelcase: false */
+                    var cancelAppend = executeRemoveStep.bind(service, state.playground.preparation.id, lastStepId, false, parameters.column_id);
+                    HistoryService.addAction(cancelAppend, append);
+                });
         }
 
         /**
          * @ngdoc method
          * @name executeAppendStep
          * @methodOf data-prep.services.playground.service:PlaygroundService
-         * @param {object} metadata The dataset metadata
+         * @param {object} preparationId The preparation id
          * @param {object | array} actionParams The transformation(s) configuration {action: string, parameters: {object}}
          * @param {string} insertionStepId The insertion point step id. (Head = 'head' | falsy | head_step_id)
          * @description Perform a transformation on the column in the current preparation, refresh the recipe and the
          * data. If there is no preparation yet, PreparationService create it.
          */
-        function executeAppendStep(metadata, actionParams, insertionStepId) {
+        function executeAppendStep(preparationId, actionParams, insertionStepId) {
             $rootScope.$emit('talend.loading.start');
-            return PreparationService.appendStep(metadata, actionParams, insertionStepId)
+            return PreparationService.appendStep(preparationId, actionParams, insertionStepId)
                 .then(function(){
                     /*jshint camelcase: false */
                     var columnToFocus = actionParams instanceof Array ? null : actionParams.parameters.column_id;
@@ -339,11 +348,11 @@
         function updateStep(step, newParams) {
             var oldParams = step.actionParameters.parameters;
             var stepIndex = RecipeService.getStepIndex(step);
-            var update = executeUpdateStep.bind(service, step, newParams);
+            var update = executeUpdateStep.bind(service, state.playground.preparation.id, step, newParams);
 
             return update().then(function() {
                 var newStep = RecipeService.getStep(stepIndex);
-                var cancelUpdate = executeUpdateStep.bind(service, newStep, oldParams);
+                var cancelUpdate = executeUpdateStep.bind(service, state.playground.preparation.id, newStep, oldParams);
                 HistoryService.addAction(cancelUpdate, update);
             });
         }
@@ -352,14 +361,15 @@
          * @ngdoc method
          * @name executeUpdateStep
          * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {string} preparationId The preparation id
          * @param {object} step The step to update
          * @param {object} newParams The new parameters
          * @description Perform a transformation update on the provided step.
          */
-        function executeUpdateStep(step, newParams) {
+        function executeUpdateStep(preparationId, step, newParams) {
             $rootScope.$emit('talend.loading.start');
             var lastActiveStepIndex = RecipeService.getActiveThresholdStepIndex();
-            return PreparationService.updateStep(step, newParams)
+            return PreparationService.updateStep(preparationId, step, newParams)
                 .then(updateRecipe)
                 // The grid update cannot be done in parallel because the update change the steps ids
                 // We have to wait for the recipe update to complete
@@ -383,21 +393,20 @@
          */
         function removeStep(step, mode) {
             mode = mode || 'cascade';
-            var metadata = state.playground.dataset;
             var cancelRemove;
             switch(mode) {
                 case 'single' :
                     var insertionStepId = RecipeService.getPreviousStep(step).transformation.stepId;
                     var actionParams = step.actionParameters;
-                    cancelRemove = executeAppendStep.bind(service, metadata, actionParams, insertionStepId);
+                    cancelRemove = executeAppendStep.bind(service, state.playground.preparation.id, actionParams, insertionStepId);
                     break;
                 case 'cascade':
                     var actionParamsList = RecipeService.getAllActionsFrom(step);
-                    cancelRemove = executeAppendStep.bind(service, metadata, actionParamsList);
+                    cancelRemove = executeAppendStep.bind(service, state.playground.preparation.id, actionParamsList);
                     break;
             }
 
-            var remove = executeRemoveStep.bind(service, step.transformation.stepId, mode === 'single');
+            var remove = executeRemoveStep.bind(service, state.playground.preparation.id, step.transformation.stepId, mode === 'single');
 
             return remove().then(function() {
                 HistoryService.addAction(cancelRemove, remove);
@@ -408,14 +417,15 @@
          * @ngdoc method
          * @name executeRemoveStep
          * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {string} preparationId The preparation id
          * @param {string} stepId The step id to remove
          * @param {boolean} singleMode Delete only the target step if true, all steps from target otherwise
          * @param {string} focusColumnId The column id to focus on
          * @description Perform a transformation removal identified by the step id
          */
-        function executeRemoveStep(stepId, singleMode, focusColumnId) {
+        function executeRemoveStep(preparationId, stepId, singleMode, focusColumnId) {
             $rootScope.$emit('talend.loading.start');
-            return PreparationService.removeStep(stepId, singleMode)
+            return PreparationService.removeStep(preparationId, stepId, singleMode)
                 .then(function() {
                     return $q.all([updateRecipe(), updatePreparationDatagrid(focusColumnId)]);
                 })
@@ -462,14 +472,11 @@
          * @description Perform an datagrid refresh with the preparation head
          */
         function updateColumn(columnId, type, domain) {
-
             return DatasetService.updateColumn(state.playground.dataset.id, columnId, {type: type, domain: domain})
                 .then(function() {
-                    // if preparation
-                    if (PreparationService.currentPreparationId) {
+                    if (state.playground.preparation) {
                         return updatePreparationDatagrid();
                     }
-                    // dataset
                     else {
                         return updateDatasetDatagrid();
                     }
@@ -489,7 +496,7 @@
          * @description Perform an datagrid refresh with the preparation head
          */
         function updatePreparationDatagrid(focusColumnId) {
-            return PreparationService.getContent('head', service.selectedSampleSize.value)
+            return PreparationService.getContent(state.playground.preparation.id, 'head', service.selectedSampleSize.value)
                 .then(function(response) {
                     DatagridService.focusedColumn = focusColumnId;
                     DatagridService.updateData(response.data);

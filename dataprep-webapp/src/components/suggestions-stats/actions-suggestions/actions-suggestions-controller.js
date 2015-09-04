@@ -65,7 +65,7 @@
             var infos = {
                 columnId: vm.column.id,
                 datasetId:  state.playground.dataset.id,
-                preparationId:  PreparationService.currentPreparationId
+                preparationId:  state.playground.preparation ? state.playground.preparation.id : null
             };
             return TransformationService.initDynamicParameters(transfo, infos);
         };

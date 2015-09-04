@@ -40,7 +40,12 @@ describe('Export directive', function () {
     var csvParameters = {exportType: 'CSV', 'exportParameters.csvSeparator': ';'};
     var csvType = exportTypes[0];
 
-    beforeEach(module('data-prep.export'));
+    var stateMock;
+
+    beforeEach(module('data-prep.export', function($provide) {
+        stateMock = {playground: {}};
+        $provide.constant('state', stateMock);
+    }));
     beforeEach(module('htmlTemplates'));
 
     beforeEach(inject(function ($rootScope, $compile, $q, ExportService) {
@@ -63,18 +68,18 @@ describe('Export directive', function () {
         state.playground.dataset = null;
     }));
 
-    it('should bind preparationId form value to controller', inject(function (PreparationService) {
+    it('should bind preparationId form value to controller', function () {
         //given
         var input = element.find('#exportForm').eq(0)[0].preparationId;
         expect(input.value).toBeFalsy();
 
         //when
-        PreparationService.currentPreparationId = '48da64513c43a548e678bc99';
+        stateMock.playground.preparation = {id: '48da64513c43a548e678bc99'};
         scope.$digest();
 
         //then
         expect(input.value).toBe('48da64513c43a548e678bc99');
-    }));
+    });
 
     it('should bind stepId form value to controller', inject(function (RecipeService) {
         //given

@@ -73,6 +73,15 @@
                 enteredMax = _aux;
             }
 
+            if(enteredMax < minimum && enteredMin < minimum){
+                enteredMin = minimum;
+                enteredMax = minimum;
+            }
+            if(enteredMin > maximum && enteredMax > maximum){
+                enteredMin = maximum;
+                enteredMax = maximum;
+            }
+
             //maximum limits
             if (enteredMax > maximum || enteredMax < minimum) {
                 enteredMax = maximum;
@@ -85,7 +94,8 @@
 
             if (enteredMin === enteredMax) {
                 var exp = '1e-' + (nbDecimals + 1);
-                return [enteredMin, enteredMin + Number(exp)];
+                //in order to avoid range over stepping
+                return enteredMin === minimum ?[enteredMin, enteredMin + Number(exp)] : [enteredMin - Number(exp), enteredMin];
             }
             else {
                 return [enteredMin, enteredMax];

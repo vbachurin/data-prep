@@ -73,14 +73,14 @@
          * @returns {promise} The POST promise
          */
         function create(datasetId, name) {
-            var createdResult;
+            var createdPreparationId;
             return PreparationRestService.create(datasetId, name)
                 .then(function(response) {
-                    createdResult = response;
+                    createdPreparationId = response.data;
                     return refreshPreparations();
                 })
-                .then(function() {
-                    return createdResult;
+                .then(function(preparations) {
+                    return _.find(preparations, {id: createdPreparationId});
                 });
         }
 
@@ -94,14 +94,14 @@
          * @returns {promise} The PUT promise
          */
         function update(preparationId, name) {
-            var updateResult;
+            var updatedPreparationId;
             return PreparationRestService.update(preparationId, name)
                 .then(function(result) {
-                    updateResult = result;
+                    updatedPreparationId = result.data;
                     return refreshPreparations();
                 })
-                .then(function() {
-                    return updateResult;
+                .then(function(preparations) {
+                    return _.find(preparations, {id: updatedPreparationId});
                 });
         }
 

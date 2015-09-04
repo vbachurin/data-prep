@@ -1,4 +1,4 @@
-describe('Preparation list service controller', function() {
+describe('Preparation list service', function() {
     'use strict';
 
     var preparations, datasets;
@@ -160,15 +160,11 @@ describe('Preparation list service controller', function() {
         initPreparations();
 
         spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({data: preparations}));
-        spyOn(PreparationRestService, 'create').and.returnValue($q.when(createdPreparationId));
+        spyOn(PreparationRestService, 'create').and.returnValue($q.when({data: createdPreparationId}));
         spyOn(PreparationRestService, 'update').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'delete').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'updateStep').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'appendStep').and.returnValue($q.when(true));
-    }));
-
-    afterEach(inject(function(PreparationListService) {
-        PreparationListService.preparations = null;
     }));
 
     it('should refresh preparations', inject(function($rootScope, PreparationListService) {
@@ -243,18 +239,22 @@ describe('Preparation list service controller', function() {
 
     it('should return created preparation id', inject(function($rootScope, PreparationListService) {
         //given
-        PreparationListService.preparations = preparations;
         var result = null;
+        var datasetId = '84ab54cd867f4645a';
+        var createdPreparation = {id: createdPreparationId};
+
+        PreparationListService.preparations = preparations;
 
         //when
-        PreparationListService.create('84ab54cd867f4645a', 'my preparation')
-            .then(function(prepId) {
-                result = prepId;
+        PreparationListService.create(datasetId, 'my preparation')
+            .then(function(prep) {
+                result = prep;
             });
+        PreparationListService.preparations.push(createdPreparation); //simulate the preparation refresh after creation
         $rootScope.$digest();
 
         //then
-        expect(result).toBe(createdPreparationId);
+        expect(result).toBe(createdPreparation);
     }));
 
     it('should refresh preparations list on creation', inject(function($rootScope, PreparationListService, PreparationRestService) {

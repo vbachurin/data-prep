@@ -72,13 +72,14 @@
 
                 previewTimeout = $timeout(function () {
                     var column = state.playground.column;
+                    var preparationId = state.playground.preparation ? state.playground.preparation.id : null;
 
                     params.scope = scope;
                     params.column_id = column.id;
                     params.column_name = column.name;
 
                     RecipeService.earlyPreview(column, action, params);
-                    PreviewService.getPreviewAddRecords(state.playground.dataset.id, action.name, params);
+                    PreviewService.getPreviewAddRecords(preparationId, state.playground.dataset.id, action.name, params);
                 }, 300);
             };
         }

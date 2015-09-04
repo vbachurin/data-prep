@@ -11,8 +11,8 @@ describe('Badge controller', function () {
     beforeEach(module('talend.widget'));
 
     beforeEach(inject(function ($rootScope, $controller) {
-        spyOn(fns, 'change').and.callThrough();
-        spyOn(fns, 'close').and.callThrough();
+        spyOn(fns, 'change').and.returnValue();
+        spyOn(fns, 'close').and.returnValue();
 
         scope = $rootScope.$new();
 

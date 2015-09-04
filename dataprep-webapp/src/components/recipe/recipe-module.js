@@ -8,8 +8,9 @@
      * @requires talend.widget
      * @requires data-prep.services.playground
      * @requires data-prep.services.recipe
-     * @requires data-prep.services.recipeBullet
      * @requires data-prep.services.preparation
+     * @requires data-prep.services.state
+     * @requires data-prep.recipe-bullet
      * @requires data-prep.transformation-params
      */
     angular.module('data-prep.recipe', [
@@ -18,6 +19,7 @@
         'data-prep.services.playground',
         'data-prep.services.recipe',
         'data-prep.services.preparation',
+        'data-prep.services.state',
         'data-prep.recipe-bullet',
         'data-prep.transformation-params'
     ]);
