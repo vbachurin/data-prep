@@ -15,6 +15,10 @@
     <name>dataprep-backend-common</name>
     <dependencies>
         <dependency>
+            <groupId>org.talend.dataquality</groupId>
+            <artifactId>org.talend.dataquality.statistics</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
         </dependency>

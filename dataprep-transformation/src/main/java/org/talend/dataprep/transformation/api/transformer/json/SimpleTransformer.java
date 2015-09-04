@@ -14,10 +14,10 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSet;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
+import org.talend.dataprep.api.dataset.statistics.StatisticsUtils;
+import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ActionParser;
@@ -36,10 +36,12 @@ import org.talend.dataquality.statistics.numeric.histogram.HistogramAnalyzer;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileAnalyzer;
 import org.talend.dataquality.statistics.numeric.summary.SummaryAnalyzer;
 import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
+import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.dataquality.statistics.text.TextLengthAnalyzer;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.semantic.SemanticAnalyzer;
+import org.talend.datascience.common.inference.semantic.SemanticType;
 import org.talend.datascience.common.inference.type.DataType;
 
 /**
@@ -96,26 +98,33 @@ class SimpleTransformer implements Transformer {
                                     .ddPath(ddPath) //
                                     .kwPath(kwPath) //
                                     .setMode(CategoryRecognizerBuilder.Mode.LUCENE);
-                            final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types);
                             // Find global min and max for histogram
                             double min = Double.MAX_VALUE;
                             double max = Double.MIN_VALUE;
+                            boolean hasMetNumeric = false;
                             for (ColumnMetadata column : columns) {
-                                final Statistics statistics = column.getStatistics();
-                                if (statistics.getMax() > max) {
-                                    max = statistics.getMax();
-                                }
-                                if (statistics.getMin() < min) {
-                                    min = statistics.getMin();
+                                final boolean isNumeric = Type.NUMERIC.isAssignableFrom(Type.get(column.getType()));
+                                if (isNumeric) {
+                                    final Statistics statistics = column.getStatistics();
+                                    if (statistics.getMax() > max) {
+                                        max = statistics.getMax();
+                                    }
+                                    if (statistics.getMin() < min) {
+                                        min = statistics.getMin();
+                                    }
+                                    hasMetNumeric = true;
                                 }
                             }
-                            histogramAnalyzer.init(min, max, 8);
-                            analyzer = Analyzers.with(new ValueQualityAnalyzer(types),
+                            final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types);
+                            if (hasMetNumeric) {
+                                histogramAnalyzer.init(min, max, 8);
+                            }
+                            analyzer = Analyzers.with( new ValueQualityAnalyzer(types),
                                     // Cardinality (distinct + duplicate)
                                     new CardinalityAnalyzer(),
                                     // Frequency analysis (Pattern + data)
                                     new DataFrequencyAnalyzer(),
-                                    new PatternFrequencyAnalyzer(), // TODO Wait for fix about pattern + data statistics
+                                    new PatternFrequencyAnalyzer(),
                                     // Quantile analysis
                                     new QuantileAnalyzer(types),
                                     // Summary (min, max, mean, variance)
@@ -166,6 +175,28 @@ class SimpleTransformer implements Transformer {
             // Write columns
             if (!wroteMetadata.get() && transformColumns) {
                 writer.fieldName("columns");
+                final RowMetadata row = context.getTransformedRowMetadata();
+                final Analyzer<Analyzers.Result> analyzer = (Analyzer<Analyzers.Result>) context.get("analyzer");
+                analyzer.end();
+                // Set metadata information (not in statistics).
+                final List<ColumnMetadata> dataSetColumns = row.getColumns();
+                final List<Analyzers.Result> results = analyzer.getResult();
+                for (int i = 0; i < results.size(); i++) {
+                    final Analyzers.Result result = results.get(i);
+                    final ColumnMetadata metadata = dataSetColumns.get(i);
+                    // Value quality
+                    final ValueQualityStatistics column = result.get(ValueQualityStatistics.class);
+                    final Quality quality = metadata.getQuality();
+                    quality.setEmpty((int) column.getEmptyCount());
+                    quality.setInvalid((int) column.getInvalidCount());
+                    quality.setValid((int) column.getValidCount());
+                    quality.setInvalidValues(column.getInvalidValues());
+                    // Semantic types
+                    final SemanticType semanticType = result.get(SemanticType.class);
+                    metadata.setDomain(TypeUtils.getDomainLabel(semanticType));
+                }
+                // Set the statistics
+                StatisticsUtils.setStatistics(row.getColumns(), analyzer);
                 writer.write(context.getTransformedRowMetadata());
             }
             writer.endObject();

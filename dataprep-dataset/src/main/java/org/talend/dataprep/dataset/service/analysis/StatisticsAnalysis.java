@@ -2,7 +2,6 @@ package org.talend.dataprep.dataset.service.analysis;
 
 import static java.util.stream.StreamSupport.stream;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,7 +22,8 @@ import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.statistics.*;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
+import org.talend.dataprep.api.dataset.statistics.StatisticsUtils;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
@@ -32,21 +32,13 @@ import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataquality.statistics.cardinality.CardinalityAnalyzer;
-import org.talend.dataquality.statistics.cardinality.CardinalityStatistics;
 import org.talend.dataquality.statistics.frequency.DataFrequencyAnalyzer;
-import org.talend.dataquality.statistics.frequency.DataFrequencyStatistics;
 import org.talend.dataquality.statistics.frequency.PatternFrequencyAnalyzer;
-import org.talend.dataquality.statistics.frequency.PatternFrequencyStatistics;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramAnalyzer;
-import org.talend.dataquality.statistics.numeric.histogram.HistogramStatistics;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileAnalyzer;
-import org.talend.dataquality.statistics.numeric.quantile.QuantileStatistics;
 import org.talend.dataquality.statistics.numeric.summary.SummaryAnalyzer;
-import org.talend.dataquality.statistics.numeric.summary.SummaryStatistics;
 import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
-import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.dataquality.statistics.text.TextLengthAnalyzer;
-import org.talend.dataquality.statistics.text.TextLengthStatistics;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.type.DataType;
@@ -169,81 +161,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
         }).forEach(analyzer::analyze);
         analyzer.end();
         // Store results back in data set
-        final Iterator<ColumnMetadata> columnIterator = columns.iterator();
-        for (Analyzers.Result result : analyzer.getResult()) {
-            final ColumnMetadata currentColumn = columnIterator.next();
-            final boolean isNumeric = Type.NUMERIC.isAssignableFrom(Type.get(currentColumn.getType()));
-            final boolean isString = Type.STRING.isAssignableFrom(Type.get(currentColumn.getType()));
-            final Statistics statistics = currentColumn.getStatistics();
-            // Value quality (empty / invalid / ...)
-            final ValueQualityStatistics valueQualityStatistics = result.get(ValueQualityStatistics.class);
-            if (valueQualityStatistics != null) {
-                statistics.setCount(valueQualityStatistics.getCount());
-                statistics.setEmpty(valueQualityStatistics.getEmptyCount());
-                statistics.setInvalid(valueQualityStatistics.getInvalidCount());
-                statistics.setValid(valueQualityStatistics.getValidCount());
-            }
-            // Cardinality (distinct + duplicates)
-            final CardinalityStatistics cardinalityStatistics = result.get(CardinalityStatistics.class);
-            if (cardinalityStatistics != null) {
-                statistics.setDistinctCount(cardinalityStatistics.getDistinctCount());
-                statistics.setDuplicateCount(cardinalityStatistics.getDuplicateCount());
-            }
-            // Frequencies (data)
-            final DataFrequencyStatistics dataFrequencyStatistics = result.get(DataFrequencyStatistics.class);
-            if (dataFrequencyStatistics != null) {
-                final Map<String, Long> topTerms = dataFrequencyStatistics.getTopK(15);
-                if (topTerms != null) {
-                    statistics.getDataFrequencies().clear();
-                    topTerms.forEach((s, o) -> statistics.getDataFrequencies().add(new DataFrequency(s, o)));
-                }
-            }
-            // Frequencies (pattern)
-            final PatternFrequencyStatistics patternFrequencyStatistics = result.get(PatternFrequencyStatistics.class);
-            if (patternFrequencyStatistics != null) {
-                final Map<String, Long> topTerms = patternFrequencyStatistics.getTopK(15);
-                if (topTerms != null) {
-                    statistics.getPatternFrequencies().clear();
-                    topTerms.forEach((s, o) -> statistics.getPatternFrequencies().add(new PatternFrequency(s, o)));
-                }
-            }
-            // Quantiles
-            final QuantileStatistics quantileStatistics = result.get(QuantileStatistics.class);
-            if (quantileStatistics != null && isNumeric) {
-                final Quantiles quantiles = statistics.getQuantiles();
-                quantiles.setLowerQuantile(quantileStatistics.getLowerQuantile());
-                quantiles.setMedian(quantileStatistics.getMedian());
-                quantiles.setUpperQuantile(quantileStatistics.getUpperQuantile());
-            }
-            // Summary (min, max, mean, variance)
-            final SummaryStatistics summaryStatistics = result.get(SummaryStatistics.class);
-            if (summaryStatistics != null) {
-                statistics.setMax(summaryStatistics.getMax());
-                statistics.setMin(summaryStatistics.getMin());
-                statistics.setMean(summaryStatistics.getMean());
-                statistics.setVariance(summaryStatistics.getVariance());
-            }
-            // Histogram
-            final HistogramStatistics histogramStatistics = result.get(HistogramStatistics.class);
-            if (histogramStatistics != null && isNumeric) {
-                statistics.getHistogram().clear();
-                histogramStatistics.getHistogram().forEach((r, v) -> {
-                    final HistogramRange range = new HistogramRange();
-                    range.getRange().setMax(r.getUpper());
-                    range.getRange().setMin(r.getLower());
-                    range.setOccurrences(v);
-                    statistics.getHistogram().add(range);
-                });
-            }
-            // Text length
-            final TextLengthStatistics textLengthStatistics = result.get(TextLengthStatistics.class);
-            if (textLengthStatistics != null && isString) {
-                final TextLengthSummary textLengthSummary = statistics.getTextLengthSummary();
-                textLengthSummary.setAverageLength(textLengthStatistics.getAvgTextLength());
-                textLengthSummary.setMinimalLength(textLengthStatistics.getMinTextLength());
-                textLengthSummary.setMaximalLength(textLengthStatistics.getMaxTextLength());
-            }
-        }
+        StatisticsUtils.setStatistics(columns, analyzer);
     }
 
     @Override
