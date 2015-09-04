@@ -202,6 +202,9 @@ public class ColumnMetadata implements Serializable {
      * @param statistics The statistics as returned by the data quality library.
      */
     public void setStatistics(Statistics statistics) {
+        if (statistics == null) {
+            statistics = new Statistics();
+        }
         this.statistics = statistics;
     }
 

@@ -28,7 +28,6 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.*;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -37,10 +36,11 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Test class for Split action. Creates one consumer, and test it.
@@ -413,23 +413,6 @@ public class ComputeTimeSinceTest {
 
         Temporal result = (unit == ChronoUnit.HOURS ? LocalDateTime.from(start) : LocalDate.from(start));
         return String.valueOf(unit.between(result, now));
-    }
-
-    /**
-     * Return a ComputeTimeSince closure with the given unit.
-     *
-     * @param unit the unit to use.
-     * @return a ComputeTimeSince closure with the given unit.
-     */
-    private DataSetRowAction getClosure(String unit) throws IOException {
-        ComputeTimeSince currentAction = new ComputeTimeSince();
-        InputStream json = ComputeTimeSince.class.getResourceAsStream("computeTimeSinceAction.json");
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters(currentAction, json);
-
-        parameters.put(TIME_UNIT_PARAMETER, unit);
-
-        Action alternativeAction = currentAction.create(parameters);
-        return alternativeAction.getRowAction();
     }
 
     /**
