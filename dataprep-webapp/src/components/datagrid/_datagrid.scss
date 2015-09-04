@@ -94,6 +94,28 @@ $datagrid-cell-font-size: .80em;
   min-height: 300px;
   border: 1px solid $shadow-gray;
 
+  //-------------------------------------------------Slickgrid hack-----------------------------------------------------
+  //disable scroll bar on frozen column
+  .slick-viewport-left {
+    overflow: hidden !important;
+  }
+
+  //not frozen columns width to fit resizable container
+  .slick-pane-right {
+    width: calc(100% - 80px) !important;
+  }
+
+  //not frozen viewport should fit its container size (slick-pane-right)
+  .slick-viewport-right {
+    width: 100% !important;
+  }
+
+  //set the reorder placeholder height to fit column height
+  .slick-sortable-placeholder {
+    height: 59px;
+  }
+
+  //------------------------------------------------Data prep column----------------------------------------------------
   .slick-header-columns {
     border-bottom: 1px solid silver;
     box-sizing: content-box;
@@ -107,6 +129,7 @@ $datagrid-cell-font-size: .80em;
     }
   }
 
+  //-----------------------------------------------Data prep content----------------------------------------------------
   .slick-row {
     position: absolute;
     background: white;

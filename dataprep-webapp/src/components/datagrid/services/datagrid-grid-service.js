@@ -91,9 +91,10 @@
                 enableAddRow: false,
                 enableCellNavigation: true,
                 enableTextSelectionOnCells: false,
-                syncColumnCellResize: true
+                syncColumnCellResize: true,
+                frozenColumn: 0
             };
-            grid = new Slick.Grid(elementId, DatagridService.dataView, [], options);
+            grid = new Slick.Grid(elementId, DatagridService.dataView, [{id: 'tdpId'}], options);
 
             //listeners
             attachLongTableListeners();
