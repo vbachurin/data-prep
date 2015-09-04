@@ -133,15 +133,10 @@
                      */
                     function attachClickListener() {
                         gridHeader.mousedown(function(event) {
-                            if(ctrl.column.name === '#'){
+                            if (event.which === 3) { //Right click
+                                //stop propagation not to hide dropdown and hide/show menu on right click
                                 event.stopPropagation();
-                                event.preventDefault();
-                            } else {
-                                if (event.which === 3) { //Right click
-                                    //stop propagation not to hide dropdown and hide/show menu on right click
-                                    event.stopPropagation();
-                                    gridHeader.find('.dropdown-action').click();
-                                }
+                                gridHeader.find('.dropdown-action').click();
                             }
                         });
                     }

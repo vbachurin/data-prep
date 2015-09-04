@@ -19,6 +19,7 @@
         var grid;
         var availableHeaders = [];
         var renewAllFlag;
+        var colIndexName = "tdpId";
 
         var gridHeaderPreviewTemplate =
             '<div class="grid-header <%= diffClass %>">' +
@@ -96,9 +97,10 @@
 
             //create new SlickGrid columns
             var colIndexArray =[] ;
+            var colIndexNameTemplate = '<div style="height: 56px; font-weight: bold;  background-color: #555964; color: #ffffff; padding: 5px 5px;">#</div>';
 
             //Add index column
-            colIndexArray.push({id: 'tdpId', name: '', field: 'tdpId', formatter: formatterIndex,  resizable : false, selectable: false, tdpColMetadata: {type: 'integer', name: '#'}});
+            colIndexArray.push({id: colIndexName, name: colIndexNameTemplate, field: colIndexName, formatter: formatterIndex,  resizable : false, selectable: false});
 
             return _.union(colIndexArray, _.map(columnsMetadata, function (col) {
                 return createColumnDefinition(col, preview);
@@ -174,7 +176,7 @@
         function detachAndSaveHeader(event, columnsArgs) {
             //No header to detach on preview
             var columnDef = columnsArgs.column;
-            if(columnDef.preview) {
+            if(columnDef.preview || columnDef.id === colIndexName) {
                 return;
             }
 
@@ -209,7 +211,7 @@
         function createAndAttachHeader(event, columnsArgs) {
             //No header to append on preview
             var columnDef = columnsArgs.column;
-            if(columnDef.preview) {
+            if(columnDef.preview || columnDef.id === colIndexName) {
                 return;
             }
 
