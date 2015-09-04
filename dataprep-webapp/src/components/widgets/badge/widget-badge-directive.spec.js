@@ -11,8 +11,8 @@ describe('Badge directive', function () {
     beforeEach(module('talend.widget'));
     beforeEach(module('htmlTemplates'));
     beforeEach(function() {
-        spyOn(fns, 'change').and.callThrough();
-        spyOn(fns, 'close').and.callThrough();
+        spyOn(fns, 'change').and.returnValue();
+        spyOn(fns, 'close').and.returnValue();
     });
 
     afterEach(function () {

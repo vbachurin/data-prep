@@ -3,17 +3,20 @@ describe('ColumnProfile controller', function () {
 
     var createController, scope;
 
-	beforeEach(module('data-prep.column-profile'));
-	beforeEach(module('data-prep.suggestions-stats'));
+    var stateMock;
+
+    beforeEach(module('data-prep.column-profile', function($provide) {
+        stateMock = {playground: {}};
+        $provide.constant('state', stateMock);
+    }));
 
     beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();
 
         createController = function () {
-            var ctrl = $controller('ColumnProfileCtrl', {
+            return $controller('ColumnProfileCtrl', {
                 $scope: scope
             });
-            return ctrl;
         };
     }));
 
@@ -106,9 +109,9 @@ describe('ColumnProfile controller', function () {
             var column = {id: '0001'};
             var aggregation = {name: 'MAX'};
 
-            PlaygroundService.currentMetadata = {id: datasetId};
+            stateMock.playground.dataset = {id: datasetId};
+            stateMock.playground.preparation = {id: preparationId};
             PlaygroundService.selectedSampleSize = {value: sampleSize};
-            PreparationService.currentPreparationId = preparationId;
             spyOn(RecipeService, 'getLastActiveStep').and.returnValue({id: stepId});
 
             //when
@@ -128,9 +131,9 @@ describe('ColumnProfile controller', function () {
             var sampleSize = 500;
             var aggregation = {name: 'MAX'};
 
-            PlaygroundService.currentMetadata = {id: datasetId};
+            stateMock.playground.dataset = {id: datasetId};
+            stateMock.playground.preparation = null;
             PlaygroundService.selectedSampleSize = {value: sampleSize};
-            PreparationService.currentPreparationId = null;
             spyOn(RecipeService, 'getLastActiveStep').and.callFake(function() {
                 throw new Error('should NOT call RecipeService because there is no preparation');
             });

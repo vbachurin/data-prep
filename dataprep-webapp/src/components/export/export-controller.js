@@ -5,17 +5,16 @@
      * @ngdoc controller
      * @name data-prep.export.controller:ExportCtrl
      * @description Export controller.
-     * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.utils.service:RestURLs
      * @requires data-prep.services.export.service:ExportService
      */
-    function ExportCtrl($timeout, PlaygroundService, PreparationService, RecipeService, RestURLs, ExportService) {
+    function ExportCtrl($timeout, state, PreparationService, RecipeService, RestURLs, ExportService) {
         var vm = this;
+        vm.state = state;
         vm.preparationService = PreparationService;
         vm.recipeService = RecipeService;
-        vm.playgroundService = PlaygroundService;
         vm.exportService = ExportService;
 
         /**
@@ -101,22 +100,6 @@
 
     /**
      * @ngdoc property
-     * @name preparationId
-     * @propertyOf data-prep.export.controller:ExportCtrl
-     * @description The current preparationId
-     * It is bound to {@link data-prep.services.preparation.service:PreparationService PreparationService} property
-     */
-    Object.defineProperty(ExportCtrl.prototype,
-        'preparationId', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.preparationService.currentPreparationId;
-            }
-        });
-
-    /**
-     * @ngdoc property
      * @name stepId
      * @propertyOf data-prep.export.controller:ExportCtrl
      * @description The current stepId
@@ -137,15 +120,15 @@
      * @name datasetId
      * @propertyOf data-prep.export.controller:ExportCtrl
      * @description The current dataset id
-     * It is bound to {@link data-prep.services.playground.service:PlaygroundService PlaygroundService} property
+     * It is bound to {@link data-prep.services.state.constant:state state} property
      */
     Object.defineProperty(ExportCtrl.prototype,
         'datasetId', {
             enumerable: true,
             configurable: false,
             get: function () {
-                var metadata = this.playgroundService.currentMetadata;
-                return metadata ? metadata.id : '';
+                var dataset = this.state.playground.dataset;
+                return dataset ? dataset.id : '';
             }
         });
 

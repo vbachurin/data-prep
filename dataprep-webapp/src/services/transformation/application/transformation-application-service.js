@@ -35,10 +35,12 @@
         function appendClosure(action, scope) {
             /*jshint camelcase: false */
             return function (params) {
+                var column = state.playground.column;
+
                 params = params || {};
                 params.scope = scope;
-                params.column_id = state.column.id;
-                params.column_name = state.column.name;
+                params.column_id = column.id;
+                params.column_name = column.name;
 
                 return PlaygroundService.appendStep(action.name, params);
             };

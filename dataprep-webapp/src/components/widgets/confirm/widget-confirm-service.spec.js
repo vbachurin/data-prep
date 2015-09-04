@@ -13,7 +13,6 @@ describe('Confirm widget service', function() {
         $translateProvider.preferredLanguage('en_US');
     }));
 
-
     afterEach(inject(function($timeout, TalendConfirmService) {
         if(TalendConfirmService.element) {
             TalendConfirmService.resolve();
@@ -99,7 +98,7 @@ describe('Confirm widget service', function() {
             scope = TalendConfirmService.modalScope;
             element = TalendConfirmService.element;
 
-            spyOn(element, 'remove').and.callThrough();
+            spyOn(element, 'remove').and.returnValue();
         }));
 
         it('should throw error on confirm create but another confirm modal is already created', inject(function($timeout, TalendConfirmService) {

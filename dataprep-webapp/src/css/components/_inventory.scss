@@ -8,24 +8,29 @@ $inventory-sort-height: 50px;
   @include flex-column();
   font-size: 0.9em;
 
-  .inventory-datasets {
-    @include calc(height, "100vh - 2 * " + $header-height + " - " + $footer-height + " - " + $inventory-sort-height);
-    overflow-y: auto;
-  }
-
   .inventory-sort {
-    @include flex-basis(52px);
+    @include flex-basis($inventory-sort-height);
+    @include flex-grow(0);
+    @include flex-shrink(0);
+
     border-bottom: 1px solid $border-color;
     font-weight: 300;
     padding: 15px 5px 0 0;
-    text-align: right;
-    height: $inventory-sort-height;
+  }
+
+  .inventory-list {
+    @include calc(flex-basis, "100vh - 2 * " + $header-height + " - " + $footer-height + " - " + $inventory-sort-height);
+    @include flex-column();
+    overflow-y: auto;
   }
 
   .inventory-entry {
     @include flex-basis(72px);
-    @include flex-row();
+    @include flex-grow(0);
+    @include flex-shrink(0);
     @include align-items(center);
+
+    @include flex-row();
 
     border-bottom: 1px solid $border-color;
     padding: 10px;

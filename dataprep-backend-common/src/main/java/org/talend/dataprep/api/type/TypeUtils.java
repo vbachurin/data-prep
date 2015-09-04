@@ -2,7 +2,10 @@ package org.talend.dataprep.api.type;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
+import org.talend.datascience.common.inference.semantic.SemanticType;
 import org.talend.datascience.common.inference.type.DataType;
 
 public class TypeUtils {
@@ -46,5 +49,23 @@ public class TypeUtils {
             }
         }
         return types;
+    }
+
+    /**
+     * @param semanticType A {@link SemanticType semantic type} as returned by the DQ's {@link org.talend.datascience.common.inference.semantic.SemanticAnalyzer}.
+     * @return A display name for the semantic type's suggested category or empty string if none found.
+     */
+    public static String getDomainLabel(SemanticType semanticType) {
+        return getDomainLabel(semanticType.getSuggestedCategory());
+    }
+
+    /**
+     * @param categoryId A category id from supported {@link SemanticCategoryEnum categories}.
+     * @return A display name for the category id or empty string if none found.
+     * @see SemanticCategoryEnum
+     */
+    public static String getDomainLabel(String categoryId) {
+        final SemanticCategoryEnum category = SemanticCategoryEnum.getCategoryById(categoryId.toUpperCase());
+        return category == null ? StringUtils.EMPTY : category.getDisplayName();
     }
 }
