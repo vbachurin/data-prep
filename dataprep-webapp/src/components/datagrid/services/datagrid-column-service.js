@@ -19,7 +19,7 @@
         var grid;
         var availableHeaders = [];
         var renewAllFlag;
-        var colIndexName = "tdpId";
+        var colIndexName = 'tdpId';
 
         var gridHeaderPreviewTemplate =
             '<div class="grid-header <%= diffClass %>">' +
