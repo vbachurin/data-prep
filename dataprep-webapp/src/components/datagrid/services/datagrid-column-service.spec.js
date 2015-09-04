@@ -198,6 +198,27 @@ describe('Datagrid column service', function () {
             expect(columnDef.header.remove).not.toHaveBeenCalled();
             expect(columnDef.scope.$destroy).not.toHaveBeenCalled();
         }));
+
+        it('should NOT detach header for index column', inject(function(DatagridColumnService) {
+            //given
+            columnDef.preview = false;
+            var columnsArgs = {
+                id: 'tdpId',
+                column: {
+                    id: 'tdpId',
+                    header: {remove: function() {}, detach: function() {}},
+                    scope: {$destroy: function() {}}
+                }
+            };
+            DatagridColumnService.renewAllColumns(false);
+
+            //when
+            var onBeforeHeaderCellDestroy = gridMock.onBeforeHeaderCellDestroy.subscribe.calls.argsFor(0)[0];
+            onBeforeHeaderCellDestroy(null, columnsArgs);
+
+            //then
+            expect(columnDef.header.detach).not.toHaveBeenCalled();
+        }));
     });
 
     describe('on column header rendered event', function() {
@@ -289,6 +310,26 @@ describe('Datagrid column service', function () {
                     id: '0002',
                     tdpColMetadata: {},
                     preview: true
+                },
+                node: angular.element('<div></div>')[0]
+            };
+
+            //when
+            var onHeaderCellRendered = gridMock.onHeaderCellRendered.subscribe.calls.argsFor(0)[0];
+            onHeaderCellRendered(null, columnsArgs);
+
+            //then
+            expect(columnsArgs.column.scope).not.toBeDefined();
+            expect(columnsArgs.column.header).not.toBeDefined();
+
+            expect(angular.element(columnsArgs.node).find('datagrid-header').length).toBe(0);
+        }));
+
+        it('should do nothing if column is index column', inject(function() {
+            //given
+            var columnsArgs = {
+                column:  {
+                    id: 'tdpId'
                 },
                 node: angular.element('<div></div>')[0]
             };
