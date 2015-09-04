@@ -31,32 +31,40 @@
          * @param {string} column The selected column
          * @param {number} row The row number
          * @param {string} tab The suggestion tab to select
-         * @description Set the selected column into external services. This will trigger actions that use this property
+         * @description Set the selected column into external services except the index column. This will trigger actions that use this property
          * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
          */
+        
         function updateSuggestionPanel(column, row, tab) {
-            var tabHasChanged = tab !== lastSelectedTab;
-            var columnHasChanged = column.tdpColMetadata !== lastSelectedColumn;
+            if (column.id !== 'tdpId') {
+                var tabHasChanged = tab !== lastSelectedTab;
+                var columnHasChanged = column.tdpColMetadata !== lastSelectedColumn;
 
-            if(!tabHasChanged && !columnHasChanged) {
-                return;
+                if(!tabHasChanged && !columnHasChanged) {
+                    return;
+                }
+    
+                $timeout.cancel(suggestionTimeout);
+    
+                    suggestionTimeout = $timeout(function() {
+                    lastSelectedColumn = column.tdpColMetadata;
+                    lastSelectedTab = tab;
+                    StateService.setGridSelection(lastSelectedColumn, row);
+    
+                        if(tabHasChanged) {
+                            SuggestionService.selectTab(lastSelectedTab);
+                        }
+                        if(columnHasChanged) {
+                            StatisticsService.processData(lastSelectedColumn);
+                            SuggestionService.setColumn(lastSelectedColumn);
+                        }
+                }, 200);
+            } else {
+                $timeout(function() {
+                    SuggestionService.reset();
+                    StatisticsService.resetCharts();
+                });
             }
-
-            $timeout.cancel(suggestionTimeout);
-
-            suggestionTimeout = $timeout(function() {
-                lastSelectedColumn = column.tdpColMetadata;
-                lastSelectedTab = tab;
-                StateService.setGridSelection(lastSelectedColumn, row);
-
-                if(tabHasChanged) {
-                    SuggestionService.selectTab(lastSelectedTab);
-                }
-                if(columnHasChanged) {
-                    StatisticsService.processData(lastSelectedColumn);
-                    SuggestionService.setColumn(lastSelectedColumn);
-                }
-            }, 200);
         }
 
         /**
