@@ -119,20 +119,27 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
         // Create a content with the expected format for the StatisticsClientJson class
         final List<ColumnMetadata> columns = metadata.getRow().getColumns();
         DataType.Type[] types = TypeUtils.convert(columns);
-        final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types);
         // Find global min and max for histogram
         double min = Double.MAX_VALUE;
         double max = Double.MIN_VALUE;
+        boolean hasMetNumeric = false;
         for (ColumnMetadata column : columns) {
-            final Statistics statistics = column.getStatistics();
-            if (statistics.getMax() > max) {
-                max = statistics.getMax();
-            }
-            if (statistics.getMin() < min) {
-                min = statistics.getMin();
+            final boolean isNumeric = Type.NUMERIC.isAssignableFrom(Type.get(column.getType()));
+            if (isNumeric) {
+                final Statistics statistics = column.getStatistics();
+                if (statistics.getMax() > max) {
+                    max = statistics.getMax();
+                }
+                if (statistics.getMin() < min) {
+                    min = statistics.getMin();
+                }
+                hasMetNumeric = true;
             }
         }
-        histogramAnalyzer.init(min, max, 8);
+        final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types);
+        if (hasMetNumeric) {
+            histogramAnalyzer.init(min, max, 8);
+        }
         // Select all analysis
         Analyzer[] allAnalyzers = new Analyzer[] {
                 new ValueQualityAnalyzer(types),
@@ -166,6 +173,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
         for (Analyzers.Result result : analyzer.getResult()) {
             final ColumnMetadata currentColumn = columnIterator.next();
             final boolean isNumeric = Type.NUMERIC.isAssignableFrom(Type.get(currentColumn.getType()));
+            final boolean isString = Type.STRING.isAssignableFrom(Type.get(currentColumn.getType()));
             final Statistics statistics = currentColumn.getStatistics();
             // Value quality (empty / invalid / ...)
             final ValueQualityStatistics valueQualityStatistics = result.get(ValueQualityStatistics.class);
@@ -184,16 +192,18 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
             // Frequencies (data)
             final DataFrequencyStatistics dataFrequencyStatistics = result.get(DataFrequencyStatistics.class);
             if (dataFrequencyStatistics != null) {
-                final Map<String, Long> topTerms = dataFrequencyStatistics.getTopK(5);
+                final Map<String, Long> topTerms = dataFrequencyStatistics.getTopK(15);
                 if (topTerms != null) {
+                    statistics.getDataFrequencies().clear();
                     topTerms.forEach((s, o) -> statistics.getDataFrequencies().add(new DataFrequency(s, o)));
                 }
             }
             // Frequencies (pattern)
             final PatternFrequencyStatistics patternFrequencyStatistics = result.get(PatternFrequencyStatistics.class);
             if (patternFrequencyStatistics != null) {
-                final Map<String, Long> topTerms = patternFrequencyStatistics.getTopK(5);
+                final Map<String, Long> topTerms = patternFrequencyStatistics.getTopK(15);
                 if (topTerms != null) {
+                    statistics.getPatternFrequencies().clear();
                     topTerms.forEach((s, o) -> statistics.getPatternFrequencies().add(new PatternFrequency(s, o)));
                 }
             }
@@ -203,7 +213,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
                 final Quantiles quantiles = statistics.getQuantiles();
                 quantiles.setLowerQuantile(quantileStatistics.getLowerQuantile());
                 quantiles.setMedian(quantileStatistics.getMedian());
-                quantiles.setMedian(quantileStatistics.getUpperQuantile());
+                quantiles.setUpperQuantile(quantileStatistics.getUpperQuantile());
             }
             // Summary (min, max, mean, variance)
             final SummaryStatistics summaryStatistics = result.get(SummaryStatistics.class);
@@ -216,6 +226,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
             // Histogram
             final HistogramStatistics histogramStatistics = result.get(HistogramStatistics.class);
             if (histogramStatistics != null && isNumeric) {
+                statistics.getHistogram().clear();
                 histogramStatistics.getHistogram().forEach((r, v) -> {
                     final HistogramRange range = new HistogramRange();
                     range.getRange().setMax(r.getUpper());
@@ -226,7 +237,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
             }
             // Text length
             final TextLengthStatistics textLengthStatistics = result.get(TextLengthStatistics.class);
-            if (textLengthStatistics != null && !isNumeric) {
+            if (textLengthStatistics != null && isString) {
                 final TextLengthSummary textLengthSummary = statistics.getTextLengthSummary();
                 textLengthSummary.setAverageLength(textLengthStatistics.getAvgTextLength());
                 textLengthSummary.setMinimalLength(textLengthStatistics.getMinTextLength());

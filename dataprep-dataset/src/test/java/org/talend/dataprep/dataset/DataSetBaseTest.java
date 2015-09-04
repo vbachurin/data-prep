@@ -6,7 +6,6 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 
-import org.apache.spark.SparkContext;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -55,9 +54,6 @@ public abstract class DataSetBaseTest {
     @Qualifier("ContentStore#local")
     protected DataSetContentStore contentStore;
 
-    @Autowired(required = false)
-    protected SparkContext sparkContext;
-
     @Autowired
     protected FormatGuess.Factory factory;
 
@@ -65,13 +61,6 @@ public abstract class DataSetBaseTest {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected void assertQueueMessages(String dataSetId) throws Exception {
-        // Wait for Spark jobs to finish
-        if (sparkContext != null) {
-            while (!sparkContext.jobProgressListener().activeJobs().isEmpty()) {
-                // TODO Is there a better way to wait for all Spark jobs to complete?
-                Thread.sleep(200);
-            }
-        }
         // Wait for queue messages
         waitForQueue(Destinations.QUALITY_ANALYSIS, dataSetId);
         waitForQueue(Destinations.STATISTICS_ANALYSIS, dataSetId);

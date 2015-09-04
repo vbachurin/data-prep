@@ -32,10 +32,6 @@
             <artifactId>org.talend.dataquality.statistics</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.talend.dataquality</groupId>
-            <artifactId>org.talend.datascience.spark</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jetty</artifactId>
             <scope>runtime</scope>

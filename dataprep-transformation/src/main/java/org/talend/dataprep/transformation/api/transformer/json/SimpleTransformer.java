@@ -30,7 +30,8 @@ import org.talend.dataprep.transformation.api.transformer.configuration.Configur
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 import org.talend.dataquality.semantic.recognizer.CategoryRecognizerBuilder;
 import org.talend.dataquality.statistics.cardinality.CardinalityAnalyzer;
-import org.talend.dataquality.statistics.frequency.FrequencyAnalyzer;
+import org.talend.dataquality.statistics.frequency.DataFrequencyAnalyzer;
+import org.talend.dataquality.statistics.frequency.PatternFrequencyAnalyzer;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramAnalyzer;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileAnalyzer;
 import org.talend.dataquality.statistics.numeric.summary.SummaryAnalyzer;
@@ -113,8 +114,8 @@ class SimpleTransformer implements Transformer {
                                     // Cardinality (distinct + duplicate)
                                     new CardinalityAnalyzer(),
                                     // Frequency analysis (Pattern + data)
-                                    new FrequencyAnalyzer(),
-                                    // new PatternFrequencyAnalyzer(), // TODO Wait for fix about pattern + data statistics
+                                    new DataFrequencyAnalyzer(),
+                                    new PatternFrequencyAnalyzer(), // TODO Wait for fix about pattern + data statistics
                                     // Quantile analysis
                                     new QuantileAnalyzer(types),
                                     // Summary (min, max, mean, variance)

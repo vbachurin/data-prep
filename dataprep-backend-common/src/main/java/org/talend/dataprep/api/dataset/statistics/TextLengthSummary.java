@@ -36,4 +36,30 @@ public class TextLengthSummary {
     public void setAverageLength(double averageLength) {
         this.averageLength = averageLength;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TextLengthSummary)) return false;
+
+        TextLengthSummary that = (TextLengthSummary) o;
+
+        if (Double.compare(that.minimalLength, minimalLength) != 0) return false;
+        if (Double.compare(that.maximalLength, maximalLength) != 0) return false;
+        return Double.compare(that.averageLength, averageLength) == 0;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(minimalLength);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(maximalLength);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(averageLength);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 }

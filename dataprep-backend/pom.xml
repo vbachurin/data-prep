@@ -126,37 +126,6 @@
                 <artifactId>org.talend.dataquality.statistics</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
-            <dependency>
-                <groupId>org.talend.dataquality</groupId>
-                <artifactId>org.talend.datascience.spark</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>jul-to-slf4j</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>jcl-over-slf4j</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-log4j12</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.eclipse.jetty.orbit</groupId>
-                        <artifactId>javax.servlet</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-simple</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
             <!-- Hazelcast -->
             <dependency>
                 <groupId>com.hazelcast</groupId>

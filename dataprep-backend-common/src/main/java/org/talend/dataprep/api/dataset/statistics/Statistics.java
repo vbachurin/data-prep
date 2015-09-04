@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.dataset.statistics;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -172,5 +173,56 @@ public class Statistics {
 
     public void setTextLengthSummary(TextLengthSummary textLengthSummary) {
         this.textLengthSummary = textLengthSummary;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Statistics)) return false;
+
+        Statistics that = (Statistics) o;
+
+        if (count != that.count) return false;
+        if (valid != that.valid) return false;
+        if (invalid != that.invalid) return false;
+        if (empty != that.empty) return false;
+        if (Double.compare(that.max, max) != 0) return false;
+        if (Double.compare(that.min, min) != 0) return false;
+        if (Double.compare(that.mean, mean) != 0) return false;
+        if (Double.compare(that.variance, variance) != 0) return false;
+        if (duplicateCount != that.duplicateCount) return false;
+        if (distinctCount != that.distinctCount) return false;
+        if (!new HashSet<>(dataFrequencies).equals(new HashSet<>(that.dataFrequencies))) return false;
+        if (!new HashSet<>(patternFrequencies).equals(new HashSet<>(that.patternFrequencies))) return false;
+        if (!quantiles.equals(that.quantiles)) return false;
+        if (!new HashSet<>(histogram).equals(new HashSet<>(that.histogram))) return false;
+        return textLengthSummary.equals(that.textLengthSummary);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = (int) (count ^ (count >>> 32));
+        result = 31 * result + (int) (valid ^ (valid >>> 32));
+        result = 31 * result + (int) (invalid ^ (invalid >>> 32));
+        result = 31 * result + (int) (empty ^ (empty >>> 32));
+        temp = Double.doubleToLongBits(max);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(min);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(mean);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(variance);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (int) (duplicateCount ^ (duplicateCount >>> 32));
+        result = 31 * result + (int) (distinctCount ^ (distinctCount >>> 32));
+        result = 31 * result + dataFrequencies.hashCode();
+        result = 31 * result + patternFrequencies.hashCode();
+        result = 31 * result + quantiles.hashCode();
+        result = 31 * result + histogram.hashCode();
+        result = 31 * result + textLengthSummary.hashCode();
+        return result;
     }
 }

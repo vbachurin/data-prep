@@ -25,4 +25,23 @@ public class HistogramRange {
     public void setRange(Range range) {
         this.range = range;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof HistogramRange)) return false;
+
+        HistogramRange that = (HistogramRange) o;
+
+        if (occurrences != that.occurrences) return false;
+        return range.equals(that.range);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (occurrences ^ (occurrences >>> 32));
+        result = 31 * result + range.hashCode();
+        return result;
+    }
 }

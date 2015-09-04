@@ -33,35 +33,7 @@
             "occurrences": 2
           },
           {
-            "data": "d72e9b958a",
-            "occurrences": 1
-          },
-          {
-            "data": "ef433d39c6",
-            "occurrences": 1
-          },
-          {
-            "data": "17b8b214b0",
-            "occurrences": 1
-          },
-          {
             "data": "23b5dae249",
-            "occurrences": 1
-          },
-          {
-            "data": "ff971288b2",
-            "occurrences": 1
-          },
-          {
-            "data": "e8f6f7853c",
-            "occurrences": 1
-          },
-          {
-            "data": "a4dc1548af",
-            "occurrences": 1
-          },
-          {
-            "data": "5802162c20",
             "occurrences": 1
           },
           {
@@ -69,15 +41,43 @@
             "occurrences": 1
           },
           {
-            "data": "1c3ddff940",
-            "occurrences": 1
-          },
-          {
             "data": "7c52e0eab6",
             "occurrences": 1
           },
           {
+            "data": "a4dc1548af",
+            "occurrences": 1
+          },
+          {
+            "data": "e8f6f7853c",
+            "occurrences": 1
+          },
+          {
+            "data": "d72e9b958a",
+            "occurrences": 1
+          },
+          {
+            "data": "5802162c20",
+            "occurrences": 1
+          },
+          {
+            "data": "ef433d39c6",
+            "occurrences": 1
+          },
+          {
+            "data": "1c3ddff940",
+            "occurrences": 1
+          },
+          {
+            "data": "ff971288b2",
+            "occurrences": 1
+          },
+          {
             "data": "82c97f8fbc",
+            "occurrences": 1
+          },
+          {
+            "data": "17b8b214b0",
             "occurrences": 1
           }
         ],
@@ -91,27 +91,7 @@
             "occurrences": 2
           },
           {
-            "pattern": "a99a9a999a",
-            "occurrences": 1
-          },
-          {
-            "pattern": "99a99a9aaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "9999999a99",
-            "occurrences": 1
-          },
-          {
-            "pattern": "9a9aaaa999",
-            "occurrences": 1
-          },
-          {
-            "pattern": "a9aa9999aa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "9a99a9aaa9",
+            "pattern": "99a9aaa999",
             "occurrences": 1
           },
           {
@@ -119,7 +99,7 @@
             "occurrences": 1
           },
           {
-            "pattern": "99a9aaa999",
+            "pattern": "99a99a9aaa",
             "occurrences": 1
           },
           {
@@ -127,7 +107,27 @@
             "occurrences": 1
           },
           {
+            "pattern": "a99a9a999a",
+            "occurrences": 1
+          },
+          {
+            "pattern": "9999999a99",
+            "occurrences": 1
+          },
+          {
+            "pattern": "a9aa9999aa",
+            "occurrences": 1
+          },
+          {
             "pattern": "a9a9a9999a",
+            "occurrences": 1
+          },
+          {
+            "pattern": "9a9aaaa999",
+            "occurrences": 1
+          },
+          {
+            "pattern": "9a99a9aaa9",
             "occurrences": 1
           },
           {
@@ -206,15 +206,11 @@
             "occurrences": 1
           },
           {
-            "data": "71",
-            "occurrences": 1
-          },
-          {
             "data": "69",
             "occurrences": 1
           },
           {
-            "data": "70",
+            "data": "91",
             "occurrences": 1
           },
           {
@@ -222,7 +218,11 @@
             "occurrences": 1
           },
           {
-            "data": "91",
+            "data": "70",
+            "occurrences": 1
+          },
+          {
+            "data": "71",
             "occurrences": 1
           }
         ],
@@ -237,66 +237,66 @@
           }
         ],
         "quantiles": {
-          "median": 70.5,
-          "lowerQuantile": 47.75,
+          "median": 71.0,
+          "lowerQuantile": 53.0,
           "upperQuantile": 75.0
         },
         "histogram": [
           {
+            "occurrences": 2,
             "range": {
-              "min": 13.0,
-              "max": 22.875
-            },
-            "occurrences": 2
+              "min": 1.0,
+              "max": 25.875
+            }
           },
           {
+            "occurrences": 1,
             "range": {
-              "min": 22.875,
-              "max": 32.75
-            },
-            "occurrences": 0
+              "min": 25.875,
+              "max": 50.75
+            }
           },
           {
+            "occurrences": 9,
             "range": {
-              "min": 32.75,
-              "max": 42.625
-            },
-            "occurrences": 0
+              "min": 50.75,
+              "max": 75.625
+            }
           },
           {
+            "occurrences": 3,
             "range": {
-              "min": 42.625,
-              "max": 52.5
-            },
-            "occurrences": 1
+              "min": 75.625,
+              "max": 100.5
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 52.5,
-              "max": 62.375
-            },
-            "occurrences": 2
+              "min": 100.5,
+              "max": 125.375
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 62.375,
-              "max": 72.25
-            },
-            "occurrences": 3
+              "min": 125.375,
+              "max": 150.25
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 72.25,
-              "max": 82.125
-            },
-            "occurrences": 5
+              "min": 150.25,
+              "max": 175.125
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 82.125,
-              "max": 92.0
-            },
-            "occurrences": 2
+              "min": 175.125,
+              "max": 200.0
+            }
           }
         ],
         "textLengthSummary": {
@@ -340,27 +340,15 @@
         "distinctCount": 14,
         "frequencyTable": [
           {
-            "data": "02/11/1963",
-            "occurrences": 2
-          },
-          {
             "data": "12/18/1950",
             "occurrences": 2
           },
           {
-            "data": "04/04/1987",
-            "occurrences": 1
+            "data": "02/11/1963",
+            "occurrences": 2
           },
           {
             "data": "01/23/1991",
-            "occurrences": 1
-          },
-          {
-            "data": "11/09/1970",
-            "occurrences": 1
-          },
-          {
-            "data": "01/31/1983",
             "occurrences": 1
           },
           {
@@ -368,15 +356,7 @@
             "occurrences": 1
           },
           {
-            "data": "06/05/1958",
-            "occurrences": 1
-          },
-          {
-            "data": "12/30/1899",
-            "occurrences": 1
-          },
-          {
-            "data": "05/24/1982",
+            "data": "11/09/1970",
             "occurrences": 1
           },
           {
@@ -384,7 +364,15 @@
             "occurrences": 1
           },
           {
-            "data": "12/19/1981",
+            "data": "05/24/1982",
+            "occurrences": 1
+          },
+          {
+            "data": "04/04/1987",
+            "occurrences": 1
+          },
+          {
+            "data": "01/31/1983",
             "occurrences": 1
           },
           {
@@ -392,7 +380,19 @@
             "occurrences": 1
           },
           {
+            "data": "06/05/1958",
+            "occurrences": 1
+          },
+          {
             "data": "06/07/1977",
+            "occurrences": 1
+          },
+          {
+            "data": "12/30/1899",
+            "occurrences": 1
+          },
+          {
+            "data": "12/19/1981",
             "occurrences": 1
           }
         ],
@@ -417,7 +417,17 @@
           "maximalLength": "NaN",
           "averageLength": "NaN"
         }
-      }
+      },
+      "domain": "",
+      "domainLabel": "",
+      "domainFrequency": 20.0,
+      "semanticDomains": [
+        {
+          "id": "",
+          "label": "",
+          "frequency": 100.0
+        }
+      ]
     },
     {
       "name": "order_id",
@@ -443,27 +453,7 @@
         "distinctCount": 16,
         "frequencyTable": [
           {
-            "data": "TSG-1200503",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200555",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200547",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200535",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200552",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200541",
+            "data": "TSG-1200493",
             "occurrences": 1
           },
           {
@@ -471,7 +461,19 @@
             "occurrences": 1
           },
           {
-            "data": "TSG-1200508",
+            "data": "TSG-1200541",
+            "occurrences": 1
+          },
+          {
+            "data": "TSG-1200552",
+            "occurrences": 1
+          },
+          {
+            "data": "TSG-1200500",
+            "occurrences": 1
+          },
+          {
+            "data": "TSG-1200555",
             "occurrences": 1
           },
           {
@@ -479,19 +481,11 @@
             "occurrences": 1
           },
           {
-            "data": "TSG-1200545",
-            "occurrences": 1
-          },
-          {
             "data": "TSG-1200534",
             "occurrences": 1
           },
           {
-            "data": "TSG-1200538",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200505",
+            "data": "TSG-1200545",
             "occurrences": 1
           },
           {
@@ -499,7 +493,23 @@
             "occurrences": 1
           },
           {
-            "data": "TSG-1200500",
+            "data": "TSG-1200535",
+            "occurrences": 1
+          },
+          {
+            "data": "TSG-1200503",
+            "occurrences": 1
+          },
+          {
+            "data": "TSG-1200547",
+            "occurrences": 1
+          },
+          {
+            "data": "TSG-1200505",
+            "occurrences": 1
+          },
+          {
+            "data": "TSG-1200538",
             "occurrences": 1
           }
         ],
@@ -564,43 +574,7 @@
             "occurrences": 2
           },
           {
-            "data": "2014-01-22 08:28:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2013-11-29 13:19:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2014-09-07 09:03:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2013-12-21 20:42:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2014-08-20 10:10:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2014-05-20 15:25:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2013-12-05 19:45:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2013-12-22 14:09:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2014-05-22 12:14:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2014-03-22 21:07:00",
+            "data": "2013-12-07 15:27:00",
             "occurrences": 1
           },
           {
@@ -608,7 +582,43 @@
             "occurrences": 1
           },
           {
-            "data": "2013-12-07 15:27:00",
+            "data": "2013-12-21 20:42:00",
+            "occurrences": 1
+          },
+          {
+            "data": "2013-12-22 14:09:00",
+            "occurrences": 1
+          },
+          {
+            "data": "2013-11-29 13:19:00",
+            "occurrences": 1
+          },
+          {
+            "data": "2014-03-22 21:07:00",
+            "occurrences": 1
+          },
+          {
+            "data": "2014-05-22 12:14:00",
+            "occurrences": 1
+          },
+          {
+            "data": "2014-01-22 08:28:00",
+            "occurrences": 1
+          },
+          {
+            "data": "2013-12-05 19:45:00",
+            "occurrences": 1
+          },
+          {
+            "data": "2014-05-20 15:25:00",
+            "occurrences": 1
+          },
+          {
+            "data": "2014-09-07 09:03:00",
+            "occurrences": 1
+          },
+          {
+            "data": "2014-08-20 10:10:00",
             "occurrences": 1
           }
         ],
@@ -629,7 +639,17 @@
           "maximalLength": "NaN",
           "averageLength": "NaN"
         }
-      }
+      },
+      "domain": "",
+      "domainLabel": "",
+      "domainFrequency": 20.0,
+      "semanticDomains": [
+        {
+          "id": "",
+          "label": "",
+          "frequency": 100.0
+        }
+      ]
     },
     {
       "name": "total",
@@ -698,66 +718,66 @@
           }
         ],
         "quantiles": {
-          "median": 19.9,
-          "lowerQuantile": 16.7,
-          "upperQuantile": 33.4
+          "median": 22.45,
+          "lowerQuantile": 19.9,
+          "upperQuantile": 63.725
         },
         "histogram": [
           {
+            "occurrences": 9,
             "range": {
-              "min": 16.7,
-              "max": 39.6125
-            },
-            "occurrences": 11
+              "min": 1.0,
+              "max": 25.875
+            }
           },
           {
+            "occurrences": 3,
             "range": {
-              "min": 39.6125,
-              "max": 62.525000000000006
-            },
-            "occurrences": 1
+              "min": 25.875,
+              "max": 50.75
+            }
           },
           {
+            "occurrences": 2,
             "range": {
-              "min": 62.525000000000006,
-              "max": 85.43750000000001
-            },
-            "occurrences": 2
+              "min": 50.75,
+              "max": 75.625
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 85.43750000000001,
-              "max": 108.35000000000001
-            },
-            "occurrences": 0
+              "min": 75.625,
+              "max": 100.5
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 108.35000000000001,
-              "max": 131.2625
-            },
-            "occurrences": 0
+              "min": 100.5,
+              "max": 125.375
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 131.2625,
-              "max": 154.175
-            },
-            "occurrences": 0
+              "min": 125.375,
+              "max": 150.25
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 154.175,
-              "max": 177.0875
-            },
-            "occurrences": 0
+              "min": 150.25,
+              "max": 175.125
+            }
           },
           {
+            "occurrences": 2,
             "range": {
-              "min": 177.0875,
+              "min": 175.125,
               "max": 200.0
-            },
-            "occurrences": 2
+            }
           }
         ],
         "textLengthSummary": {
@@ -826,64 +846,64 @@
         "quantiles": {
           "median": 1.0,
           "lowerQuantile": 1.0,
-          "upperQuantile": 2.0
+          "upperQuantile": 2.75
         },
         "histogram": [
           {
+            "occurrences": 16,
             "range": {
               "min": 1.0,
-              "max": 1.875
-            },
-            "occurrences": 9
+              "max": 25.875
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 1.875,
-              "max": 2.75
-            },
-            "occurrences": 3
+              "min": 25.875,
+              "max": 50.75
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 2.75,
-              "max": 3.625
-            },
-            "occurrences": 2
+              "min": 50.75,
+              "max": 75.625
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 3.625,
-              "max": 4.5
-            },
-            "occurrences": 0
+              "min": 75.625,
+              "max": 100.5
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 4.5,
-              "max": 5.375
-            },
-            "occurrences": 0
+              "min": 100.5,
+              "max": 125.375
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 5.375,
-              "max": 6.25
-            },
-            "occurrences": 0
+              "min": 125.375,
+              "max": 150.25
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 6.25,
-              "max": 7.125
-            },
-            "occurrences": 0
+              "min": 150.25,
+              "max": 175.125
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 7.125,
-              "max": 8.0
-            },
-            "occurrences": 2
+              "min": 175.125,
+              "max": 200.0
+            }
           }
         ],
         "textLengthSummary": {
@@ -952,64 +972,64 @@
         "quantiles": {
           "median": 19.9,
           "lowerQuantile": 16.7,
-          "upperQuantile": 19.9
+          "upperQuantile": 24.725
         },
         "histogram": [
           {
+            "occurrences": 16,
             "range": {
-              "min": 16.7,
-              "max": 17.7375
-            },
-            "occurrences": 5
+              "min": 1.0,
+              "max": 25.875
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 17.7375,
-              "max": 18.775
-            },
-            "occurrences": 0
+              "min": 25.875,
+              "max": 50.75
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 18.775,
-              "max": 19.8125
-            },
-            "occurrences": 0
+              "min": 50.75,
+              "max": 75.625
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 19.8125,
-              "max": 20.85
-            },
-            "occurrences": 6
+              "min": 75.625,
+              "max": 100.5
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 20.85,
-              "max": 21.8875
-            },
-            "occurrences": 0
+              "min": 100.5,
+              "max": 125.375
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 21.8875,
-              "max": 22.925
-            },
-            "occurrences": 0
+              "min": 125.375,
+              "max": 150.25
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 22.925,
-              "max": 23.9625
-            },
-            "occurrences": 1
+              "min": 150.25,
+              "max": 175.125
+            }
           },
           {
+            "occurrences": 0,
             "range": {
-              "min": 23.9625,
-              "max": 25.0
-            },
-            "occurrences": 4
+              "min": 175.125,
+              "max": 200.0
+            }
           }
         ],
         "textLengthSummary": {
@@ -1053,19 +1073,19 @@
         "distinctCount": 4,
         "frequencyTable": [
           {
-            "data": "Black T-Shirt M",
-            "occurrences": 5
-          },
-          {
             "data": "Hoodie",
             "occurrences": 5
           },
           {
-            "data": "Black T-Shirt F",
-            "occurrences": 3
+            "data": "Black T-Shirt M",
+            "occurrences": 5
           },
           {
             "data": "White T-Shirt M",
+            "occurrences": 3
+          },
+          {
+            "data": "Black T-Shirt F",
             "occurrences": 3
           }
         ],
