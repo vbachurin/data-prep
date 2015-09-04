@@ -32,6 +32,13 @@ $datagrid-cell-font-size: .80em;
   padding: 5px 5px;
 }
 
+.formatterIndexColumn {
+  text-align: right;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .tooltip-ruler {
   font-size: $datagrid-cell-font-size;
   font-family: $monospace;

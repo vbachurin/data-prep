@@ -92,7 +92,7 @@
         function createColumns(columnsMetadata, preview) {
 
             function formatterIndex(row, cell, value) {
-                return '<div style="text-align: right; font-weight: bold">' + value + '</div>';
+                return '<div class="formatterIndexColumn">' + value + '</div>';
             }
 
             //create new SlickGrid columns
