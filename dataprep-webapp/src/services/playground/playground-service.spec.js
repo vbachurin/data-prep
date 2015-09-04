@@ -810,29 +810,7 @@ describe('Playground Service', function () {
                 spyOn(RecipeService, 'getAllActionsFrom').and.returnValue(allActionsFromStepToDelete);
             }));
 
-            it('should remove preparation step in single mode', inject(function ($rootScope, PlaygroundService, PreparationService) {
-                //given
-                stateMock.playground.preparation = {id: preparationId};
-
-                //when
-                PlaygroundService.removeStep(stepToDelete, 'single');
-
-                //then
-                expect(PreparationService.removeStep).toHaveBeenCalledWith(preparationId, stepToDeleteId, true);
-            }));
-
-            it('should remove preparation step in cascade mode', inject(function ($rootScope, PlaygroundService, PreparationService) {
-                //given
-                stateMock.playground.preparation = {id: preparationId};
-
-                //when
-                PlaygroundService.removeStep(stepToDelete, 'cascade');
-
-                //then
-                expect(PreparationService.removeStep).toHaveBeenCalledWith(preparationId, stepToDeleteId, false);
-            }));
-
-            it('should remove preparation step in default mode (cascade)', inject(function ($rootScope, PlaygroundService, PreparationService) {
+            it('should remove preparation step', inject(function ($rootScope, PlaygroundService, PreparationService) {
                 //given
                 stateMock.playground.preparation = {id: preparationId};
 
@@ -840,7 +818,7 @@ describe('Playground Service', function () {
                 PlaygroundService.removeStep(stepToDelete);
 
                 //then
-                expect(PreparationService.removeStep).toHaveBeenCalledWith(preparationId, stepToDeleteId, false);
+                expect(PreparationService.removeStep).toHaveBeenCalledWith(preparationId, stepToDeleteId, true);
             }));
 
             it('should show/hide loading', inject(function ($rootScope, PlaygroundService) {
@@ -848,7 +826,7 @@ describe('Playground Service', function () {
                 stateMock.playground.preparation = {id: preparationId};
 
                 //when
-                PlaygroundService.removeStep(stepToDelete, 'cascade');
+                PlaygroundService.removeStep(stepToDelete);
                 expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
                 $rootScope.$digest();
 
@@ -861,7 +839,7 @@ describe('Playground Service', function () {
                 stateMock.playground.preparation = {id: preparationId};
 
                 //when
-                PlaygroundService.removeStep(stepToDelete, 'cascade');
+                PlaygroundService.removeStep(stepToDelete);
                 $rootScope.$digest();
 
                 //then
@@ -874,7 +852,7 @@ describe('Playground Service', function () {
                 PlaygroundService.selectedSampleSize = {value: 'full'};
 
                 //when
-                PlaygroundService.removeStep(stepToDelete, 'cascade');
+                PlaygroundService.removeStep(stepToDelete);
                 $rootScope.$digest();
 
                 //then
@@ -901,7 +879,7 @@ describe('Playground Service', function () {
                 it('should add single action in the previous step insertion point on UNDO', inject(function($rootScope, PlaygroundService, HistoryService, PreparationService) {
                     //given
                     stateMock.playground.preparation = {id: preparationId};
-                    PlaygroundService.removeStep(stepToDelete, 'single');
+                    PlaygroundService.removeStep(stepToDelete);
                     $rootScope.$digest();
                     expect(PreparationService.appendStep).not.toHaveBeenCalled();
 
@@ -913,25 +891,10 @@ describe('Playground Service', function () {
                     expect(PreparationService.appendStep).toHaveBeenCalledWith(preparationId, stepToDelete.actionParameters, previousStepId);
                 }));
 
-                it('should add all following actions (cascade) to preparation head on UNDO', inject(function($rootScope, PlaygroundService, HistoryService, PreparationService) {
-                    //given
-                    stateMock.playground.preparation = {id: preparationId};
-                    PlaygroundService.removeStep(stepToDelete, 'cascade');
-                    $rootScope.$digest();
-                    expect(PreparationService.appendStep).not.toHaveBeenCalled();
-
-                    //when
-                    var undo = HistoryService.addAction.calls.argsFor(0)[0];
-                    undo();
-
-                    //then
-                    expect(PreparationService.appendStep).toHaveBeenCalledWith(preparationId, allActionsFromStepToDelete, undefined);
-                }));
-
                 it('should refresh recipe on UNDO', inject(function($rootScope, PlaygroundService, HistoryService, RecipeService) {
                     //given
                     stateMock.playground.preparation = {id: preparationId};
-                    PlaygroundService.removeStep(stepToDelete, 'cascade');
+                    PlaygroundService.removeStep(stepToDelete);
                     $rootScope.$digest();
                     expect(RecipeService.refresh.calls.count()).toBe(1);
 
@@ -948,7 +911,7 @@ describe('Playground Service', function () {
                     //given
                     stateMock.playground.preparation = {id: preparationId};
                     PlaygroundService.selectedSampleSize = {value: 'full'};
-                    PlaygroundService.removeStep(stepToDelete, 'cascade');
+                    PlaygroundService.removeStep(stepToDelete);
                     $rootScope.$digest();
                     expect(RecipeService.refresh.calls.count()).toBe(1);
 
@@ -959,7 +922,7 @@ describe('Playground Service', function () {
 
                     //then
                     expect(PreparationService.getContent).toHaveBeenCalledWith(preparationId, 'head', 'full');
-                    expect(DatagridService.focusedColumn).toBeFalsy();
+                    expect(DatagridService.focusedColumn).toBe(stepToDelete.actionParameters.parameters.column_id);
                     expect(DatagridService.updateData).toHaveBeenCalledWith(preparationHeadContent);
                     expect(PreviewService.reset).toHaveBeenCalledWith(false);
                 }));

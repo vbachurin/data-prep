@@ -391,20 +391,23 @@
          * @description Call an execution of a transformation on the column in the current preparation and add an entry
          * in actions history
          */
-        function removeStep(step, mode) {
-            mode = mode || 'cascade';
-            var cancelRemove;
-            switch(mode) {
-                case 'single' :
-                    var insertionStepId = RecipeService.getPreviousStep(step).transformation.stepId;
-                    var actionParams = step.actionParameters;
-                    cancelRemove = executeAppendStep.bind(service, state.playground.preparation.id, actionParams, insertionStepId);
-                    break;
-                case 'cascade':
-                    var actionParamsList = RecipeService.getAllActionsFrom(step);
-                    cancelRemove = executeAppendStep.bind(service, state.playground.preparation.id, actionParamsList);
-                    break;
-            }
+        function removeStep(step) {
+            var mode = 'single';
+
+            var insertionStepId = RecipeService.getPreviousStep(step).transformation.stepId;
+            var actionParams = step.actionParameters;
+            var cancelRemove = executeAppendStep.bind(service, state.playground.preparation.id, actionParams, insertionStepId);
+            //switch(mode) {
+            //    case 'single' :
+            //        var insertionStepId = RecipeService.getPreviousStep(step).transformation.stepId;
+            //        var actionParams = step.actionParameters;
+            //        cancelRemove = executeAppendStep.bind(service, state.playground.preparation.id, actionParams, insertionStepId);
+            //        break;
+            //    case 'cascade':
+            //        var actionParamsList = RecipeService.getAllActionsFrom(step);
+            //        cancelRemove = executeAppendStep.bind(service, state.playground.preparation.id, actionParamsList);
+            //        break;
+            //}
 
             var remove = executeRemoveStep.bind(service, state.playground.preparation.id, step.transformation.stepId, mode === 'single');
 

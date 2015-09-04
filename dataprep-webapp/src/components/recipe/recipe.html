@@ -7,8 +7,7 @@
              ng-click="recipeCtrl.showModal[$index] = !!recipeCtrl.hasDynamicParams(step)"
              ng-switch="step.actionParameters.parameters.scope">
 
-            <i data-icon="e" ng-click="recipeCtrl.remove(step, 'single')" style="color: #8abc00;" class="action-icon animated"></i>
-            <i data-icon="e" ng-click="recipeCtrl.remove(step, 'cascade')" style="color: #ce6564;" class="action-icon animated"></i>
+            <i data-icon="e" ng-click="recipeCtrl.remove(step)" style="color: #8abc00;" class="action-icon animated"></i>
             {{$index + 1}}.
             <span class="recipe-description">{{::step.transformation.label}}</span>
 
