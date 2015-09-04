@@ -64,10 +64,9 @@ describe('Datagrid column service', function () {
             //then
             expect(createdColumns[0].id).toEqual('tdpId');
             expect(createdColumns[0].field).toEqual('tdpId');
-            expect(createdColumns[0].name).toEqual('');
+            expect(createdColumns[0].name).toEqual('<div style="height: 56px; font-weight: bold;  background-color: #555964; color: #ffffff; padding: 5px 5px;">#</div>');
             expect(createdColumns[0].resizable).toBeFalsy();
             expect(createdColumns[0].selectable).toBeFalsy();
-            expect(createdColumns[0].tdpColMetadata).toEqual({ type: 'integer', name: '#' } );
 
             expect(createdColumns[1].id).toEqual('0000');
             expect(createdColumns[1].field).toEqual('0000');
@@ -98,10 +97,9 @@ describe('Datagrid column service', function () {
             //then
             expect(createdColumns[0].id).toEqual('tdpId');
             expect(createdColumns[0].field).toEqual('tdpId');
-            expect(createdColumns[0].name).toEqual('');
+            expect(createdColumns[0].name).toEqual('<div style="height: 56px; font-weight: bold;  background-color: #555964; color: #ffffff; padding: 5px 5px;">#</div>');
             expect(createdColumns[0].resizable).toBeFalsy();
             expect(createdColumns[0].selectable).toBeFalsy();
-            expect(createdColumns[0].tdpColMetadata).toEqual({ type: 'integer', name: '#' } );
 
             expect(createdColumns[1].id).toEqual('0000');
             expect(createdColumns[1].field).toEqual('0000');

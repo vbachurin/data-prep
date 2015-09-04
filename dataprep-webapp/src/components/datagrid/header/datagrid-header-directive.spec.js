@@ -256,32 +256,6 @@ describe('Dataset column header directive', function () {
         expect(element.find('.dropdown-menu').hasClass('show-menu')).toBeTruthy();
     });
 
-    it('should NOT show menu on right click on grid-header of the index column', inject(function ($rootScope, $compile, $timeout) {
-        //given
-        var columnIndex = {
-            'id': 'tdpId',
-            'name': '#'
-        };
-        var scopeColIndex = $rootScope.$new(true);
-        scopeColIndex.column = columnIndex;
-
-        var elementColIndex = angular.element('<datagrid-header column="column"></datagrid-header>');
-        body.append(elementColIndex);
-        $compile(elementColIndex)(scopeColIndex);
-        scopeColIndex.$digest();
-        $timeout.flush();
-
-        elementColIndex.find('.dropdown-menu').removeClass('show-menu');
-
-        //when
-        var event = angular.element.Event('mousedown');
-        event.which = 3;
-        elementColIndex.find('.grid-header').eq(0).trigger(event);
-
-        //then
-        expect(elementColIndex.find('.dropdown-menu').hasClass('show-menu')).toBeFalsy();
-    }));
-
     it('should hide menu on right click if menu is visible', function () {
         //given
         createElement();
