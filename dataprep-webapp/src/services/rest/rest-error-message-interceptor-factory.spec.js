@@ -13,7 +13,7 @@ describe('Rest message interceptor factory', function () {
         $httpBackend.when('GET', 'i18n/en.json').respond({});
         $httpBackend.when('GET', 'i18n/fr.json').respond({});
 
-        spyOn(MessageService, 'error').and.callThrough();
+        spyOn(MessageService, 'error').and.returnValue();
     }));
 
     it('should have the RestErrorMessageHandler as an interceptor', function () {

@@ -92,7 +92,7 @@ describe('Datagrid external service', function () {
             //then
             expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
             expect(SuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
-            expect(SuggestionService.selectTab).toHaveBeenCalledWith('CELL');
+            expect(SuggestionService.selectTab).toHaveBeenCalledWith('COLUMN');
         }));
 
         it('should NOT update playground right panel on active cell changed if column and tab are the same', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
@@ -169,7 +169,7 @@ describe('Datagrid external service', function () {
             //then
             expect(StatisticsService.processData).toHaveBeenCalledWith(secondCallColumnMetadata);
             expect(SuggestionService.setColumn).toHaveBeenCalledWith(secondCallColumnMetadata);
-            expect(SuggestionService.selectTab).toHaveBeenCalledWith('CELL');
+            expect(SuggestionService.selectTab).toHaveBeenCalledWith('COLUMN');
         }));
         
         it('should do nothing when no cell is active', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
@@ -318,7 +318,7 @@ describe('Datagrid external service', function () {
             //then : only tab is updated, NOT stats or suggestions
             expect(StatisticsService.processData.calls.count()).toBe(1);
             expect(SuggestionService.setColumn.calls.count()).toBe(1);
-            expect(SuggestionService.selectTab.calls.count()).toBe(2);
+            expect(SuggestionService.selectTab.calls.count()).toBe(1);
         }));
 
         it('should NOT update suggestions and stats when column is index column', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {

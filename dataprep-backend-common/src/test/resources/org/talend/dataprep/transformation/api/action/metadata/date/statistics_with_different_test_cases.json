@@ -104,9 +104,7 @@
   "histogram": [],
   "textLengthSummary": {
     "minimalLength": 0,
-    "minimalLengthWithBlank": 0,
     "maximalLength": 0,
-    "averageLength": 0,
-    "averageLengthWithBlank": 0
+    "averageLength": 0
   }
 }

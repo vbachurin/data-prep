@@ -5,7 +5,7 @@ describe('Dataprep app', function() {
 
     describe('run', function() {
         beforeEach(inject(function($translate) {
-            spyOn($translate, 'use').and.callThrough();
+            spyOn($translate, 'use').and.returnValue();
         }));
 
         it('should set language from navigator', inject(function($rootScope, $injector, $window, $translate) {

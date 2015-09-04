@@ -17,7 +17,7 @@ describe('Type transform menu controller', function () {
 
     beforeEach(module('data-prep.type-transformation-menu'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, ColumnTypesService, PlaygroundService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, state, ColumnTypesService) {
         scope = $rootScope.$new();
         createController = function () {
             var ctrl = $controller('TypeTransformMenuCtrl', {
@@ -39,7 +39,7 @@ describe('Type transform menu controller', function () {
             return ctrl;
         };
 
-        PlaygroundService.currentMetadata = currentMetadata;
+        state.playground.dataset = currentMetadata;
         spyOn(ColumnTypesService, 'getTypes').and.returnValue($q.when(types));
     }));
 

@@ -1,11 +1,14 @@
 describe('Playground controller', function() {
     'use strict';
 
-    var createController, scope;
+    var createController, scope, stateMock;
 
-    beforeEach(module('data-prep.playground'));
+    beforeEach(module('data-prep.playground', function($provide) {
+        stateMock = {playground: {}};
+        $provide.constant('state', stateMock);
+    }));
 
-    beforeEach(inject(function($rootScope, $q, $controller, $state, PlaygroundService) {
+    beforeEach(inject(function($rootScope, $q, $controller, $state, PlaygroundService, StateService) {
         scope = $rootScope.$new();
 
         createController = function() {
@@ -17,72 +20,12 @@ describe('Playground controller', function() {
 
         spyOn(PlaygroundService, 'createOrUpdatePreparation').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'changeSampleSize').and.returnValue($q.when(true));
+        spyOn(StateService, 'setNameEditionMode').and.returnValue();
         spyOn($state, 'go').and.returnValue();
 
     }));
 
     describe('bindings', function() {
-        it('should bind showPlayground getter with PlaygroundService', inject(function(PlaygroundService) {
-            //given
-            var ctrl = createController();
-            expect(ctrl.showPlayground).toBe(false);
-
-            //when
-            PlaygroundService.show();
-
-            //then
-            expect(ctrl.showPlayground).toBe(true);
-        }));
-
-        it('should bind showPlayground setter with PlaygroundService', inject(function(PlaygroundService) {
-            //given
-            var ctrl = createController();
-            expect(PlaygroundService.visible).toBe(false);
-
-            //when
-            ctrl.showPlayground = true;
-
-            //then
-            expect(PlaygroundService.visible).toBe(true);
-        }));
-
-        it('should bind editionMode getter with PlaygroundService', inject(function(PlaygroundService) {
-            //given
-            var ctrl = createController();
-            expect(ctrl.editionMode).toBe(true);
-
-            //when
-            PlaygroundService.preparationNameEditionMode = false;
-
-            //then
-            expect(ctrl.editionMode).toBe(false);
-        }));
-
-        it('should bind editionMode setter with PlaygroundService', inject(function(PlaygroundService) {
-            //given
-            var ctrl = createController();
-            expect(PlaygroundService.preparationNameEditionMode).toBe(true);
-
-            //when
-            ctrl.editionMode = false;
-
-            //then
-            expect(PlaygroundService.preparationNameEditionMode).toBe(false);
-        }));
-
-        it('should bind metadata getter with PlaygroundService', inject(function(PlaygroundService) {
-            //given
-            var metadata = {name: 'my dataset'};
-            var ctrl = createController();
-            expect(ctrl.metadata).toBeFalsy();
-
-            //when
-            PlaygroundService.currentMetadata = metadata;
-
-            //then
-            expect(ctrl.metadata).toBe(metadata);
-        }));
-
         it('should bind preparationName getter with PlaygroundService', inject(function(PlaygroundService) {
             //given
             var ctrl = createController();
@@ -119,30 +62,6 @@ describe('Playground controller', function() {
             expect(ctrl.previewInProgress).toBe(true);
         }));
 
-        it('should bind showRecipe getter to PlaygroundService', inject(function(PlaygroundService) {
-            //given
-            var ctrl = createController();
-            expect(ctrl.showRecipe).toBeFalsy();
-
-            //when
-            PlaygroundService.showRecipe = true;
-
-            //then
-            expect(ctrl.showRecipe).toBe(true);
-        }));
-
-        it('should bind showRecipe setter to PlaygroundService', inject(function(PlaygroundService) {
-            //given
-            var ctrl = createController();
-            expect(PlaygroundService.showRecipe).toBeFalsy();
-
-            //when
-            ctrl.showRecipe = true;
-
-            //then
-            expect(PlaygroundService.showRecipe).toBe(true);
-        }));
-
         it('should bind selectedSampleSize getter to PlaygroundService', inject(function(PlaygroundService) {
             //given
             var ctrl = createController();
@@ -157,7 +76,7 @@ describe('Playground controller', function() {
             expect(ctrl.selectedSampleSize).toBe(newSize);
         }));
 
-        it('should bind showRecipe setter to PlaygroundService', inject(function(PlaygroundService) {
+        it('should bind selectedSampleSize setter to PlaygroundService', inject(function(PlaygroundService) {
             //given
             var ctrl = createController();
             expect(PlaygroundService.selectedSampleSize).toEqual({ display: '100', value: 100 });
@@ -173,17 +92,18 @@ describe('Playground controller', function() {
     });
 
     describe('recipe header', function() {
-        it('should toggle edition mode flag', function() {
+        it('should toggle edition mode flag', inject(function(StateService) {
             //given
             var ctrl = createController();
-            expect(ctrl.editionMode).toBe(true);
+            stateMock.playground.nameEditionMode = true;
+            expect(StateService.setNameEditionMode).not.toHaveBeenCalled();
 
             //when
             ctrl.toggleEditionMode();
 
             //then
-            expect(ctrl.editionMode).toBe(false);
-        });
+            expect(StateService.setNameEditionMode).toHaveBeenCalledWith(false);
+        }));
 
         it('should create/update preparation with clean name on name edition confirmation', inject(function(PlaygroundService) {
             //given
@@ -198,10 +118,11 @@ describe('Playground controller', function() {
             expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalledWith('my new name');
         }));
 
-        it('should toggle edition mode flag on name edition confirmation', function() {
+        it('should toggle edition mode flag on name edition confirmation', inject(function(StateService) {
             //given
             var ctrl = createController();
-            expect(ctrl.editionMode).toBe(true);
+            stateMock.playground.nameEditionMode = true;
+            expect(StateService.setNameEditionMode).not.toHaveBeenCalled();
 
             ctrl.preparationName = 'my new name';
 
@@ -209,14 +130,14 @@ describe('Playground controller', function() {
             ctrl.confirmPrepNameEdition();
 
             //then
-            expect(ctrl.editionMode).toBe(false);
-        });
+            expect(StateService.setNameEditionMode).toHaveBeenCalledWith(false);
+        }));
 
-        it('should change route to preparation route on name edition confirmation', inject(function($rootScope, $state, PreparationService) {
+        it('should change route to preparation route on name edition confirmation', inject(function($rootScope, $state) {
             //given
             var ctrl = createController();
             ctrl.preparationName = 'My preparation ';
-            PreparationService.currentPreparationId = 'fe6843da512545e';
+            stateMock.playground.preparation = {id: 'fe6843da512545e'};
 
             //when
             ctrl.confirmPrepNameEdition();
@@ -238,10 +159,11 @@ describe('Playground controller', function() {
             expect(PlaygroundService.createOrUpdatePreparation).not.toHaveBeenCalled();
         }));
 
-        it('should reset name and toggle edition mode flag on name edition cancelation', inject(function(PlaygroundService) {
+        it('should reset name and toggle edition mode flag on name edition cancelation', inject(function(PlaygroundService, StateService) {
             //given
+            stateMock.playground.nameEditionMode = true;
             var ctrl = createController();
-            expect(ctrl.editionMode).toBe(true);
+            expect(StateService.setNameEditionMode).not.toHaveBeenCalled();
 
             ctrl.preparationName = 'my new name';
             PlaygroundService.originalPreparationName = 'my old name';
@@ -251,32 +173,34 @@ describe('Playground controller', function() {
 
             //then
             expect(ctrl.preparationName).toBe('my old name');
-            expect(ctrl.editionMode).toBe(false);
+            expect(StateService.setNameEditionMode).toHaveBeenCalledWith(false);
         }));
     });
 
     describe('implicit preparation', function() {
         var ctrl;
+        var preparation;
 
-        beforeEach(inject(function($q, PlaygroundService, PreparationService) {
-            PlaygroundService.originalPreparationName = '';
-            PreparationService.currentPreparationId = '9af874865e42b546';
+        beforeEach(inject(function($q, PreparationService, StateService) {
+            preparation = {id: '9af874865e42b546', draft: true};
+            stateMock.playground.preparation = preparation;
 
-            spyOn(PreparationService, 'deleteCurrentPreparation').and.returnValue($q.when(true));
+            spyOn(PreparationService, 'delete').and.returnValue($q.when(true));
+            spyOn(StateService, 'hidePlayground').and.returnValue();
 
             ctrl = createController();
         }));
 
-        it('should return true (allow playground close) with NOT implicit preparation', inject(function(PlaygroundService) {
+        it('should return true (allow playground close) with NOT implicit preparation', function() {
             //given
-            PlaygroundService.originalPreparationName = 'my preparation';
+            preparation.draft = false;
 
             //when
             var result = ctrl.beforeClose();
 
             //then
             expect(result).toBe(true);
-        }));
+        });
 
         it('should return false (block playground close) with implicit preparation', function() {
             //when
@@ -302,13 +226,13 @@ describe('Playground controller', function() {
             ctrl.discardSaveOnClose();
 
             //then
-            expect(PreparationService.deleteCurrentPreparation).toHaveBeenCalled();
+            expect(PreparationService.delete).toHaveBeenCalledWith(preparation);
         }));
 
-        it('should hide save/discard and playground modals on save discard', function() {
+        it('should hide save/discard and playground modals on save discard', inject(function(StateService) {
             //given
             ctrl.showNameValidation = true;
-            ctrl.showPlayground = true;
+            expect(StateService.hidePlayground).not.toHaveBeenCalled();
 
             //when
             ctrl.discardSaveOnClose();
@@ -316,8 +240,8 @@ describe('Playground controller', function() {
 
             //then
             expect(ctrl.showNameValidation).toBe(false);
-            expect(ctrl.showPlayground).toBe(false);
-        });
+            expect(StateService.hidePlayground).toHaveBeenCalled();
+        }));
 
         it('should change preparation name on save confirm', inject(function(PlaygroundService) {
             //given
@@ -330,17 +254,18 @@ describe('Playground controller', function() {
             expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalledWith('my preparation');
         }));
 
-        it('should toggle edition mode on save confirm', function() {
+        it('should toggle edition mode on save confirm', inject(function(StateService) {
             //given
-            ctrl.editionMode = true;
+            stateMock.playground.nameEditionMode = true;
+            expect(StateService.setNameEditionMode).not.toHaveBeenCalled();
 
             //when
             ctrl.confirmSaveOnClose();
             scope.$digest();
 
             //then
-            expect(ctrl.editionMode).toBe(false);
-        });
+            expect(StateService.setNameEditionMode).toHaveBeenCalledWith(false);
+        }));
 
         it('should manage saving flag on save confirm', function() {
             //given
@@ -355,10 +280,10 @@ describe('Playground controller', function() {
             expect(ctrl.saveInProgress).toBe(false);
         });
 
-        it('should hide save/discard and playground modals on save confirm', function() {
+        it('should hide save/discard and playground modals on save confirm', inject(function(StateService) {
             //given
             ctrl.showNameValidation = true;
-            ctrl.showPlayground = true;
+            expect(StateService.hidePlayground).not.toHaveBeenCalled();
 
             //when
             ctrl.confirmSaveOnClose();
@@ -366,7 +291,7 @@ describe('Playground controller', function() {
 
             //then
             expect(ctrl.showNameValidation).toBe(false);
-            expect(ctrl.showPlayground).toBe(false);
-        });
+            expect(StateService.hidePlayground).toHaveBeenCalled();
+        }));
     });
 });

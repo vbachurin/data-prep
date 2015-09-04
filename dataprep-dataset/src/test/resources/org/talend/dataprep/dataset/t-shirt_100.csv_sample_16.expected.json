@@ -143,10 +143,8 @@
         "histogram": [],
         "textLengthSummary": {
           "minimalLength": 10.0,
-          "minimalLengthWithBlank": 0.0,
           "maximalLength": 10.0,
-          "averageLength": 10.0,
-          "averageLengthWithBlank": 10.0
+          "averageLength": 10.0
         }
       },
       "domain": "",
@@ -177,7 +175,7 @@
         "invalid": 0,
         "empty": 1,
         "max": 92.0,
-        "min": 0.0,
+        "min": 13.0,
         "duplicateCount": 5,
         "distinctCount": 11,
         "frequencyTable": [
@@ -301,10 +299,8 @@
         ],
         "textLengthSummary": {
           "minimalLength": "NaN",
-          "minimalLengthWithBlank": "NaN",
           "maximalLength": "NaN",
-          "averageLength": "NaN",
-          "averageLengthWithBlank": "NaN"
+          "averageLength": "NaN"
         }
       },
       "domain": "",
@@ -400,11 +396,11 @@
         ],
         "patternFrequencyTable": [
           {
-            "pattern": "MM/dd/yyyy",
+            "pattern": "M/d/yyyy",
             "occurrences": 9
           },
           {
-            "pattern": "dd/MM/yyyy",
+            "pattern": "d/M/yyyy",
             "occurrences": 7
           }
         ],
@@ -416,10 +412,8 @@
         "histogram": [],
         "textLengthSummary": {
           "minimalLength": "NaN",
-          "minimalLengthWithBlank": "NaN",
           "maximalLength": "NaN",
-          "averageLength": "NaN",
-          "averageLengthWithBlank": "NaN"
+          "averageLength": "NaN"
         }
       }
     },
@@ -521,10 +515,8 @@
         "histogram": [],
         "textLengthSummary": {
           "minimalLength": 11.0,
-          "minimalLengthWithBlank": 0.0,
           "maximalLength": 11.0,
-          "averageLength": 11.0,
-          "averageLengthWithBlank": 11.0
+          "averageLength": 11.0
         }
       },
       "domain": "",
@@ -620,7 +612,7 @@
         ],
         "patternFrequencyTable": [
           {
-            "pattern": "yyyy-MM-dd HH:mm:ss",
+            "pattern": "yyyy-M-d H:m:s",
             "occurrences": 16
           }
         ],
@@ -632,10 +624,8 @@
         "histogram": [],
         "textLengthSummary": {
           "minimalLength": "NaN",
-          "minimalLengthWithBlank": "NaN",
           "maximalLength": "NaN",
-          "averageLength": "NaN",
-          "averageLengthWithBlank": "NaN"
+          "averageLength": "NaN"
         }
       }
     },
@@ -768,10 +758,8 @@
         ],
         "textLengthSummary": {
           "minimalLength": "NaN",
-          "minimalLengthWithBlank": "NaN",
           "maximalLength": "NaN",
-          "averageLength": "NaN",
-          "averageLengthWithBlank": "NaN"
+          "averageLength": "NaN"
         }
       },
       "domain": "",
@@ -894,10 +882,8 @@
         ],
         "textLengthSummary": {
           "minimalLength": "NaN",
-          "minimalLengthWithBlank": "NaN",
           "maximalLength": "NaN",
-          "averageLength": "NaN",
-          "averageLengthWithBlank": "NaN"
+          "averageLength": "NaN"
         }
       },
       "domain": "",
@@ -1020,10 +1006,8 @@
         ],
         "textLengthSummary": {
           "minimalLength": "NaN",
-          "minimalLengthWithBlank": "NaN",
           "maximalLength": "NaN",
-          "averageLength": "NaN",
-          "averageLengthWithBlank": "NaN"
+          "averageLength": "NaN"
         }
       },
       "domain": "",
@@ -1095,10 +1079,8 @@
         "histogram": [],
         "textLengthSummary": {
           "minimalLength": 6.0,
-          "minimalLengthWithBlank": 0.0,
           "maximalLength": 15.0,
-          "averageLength": 12.1875,
-          "averageLengthWithBlank": 12.1875
+          "averageLength": 12.1875
         }
       },
       "domain": "",
@@ -1111,7 +1093,7 @@
           "frequency": 50.0
         },
         {
-          "id": "Full Name",
+          "id": "FULL_NAME",
           "label": "Full Name",
           "frequency": 50.0
         }
@@ -1129,7 +1111,7 @@
       "0006": "3",
       "0007": "23.9",
       "0008": "White T-Shirt M",
-      "tdpId": 0
+      "tdpId": 1
     },
     {
       "0000": "e8f6f7853c",
@@ -1141,7 +1123,7 @@
       "0006": "1",
       "0007": "19.9",
       "0008": "Black T-Shirt M",
-      "tdpId": 1
+      "tdpId": 2
     },
     {
       "0000": "5802162c20",
@@ -1153,7 +1135,7 @@
       "0006": "1",
       "0007": "19.9",
       "0008": "Black T-Shirt F",
-      "tdpId": 2
+      "tdpId": 3
     },
     {
       "0000": "67dc195843",
@@ -1165,7 +1147,7 @@
       "0006": "1",
       "0007": "16.7",
       "0008": "Black T-Shirt M",
-      "tdpId": 3
+      "tdpId": 4
     },
     {
       "0000": "7c52e0eab6",
@@ -1177,7 +1159,7 @@
       "0006": "1",
       "0007": "16.7",
       "0008": "Black T-Shirt F",
-      "tdpId": 4
+      "tdpId": 5
     },
     {
       "0000": "ef433d39c6",
@@ -1189,7 +1171,7 @@
       "0006": "1",
       "0007": "16.7",
       "0008": "Black T-Shirt M",
-      "tdpId": 5
+      "tdpId": 6
     },
     {
       "0000": "17b8b214b0",
@@ -1201,7 +1183,7 @@
       "0006": "1",
       "0007": "19.9",
       "0008": "White T-Shirt M",
-      "tdpId": 6
+      "tdpId": 7
     },
     {
       "0000": "1c3ddff940",
@@ -1213,7 +1195,7 @@
       "0006": "1",
       "0007": "19.9",
       "0008": "Black T-Shirt F",
-      "tdpId": 7
+      "tdpId": 8
     },
     {
       "0000": "61a7d084f5",
@@ -1225,7 +1207,7 @@
       "0006": "2",
       "0007": "16.7",
       "0008": "Black T-Shirt M",
-      "tdpId": 8
+      "tdpId": 9
     },
     {
       "0000": "61a7d084f5",
@@ -1237,7 +1219,7 @@
       "0006": "2",
       "0007": "16.7",
       "0008": "Black T-Shirt M",
-      "tdpId": 9
+      "tdpId": 10
     },
     {
       "0000": "ff971288b2",
@@ -1249,7 +1231,7 @@
       "0006": "2",
       "0007": "19.9",
       "0008": "White T-Shirt M",
-      "tdpId": 10
+      "tdpId": 11
     },
     {
       "0000": "d72e9b958a",
@@ -1261,7 +1243,7 @@
       "0006": "1",
       "0007": "25.0",
       "0008": "Hoodie",
-      "tdpId": 11
+      "tdpId": 12
     },
     {
       "0000": "87f89d1fe4",
@@ -1273,7 +1255,7 @@
       "0006": "8",
       "0007": "25.0",
       "0008": "Hoodie",
-      "tdpId": 12
+      "tdpId": 13
     },
     {
       "0000": "87f89d1fe4",
@@ -1285,7 +1267,7 @@
       "0006": "8",
       "0007": "25.0",
       "0008": "Hoodie",
-      "tdpId": 13
+      "tdpId": 14
     },
     {
       "0000": "23b5dae249",
@@ -1297,7 +1279,7 @@
       "0006": "1",
       "0007": "19.9",
       "0008": "Hoodie",
-      "tdpId": 14
+      "tdpId": 15
     },
     {
       "0000": "82c97f8fbc",
@@ -1309,7 +1291,7 @@
       "0006": "3",
       "0007": "25.0",
       "0008": "Hoodie",
-      "tdpId": 15
+      "tdpId": 16
     }
   ]
 }

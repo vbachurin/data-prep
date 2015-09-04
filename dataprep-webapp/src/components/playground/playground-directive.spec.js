@@ -2,6 +2,7 @@ describe('Playground directive', function () {
     'use strict';
 
     var scope, createElement, element;
+    var stateMock;
 
     var metadata = {
         'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
@@ -11,7 +12,10 @@ describe('Playground directive', function () {
         records: '3'
     };
 
-    beforeEach(module('data-prep.playground'));
+    beforeEach(module('data-prep.playground', function($provide) {
+        stateMock = {playground: {visible: true}};
+        $provide.constant('state', stateMock);
+    }));
     beforeEach(module('htmlTemplates'));
     beforeEach(module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
@@ -22,6 +26,7 @@ describe('Playground directive', function () {
 
 
     beforeEach(inject(function ($state, $rootScope, $compile, $q, $timeout, PreparationService, PlaygroundService, ExportService) {
+        stateMock.playground.visible = true;
         scope = $rootScope.$new();
 
         createElement = function () {
@@ -49,9 +54,9 @@ describe('Playground directive', function () {
         $stateParams.datasetid = null;
     }));
 
-    it('should render playground elements', inject(function (PlaygroundService) {
+    it('should render playground elements', function () {
         //given
-        PlaygroundService.currentMetadata = metadata;
+        stateMock.playground.dataset = metadata;
 
         //when
         createElement();
@@ -79,17 +84,26 @@ describe('Playground directive', function () {
         expect(playground.eq(0).find('.filter-list').length).toBe(1);
         expect(playground.eq(0).find('.filter-list').find('.filter-search').length).toBe(1);
         expect(playground.eq(0).find('datagrid').length).toBe(1);
-    }));
+    });
 
     describe('recipe header', function () {
-        it('should show/hide action buttons in the recipe header', inject(function (PlaygroundService) {
+        beforeEach(inject(function(StateService) {
+            stateMock.playground.nameEditionMode = true;
+
+            spyOn(StateService, 'setNameEditionMode').and.callFake(function(value) {
+                stateMock.playground.nameEditionMode = value;
+            });
+        }));
+
+        it('should show/hide action buttons in the recipe header', function () {
             //given
-            PlaygroundService.currentMetadata = metadata;
+            stateMock.playground.preparation = {id: '3e41168465e15d4'};
+            stateMock.playground.dataset = metadata;
             createElement();
 
             var stepsHeader = angular.element('body > talend-modal').find('.steps-header').eq(0);
-            var nonEditionSection = stepsHeader.find('div[ng-show="!playgroundCtrl.editionMode"]').eq(0);
-            var editionSection = stepsHeader.find('div[ng-show="playgroundCtrl.editionMode"]').eq(0);
+            var nonEditionSection = stepsHeader.find('div[ng-show="!playgroundCtrl.state.playground.nameEditionMode"]').eq(0);
+            var editionSection = stepsHeader.find('div[ng-show="playgroundCtrl.state.playground.nameEditionMode"]').eq(0);
 
             var confirmBtn = stepsHeader.find('a.check-btn').eq(0);
             var editionBtn = stepsHeader.find('a.edit-btn').eq(0);
@@ -115,7 +129,7 @@ describe('Playground directive', function () {
             expect(nonEditionSection.is(':visible')).toBe(false);
             expect(editionSection.is(':visible')).toBe(true);
 
-        }));
+        });
 
         it('should toggle recipe on click on the On/Off switch', inject(function (RecipeBulletService) {
             //given
@@ -131,9 +145,9 @@ describe('Playground directive', function () {
             expect(RecipeBulletService.toggleRecipe).toHaveBeenCalled();
         }));
 
-        it('should switch OFF the On/Off switch when the 1st step is INACTIVE', inject(function ($rootScope, PlaygroundService, RecipeService) {
+        it('should switch OFF the On/Off switch when the 1st step is INACTIVE', inject(function (RecipeService) {
             //given
-            PlaygroundService.currentMetadata = metadata;
+            stateMock.playground.dataset = metadata;
             var step = {
                 inactive: false,
                 transformation: {
@@ -152,15 +166,15 @@ describe('Playground directive', function () {
 
             //when
             step.inactive = true;
-            $rootScope.$digest();
+            scope.$digest();
 
             //then
             expect(chkboxOnOff.prop('checked')).toBe(false);
         }));
 
-        it('should switch ON the On/Off switch when the 1st step is ACTIVE', inject(function ($rootScope, PlaygroundService, RecipeService) {
+        it('should switch ON the On/Off switch when the 1st step is ACTIVE', inject(function (RecipeService) {
             //given
-            PlaygroundService.currentMetadata = metadata;
+            stateMock.playground.dataset = metadata;
             var step = {
                 inactive: true,
                 transformation: {
@@ -179,7 +193,7 @@ describe('Playground directive', function () {
 
             //when
             step.inactive = false;
-            $rootScope.$digest();
+            scope.$digest();
 
             //then
             expect(chkboxOnOff.prop('checked')).toBe(true);
@@ -187,7 +201,7 @@ describe('Playground directive', function () {
 
         it('should confirm preparation name edition on ENTER keydown', inject(function (PlaygroundService) {
             //given
-            PlaygroundService.currentMetadata = metadata;
+            stateMock.playground.dataset = metadata;
             PlaygroundService.preparationName = 'PrepName';
 
             createElement();
@@ -206,7 +220,7 @@ describe('Playground directive', function () {
 
         it('should cancel preparation name edition on ENTER keydown', inject(function ($timeout, PlaygroundService) {
             //given
-            PlaygroundService.currentMetadata = metadata;
+            stateMock.playground.dataset = metadata;
             PlaygroundService.preparationName = 'PrepName';
 
             createElement();
@@ -226,7 +240,7 @@ describe('Playground directive', function () {
 
         it('should do nothing special on keydown other than ENTER/ESC', inject(function ($timeout, PlaygroundService) {
             //given
-            PlaygroundService.currentMetadata = metadata;
+            stateMock.playground.dataset = metadata;
             PlaygroundService.preparationName = 'PrepName';
 
             createElement();
@@ -248,45 +262,44 @@ describe('Playground directive', function () {
 
     describe('hide playground', function () {
         beforeEach(inject(function (PlaygroundService, PreparationService) {
-            PlaygroundService.currentMetadata = metadata;
+            stateMock.playground.dataset = metadata;
             createElement();
 
-            PlaygroundService.show();
             scope.$apply();
             expect(PreparationService.refreshPreparations).not.toHaveBeenCalled();
         }));
 
-        it('should change route to preparations list on preparation playground hide', inject(function ($state, $stateParams, PlaygroundService) {
+        it('should change route to preparations list on preparation playground hide', inject(function ($state, $stateParams) {
             //given: simulate playground route with preparation id
             $stateParams.prepid = '1234';
 
             //when
-            PlaygroundService.hide();
+            stateMock.playground.visible = false;
             scope.$apply();
 
             //then
             expect($state.go).toHaveBeenCalledWith('nav.home.preparations', {prepid: null});
         }));
 
-        it('should change route to datasets list on dataset playground hide', inject(function ($state, $stateParams, PlaygroundService) {
+        it('should change route to datasets list on dataset playground hide', inject(function ($state, $stateParams) {
             //given: simulate playground route with preparation id
             $stateParams.datasetid = '1234';
 
             //when
-            PlaygroundService.hide();
+            stateMock.playground.visible = false;
             scope.$apply();
 
             //then
             expect($state.go).toHaveBeenCalledWith('nav.home.datasets', {datasetid: null});
         }));
 
-        it('should do nothing if playground is not routed', inject(function ($state, $stateParams, PlaygroundService, PreparationService) {
+        it('should do nothing if playground is not routed', inject(function ($state, $stateParams, PreparationService) {
             //given: simulate no preparation id in route
             $stateParams.prepid = null;
             $stateParams.datasetid = null;
 
             //when
-            PlaygroundService.hide();
+            stateMock.playground.visible = false;
             scope.$apply();
 
             //then
@@ -294,9 +307,9 @@ describe('Playground directive', function () {
             expect($state.go).not.toHaveBeenCalled();
         }));
 
-        it('should refresh preparations on playground hide', inject(function (PlaygroundService, PreparationService) {
+        it('should refresh preparations on playground hide', inject(function (PreparationService) {
             //when
-            PlaygroundService.hide();
+            stateMock.playground.visible = false;
             scope.$apply();
 
             //then

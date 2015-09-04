@@ -21,7 +21,7 @@ public class DiffTests extends TransformationServiceBaseTests {
 
         final String oldActions = getSingleTransformation();
         final String newActions = getMultipleTransformation();
-        final String indexes = "[1,3,5]";
+        final String indexes = "[2,4,6]";
 
         // when
         final Response post = given() //

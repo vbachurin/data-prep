@@ -55,7 +55,7 @@
 
                     var nbDecimals = d3.max([ctrl.decimalPlaces(minBrush), ctrl.decimalPlaces(maxBrush)]);
                     var centerValue = (minBrush + maxBrush) / 2;
-
+                    var filterToApply;
                     //--------------------------------------------------------------------------------------------------
                     //----------------------------------------------BASE------------------------------------------------
                     //--------------------------------------------------------------------------------------------------
@@ -87,6 +87,26 @@
                         document.getElementsByName('minRange')[0].value = s[0] > 1e4 || s[0] < -1e4 ? d3.format('e')(s[0].toFixed(nbDecimals)) : s[0].toFixed(nbDecimals);
                         document.getElementsByName('maxRange')[0].value = s[1] > 1e4 || s[1] < -1e4 ? d3.format('e')(s[1].toFixed(nbDecimals)) : s[1].toFixed(nbDecimals);
                         return s;
+                    }
+
+                    //It will update Min and Max inputs with the correspondent entered intervals
+                    //executed at column selection
+                    function fillWithManuallyEnteredValues() {
+                        //there is an existent filter
+                        if (scope.rangeLimits.minFilterVal !== undefined && scope.rangeLimits.maxFilterVal !== undefined) {
+                            var m = [
+                                scope.rangeLimits.minFilterVal,
+                                scope.rangeLimits.maxFilterVal
+                            ];
+                            document.getElementsByName('minRange')[0].value = m[0] > 1e4 || m[0] < -1e4 ? d3.format('e')(m[0].toFixed(nbDecimals)) : m[0].toFixed(nbDecimals);
+                            document.getElementsByName('maxRange')[0].value = m[1] > 1e4 || m[1] < -1e4 ? d3.format('e')(m[1].toFixed(nbDecimals)) : m[1].toFixed(nbDecimals);
+                        }
+                        else {
+                            //initialize the filterToApply, it will be updated when the user types values,
+                            // and will be used to propagate the right filter limits
+                            filterToApply = scope.brush.extent();
+                            fillInputs();
+                        }
                     }
 
                     //stop event propagation
@@ -186,13 +206,17 @@
                         brushg.transition()
                             .call(scope.brush.extent(finalExtent));
 
-                        fillInputs(); //should be after brush update
+                        //fillInputs(); //should be after brush update
 
-                        if(scope.oldRangeLimits[0] !== scope.brush.extent()[0] || scope.oldRangeLimits[1] !== scope.brush.extent()[1]) {
+                        if(scope.oldRangeLimits[0] !== scope.brush.extent()[0] ||
+                           scope.oldRangeLimits[1] !== scope.brush.extent()[1] ||
+                           +enteredMin !== scope.brush.extent()[0] ||
+                           +enteredMax !== scope.brush.extent()[1]
+                        ) {
                             //trigger brush end callback
-                            scope.onBrushEnd()(scope.brush.extent().map(function (n) {
-                                return +n.toFixed(nbDecimals);
-                            }));
+                            filterToApply = enteredMin > enteredMax? [+enteredMax.toFixed(nbDecimals), +enteredMin.toFixed(nbDecimals)] : [+enteredMin.toFixed(nbDecimals), +enteredMax.toFixed(nbDecimals)];
+
+                            scope.onBrushEnd()(filterToApply);
                         }
                     }
 
@@ -206,20 +230,44 @@
 
                             //It will update the min and max inputs, and create a brush on a single value when the user clics on the slider without making a drag( the created brush will be empty )
                             .on('brush', function brushmove() {
-                                var newExtent = fillInputs();
+                                var s = scope.brush.extent();
+                                //the user is moving the whole brush
+                                if(scope.oldRangeLimits[0] !== s[0] && scope.oldRangeLimits[1] !== s[1]){
+                                    document.getElementsByName('minRange')[0].value = s[0] > 1e4 || s[0] < -1e4 ? d3.format('e')(s[0].toFixed(nbDecimals)) : s[0].toFixed(nbDecimals);
+                                    document.getElementsByName('maxRange')[0].value = s[1] > 1e4 || s[1] < -1e4 ? d3.format('e')(s[1].toFixed(nbDecimals)) : s[1].toFixed(nbDecimals);
+                                }
+                                //the user is moving the left brush handler
+                                else if(scope.oldRangeLimits[0] !== s[0]){
+                                    document.getElementsByName('minRange')[0].value = s[0] > 1e4 || s[0] < -1e4 ? d3.format('e')(s[0].toFixed(nbDecimals)) : s[0].toFixed(nbDecimals);
+                                }
+                                //the user is moving the right brush handler
+                                else if(scope.oldRangeLimits[1] !== s[1]){
+                                    document.getElementsByName('maxRange')[0].value = s[1] > 1e4 || s[1] < -1e4 ? d3.format('e')(s[1].toFixed(nbDecimals)) : s[1].toFixed(nbDecimals);
+                                }
+
                                 if (scope.brush.empty()) {
                                     var exp = '1e-' + (nbDecimals + 1);
-                                    svg.select('.brush').call(scope.brush.clear().extent([newExtent[0], newExtent[1] + Number(exp)]));
+                                    svg.select('.brush').call(scope.brush.clear().extent([s[0], s[1] + Number(exp)]));
                                 }
                             })
 
                             //It will propagate the new filter limits to the rest of the app, it's triggered when the user finishes a brush
                             .on('brushend', function brushend() {
-                                if(scope.oldRangeLimits[0] !== scope.brush.extent()[0] || scope.oldRangeLimits[1] !== scope.brush.extent()[1]){
+                                var s = scope.brush.extent();
+                                //the user is moving the whole brush
+                                if(scope.oldRangeLimits[0] !== s[0] && scope.oldRangeLimits[1] !== s[1]){
                                     //trigger filter process in the datagrid
                                     scope.onBrushEnd()(scope.brush.extent().map(function (n) {
                                         return +n.toFixed(nbDecimals);
                                     }));
+                                }
+                                //the user is moving the left brush handler
+                                else if(scope.oldRangeLimits[0] !== s[0]){
+                                    scope.onBrushEnd()([+s[0].toFixed(nbDecimals), filterToApply[1]]);
+                                }
+                                //the user is moving the right brush handler
+                                else if(scope.oldRangeLimits[1] !== s[1]){
+                                    scope.onBrushEnd()([filterToApply[0], +s[1].toFixed(nbDecimals)]);
                                 }
                             });
                     }
@@ -287,14 +335,19 @@
                     //--------------------------------------------------------------------------------------------------
                     //-----------------------------------------------INIT-----------------------------------------------
                     //--------------------------------------------------------------------------------------------------
-                    fillInputs();
+                    fillWithManuallyEnteredValues();
                     initRangeInputsListeners();
                     initBrushListeners();
 
                     //In case of a single value filter
                     if (scope.brush.empty()) {
                         var exp = '1e-' + (nbDecimals + 1);
-                        svg.select('.brush').call(scope.brush.clear().extent([minBrush, maxBrush + Number(exp)]));
+                        if(maxBrush === maximum){
+                            svg.select('.brush').call(scope.brush.clear().extent([minBrush - Number(exp), maxBrush]));
+                        }
+                        else {
+                            svg.select('.brush').call(scope.brush.clear().extent([minBrush, maxBrush + Number(exp)]));
+                        }
 
                         //the case where there is a filter not responding to the range limits -- caused by sample size change
                         if (scope.rangeLimits.minFilterVal && scope.rangeLimits.maxFilterVal){

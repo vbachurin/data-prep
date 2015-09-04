@@ -5,20 +5,23 @@ describe('Recipe controller', function() {
 
     var createController, scope;
     var lastActiveStep = {inactive: false};
+    var stateMock;
 
-    beforeEach(module('data-prep.recipe'));
+    beforeEach(module('data-prep.recipe', function($provide) {
+        stateMock = {playground: {preparation: {id: '132da49ef87694ab64e6'}}};
+        $provide.constant('state', stateMock);
+    }));
 
     beforeEach(inject(function($rootScope, $controller, $q, $timeout, RecipeService, PlaygroundService, PreparationService, PreviewService) {
         scope = $rootScope.$new();
 
         createController = function() {
-            var ctrl =  $controller('RecipeCtrl', {
+            return $controller('RecipeCtrl', {
                 $scope: scope
             });
-            return ctrl;
         };
 
-        spyOn($rootScope, '$emit').and.callThrough();
+        spyOn($rootScope, '$emit').and.returnValue();
         spyOn(RecipeService, 'refresh').and.callFake(function() {
             var recipe = RecipeService.getRecipe();
             recipe.splice(0, recipe.length);
@@ -28,7 +31,7 @@ describe('Recipe controller', function() {
         spyOn(PreviewService, 'getPreviewDiffRecords').and.returnValue($q.when(true));
         spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when(true));
         spyOn(PreviewService, 'cancelPreview').and.returnValue(null);
-        spyOn($timeout, 'cancel').and.callThrough();
+        spyOn($timeout, 'cancel').and.returnValue();
     }));
 
     it('should bind recipe getter with RecipeService', inject(function(RecipeService) {
@@ -228,7 +231,11 @@ describe('Recipe controller', function() {
         $rootScope.$digest();
 
         //then
-        expect(PreviewService.getPreviewUpdateRecords).toHaveBeenCalledWith(lastActiveStep, step, {pattern: '--', column_id: '0', column_name: 'state', scope: 'column'});
+        expect(PreviewService.getPreviewUpdateRecords).toHaveBeenCalledWith(
+            stateMock.playground.preparation.id,
+            lastActiveStep,
+            step,
+            {pattern: '--', column_id: '0', column_name: 'state', scope: 'column'});
     }));
 
     describe('step parameters', function () {
