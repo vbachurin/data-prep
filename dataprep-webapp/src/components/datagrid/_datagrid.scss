@@ -24,6 +24,14 @@ $datagrid-cell-font-size: .80em;
   height: 59px !important;
 }
 
+.slick-header-column-index {
+  height: 56px;
+  font-weight: bold;
+  background-color: #555964;
+  color: #ffffff;
+  padding: 5px 5px;
+}
+
 .tooltip-ruler {
   font-size: $datagrid-cell-font-size;
   font-family: $monospace;

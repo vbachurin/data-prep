@@ -64,7 +64,7 @@ describe('Datagrid column service', function () {
             //then
             expect(createdColumns[0].id).toEqual('tdpId');
             expect(createdColumns[0].field).toEqual('tdpId');
-            expect(createdColumns[0].name).toEqual('<div style="height: 56px; font-weight: bold;  background-color: #555964; color: #ffffff; padding: 5px 5px;">#</div>');
+            expect(createdColumns[0].name).toEqual('<div class="slick-header-column-index">#</div>');
             expect(createdColumns[0].resizable).toBeFalsy();
             expect(createdColumns[0].selectable).toBeFalsy();
 
@@ -97,7 +97,7 @@ describe('Datagrid column service', function () {
             //then
             expect(createdColumns[0].id).toEqual('tdpId');
             expect(createdColumns[0].field).toEqual('tdpId');
-            expect(createdColumns[0].name).toEqual('<div style="height: 56px; font-weight: bold;  background-color: #555964; color: #ffffff; padding: 5px 5px;">#</div>');
+            expect(createdColumns[0].name).toEqual('<div class="slick-header-column-index">#</div>');
             expect(createdColumns[0].resizable).toBeFalsy();
             expect(createdColumns[0].selectable).toBeFalsy();
 

@@ -97,7 +97,7 @@
 
             //create new SlickGrid columns
             var colIndexArray =[] ;
-            var colIndexNameTemplate = '<div style="height: 56px; font-weight: bold;  background-color: #555964; color: #ffffff; padding: 5px 5px;">#</div>';
+            var colIndexNameTemplate = '<div class="slick-header-column-index">#</div>';
 
             //Add index column
             colIndexArray.push({id: colIndexName, name: colIndexNameTemplate, field: colIndexName, formatter: formatterIndex,  resizable : false, selectable: false});
