@@ -18,8 +18,8 @@ import org.talend.dataprep.dataset.DataSetBaseTest;
  * Unit/integration test for the file system dataset metadata repository.
  */
 @TestPropertySource(properties = { "dataset.metadata.store=file",
-        "dataset.metadata.store.file.location=${java.io.tmpdir}/test/store/metadata", "dataset.spark.master=false" })
-@Ignore
+        "dataset.metadata.store.file.location=target/test/store/metadata" })
+@Ignore // unit test ignore until spark won't be needed anymore
 public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
 
     /** The repository to test. */

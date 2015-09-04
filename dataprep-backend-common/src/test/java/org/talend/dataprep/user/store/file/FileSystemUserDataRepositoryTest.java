@@ -10,7 +10,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.user.UserData;
@@ -21,11 +23,21 @@ import org.talend.dataprep.api.user.UserData;
  * @see FileSystemUserDataRepository
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = FileSystemUserDataRepository.class)
+@SpringApplicationConfiguration(classes = FileSystemUserDataRepositoryTest.class)
 @ComponentScan(basePackages = "org.talend.dataprep.user.store.file")
-@TestPropertySource(inheritLocations = false, inheritProperties = false, properties = { "user.data.store=file",
-        "user.data.store.file.location=${java.io.tmpdir}/test/store/userdata" })
+@TestPropertySource(inheritLocations = false, inheritProperties = false, properties = { "user.data.store:file",
+        "user.data.store.file.location:target/test/store/userdata" })
 public class FileSystemUserDataRepositoryTest {
+
+    /**
+     * Bean needed to resolve test properties set by the @TestPropertySource annotation
+     * 
+     * @see FileSystemUserDataRepository#storeLocation
+     */
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertiesResolver() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 
     /** The user data repository to test. */
     @Autowired
