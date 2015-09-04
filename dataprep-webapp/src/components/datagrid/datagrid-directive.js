@@ -145,7 +145,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Manage the reordering for index column 'tdpId'
                  */
-                var initDragDropColumnsHeader = function onFiltersChange() {
+                var initDragDropColumnsHeader = function initDragDropColumnsHeader() {
 
                     var isDown = false;   // Tracks status of mouse button
 
@@ -155,11 +155,11 @@
                         isDown = false;    // When mouse goes up, set isDown to false
                     });
 
-                    $('.slick-header-columns').mouseleave(function(event) {
+                    $('#datagrid').mouseleave(function() {
                         if(isDown) {
                             // Triggers mouseup on the body.
-                            var e = $.Event( "mouseup", { which: 1 } );
-                            $("body").trigger(e);
+                            var e = $.Event( 'mouseup', { which: 1 } );
+                            $('body').trigger(e);
                         }
                     });
 
@@ -167,11 +167,10 @@
                         if(isDown) {
                             var parentOffset = $(this).parent().offset();
                             var relX = event.pageX - parentOffset.left;
-                            var relY = event.pageY - parentOffset.top;
-                            if((relX <= 85 && relY <= 65)) { //tdpId header size
+                            if((relX <= 85)) { //tdpId header size
                                 // Triggers mouseup on the body.
-                                var e = $.Event( "mouseup", { which: 1 } );
-                                $("body").trigger(e);
+                                var e = $.Event( 'mouseup', { which: 1 } );
+                                $('body').trigger(e);
                             }
                         }
                     });

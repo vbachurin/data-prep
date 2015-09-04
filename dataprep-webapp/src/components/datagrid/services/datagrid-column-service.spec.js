@@ -61,11 +61,6 @@ describe('Datagrid column service', function () {
             //when
             var createdColumns = DatagridColumnService.createColumns(columnsMetadata, true, false);
 
-            var formatterIndex = function formatterIndex (row, cell, value) {
-                return '<div style="text-align: right; font-weight: bold">' + value + '</div>';
-            }
-
-
             //then
             expect(createdColumns[0].id).toEqual('tdpId');
             expect(createdColumns[0].field).toEqual('tdpId');
