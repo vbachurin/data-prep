@@ -13,11 +13,12 @@
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.playground.service:PreviewService
      */
-    function PlaygroundCtrl($state, $stateParams, PlaygroundService, PreparationService, PreviewService, RecipeService, RecipeBulletService) {
+    function PlaygroundCtrl($state, $stateParams, state, StateService, PlaygroundService, PreparationService, PreviewService, RecipeService, RecipeBulletService) {
         var vm = this;
         vm.playgroundService = PlaygroundService;
         vm.previewService = PreviewService;
         vm.recipeService = RecipeService;
+        vm.state = state;
 
         /**
          * @ngdoc property
@@ -62,7 +63,8 @@
          * @description Toggle the edition mode flag
          */
         vm.toggleEditionMode = function toggleEditionMode() {
-            vm.editionMode = !vm.editionMode;
+            var editionMode = state.playground.nameEditionMode;
+            StateService.setNameEditionMode(!editionMode);
         };
 
         /**
@@ -124,7 +126,7 @@
          */
         function hideAll() {
             vm.showNameValidation = false;
-            vm.showPlayground = false;
+            StateService.hidePlayground();
         }
 
         /**
@@ -190,25 +192,6 @@
 
     /**
      * @ngdoc property
-     * @name showPlayground
-     * @propertyOf data-prep.playground.controller:PlaygroundCtrl
-     * @description Flag that controls the display of the playground.
-     * It is bound to {@link data-prep.services.playground.service:PlaygroundService PlaygroundService} property
-     */
-    Object.defineProperty(PlaygroundCtrl.prototype,
-        'showPlayground', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.playgroundService.visible;
-            },
-            set: function(value) {
-                this.playgroundService.visible = value;
-            }
-        });
-
-    /**
-     * @ngdoc property
      * @name metadata
      * @propertyOf data-prep.playground.controller:PlaygroundCtrl
      * @description The loaded metadata
@@ -219,7 +202,7 @@
             enumerable: true,
             configurable: false,
             get: function () {
-                return this.playgroundService.currentMetadata;
+                return this.state.playground.dataset;
             }
         });
 
@@ -311,42 +294,6 @@
                 return firstStep && !firstStep.inactive;
             },
             set: function () {}
-        });
-
-    /**
-     * @name showRecipe
-     * @propertyOf data-prep.playground.controller:PlaygroundCtrl
-     * @description The flag that pilots the recipe panel display
-     * It is bound to {@link data-prep.services.playground.service:PlaygroundService PlaygroundService} property
-     */
-    Object.defineProperty(PlaygroundCtrl.prototype,
-        'showRecipe', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.playgroundService.showRecipe;
-            },
-            set: function(value) {
-                this.playgroundService.showRecipe = value;
-            }
-        });
-
-    /**
-     * @name editionMode
-     * @propertyOf data-prep.playground.controller:PlaygroundCtrl
-     * @description The flag that pilots the recipe panel display
-     * It is bound to {@link data-prep.services.playground.service:PlaygroundService PlaygroundService} property
-     */
-    Object.defineProperty(PlaygroundCtrl.prototype,
-        'editionMode', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.playgroundService.preparationNameEditionMode;
-            },
-            set: function(value) {
-                this.playgroundService.preparationNameEditionMode = value;
-            }
         });
 
     angular.module('data-prep.playground')

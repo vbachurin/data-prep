@@ -211,9 +211,10 @@ describe('Home controller', function () {
             };
             var confirmDefer;
 
-            beforeEach(inject(function ($rootScope, $q, DatasetService, TalendConfirmService) {
+            beforeEach(inject(function ($rootScope, $q, StateService, DatasetService, TalendConfirmService) {
                 confirmDefer = $q.defer();
 
+                spyOn(StateService, 'resetPlayground').and.returnValue();
                 spyOn(DatasetService, 'getDatasetByName').and.returnValue(dataset);
                 spyOn(DatasetService, 'getUniqueName').and.returnValue('my cool dataset (1)');
                 spyOn(TalendConfirmService, 'confirm').and.returnValue(confirmDefer.promise);
@@ -267,10 +268,10 @@ describe('Home controller', function () {
                 expect(DatasetService.getDatasetById).toHaveBeenCalled();
             }));
 
-            it('should force playground reset on update existing dataset', inject(function (MessageService, TalendConfirmService, DatasetService, PlaygroundService) {
+            it('should force playground reset on update existing dataset', inject(function (StateService) {
                 //given
                 ctrl.uploadDatasetName();
-                PlaygroundService.currentMetadata = {};
+                expect(StateService.resetPlayground).not.toHaveBeenCalled();
 
                 //when
                 confirmDefer.resolve();
@@ -280,7 +281,7 @@ describe('Home controller', function () {
                 scope.$digest();
 
                 //then
-                expect(PlaygroundService.currentMetadata).toBeFalsy();
+                expect(StateService.resetPlayground).toHaveBeenCalled();
             }));
 
             it('should set error flag and show error toast on update error', inject(function (MessageService, TalendConfirmService, DatasetService) {

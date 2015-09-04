@@ -5,11 +5,10 @@
      * @ngdoc service
      * @name EarlyPreviewService
      * @description Launches a preview before the transformation application
-     * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.playground.service:PreviewService
      */
-    function EarlyPreviewService($timeout, state, PlaygroundService, RecipeService, PreviewService) {
+    function EarlyPreviewService($timeout, state, RecipeService, PreviewService) {
         var previewDisabled = false;
         var previewTimeout;
         var previewCancelerTimeout;
@@ -72,14 +71,14 @@
                 cancelPendingPreview();
 
                 previewTimeout = $timeout(function () {
+                    var column = state.playground.column;
+
                     params.scope = scope;
-                    params.column_id = state.column.id;
-                    params.column_name = state.column.name;
+                    params.column_id = column.id;
+                    params.column_name = column.name;
 
-                    var datasetId = PlaygroundService.currentMetadata.id;
-
-                    RecipeService.earlyPreview(state.column, action, params);
-                    PreviewService.getPreviewAddRecords(datasetId, action.name, params);
+                    RecipeService.earlyPreview(column, action, params);
+                    PreviewService.getPreviewAddRecords(state.playground.dataset.id, action.name, params);
                 }, 300);
             };
         }
