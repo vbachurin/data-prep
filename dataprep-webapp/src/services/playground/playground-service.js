@@ -454,7 +454,7 @@
          */
         function updateColumn(columnId, type, domain) {
 
-            return DatasetService.updateColumn(state.playground.dataset.id, columnId, {type: type, domain: domain})
+            /*return DatasetService.updateColumn(state.playground.dataset.id, columnId, {type: type, domain: domain})
                 .then(function() {
                     // if preparation
                     if (PreparationService.currentPreparationId) {
@@ -465,7 +465,25 @@
                         return updateDatasetDatagrid();
                     }
                 });
-
+            */
+            console.log('updateColumn:'+columnId+','+type.id);
+            return appendStep('type_change',
+                {
+                    'scope':'column',
+                    'column_id': columnId,
+                    'NEW_TYPE':type.id
+                })
+                .then(function() {
+                          console.log('appendStep.then ')
+                          // if preparation
+                          if (PreparationService.currentPreparationId) {
+                              return updatePreparationDatagrid();
+                          }
+                          // dataset
+                          else {
+                              return updateDatasetDatagrid();
+                          }
+                      });
         }
 
         //------------------------------------------------------------------------------------------------------
