@@ -9,7 +9,7 @@
      * @requires data-prep.services.playground.service:PreviewService
      * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function RecipeBulletService($timeout, RecipeService, PreviewService, PlaygroundService) {
+    function RecipeBulletService($timeout, state, RecipeService, PreviewService, PlaygroundService) {
         var previewTimeout;
         
         var service = {
@@ -114,7 +114,9 @@
          */
         function previewAppend(previewStep) {
             var currentStep = RecipeService.getLastActiveStep();
-            PreviewService.getPreviewDiffRecords(currentStep, previewStep, previewStep.column.id);
+            var preparationId = state.playground.preparation.id;
+            var columnToFocusId = previewStep.column.id;
+            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, columnToFocusId);
         }
 
         /**
@@ -127,8 +129,9 @@
         function previewDisable(disabledStep) {
             var previewStep = RecipeService.getPreviousStep(disabledStep);
             var currentStep = RecipeService.getLastActiveStep();
-
-            PreviewService.getPreviewDiffRecords(currentStep, previewStep, disabledStep.column.id);
+            var preparationId = state.playground.preparation.id;
+            var columnToFocusId = disabledStep.column.id;
+            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, columnToFocusId);
         }
     }
 

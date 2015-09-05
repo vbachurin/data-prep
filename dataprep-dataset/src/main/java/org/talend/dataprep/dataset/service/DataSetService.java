@@ -27,7 +27,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
@@ -42,6 +41,7 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
+import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.schema.DraftValidator;
@@ -547,7 +547,7 @@ public class DataSetService {
      */
     void completeWithUserData(DataSetMetadata dataSetMetadata) {
         String userId = getUserId();
-        UserData userData = userDataRepository.getUserData(userId);
+        UserData userData = userDataRepository.get(userId);
         if (userData != null) {
             dataSetMetadata.setFavorite(userData.getFavoritesDatasets().contains(dataSetMetadata.getId()));
         }// no user data related to the current user to do nothing
@@ -628,7 +628,7 @@ public class DataSetService {
     @Timed
     public Iterable<String> favorites() {
         String userId = getUserId();
-        UserData userData = userDataRepository.getUserData(userId);
+        UserData userData = userDataRepository.get(userId);
         return userData != null ? userData.getFavoritesDatasets() : Collections.emptyList();
     }
 
@@ -653,18 +653,18 @@ public class DataSetService {
         if (dataSetMetadata != null) {
             LOG.debug("{} favorite dataset for #{} for user {}", unset ? "Unset" : "Set", dataSetId, userId); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
-            UserData userData = userDataRepository.getUserData(userId);
+            UserData userData = userDataRepository.get(userId);
             if (unset) {// unset the favorites
                 if (userData != null) {
                     userData.getFavoritesDatasets().remove(dataSetId);
-                    userDataRepository.setUserData(userData);
+                    userDataRepository.save(userData);
                 }// no user data for this user so nothing to unset
             } else {// set the favorites
                 if (userData == null) {// let's create a new UserData
                     userData = new UserData(userId);
                 }// else already created so just update it.
                 userData.addFavoriteDataset(dataSetId);
-                userDataRepository.setUserData(userData);
+                userDataRepository.save(userData);
             }
         } else {// no dataset found so throws an error
             throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", dataSetId));

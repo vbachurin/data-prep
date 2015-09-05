@@ -74,7 +74,6 @@ public class AggregationTests extends TransformationServiceBaseTests {
     public void shouldAggregateSum() throws IOException {
         // when
         final String actual = aggregate("../aggregation/sum.json", "../aggregation/aggregation_dataset_input.json");
-        System.out.println(actual);
 
         // then
         assertThat(actual, sameJSONAsFile(this.getClass().getResourceAsStream("../aggregation/sum_expected.json")));

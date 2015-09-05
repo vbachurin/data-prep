@@ -17,8 +17,7 @@ import javax.validation.constraints.NotNull;
 import org.talend.dataprep.api.user.UserData;
 
 /**
- * storage interface for the user data
- *
+ * Storage interface for the user data.
  */
 public interface UserDataRepository {
 
@@ -29,14 +28,14 @@ public interface UserDataRepository {
      * @return the {@link UserData} for the given userId
      */
     @NotNull
-    UserData getUserData(String userId);
+    UserData get(String userId);
 
     /**
      * store the given {@link UserData}
      * 
      * @param userData the {@link UserData} to store
      */
-    void setUserData(UserData userData);
+    void save(UserData userData);
 
     /**
      * remove the userData associated with the userId

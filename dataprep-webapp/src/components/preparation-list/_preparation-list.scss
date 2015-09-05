@@ -3,7 +3,7 @@
   @include flex-wrap(wrap);
 
   .preparation {
-    @include flex-basis(300px);
+    @include flex-basis(290px);
     @include flex-shrink(0);
     @include flex-grow(0);
 

@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     /**
@@ -12,12 +12,14 @@
     function DatagridStyleService(DatagridService, ConverterService, TextFormatService) {
         var grid;
         var lastSelectedColumnId;
+        var highlightCellTimeout;
+        var columnClassTimeout;
 
         return {
             init: init,
-            resetCellStyles : resetCellStyles,
-            resetColumnStyles : resetColumnStyles,
-            selectedColumn : selectedColumn,
+            resetCellStyles: resetCellStyles,
+            resetColumnStyles: resetColumnStyles,
+            selectedColumn: selectedColumn,
             manageColumnStyle: manageColumnStyle,
             columnFormatter: columnFormatter,
             getColumnPreviewStyle: getColumnPreviewStyle
@@ -56,8 +58,8 @@
          * @return {object}
          */
         function selectedColumn(columns) {
-            if(lastSelectedColumnId) {
-                return _.find(columns, function(column) {
+            if (lastSelectedColumnId) {
+                return _.find(columns, function (column) {
                     return column.id === lastSelectedColumnId;
                 });
             }
@@ -84,7 +86,7 @@
          * @param {object} selectedCol The selected column
          */
         function updateSelectionClass(column, selectedCol) {
-            if(column === selectedCol) {
+            if (column === selectedCol) {
                 addClass(column, 'selected');
             }
         }
@@ -96,9 +98,9 @@
          * @description Add the 'number' class to the column if its type is a number type
          * @param {object} column the target column
          */
-        function updateNumbersClass(column){
+        function updateNumbersClass(column) {
             var simplifiedType = ConverterService.simplifyType(column.tdpColMetadata.type);
-            if (simplifiedType === 'number'){
+            if (simplifiedType === 'number') {
                 addClass(column, 'numbers');
             }
         }
@@ -112,13 +114,18 @@
          * @param {object} selectedCol The grid selected column
          */
         function updateColumnClass(columns, selectedCol) {
-            _.forEach(columns, function(column) {
-                column.cssClass = null;
-                updateSelectionClass(column, selectedCol);
-                updateNumbersClass(column);
+            _.forEach(columns, function (column) {
+                if (column.field === 'tdpId') {
+                    column.cssClass = 'index-column';
+                }
+                else {
+                    column.cssClass = null;
+                    updateSelectionClass(column, selectedCol);
+                    updateNumbersClass(column);
+                }
             });
 
-            if(selectedCol) {
+            if (selectedCol) {
                 lastSelectedColumnId = selectedCol.id;
             }
         }
@@ -135,13 +142,13 @@
         function manageColumnStyle(columns, isPreview) {
             var selectedColumn;
 
-            if(!isPreview) {
+            if (!isPreview) {
                 var activeCell = grid.getActiveCell();
-                if(activeCell) {
+                if (activeCell) {
                     selectedColumn = columns[activeCell.cell];
                 }
-                else if(lastSelectedColumnId) {
-                    selectedColumn = _.find(columns, function(col) {
+                else if (lastSelectedColumnId) {
+                    selectedColumn = _.find(columns, function (col) {
                         return col.id === lastSelectedColumnId;
                     });
                 }
@@ -169,17 +176,22 @@
                 var returnStr = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(value);
 
                 //entire row modification preview
-                switch(dataContext.__tdpRowDiff) {
-                    case 'delete': return '<div class="cellDeletedValue">' + (returnStr ? returnStr : ' ') + '</div>';
-                    case 'new': return '<div class="cellNewValue">' + (returnStr ? returnStr : ' ') + '</div>';
+                switch (dataContext.__tdpRowDiff) {
+                    case 'delete':
+                        return '<div class="cellDeletedValue">' + (returnStr ? returnStr : ' ') + '</div>';
+                    case 'new':
+                        return '<div class="cellNewValue">' + (returnStr ? returnStr : ' ') + '</div>';
                 }
 
                 //cell modification preview
-                if(dataContext.__tdpDiff && dataContext.__tdpDiff[columnDef.id]){
-                    switch(dataContext.__tdpDiff[columnDef.id]) {
-                        case 'update': return '<div class="cellUpdateValue">' + returnStr + '</div>';
-                        case 'new': return '<div class="cellNewValue">' + returnStr + '</div>';
-                        case 'delete': return '<div class="cellDeletedValue">' + (returnStr ? returnStr : ' ') + '</div>';
+                if (dataContext.__tdpDiff && dataContext.__tdpDiff[columnDef.id]) {
+                    switch (dataContext.__tdpDiff[columnDef.id]) {
+                        case 'update':
+                            return '<div class="cellUpdateValue">' + returnStr + '</div>';
+                        case 'new':
+                            return '<div class="cellNewValue">' + returnStr + '</div>';
+                        case 'delete':
+                            return '<div class="cellDeletedValue">' + (returnStr ? returnStr : ' ') + '</div>';
                     }
                 }
 
@@ -196,10 +208,14 @@
          */
         function getColumnPreviewStyle(col) {
             switch (col.__tdpColumnDiff) {
-                case 'new':     return 'newColumn';
-                case 'delete':  return 'deletedColumn';
-                case 'update':  return 'updatedColumn';
-                default:        return '';
+                case 'new':
+                    return 'newColumn';
+                case 'delete':
+                    return 'deletedColumn';
+                case 'update':
+                    return 'updatedColumn';
+                default:
+                    return '';
             }
         }
 
@@ -209,12 +225,11 @@
          * @methodOf data-prep.datagrid.service:DatagridStyleService
          * @description attachColumnHeaderListeners callback
          */
-        function attachColumnHeaderCallback(args) {
+        function attachColumnHeaderCallback(event, args) {
             resetCellStyles();
             updateColumnClass(grid.getColumns(), args.column);
             grid.invalidate();
         }
-
 
         /**
          * @ngdoc method
@@ -223,42 +238,60 @@
          * @description Attach style listener on headers. On header selection (on right click or left click) we update the column cells style
          */
         function attachColumnHeaderListeners() {
-            grid.onHeaderContextMenu.subscribe(function(e, args) {
-                attachColumnHeaderCallback (args);
-            });
-
-            grid.onHeaderClick.subscribe(function(e, args) {
-                attachColumnHeaderCallback (args);
-            });
+            grid.onHeaderContextMenu.subscribe(attachColumnHeaderCallback);
+            grid.onHeaderClick.subscribe(attachColumnHeaderCallback);
         }
 
-        function highlightCellsContaining(rowIndex, colIndex) {
-            var column = grid.getColumns()[colIndex];
-            var content = DatagridService.dataView.getItem(rowIndex)[column.id];
+        /**
+         * @ngdoc method
+         * @name scheduleHighlightCellsContaining
+         * @methodOf data-prep.datagrid.service:DatagridStyleService
+         * @param {number} rowIndex The row index
+         * @param {number} colIndex The column index
+         * @description Cancel the previous scheduled task and schedule a new one to highlight the cells that contains the same value as the (rowIndex, colIndex) cell
+         */
+        function scheduleHighlightCellsContaining(rowIndex, colIndex) {
+            clearTimeout(highlightCellTimeout);
+            highlightCellTimeout = setTimeout(function() {
+                var column = grid.getColumns()[colIndex];
+                var content = DatagridService.dataView.getItem(rowIndex)[column.id];
 
-            var sameContentConfig = DatagridService.getSameContentConfig(column.id, content, 'highlight');
-            grid.setCellCssStyles('highlight', sameContentConfig);
+                var sameContentConfig = DatagridService.getSameContentConfig(column.id, content, 'highlight');
+                grid.setCellCssStyles('highlight', sameContentConfig);
+            }, 200);
+        }
+
+        /**
+         * @ngdoc method
+         * @name scheduleUpdateColumnClass
+         * @methodOf data-prep.datagrid.service:DatagridStyleService
+         * @param {number} colIndex The selected column index
+         * @description Cancel the previous scheduled task and schedule a new one to update columns classes.
+         */
+        function scheduleUpdateColumnClass(colIndex) {
+            var columns = grid.getColumns();
+            var column = columns[colIndex];
+
+            if(lastSelectedColumnId !== column.id) {
+                clearTimeout(columnClassTimeout);
+                columnClassTimeout = setTimeout(function() {
+                    updateColumnClass(columns, column);
+                    grid.invalidate();
+                }, 100);
+            }
         }
 
         /**
          * @ngdoc method
          * @name attachCellListeners
          * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @description Attach cell action listeners (click, active change, ...)
+         * @description Attach cell action listeners : update columns classes and highlight cells
          */
         function attachCellListeners() {
-            //get clicked content and highlight cells in clicked column containing the content
-            grid.onClick.subscribe(function (e,args) {
-                setTimeout(highlightCellsContaining.bind(null, args.row, args.cell), 0);
-            });
-
-            //change selected cell column background
-            grid.onActiveCellChanged.subscribe(function(e,args) {
-                if(angular.isDefined(args.cell)) {
-                    var columns = grid.getColumns();
-                    var column = columns[args.cell];
-                    updateColumnClass(columns, column);
-                    grid.invalidate();
+            grid.onActiveCellChanged.subscribe(function (e, args) {
+                if (angular.isDefined(args.cell)) {
+                    scheduleHighlightCellsContaining(args.row, args.cell);
+                    scheduleUpdateColumnClass(args.cell);
                 }
             });
         }

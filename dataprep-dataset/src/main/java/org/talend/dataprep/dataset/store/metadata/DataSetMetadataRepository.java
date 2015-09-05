@@ -2,12 +2,13 @@ package org.talend.dataprep.dataset.store.metadata;
 
 import javax.annotation.Nullable;
 
-import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.lock.DistributedLock;
 
+/**
+ * Interface for all DatasetMetadata repository implementations.
+ */
 public interface DataSetMetadataRepository {
-
-    String DATASET_LOCK_PREFIX = "dataset#"; //$NON-NLS-1$
 
     /**
      * @return A {@link java.lang.Iterable iterable} of {@link DataSetMetadata data set}. Returned data set are expected

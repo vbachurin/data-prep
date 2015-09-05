@@ -97,6 +97,7 @@ describe('Playground directive', function () {
 
         it('should show/hide action buttons in the recipe header', function () {
             //given
+            stateMock.playground.preparation = {id: '3e41168465e15d4'};
             stateMock.playground.dataset = metadata;
             createElement();
 

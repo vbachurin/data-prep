@@ -3,9 +3,11 @@ package org.talend.dataprep.api.preparation;
 import static java.util.Collections.unmodifiableList;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.talend.dataprep.exception.TDPException;
@@ -13,7 +15,7 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class PreparationActions extends Identifiable {
+public class PreparationActions extends Identifiable implements Serializable {
 
     public static final PreparationActions ROOT_CONTENT = new PreparationActions(Collections.<Action>emptyList());
 
@@ -83,5 +85,26 @@ public class PreparationActions extends Identifiable {
             serializedActions = "invalid actions";
         }
         return "PreparationActions {" + "id:'" + id() + "', actions: " + serializedActions + '}';
+    }
+
+    /**
+     * @see Object#equals(Object)
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        PreparationActions that = (PreparationActions) o;
+        return Objects.equals(actions, that.actions);
+    }
+
+    /**
+     * @see Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(actions);
     }
 }

@@ -7,8 +7,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.preparation.PreparationRepository;
 import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.preparation.store.inmemory.InMemoryPreparationRepository;
 
 /**
  * Unit test for the InMemoryPreparationRepository.

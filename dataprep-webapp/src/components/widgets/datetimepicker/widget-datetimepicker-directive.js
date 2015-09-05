@@ -29,71 +29,66 @@
             },
             controllerAs: 'ctrl',
             link: function (scope, element, attributes) {
+                Date.parseDate = function (input, format) {
+                    return moment(input, format).toDate();
+                };
+                Date.prototype.dateFormat = function (format) {
+                    return moment(this).format(format);
+                };
 
-              var body = angular.element('body').eq(0);
+                var format = attributes.format ? attributes.format : 'DD/MM/YYYY hh:mm:ss';
+                var formatTime = attributes.formatTime ? attributes.formatTime : 'hh:mm:ss';
+                var formatDate = attributes.formatDate ? attributes.formatDate : 'DD/MM/YYYY';
 
-              Date.parseDate = function(input, format ){
-                return moment(input,format).toDate();
-              };
-              Date.prototype.dateFormat = function( format ){
-                return moment(this).format(format);
-              };
+                var dateInput = angular.element('.datetimepicker');
+                dateInput.datetimepicker({
+                        format: format,
+                        formatTime: formatTime,
+                        formatDate: formatDate
+                    }
+                );
 
-              var format = attributes.format?attributes.format:'DD/MM/YYYY hh:mm:ss';
-              var formatTime = attributes.formatTime?attributes.formatTime:'hh:mm:ss';
-              var formatDate = attributes.formatDate?attributes.formatDate:'DD/MM/YYYY';
+                /**
+                 * @ngdoc method
+                 * @name hideCalendar
+                 * @methodOf talend.widget.directive:TalendDatetimePicker
+                 * @description [PRIVATE] hide calendar widget
+                 */
+                var hideCalendar = function () {
+                    dateInput.datetimepicker('hide');
+                };
 
-              var dateInput = angular.element('.datetimepicker');
-              dateInput.datetimepicker({
-                    format: format,
-                    formatTime: formatTime,
-                    formatDate:formatDate
-                  }
-              );
+                /**
+                 * @ngdoc method
+                 * @name attachKeyMap
+                 * @methodOf talend.widget.directive:TalendDatetimePicker
+                 * @description [PRIVATE] Attach ESC actions
+                 * <ul>
+                 *     <li>ESC : hide the calendar</li>
+                 * </ul>
+                 */
+                var attachKeyMap = function () {
+                    dateInput.bind('keydown', function (event) {
 
-              /**
-               * @ngdoc method
-               * @name hideCalendar
-               * @methodOf talend.widget.directive:TalendDatetimePicker
-               * @description [PRIVATE] hide calendar widget
-               */
-              var hideCalendar = function(){
-                dateInput.datetimepicker('hide');
-              };
+                        // hide calendar on 'ESC' keydown
+                        if (event.keyCode === 27) {
+                            hideCalendar();
+                            event.stopPropagation();
+                        }
+                    });
+                };
 
-              /**
-               * @ngdoc method
-               * @name attachKeyMap
-               * @methodOf talend.widget.directive:TalendDatetimePicker
-               * @description [PRIVATE] Attach ESC actions
-               * <ul>
-               *     <li>ESC : hide the calendar</li>
-               * </ul>
-               */
-               var attachKeyMap = function() {
-                 dateInput.bind('keydown', function (event) {
-
-                  // hide calendar on 'ESC' keydown
-                   if (event.keyCode === 27) {
-                     hideCalendar();
-                     event.stopPropagation();
-                   }
+                /**
+                 * on element destroy, we destroy the scope which unregister body mousedown
+                 */
+                element.on('$destroy', function () {
+                    scope.$destroy();
                 });
-              };
+                scope.$on('$destroy', function () {
+                    dateInput.off('mousedown');
+                });
 
-
-              /**
-               * on element destroy, we destroy the scope which unregister body mousedown
-               */
-              element.on('$destroy', function () {
-                scope.$destroy();
-              });
-              scope.$on('$destroy', function () {
-                dateInput.off('mousedown');
-              });
-
-              attachKeyMap();
-
+                attachKeyMap();
             }
         };
 

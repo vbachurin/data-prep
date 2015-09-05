@@ -13,7 +13,7 @@ describe('Message service', function() {
     }));
 
     beforeEach(inject(function(toaster) {
-        spyOn(toaster, 'pop').and.callThrough();
+        spyOn(toaster, 'pop').and.returnValue();
     }));
 
     it('should show toast on error without translate arg', inject(function($rootScope, MessageService, toaster) {

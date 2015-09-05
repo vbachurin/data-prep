@@ -90,7 +90,7 @@ describe('Preparation list controller', function() {
         });
         spyOn(PreparationService, 'preparationsList').and.returnValue(allPreparations);
         spyOn(PlaygroundService, 'load').and.returnValue($q.when(true));
-        spyOn(StateService, 'showPlayground').and.callThrough();
+        spyOn(StateService, 'showPlayground').and.returnValue();
         spyOn(MessageService, 'success').and.returnValue(null);
         spyOn(MessageService, 'error').and.returnValue(null);
     }));

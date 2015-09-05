@@ -52,7 +52,7 @@
 
             var datasetId = state.playground.dataset.id;
             var sampleSize = PlaygroundService.selectedSampleSize.value;
-            var preparationId = PreparationService.currentPreparationId;
+            var preparationId = state.playground.preparation ? state.playground.preparation.id : null;
             var stepId = preparationId ? RecipeService.getLastActiveStep().id : null;
 
             StatisticsService.processAggregation(datasetId, preparationId, stepId, sampleSize, column, aggregation);

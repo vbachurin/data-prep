@@ -39,7 +39,7 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
     private final RowMetadata rowMetadata;
 
     /** Counter for the tdp id. */
-    private long nextRowId = 0;
+    private long nextRowId = 1;
 
     /**
      * Constructor.

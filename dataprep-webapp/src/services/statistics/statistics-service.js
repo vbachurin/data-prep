@@ -147,20 +147,39 @@
 
             if(currentRangeFilter){
                 if(currentRangeFilter.args.interval[0] < column.statistics.min){
+                    var maxBrush;
+                    if(currentRangeFilter.args.interval[1] <= column.statistics.min){
+                        maxBrush = column.statistics.min;
+                    }
+                    else if(currentRangeFilter.args.interval[1] >= column.statistics.max){
+                        maxBrush = column.statistics.max;
+                    }
+                    else if(currentRangeFilter.args.interval[1] < column.statistics.max && currentRangeFilter.args.interval[1] > column.statistics.min){
+                        maxBrush = currentRangeFilter.args.interval[1];
+                    }
                     service.rangeLimits = {
                         min : column.statistics.min,
                         max : column.statistics.max,
                         minBrush : column.statistics.min,
-                        maxBrush : column.statistics.min,
+                        maxBrush : maxBrush,
                         minFilterVal : currentRangeFilter.args.interval[0],
                         maxFilterVal : currentRangeFilter.args.interval[1]
                     };
                 }
                 else if(currentRangeFilter.args.interval[1] > column.statistics.max){
+
+                    var minBrush;
+                    if(currentRangeFilter.args.interval[0] >= column.statistics.max){
+                        minBrush = column.statistics.max;
+                    }
+                    else if(currentRangeFilter.args.interval[0] <= column.statistics.max && currentRangeFilter.args.interval[0] >= column.statistics.min){
+                        minBrush = currentRangeFilter.args.interval[0];
+                    }
+
                     service.rangeLimits = {
                         min : column.statistics.min,
                         max : column.statistics.max,
-                        minBrush : column.statistics.max,
+                        minBrush : minBrush,
                         maxBrush : column.statistics.max,
                         minFilterVal : currentRangeFilter.args.interval[0],
                         maxFilterVal : currentRangeFilter.args.interval[1]

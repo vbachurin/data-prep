@@ -12,20 +12,43 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.preparation.*;
+import org.talend.dataprep.api.preparation.Identifiable;
+import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.PreparationActions;
+import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.preparation.store.PreparationRepository;
 
+/**
+ * MongoDB implementation of the preparation repository.
+ */
 @Component
 @ConditionalOnProperty(name = "preparation.store", havingValue = "mongodb")
 public class MongoDBPreparationRepository implements PreparationRepository {
 
+    /** Spring interface used to access mongodb. */
     @Autowired
-    PreparationStorage store;
+    private PreparationStorage store;
 
+    /**
+     * Add the root elements in the repository.
+     */
+    @PostConstruct
+    public void init() {
+        add(Step.ROOT_STEP);
+        add(PreparationActions.ROOT_CONTENT);
+    }
+
+    /**
+     * @see PreparationRepository#add(Identifiable)
+     */
     @Override
     public void add(Identifiable object) {
         store.save(object);
     }
 
+    /**
+     * @see PreparationRepository#get(String, Class)
+     */
     @Override
     public <T extends Identifiable> T get(String id, Class<T> clazz) {
         if (id == null) {
@@ -60,11 +83,17 @@ public class MongoDBPreparationRepository implements PreparationRepository {
         return (Collection<Preparation>) (Collection<?>) store.findByDataSet(Preparation.class.getName(), dataSetId);
     }
 
+    /**
+     * @see PreparationRepository#listAll(Class)
+     */
     @Override
     public <T extends Identifiable> Collection<T> listAll(Class<T> clazz) {
         return (Collection<T>) store.findAll(clazz.getName());
     }
 
+    /**
+     * @see PreparationRepository#clear()
+     */
     @Override
     public void clear() {
         store.deleteAll();
@@ -72,6 +101,9 @@ public class MongoDBPreparationRepository implements PreparationRepository {
         add(ROOT_STEP);
     }
 
+    /**
+     * @see PreparationRepository#remove(Identifiable)
+     */
     @Override
     public void remove(Identifiable object) {
         if (object == null) {
@@ -80,9 +112,5 @@ public class MongoDBPreparationRepository implements PreparationRepository {
         store.delete(object.getClass().getName(), object.id());
     }
 
-    @PostConstruct
-    public void init() {
-        add(Step.ROOT_STEP);
-        add(PreparationActions.ROOT_CONTENT);
-    }
+
 }

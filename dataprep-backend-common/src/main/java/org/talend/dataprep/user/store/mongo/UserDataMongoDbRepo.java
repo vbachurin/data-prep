@@ -15,6 +15,9 @@ package org.talend.dataprep.user.store.mongo;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.talend.dataprep.api.user.UserData;
 
+/**
+ * Spring interface needed to mongo db user data repository implementation.
+ */
 public interface UserDataMongoDbRepo extends MongoRepository<UserData, String> {
     // interface to inject the Mongo Repo for User Data
 }
