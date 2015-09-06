@@ -73,7 +73,7 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
                     LOGGER.debug("Schema information must be computed before quality analysis can be performed, ignoring message");
                     return; // no acknowledge to allow re-poll.
                 }
-
+                LOGGER.info("Analyzing quality of dataset #{}...", metadata.getId());
                 computeQuality(metadata, stream);
 
                 // ... all quality is now analyzed, mark it so.
@@ -107,7 +107,6 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
         // Compute valid / invalid / empty count, need data types for analyzer first
         DataType.Type[] types = TypeUtils.convert(dataset.getRow().getColumns());
         // Run analysis
-        LOGGER.info("Analyzing quality of dataset #{}...", dataset.getId());
         final ValueQualityAnalyzer valueQualityAnalyzer = new ValueQualityAnalyzer(types);
         valueQualityAnalyzer.setStoreInvalidValues(true);
         final Analyzer<Analyzers.Result> analyzer = Analyzers.with(valueQualityAnalyzer, new SummaryAnalyzer(types));
