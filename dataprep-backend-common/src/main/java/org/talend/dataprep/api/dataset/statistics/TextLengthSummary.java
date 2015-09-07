@@ -1,8 +1,10 @@
 package org.talend.dataprep.api.dataset.statistics;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TextLengthSummary {
+public class TextLengthSummary implements Serializable {
 
     @JsonProperty("minimalLength")
     double minimalLength = Double.NaN;

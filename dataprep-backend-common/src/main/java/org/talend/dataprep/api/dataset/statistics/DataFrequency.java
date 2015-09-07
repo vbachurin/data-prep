@@ -1,8 +1,10 @@
 package org.talend.dataprep.api.dataset.statistics;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class DataFrequency {
+public class DataFrequency implements Serializable {
 
     @JsonProperty("data")
     String data;

@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.dataset.statistics;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("statistics")
-public class Statistics {
+public class Statistics implements Serializable {
 
     @JsonProperty("count")
     long count;
