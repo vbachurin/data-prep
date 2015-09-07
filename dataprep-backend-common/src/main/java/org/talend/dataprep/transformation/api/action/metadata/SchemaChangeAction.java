@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.action.schema;
+package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.HashSet;
 import java.util.Set;

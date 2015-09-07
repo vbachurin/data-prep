@@ -13,7 +13,7 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.schema.SchemaChangeAction;
+import org.talend.dataprep.transformation.api.action.metadata.SchemaChangeAction;
 
 /**
  * Change the type of a column <b>This action is not displayed in the UI it's here to ease recording it as a Step It's
@@ -75,8 +75,8 @@ public class TypeChange extends AbstractActionMetadata implements ColumnAction, 
             columnMetadata.setTypeForced(true);
             // erase domain
             columnMetadata.setDomain("");
-            columnMetadata.setDomainLabel("");
-            columnMetadata.setDomainFrequency(0);
+            columnMetadata.setDomainLabel( "" );
+            columnMetadata.setDomainFrequency( 0 );
             forceColumn( context, columnId );
         }
     }
