@@ -39,7 +39,6 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
             return Type.STRING;
         }
 
-        ;
     }
 
     protected static final UrlTokenExtractor PROTOCOL_TOKEN_EXTRACTOR = new UrlTokenExtractor() {
@@ -55,18 +54,19 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
         }
     };
 
-    private static UrlTokenExtractor[] urlTokenExtractors = new UrlTokenExtractor[]{PROTOCOL_TOKEN_EXTRACTOR, new UrlTokenExtractor() {
+    private static UrlTokenExtractor[] urlTokenExtractors = new UrlTokenExtractor[]{PROTOCOL_TOKEN_EXTRACTOR,
+            new UrlTokenExtractor() {
 
-        @Override
-        public String getSuffix() {
-            return "_host";
-        }
+                @Override
+                public String getSuffix() {
+                    return "_host";
+                }
 
-        @Override
-        public String extractToken(URL url) {
-            return url.getHost();
-        }
-    }, new UrlTokenExtractor() {
+                @Override
+                public String extractToken(URL url) {
+                    return url.getHost();
+                }
+            }, new UrlTokenExtractor() {
 
         @Override
         public String getSuffix() {
@@ -93,6 +93,52 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
         @Override
         public String extractToken(URL url) {
             return url.getPath();
+        }
+    }, new UrlTokenExtractor() {
+
+        @Override
+        public String getSuffix() {
+            return "_query";
+        }
+
+        @Override
+        public String extractToken(URL url) {
+            return url.getQuery();
+        }
+    }, new UrlTokenExtractor() {
+
+        @Override
+        public String getSuffix() {
+            return "_fragment";
+        }
+
+        @Override
+        public String extractToken(URL url) {
+            return url.getRef();
+        }
+    }, new UrlTokenExtractor() {
+
+        @Override
+        public String getSuffix() {
+            return "_user";
+        }
+
+        @Override
+        public String extractToken(URL url) {
+            final String userInfo = url.getUserInfo();
+            return (userInfo == null ? "" : userInfo.split(":")[0]);
+        }
+    }, new UrlTokenExtractor() {
+
+        @Override
+        public String getSuffix() {
+            return "_password";
+        }
+
+        @Override
+        public String extractToken(URL url) {
+            final String userInfo = url.getUserInfo();
+            return (userInfo == null ? "" : userInfo.split(":")[1]);
         }
     }};
 
@@ -144,15 +190,17 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
             // Nothing to do, silently skip this row, leave url null, will be treated just bellow
         }
 
-        // if url is null, we still loop on urlTokenExtractors in order to create the column metadata for all rows, even invalid ones.
+        // if url is null, we still loop on urlTokenExtractors in order to create the column metadata for all rows, even
+        // invalid ones.
         for (UrlTokenExtractor urlTokenExtractor : urlTokenExtractors) {
 
-            final ColumnMetadata newColumnMetadata = createNewColumn(column, urlTokenExtractor.getSuffix(), urlTokenExtractor.getType());
+            final ColumnMetadata newColumnMetadata = createNewColumn(column, urlTokenExtractor.getSuffix(),
+                    urlTokenExtractor.getType());
             final String local = rowMetadata.insertAfter(columnToInsertAfter.getId(), newColumnMetadata);
 
             final String tokenValue = (url == null ? "" : urlTokenExtractor.extractToken(url));
 
-            row.set(local, tokenValue);
+            row.set(local, (tokenValue == null ? "" : tokenValue));
 
             columnToInsertAfter = newColumnMetadata;
         }
