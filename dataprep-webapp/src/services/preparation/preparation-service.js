@@ -29,6 +29,7 @@
             copyImplicitParameters: copyImplicitParameters,
             paramsHasChanged: paramsHasChanged,
             appendStep: appendStep,
+            executeAppendStep: executeAppendStep,
             updateStep: updateStep,
             removeStep: removeStep,
 
@@ -207,6 +208,23 @@
 
         /**
          * @ngdoc method
+         * @name executeAppendStep
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @param {object} action The action name
+         * @param {object} parameters The new action parameters
+         * @description Append a step. If the preparation does not exists, it is created
+         * @returns {promise} The PUT promise
+         */
+        function executeAppendStep(action, parameters) {
+            var promise = service.currentPreparationId ? $q.when(service.currentPreparationId) : create(metadata, 'Preparation draft');
+            return promise.then(function() {
+                return PreparationRestService.appendStep(service.currentPreparationId, action, parameters);
+            });
+        }
+
+
+        /**
+         * @ngdoc method
          * @name updateStep
          * @methodOf data-prep.services.preparation.service:PreparationService
          * @param {string} preparationId The preparation id
@@ -222,6 +240,7 @@
                 {action: step.transformation.name, parameters: parameters}
             );
         }
+
 
         /**
          * @ngdoc method

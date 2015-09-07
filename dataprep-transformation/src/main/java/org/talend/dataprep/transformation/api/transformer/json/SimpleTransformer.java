@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,13 +18,20 @@ import org.apache.spark.SparkContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.*;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.api.dataset.DataSetAnalysis;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.Quality;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.SchemaChangeAction;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
@@ -84,7 +93,8 @@ class SimpleTransformer implements Transformer {
                     try {
                         analyzer = (Analyzer<Analyzers.Result>) context.get("analyzer");
                         if (analyzer == null) {
-                            // Configure quality & semantic analysis (if column metadata information is present in stream).
+                            // Configure quality & semantic analysis (if column metadata information is present in
+                            // stream).
                             final DataType.Type[] types = TypeUtils.convert(context.getTransformedRowMetadata().getColumns());
                             final URI ddPath = this.getClass().getResource("/luceneIdx/dictionary").toURI(); //$NON-NLS-1$
                             final URI kwPath = this.getClass().getResource("/luceneIdx/keyword").toURI(); //$NON-NLS-1$
@@ -139,6 +149,10 @@ class SimpleTransformer implements Transformer {
 
             // Column statistics
             if (transformColumns) {
+                Set<String> forcedColumns = (Set<String>) context.get( SchemaChangeAction.FORCED_TYPE_SET_CTX_KEY );
+                if (forcedColumns==null){
+                    forcedColumns = Collections.emptySet();
+                }
                 // Spark statistics
                 final RowMetadata rowMetadata = context.getTransformedRowMetadata();
                 final DataSetMetadata transformedMetadata = new DataSetMetadata("", //
@@ -163,12 +177,15 @@ class SimpleTransformer implements Transformer {
                     quality.setInvalid((int) column.getInvalidCount());
                     quality.setValid((int) column.getValidCount());
                     quality.setInvalidValues(column.getInvalidValues());
-                    // Semantic types
-                    final SemanticType semanticType = result.get(SemanticType.class);
-                    metadata.setDomain(TypeUtils.getDomainLabel(semanticType));
+                    // we do not change again the domain as it has been maybe override by the user
+                    if (!(metadata.isDomainForced() || metadata.isTypeForced()) && !forcedColumns.contains( metadata.getId() )) {
+                        // Semantic types
+                        final SemanticType semanticType = result.get(SemanticType.class);
+                        metadata.setDomain(TypeUtils.getDomainLabel(semanticType));
+                    }
                 }
                 // statistics analysis must be performed after quality, otherwise it will not be accurate
-                DataSetAnalysis.computeStatistics(statisticsDataSet, sparkContext, builder);
+                DataSetAnalysis.computeStatistics( statisticsDataSet, sparkContext, builder );
             }
             writer.endArray();
             // Write columns
