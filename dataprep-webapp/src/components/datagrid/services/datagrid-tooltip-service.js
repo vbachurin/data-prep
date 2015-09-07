@@ -46,11 +46,10 @@
          * @name createTooltip
          * @methodOf data-prep.datagrid.service:DatagridTooltipService
          * @param {object} event The Slickgrid cell enter event
-         * @description Update the tooltip component and display with a delay (except for the index column)
+         * @description Update the tooltip component and display with a delay
          */
         function createTooltip(event) {
             tooltipTimeout = setTimeout(function () {
-
                 var cell = grid.getCellFromEvent(event);
                 if (!cell) {
                     return;
@@ -60,21 +59,19 @@
                 var item = DatagridService.dataView.getItem(row);
 
                 var column = grid.getColumns()[cell.cell];
+                var value = item[column.id];
 
-                if (column.id !== 'tdpId') {
-                    var value = item[column.id];
-                    if (shouldShowTooltip(value, cell)) {
-                        tooltipShowPromise = $timeout(function () {
-                            service.tooltip = {
-                                position: {
-                                    x: event.clientX,
-                                    y: event.clientY
-                                },
-                                htmlStr: TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(value)
-                            };
-                            service.showTooltip = true;
-                        });
-                    }
+                if (shouldShowTooltip(value, cell)) {
+                    tooltipShowPromise = $timeout(function () {
+                        service.tooltip = {
+                            position: {
+                                x: event.clientX,
+                                y: event.clientY
+                            },
+                            htmlStr: TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(value)
+                        };
+                        service.showTooltip = true;
+                    });
                 }
             }, tooltipDelay);
         }
