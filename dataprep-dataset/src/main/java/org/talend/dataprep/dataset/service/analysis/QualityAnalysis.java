@@ -1,11 +1,7 @@
 package org.talend.dataprep.dataset.service.analysis;
 
-import static java.util.stream.StreamSupport.stream;
-
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
@@ -110,15 +106,7 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
         final ValueQualityAnalyzer valueQualityAnalyzer = new ValueQualityAnalyzer(types);
         valueQualityAnalyzer.setStoreInvalidValues(true);
         final Analyzer<Analyzers.Result> analyzer = Analyzers.with(valueQualityAnalyzer, new SummaryAnalyzer(types));
-        records.map(row -> {
-            final Map<String, Object> rowValues = row.values();
-            final List<String> strings = stream(rowValues.entrySet().spliterator(), false) //
-                    .filter(e -> !DataSetRow.TDP_ID.equals(e.getKey())) // Don't take TDP_ID column
-                    .map(Map.Entry::getValue) //
-                    .map(String::valueOf) //
-                    .collect(Collectors.<String> toList());
-            return strings.toArray(new String[strings.size()]);
-        }).forEach(analyzer::analyze);
+        records.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
         // Determine content size
         final List<Analyzers.Result> result = analyzer.getResult();
         final Iterator<ColumnMetadata> iterator = dataset.getRow().getColumns().iterator();

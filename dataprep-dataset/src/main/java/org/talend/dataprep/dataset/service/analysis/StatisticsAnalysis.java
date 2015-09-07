@@ -1,10 +1,6 @@
 package org.talend.dataprep.dataset.service.analysis;
 
-import static java.util.stream.StreamSupport.stream;
-
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.jms.JMSException;
@@ -150,15 +146,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
                 new TextLengthAnalyzer()
         };
         final Analyzer<Analyzers.Result> analyzer = Analyzers.with(allAnalyzers);
-        stream.map(row -> {
-            final Map<String, Object> rowValues = row.values();
-            final List<String> strings = stream(rowValues.entrySet().spliterator(), false) //
-                    .filter(e -> !DataSetRow.TDP_ID.equals(e.getKey())) // Don't take TDP_ID column
-                    .map(Map.Entry::getValue) //
-                    .map(String::valueOf) //
-                    .collect(Collectors.<String> toList());
-            return strings.toArray(new String[strings.size()]);
-        }).forEach(analyzer::analyze);
+        stream.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
         analyzer.end();
         // Store results back in data set
         StatisticsUtils.setStatistics(columns, analyzer);

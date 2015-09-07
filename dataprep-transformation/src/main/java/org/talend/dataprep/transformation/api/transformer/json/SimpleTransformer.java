@@ -1,14 +1,10 @@
 package org.talend.dataprep.transformation.api.transformer.json;
 
-import static java.util.stream.StreamSupport.stream;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,12 +137,7 @@ class SimpleTransformer implements Transformer {
                     }
                     // Use analyzer (for empty values, semantic...)
                     if (!r.isDeleted()) {
-                        final List<ColumnMetadata> columns = r.getRowMetadata().getColumns();
-                        final Map<String, Object> rowValues = r.order(columns).values();
-                        final List<String> strings = stream(rowValues.values().spliterator(), false) //
-                                .map(String::valueOf) //
-                                .collect(Collectors.<String> toList());
-                        analyzer.analyze(strings.toArray(new String[strings.size()]));
+                        analyzer.analyze(r.toArray());
                     }
                 }
                 return r;
