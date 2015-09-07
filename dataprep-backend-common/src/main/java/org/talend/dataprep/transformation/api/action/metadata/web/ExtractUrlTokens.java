@@ -2,7 +2,6 @@ package org.talend.dataprep.transformation.api.action.metadata.web;
 
 import static org.talend.dataprep.api.type.Type.STRING;
 
-import java.awt.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
@@ -30,7 +29,7 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
      */
     public static final String EXTRACT_URL_TOKENS_ACTION_NAME = "extract_url_tokens"; //$NON-NLS-1$
 
-    private interface UrlTokenExtractor {
+    protected interface UrlTokenExtractor {
 
         String getSuffix();
 
@@ -43,7 +42,7 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
         ;
     }
 
-    private static UrlTokenExtractor[] urlTokenExtractors = new UrlTokenExtractor[]{new UrlTokenExtractor() {
+    protected static final UrlTokenExtractor PROTOCOL_TOKEN_EXTRACTOR = new UrlTokenExtractor() {
 
         @Override
         public String getSuffix() {
@@ -54,7 +53,9 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
         public String extractToken(URL url) {
             return url.getProtocol();
         }
-    }, new UrlTokenExtractor() {
+    };
+
+    private static UrlTokenExtractor[] urlTokenExtractors = new UrlTokenExtractor[]{PROTOCOL_TOKEN_EXTRACTOR, new UrlTokenExtractor() {
 
         @Override
         public String getSuffix() {
