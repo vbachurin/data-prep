@@ -6,7 +6,8 @@
      * @name data-prep.services.onboarding.service:OnboardingService
      * @description OnboardingService service. This service exposes functions to start onboarding tours
      */
-    function OnboardingService($window, datasetTour) {
+    function OnboardingService($window, datasetTour, preparationTour) {
+
         var TOUR_OPTIONS_KEY = 'org.talend.dataprep.tour_options';
 
         /**
@@ -61,23 +62,57 @@
 
         /**
          * @ngdoc method
+         * @name getTourConstantsFromTourId
+         * @methodOf data-prep.services.onboarding.service:OnboardingService
+         * @param {String} The tour Id
+         * @description Get Tour options constant
+         * @returns {array} Tour options constant
+         */
+        var getTourConstantsFromTourId = function getTourConstantsFromTourId(tour) {
+            switch(tour) {
+                case 'dataset':
+                    return datasetTour;
+                case 'preparation':
+                    return preparationTour;
+                default:
+                    return datasetTour;
+            }
+        };
+
+        /**
+         * @ngdoc method
+         * @name setTourDone
+         * @methodOf data-prep.services.onboarding.service:OnboardingService
+         * @param {String} The tour Id
+         * @description Set tour done in localStorage
+         */
+        var setTourDone = function setTourDone(tour) {
+            var options = getTourOptions();
+            options[tour] = true;
+            setTourOptions(options);
+        };
+
+        /**
+         * @ngdoc method
          * @name startTour
          * @methodOf data-prep.services.onboarding.service:OnboardingService
+         * @param {String} The tour Id
          * @description Configure and start an onboarding tour
          */
-        this.startTour = function startTour() {
+        this.startTour = function startTour(tour) {
             introJs()
                 .setOptions({
                     nextLabel: 'NEXT',
                     prevLabel: 'BACK',
                     skipLabel: 'SKIP',
                     doneLabel: 'OK, LET ME TRY!',
-                    steps: createIntroSteps(datasetTour)
+                    steps: createIntroSteps(getTourConstantsFromTourId(tour))
                 })
                 .oncomplete(function() {
-                    var options = getTourOptions();
-                    options.done = true;
-                    setTourOptions(options);
+                    setTourDone(tour);
+                })
+                .onexit(function() {
+                    setTourDone(tour);
                 })
                 .start();
         };
@@ -87,10 +122,12 @@
          * @name shouldStartTour
          * @methodOf data-prep.services.onboarding.service:OnboardingService
          * @description Check if the tour should be started depending on the saved options
+         * @param {String} The tour Id
          * @return {boolean} True if the tour has not been completed yet
          */
-        this.shouldStartTour = function shouldStartTour() {
-            return !getTourOptions().done;
+        this.shouldStartTour = function shouldStartTour(tour) {
+            var tourOptions = getTourOptions();
+            return !tourOptions[tour];
         };
     }
 
