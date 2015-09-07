@@ -34,7 +34,7 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
 
         String getSuffix();
 
-        String extract(URL url);
+        String extractToken(URL url);
 
         default Type getType() {
             return Type.STRING;
@@ -51,7 +51,7 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
         }
 
         @Override
-        public String extract(URL url) {
+        public String extractToken(URL url) {
             return url.getProtocol();
         }
     }, new UrlTokenExtractor() {
@@ -62,7 +62,7 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
         }
 
         @Override
-        public String extract(URL url) {
+        public String extractToken(URL url) {
             return url.getHost();
         }
     }, new UrlTokenExtractor() {
@@ -73,7 +73,7 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
         }
 
         @Override
-        public String extract(URL url) {
+        public String extractToken(URL url) {
             final int port = url.getPort();
             return (port == -1 ? "" : port + "");
         }
@@ -138,7 +138,7 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
             final ColumnMetadata newColumnMetadata = createNewColumn(column, urlTokenExtractor.getSuffix(), urlTokenExtractor.getType());
             final String local = rowMetadata.insertAfter(columnToInsertAfter.getId(), newColumnMetadata);
 
-            final String tokenValue = (url == null ? "" : urlTokenExtractor.extract(url));
+            final String tokenValue = (url == null ? "" : urlTokenExtractor.extractToken(url));
 
             row.set(local, tokenValue);
 
