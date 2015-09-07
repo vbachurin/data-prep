@@ -88,6 +88,7 @@ public class ExtractUrlTokensTest {
         expectedValues.put("0003", "http");
         expectedValues.put("0004", "www.talend.com");
         expectedValues.put("0005", "");
+        expectedValues.put("0006", "");
         expectedValues.put("0002", "01/01/2015");
 
         // when
@@ -115,6 +116,7 @@ public class ExtractUrlTokensTest {
         expectedValues.put("0003", "http");
         expectedValues.put("0004", "10.42.10.99");
         expectedValues.put("0005", "80");
+        expectedValues.put("0006", "/home/datasets");
         expectedValues.put("0002", "01/01/2015");
 
         // when
@@ -142,6 +144,7 @@ public class ExtractUrlTokensTest {
         expectedValues.put("0003", "");
         expectedValues.put("0004", "");
         expectedValues.put("0005", "");
+        expectedValues.put("0006", "");
         expectedValues.put("0002", "01/01/2015");
 
         // when
@@ -169,6 +172,7 @@ public class ExtractUrlTokensTest {
         expectedValues.put("0003", "");
         expectedValues.put("0004", "");
         expectedValues.put("0005", "");
+        expectedValues.put("0006", "");
         expectedValues.put("0002", "01/01/2015");
 
         // when
@@ -196,6 +200,7 @@ public class ExtractUrlTokensTest {
         expected.add(createMetadata("0003", "url_protocol"));
         expected.add(createMetadata("0004", "url_host"));
         expected.add(createMetadata("0005", "url_port", Type.INTEGER));
+        expected.add(createMetadata("0006", "url_path"));
         expected.add(createMetadata("0002", "last update"));
 
         // when
@@ -247,6 +252,7 @@ public class ExtractUrlTokensTest {
         assertEquals("mailto", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URL("mailto:smallet@talend.com")));
         assertEquals("ftp", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URL("ftp://server:21/this/is/a/resource")));
         assertEquals("http", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URL("HTTP://www.yahoo.fr")));
-        assertEquals("http", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URL("http:10.42.10.99:80/home/datasets?datasetid=c522a037")));
+        assertEquals("http", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URL(
+                "http:10.42.10.99:80/home/datasets?datasetid=c522a037")));
     }
 }
