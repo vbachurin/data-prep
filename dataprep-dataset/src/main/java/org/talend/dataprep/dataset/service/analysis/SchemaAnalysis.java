@@ -1,13 +1,10 @@
 package org.talend.dataprep.dataset.service.analysis;
 
-import static java.util.stream.StreamSupport.stream;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
@@ -78,13 +75,7 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
                 final SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(builder);
                 final Analyzer<Analyzers.Result> analyzer = Analyzers.with(dataTypeAnalyzer, semanticAnalyzer);
                 // Determine schema for the content (on the 20 first rows).
-                stream.limit(20).map(row -> {
-                    final Map<String, Object> rowValues = row.values();
-                    final List<String> strings = stream(rowValues.values().spliterator(), false) //
-                            .map(String::valueOf) //
-                            .collect(Collectors.<String> toList());
-                    return strings.toArray(new String[strings.size()]);
-                }).forEach(analyzer::analyze);
+                stream.limit(20).map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
                 // Find the best suitable type
                 List<Analyzers.Result> columnTypes = analyzer.getResult();
                 final Iterator<ColumnMetadata> columns = metadata.getRow().getColumns().iterator();

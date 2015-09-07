@@ -16,7 +16,11 @@
     <dependencies>
         <dependency>
             <groupId>org.talend.dataquality</groupId>
-            <artifactId>org.talend.datascience.spark</artifactId>
+            <artifactId>org.talend.dataquality.statistics</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
         </dependency>
         <dependency>
             <groupId>com.hazelcast</groupId>
@@ -37,10 +41,6 @@
         <dependency>
             <groupId>net.sf.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-jaxrs</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>

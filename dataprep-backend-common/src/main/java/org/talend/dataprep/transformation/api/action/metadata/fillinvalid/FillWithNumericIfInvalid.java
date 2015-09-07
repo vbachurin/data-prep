@@ -34,21 +34,18 @@ public class FillWithNumericIfInvalid extends AbstractFillIfInvalid {
     @Override
     public boolean acceptColumn(ColumnMetadata column) {
         Type type = Type.get(column.getType());
-
-        return isNumericType( type );
+        return isNumericType(type);
     }
 
-
-    private boolean isNumericType(Type type){
-        if ( Type.NUMERIC.equals( type ) ){
+    private boolean isNumericType(Type type) {
+        if (Type.NUMERIC.equals(type)) {
             return true;
         }
         Type parent = type.getSuperType();
-        if (parent == null){
+        if (parent == null) {
             return false;
         }
-        return isNumericType( parent );
+        return isNumericType(parent);
     }
-
 
 }
