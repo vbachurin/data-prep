@@ -13,13 +13,14 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+import org.talend.dataprep.transformation.api.action.schema.SchemaChangeAction;
 
 /**
  * Change the type of a column <b>This action is not displayed in the UI it's here to ease recording it as a Step It's
  * available from column headers</b>
  */
 @Component(TypeChange.ACTION_BEAN_PREFIX + TypeChange.TYPE_CHANGE_ACTION_NAME)
-public class TypeChange extends AbstractActionMetadata implements ColumnAction {
+public class TypeChange extends AbstractActionMetadata implements ColumnAction, SchemaChangeAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TypeChange.class);
 
@@ -71,11 +72,12 @@ public class TypeChange extends AbstractActionMetadata implements ColumnAction {
 
         if (StringUtils.isNotEmpty(newType)) {
             columnMetadata.setType(newType);
-            columnMetadata.setTypeForced( true );
+            columnMetadata.setTypeForced(true);
             // erase domain
             columnMetadata.setDomain("");
             columnMetadata.setDomainLabel("");
             columnMetadata.setDomainFrequency(0);
+            forceColumn( context, columnId );
         }
     }
 

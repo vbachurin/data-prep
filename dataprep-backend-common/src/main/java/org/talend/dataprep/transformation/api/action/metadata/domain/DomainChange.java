@@ -14,13 +14,14 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+import org.talend.dataprep.transformation.api.action.schema.SchemaChangeAction;
 
 /**
  * Change the domain of a column. <b>This action is not displayed in the UI it's here to ease recording it as a Step
  * It's available from column headers</b>
  */
 @Component(DomainChange.ACTION_BEAN_PREFIX + DomainChange.DOMAIN_CHANGE_ACTION_NAME)
-public class DomainChange extends AbstractActionMetadata implements ColumnAction {
+public class DomainChange extends AbstractActionMetadata implements ColumnAction, SchemaChangeAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainChange.class);
 
@@ -80,7 +81,8 @@ public class DomainChange extends AbstractActionMetadata implements ColumnAction
             columnMetadata.setDomain(newDomainId);
             columnMetadata.setDomainLabel(newDomainLabel);
             columnMetadata.setDomainFrequency(NumberUtils.toFloat(newDomainFrequency, 0));
-            columnMetadata.setDomainForced( true );
+            columnMetadata.setDomainForced(true);
+            forceColumn( context, columnId );
         }
 
     }

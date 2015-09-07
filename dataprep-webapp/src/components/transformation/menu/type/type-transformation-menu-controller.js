@@ -71,7 +71,7 @@
             setColumnDomainAndType({id: '', label: '', frequency: 0}, type.id);
             vm.column.typeForced=true;
 
-            PlaygroundService.updateColumn(vm.column.id, type, '')
+            PlaygroundService.addUpdateColumnStep(vm.column.id, type, '')
                 .catch(setColumnDomainAndType.bind(vm, originalDomain, originalType));
 
             /*PlaygroundService.appendStep('type_change',
