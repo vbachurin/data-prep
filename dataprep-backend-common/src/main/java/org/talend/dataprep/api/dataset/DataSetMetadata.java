@@ -303,6 +303,7 @@ public class DataSetMetadata implements Serializable {
     /**
      * @see Object#clone()
      */
+    @Override
     public DataSetMetadata clone() {
         return Builder.metadata().copy(this).build();
     }
@@ -500,13 +501,13 @@ public class DataSetMetadata implements Serializable {
             this.schemaAnalyzed = original.getLifecycle().schemaAnalyzed();
             this.importing = original.getLifecycle().importing();
             this.parameters = original.getContent().getParameters();
-            ArrayList<ColumnMetadata.Builder> builders = new ArrayList<>();
+            List<ColumnMetadata.Builder> builders = new ArrayList<>();
             if (original.getRow() != null) {
                 for (ColumnMetadata col : original.getRow().getColumns()) {
                     builders.add(ColumnMetadata.Builder.column().copy(col));
                 }
             }
-            this.columnBuilders = builders.toArray(new ColumnMetadata.Builder[0]);
+            this.columnBuilders = builders.toArray(new ColumnMetadata.Builder[builders.size()]);
             this.certificationStep = original.getGovernance().getCertificationStep();
             this.schemaParserResult = original.getSchemaParserResult();
             return this;
