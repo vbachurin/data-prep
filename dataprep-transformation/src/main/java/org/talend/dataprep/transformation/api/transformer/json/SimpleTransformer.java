@@ -143,7 +143,8 @@ class SimpleTransformer implements Transformer {
                 if (transformColumns) {
                     // Use analyzer (for empty values, semantic...)
                     if (!r.isDeleted()) {
-                        configureAnalyzer(context).analyze(r.toArray());
+                        final DataSetRow row = r.order(r.getRowMetadata().getColumns());
+                        configureAnalyzer(context).analyze(row.toArray());
                     }
                 }
                 return r;
