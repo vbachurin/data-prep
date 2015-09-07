@@ -40,7 +40,7 @@
             var originalDomain = getOriginalDomain();
 
             setColumnDomainAndType(domain, null);
-            vm.column.domainForced=true;
+            
             /*
             DatasetService.updateColumn(state.playground.dataset.id, vm.column.id, {domain: domain.id})
                 .catch(setColumnDomainAndType.bind(vm, originalDomain));
@@ -73,14 +73,6 @@
 
             PlaygroundService.addUpdateColumnStep(vm.column.id, type, '')
                 .catch(setColumnDomainAndType.bind(vm, originalDomain, originalType));
-
-            /*PlaygroundService.appendStep('type_change',
-                {
-                    'scope':'column',
-                    'column_id': vm.column.id,
-                    'NEW_TYPE':type.id
-                })
-                .catch(setColumnDomainAndType.bind(vm, originalDomain, originalType));*/
         };
 
         /**
