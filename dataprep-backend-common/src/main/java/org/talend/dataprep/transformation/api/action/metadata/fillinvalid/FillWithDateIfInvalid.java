@@ -1,13 +1,13 @@
 package org.talend.dataprep.transformation.api.action.metadata.fillinvalid;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
@@ -18,14 +18,12 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component(value = FillWithDateIfInvalid.ACTION_BEAN_PREFIX + FillWithDateIfInvalid.FILL_INVALID_ACTION_NAME)
 public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
@@ -89,28 +87,20 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
     }
 
     protected String findMostUsedDatePattern(final ColumnMetadata column) {
-
         // get the date pattern to write the date with
-        final JsonFactory jsonFactory = new JsonFactory();
-        final ObjectMapper mapper = new ObjectMapper(jsonFactory);
-
         // register the new pattern in column stats, to be able to process date action later
-        final JsonNode rootNode = getStatisticsNode(mapper, column);
-        final JsonNode patternFrequencyTable = rootNode.get("patternFrequencyTable"); //$NON-NLS-1$
-
-        int maxOccurence = 0, maxOccurenceIdx = 0;
-
-        for (int i = 0, size = patternFrequencyTable.size(); i < size; i++) {
-            int occurrences = patternFrequencyTable.get(i).get("occurrences").asInt();
-            if (occurrences > maxOccurence) {
-                maxOccurenceIdx = i;
-                maxOccurence = occurrences;
+        final Statistics statistics = column.getStatistics();
+        final Stream<PatternFrequency> stream = statistics.getPatternFrequencies().stream();
+        final Optional<PatternFrequency> mostUsed = stream.sorted((pf1, pf2) -> {
+            if (pf1.getOccurrences() - pf2.getOccurrences() == 0) {
+                return 0;
+            } else if(pf1.getOccurrences() - pf2.getOccurrences() > 0) {
+                return 1;
+            } else {
+                return -1;
             }
-        }
-
-        String mostUsedPattern = patternFrequencyTable.get(maxOccurenceIdx).get("pattern").asText();
-
-        return mostUsedPattern;
+        }).findFirst();
+        return mostUsed.get().getPattern();
     }
 
     /**

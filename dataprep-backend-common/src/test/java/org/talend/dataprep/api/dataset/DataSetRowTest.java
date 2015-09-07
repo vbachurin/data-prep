@@ -257,4 +257,42 @@ public class DataSetRowTest {
         values.put("age", "18");
         return values;
     }
+
+    @Test
+    public void testToArrayNoFilter() throws Exception {
+        final Map<String, String> values = new HashMap<>(4);
+        values.put("column0", "1");
+        values.put("column1", "2");
+        final DataSetRow row = new DataSetRow(values);
+        final String[] strings = row.toArray();
+        assertEquals(2, strings.length);
+        assertEquals("1", strings[0]);
+        assertEquals("2", strings[1]);
+    }
+
+    @Test
+    public void testToArrayFilterTdpId() throws Exception {
+        final Map<String, String> values = new HashMap<>(4);
+        values.put(DataSetRow.TDP_ID, "1");
+        values.put("column0", "2");
+        values.put("column1", "3");
+        final DataSetRow row = new DataSetRow(values);
+        final String[] strings = row.toArray(DataSetRow.SKIP_TDP_ID);
+        assertEquals(2, strings.length);
+        assertEquals("2", strings[0]);
+        assertEquals("3", strings[1]);
+    }
+
+    @Test
+    public void testToArrayMultipleFilters() throws Exception {
+        final Map<String, String> values = new HashMap<>(4);
+        values.put(DataSetRow.TDP_ID, "1");
+        values.put("column0", "2");
+        values.put("column1", "3");
+        final DataSetRow row = new DataSetRow(values);
+        final String[] strings = row.toArray(DataSetRow.SKIP_TDP_ID, e -> !"column1".equals(e.getKey()));
+        assertEquals(1, strings.length);
+        assertEquals("2", strings[0]);
+    }
+
 }

@@ -15,14 +15,11 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.diff.FlagNames;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Represents information about a column in a data set. It includes:
@@ -60,8 +57,7 @@ public class ColumnMetadata implements Serializable {
 
     /** Statistics of the column. */
     @JsonProperty("statistics")
-    @JsonRawValue
-    private String statistics = "{}"; //$NON-NLS-1$
+    private Statistics statistics = new Statistics();
 
     @JsonProperty("domain")
     private String domain = StringUtils.EMPTY;
@@ -228,10 +224,9 @@ public class ColumnMetadata implements Serializable {
     }
 
     /**
-     * @return The statistics (as raw JSON content) returned by data quality library.
+     * @return The statistics returned by data quality library.
      */
-    @JsonRawValue
-    public String getStatistics() {
+    public Statistics getStatistics() {
         return statistics;
     }
 
@@ -240,25 +235,11 @@ public class ColumnMetadata implements Serializable {
      *
      * @param statistics The statistics as returned by the data quality library.
      */
-    public void setStatistics(Object statistics) {
+    public void setStatistics(Statistics statistics) {
         if (statistics == null) {
-            this.statistics = "{}"; //$NON-NLS-1$
-        } else {
-            if (statistics instanceof Map) {
-                try {
-                    final StringWriter writer = new StringWriter();
-                    new ObjectMapper().writer().writeValue(writer, statistics);
-                    this.statistics = writer.toString();
-                } catch (IOException e) {
-                    throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
-                }
-            } else if (statistics instanceof String) {
-                this.statistics = String.valueOf(statistics);
-            } else {
-                throw new IllegalArgumentException(
-                        "Received a '" + statistics.getClass().getName() + "' but don't know how to interpret it.");
-            }
+            statistics = new Statistics();
         }
+        this.statistics = statistics;
     }
 
     public void setDomain(String domain) {
@@ -281,15 +262,17 @@ public class ColumnMetadata implements Serializable {
         return semanticDomains;
     }
 
-    public void setSemanticDomains(List<SemanticDomain> semanticDomains) {
+    public void setSemanticDomains( List<SemanticDomain> semanticDomains ) {
         this.semanticDomains = semanticDomains;
     }
 
-    public float getDomainFrequency() {
+    public float getDomainFrequency()
+    {
         return domainFrequency;
     }
 
-    public void setDomainFrequency(float domainFrequency) {
+    public void setDomainFrequency( float domainFrequency )
+    {
         this.domainFrequency = domainFrequency;
     }
 
@@ -327,7 +310,7 @@ public class ColumnMetadata implements Serializable {
         private String diffFlagValue = null;
 
         /** The column statistics. */
-        private String statistics = null;
+        private Statistics statistics = new Statistics();
 
         /** The invalid values. */
         private Set<String> invalidValues = new HashSet<>();
@@ -386,7 +369,7 @@ public class ColumnMetadata implements Serializable {
          * @param statistics the column statistics to set.
          * @return the builder to carry on building the column.
          */
-        public ColumnMetadata.Builder statistics(String statistics) {
+        public ColumnMetadata.Builder statistics(Statistics statistics) {
             this.statistics = statistics;
             return this;
         }

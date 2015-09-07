@@ -50,19 +50,6 @@ public interface DataSetContentStore {
     }
 
     /**
-     * Same as {@link DataSetContentStore#stream(DataSetMetadata)} but adds tdpId to the values.
-     *
-     * This is needed by the DQ library that needs columns and values to be the same.
-     *
-     * @param dataSetMetadata The {@link DataSetMetadata data set} to read rows from.
-     * @return A valid <b>{@link DataSetRow}</b> stream with tdpIds.
-     */
-    default Stream<DataSetRow> streamWithoutRowId(DataSetMetadata dataSetMetadata) {
-        final Iterable<DataSetRow> rowIterable = () -> new DataSetRowIterator(get(dataSetMetadata), false);
-        return StreamSupport.stream(rowIterable.spliterator(), false);
-    }
-
-    /**
      * Return a sample of the given size for the wanted dataset.
      *
      * @param dataSetMetadata The {@link DataSetMetadata data set} to read rows from.
@@ -71,17 +58,6 @@ public interface DataSetContentStore {
      */
     default Stream<DataSetRow> sample(DataSetMetadata dataSetMetadata, long size) {
         return stream(dataSetMetadata).limit(size);
-    }
-
-    /**
-     * Return a sample of the given size for the wanted dataset without the dataset id.
-     *
-     * @param dataSetMetadata The {@link DataSetMetadata data set} to read rows from.
-     * @param size the wanted sample size.
-     * @return A valid <b>{@link DataSetRow}</b> stream sample.
-     */
-    default Stream<DataSetRow> sampleWithoutId(DataSetMetadata dataSetMetadata, long size) {
-        return streamWithoutRowId(dataSetMetadata).limit(size);
     }
 
     /**

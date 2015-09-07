@@ -3,8 +3,6 @@ package org.talend.dataprep.transformation.api.action.metadata.date;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.talend.dataprep.api.type.Type.STRING;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,20 +15,13 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Change the date pattern on a 'date' column.
@@ -96,43 +87,21 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
         if (column == null) {
             return;
         }
-
         // parse and checks the new date pattern
-        final JsonFactory jsonFactory = new JsonFactory();
-        final ObjectMapper mapper = new ObjectMapper(jsonFactory);
-
         // register the new pattern in column stats, to be able to process date action later
-        final JsonNode rootNode = getStatisticsNode(mapper, column);
-        final JsonNode patternFrequencyTable = rootNode.get("patternFrequencyTable"); //$NON-NLS-1$
-        try {
-            boolean isNewPatternRegistered = false;
-            // loop on the existing pattern to see if thenew one is already present or not:
-            for (int i = 0; i < patternFrequencyTable.size(); i++) {
-                String pattern = patternFrequencyTable.get(i).get("pattern").asText(); //$NON-NLS-1$
-                if (pattern.equals(newPattern)) {
-                    isNewPatternRegistered = true;
-                }
+        final Statistics statistics = column.getStatistics();
+        boolean isNewPatternRegistered = false;
+        // loop on the existing pattern to see if the new one is already present or not:
+        for (PatternFrequency patternFrequency : statistics.getPatternFrequencies()) {
+            if (patternFrequency.getPattern().equals(newPattern)) {
+                isNewPatternRegistered = true;
             }
-
-            // if the new pattern is not yet present (ie: we're probably working on the first line)
-            if (!isNewPatternRegistered) {
-                JsonNode newPatternNode = mapper.createObjectNode();
-                // creates a new json node with the new pattern to register, no need of occurence here
-                ((ObjectNode) newPatternNode).put("pattern", newPattern);
-                // add a new node, with our new pattern
-                ((ArrayNode) patternFrequencyTable).add(newPatternNode);
-
-                // save all the json tree in the stats column
-                final StringWriter temp = new StringWriter(1000);
-                final JsonGenerator generator = mapper.getFactory().createGenerator(temp);
-                mapper.writeTree(generator, rootNode);
-                column.setStatistics(temp.toString());
-            }
-
-        } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_WRITE_JSON, e);
         }
-
+        // if the new pattern is not yet present (ie: we're probably working on the first line)
+        if (!isNewPatternRegistered) {
+            statistics.getPatternFrequencies().add(new PatternFrequency(newPattern, 1));
+            column.setStatistics(statistics);
+        }
         // Change the date pattern
         final String value = row.get(columnId);
         if (value == null) {

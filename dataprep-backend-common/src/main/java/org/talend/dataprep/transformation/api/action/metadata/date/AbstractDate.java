@@ -13,23 +13,17 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public abstract class AbstractDate extends AbstractActionMetadata {
-
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractDate.class);
 
     /**
      * @see ActionMetadata#getCategory()
@@ -94,19 +88,12 @@ public abstract class AbstractDate extends AbstractActionMetadata {
      */
     protected List<DatePattern> getPatterns(DataSetRow row, String columnId) {
         final ColumnMetadata column = row.getRowMetadata().getById(columnId);
-
         // parse and checks the new date pattern
-        final JsonFactory jsonFactory = new JsonFactory();
-        final ObjectMapper mapper = new ObjectMapper(jsonFactory);
-
         // store the current pattern in the context
-        final JsonNode rootNode = getStatisticsNode(mapper, column);
-        final JsonNode patternFrequencyTable = rootNode.get("patternFrequencyTable"); //$NON-NLS-1$
-
-        List<DatePattern> patterns = new ArrayList<>();
-
-        for (int i = 0; i < patternFrequencyTable.size(); i++) {
-            String pattern = patternFrequencyTable.get(i).get("pattern").asText(); //$NON-NLS-1$
+        final Statistics statistics = column.getStatistics();
+        final List<DatePattern> patterns = new ArrayList<>();
+        for (PatternFrequency patternFrequency : statistics.getPatternFrequencies()) {
+            final String pattern = patternFrequency.getPattern();
             // skip empty patterns
             if (StringUtils.isEmpty(pattern)) {
                 continue;
@@ -115,14 +102,8 @@ public abstract class AbstractDate extends AbstractActionMetadata {
             if (contains(pattern, patterns)) {
                 continue;
             }
-            final JsonNode occurrencesNode = patternFrequencyTable.get(i).get("occurrences"); //$NON-NLS-1$
-            Integer occurrences = 0;
-            if (occurrencesNode != null) {
-                occurrences = occurrencesNode.asInt();
-            }
-            patterns.add(new DatePattern(occurrences, pattern));
+            patterns.add(new DatePattern(patternFrequency.getOccurrences(), pattern));
         }
-
         Collections.sort(patterns);
         return computeDateTimeFormatter(patterns);
     }

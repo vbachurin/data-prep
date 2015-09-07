@@ -9,6 +9,10 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.lock.DistributedLock;
 
+/**
+ * A special implementation of {@link SynchronousAnalysisEnd} that is always executed after all other implementations.
+ * @see #order()
+ */
 @Component
 public class SynchronousAnalysisEnd implements SynchronousDataSetAnalyzer {
 

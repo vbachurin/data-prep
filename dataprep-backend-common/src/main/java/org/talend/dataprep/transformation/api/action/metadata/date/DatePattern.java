@@ -8,13 +8,13 @@ import java.util.Objects;
  */
 class DatePattern implements Comparable {
 
-    private int occurrences;
+    private long occurrences;
 
     private String pattern;
 
     private DateTimeFormatter formatter;
 
-    public DatePattern(int occurrences, String pattern) {
+    public DatePattern(long occurrences, String pattern) {
         this.occurrences = occurrences;
         this.pattern = pattern;
     }
@@ -22,7 +22,7 @@ class DatePattern implements Comparable {
     /**
      * @return the Occurences
      */
-    public int getOccurrences() {
+    public long getOccurrences() {
         return occurrences;
     }
 
@@ -66,7 +66,7 @@ class DatePattern implements Comparable {
             return -1;
         }
 
-        return Integer.compare(other.getOccurrences(), this.getOccurrences());
+        return Long.compare(other.getOccurrences(), this.getOccurrences());
     }
 
     /**
