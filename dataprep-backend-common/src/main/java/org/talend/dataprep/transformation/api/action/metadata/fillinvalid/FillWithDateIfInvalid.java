@@ -1,10 +1,11 @@
 package org.talend.dataprep.transformation.api.action.metadata.fillinvalid;
 
-import java.time.Instant;
+import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.time.temporal.TemporalAccessor;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -75,11 +76,14 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
                 // we assume all controls have been made in the ui.
                 String newDateStr = parameters.get(DEFAULT_VALUE_PARAMETER);
 
-                // we search the most used pattern
+                // get the most used pattern
                 String mostUsedPattern = findMostUsedDatePattern(column);
 
-                String newDateWithFormat = DateTimeFormatter.ofPattern(mostUsedPattern) //
-                        .format(LocalDateTime.parse(newDateStr, DEFAULT_FORMATTER));
+                // parse the date
+                TemporalAccessor temp = parseDateTime(newDateStr, mostUsedPattern);
+
+                // format the result
+                String newDateWithFormat = DEFAULT_FORMATTER.format(temp);
 
                 row.set(columnId, newDateWithFormat);
             }
@@ -88,8 +92,34 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
         }
     }
 
+    /**
+     * Return the parsed dated of the given date value.
+     *
+     * @param dateTimeOrDate the string to parse.
+     * @param pattern the pattern to use to parse the date.
+     * @return the parsed dated of the given date value.
+     */
+    private TemporalAccessor parseDateTime(String dateTimeOrDate, String pattern) {
+
+        // first try the LocalDateTime
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        try {
+            return LocalDateTime.parse(dateTimeOrDate, formatter);
+        } catch (DateTimeException e) {
+            // if it fails, let's try the LocalDate
+            try {
+                LocalDate temp = LocalDate.parse(dateTimeOrDate, formatter);
+                return temp.atStartOfDay();
+            } catch (DateTimeException e2) {
+                // nothing to do here, just throw the exception...
+                throw e2;
+            }
+        }
+    }
+
     protected String findMostUsedDatePattern(final ColumnMetadata column) {
 
+        // TODO use the ObjectMapper provided by Spring but see https://jira.talendforge.org/browse/TDP-436 first.
         // get the date pattern to write the date with
         final JsonFactory jsonFactory = new JsonFactory();
         final ObjectMapper mapper = new ObjectMapper(jsonFactory);
@@ -98,17 +128,17 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
         final JsonNode rootNode = getStatisticsNode(mapper, column);
         final JsonNode patternFrequencyTable = rootNode.get("patternFrequencyTable"); //$NON-NLS-1$
 
-        int maxOccurence = 0, maxOccurenceIdx = 0;
+        int maxOccurrence = 0, maxOccurrenceIdx = 0;
 
         for (int i = 0, size = patternFrequencyTable.size(); i < size; i++) {
             int occurrences = patternFrequencyTable.get(i).get("occurrences").asInt();
-            if (occurrences > maxOccurence) {
-                maxOccurenceIdx = i;
-                maxOccurence = occurrences;
+            if (occurrences > maxOccurrence) {
+                maxOccurrenceIdx = i;
+                maxOccurrence = occurrences;
             }
         }
 
-        String mostUsedPattern = patternFrequencyTable.get(maxOccurenceIdx).get("pattern").asText();
+        String mostUsedPattern = patternFrequencyTable.get(maxOccurrenceIdx).get("pattern").asText();
 
         return mostUsedPattern;
     }
