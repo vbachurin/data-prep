@@ -1,4 +1,7 @@
 @import "cluster/transformation-cluster-params";
+@import "date/transformation-date-params";
+@import "simple/transformation-simple-params";
+@import "choice/transformation-choice-params";
 
 .transformation-params {
   select,
@@ -6,48 +9,12 @@
     margin: 0;
   }
 
-  .param {
-    @include display(flex);
-    @include flex-direction(column);
-    @include justify-content(flex-start);
-    @include align-items(stretch);
-
-    padding: 10px;
-
-    div:hover {
-      position: relative;
-    }
-
-    &.param-no-space {
-      padding: 0;
-    }
-
-    .param-row {
-      @include display(flex);
-      @include flex-direction(row);
-      @include flex-wrap(wrap);
-      @include align-items(center);
-
-      padding: 10px;
-
-      .param-name {
-        @include flex-basis(30px);
-        @include flex-grow(2);
-      }
-
-      .param-input {
-        @include flex-basis(120px);
-        @include flex-grow(2);
-      }
-
-      .param-error {
-        @include flex-basis(100%);
-      }
-    }
-  }
-
   .param-buttons{
     text-align: right;
     padding: 0 10px 10px 0;
+  }
+
+  form{
+    height: 80%;
   }
 }
