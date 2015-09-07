@@ -12,12 +12,14 @@ describe('Datagrid style service', function () {
     beforeEach(module('data-prep.datagrid'));
 
     beforeEach(inject(function () {
+        jasmine.clock().install();
         gridColumns = [
             {id: '0000', field: 'col0', tdpColMetadata: {id: '0000', name: 'col0', type: 'string'}},
             {id: '0001', field: 'col1', tdpColMetadata: {id: '0001', name: 'col1', type: 'integer'}},
             {id: '0002', field: 'col2', tdpColMetadata: {id: '0002', name: 'col2', type: 'string'}},
             {id: '0003', field: 'col3', tdpColMetadata: {id: '0003', name: 'col3', type: 'string'}},
-            {id: '0004', field: 'col4', tdpColMetadata: {id: '0004', name: 'col4', type: 'string'}}
+            {id: '0004', field: 'col4', tdpColMetadata: {id: '0004', name: 'col4', type: 'string'}},
+            {id: 'tdpId', field: 'tdpId', tdpColMetadata: {id: 'tdpId', name: '#'}}
         ];
 
         /*global SlickGridMock:false */
@@ -31,6 +33,10 @@ describe('Datagrid style service', function () {
         spyOn(gridMock, 'resetActiveCell').and.returnValue();
         spyOn(gridMock, 'invalidate').and.returnValue();
     }));
+
+    afterEach(function() {
+        jasmine.clock().uninstall();
+    });
 
     describe('on creation', function () {
         it('should add header click listener', inject(function (DatagridStyleService) {
@@ -49,14 +55,6 @@ describe('Datagrid style service', function () {
             expect(gridMock.onHeaderContextMenu.subscribe).toHaveBeenCalled();
         }));
 
-        it('should add cell click listener', inject(function (DatagridStyleService) {
-            //when
-            DatagridStyleService.init(gridMock);
-
-            //then
-            expect(gridMock.onClick.subscribe).toHaveBeenCalled();
-        }));
-
         it('should add active cell changed listener', inject(function (DatagridStyleService) {
             //when
             DatagridStyleService.init(gridMock);
@@ -67,7 +65,7 @@ describe('Datagrid style service', function () {
     });
 
     describe('on header click event', function () {
-        it('should set reset cell styles', inject(function (DatagridStyleService) {
+        it('should reset cell styles', inject(function (DatagridStyleService) {
             //given
             DatagridStyleService.init(gridMock);
             gridMock.setCellCssStyles('highlight', {'2': {'0000': 'highlight'}});
@@ -100,6 +98,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
         it('should invalidate grid', inject(function (DatagridStyleService) {
@@ -115,7 +114,6 @@ describe('Datagrid style service', function () {
             expect(gridMock.invalidate).toHaveBeenCalled();
         }));
     });
-
 
     describe('on header right click event', function () {
         it('should set reset cell styles', inject(function (DatagridStyleService) {
@@ -151,6 +149,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
         it('should invalidate grid', inject(function (DatagridStyleService) {
@@ -167,7 +166,7 @@ describe('Datagrid style service', function () {
         }));
     });
 
-    describe('on header click event', function () {
+    describe('on active cell changed event', function () {
         beforeEach(inject(function(DatagridService) {
             spyOn(DatagridService.dataView, 'getItem').and.returnValue({'0001': 'cell 1 content'});
             spyOn(DatagridService, 'getSameContentConfig').and.returnValue({
@@ -179,19 +178,17 @@ describe('Datagrid style service', function () {
             });
         }));
 
-        it('should configure cells highlight class on cell click', inject(function (DatagridStyleService) {
+        it('should configure cells highlight class', inject(function (DatagridStyleService) {
             //given
-            jasmine.clock().install();
-
             DatagridStyleService.init(gridMock);
             var cell = 1;
             var row = 28;
             var args = {cell: cell, row: row};
 
             //when
-            var onClick = gridMock.onClick.subscribe.calls.argsFor(0)[0];
-            onClick(null, args);
-            jasmine.clock().tick(1);
+            var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
+            onActiveCellChanged(null, args);
+            jasmine.clock().tick(200);
 
             //then
             expect(gridMock.cssStyleConfig.highlight).toEqual({
@@ -201,11 +198,8 @@ describe('Datagrid style service', function () {
                 42: { '0001': 'highlight' },
                 43: { '0001': 'highlight' }
             });
-            jasmine.clock().uninstall();
         }));
-    });
 
-    describe('on active cell changed event', function () {
         it('should set "selected" column class', inject(function (DatagridStyleService) {
             //given
             DatagridStyleService.init(gridMock);
@@ -216,6 +210,7 @@ describe('Datagrid style service', function () {
             //when
             var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
             onActiveCellChanged(null, args);
+            jasmine.clock().tick(200);
 
             //then
             expect(gridColumns[0].cssClass).toBeFalsy();
@@ -223,6 +218,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
         it('should invalidate grid', inject(function (DatagridStyleService) {
@@ -233,6 +229,7 @@ describe('Datagrid style service', function () {
             //when
             var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
             onActiveCellChanged(null, args);
+            jasmine.clock().tick(200);
 
             //then
             expect(gridMock.invalidate).toHaveBeenCalled();
@@ -297,6 +294,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
         it('should NOT set "selected" class on active cell column when this is a preview', inject(function (DatagridStyleService) {
@@ -317,6 +315,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
         it('should NOT set "selected" class without active cell', inject(function (DatagridStyleService) {
@@ -337,6 +336,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
         it('should set "number" class on number column on preview mode', inject(function (DatagridStyleService) {
@@ -355,6 +355,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
         it('should set "number" class on number column on NON preview mode with active cell', inject(function (DatagridStyleService) {
@@ -375,6 +376,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
         it('should apply "selected" class to last selected column before preview', inject(function (DatagridStyleService) {
@@ -399,6 +401,7 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
         }));
     });
 
