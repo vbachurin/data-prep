@@ -24,7 +24,7 @@
     @include flex-direction(column);
     @include justify-content(flex-start);
     @include align-items(stretch);
-    height: 100%;
+    height: 50vh;
 
     padding: 10px;
 
@@ -132,7 +132,7 @@
 
     overflow-y: auto;
     overflow-x: hidden;
-    max-height: 100%;
+
     >.cluster-line {
       @include transition(background-color 0.3s ease-in-out);
       color: $text-color;
