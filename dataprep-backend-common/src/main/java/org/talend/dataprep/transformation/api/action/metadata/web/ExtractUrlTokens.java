@@ -83,6 +83,17 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
         public Type getType() {
             return Type.INTEGER;
         }
+    }, new UrlTokenExtractor() {
+
+        @Override
+        public String getSuffix() {
+            return "_path";
+        }
+
+        @Override
+        public String extractToken(URL url) {
+            return url.getPath();
+        }
     }};
 
     /**
