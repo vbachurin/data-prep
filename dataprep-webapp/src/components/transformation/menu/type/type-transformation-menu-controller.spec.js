@@ -53,9 +53,9 @@ describe('Type transform menu controller', function () {
         expect(ctrl.types).toBe(types);
     }));
 
-    it('should change domain locally and call backend', inject(function ($q, DatasetService) {
+    it('should change domain locally and call backend to add a step', inject(function ($q, PlaygroundService) {
         //given
-        spyOn(DatasetService, 'updateColumn').and.returnValue($q.when(null));
+        spyOn(PlaygroundService, 'addUpdateColumnDomainStep').and.returnValue($q.when(null));
         var ctrl = createController();
         var newDomain = {
             id: 'COUNTRY',
@@ -72,12 +72,13 @@ describe('Type transform menu controller', function () {
         expect(ctrl.column.domainFrequency).toBe(17);
         expect(ctrl.currentDomain).toBe('COUNTRY');
         expect(ctrl.currentSimplifiedDomain).toBe('COUNTRY');
-        expect(DatasetService.updateColumn).toHaveBeenCalledWith(currentMetadata.id, '0001', {domain: 'COUNTRY'});
+
+        expect(PlaygroundService.addUpdateColumnDomainStep).toHaveBeenCalledWith('0001', {id: 'COUNTRY', label: 'COUNTRY', frequency: 17});
     }));
 
-    it('should revert domain when backend return error', inject(function ($q, DatasetService) {
+    it('should revert domain when backend return error', inject(function ($q, PlaygroundService) {
         //given
-        spyOn(DatasetService, 'updateColumn').and.returnValue($q.reject(null));
+        spyOn(PlaygroundService, 'addUpdateColumnDomainStep').and.returnValue($q.reject(null));
         var ctrl = createController();
         var newDomain = {
             id: 'COUNTRY',
@@ -99,7 +100,7 @@ describe('Type transform menu controller', function () {
 
     it('should change type and clear domain locally and call backend', inject(function ($q, PlaygroundService) {
         //given
-        spyOn(PlaygroundService, 'updateColumn').and.returnValue($q.when(null));
+        spyOn(PlaygroundService, 'addUpdateColumnTypeStep').and.returnValue($q.when(null));
         var ctrl = createController();
         var newType = {
             id: 'integer'
@@ -115,12 +116,12 @@ describe('Type transform menu controller', function () {
         expect(ctrl.column.domainFrequency).toBe(0);
         expect(ctrl.currentDomain).toBe('INTEGER');
         expect(ctrl.currentSimplifiedDomain).toBe('number');
-        expect(PlaygroundService.updateColumn).toHaveBeenCalledWith('0001', 'integer', '');
+        expect(PlaygroundService.addUpdateColumnTypeStep).toHaveBeenCalledWith('0001', {id:'integer'});
     }));
 
     it('should revert type and domain when backend return error', inject(function ($q, PlaygroundService) {
         //given
-        spyOn(PlaygroundService, 'updateColumn').and.returnValue($q.reject(null));
+        spyOn(PlaygroundService, 'addUpdateColumnTypeStep').and.returnValue($q.reject(null));
         var ctrl = createController();
         var newType = {
             id: 'integer'
