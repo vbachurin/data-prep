@@ -250,38 +250,6 @@ describe('Datagrid tooltip service', function() {
                 expect(DatagridTooltipService.showTooltip).toBeFalsy();
             }
         }));
-
-
-        it('should NOT show tooltip with index column (column 5)', inject(function($timeout, DatagridTooltipService) {
-            //given
-            DatagridTooltipService.init(gridMock);
-
-            var box = {left: 400, right: 500, top: 10, bottom: 40}; //width: 100
-            var cell = {row: 1, cell: 5};                           // '16678678678686786788888888888888888886872'
-            gridMock.initCellMock(cell, box);
-
-
-            //when
-            var mouseEnterHandler = gridMock.onMouseEnter.subscribe.calls.argsFor(0)[0];
-            var event = {clientX: 500, clientY: 300};
-            mouseEnterHandler(event);
-
-            //then
-            expect(DatagridTooltipService.tooltip).toEqual({});
-            expect(DatagridTooltipService.showTooltip).toBeFalsy();
-
-            //when
-            jasmine.clock().tick(300);
-            try {
-                $timeout.flush();
-                throw Error('Should have thrown exception, because no timeout is waiting');
-            }
-                //then
-            catch(error) {
-                expect(DatagridTooltipService.tooltip).toEqual({});
-                expect(DatagridTooltipService.showTooltip).toBeFalsy();
-            }
-        }));
     });
 
     describe('on mouse leave', function() {

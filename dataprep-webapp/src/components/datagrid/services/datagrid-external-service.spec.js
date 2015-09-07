@@ -292,7 +292,7 @@ describe('Datagrid external service', function () {
             expect(SuggestionService.selectTab.calls.count()).toBe(1);
         }));
 
-        it('should NOT suggestions and stats when column is the same', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
+        it('should NOT update suggestions and stats when column is the same', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
             //given : active cell will update suggestions + stats for column 1, and set tab to CELL
             DatagridExternalService.init(gridMock);
             var activeCellArgs = {cell: 1};
@@ -321,7 +321,7 @@ describe('Datagrid external service', function () {
             expect(SuggestionService.selectTab.calls.count()).toBe(1);
         }));
 
-        it('should NOT update suggestions and stats when column is index column', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
+        it('should reset suggestions and stats when column is index column', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
             //given
             var headerClickArgs = {
                 column: {id: 'tdpId'}
