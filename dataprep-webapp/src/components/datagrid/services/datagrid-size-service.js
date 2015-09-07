@@ -24,7 +24,7 @@
          * @description Get the actual dataset column sizes key. This key is used in localStorage 
          */
         function getLocalStorageKey() {
-            return 'dataprep.col_size_' + DatagridService.metadata.id;
+            return 'org.talend.dataprep.col_size_' + DatagridService.metadata.id;
         }
 
         /**

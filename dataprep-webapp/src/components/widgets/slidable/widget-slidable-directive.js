@@ -54,7 +54,7 @@
             },
             link: function(scope, iElement, iAttrs, ctrl) {
                 if(ctrl.resizable) {
-                    var localStorageWidthKey = 'dataprep.' + ctrl.resizable + '.width';
+                    var localStorageWidthKey = 'org.talend.dataprep.' + ctrl.resizable + '.width';
                     var width = $window.localStorage.getItem(localStorageWidthKey) || iElement.width() + 'px';
 
                     iElement.resizable({

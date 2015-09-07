@@ -1,7 +1,7 @@
 describe('Onboarding service', function() {
     'use strict';
 
-    var TOUR_OPTIONS_KEY = 'tour_options';
+    var TOUR_OPTIONS_KEY = 'org.talend.dataprep.tour_options';
 
     var introJsMock = {
         setOptions: function() {return this;},

@@ -7,7 +7,7 @@
      * @description OnboardingService service. This service exposes functions to start onboarding tours
      */
     function OnboardingService($window, datasetTour) {
-        var TOUR_OPTIONS_KEY = 'tour_options';
+        var TOUR_OPTIONS_KEY = 'org.talend.dataprep.tour_options';
 
         /**
          * @ngdoc property

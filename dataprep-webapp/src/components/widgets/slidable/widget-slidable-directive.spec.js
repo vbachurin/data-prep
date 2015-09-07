@@ -3,7 +3,7 @@ describe('Slidable directive', function () {
 
     var scope, element, createElement, createResizableElement;
     var resizableId = 'resizableId';
-    var widthStorageKey = 'dataprep.' + resizableId + '.width';
+    var widthStorageKey = 'org.talend.dataprep.' + resizableId + '.width';
 
     beforeEach(module('talend.widget'));
     beforeEach(module('htmlTemplates'));
