@@ -6,10 +6,9 @@
      * @name data-prep.transformation-menu.controller:TransformMenuCtrl
      * @description Transformation menu item controller.
      * @requires data-prep.services.playground.service:PlaygroundService
-     * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.transformation.service:TransformationService
      */
-    function TransformMenuCtrl(state, PlaygroundService, PreparationService, TransformationService) {
+    function TransformMenuCtrl(state, PlaygroundService, TransformationService) {
         var vm = this;
 
         /**
@@ -55,6 +54,8 @@
                 });
             }
             else if (menu.parameters || menu.items) {
+                TransformationService.resetParamValue(menu.parameters);
+                TransformationService.resetParamValue(menu.items, 'CHOICE');
                 vm.showModal = true;
                 vm.selectedMenu = menu;
                 vm.selectedScope = scope;
