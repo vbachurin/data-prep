@@ -89,6 +89,10 @@ public class ExtractUrlTokensTest {
         expectedValues.put("0004", "www.talend.com");
         expectedValues.put("0005", "");
         expectedValues.put("0006", "");
+        expectedValues.put("0007", "");
+        expectedValues.put("0008", "");
+        expectedValues.put("0009", "");
+        expectedValues.put("0010", "");
         expectedValues.put("0002", "01/01/2015");
 
         // when
@@ -106,17 +110,21 @@ public class ExtractUrlTokensTest {
         // given
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
-        values.put("0001", "http://10.42.10.99:80/home/datasets?datasetid=c522a037-7bd8-42c1-a8ee-a0628c66d8c4");
+        values.put("0001", "http://stef:pwd@10.42.10.99:80/home/datasets?datasetid=c522a037-7bd8-42c1-a8ee-a0628c66d8c4#frag");
         values.put("0002", "01/01/2015");
         final DataSetRow row = new DataSetRow(values);
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
-        expectedValues.put("0001", "http://10.42.10.99:80/home/datasets?datasetid=c522a037-7bd8-42c1-a8ee-a0628c66d8c4");
+        expectedValues.put("0001", "http://stef:pwd@10.42.10.99:80/home/datasets?datasetid=c522a037-7bd8-42c1-a8ee-a0628c66d8c4#frag");
         expectedValues.put("0003", "http");
         expectedValues.put("0004", "10.42.10.99");
         expectedValues.put("0005", "80");
         expectedValues.put("0006", "/home/datasets");
+        expectedValues.put("0007", "datasetid=c522a037-7bd8-42c1-a8ee-a0628c66d8c4");
+        expectedValues.put("0008", "frag");
+        expectedValues.put("0009", "stef");
+        expectedValues.put("0010", "pwd");
         expectedValues.put("0002", "01/01/2015");
 
         // when
@@ -145,6 +153,10 @@ public class ExtractUrlTokensTest {
         expectedValues.put("0004", "");
         expectedValues.put("0005", "");
         expectedValues.put("0006", "");
+        expectedValues.put("0007", "");
+        expectedValues.put("0008", "");
+        expectedValues.put("0009", "");
+        expectedValues.put("0010", "");
         expectedValues.put("0002", "01/01/2015");
 
         // when
@@ -173,6 +185,10 @@ public class ExtractUrlTokensTest {
         expectedValues.put("0004", "");
         expectedValues.put("0005", "");
         expectedValues.put("0006", "");
+        expectedValues.put("0007", "");        expectedValues.put("0008", "");
+        expectedValues.put("0009", "");
+        expectedValues.put("0010", "");
+
         expectedValues.put("0002", "01/01/2015");
 
         // when
@@ -201,6 +217,10 @@ public class ExtractUrlTokensTest {
         expected.add(createMetadata("0004", "url_host"));
         expected.add(createMetadata("0005", "url_port", Type.INTEGER));
         expected.add(createMetadata("0006", "url_path"));
+        expected.add(createMetadata("0007", "url_query"));
+        expected.add(createMetadata("0008", "url_fragment"));
+        expected.add(createMetadata("0009", "url_user"));
+        expected.add(createMetadata("0010", "url_password"));
         expected.add(createMetadata("0002", "last update"));
 
         // when
@@ -254,5 +274,7 @@ public class ExtractUrlTokensTest {
         assertEquals("http", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URL("HTTP://www.yahoo.fr")));
         assertEquals("http", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URL(
                 "http:10.42.10.99:80/home/datasets?datasetid=c522a037")));
+        assertEquals("file", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URL("file://server:21/this/is/a/resource")));
     }
+
 }
