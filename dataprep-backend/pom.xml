@@ -93,7 +93,7 @@
             <dependency>
                 <groupId>org.talend.dataquality</groupId>
                 <artifactId>org.talend.datascience.common</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>1.0.1-SNAPSHOT</version>
                 <exclusions>
                     <exclusion>
                         <groupId>log4j</groupId>
@@ -124,7 +124,7 @@
             <dependency>
                 <groupId>org.talend.dataquality</groupId>
                 <artifactId>org.talend.dataquality.statistics</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>1.0.1-SNAPSHOT</version>
             </dependency>
             <!-- Hazelcast -->
             <dependency>
