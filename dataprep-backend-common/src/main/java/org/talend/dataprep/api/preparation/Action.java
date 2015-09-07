@@ -1,7 +1,9 @@
 package org.talend.dataprep.api.preparation;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.data.annotation.Transient;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
@@ -13,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
  * Class used to wrap DataSetRowAction into json.
  */
 @JsonRootName("action")
-public class Action {
+public class Action implements Serializable {
 
     /** Default noop action. */
     public static final DataSetRowAction IDLE_ROW_ACTION = (row, context) -> row;
@@ -79,6 +81,27 @@ public class Action {
     @Transient
     public DataSetRowAction getRowAction() {
         return rowAction;
+    }
+
+    /**
+     * @see Object#equals(Object)
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Action action1 = (Action) o;
+        return Objects.equals(action, action1.action) && Objects.equals(parameters, action1.parameters);
+    }
+
+    /**
+     * @see Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(rowAction, action, parameters);
     }
 
     /**

@@ -50,9 +50,9 @@ $ mvn -Ddataset.metadata.store=mongodb -Dspring.data.mongodb.host=mongoserver -D
 ## Data set content storage
 
 You can choose between 2 content storage:
-* local: stores content to <i>${java.io.tmpdir}/talend/tdp/datasets/</i>. You may customize this path using the property "dataset.content.store.local.location" as follows:
+* local: stores content to <i>${java.io.tmpdir}/talend/tdp/datasets/</i>. You may customize this path using the property "dataset.content.store.file.location" as follows:
 ```
-$ mvn -Ddataset.content.store.local.location=/home/user/permanent_store/
+$ mvn -Ddataset.content.store.file.location=/home/user/permanent_store/
 ```
 * hdfs (experimental):
 ```
@@ -98,7 +98,7 @@ Docker image comes with the following environment properties:
 * TDP_DATASET_SERVER_PORT: port for the API service (used for server.port).
 * TDP_DATASET_METADATA_STORE: type of storage for metadata (mongodb, in-memory).
 * TDP_DATASET_CONTENT_STORE: type of storage for the data sets (hdfs, local).
-* TDP_DATASET_CONTENT_STORE_LOCAL_LOCATION: when TDP_DATASET_CONTENT_STORE = local, path to the local store directory.
+* TDP_DATASET_CONTENT_STORE_FILE_LOCATION: when TDP_DATASET_CONTENT_STORE = file, path to the local store directory.
 * TDP_DATASET_MONGODB_HOST: when using TDP_DATASET_METADATA_STORE = mongodb, host name (or IP address) of the MongoDB instance.
 * TDP_DATASET_MONGODB_PORT: when using TDP_DATASET_METADATA_STORE = mongodb, port of the MongoDB instance.
 Note: value supports environment property placeholders, this means a environment property such as:

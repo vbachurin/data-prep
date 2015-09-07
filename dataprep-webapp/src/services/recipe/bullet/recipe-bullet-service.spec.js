@@ -5,19 +5,24 @@ describe('Recipe Bullet service', function () {
     var previousStep = {column:{id:'0003'}};
     var lastActiveStep = {inactive: false};
 
-    beforeEach(module('data-prep.services.recipe'));
+    var preparationId = '4635fa41864b74ef64';
+    var stateMock;
+
+    beforeEach(module('data-prep.services.recipe', function($provide) {
+        stateMock = {playground: {preparation: {id: preparationId}}};
+        $provide.constant('state', stateMock);
+    }));
 
     beforeEach(inject(function ($rootScope, $controller, $q, $timeout, RecipeBulletService, RecipeService, PlaygroundService, PreparationService, PreviewService) {
         scope = $rootScope.$new();
 
         createController = function () {
-            var ctrl = $controller('RecipeCtrl', {
+            return $controller('RecipeCtrl', {
                 $scope: scope
             });
-            return ctrl;
         };
 
-        spyOn($rootScope, '$emit').and.callThrough();
+        spyOn($rootScope, '$emit').and.returnValue();
         spyOn(RecipeService, 'getPreviousStep').and.returnValue(previousStep);
         spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(3);
         spyOn(RecipeService, 'refresh').and.callFake(function () {
@@ -30,7 +35,7 @@ describe('Recipe Bullet service', function () {
         spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when(true));
         spyOn(PreviewService, 'cancelPreview').and.returnValue(null);
         spyOn(PreviewService, 'stopPendingPreview').and.returnValue(null);
-        spyOn($timeout, 'cancel').and.callThrough();
+        spyOn($timeout, 'cancel').and.returnValue();
     }));
 
     beforeEach(function () {
@@ -58,7 +63,7 @@ describe('Recipe Bullet service', function () {
         jasmine.clock().tick(1);
 
         //then
-        expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(recipe[0], recipe[2], '0004');
+        expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(preparationId, recipe[0], recipe[2], '0004');
     }));
 
     it('should cancel pending preview action on step hover', inject(function ($timeout, RecipeService, RecipeBulletService, PreviewService) {
@@ -142,7 +147,7 @@ describe('Recipe Bullet service', function () {
         jasmine.clock().tick(1);
 
         //then
-        expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(recipe[3], previousStep, '0000');
+        expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(preparationId, recipe[3], previousStep, '0000');
     }));
 
     it('should cancel current preview on mouse hover end after a delay of 100ms', inject(function ($timeout, PreviewService, RecipeBulletService) {

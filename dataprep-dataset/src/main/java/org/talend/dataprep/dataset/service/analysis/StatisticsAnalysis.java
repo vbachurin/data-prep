@@ -14,7 +14,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -38,6 +37,7 @@ import org.talend.dataquality.statistics.text.TextLengthAnalyzer;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.type.DataType;
+import org.talend.dataprep.lock.DistributedLock;
 
 @Component
 public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {

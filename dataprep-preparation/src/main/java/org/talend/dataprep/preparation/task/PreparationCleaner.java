@@ -1,19 +1,19 @@
 package org.talend.dataprep.preparation.task;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.preparation.PreparationRepository;
-import org.talend.dataprep.api.preparation.PreparationUtils;
-import org.talend.dataprep.api.preparation.Step;
+import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import static java.util.stream.Collectors.toSet;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.PreparationUtils;
+import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.preparation.store.PreparationRepository;
 
 /**
  * Scheduler that clean the repository.

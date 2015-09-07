@@ -55,7 +55,12 @@ describe('Transform menu controller', function () {
         ]
     };
 
-    beforeEach(module('data-prep.transformation-menu'));
+    var stateMock;
+
+    beforeEach(module('data-prep.transformation-menu', function ($provide) {
+        stateMock = {playground: {}};
+        $provide.constant('state', stateMock);
+    }));
 
     beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService) {
         scope = $rootScope.$new();
@@ -70,8 +75,28 @@ describe('Transform menu controller', function () {
         };
 
         spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when(true));
+        spyOn(TransformationService, 'resetParamValue').and.returnValue();
         spyOn(TransformationService, 'initDynamicParameters').and.returnValue($q.when(true));
 
+    }));
+
+    it('should reset parameters/choices on select if items has parameters/choices', inject(function (TransformationService) {
+        //given
+        var ctrl = createController();
+        var menu = {
+            parameters: [{name: 'param1', type: 'text', default: '.'}],
+            items: []
+        };
+        var scope = 'column';
+
+        expect(TransformationService.resetParamValue).not.toHaveBeenCalled();
+
+        //when
+        ctrl.select(menu, scope);
+
+        //then
+        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(menu.parameters);
+        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(menu.items, 'CHOICE');
     }));
 
     it('should open modal on select if item has parameters', inject(function (PlaygroundService) {
@@ -126,13 +151,13 @@ describe('Transform menu controller', function () {
     }));
 
 
-    it('should fetch dynamic parameters', inject(function (state, PlaygroundService, PreparationService, TransformationService) {
+    it('should fetch dynamic parameters', inject(function (TransformationService) {
         //given
         var ctrl = createController();
         var menu = {name: 'textclustering', category: 'quickfix', dynamic: true};
 
-        state.playground.dataset = {id: '78bae6345aef9965e22b54'};
-        PreparationService.currentPreparationId = '721cd4455fb69e89543d4';
+        stateMock.playground.dataset = {id: '78bae6345aef9965e22b54'};
+        stateMock.playground.preparation = {id: '721cd4455fb69e89543d4'};
 
         //when
         ctrl.select(menu);
@@ -150,13 +175,13 @@ describe('Transform menu controller', function () {
     }));
 
 
-    it('should display modal and set flags on dynamic params fetch', inject(function (state, PlaygroundService, PreparationService) {
+    it('should display modal and set flags on dynamic params fetch', function () {
         //given
         var ctrl = createController();
         var menu = {name: 'textclustering', category: 'quickfix', dynamic: true};
 
-        state.playground.dataset = {id: '78bae6345aef9965e22b54'};
-        PreparationService.currentPreparationId = '721cd4455fb69e89543d4';
+        stateMock.playground.dataset = {id: '78bae6345aef9965e22b54'};
+        stateMock.playground.preparation = {id: '721cd4455fb69e89543d4'};
 
         //when
         expect(ctrl.showModal).toBeFalsy();
@@ -168,7 +193,7 @@ describe('Transform menu controller', function () {
         //then
         expect(ctrl.showModal).toBeTruthy();
         expect(ctrl.dynamicFetchInProgress).toBeFalsy();
-    }));
+    });
 
 
     it('should call playground service to append step and hide modal', inject(function (PlaygroundService) {

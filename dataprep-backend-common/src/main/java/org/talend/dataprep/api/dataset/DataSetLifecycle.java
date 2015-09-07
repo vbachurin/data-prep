@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.dataset;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Represents the lifecycle of the data set (information that can change over time).
  */
-public class DataSetLifecycle {
+public class DataSetLifecycle implements Serializable {
 
     @JsonProperty("importing")
     private boolean importing;
@@ -100,5 +101,11 @@ public class DataSetLifecycle {
     @Override
     public int hashCode() {
         return Objects.hash(importing, contentAnalyzed, schemaAnalyzed, qualityAnalyzed);
+    }
+
+    @Override
+    public String toString() {
+        return "DataSetLifecycle{" + "importing=" + importing + ", contentAnalyzed=" + contentAnalyzed + ", schemaAnalyzed="
+                + schemaAnalyzed + ", qualityAnalyzed=" + qualityAnalyzed + '}';
     }
 }

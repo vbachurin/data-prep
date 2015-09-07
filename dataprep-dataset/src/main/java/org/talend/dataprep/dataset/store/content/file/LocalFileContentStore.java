@@ -23,13 +23,13 @@ import org.talend.dataprep.exception.TDPExceptionContext;
  * Local dataset content that stores content in files.
  */
 @Component("ContentStore#local")
-@ConditionalOnProperty(name = "dataset.content.store", havingValue = "local", matchIfMissing = false)
+@ConditionalOnProperty(name = "dataset.content.store", havingValue = "file", matchIfMissing = false)
 public class LocalFileContentStore extends DataSetContentStoreAdapter {
 
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalFileContentStore.class);
 
-    @Value("${dataset.content.store.local.location}")
+    @Value("${dataset.content.store.file.location}")
     private String storeLocation;
 
     @PostConstruct

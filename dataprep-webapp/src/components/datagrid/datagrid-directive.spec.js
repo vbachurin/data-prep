@@ -22,8 +22,8 @@ describe('Datagrid directive', function() {
         var realInitGrid = DatagridGridService.initGrid;
         DatagridGridService.initGrid = function(parentId) {
             grid = realInitGrid(parentId);
-            spyOn(grid, 'invalidate').and.callThrough();
-            spyOn(grid, 'scrollRowToTop').and.callThrough();
+            spyOn(grid, 'invalidate').and.returnValue();
+            spyOn(grid, 'scrollRowToTop').and.returnValue();
 
             return grid;
         };

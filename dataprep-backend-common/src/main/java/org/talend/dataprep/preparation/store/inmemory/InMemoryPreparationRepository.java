@@ -1,4 +1,4 @@
-package org.talend.dataprep.preparation.store;
+package org.talend.dataprep.preparation.store.inmemory;
 
 import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
@@ -14,24 +14,37 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Identifiable;
 import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.preparation.PreparationRepository;
+import org.talend.dataprep.preparation.store.PreparationRepository;
 
+/**
+ * In memory Preparation repository.
+ */
 @Component
 @ConditionalOnProperty(name = "preparation.store", havingValue = "in-memory", matchIfMissing = true)
 public class InMemoryPreparationRepository implements PreparationRepository {
 
+    /** Map where preparations are stored. */
     private final Map<String, Identifiable> store = new HashMap<>();
 
+    /**
+     * Default empty constructor.
+     */
     public InMemoryPreparationRepository() {
         add(ROOT_CONTENT);
         add(ROOT_STEP);
     }
 
+    /**
+     * @see PreparationRepository#add(Identifiable)
+     */
     @Override
     public void add(Identifiable object) {
         store.put(object.id(), object);
     }
 
+    /**
+     * @see PreparationRepository#get(String, Class)
+     */
     @Override
     public <T extends Identifiable> T get(String id, Class<T> clazz) {
         if (id == null) {
@@ -65,12 +78,18 @@ public class InMemoryPreparationRepository implements PreparationRepository {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * @see PreparationRepository#listAll(Class)
+     */
     @Override
     public <T extends Identifiable> Collection<T> listAll(Class<T> clazz) {
         return store.entrySet().stream().filter(entry -> clazz.isAssignableFrom(entry.getValue().getClass()))
                 .map(entry -> (T) entry.getValue()).collect(Collectors.toSet());
     }
 
+    /**
+     * @see PreparationRepository#clear()
+     */
     @Override
     public void clear() {
         store.clear();
@@ -78,6 +97,9 @@ public class InMemoryPreparationRepository implements PreparationRepository {
         add(ROOT_STEP);
     }
 
+    /**
+     * @see PreparationRepository#remove
+     */
     @Override
     public void remove(Identifiable object) {
         if (object == null) {
@@ -85,4 +107,5 @@ public class InMemoryPreparationRepository implements PreparationRepository {
         }
         store.remove(object.id());
     }
+
 }

@@ -15,6 +15,30 @@ $datagrid-cell-font-size: .80em;
   padding: 1px 4px 2px;
 }
 
+.index-column {
+  background-color: #555964 !important;
+  color: $white !important;
+}
+
+.slick-header-columns {
+  height: 59px !important;
+}
+
+.slick-header-column-index {
+  height: 56px;
+  font-weight: bold;
+  background-color: #555964;
+  color: #ffffff;
+  padding: 5px 5px;
+}
+
+.index-cell {
+  text-align: right;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .tooltip-ruler {
   font-size: $datagrid-cell-font-size;
   font-family: $monospace;
@@ -77,6 +101,23 @@ $datagrid-cell-font-size: .80em;
   min-height: 300px;
   border: 1px solid $shadow-gray;
 
+  //-------------------------------------------------Slickgrid hack-----------------------------------------------------
+  //not frozen columns width to fit resizable container
+  .slick-pane-right {
+    width: calc(100% - 80px) !important;
+  }
+
+  //not frozen viewport should fit its container size (slick-pane-right)
+  .slick-viewport-right {
+    width: 100% !important;
+  }
+
+  //set the reorder placeholder height to fit column height
+  .slick-sortable-placeholder {
+    height: 59px !important;
+  }
+
+  //------------------------------------------------Data prep column----------------------------------------------------
   .slick-header-columns {
     border-bottom: 1px solid silver;
     box-sizing: content-box;
@@ -90,6 +131,7 @@ $datagrid-cell-font-size: .80em;
     }
   }
 
+  //-----------------------------------------------Data prep content----------------------------------------------------
   .slick-row {
     position: absolute;
     background: white;

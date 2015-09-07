@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.dataset;
 
+import java.io.Serializable;
 import java.util.*;
 
 import org.springframework.data.annotation.Id;
@@ -20,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  * 
  * @see DataSetMetadata.Builder
  */
-public class DataSetMetadata {
+public class DataSetMetadata implements Serializable {
 
     /** The dataset id. */
     @Id
@@ -81,6 +82,9 @@ public class DataSetMetadata {
     @JsonProperty("favorite")
     private transient boolean favorite;
 
+    /**
+     * Default empty constructor.
+     */
     public DataSetMetadata() {
         // no op
     }
@@ -278,7 +282,6 @@ public class DataSetMetadata {
         DataSetMetadata that = (DataSetMetadata) o;
         return Objects.equals(creationDate, that.creationDate) && //
                 Objects.equals(draft, that.draft) && //
-                Objects.equals(favorite, that.favorite) && //
                 Objects.equals(id, that.id) && //
                 Objects.equals(rowMetadata, that.rowMetadata) && //
                 Objects.equals(lifecycle, that.lifecycle) && //

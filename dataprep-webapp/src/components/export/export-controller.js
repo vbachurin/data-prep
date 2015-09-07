@@ -100,22 +100,6 @@
 
     /**
      * @ngdoc property
-     * @name preparationId
-     * @propertyOf data-prep.export.controller:ExportCtrl
-     * @description The current preparationId
-     * It is bound to {@link data-prep.services.preparation.service:PreparationService PreparationService} property
-     */
-    Object.defineProperty(ExportCtrl.prototype,
-        'preparationId', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.preparationService.currentPreparationId;
-            }
-        });
-
-    /**
-     * @ngdoc property
      * @name stepId
      * @propertyOf data-prep.export.controller:ExportCtrl
      * @description The current stepId

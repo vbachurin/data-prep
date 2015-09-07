@@ -5,6 +5,7 @@ describe('Early Preview Service', function () {
 
     var stateMock;
     var dataset = {id: '123456'};
+    var preparation = {id: '456789'};
     var column = {id: '0001', name: 'firstname'};
     var transfoScope;
     var transformation;
@@ -12,7 +13,8 @@ describe('Early Preview Service', function () {
 
     beforeEach(module('data-prep.services.playground', function ($provide) {
         stateMock = {playground: {
-            dataset: dataset
+            dataset: dataset,
+            preparation: preparation
         }};
         $provide.constant('state', stateMock);
     }));
@@ -33,10 +35,43 @@ describe('Early Preview Service', function () {
         spyOn(RecipeService, 'cancelEarlyPreview').and.returnValue();
         spyOn(PreviewService, 'getPreviewAddRecords').and.returnValue();
         spyOn(PreviewService, 'cancelPreview').and.returnValue();
-        spyOn(EarlyPreviewService, 'cancelPendingPreview').and.callThrough();
+        spyOn(EarlyPreviewService, 'cancelPendingPreview').and.returnValue();
     }));
 
-    it('should trigger preview after a 300ms delay', inject(function ($timeout, PreviewService, EarlyPreviewService, RecipeService) {
+    it('should trigger preview without preparation id after a 300ms delay', inject(function ($timeout, PreviewService, EarlyPreviewService, RecipeService) {
+        //when
+        stateMock.playground.preparation = null;
+        EarlyPreviewService.earlyPreview(transformation, transfoScope)(params);
+        expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
+        $timeout.flush(300);
+
+        //then
+        expect(RecipeService.earlyPreview).toHaveBeenCalledWith(
+            column,
+            transformation,
+            {
+                value: 'James',
+                replace: 'Jimmy',
+                scope: transfoScope,
+                column_id: column.id,
+                column_name: column.name
+            }
+        );
+        expect(PreviewService.getPreviewAddRecords).toHaveBeenCalledWith(
+            null,
+            dataset.id,
+            'replace_on_value',
+            {
+                value: 'James',
+                replace: 'Jimmy',
+                scope: transfoScope,
+                column_id: column.id,
+                column_name: column.name
+            }
+        );
+    }));
+
+    it('should trigger preview with preparation id after a 300ms delay', inject(function ($timeout, PreviewService, EarlyPreviewService, RecipeService) {
         //when
         EarlyPreviewService.earlyPreview(transformation, transfoScope)(params);
         expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
@@ -55,6 +90,7 @@ describe('Early Preview Service', function () {
             }
         );
         expect(PreviewService.getPreviewAddRecords).toHaveBeenCalledWith(
+            preparation.id,
             dataset.id,
             'replace_on_value',
             {
@@ -145,6 +181,7 @@ describe('Early Preview Service', function () {
             }
         );
         expect(PreviewService.getPreviewAddRecords).toHaveBeenCalledWith(
+            preparation.id,
             dataset.id,
             'replace_on_value',
             {

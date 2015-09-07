@@ -143,7 +143,6 @@ describe('Dropdown directive', function () {
             //when
             element.remove();
 
-            var asset = $._data(angular.element('body')[0], 'events');
             //then
             expect($._data(angular.element('body')[0], 'events')).not.toBeDefined();
         });

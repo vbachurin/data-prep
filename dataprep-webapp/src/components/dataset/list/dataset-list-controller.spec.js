@@ -33,9 +33,9 @@ describe('Dataset list controller', function () {
         spyOn(DatasetListSortService, 'setOrder').and.returnValue();
 
         spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when(true));
-        spyOn(StateService, 'showPlayground').and.callThrough();
-        spyOn(MessageService, 'error').and.returnValue(null);
-        spyOn($state, 'go').and.returnValue(null);
+        spyOn(StateService, 'showPlayground').and.returnValue();
+        spyOn(MessageService, 'error').and.returnValue();
+        spyOn($state, 'go').and.returnValue();
     }));
 
     afterEach(inject(function($stateParams) {
@@ -215,7 +215,7 @@ describe('Dataset list controller', function () {
 
             spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.when(true));
             spyOn(DatasetService, 'delete').and.returnValue($q.when(true));
-            spyOn(MessageService, 'success').and.callThrough();
+            spyOn(MessageService, 'success').and.returnValue();
             spyOn(DatasetSheetPreviewService, 'loadPreview').and.returnValue($q.when(true));
             spyOn(DatasetSheetPreviewService, 'display').and.returnValue($q.when(true));
             spyOn(DatasetService, 'toggleFavorite').and.returnValue($q.when(true));

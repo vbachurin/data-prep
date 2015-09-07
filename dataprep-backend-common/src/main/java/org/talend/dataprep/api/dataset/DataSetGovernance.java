@@ -1,11 +1,12 @@
 package org.talend.dataprep.api.dataset;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Represents governance data of the dataset.
  */
-public class DataSetGovernance {
+public class DataSetGovernance implements Serializable {
 
     public enum Certification {
         NONE,
@@ -38,5 +39,10 @@ public class DataSetGovernance {
     @Override
     public int hashCode() {
         return Objects.hash(certificationStep);
+    }
+
+    @Override
+    public String toString() {
+        return "DataSetGovernance{" + "certificationStep=" + certificationStep + '}';
     }
 }

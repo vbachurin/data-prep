@@ -8,7 +8,7 @@ describe('Dataset Rest Service', function () {
     beforeEach(inject(function ($rootScope, $injector) {
         $httpBackend = $injector.get('$httpBackend');
 
-        spyOn($rootScope, '$emit').and.callThrough();
+        spyOn($rootScope, '$emit').and.returnValue();
     }));
 
     it('should call dataset list rest service WITHOUT sort parameters', inject(function ($rootScope, DatasetRestService, RestURLs, $q) {

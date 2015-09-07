@@ -1,0 +1,29 @@
+{
+  "id": "b7404d92-436e-4c83-9edc-0cd677e16377",
+  "favorite": false,
+  "lifecycle": {
+    "importing": false,
+    "contentAnalyzed": true,
+    "schemaAnalyzed": true,
+    "qualityAnalyzed": true
+  },
+  "records": 3,
+  "nbLinesHeader": 1,
+  "nbLinesFooter": 0,
+  "type": "text/csv",
+  "parameters": {
+    "SEPARATOR": ";"
+  },
+  "formatGuess": "formatGuess#csv",
+  "certificationStep": "NONE",
+  "location": {
+    "type": "local"
+  },
+  "name": "bands",
+  "author": "anonymousUser",
+  "created": 1441101537765,
+  "sheetName": null,
+  "draft": false,
+  "schemaParserResult": null
+}
+

@@ -488,11 +488,11 @@ describe('Datagrid service', function () {
             DatagridService.dataView = dataView;
             DatagridService.data = originalData;
 
-            spyOn(dataView, 'beginUpdate').and.callThrough();
-            spyOn(dataView, 'endUpdate').and.callThrough();
-            spyOn(dataView, 'insertItem').and.callThrough();
-            spyOn(dataView, 'deleteItem').and.callThrough();
-            spyOn(dataView, 'updateItem').and.callThrough();
+            spyOn(dataView, 'beginUpdate').and.returnValue();
+            spyOn(dataView, 'endUpdate').and.returnValue();
+            spyOn(dataView, 'insertItem').and.returnValue();
+            spyOn(dataView, 'deleteItem').and.returnValue();
+            spyOn(dataView, 'updateItem').and.returnValue();
         }));
 
         it('should create executor that match the preview data', inject(function (DatagridService) {

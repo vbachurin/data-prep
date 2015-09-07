@@ -40,7 +40,12 @@ describe('Export controller', function() {
     var currentParameters = {exportType: 'XLS'};
     var currentType = exportTypes[2];
 
-    beforeEach(module('data-prep.export'));
+    var stateMock;
+
+    beforeEach(module('data-prep.export', function($provide) {
+        stateMock = {playground: {}};
+        $provide.constant('state', stateMock);
+    }));
 
     beforeEach(inject(function ($rootScope, $controller, $q, ExportService) {
         form = {submit : function() {}};
@@ -63,23 +68,7 @@ describe('Export controller', function() {
         spyOn(form, 'submit').and.returnValue();
     }));
 
-    afterEach(inject(function (state) {
-        state.playground.dataset = null;
-    }));
-
     describe('property binding', function() {
-        it('should bind preparationId getter to PreparationService', inject(function(PreparationService) {
-            //given
-            var ctrl = createController();
-            expect(ctrl.preparationId).toBeFalsy();
-
-            //when
-            PreparationService.currentPreparationId = '48da64513c43a548e678bc99';
-
-            //then
-            expect(ctrl.preparationId).toBe('48da64513c43a548e678bc99');
-        }));
-
         it('should bind stepId getter to RecipeService', inject(function(RecipeService) {
             //given
             var ctrl = createController();
@@ -96,19 +85,19 @@ describe('Export controller', function() {
             expect(ctrl.stepId).toBe('48da64513c43a548e678bc99');
         }));
 
-        it('should bind datasetId getter to PlaygroundService', inject(function(state) {
+        it('should bind datasetId getter to PlaygroundService', function() {
             //given
             var ctrl = createController();
             expect(ctrl.datasetId).toBeFalsy();
 
             //when
-            state.playground.dataset = {
+            stateMock.playground.dataset = {
                 id: '48da64513c43a548e678bc99'
             };
 
             //then
             expect(ctrl.datasetId).toBe('48da64513c43a548e678bc99');
-        }));
+        });
 
         it('should bind exportTypes getter to ExportService', inject(function(ExportService) {
             //given

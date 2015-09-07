@@ -21,32 +21,43 @@ import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.user.store.UserDataRepository;
 
 /**
- * created by sgandon on 16 juin 2015 Detailled comment
- *
+ * Mongo db user data repository implementation.
  */
 @Component
 @ConditionalOnProperty(name = "user.data.store", havingValue = "mongodb", matchIfMissing = false)
 public class MongoUserDateRepository implements UserDataRepository {
 
+    /** Spring interface for mongo db. */
     @Autowired
-    UserDataMongoDbRepo repository;
+    private UserDataMongoDbRepo repository;
 
+    /**
+     * @see UserDataRepository#get(String)
+     */
     @Override
-    public UserData getUserData(String userId) {
+    public UserData get(String userId) {
         return repository.findOne(userId);
     }
 
+    /**
+     * @see UserDataRepository#save(UserData)
+     */
     @Override
-    public void setUserData(UserData userData) {
+    public void save(UserData userData) {
         repository.save(Collections.singleton(userData));
-
     }
 
+    /**
+     * @see UserDataRepository#remove(String)
+     */
     @Override
     public void remove(String userId) {
         repository.delete(userId);
     }
 
+    /**
+     * @see UserDataRepository#clear()
+     */
     @Override
     public void clear() {
         repository.deleteAll();

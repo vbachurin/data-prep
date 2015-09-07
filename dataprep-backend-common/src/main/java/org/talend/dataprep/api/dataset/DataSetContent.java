@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.dataset;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -10,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Dataset content summary.
  */
 
-public class DataSetContent {
+public class DataSetContent implements Serializable {
 
     @JsonProperty("records")
     private int nbRecords;
