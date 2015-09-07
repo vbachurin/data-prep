@@ -14,7 +14,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
-public class ChangeDomainTest {
+public class DomainChangeTest {
 
     @Test
     public void should_change_domain() throws Exception {

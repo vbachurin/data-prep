@@ -176,6 +176,15 @@ public class Statistics {
     }
 
     @Override
+    public String toString() {
+        return "Statistics{" + "count=" + count + ", valid=" + valid + ", invalid=" + invalid + ", empty=" + empty + ", max="
+                + max + ", min=" + min + ", mean=" + mean + ", variance=" + variance + ", duplicateCount=" + duplicateCount
+                + ", distinctCount=" + distinctCount + ", dataFrequencies=" + dataFrequencies + ", patternFrequencies="
+                + patternFrequencies + ", quantiles=" + quantiles + ", histogram=" + histogram + ", textLengthSummary="
+                + textLengthSummary + '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Statistics)) return false;

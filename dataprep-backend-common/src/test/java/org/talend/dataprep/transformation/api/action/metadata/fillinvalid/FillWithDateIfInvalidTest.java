@@ -5,6 +5,8 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,9 +15,12 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Unit test for FillWithDateIfInvalid action.
@@ -50,8 +55,7 @@ public class FillWithDateIfInvalidTest {
                                 .type(Type.DATE) //
                                 .computedId("0002") //
                                 .invalidValues(newHashSet("N")) //
-                                .statistics(IOUtils
-                                        .toString(this.getClass().getResourceAsStream("fillInvalidDateAction_statistics.json")))
+                .statistics(getStatistics(this.getClass().getResourceAsStream("fillInvalidDateAction_statistics.json")))
                                 .build()));
 
         final DataSetRow row = new DataSetRow(values);
@@ -82,8 +86,8 @@ public class FillWithDateIfInvalidTest {
                         .type(Type.DATE) //
                         .computedId("0002") //
                         .invalidValues(newHashSet("N")) //
-                        .statistics(IOUtils
-                                .toString(this.getClass().getResourceAsStream("fillInvalidDateTimeAction_statistics.json")))
+                                .statistics(getStatistics(
+                                        this.getClass().getResourceAsStream("fillInvalidDateTimeAction_statistics.json")))
                         .build()));
 
         final DataSetRow row = new DataSetRow(values);
@@ -111,6 +115,12 @@ public class FillWithDateIfInvalidTest {
         assertFalse(action.acceptColumn(getColumn(Type.FLOAT)));
         assertFalse(action.acceptColumn(getColumn(Type.STRING)));
         assertFalse(action.acceptColumn(getColumn(Type.BOOLEAN)));
+    }
+
+    public Statistics getStatistics(InputStream source) throws IOException {
+        final String statisticsContent = IOUtils.toString(source);
+        final ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(statisticsContent, Statistics.class);
     }
 
 }

@@ -126,9 +126,9 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
             if (pf1.getOccurrences() - pf2.getOccurrences() == 0) {
                 return 0;
             } else if(pf1.getOccurrences() - pf2.getOccurrences() > 0) {
-                return 1;
-            } else {
                 return -1;
+            } else {
+                return 1;
             }
         }).findFirst();
         return mostUsed.get().getPattern();
