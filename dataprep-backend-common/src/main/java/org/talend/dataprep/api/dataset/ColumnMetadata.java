@@ -4,19 +4,22 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.diff.FlagNames;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Represents information about a column in a data set. It includes:
@@ -54,12 +57,11 @@ public class ColumnMetadata implements Serializable {
 
     /** Statistics of the column. */
     @JsonProperty("statistics")
-    @JsonRawValue
-    private String statistics = "{}"; //$NON-NLS-1$
+    private Statistics statistics = new Statistics();
 
     @JsonProperty("domain")
     private String domain = StringUtils.EMPTY;
-    
+
     @JsonProperty("domainLabel")
     private String domainLabel = StringUtils.EMPTY;
 
@@ -68,6 +70,14 @@ public class ColumnMetadata implements Serializable {
 
     @JsonProperty("semanticDomains")
     private List<SemanticDomain> semanticDomains = Collections.emptyList();
+
+    /** if the domain has been changed/forced manually by the user */
+    @JsonProperty("domainForced")
+    private boolean domainForced;
+
+    /** if the type has been changed/forced manually by the user */
+    @JsonProperty("typeForced")
+    private boolean typeForced;
 
     /**
      * Default empty constructor.
@@ -158,6 +168,26 @@ public class ColumnMetadata implements Serializable {
         return quality;
     }
 
+    public boolean isDomainForced()
+    {
+        return domainForced;
+    }
+
+    public void setDomainForced( boolean domainForced )
+    {
+        this.domainForced = domainForced;
+    }
+
+    public boolean isTypeForced()
+    {
+        return typeForced;
+    }
+
+    public void setTypeForced( boolean typeForced )
+    {
+        this.typeForced = typeForced;
+    }
+
     @Override
     public boolean equals(Object obj) {
         return Optional.ofNullable(obj) //
@@ -178,27 +208,25 @@ public class ColumnMetadata implements Serializable {
     }
 
     @Override
-    public String toString()
-    {
-        return "ColumnMetadata{" +
- "id='" + id + '\'' +
-            ", name='" + name + '\'' +
-            ", typeName='" + typeName + '\'' +
- ", quality="
-                + quality + '\'' + ", headerSize=" + headerSize + '\'' +
-            ", diffFlagValue='" + diffFlagValue + '\'' +
-            ", statistics='" + statistics + '\'' +
-            ", domain='" + domain + '\'' +
-            ", domainLabel='" + domainLabel + '\'' +
-            ", semanticDomains=" + semanticDomains +
-            '}';
+    public String toString() {
+        return "ColumnMetadata{" + //
+                "id='" + id + '\'' + //
+                ", name='" + name + '\'' + //
+                ", typeName='" + typeName + '\'' + //
+                ", quality=" + quality + //
+                ", headerSize=" + headerSize + //
+                ", diffFlagValue='" + diffFlagValue + '\'' + //
+                ", statistics='" + statistics + '\'' + //
+                ", domain='" + domain + '\'' + //
+                ", domainLabel='" + domainLabel + '\'' + //
+                ", semanticDomains=" + semanticDomains + //
+                '}';
     }
 
     /**
-     * @return The statistics (as raw JSON content) returned by data quality library.
+     * @return The statistics returned by data quality library.
      */
-    @JsonRawValue
-    public String getStatistics() {
+    public Statistics getStatistics() {
         return statistics;
     }
 
@@ -207,25 +235,11 @@ public class ColumnMetadata implements Serializable {
      *
      * @param statistics The statistics as returned by the data quality library.
      */
-    public void setStatistics(Object statistics) {
+    public void setStatistics(Statistics statistics) {
         if (statistics == null) {
-            this.statistics = "{}"; //$NON-NLS-1$
-        } else {
-            if (statistics instanceof Map) {
-                try {
-                    final StringWriter writer = new StringWriter();
-                    new ObjectMapper().writer().writeValue(writer, statistics);
-                    this.statistics = writer.toString();
-                } catch (IOException e) {
-                    throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
-                }
-            } else if (statistics instanceof String) {
-                this.statistics = String.valueOf(statistics);
-            } else {
-                throw new IllegalArgumentException("Received a '" + statistics.getClass().getName()
-                        + "' but don't know how to interpret it.");
-            }
+            statistics = new Statistics();
         }
+        this.statistics = statistics;
     }
 
     public void setDomain(String domain) {
@@ -296,7 +310,7 @@ public class ColumnMetadata implements Serializable {
         private String diffFlagValue = null;
 
         /** The column statistics. */
-        private String statistics = null;
+        private Statistics statistics = new Statistics();
 
         /** The invalid values. */
         private Set<String> invalidValues = new HashSet<>();
@@ -355,7 +369,7 @@ public class ColumnMetadata implements Serializable {
          * @param statistics the column statistics to set.
          * @return the builder to carry on building the column.
          */
-        public ColumnMetadata.Builder statistics(String statistics) {
+        public ColumnMetadata.Builder statistics(Statistics statistics) {
             this.statistics = statistics;
             return this;
         }
@@ -454,7 +468,7 @@ public class ColumnMetadata implements Serializable {
          * @param domainFrequency the frequency of value with this domain of the column to set.
          * @return the builder to carry on building the column.
          */
-        public ColumnMetadata.Builder domainFrequency( float domainFrequency ) {
+        public ColumnMetadata.Builder domainFrequency(float domainFrequency) {
             this.domainFrequency = domainFrequency;
             return this;
         }
@@ -484,7 +498,7 @@ public class ColumnMetadata implements Serializable {
             this.valid = originalQuality.getValid();
             this.invalidValues = originalQuality.getInvalidValues();
             this.headerSize = original.getHeaderSize();
-            this.type = Type.get( original.getType() );
+            this.type = Type.get(original.getType());
             this.diffFlagValue = original.getDiffFlagValue();
             this.statistics = original.getStatistics();
             this.domain = original.getDomain();
@@ -510,10 +524,10 @@ public class ColumnMetadata implements Serializable {
             columnMetadata.setHeaderSize(this.headerSize);
             columnMetadata.setDiffFlagValue(this.diffFlagValue);
             columnMetadata.setStatistics(this.statistics);
-            columnMetadata.setDomain( this.domain == null ? StringUtils.EMPTY : this.domain );
-            columnMetadata.setDomainLabel( this.domainLabel == null ? StringUtils.EMPTY : this.domainLabel );
-            columnMetadata.setDomainFrequency( this.domainFrequency );
-            columnMetadata.setSemanticDomains( this.semanticDomains == null ? Collections.emptyList() : this.semanticDomains );
+            columnMetadata.setDomain(this.domain == null ? StringUtils.EMPTY : this.domain);
+            columnMetadata.setDomainLabel(this.domainLabel == null ? StringUtils.EMPTY : this.domainLabel);
+            columnMetadata.setDomainFrequency(this.domainFrequency);
+            columnMetadata.setSemanticDomains(this.semanticDomains == null ? Collections.emptyList() : this.semanticDomains);
             return columnMetadata;
         }
     }

@@ -8,7 +8,7 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.diff.Flag;
 
 import com.fasterxml.jackson.annotation.JsonProperty;

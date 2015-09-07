@@ -99,9 +99,7 @@ describe('Statistics service', function () {
             ],
             textLengthSummary: {
                 averageLength: 10.13248646854654,
-                averageLengthIgnoreBlank: 11.783242375675245,
                 minimalLength: 12,
-                minimalLengthIgnoreBlank: 13,
                 maximalLength: 14
             },
             count: 4,
@@ -144,9 +142,7 @@ describe('Statistics service', function () {
             ],
             textLengthSummary: {
                 averageLength: 10.13248646854654,
-                averageLengthWithBlank: 11.783242375675245,
                 minimalLength: 12,
-                minimalLengthWithBlank: 13,
                 maximalLength: 14
             },
             count: 4,
@@ -587,9 +583,7 @@ describe('Statistics service', function () {
                     valid: 9,
                     textLengthSummary: {
                         averageLength: 10.13248646854654,
-                        averageLengthIgnoreBlank: 11.783242375675245,
                         minimalLength: 12,
-                        minimalLengthIgnoreBlank: 13,
                         maximalLength: 14
                     }
                 }
@@ -610,10 +604,8 @@ describe('Statistics service', function () {
                 INVALID: 8
             });
             expect(StatisticsService.statistics.specific).toEqual({
-                AVG_LENGTH: 11.78,
-                AVG_LENGTH_WITH_BLANK: 10.13,
-                MIN_LENGTH: 13,
-                MIN_LENGTH_WITH_BLANK: 12,
+                AVG_LENGTH: 10.13,
+                MIN_LENGTH: 12,
                 MAX_LENGTH: 14
             });
         }));

@@ -12,46 +12,28 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.assertj.core.api.Assertions;
-
 import org.junit.Before;
-
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.text.Split;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
-import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 /**
  * Test class for Split action. Creates one consumer, and test it.
@@ -91,7 +73,7 @@ public class CopyColumnTest {
      */
     @Test
     public void should_split_row() {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
         values.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
@@ -104,10 +86,10 @@ public class CopyColumnTest {
         expectedValues.put("0003", "Bacon ipsum dolor amet swine leberkas pork belly");
         expectedValues.put("0002", "01/01/2015");
 
-        //when
+        // when
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
-        //then
+        // then
         assertEquals(expectedValues, row.values());
     }
 
@@ -116,7 +98,7 @@ public class CopyColumnTest {
      */
     @Test
     public void should_update_metadata() {
-        //given
+        // given
         final List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("0000", "recipe"));
         input.add(createMetadata("0001", "steps"));
@@ -129,32 +111,32 @@ public class CopyColumnTest {
         expected.add(createMetadata("0003", "steps_copy"));
         expected.add(createMetadata("0002", "last update"));
 
-        //when
+        // when
         action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
 
-        //then
+        // then
         assertEquals(expected, rowMetadata.getColumns());
     }
 
     @Test
     public void should_copy_statistics() throws Exception {
-        //given
+        // given
         final ColumnMetadata original = createMetadata("0001", "column");
-        original.setStatistics("{}");
+        original.setStatistics(new Statistics());
         final List<ColumnMetadata> input = new ArrayList<>();
         input.add(original);
         final RowMetadata rowMetadata = new RowMetadata(input);
 
         final ColumnMetadata transformed = createMetadata("0002", "column");
-        original.setStatistics("{}");
+        original.setStatistics(new Statistics());
         final List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("0001", "column"));
         expected.add(transformed);
 
-        //when
+        // when
         action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
 
-        //then
+        // then
         assertEquals(expected.get(1).getStatistics(), original.getStatistics());
     }
 
@@ -162,33 +144,33 @@ public class CopyColumnTest {
     public void should_copy_semantic() throws Exception {
         List<ColumnMetadata> input = new ArrayList<>();
         final ColumnMetadata original = createMetadata("0001", "column");
-        original.setStatistics( "{}" );
+        original.setStatistics(new Statistics());
 
-        SemanticDomain semanticDomain = new SemanticDomain( "mountain_goat", "Mountain goat pale pale", 1 );
+        SemanticDomain semanticDomain = new SemanticDomain("mountain_goat", "Mountain goat pale pale", 1);
 
-        original.setDomain( "beer" );
-        original.setDomainFrequency( 1 );
-        original.setDomainLabel( "the best beer" );
-        original.setSemanticDomains( Arrays.asList( semanticDomain ) );
+        original.setDomain("beer");
+        original.setDomainFrequency(1);
+        original.setDomainLabel("the best beer");
+        original.setSemanticDomains(Collections.singletonList(semanticDomain));
 
-        input.add( original );
+        input.add(original);
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        Assertions.assertThat( rowMetadata.getColumns() ).isNotNull().isNotEmpty().hasSize( 1 );
+        Assertions.assertThat(rowMetadata.getColumns()).isNotNull().isNotEmpty().hasSize(1);
 
-        action.applyOnColumn( new DataSetRow( rowMetadata ),new TransformationContext(), parameters, "0001"  );
+        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
 
         List<ColumnMetadata> expected = rowMetadata.getColumns();
 
-        Assertions.assertThat( expected ).isNotNull().isNotEmpty().hasSize( 2 );
+        Assertions.assertThat(expected).isNotNull().isNotEmpty().hasSize(2);
 
-        assertEquals( expected.get( 1 ).getStatistics(), original.getStatistics() );
+        assertEquals(expected.get(1).getStatistics(), original.getStatistics());
 
-        Assertions.assertThat(expected.get( 1 )) //
-            .isEqualToComparingOnlyGivenFields( original, "domain", "domainLabel", "domainFrequency" );
+        Assertions.assertThat(expected.get(1)) //
+                .isEqualToComparingOnlyGivenFields(original, "domain", "domainLabel", "domainFrequency");
 
-        Assertions.assertThat( expected.get( 1 ).getSemanticDomains() ).isNotNull() //
-            .isNotEmpty().contains( semanticDomain );
+        Assertions.assertThat(expected.get(1).getSemanticDomains()).isNotNull() //
+                .isNotEmpty().contains(semanticDomain);
     }
 
     @Test

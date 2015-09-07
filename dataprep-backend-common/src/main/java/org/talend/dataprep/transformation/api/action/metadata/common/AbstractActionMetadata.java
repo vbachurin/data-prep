@@ -15,7 +15,6 @@ package org.talend.dataprep.transformation.api.action.metadata.common;
 import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -24,17 +23,11 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.preparation.Action;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Base class for all single column action.
@@ -172,25 +165,6 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
     @Nonnull
     public Item[] getItems() {
         return new Item[0];
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------------UTILS--------------------------------------------------------
-    //------------------------------------------------------------------------------------------------------------------
-
-    /**
-     * Return the json statistics node.
-     *
-     * @param mapper jackson object mapper.
-     * @param column the column metadata to work on.
-     * @return the json statistics node.
-     */
-    protected JsonNode getStatisticsNode(ObjectMapper mapper, ColumnMetadata column) {
-        try {
-            return mapper.readTree(column.getStatistics());
-        } catch (final IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
-        }
     }
 
 }
