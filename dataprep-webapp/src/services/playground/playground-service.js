@@ -54,7 +54,8 @@
 
             // dataset
             updateColumn: updateColumn,
-            addUpdateColumnStep: addUpdateColumnStep,
+            addUpdateColumnTypeStep: addUpdateColumnTypeStep,
+            addUpdateColumnDomainStep: addUpdateColumnDomainStep,
 
             //preparation
             createOrUpdatePreparation: createOrUpdatePreparation,
@@ -487,14 +488,13 @@
 
         /**
          * @ngdoc method
-         * @name addUpdateColumnStep
+         * @name addUpdateColumnTypeStep
          * @methodOf data-prep.services.playground.service:PlaygroundService
          * @param {string} columnId The column id to focus update
          * @param {string} type the new type of the column
-         * @param {string} domain the new domain of the column
          * @description Add step which change column type
          */
-        function addUpdateColumnStep(columnId, type, domain) {
+        function addUpdateColumnTypeStep(columnId, type) {
             return appendStep('type_change',
                 {
                     'scope':'column',
@@ -510,6 +510,35 @@
                     else {
                         return updateDatasetDatagrid();
                     }
+                });
+        }
+
+        /**
+         * @ngdoc method
+         * @name addUpdateColumnDomainStep
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {string} columnId The column id to focus update
+         * @param {string} domain the new domain of the column
+         * @description Add step which change column domain
+         */
+        function addUpdateColumnDomainStep(columnId, domain) {
+            return appendStep('domain_change',
+                {
+                    'scope':'column',
+                    'column_id': columnId,
+                    'NEW_DOMAIN_ID':domain.id,
+                    'NEW_DOMAIN_LABEL': domain.label,
+                    'NEW_DOMAIN_FREQUENCY': domain.frequency
+                })
+                .then(function() {
+                  // if preparation
+                  if (state.playground.preparation) {
+                      return updatePreparationDatagrid();
+                  }
+                  // dataset
+                  else {
+                      return updateDatasetDatagrid();
+                  }
                 });
         }
 
