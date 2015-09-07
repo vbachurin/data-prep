@@ -126,5 +126,4 @@ public class ExtractEmailDomain extends AbstractActionMetadata implements Column
                 .build();
     }
 
-
 }
