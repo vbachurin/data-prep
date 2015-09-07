@@ -9,9 +9,8 @@
      * @requires data-prep.services.dataset.service:DatasetService
      * @requires data-prep.services.dataset.service:ColumnTypesService
      * @requires data-prep.services.utils.service:ConverterService
-     * @requires data-prep.services.preparation.service:PreparationService
      */
-    function TypeTransformMenuCtrl(state, PlaygroundService, DatasetService, ColumnTypesService, ConverterService, PreparationService) {
+    function TypeTransformMenuCtrl(state, PlaygroundService, DatasetService, ColumnTypesService, ConverterService) {
 
         var vm = this;
 
