@@ -125,21 +125,24 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
 
         ColumnMetadata columnToInsertAfter = column;
 
+        URL url = null;
         try {
-            URL url = (originalValue == null ? null : new URL(originalValue));
-
-            for (UrlTokenExtractor urlTokenExtractor : urlTokenExtractors) {
-
-                final ColumnMetadata newColumnMetadata = createNewColumn(column, urlTokenExtractor.getSuffix(), urlTokenExtractor.getType());
-                final String local = rowMetadata.insertAfter(columnToInsertAfter.getId(), newColumnMetadata);
-                final String tokenValue = (url == null ? "" : urlTokenExtractor.extract(url));
-
-                row.set(local, tokenValue);
-
-                columnToInsertAfter = newColumnMetadata;
-            }
+            url = new URL(originalValue);
         } catch (MalformedURLException e) {
-            // Nothing to do, silently skip this row
+            // Nothing to do, silently skip this row, leave url null, will be treated just bellow
+        }
+
+        // if url is null, we still loop on urlTokenExtractors in order to create the column metadata for all rows, even invalid ones.
+        for (UrlTokenExtractor urlTokenExtractor : urlTokenExtractors) {
+
+            final ColumnMetadata newColumnMetadata = createNewColumn(column, urlTokenExtractor.getSuffix(), urlTokenExtractor.getType());
+            final String local = rowMetadata.insertAfter(columnToInsertAfter.getId(), newColumnMetadata);
+
+            final String tokenValue = (url == null ? "" : urlTokenExtractor.extract(url));
+
+            row.set(local, tokenValue);
+
+            columnToInsertAfter = newColumnMetadata;
         }
     }
 
