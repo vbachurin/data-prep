@@ -18,8 +18,8 @@ import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -152,7 +152,7 @@ public class ExtractUrlTokensTest {
         expectedValues.put("0003", "");
         expectedValues.put("0004", "");
         expectedValues.put("0005", "");
-        expectedValues.put("0006", "");
+        expectedValues.put("0006", "http_www.talend.com");
         expectedValues.put("0007", "");
         expectedValues.put("0008", "");
         expectedValues.put("0009", "");
@@ -267,14 +267,16 @@ public class ExtractUrlTokensTest {
     }
 
     @Test
-    public void testProtocolExtractor() throws MalformedURLException {
-        assertEquals("http", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URL("http://www.yahoo.fr")));
-        assertEquals("mailto", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URL("mailto:smallet@talend.com")));
-        assertEquals("ftp", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URL("ftp://server:21/this/is/a/resource")));
-        assertEquals("http", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URL("HTTP://www.yahoo.fr")));
-        assertEquals("http", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URL(
+    public void testProtocolExtractor() throws URISyntaxException {
+        assertEquals("http", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("http://www.yahoo.fr")));
+        assertEquals("mailto", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("mailto:smallet@talend.com")));
+        assertEquals("ftp", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("ftp://server:21/this/is/a/resource")));
+        assertEquals("http", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("HTTP://www.yahoo.fr")));
+        assertEquals("http", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI(
                 "http:10.42.10.99:80/home/datasets?datasetid=c522a037")));
-        assertEquals("file", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URL("file://server:21/this/is/a/resource")));
+        assertEquals("file", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("file://server:21/this/is/a/resource")));
+        assertEquals("mvn", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("mvn://server:21/this/is/a/resource")));
+        assertEquals("tagada", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("tagada://server:21/this/is/a/resource")));
     }
 
 }
