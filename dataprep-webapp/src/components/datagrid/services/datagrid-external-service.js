@@ -10,7 +10,7 @@
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.playground.service:PreviewService
      */
-    function DatagridExternalService($timeout, StatisticsService, SuggestionService, PreviewService, StateService) {
+    function DatagridExternalService($window, $timeout, StatisticsService, SuggestionService, PreviewService, StateService, DatagridService) {
         var grid;
         var suggestionTimeout;
         var scrollTimeout;
@@ -19,10 +19,44 @@
 
         return {
             init: init,
-            updateSuggestionPanel: updateSuggestionPanel
+            updateSuggestionPanel: updateSuggestionPanel,
+            getColumnSelected: getColumnSelected
         };
 
         //--------------------------------------------------------------------------------------------------------------
+
+        /**
+         * @ngdoc method
+         * @name getLocalStorageKey
+         * @methodOf data-prep.datagrid.service:DatagridSizeService
+         * @description Get the actual dataset column selected. This key is used in localStorage
+         */
+        function getLocalStorageKey() {
+            return 'org.talend.dataprep.col_selected_' + DatagridService.metadata.id;
+        }
+
+        /**
+         * @ngdoc method
+         * @name saveColumnSelected
+         * @methodOf data-prep.datagrid.service:DatagridSizeService
+         * @description Save the selected column  of the dataset in localstorage
+         */
+        function saveColumnSelected(col) {
+            var localKey = getLocalStorageKey();
+            $window.localStorage.setItem(localKey, col.id);
+        }
+
+
+        /**
+         * @ngdoc method
+         * @name getColumnSelected
+         * @methodOf data-prep.datagrid.service:DatagridSizeService
+         * @description Get the actual dataset column selected. This value is stored in localStorage
+         */
+        function getColumnSelected() {
+            var localKey = getLocalStorageKey();
+            return $window.localStorage.getItem(localKey);
+        }
 
         /**
          * @ngdoc method
@@ -57,6 +91,7 @@
                         if(columnHasChanged) {
                             StatisticsService.processData(lastSelectedColumn);
                             SuggestionService.setColumn(lastSelectedColumn);
+                            saveColumnSelected(lastSelectedColumn);
                         }
                 }, 200);
             } else {
