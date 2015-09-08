@@ -21,7 +21,7 @@
      * @requires data-prep.services.onboarding:OnboardingService
      */
     function DatasetListCtrl($timeout, $state, $stateParams, DatasetService, DatasetListSortService, PlaygroundService,
-                             TalendConfirmService, MessageService, UploadWorkflowService, StateService, OnboardingService) {
+                             TalendConfirmService, MessageService, UploadWorkflowService, StateService, OnboardingService, DatagridExternalService) {
         var vm = this;
 
         vm.datasetService = DatasetService;
@@ -129,18 +129,25 @@
          */
         var showPlayground = function() {
             StateService.showPlayground();
+
             var tourId = 'preparation';
             if ($state.current.name === 'nav.home.datasets' && $state.params.datasetid && OnboardingService.shouldStartTour(tourId)) {
-                    $timeout(function(){
+                $timeout(function(){
+                    OnboardingService.startTour(tourId);
+                    //Select the first column by default
+                    $('div[id^="slickgrid_"][id$="0000"]').each(function () {
+                        this.click();
+                    });
 
-                        OnboardingService.startTour(tourId);
-
-                        //Select the first column by default
-                        $('div[id^="slickgrid_"][id$="0000"]').each(function () {
-                            this.click();
-                        });
-
-                    }, 500);
+                },200);
+            } else {
+                $timeout(function(){
+                    var colSelected = DatagridExternalService.getColumnSelected();
+                    //Select the column selected previously
+                    $('div[id^="slickgrid_"][id$="'+colSelected+'"]').each(function () {
+                        this.click();
+                    });
+                },200);
             }
         };
         /**

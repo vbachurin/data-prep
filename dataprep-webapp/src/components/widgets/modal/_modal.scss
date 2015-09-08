@@ -201,6 +201,7 @@
 
   .modal-state:checked + .modal-window {
     visibility: visible;
+    //z-index: 1000 !important;
     opacity: 1;
     @include animation(fadeIn 0.25s);
   }
