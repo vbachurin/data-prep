@@ -2,8 +2,8 @@ package org.talend.dataprep.transformation.api.action.metadata.web;
 
 import static org.talend.dataprep.api.type.Type.STRING;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,7 +33,7 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
 
         String getSuffix();
 
-        String extractToken(URL url);
+        String extractToken(URI url);
 
         default Type getType() {
             return Type.STRING;
@@ -49,8 +49,9 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
         }
 
         @Override
-        public String extractToken(URL url) {
-            return url.getProtocol();
+        public String extractToken(URI url) {
+            final String scheme = url.getScheme();
+            return (scheme == null ? "" : scheme.toLowerCase());
         }
     };
 
@@ -63,7 +64,7 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
                 }
 
                 @Override
-                public String extractToken(URL url) {
+                public String extractToken(URI url) {
                     return url.getHost();
                 }
             }, new UrlTokenExtractor() {
@@ -74,7 +75,7 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
         }
 
         @Override
-        public String extractToken(URL url) {
+        public String extractToken(URI url) {
             final int port = url.getPort();
             return (port == -1 ? "" : port + "");
         }
@@ -91,7 +92,7 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
         }
 
         @Override
-        public String extractToken(URL url) {
+        public String extractToken(URI url) {
             return url.getPath();
         }
     }, new UrlTokenExtractor() {
@@ -102,7 +103,7 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
         }
 
         @Override
-        public String extractToken(URL url) {
+        public String extractToken(URI url) {
             return url.getQuery();
         }
     }, new UrlTokenExtractor() {
@@ -113,8 +114,8 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
         }
 
         @Override
-        public String extractToken(URL url) {
-            return url.getRef();
+        public String extractToken(URI url) {
+            return url.getFragment();
         }
     }, new UrlTokenExtractor() {
 
@@ -124,7 +125,7 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
         }
 
         @Override
-        public String extractToken(URL url) {
+        public String extractToken(URI url) {
             final String userInfo = url.getUserInfo();
             return (userInfo == null ? "" : userInfo.split(":")[0]);
         }
@@ -136,7 +137,7 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
         }
 
         @Override
-        public String extractToken(URL url) {
+        public String extractToken(URI url) {
             final String userInfo = url.getUserInfo();
             return (userInfo == null ? "" : userInfo.split(":")[1]);
         }
@@ -183,10 +184,10 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
 
         ColumnMetadata columnToInsertAfter = column;
 
-        URL url = null;
+        URI url = null;
         try {
-            url = new URL(originalValue);
-        } catch (MalformedURLException e) {
+            url = new URI(originalValue);
+        } catch (URISyntaxException | NullPointerException e) {
             // Nothing to do, silently skip this row, leave url null, will be treated just bellow
         }
 
