@@ -45,9 +45,6 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
     @Autowired
     ContentStoreRouter store;
 
-    @Autowired
-    Jackson2ObjectMapperBuilder builder;
-
     @Override
     public void analyze(String dataSetId) {
         if (StringUtils.isEmpty(dataSetId)) {

@@ -35,9 +35,6 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
     private static final Logger LOG = LoggerFactory.getLogger(FormatAnalysis.class);
 
     @Autowired
-    ApplicationContext context;
-
-    @Autowired
     DataSetMetadataRepository repository;
 
     @Autowired
