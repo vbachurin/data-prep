@@ -26,6 +26,7 @@ import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataquality.statistics.cardinality.CardinalityAnalyzer;
 import org.talend.dataquality.statistics.frequency.DataFrequencyAnalyzer;
 import org.talend.dataquality.statistics.frequency.PatternFrequencyAnalyzer;
@@ -37,7 +38,6 @@ import org.talend.dataquality.statistics.text.TextLengthAnalyzer;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.type.DataType;
-import org.talend.dataprep.lock.DistributedLock;
 
 @Component
 public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
@@ -93,7 +93,6 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
                     LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
                 LOGGER.warn("dataset {} generates an error", dataSetId, e);
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
             }
