@@ -67,6 +67,9 @@ public class DeleteInvalidTest {
         assertEquals("David Bowie", row.get("0001"));
     }
 
+    /**
+     * see https://jira.talendforge.org/browse/TDP-457
+     */
     @Test
     public void should_delete_invalid_values_not_in_metadata() {
         // given
