@@ -9,9 +9,9 @@
             position: 'right'
         },
         {
-            element: '#help-import-local',
-            title: 'Importing files',
-            content: 'Click here to import a new local file (csv or Excel).',
+            element: '#dataset-sampling-select',
+            title: 'Dataset sampling',
+            content: 'Click here to select a sample size.',
             position: 'right'
         }
     ];

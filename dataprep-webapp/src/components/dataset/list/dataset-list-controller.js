@@ -18,9 +18,10 @@
      * @requires data-prep.services.utils.service:MessageService
      * @requires data-prep.services.uploadWorkflowService.service:UploadWorkflowService
      * @requires data-prep.services.state.service:StateService
+     * @requires data-prep.services.onboarding:OnboardingService
      */
-    function DatasetListCtrl($stateParams, DatasetService, DatasetListSortService, PlaygroundService,
-                             TalendConfirmService, MessageService, UploadWorkflowService, StateService) {
+    function DatasetListCtrl($timeout, $state, $stateParams, DatasetService, DatasetListSortService, PlaygroundService,
+                             TalendConfirmService, MessageService, UploadWorkflowService, StateService, OnboardingService) {
         var vm = this;
 
         vm.datasetService = DatasetService;
@@ -117,9 +118,31 @@
          */
         var open = function(dataset) {
             PlaygroundService.initPlayground(dataset)
-                .then(StateService.showPlayground);
+                .then(showPlayground);
         };
 
+        /**
+         * @ngdoc method
+         * @name showPlayground
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description [PRIVATE] Display a new preparation from dataset
+         */
+        var showPlayground = function() {
+            StateService.showPlayground();
+            var tourId = 'preparation';
+            if ($state.current.name === 'nav.home.datasets' && $state.params.datasetid && OnboardingService.shouldStartTour(tourId)) {
+                    $timeout(function(){
+
+                        OnboardingService.startTour(tourId);
+
+                        //Select the first column by default
+                        $('div[id^="slickgrid_"][id$="0000"]').each(function () {
+                            this.click();
+                        });
+
+                    }, 500);
+            }
+        };
         /**
          * @ngdoc method
          * @name delete

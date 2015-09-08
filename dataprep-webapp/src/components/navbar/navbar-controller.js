@@ -8,7 +8,7 @@
 
         if ($state.current.name === 'nav.home.datasets' && !$state.params.datasetid && OnboardingService.shouldStartTour(tourId)) {
             DatasetService.getDatasets().then(function () {
-                $timeout(OnboardingService.startTour(tourId));
+                $timeout(OnboardingService.startTour.bind(null, tourId));
             });
         }
     }
