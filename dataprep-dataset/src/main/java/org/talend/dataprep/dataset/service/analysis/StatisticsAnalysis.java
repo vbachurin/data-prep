@@ -148,7 +148,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
         stream.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
         analyzer.end();
         // Store results back in data set
-        StatisticsUtils.setStatistics(columns, analyzer);
+        StatisticsUtils.setStatistics(columns, analyzer.getResult());
     }
 
     /**
