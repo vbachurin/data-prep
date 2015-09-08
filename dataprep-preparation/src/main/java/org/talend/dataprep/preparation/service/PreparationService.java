@@ -1,8 +1,5 @@
 package org.talend.dataprep.preparation.service;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
@@ -11,7 +8,10 @@ import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.*;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,12 +30,12 @@ import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.api.AppendStep;
 import org.talend.dataprep.preparation.exception.PreparationErrorCodes;
+import org.talend.dataprep.preparation.store.PreparationRepository;
 import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 @RestController
 @Api(value = "preparations", basePath = "/preparations", description = "Operations on preparations")

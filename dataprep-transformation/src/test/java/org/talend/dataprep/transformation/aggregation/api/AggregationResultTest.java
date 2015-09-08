@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.transformation.Application;
@@ -26,7 +25,6 @@ import org.talend.dataprep.transformation.aggregation.operation.NumberContext;
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
 @IntegrationTest
-@DirtiesContext
 public class AggregationResultTest extends TestCase {
 
     /** The data-prep ready jackson module. */

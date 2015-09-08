@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     /**
@@ -31,32 +31,42 @@
          * @param {string} column The selected column
          * @param {number} row The row number
          * @param {string} tab The suggestion tab to select
-         * @description Set the selected column into external services. This will trigger actions that use this property
+         * @description Set the selected column into external services except the index column. This will trigger actions that use this property
          * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
          */
+
         function updateSuggestionPanel(column, row, tab) {
-            var tabHasChanged = tab !== lastSelectedTab;
-            var columnHasChanged = column.tdpColMetadata !== lastSelectedColumn;
-
-            if(!tabHasChanged && !columnHasChanged) {
-                return;
+            if (column.id === 'tdpId') {
+                $timeout(function () {
+                    lastSelectedColumn = null;
+                    SuggestionService.reset();
+                    StatisticsService.resetCharts();
+                });
             }
+            else {
+                var tabHasChanged = tab !== lastSelectedTab;
+                var columnHasChanged = column.tdpColMetadata !== lastSelectedColumn;
 
-            $timeout.cancel(suggestionTimeout);
-
-            suggestionTimeout = $timeout(function() {
-                lastSelectedColumn = column.tdpColMetadata;
-                lastSelectedTab = tab;
-                StateService.setGridSelection(lastSelectedColumn, row);
-
-                if(tabHasChanged) {
-                    SuggestionService.selectTab(lastSelectedTab);
+                if (!tabHasChanged && !columnHasChanged) {
+                    return;
                 }
-                if(columnHasChanged) {
-                    StatisticsService.processData(lastSelectedColumn);
-                    SuggestionService.setColumn(lastSelectedColumn);
-                }
-            }, 200);
+
+                $timeout.cancel(suggestionTimeout);
+
+                suggestionTimeout = $timeout(function () {
+                    lastSelectedColumn = column.tdpColMetadata;
+                    lastSelectedTab = tab;
+                    StateService.setGridSelection(lastSelectedColumn, row);
+
+                    if (tabHasChanged) {
+                        SuggestionService.selectTab(lastSelectedTab);
+                    }
+                    if (columnHasChanged) {
+                        StatisticsService.processData(lastSelectedColumn);
+                        SuggestionService.setColumn(lastSelectedColumn);
+                    }
+                }, 200);
+            }
         }
 
         /**
@@ -67,8 +77,8 @@
          */
         function attachCellListeners() {
             //change selected cell column background
-            grid.onActiveCellChanged.subscribe(function(e,args) {
-                if(angular.isDefined(args.cell)) {
+            grid.onActiveCellChanged.subscribe(function (e, args) {
+                if (angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
                     updateSuggestionPanel(column, args.row, 'COLUMN'); //TODO : change this to CELL when cell actions are supported
                 }
@@ -88,11 +98,11 @@
                 updateSuggestionPanel(column, null, 'COLUMN');
             }
 
-            grid.onHeaderContextMenu.subscribe(function(e, args) {
+            grid.onHeaderContextMenu.subscribe(function (e, args) {
                 attachColumnCallback(args);
             });
 
-            grid.onHeaderClick.subscribe(function(e, args) {
+            grid.onHeaderClick.subscribe(function (e, args) {
                 attachColumnCallback(args);
             });
         }
@@ -104,9 +114,9 @@
          * @description Attach grid scroll listener. It will update the displayed range for preview
          */
         function attachGridScrollListener() {
-            grid.onScroll.subscribe(function() {
+            grid.onScroll.subscribe(function () {
                 clearTimeout(scrollTimeout);
-                scrollTimeout = setTimeout(function() {
+                scrollTimeout = setTimeout(function () {
                     PreviewService.gridRangeIndex = grid.getRenderedRange();
                 }, 200);
             });

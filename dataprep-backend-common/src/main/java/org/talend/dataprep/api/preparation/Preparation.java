@@ -3,13 +3,14 @@ package org.talend.dataprep.api.preparation;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 
-public class Preparation extends Identifiable {
+public class Preparation extends Identifiable implements Serializable {
 
     private String dataSetId;
 

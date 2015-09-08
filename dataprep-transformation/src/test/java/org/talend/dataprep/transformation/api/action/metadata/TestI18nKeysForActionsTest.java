@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.i18n.MessagesBundle;
@@ -28,7 +27,6 @@ import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 @SpringApplicationConfiguration(classes = Application.class)
 @IntegrationTest
 @WebAppConfiguration
-@DirtiesContext
 public class TestI18nKeysForActionsTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestI18nKeysForActionsTest.class);

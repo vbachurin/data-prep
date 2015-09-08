@@ -54,6 +54,8 @@
 
             // dataset
             updateColumn: updateColumn,
+            addUpdateColumnTypeStep: addUpdateColumnTypeStep,
+            addUpdateColumnDomainStep: addUpdateColumnDomainStep,
 
             //preparation
             createOrUpdatePreparation: createOrUpdatePreparation,
@@ -474,14 +476,70 @@
         function updateColumn(columnId, type, domain) {
             return DatasetService.updateColumn(state.playground.dataset.id, columnId, {type: type, domain: domain})
                 .then(function() {
+                          if (state.playground.preparation) {
+                              return updatePreparationDatagrid();
+                          }
+                          else {
+                              return updateDatasetDatagrid();
+                          }
+                      });
+
+        }
+
+        /**
+         * @ngdoc method
+         * @name addUpdateColumnTypeStep
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {string} columnId The column id to focus update
+         * @param {string} type the new type of the column
+         * @description Add step which change column type
+         */
+        function addUpdateColumnTypeStep(columnId, type) {
+            return appendStep('type_change',
+                {
+                    'scope':'column',
+                    'column_id': columnId,
+                    'NEW_TYPE':type.id
+                })
+                .then(function() {
+                    // if preparation
                     if (state.playground.preparation) {
                         return updatePreparationDatagrid();
                     }
+                    // dataset
                     else {
                         return updateDatasetDatagrid();
                     }
                 });
+        }
 
+        /**
+         * @ngdoc method
+         * @name addUpdateColumnDomainStep
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {string} columnId The column id to focus update
+         * @param {string} domain the new domain of the column
+         * @description Add step which change column domain
+         */
+        function addUpdateColumnDomainStep(columnId, domain) {
+            return appendStep('domain_change',
+                {
+                    'scope':'column',
+                    'column_id': columnId,
+                    'NEW_DOMAIN_ID':domain.id,
+                    'NEW_DOMAIN_LABEL': domain.label,
+                    'NEW_DOMAIN_FREQUENCY': domain.frequency
+                })
+                .then(function() {
+                  // if preparation
+                  if (state.playground.preparation) {
+                      return updatePreparationDatagrid();
+                  }
+                  // dataset
+                  else {
+                      return updateDatasetDatagrid();
+                  }
+                });
         }
 
         //------------------------------------------------------------------------------------------------------

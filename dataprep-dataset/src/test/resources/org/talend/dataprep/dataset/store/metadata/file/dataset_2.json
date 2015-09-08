@@ -1,0 +1,29 @@
+{
+  "id": "lsfglqsdfh-dsf-qsgq-fgq-gf",
+  "favorite": true,
+  "lifecycle": {
+    "importing": true,
+    "contentAnalyzed": false,
+    "schemaAnalyzed": false,
+    "qualityAnalyzed": false
+  },
+  "records": 9,
+  "nbLinesHeader": 2,
+  "nbLinesFooter": 1,
+  "type": "text/xls",
+  "parameters": {
+    "SEPARATOR": ";"
+  },
+  "formatGuess": "formatGuess#xls",
+  "certificationStep": "NONE",
+  "location": {
+    "type": "local"
+  },
+  "name": "bands",
+  "author": "anonymousUser",
+  "created": 1441101537876,
+  "sheetName": null,
+  "draft": true,
+  "schemaParserResult": null
+}
+

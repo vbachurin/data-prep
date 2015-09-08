@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.dataset;
 
+import java.io.Serializable;
 import java.util.*;
 
 import org.springframework.data.annotation.Id;
@@ -20,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  * 
  * @see DataSetMetadata.Builder
  */
-public class DataSetMetadata {
+public class DataSetMetadata implements Serializable {
 
     /** The dataset id. */
     @Id
@@ -81,6 +82,9 @@ public class DataSetMetadata {
     @JsonProperty("favorite")
     private transient boolean favorite;
 
+    /**
+     * Default empty constructor.
+     */
     public DataSetMetadata() {
         // no op
     }
@@ -278,7 +282,6 @@ public class DataSetMetadata {
         DataSetMetadata that = (DataSetMetadata) o;
         return Objects.equals(creationDate, that.creationDate) && //
                 Objects.equals(draft, that.draft) && //
-                Objects.equals(favorite, that.favorite) && //
                 Objects.equals(id, that.id) && //
                 Objects.equals(rowMetadata, that.rowMetadata) && //
                 Objects.equals(lifecycle, that.lifecycle) && //
@@ -300,6 +303,7 @@ public class DataSetMetadata {
     /**
      * @see Object#clone()
      */
+    @Override
     public DataSetMetadata clone() {
         return Builder.metadata().copy(this).build();
     }
@@ -497,13 +501,13 @@ public class DataSetMetadata {
             this.schemaAnalyzed = original.getLifecycle().schemaAnalyzed();
             this.importing = original.getLifecycle().importing();
             this.parameters = original.getContent().getParameters();
-            ArrayList<ColumnMetadata.Builder> builders = new ArrayList<>();
+            List<ColumnMetadata.Builder> builders = new ArrayList<>();
             if (original.getRow() != null) {
                 for (ColumnMetadata col : original.getRow().getColumns()) {
                     builders.add(ColumnMetadata.Builder.column().copy(col));
                 }
             }
-            this.columnBuilders = builders.toArray(new ColumnMetadata.Builder[0]);
+            this.columnBuilders = builders.toArray(new ColumnMetadata.Builder[builders.size()]);
             this.certificationStep = original.getGovernance().getCertificationStep();
             this.schemaParserResult = original.getSchemaParserResult();
             return this;

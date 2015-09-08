@@ -1,5 +1,6 @@
 package org.talend.dataprep.schema;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class SchemaParserResult {
+public class SchemaParserResult implements Serializable {
 
     @JsonProperty("draft")
     private boolean draft;
@@ -41,7 +42,7 @@ public class SchemaParserResult {
         return sheetName;
     }
 
-    public static class SheetContent {
+    public static class SheetContent implements Serializable {
 
         @JsonProperty("name")
         private String name;

@@ -10,46 +10,33 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.dataprep;
+package org.talend.dataprep.lock;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
 
 /**
  * Basic distributed Lock implementation for locking. This implementation relies on Hazelcast but it was created to
- * avoid Hazelcast dependencies in all the Talend classes. Use ApplicationContext.getBean(DistributedLock.class, key) to
- * get an instance of the bean for the given key.
+ * avoid Hazelcast dependencies in all the Talend classes. Use LockFactory.getLock(String) to get a new instance.
  *
+ * @see LockFactory#getLock(String)
  */
-@Component
-@Scope("prototype")
 public class DistributedLock {
 
-    @Autowired
-    HazelcastInstance hci;
-
+    /** The key where the lock is. */
     private String lockKey;
 
+    /** the Hazelcast lock. */
     private ILock lock;
 
     /**
      * create a distributed lock based on the key param.
-     * 
+     *
      * @param key, unique name of the lock.
+     * @param lock the hazelcast lock
      */
-    private DistributedLock(String key) {
+    DistributedLock(String key, ILock lock) {
         this.lockKey = key;
-    }
-
-    @PostConstruct
-    private void createLock() {
-        lock = hci.getLock(lockKey);
+        this.lock = lock;
     }
 
     /**

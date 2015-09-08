@@ -12,7 +12,9 @@
 // ============================================================================
 package org.talend.dataprep.api.user;
 
+import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
@@ -22,10 +24,9 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 
 /**
  * Holds data related to a single user.
- *
  */
 @JsonRootName("userdata")
-public class UserData {
+public class UserData implements Serializable {
 
     /** Favorites datasets. */
     @JsonProperty(value = "favoritedDS", required = false)
@@ -80,4 +81,34 @@ public class UserData {
     public String getUserId() {
         return this.userId;
     }
+
+    /**
+     * @see Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "UserData{" + "favoritesDatasets=" + favoritesDatasets + ", userId='" + userId + '\'' + '}';
+    }
+
+    /**
+     * @see Object#equals(Object)
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        UserData userData = (UserData) o;
+        return Objects.equals(favoritesDatasets, userData.favoritesDatasets) && Objects.equals(userId, userData.userId);
+    }
+
+    /**
+     * @see Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(favoritesDatasets, userId);
+    }
+
 }

@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -38,7 +37,7 @@ public class ActionMetadataTestUtils {
      * @throws IOException if an error occurs.
      */
     public static Map<String, String> parseParameters(ActionMetadata action, InputStream input) throws IOException {
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory());
+        ObjectMapper mapper = new ObjectMapper();
         mapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false );
         JsonNode node = mapper.readTree(input);
         return action.parseParameters(node.get("actions").get(0).get("parameters").fields());
@@ -53,7 +52,8 @@ public class ActionMetadataTestUtils {
      * @throws IOException you never know :)
      */
     public static void setStatistics(DataSetRow row, String columnId, InputStream statisticsContent) throws IOException {
-        String statistics = IOUtils.toString(statisticsContent);
+        final ObjectMapper mapper = new ObjectMapper();
+        final Statistics statistics = mapper.readValue(statisticsContent, Statistics.class);
         row.getRowMetadata().getById(columnId).setStatistics(statistics);
     }
 }

@@ -6,10 +6,11 @@
      * @name data-prep.datagrid-header.controller:DatagridHeaderCtrl
      * @description Dataset Column Header controller.
      * @requires data-prep.services.transformation.service:TransformationCacheService
+     * @requires data-prep.services.transformation.service:TransformationService
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function DatagridHeaderCtrl(TransformationCacheService, ConverterService, PlaygroundService) {
+    function DatagridHeaderCtrl(TransformationService, TransformationCacheService, ConverterService, PlaygroundService) {
         var COLUMN_CATEGORY = 'columns';
         var RENAME_ACTION = 'rename_column';
         var originalName;
@@ -57,7 +58,6 @@
 
                 TransformationCacheService.getTransformations(vm.column)
                     .then(function(menus) {
-                        vm.rawTransformations = _.cloneDeep(menus);
                         vm.transformations = _.filter(menus, function(menu) {
                             return menu.category === COLUMN_CATEGORY;
                         });
@@ -68,14 +68,6 @@
                     .finally(function() {
                         vm.initTransformationsInProgress = false;
                     });
-            }
-            else{// reset the parameters to the initial ones
-                _.map(vm.transformations, function(menuWithParam){
-                    var theTransfoToReset = _.find(vm.rawTransformations, function(rawTransfo){
-                        return menuWithParam.name === rawTransfo.name;
-                    });
-                    menuWithParam.parameters = theTransfoToReset.parameters;
-                });
             }
         };
 

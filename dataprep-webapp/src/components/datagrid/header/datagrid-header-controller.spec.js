@@ -152,21 +152,6 @@ describe('Datagrid header controller', function () {
             //then
             expect(TransformationCacheService.getTransformations.calls.count()).toBe(1);
         }));
-
-        it('should reset the parameters of the already initiated transformations', inject(function ($rootScope) {
-            //given
-            var ctrl = createController();
-            ctrl.initTransformations();
-            $rootScope.$digest();
-            ctrl.transformations[0].parameters = [{value:'dsfdsfdsds'}];
-
-            //when
-            ctrl.initTransformations();
-            $rootScope.$digest();
-
-            //then
-            expect(ctrl.transformations[1].parameters).toBe(null);
-        }));
     });
 
     describe('with transformation list error', function () {

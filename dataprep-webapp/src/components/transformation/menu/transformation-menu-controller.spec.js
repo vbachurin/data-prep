@@ -57,7 +57,7 @@ describe('Transform menu controller', function () {
 
     var stateMock;
 
-    beforeEach(module('data-prep.transformation-menu', function($provide) {
+    beforeEach(module('data-prep.transformation-menu', function ($provide) {
         stateMock = {playground: {}};
         $provide.constant('state', stateMock);
     }));
@@ -75,8 +75,28 @@ describe('Transform menu controller', function () {
         };
 
         spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when(true));
+        spyOn(TransformationService, 'resetParamValue').and.returnValue();
         spyOn(TransformationService, 'initDynamicParameters').and.returnValue($q.when(true));
 
+    }));
+
+    it('should reset parameters/choices on select if items has parameters/choices', inject(function (TransformationService) {
+        //given
+        var ctrl = createController();
+        var menu = {
+            parameters: [{name: 'param1', type: 'text', default: '.'}],
+            items: []
+        };
+        var scope = 'column';
+
+        expect(TransformationService.resetParamValue).not.toHaveBeenCalled();
+
+        //when
+        ctrl.select(menu, scope);
+
+        //then
+        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(menu.parameters);
+        expect(TransformationService.resetParamValue).toHaveBeenCalledWith(menu.items, 'CHOICE');
     }));
 
     it('should open modal on select if item has parameters', inject(function (PlaygroundService) {

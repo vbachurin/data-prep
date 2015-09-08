@@ -1,30 +1,24 @@
 package org.talend.dataprep.transformation.api.action.validation;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.talend.dataprep.exception.TDPException;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.talend.dataprep.exception.error.CommonErrorCodes.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.talend.dataprep.exception.error.CommonErrorCodes.MISSING_ACTION_SCOPE;
-import static org.talend.dataprep.exception.error.CommonErrorCodes.MISSING_ACTION_SCOPE_PARAMETER;
-import static org.talend.dataprep.exception.error.CommonErrorCodes.UNSUPPORTED_ACTION_SCOPE;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.talend.dataprep.exception.TDPException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ActionMetadataValidationTest.class)
-@Configuration
 @ComponentScan(basePackages = "org.talend.dataprep")
-@EnableAutoConfiguration
 public class ActionMetadataValidationTest {
     @Autowired
     private ActionMetadataValidation validator;

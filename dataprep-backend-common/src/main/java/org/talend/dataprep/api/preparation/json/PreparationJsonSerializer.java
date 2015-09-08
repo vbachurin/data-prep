@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.*;
+import org.talend.dataprep.preparation.store.PreparationRepository;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
 import com.fasterxml.jackson.core.JsonGenerator;

@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.dataset;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -8,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Quality bean linked to column metadata.
  */
-public class Quality {
+public class Quality implements Serializable {
 
     /** Number of empty records. */
     @JsonProperty("empty")

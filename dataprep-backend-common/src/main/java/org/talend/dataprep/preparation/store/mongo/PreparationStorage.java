@@ -6,6 +6,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.talend.dataprep.api.preparation.Identifiable;
 
+/**
+ * Spring interface for PreparationRepository.
+ */
 public interface PreparationStorage extends MongoRepository<Identifiable, String> {
 
     @Query("{ '_class' : '?0' }")

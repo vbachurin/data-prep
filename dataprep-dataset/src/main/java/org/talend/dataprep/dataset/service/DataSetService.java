@@ -17,8 +17,7 @@ import javax.annotation.PostConstruct;
 import javax.jms.Message;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.spark.SparkContext;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
@@ -42,6 +40,7 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
+import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.schema.DraftValidator;
@@ -76,6 +75,10 @@ public class DataSetService {
     @Autowired
     private QualityAnalysis qualityAnalyzer;
 
+    /** Statistics analyzer needed to compute statistics on dataset sample. */
+    @Autowired
+    private StatisticsAnalysis statisticsAnalysis;
+
     /** JMS template used to call aysnchronous analysers. */
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -103,10 +106,6 @@ public class DataSetService {
     /** DataPrep ready to use jackson object mapper. */
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
-
-    /** Spark context needed for dataset statistics computing in case of samples. */
-    @Autowired
-    private SparkContext sparkContext;
 
     /**
      * Sort the synchronous analyzers.
@@ -547,7 +546,7 @@ public class DataSetService {
      */
     void completeWithUserData(DataSetMetadata dataSetMetadata) {
         String userId = getUserId();
-        UserData userData = userDataRepository.getUserData(userId);
+        UserData userData = userDataRepository.get(userId);
         if (userData != null) {
             dataSetMetadata.setFavorite(userData.getFavoritesDatasets().contains(dataSetMetadata.getId()));
         }// no user data related to the current user to do nothing
@@ -628,7 +627,7 @@ public class DataSetService {
     @Timed
     public Iterable<String> favorites() {
         String userId = getUserId();
-        UserData userData = userDataRepository.getUserData(userId);
+        UserData userData = userDataRepository.get(userId);
         return userData != null ? userData.getFavoritesDatasets() : Collections.emptyList();
     }
 
@@ -653,18 +652,18 @@ public class DataSetService {
         if (dataSetMetadata != null) {
             LOG.debug("{} favorite dataset for #{} for user {}", unset ? "Unset" : "Set", dataSetId, userId); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
-            UserData userData = userDataRepository.getUserData(userId);
+            UserData userData = userDataRepository.get(userId);
             if (unset) {// unset the favorites
                 if (userData != null) {
                     userData.getFavoritesDatasets().remove(dataSetId);
-                    userDataRepository.setUserData(userData);
+                    userDataRepository.save(userData);
                 }// no user data for this user so nothing to unset
             } else {// set the favorites
                 if (userData == null) {// let's create a new UserData
                     userData = new UserData(userId);
                 }// else already created so just update it.
                 userData.addFavoriteDataset(dataSetId);
-                userDataRepository.setUserData(userData);
+                userDataRepository.save(userData);
             }
         } else {// no dataset found so throws an error
             throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", dataSetId));
@@ -752,18 +751,12 @@ public class DataSetService {
      * @param sample the sample size
      */
     private void computeSampleStatistics(DataSetMetadata dataSetMetadata, long sample) {
-        try {
-            // compute statistics on a copy
-            DataSet copy = new DataSet();
-            copy.setMetadata(dataSetMetadata);
-            copy.setColumns(dataSetMetadata.getRow().getColumns());
-            copy.setRecords(contentStore.sampleWithoutId(dataSetMetadata, sample));
-
-            // TODO François, is there a better way to compute quality & statistics like Analyzers.with(...) ?
-            qualityAnalyzer.computeQuality(copy.getMetadata(), contentStore.sampleWithoutId(dataSetMetadata, sample));
-            DataSetAnalysis.computeStatistics(copy, sparkContext, builder);
-        } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
-        }
+        // compute statistics on a copy
+        DataSet copy = new DataSet();
+        copy.setMetadata(dataSetMetadata);
+        copy.setColumns(dataSetMetadata.getRow().getColumns());
+        // Compute quality and statistics on sample only
+        qualityAnalyzer.computeQuality(copy.getMetadata(), contentStore.sample(dataSetMetadata, sample));
+        statisticsAnalysis.computeStatistics(copy.getMetadata(), contentStore.sample(dataSetMetadata, sample));
     }
 }
