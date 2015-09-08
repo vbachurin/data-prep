@@ -23,12 +23,18 @@ public class DataFrequency implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof DataFrequency)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof DataFrequency)) {
+            return false;
+        }
 
         DataFrequency that = (DataFrequency) o;
 
-        if (occurrences != that.occurrences) return false;
+        if (occurrences != that.occurrences) {
+            return false;
+        }
         return data.equals(that.data);
 
     }

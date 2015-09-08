@@ -3,7 +3,6 @@ package org.talend.dataprep.api.dataset;
 import static java.util.stream.StreamSupport.stream;
 import static org.talend.dataprep.api.dataset.diff.Flag.*;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -16,7 +15,7 @@ import org.talend.dataprep.api.type.Type;
 /**
  * A DataSetRow is a row of a dataset. Values in data set row are <b>alphabetically</b> ordered by name.
  */
-public class DataSetRow implements Cloneable, Serializable {
+public class DataSetRow implements Cloneable {
     public static final String TDP_ID = "tdpId";
 
     /**
