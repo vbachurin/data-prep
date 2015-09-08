@@ -9,6 +9,11 @@
         vm.barchartClickFn = function barchartClickFn (item){
             return StatisticsService.addFilter(item.data);
         };
+
+        vm.vBarchartClickFn = function vBarchartClickFn (item){
+            var jsonRange = JSON.parse('['+item.data.replace('...',',')+']');
+            return StatisticsService.addRangeFilter(jsonRange);
+        };
         
         //------------------------------------------------------------------------------------------------------
         //----------------------------------------------AGGREGATION---------------------------------------------

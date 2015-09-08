@@ -109,7 +109,7 @@
                 };
             });
 
-            initClassicHistogram('occurrences', 'Occurrences', rangeData);
+            initVerticalHistogram('data', 'occurrences', rangeData);
         }
 
         /**
@@ -127,6 +127,24 @@
                     rec.formattedValue = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(rec.data);
                     return rec;
                 }),
+                key: key,
+                label: label,
+                column: service.selectedColumn
+            };
+        }
+
+        /**
+         * @ngdoc method
+         * @name initVerticalHistogram
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {string} key The value key
+         * @param {string} label The value label
+         * @param {Array} dataTable The table to display
+         * @description Set the frequency table that fit the histogram format
+         */
+        function initVerticalHistogram(key, label, dataTable) {
+            service.histogram = {
+                numData: dataTable,
                 key: key,
                 label: label,
                 column: service.selectedColumn

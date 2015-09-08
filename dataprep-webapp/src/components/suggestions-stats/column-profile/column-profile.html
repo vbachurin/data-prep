@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    <horizontal-barchart id="barChart"
+    <horizontal-barchart id="hBarChart"
                          width="310"
                 height="400"
                 on-click="columnProfileCtrl.barchartClickFn"
@@ -33,6 +33,15 @@
                 value-field="formattedValue"
                 key-field="{{columnProfileCtrl.histogram.key}}"
                 key-label="{{columnProfileCtrl.histogram.label}}"></horizontal-barchart>
+
+    <vertical-barchart id="vBarChart"
+                         width="310"
+                         height="400"
+                         on-click="columnProfileCtrl.vBarchartClickFn"
+                         visu-data="columnProfileCtrl.histogram.numData"
+                         value-field="occurrences"
+                         key-field="{{columnProfileCtrl.histogram.key}}"
+                         key-label="{{columnProfileCtrl.histogram.label}}"></vertical-barchart>
 
     <highchart id="geochart"
                ng-if="columnProfileCtrl.stateDistribution"

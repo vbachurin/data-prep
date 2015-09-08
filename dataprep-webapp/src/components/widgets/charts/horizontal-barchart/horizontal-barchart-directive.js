@@ -33,7 +33,7 @@
                 var renderTimeout;
 				var tip;
 
-                function renderBarchart(statData) {
+                function renderHBarchart(statData) {
                     var container = attrs.id;
                     var width = +attrs.width;
                     var height = Math.ceil(((+attrs.height) / 15) * (statData.length + 1));
@@ -157,7 +157,7 @@
 						}
                         if (statData) {
                             clearTimeout(renderTimeout);
-                            renderTimeout = setTimeout(renderBarchart.bind(this, statData), 100);
+                            renderTimeout = setTimeout(renderHBarchart.bind(this, statData), 100);
                         }
                     });
             }
