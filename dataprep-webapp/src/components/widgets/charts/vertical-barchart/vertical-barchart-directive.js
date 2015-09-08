@@ -62,8 +62,8 @@
 
 					tip = d3.tip()
 						.attr('class', 'vertical-barchart-cls d3-tip')
-						.offset([-10, 0])
-						//.direction('n')
+						.offset([0, -11])
+						.direction('w')
 						.html(function(d) {
 							return 	'<strong>Occurences:</strong> <span style="color:yellow">' + d[yField] + '</span>'+
 								'<br/>'+
@@ -133,12 +133,17 @@
 						})
 						.attr("width", x.rangeBand())
 						.attr("y", function(d) {
-							return y(d[yField]);
+							return y(0);
 						})
 						.attr("height", 0)
-						.transition().duration(500)
+						.transition().delay(function(d,i){
+							return i*30;
+						})
 						.attr("height", function(d) {
 							return h - y(d[yField]);
+						})
+						.attr("y", function(d) {
+							return y(d[yField]);
 						});
 
 					/************btgrect*********/
