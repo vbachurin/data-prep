@@ -1,8 +1,10 @@
 package org.talend.dataprep.api.dataset.statistics;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Quantiles {
+public class Quantiles implements Serializable {
 
     @JsonProperty("median")
     double median = Double.NaN;
@@ -39,13 +41,21 @@ public class Quantiles {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Quantiles)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Quantiles)) {
+            return false;
+        }
 
         Quantiles quantiles = (Quantiles) o;
 
-        if (Double.compare(quantiles.median, median) != 0) return false;
-        if (Double.compare(quantiles.lowerQuantile, lowerQuantile) != 0) return false;
+        if (Double.compare(quantiles.median, median) != 0) {
+            return false;
+        }
+        if (Double.compare(quantiles.lowerQuantile, lowerQuantile) != 0) {
+            return false;
+        }
         return Double.compare(quantiles.upperQuantile, upperQuantile) == 0;
 
     }

@@ -1,8 +1,10 @@
 package org.talend.dataprep.api.dataset.statistics;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class PatternFrequency {
+public class PatternFrequency implements Serializable {
 
     @JsonProperty("pattern")
     String pattern;
@@ -37,12 +39,18 @@ public class PatternFrequency {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PatternFrequency)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PatternFrequency)) {
+            return false;
+        }
 
         PatternFrequency that = (PatternFrequency) o;
 
-        if (occurrences != that.occurrences) return false;
+        if (occurrences != that.occurrences) {
+            return false;
+        }
         return pattern.equals(that.pattern);
 
     }

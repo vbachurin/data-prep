@@ -1,8 +1,10 @@
 package org.talend.dataprep.api.dataset.statistics;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TextLengthSummary {
+public class TextLengthSummary implements Serializable {
 
     @JsonProperty("minimalLength")
     double minimalLength = Double.NaN;
@@ -39,13 +41,21 @@ public class TextLengthSummary {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof TextLengthSummary)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof TextLengthSummary)) {
+            return false;
+        }
 
         TextLengthSummary that = (TextLengthSummary) o;
 
-        if (Double.compare(that.minimalLength, minimalLength) != 0) return false;
-        if (Double.compare(that.maximalLength, maximalLength) != 0) return false;
+        if (Double.compare(that.minimalLength, minimalLength) != 0) {
+            return false;
+        }
+        if (Double.compare(that.maximalLength, maximalLength) != 0) {
+            return false;
+        }
         return Double.compare(that.averageLength, averageLength) == 0;
 
     }

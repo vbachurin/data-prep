@@ -100,15 +100,13 @@
     background: $modal-background;
     border-radius: $base-border-radius;
     margin: auto;
-    max-height: 95%;
-    overflow: auto;
+    overflow: hidden;
     padding: $modal-padding / 2;
     padding-top: $modal-padding-top;
     position: relative;
     width: 95%;
 
     @include media($medium-screen) {
-      max-height: 80%;
       width: 80%;
     }
 

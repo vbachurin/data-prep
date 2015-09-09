@@ -1,8 +1,10 @@
 package org.talend.dataprep.api.dataset.statistics;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class HistogramRange {
+public class HistogramRange implements Serializable {
 
     @JsonProperty("occurrences")
     long occurrences = 0;
@@ -28,12 +30,16 @@ public class HistogramRange {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof HistogramRange)) return false;
-
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof HistogramRange)) {
+            return false;
+        }
         HistogramRange that = (HistogramRange) o;
-
-        if (occurrences != that.occurrences) return false;
+        if (occurrences != that.occurrences) {
+            return false;
+        }
         return range.equals(that.range);
 
     }

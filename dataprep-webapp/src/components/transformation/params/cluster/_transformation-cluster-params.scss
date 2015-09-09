@@ -19,6 +19,47 @@
 
   min-width: $table-width;
 
+  &.param {
+    @include display(flex);
+    @include flex-direction(column);
+    @include justify-content(flex-start);
+    @include align-items(stretch);
+    height: 50vh;
+
+    padding: 10px;
+
+    div:hover {
+      position: relative;
+    }
+
+    &.param-no-space {
+      padding: 0;
+    }
+
+    .param-row {
+      @include display(flex);
+      @include flex-direction(row);
+      @include flex-wrap(wrap);
+      @include align-items(center);
+
+      padding: 0px;
+
+      .param-name {
+        @include flex-basis(30px);
+        @include flex-grow(2);
+      }
+
+      .param-input {
+        @include flex-basis(120px);
+        @include flex-grow(2);
+      }
+
+      .param-error {
+        @include flex-basis(100%);
+      }
+    }
+  }
+
   @mixin column-sizes() {
     &:nth-child(1) {
       @include flex-basis($column-one-width);
@@ -86,7 +127,7 @@
   }
 
   .cluster-body {
-    @include flex-basis($table-body-height);
+    @include flex-basis(auto);
     @include flex-grow(0);
 
     overflow-y: auto;

@@ -1,8 +1,10 @@
 package org.talend.dataprep.api.dataset.statistics;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class DataFrequency {
+public class DataFrequency implements Serializable {
 
     @JsonProperty("data")
     String data;
@@ -21,12 +23,18 @@ public class DataFrequency {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof DataFrequency)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof DataFrequency)) {
+            return false;
+        }
 
         DataFrequency that = (DataFrequency) o;
 
-        if (occurrences != that.occurrences) return false;
+        if (occurrences != that.occurrences) {
+            return false;
+        }
         return data.equals(that.data);
 
     }

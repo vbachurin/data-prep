@@ -49,12 +49,69 @@ import org.talend.datascience.common.inference.type.DataType;
 @Component
 class SimpleTransformer implements Transformer {
 
+    public static final String CONTEXT_ANALYZER = "analyzer";
+
     @Autowired
     ActionParser actionParser;
 
     /** The data-prep jackson builder. */
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
+
+    private static Analyzer<Analyzers.Result> configureAnalyzer(TransformationContext context) {
+        try {
+            Analyzer<Analyzers.Result> analyzer = (Analyzer<Analyzers.Result>) context.get(CONTEXT_ANALYZER);
+            if (analyzer == null) {
+                // Configure quality & semantic analysis (if column metadata information is present in stream).
+                final List<ColumnMetadata> columns = context.getTransformedRowMetadata().getColumns();
+                final DataType.Type[] types = TypeUtils.convert(columns);
+                final URI ddPath = SimpleTransformer.class.getResource("/luceneIdx/dictionary").toURI(); //$NON-NLS-1$
+                final URI kwPath = SimpleTransformer.class.getResource("/luceneIdx/keyword").toURI(); //$NON-NLS-1$
+                final CategoryRecognizerBuilder categoryBuilder = CategoryRecognizerBuilder.newBuilder() //
+                        .ddPath(ddPath) //
+                        .kwPath(kwPath) //
+                        .setMode(CategoryRecognizerBuilder.Mode.LUCENE);
+                // Find global min and max for histogram
+                double min = Double.MAX_VALUE;
+                double max = Double.MIN_VALUE;
+                boolean hasMetNumeric = false;
+                for (ColumnMetadata column : columns) {
+                    final boolean isNumeric = Type.NUMERIC.isAssignableFrom(Type.get(column.getType()));
+                    if (isNumeric) {
+                        final Statistics statistics = column.getStatistics();
+                        if (statistics.getMax() > max) {
+                            max = statistics.getMax();
+                        }
+                        if (statistics.getMin() < min) {
+                            min = statistics.getMin();
+                        }
+                        hasMetNumeric = true;
+                    }
+                }
+                final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types);
+                if (hasMetNumeric) {
+                    histogramAnalyzer.init(min, max, 8);
+                }
+                analyzer = Analyzers.with(new ValueQualityAnalyzer(types),
+                        // Cardinality (distinct + duplicate)
+                        new CardinalityAnalyzer(),
+                        // Frequency analysis (Pattern + data)
+                        new DataFrequencyAnalyzer(), new PatternFrequencyAnalyzer(),
+                        // Quantile analysis
+                        new QuantileAnalyzer(types),
+                        // Summary (min, max, mean, variance)
+                        new SummaryAnalyzer(types),
+                        // Histogram
+                        histogramAnalyzer,
+                        // Text length analysis (for applicable columns)
+                        new TextLengthAnalyzer(), new SemanticAnalyzer(categoryBuilder));
+                context.put(CONTEXT_ANALYZER, analyzer);
+            }
+            return analyzer;
+        } catch (URISyntaxException e) {
+            throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
+        }
+    }
 
     /**
      * @see Transformer#transform(DataSet, Configuration)
@@ -84,80 +141,22 @@ class SimpleTransformer implements Transformer {
                 context.setTransformedRowMetadata(r.getRowMetadata());
                 // Configure analyzer
                 if (transformColumns) {
-                    Analyzer<Analyzers.Result> analyzer = null;
-                    try {
-                        analyzer = (Analyzer<Analyzers.Result>) context.get("analyzer");
-                        if (analyzer == null) {
-                            // Configure quality & semantic analysis (if column metadata information is present in stream).
-                            final List<ColumnMetadata> columns = context.getTransformedRowMetadata().getColumns();
-                            final DataType.Type[] types = TypeUtils.convert(columns);
-                            final URI ddPath = this.getClass().getResource("/luceneIdx/dictionary").toURI(); //$NON-NLS-1$
-                            final URI kwPath = this.getClass().getResource("/luceneIdx/keyword").toURI(); //$NON-NLS-1$
-                            final CategoryRecognizerBuilder categoryBuilder = CategoryRecognizerBuilder.newBuilder() //
-                                    .ddPath(ddPath) //
-                                    .kwPath(kwPath) //
-                                    .setMode(CategoryRecognizerBuilder.Mode.LUCENE);
-                            // Find global min and max for histogram
-                            double min = Double.MAX_VALUE;
-                            double max = Double.MIN_VALUE;
-                            boolean hasMetNumeric = false;
-                            for (ColumnMetadata column : columns) {
-                                final boolean isNumeric = Type.NUMERIC.isAssignableFrom(Type.get(column.getType()));
-                                if (isNumeric) {
-                                    final Statistics statistics = column.getStatistics();
-                                    if (statistics.getMax() > max) {
-                                        max = statistics.getMax();
-                                    }
-                                    if (statistics.getMin() < min) {
-                                        min = statistics.getMin();
-                                    }
-                                    hasMetNumeric = true;
-                                }
-                            }
-                            final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types);
-                            if (hasMetNumeric) {
-                                histogramAnalyzer.init(min, max, 8);
-                            }
-                            analyzer = Analyzers.with( new ValueQualityAnalyzer(types),
-                                    // Cardinality (distinct + duplicate)
-                                    new CardinalityAnalyzer(),
-                                    // Frequency analysis (Pattern + data)
-                                    new DataFrequencyAnalyzer(),
-                                    new PatternFrequencyAnalyzer(),
-                                    // Quantile analysis
-                                    new QuantileAnalyzer(types),
-                                    // Summary (min, max, mean, variance)
-                                    new SummaryAnalyzer(types),
-                                    // Histogram
-                                    histogramAnalyzer,
-                                    // Text length analysis (for applicable columns)
-                                    new TextLengthAnalyzer(),
-                                    new SemanticAnalyzer(categoryBuilder));
-                            context.put("analyzer", analyzer);
-                        }
-                    } catch (URISyntaxException e) {
-                        throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
-                    }
                     // Use analyzer (for empty values, semantic...)
                     if (!r.isDeleted()) {
-                        analyzer.analyze(r.toArray());
+                        final DataSetRow row = r.order(r.getRowMetadata().getColumns());
+                        configureAnalyzer(context).analyze(row.toArray());
                     }
                 }
                 return r;
             });
             // Write transformed records to stream
-            AtomicBoolean wroteMetadata = new AtomicBoolean(false);
+            final AtomicBoolean wroteMetadata = new AtomicBoolean(false);
             records.forEach(row -> {
-                if (writer.requireMetadataForHeader() && !wroteMetadata.get()) {
-                    try {
+                try {
+                    if (writer.requireMetadataForHeader() && !wroteMetadata.get()) {
                         writer.write(row.getRowMetadata());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    } finally {
                         wroteMetadata.set(true);
                     }
-                }
-                try {
                     if (row.shouldWrite()) {
                         writer.write(row);
                     }
@@ -168,13 +167,13 @@ class SimpleTransformer implements Transformer {
             writer.endArray();
             // Write columns
             if (!wroteMetadata.get() && transformColumns) {
-                Set<String> forcedColumns = (Set<String>) context.get( SchemaChangeAction.FORCED_TYPE_SET_CTX_KEY );
-                if (forcedColumns==null){
+                Set<String> forcedColumns = (Set<String>) context.get(SchemaChangeAction.FORCED_TYPE_SET_CTX_KEY);
+                if (forcedColumns == null) {
                     forcedColumns = Collections.emptySet();
                 }
                 writer.fieldName("columns");
                 final RowMetadata row = context.getTransformedRowMetadata();
-                final Analyzer<Analyzers.Result> analyzer = (Analyzer<Analyzers.Result>) context.get("analyzer");
+                final Analyzer<Analyzers.Result> analyzer = (Analyzer<Analyzers.Result>) context.get(CONTEXT_ANALYZER);
                 analyzer.end();
                 // Set metadata information (not in statistics).
                 final List<ColumnMetadata> dataSetColumns = row.getColumns();
@@ -197,7 +196,7 @@ class SimpleTransformer implements Transformer {
                     }
                 }
                 // Set the statistics
-                StatisticsUtils.setStatistics(row.getColumns(), analyzer);
+                StatisticsUtils.setStatistics(row.getColumns(), analyzer.getResult());
                 writer.write(context.getTransformedRowMetadata());
             }
             writer.endObject();
