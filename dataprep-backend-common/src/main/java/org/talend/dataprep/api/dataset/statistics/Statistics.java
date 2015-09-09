@@ -187,25 +187,55 @@ public class Statistics implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Statistics)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof Statistics))
+            return false;
 
         Statistics that = (Statistics) o;
 
-        if (count != that.count) return false;
-        if (valid != that.valid) return false;
-        if (invalid != that.invalid) return false;
-        if (empty != that.empty) return false;
-        if (Double.compare(that.max, max) != 0) return false;
-        if (Double.compare(that.min, min) != 0) return false;
-        if (Double.compare(that.mean, mean) != 0) return false;
-        if (Double.compare(that.variance, variance) != 0) return false;
-        if (duplicateCount != that.duplicateCount) return false;
-        if (distinctCount != that.distinctCount) return false;
-        if (!new HashSet<>(dataFrequencies).equals(new HashSet<>(that.dataFrequencies))) return false;
-        if (!new HashSet<>(patternFrequencies).equals(new HashSet<>(that.patternFrequencies))) return false;
-        if (!quantiles.equals(that.quantiles)) return false;
-        if (!new HashSet<>(histogram).equals(new HashSet<>(that.histogram))) return false;
+        if (count != that.count) {
+            return false;
+        }
+        if (valid != that.valid) {
+            return false;
+        }
+        if (invalid != that.invalid) {
+            return false;
+        }
+        if (empty != that.empty) {
+            return false;
+        }
+        if (Double.compare(that.max, max) != 0) {
+            return false;
+        }
+        if (Double.compare(that.min, min) != 0) {
+            return false;
+        }
+        if (Double.compare(that.mean, mean) != 0) {
+            return false;
+        }
+        if (Double.compare(that.variance, variance) != 0) {
+            return false;
+        }
+        if (duplicateCount != that.duplicateCount) {
+            return false;
+        }
+        if (distinctCount != that.distinctCount) {
+            return false;
+        }
+        if (!new HashSet<>(dataFrequencies).equals(new HashSet<>(that.dataFrequencies))) {
+            return false;
+        }
+        if (!new HashSet<>(patternFrequencies).equals(new HashSet<>(that.patternFrequencies))) {
+            return false;
+        }
+        if (!quantiles.equals(that.quantiles)) {
+            return false;
+        }
+        if (!new HashSet<>(histogram).equals(new HashSet<>(that.histogram))) {
+            return false;
+        }
         return textLengthSummary.equals(that.textLengthSummary);
 
     }

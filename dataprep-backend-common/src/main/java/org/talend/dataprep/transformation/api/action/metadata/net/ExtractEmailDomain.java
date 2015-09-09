@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.action.metadata.text;
+package org.talend.dataprep.transformation.api.action.metadata.net;
 
 import static org.talend.dataprep.api.type.Type.STRING;
 
@@ -125,6 +125,5 @@ public class ExtractEmailDomain extends AbstractActionMetadata implements Column
                 .headerSize(column.getHeaderSize()) //
                 .build();
     }
-
 
 }
