@@ -12,8 +12,9 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.state.service:StateService
      */
-    function HomeCtrl(UploadWorkflowService, MessageService, DatasetService, TalendConfirmService, PlaygroundService, StateService) {
+    function HomeCtrl($window, UploadWorkflowService, MessageService, DatasetService, TalendConfirmService, PlaygroundService, StateService) {
         var vm = this;
+        var DATA_INVENTORY_PANEL_KEY = 'org.talend.dataprep.data_inventory_panel_display';
 
         /**
          * @ngdoc property
@@ -35,7 +36,7 @@
          * @description Flag that control the right panel display
          * @type {boolean}
          */
-        vm.showRightPanel = true;
+        vm.showRightPanel = getParameters();
 
         /**
          * @ngdoc property
@@ -54,7 +55,29 @@
          */
         vm.toggleRightPanel = function () {
             vm.showRightPanel = !vm.showRightPanel;
+            setParameters(vm.showRightPanel);
         };
+
+        /**
+         * @ngdoc method
+         * @name getParameters
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @description Get the data inventory panel parameters from localStorage
+         */
+        function getParameters() {
+            var params = $window.localStorage.getItem(DATA_INVENTORY_PANEL_KEY);
+            return params ? JSON.parse(params) : false;
+        }
+
+        /**
+         * @ngdoc method
+         * @name setParameters
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @description Save the data inventory panel parameters in localStorage
+         */
+        function setParameters(params) {
+            $window.localStorage.setItem(DATA_INVENTORY_PANEL_KEY, JSON.stringify(params));
+        }
 
         /**
          * @ngdoc method
