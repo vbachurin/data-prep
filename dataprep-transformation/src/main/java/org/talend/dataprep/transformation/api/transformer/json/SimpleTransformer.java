@@ -196,7 +196,7 @@ class SimpleTransformer implements Transformer {
                     }
                 }
                 // Set the statistics
-                StatisticsUtils.setStatistics(row.getColumns(), analyzer);
+                StatisticsUtils.setStatistics(row.getColumns(), analyzer.getResult());
                 writer.write(context.getTransformedRowMetadata());
             }
             writer.endObject();
