@@ -125,7 +125,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
         }
         final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types);
         if (hasMetNumeric) {
-            histogramAnalyzer.init(min, max, 8);
+            histogramAnalyzer.init(min, max, 20);
         }
         // Select all analysis
         Analyzer[] allAnalyzers = new Analyzer[] {
