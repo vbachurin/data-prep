@@ -60,6 +60,8 @@
 
                 var column = grid.getColumns()[cell.cell];
                 var value = item[column.id];
+                //convert to string
+                value +="";
 
                 if (shouldShowTooltip(value, cell)) {
                     tooltipShowPromise = $timeout(function () {
@@ -113,22 +115,27 @@
          */
         function shouldShowTooltip(text, cell) {
             //do NOT show if content is empty
-            if (text === '') {
+
+            //convert to string
+            var textConverted = text ;
+            textConverted +="";
+
+            if (textConverted === '') {
                 return false;
             }
             //show if content is multiline (avoid too loud check with div size)
-            else if (text.indexOf('\n') > -1) {
+            else if (textConverted.indexOf('\n') > -1) {
                 return true;
             }
             //heavy check based on div size
             else {
                 var ruler = service.tooltipRuler;
-                ruler.text(text);
+                ruler.text(textConverted);
                 var box = grid.getCellNodeBox(cell.row, cell.cell);
 
                 // return if the content is bigger than the displayed box by computing the diff between the displayed box
                 // and the hidden tooltip ruler size minus the cell padding
-                return (box.right - box.left - 11 ) <= ruler.width() || (box.bottom - box.top) < ruler.height();
+                return (box.right - box.left - 12 ) <= ruler.width() || (box.bottom - box.top) < ruler.height();
             }
         }
 
