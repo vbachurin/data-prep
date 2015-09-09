@@ -1,0 +1,12 @@
+{
+  "actions": [
+    {
+      "action": "timestamp_to_date",
+      "parameters": {
+        "column_id": "0001",
+        "column_name": "timestamp",
+        "scope": "column"
+      }
+    }
+  ]
+}
