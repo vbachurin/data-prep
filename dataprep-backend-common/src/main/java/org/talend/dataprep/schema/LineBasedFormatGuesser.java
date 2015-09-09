@@ -28,7 +28,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
     private CSVFormatGuess csvFormatGuess;
     /** The fallback guess if the input is not CSV compliant. */
     @Autowired
-    private NoOpFormatGuess fallbackGuess;
+    private UnsupportedFormatGuess fallbackGuess;
 
     /**
      * @see FormatGuesser#guess(InputStream)
@@ -36,7 +36,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
     @Override
     public FormatGuesser.Result guess(InputStream stream) {
         Separator sep = guessSeparator(stream, "UTF-8");
-        if (sep != null) {
+        if (sep != null && sep.getSeparator() != '?') {
             return new FormatGuesser.Result(csvFormatGuess, //
                     Collections.singletonMap(CSVFormatGuess.SEPARATOR_PARAMETER, String.valueOf(sep.getSeparator())));
         }

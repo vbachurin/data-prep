@@ -8,7 +8,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -18,10 +17,7 @@ import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.lock.DistributedLock;
-import org.talend.dataprep.schema.FormatGuess;
-import org.talend.dataprep.schema.FormatGuesser;
-import org.talend.dataprep.schema.SchemaParser;
-import org.talend.dataprep.schema.SchemaParserResult;
+import org.talend.dataprep.schema.*;
 
 /**
  * Analyzes the raw content of a dataset and determine the best format (XLS, CSV...) for the data set raw content. It
@@ -57,7 +53,17 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
             if (metadata != null) {
                 // Guess media type based on InputStream
                 Set<FormatGuesser.Result> mediaTypes = guessMediaTypes(dataSetId, metadata);
-
+                // Check if only found format is Unsupported Format.
+                if (mediaTypes.size() == 1) {
+                    final FormatGuesser.Result result = mediaTypes.iterator().next();
+                    if (UnsupportedFormatGuess.class.isAssignableFrom(result.getFormatGuess().getClass())) {
+                        // Clean up content & metadata (don't keep invalid information)
+                        store.delete(metadata);
+                        repository.remove(dataSetId);
+                        // Throw exception to indicate unsupported content
+                        throw new TDPException(DataSetErrorCodes.UNSUPPORTED_CONTENT);
+                    }
+                }
                 // Select best format guess
                 List<FormatGuesser.Result> orderedGuess = new LinkedList<>(mediaTypes);
                 Collections.sort(orderedGuess, (g1, g2) -> //

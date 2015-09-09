@@ -54,7 +54,7 @@ public class XlsFormatTest {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("fake.xls")) {
             FormatGuess formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
             Assert.assertNotNull(formatGuess);
-            Assert.assertTrue(formatGuess instanceof NoOpFormatGuess);
+            Assert.assertTrue(formatGuess instanceof UnsupportedFormatGuess);
         }
     }
 
@@ -62,7 +62,7 @@ public class XlsFormatTest {
     public void read_null_xls_file() throws Exception {
         FormatGuess formatGuess = formatGuesser.guess(null).getFormatGuess();
         Assert.assertNotNull(formatGuess);
-        Assert.assertTrue(formatGuess instanceof NoOpFormatGuess);
+        Assert.assertTrue(formatGuess instanceof UnsupportedFormatGuess);
     }
 
     @Test

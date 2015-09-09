@@ -28,7 +28,7 @@ public enum DataSetErrorCodes implements ErrorCode {
     /**
      * Error returned in case the data set is in "importing" state, meaning all mandatory analysis prevents service to
      * correctly serve data set's content.
-     * 
+     *
      * @see DataSetLifecycle#importing()
      */
     UNABLE_TO_SERVE_DATASET_CONTENT(400, "id"),
@@ -45,7 +45,7 @@ public enum DataSetErrorCodes implements ErrorCode {
     DATASET_DOES_NOT_EXIST(400, "id"),
     /**
      * Error returned when the json that contains the dataset location cannot be parsed.
-     * 
+     *
      * @see org.talend.dataprep.dataset.service.DataSetService#create(String, String, InputStream, HttpServletResponse)
      */
     UNABLE_TO_READ_DATASET_LOCATION(400),
@@ -67,10 +67,20 @@ public enum DataSetErrorCodes implements ErrorCode {
      * @see org.talend.dataprep.dataset.service.DataSetService#list(String, String)
      */
     ILLEGAL_SORT_FOR_LIST(400, "sort"),
-                                                    /** Error returned when the dataset metadata could not be saved. */
+    /**
+     * Error returned when the dataset metadata could not be saved.
+     */
     UNABLE_TO_STORE_DATASET_METADATA(500, "id"),
-                                                    /** Error returned when the dataset metadata could not be read. */
-    UNABLE_TO_READ_DATASET_METADATA(500, "id");
+    /**
+     * Error returned when the dataset metadata could not be read.
+     */
+    UNABLE_TO_READ_DATASET_METADATA(500, "id"),
+    /**
+     * Error return when the uploaded content is not supported by any {@link org.talend.dataprep.schema.FormatGuesser
+     * guesser}.
+     * @see org.talend.dataprep.schema.UnsupportedFormatGuess
+     */
+    UNSUPPORTED_CONTENT(400);
 
     /** The http status to use. */
     private int httpStatus;

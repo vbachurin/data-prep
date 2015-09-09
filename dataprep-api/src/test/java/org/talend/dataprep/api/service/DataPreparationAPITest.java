@@ -311,6 +311,16 @@ public class DataPreparationAPITest {
     }
 
     @Test
+    public void testDataSetCreateUnsupportedFormat() throws Exception {
+        // given
+        final String datasetContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("dataset/dataset.ods"));
+        final int metadataCount = dataSetMetadataRepository.size();
+        // then
+        assertThat(given().body(datasetContent).when().post("/api/datasets").getStatusCode(), is(400));
+        assertThat(dataSetMetadataRepository.size(), is(metadataCount)); // No data set metadata should be created
+    }
+
+    @Test
     public void testDataSetGetWithSample() throws Exception {
         // given
         final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");

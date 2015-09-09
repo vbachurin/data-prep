@@ -10,12 +10,15 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.json.JsonErrorCode;
 
 import com.netflix.hystrix.HystrixCommand;
 
@@ -25,6 +28,9 @@ import com.netflix.hystrix.HystrixCommand;
 @Component
 @Scope("request")
 public class CreateDataSet extends DataPrepCommand<String> {
+
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
 
     /** The dataset name. */
     private final String name;
@@ -63,12 +69,16 @@ public class CreateDataSet extends DataPrepCommand<String> {
             contentCreation.setEntity(new InputStreamEntity(dataSetContent));
             HttpResponse response = client.execute(contentCreation);
             int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode >= 200) {
+            if (statusCode >= 200 && statusCode < 300) {
                 if (statusCode == HttpStatus.SC_NO_CONTENT) {
                     return StringUtils.EMPTY;
                 } else if (statusCode == HttpStatus.SC_OK) {
                     return IOUtils.toString(response.getEntity().getContent());
                 }
+            } else if (statusCode == 400) {
+                JsonErrorCode code = builder.build().reader(JsonErrorCode.class).readValue(response.getEntity().getContent());
+                code.setHttpStatus(statusCode);
+                throw new TDPException(code);
             }
         } finally {
             contentCreation.releaseConnection();

@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NoOpFormatGuesser implements FormatGuesser {
+public class UnsupportedFormatGuesser implements FormatGuesser {
 
     @Autowired
-    private NoOpFormatGuess noOpFormatGuess;
+    private UnsupportedFormatGuess noOpFormatGuess;
 
     @Override
     public FormatGuesser.Result guess(InputStream stream) {

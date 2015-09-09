@@ -17,7 +17,7 @@ public interface FormatGuesser {
      * {@link FormatGuess#getConfidence()}.
      */
     default Result guess(InputStream stream) {
-        return new Result(new NoOpFormatGuess(), Collections.emptyMap());
+        return new Result(new UnsupportedFormatGuess(), Collections.emptyMap());
     }
 
     class Result {
@@ -45,6 +45,31 @@ public interface FormatGuesser {
 
         public void setParameters(Map<String, String> parameters) {
             this.parameters = parameters;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof Result)) {
+                return false;
+            }
+
+            Result result = (Result) o;
+
+            if (!formatGuess.equals(result.formatGuess)) {
+                return false;
+            }
+            return parameters.equals(result.parameters);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = formatGuess.hashCode();
+            result = 31 * result + parameters.hashCode();
+            return result;
         }
     }
 }
