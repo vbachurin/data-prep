@@ -19,6 +19,7 @@
             appendStep: appendStep,
             updateStep: updateStep,
             removeStep: removeStep,
+            setHead: setHead,
 
             //getter : list, content, details
             getPreparations: getPreparations,
@@ -213,6 +214,20 @@
         function removeStep(preparationId, stepId, singleMode) {
             var url = RestURLs.preparationUrl + '/' + preparationId + '/actions/' + stepId + (singleMode ? '?single=true' : '');
             return $http.delete(url);
+        }
+
+        /**
+         * @ngdoc method
+         * @name setHead
+         * @methodOf data-prep.services.preparation.service:PreparationRestService
+         * @param {string} preparationId The preparation id
+         * @param {string} stepId The head step id
+         * @description Move the preparation head to the specified step
+         * @returns {promise} The PUT promise
+         */
+        function setHead(preparationId, stepId) {
+            var url = RestURLs.preparationUrl + '/' + preparationId + '/head/' + stepId;
+            return $http.put(url);
         }
 
         //---------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.preparation;
+package org.talend.dataprep.preparation.service;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
@@ -27,6 +27,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.PreparationActions;
+import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.preparation.Application;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 
@@ -70,6 +73,9 @@ public class PreparationServiceTest {
                 .header("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------GETTER------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
     @Test
     public void listAll() throws Exception {
         when().get("/preparations/all").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
@@ -104,6 +110,61 @@ public class PreparationServiceTest {
         assertThat(list, hasItems("ae242b07084aa7b8341867a8be1707f4d52501d1", "1de0ffaa4e00437dd0c7e1097caf5e5657440ee5"));
     }
 
+    @Test
+    public void get() throws Exception {
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        preparation.setCreationDate(0);
+        preparation.setLastModificationDate(12345);
+        repository.add(preparation);
+        String preparationDetails = when().get("/preparations/{id}", preparation.id()).asString();
+        InputStream expected = PreparationServiceTest.class.getResourceAsStream("preparation_1234.json");
+        assertThat(preparationDetails, sameJSONAsFile(expected));
+    }
+
+    @Test
+    public void should_return_list_of_specific_dataset_preparations() throws Exception {
+        // given : relevant preparation
+        final String wantedDataSetId = "wanted";
+        final String preparation1 = createPreparation(wantedDataSetId, "prep_1");
+        final String preparation2 = createPreparation(wantedDataSetId, "prep_2");
+
+        // given : noise data not to be returned by the service
+        final String preparation3 = createPreparation("4523", "prep_3");
+        final String preparation4 = createPreparation("7534", "prep_4");
+        final String preparation5 = createPreparation("1598", "prep_5");
+
+        // when
+        final String result = when().get("/preparations?dataSetId=" + wantedDataSetId).asString();
+        final List<String> preparationIds = JsonPath.from(result).get("id");
+
+        // then
+        assertThat(preparationIds, hasItem(preparation1));
+        assertThat(preparationIds, hasItem(preparation2));
+        assertThat(preparationIds, not(hasItem(preparation3)));
+        assertThat(preparationIds, not(hasItem(preparation4)));
+        assertThat(preparationIds, not(hasItem(preparation5)));
+    }
+
+    @Test
+    public void shouldListErrors() throws Exception {
+        // when
+        final String errors = when().get("/preparations/errors").asString();
+
+        final ObjectMapper mapper = new ObjectMapper();
+        final JsonNode actualErrorCodes = mapper.readTree(errors);
+
+        // then
+        assertTrue(actualErrorCodes.isArray());
+        assertTrue(actualErrorCodes.size() > 0);
+        for (final JsonNode currentCode : actualErrorCodes) {
+            assertTrue(currentCode.has("code"));
+            assertTrue(currentCode.has("http-status-code"));
+        }
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------LIFECYCLE----------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
     @Test
     public void create() throws Exception {
         assertThat(repository.listAll(Preparation.class).size(), is(0));
@@ -189,14 +250,44 @@ public class PreparationServiceTest {
     }
 
     @Test
-    public void get() throws Exception {
-        Preparation preparation = new Preparation("1234", ROOT_STEP);
-        preparation.setCreationDate(0);
-        preparation.setLastModificationDate(12345);
-        repository.add(preparation);
-        String preparationDetails = when().get("/preparations/{id}", preparation.id()).asString();
-        InputStream expected = PreparationServiceTest.class.getResourceAsStream("preparation_1234.json");
-        assertThat(preparationDetails, sameJSONAsFile(expected));
+    public void should_change_preparation_head() throws Exception {
+        //given
+        final String preparationId = createPreparation("1234", "my preparation");
+        final String firstStepId = applyTransformation(preparationId, "upper_case.json");
+        final String secondStepId = applyTransformation(preparationId, "lower_case.json");
+
+        Preparation preparation = repository.get(preparationId, Preparation.class);
+        assertThat(preparation.getStep().id(), is(secondStepId));
+
+        //when
+        given().when()//
+                .put("/preparations/{id}/head/{stepId}", preparationId, firstStepId)//
+                .then()//
+                .statusCode(200);
+
+        //then
+        preparation = repository.get(preparationId, Preparation.class);
+        assertThat(preparation.getStep().id(), is(firstStepId));
+    }
+
+    @Test
+    public void should_throw_exception_on_preparation_head_change_with_unknown_step() throws Exception {
+        //given
+        final String preparationId = createPreparation("1234", "my preparation");
+        final String firstStepId = applyTransformation(preparationId, "upper_case.json");
+
+        Preparation preparation = repository.get(preparationId, Preparation.class);
+        assertThat(preparation.getStep().id(), is(firstStepId));
+
+        //when
+        final Response response = given().when()//
+                .put("/preparations/{id}/head/{stepId}", preparationId, "unknown_step_id");
+
+        //then
+        response.then()//
+                .statusCode(400)//
+                .assertThat()//
+                .body("code", is("TDP_PS_PREPARATION_STEP_DOES_NOT_EXIST"));
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -610,58 +701,6 @@ public class PreparationServiceTest {
         // then
         preparation = repository.get(preparation.id(), Preparation.class);
         assertThat(oldModificationDate, lessThan(preparation.getLastModificationDate()));
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------------GETTERS------------------------------------------------------
-    //------------------------------------------------------------------------------------------------------------------
-    /**
-     * @see org.talend.dataprep.preparation.service.PreparationService#listByDataSet
-     */
-    @Test
-    public void should_return_list_of_specific_dataset_preparations() throws Exception {
-        // given : relevant preparation
-        final String wantedDataSetId = "wanted";
-        final String preparation1 = createPreparation(wantedDataSetId, "prep_1");
-        final String preparation2 = createPreparation(wantedDataSetId, "prep_2");
-
-        // given : noise data not to be returned by the service
-        final String preparation3 = createPreparation("4523", "prep_3");
-        final String preparation4 = createPreparation("7534", "prep_4");
-        final String preparation5 = createPreparation("1598", "prep_5");
-
-        // when
-        final String result = when().get("/preparations?dataSetId=" + wantedDataSetId).asString();
-        final List<String> preparationIds = JsonPath.from(result).get("id");
-
-        // then
-        assertThat(preparationIds, hasItem(preparation1));
-        assertThat(preparationIds, hasItem(preparation2));
-        assertThat(preparationIds, not(hasItem(preparation3)));
-        assertThat(preparationIds, not(hasItem(preparation4)));
-        assertThat(preparationIds, not(hasItem(preparation5)));
-    }
-
-    /**
-     * Check that the error listing service returns a list parsable of error codes. The content is not checked
-     *
-     * @throws Exception if an error occurs.
-     */
-    @Test
-    public void shouldListErrors() throws Exception {
-        // when
-        final String errors = when().get("/preparations/errors").asString();
-
-        final ObjectMapper mapper = new ObjectMapper();
-        final JsonNode actualErrorCodes = mapper.readTree(errors);
-
-        // then
-        assertTrue(actualErrorCodes.isArray());
-        assertTrue(actualErrorCodes.size() > 0);
-        for (final JsonNode currentCode : actualErrorCodes) {
-            assertTrue(currentCode.has("code"));
-            assertTrue(currentCode.has("http-status-code"));
-        }
     }
 
     //------------------------------------------------------------------------------------------------------------------

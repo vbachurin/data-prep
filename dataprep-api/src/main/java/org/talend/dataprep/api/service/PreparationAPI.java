@@ -196,13 +196,31 @@ public class PreparationAPI extends APIService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") final String preparationId,
             @PathVariable(value = "stepId") @ApiParam(name = "stepId", value = "Step id to delete.") final String stepId,
             @RequestParam(value = "single", defaultValue = "false") @ApiParam(name = "single", value = "Remove only the targeted step if 'true'. Else delete cascade from step to the head") final boolean single) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Deleting preparation action at step #{} (pool: {} ) with single mode '{}'...", stepId, getConnectionManager().getTotalStats(), single);
-        }
+        LOG.debug("Deleting preparation action at step #{} (pool: {} ) with single mode '{}'...", stepId, getConnectionManager().getTotalStats(), single);
+
         final HttpClient client = getClient();
         final HystrixCommand<Void> command = getCommand(PreparationDeleteAction.class, client, preparationId, stepId, single);
         command.execute();
+
         LOG.debug("Deleting preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
+    }
+
+    @RequestMapping(value = "/api/preparations/{id}/head/{headId}", method = PUT, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Delete an action in the preparation.", notes = "Does not return any value, client may expect successful operation based on HTTP status code.")
+    @Timed
+    public void setPreparationHead(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") final String preparationId,
+            @PathVariable(value = "headId") @ApiParam(name = "headId", value = "New head step id") final String headId) {
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Moving preparation #{} head to step '{}'...", preparationId, headId);
+        }
+
+        final HttpClient client = getClient();
+        final HystrixCommand<Void> command = getCommand(PreparationMoveHead.class, client, preparationId, headId);
+        command.execute();
+
+        LOG.debug("Moved preparation #{} head to step '{}'...", preparationId, headId);
     }
 
     // ---------------------------------------------------------------------------------

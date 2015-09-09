@@ -1,12 +1,16 @@
 package org.talend.dataprep.preparation.task;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -26,9 +30,13 @@ public class PreparationCleaner {
     @Autowired
     private PreparationRepository repository;
 
+    private Map<Step, Integer> orphansStepsTags = new HashMap<>();
+
+    @Value("${preparation.store.remove.hours}")
+    private int orphanTime;
+
     /**
      * Get all the step ids that belong to a preparation
-     *
      * @return The step ids
      */
     private Set<String> getPreparationStepIds() {
@@ -39,19 +47,41 @@ public class PreparationCleaner {
     }
 
     /**
-     * Remove all the steps which id is not in the preparations step ids
-     *
-     * @param steps              The steps list to process
-     * @param preparationStepIds The step ids that belongs to at least 1 preparation
+     * Get current steps that has no preparation
+     * @return The orphan steps
      */
-    private void cleanSteps(final Collection<Step> steps, final Set<String> preparationStepIds) {
+    public List<Step> getCurrentOrphanSteps() {
+        final Collection<Step> steps = repository.listAll(Step.class);
+        final Set<String> preparationStepIds = getPreparationStepIds();
+
         final Predicate<Step> isNotRootStep = step -> !Step.ROOT_STEP.getId().equals(step.getId());
         final Predicate<Step> isOrphan = step -> !preparationStepIds.contains(step.getId());
 
-        steps.stream()
+        return steps.stream()
                 .filter(isNotRootStep)
                 .filter(isOrphan)
-                .forEach(repository::remove);
+                .collect(toList());
+    }
+
+    /**
+     * Tag the orphans steps.
+     * @param currentOrphans The current orphans
+     */
+    private void updateOrphanTags(final List<Step> currentOrphans) {
+        orphansStepsTags = currentOrphans.stream()
+                .collect(toMap(Function.identity(), step -> {
+                    final Integer tag = orphansStepsTags.get(step);
+                    return tag == null ? 0 : tag + 1;
+                }));
+    }
+
+    /**
+     * Remove all the orphan steps that is orphans since {preparation.store.remove.hours} hours
+     */
+    private void cleanSteps() {
+        orphansStepsTags.entrySet().stream()
+                .filter(entry -> entry.getValue() >= orphanTime)
+                .forEach(entry -> repository.remove(entry.getKey()));
     }
 
     /**
@@ -59,9 +89,8 @@ public class PreparationCleaner {
      */
     @Scheduled(fixedDelay = 60000)
     public void removeOrphanSteps() {
-        final Collection<Step> steps = repository.listAll(Step.class);
-        final Set<String> preparationStepIds = getPreparationStepIds();
-
-        cleanSteps(steps, preparationStepIds);
+        final List<Step> currentOrphans = getCurrentOrphanSteps();
+        updateOrphanTags(currentOrphans);
+        cleanSteps();
     }
 }

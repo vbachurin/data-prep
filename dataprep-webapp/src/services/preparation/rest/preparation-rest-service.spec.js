@@ -347,7 +347,7 @@ describe('Preparation REST Service', function () {
             //then : update request to have been called
         }));
 
-        it('should remove a transformation step in the current preparation in cascade mode', inject(function($rootScope, $q, RestURLs, PreparationRestService) {
+        it('should remove a transformation step in the current preparation in cascade mode', inject(function($rootScope, RestURLs, PreparationRestService) {
             //given
             var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
             var stepId = '856980bacf0890c89bc318856980bacf0890c89b';
@@ -365,7 +365,7 @@ describe('Preparation REST Service', function () {
             //then : delete request to have been called
         }));
 
-        it('should remove a transformation step in the current preparation in single mode', inject(function($rootScope, $q, RestURLs, PreparationRestService) {
+        it('should remove a transformation step in the current preparation in single mode', inject(function($rootScope, RestURLs, PreparationRestService) {
             //given
             var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
             var stepId = '856980bacf0890c89bc318856980bacf0890c89b';
@@ -381,6 +381,23 @@ describe('Preparation REST Service', function () {
             $rootScope.$digest();
 
             //then : delete request to have been called
+        }));
+
+        it('should move preparation head', inject(function($rootScope, RestURLs, PreparationRestService) {
+            //given
+            var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+            var headId = '856980bacf0890c89bc318856980bacf0890c89b';
+
+            $httpBackend
+                .expectPUT(RestURLs.preparationUrl + '/' + preparationId + '/head/' + headId)
+                .respond(200);
+
+            //when
+            PreparationRestService.setHead(preparationId, headId);
+            $httpBackend.flush();
+            $rootScope.$digest();
+
+            //then : put request to have been called
         }));
     });
 

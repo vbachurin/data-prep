@@ -1,20 +1,8 @@
 package org.talend.dataprep.preparation.service;
 
-import static java.util.stream.Collectors.toList;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
-import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.*;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +21,19 @@ import org.talend.dataprep.preparation.exception.PreparationErrorCodes;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.*;
 
 @RestController
 @Api(value = "preparations", basePath = "/preparations", description = "Operations on preparations")
@@ -282,6 +280,25 @@ public class PreparationService {
             final Step newHead = preparationRepository.get(stepToDelete.getParent(), Step.class);
             setPreparationHead(preparation, newHead);
         }
+    }
+
+    @RequestMapping(value = "/preparations/{id}/head/{headId}", method = PUT)
+    @ApiOperation(value = "Move preparation head", notes = "Set head to the specified head id")
+    @Timed
+    public void setPreparationHead(
+            @PathVariable("id") final String preparationId,
+            @PathVariable("headId") final String headId) throws TDPException {
+
+        final Step head = preparationRepository.get(headId, Step.class);
+        if (head == null) {
+            throw new TDPException(PREPARATION_STEP_DOES_NOT_EXIST,
+                    TDPExceptionContext.build()
+                            .put("id", preparationId)
+                            .put("stepId", headId));
+        }
+
+        final Preparation preparation = getPreparation(preparationId);
+        setPreparationHead(preparation, head);
     }
 
     @RequestMapping(value = "/preparations/{id}/actions/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
