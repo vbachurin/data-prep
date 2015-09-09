@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.action.metadata.web;
+package org.talend.dataprep.transformation.api.action.metadata.net;
 
 import static org.talend.dataprep.api.type.Type.STRING;
 
@@ -28,120 +28,6 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
      * The action name.
      */
     public static final String EXTRACT_URL_TOKENS_ACTION_NAME = "extract_url_tokens"; //$NON-NLS-1$
-
-    protected interface UrlTokenExtractor {
-
-        String getSuffix();
-
-        String extractToken(URI url);
-
-        default Type getType() {
-            return Type.STRING;
-        }
-
-    }
-
-    protected static final UrlTokenExtractor PROTOCOL_TOKEN_EXTRACTOR = new UrlTokenExtractor() {
-
-        @Override
-        public String getSuffix() {
-            return "_protocol";
-        }
-
-        @Override
-        public String extractToken(URI url) {
-            final String scheme = url.getScheme();
-            return (scheme == null ? "" : scheme.toLowerCase());
-        }
-    };
-
-    private static UrlTokenExtractor[] urlTokenExtractors = new UrlTokenExtractor[]{PROTOCOL_TOKEN_EXTRACTOR,
-            new UrlTokenExtractor() {
-
-                @Override
-                public String getSuffix() {
-                    return "_host";
-                }
-
-                @Override
-                public String extractToken(URI url) {
-                    return url.getHost();
-                }
-            }, new UrlTokenExtractor() {
-
-        @Override
-        public String getSuffix() {
-            return "_port";
-        }
-
-        @Override
-        public String extractToken(URI url) {
-            final int port = url.getPort();
-            return (port == -1 ? "" : port + "");
-        }
-
-        @Override
-        public Type getType() {
-            return Type.INTEGER;
-        }
-    }, new UrlTokenExtractor() {
-
-        @Override
-        public String getSuffix() {
-            return "_path";
-        }
-
-        @Override
-        public String extractToken(URI url) {
-            return url.getPath();
-        }
-    }, new UrlTokenExtractor() {
-
-        @Override
-        public String getSuffix() {
-            return "_query";
-        }
-
-        @Override
-        public String extractToken(URI url) {
-            return url.getQuery();
-        }
-    }, new UrlTokenExtractor() {
-
-        @Override
-        public String getSuffix() {
-            return "_fragment";
-        }
-
-        @Override
-        public String extractToken(URI url) {
-            return url.getFragment();
-        }
-    }, new UrlTokenExtractor() {
-
-        @Override
-        public String getSuffix() {
-            return "_user";
-        }
-
-        @Override
-        public String extractToken(URI url) {
-            final String userInfo = url.getUserInfo();
-            return (userInfo == null ? "" : userInfo.split(":")[0]);
-        }
-    }, new UrlTokenExtractor() {
-
-        @Override
-        public String getSuffix() {
-            return "_password";
-        }
-
-        @Override
-        public String extractToken(URI url) {
-            final String userInfo = url.getUserInfo();
-            return (userInfo == null ? "" : userInfo.split(":")[1]);
-        }
-    }};
 
     /**
      * Private constructor to ensure IoC use.
@@ -193,9 +79,9 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
 
         // if url is null, we still loop on urlTokenExtractors in order to create the column metadata for all rows, even
         // invalid ones.
-        for (UrlTokenExtractor urlTokenExtractor : urlTokenExtractors) {
+        for (UrlTokenExtractor urlTokenExtractor : UrlTokenExtractors.urlTokenExtractors) {
 
-            final ColumnMetadata newColumnMetadata = createNewColumn(column, urlTokenExtractor.getSuffix(),
+            final ColumnMetadata newColumnMetadata = createNewColumn(column, urlTokenExtractor.getTokenName(),
                     urlTokenExtractor.getType());
             final String local = rowMetadata.insertAfter(columnToInsertAfter.getId(), newColumnMetadata);
 
