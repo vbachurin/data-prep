@@ -70,7 +70,7 @@
 								'<br/>'+
 								'<strong>Range:</strong> <span style="color:yellow">'+ d[xField] + '</span>';
 						});
-
+/*
 					var line = d3.svg.line()
 						.interpolate("monotone")
 						//    .interpolate("step-after")
@@ -80,7 +80,7 @@
 						.y(function(d) {
 							return y(d[yField]);
 						});
-
+*/
 					var svg = d3.select("#"+container).append("svg")
 						.attr('class', 'vertical-barchart-cls')
 						.attr("width", w + margin.left + margin.right)
@@ -108,11 +108,13 @@
 						.attr("transform", "translate(0," + h + ")")
 						.call(xAxis)
 						.selectAll("text")
-						.attr("y", 0)
+						/*.attr("y", 0)
 						.attr("x", 9)
 						.attr("dy", ".35em")
 						.attr("transform", "rotate(90)")
-						.style("text-anchor", "start");
+						.style("text-anchor", "start")
+						*/
+						.attr('display','none');
 
 					svg.append("g")
 						.attr("class", "y axis")
@@ -166,7 +168,7 @@
 						})
 						.on('mouseleave', function (d) {
 							d3.select(this).style('opacity', 0);
-							//tip.hide(d);
+							tip.hide(d);
 						})
 						.on('click', function (d) {
 							scope.onClick()(d);
@@ -187,7 +189,13 @@
 						.attr("class", "dot")
 						.attr("cx", line.x())
 						.attr("cy", line.y())
-						.attr("r", 4.5);*/
+
+						.attr("r", .5)
+						.transition().delay(function(d,i){
+							return i*30;
+						})//.duration(1000)
+						.attr("r", 4.5);
+*/
 				}
 
 				scope.$watch('visuData',
