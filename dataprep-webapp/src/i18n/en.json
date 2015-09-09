@@ -108,6 +108,8 @@
   "PREPARATION_STEP_DELETE_MODE_NOT_AUTHORIZED": "This actions cannot be deleted alone because other following actions depends on it",
   "SERVER_ERROR_TITLE": "Server error",
   "SERVICE_UNAVAILABLE": "Service unavailable",
+  "UNSUPPORTED_CONTENT_TITLE": "Unsupported content",
+  "UNSUPPORTED_CONTENT": "Unable to create data set, content is not supported.",
   "UPLOAD_ERROR_TITLE": "Upload error",
   "UPLOAD_ERROR": "An error occurred during file upload",
 
