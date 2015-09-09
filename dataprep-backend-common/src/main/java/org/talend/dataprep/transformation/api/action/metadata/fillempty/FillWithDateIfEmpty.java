@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
@@ -23,8 +22,7 @@ public class FillWithDateIfEmpty extends AbstractFillIfEmpty {
 
     private static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
-    private static final String DEFAULT_DATE_VALUE = DEFAULT_FORMATTER.format( LocalDateTime.of( 1970, Month.JANUARY, 1,
-                                                                                                 10, 0 ) );
+    private static final String DEFAULT_DATE_VALUE = DEFAULT_FORMATTER.format(LocalDateTime.of(1970, Month.JANUARY, 1, 10, 0));
 
     @Override
     public String getName() {
@@ -45,6 +43,14 @@ public class FillWithDateIfEmpty extends AbstractFillIfEmpty {
     @Override
     public boolean acceptColumn(ColumnMetadata column) {
         return Type.DATE.equals(Type.get(column.getType()));
+    }
+
+    /**
+     *
+     * @return <code>true</code> if this action is date related so the datetimepicker can be display
+     */
+    public boolean isDate() {
+        return true;
     }
 
 }

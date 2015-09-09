@@ -65,6 +65,7 @@ public class FillWithDateIfEmptyTest {
     @Test
     public void should_accept_column() {
         assertTrue(action.acceptColumn(getColumn(Type.DATE)));
+        assertTrue(action.isDate());
     }
 
     @Test

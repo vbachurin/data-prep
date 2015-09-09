@@ -143,6 +143,10 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
         return Type.DATE.equals(type);
     }
 
+    /**
+     *
+     * @return <code>true</code> if this action is date related so the datetimepicker can be display
+     */
     public boolean isDate() {
         return true;
     }
