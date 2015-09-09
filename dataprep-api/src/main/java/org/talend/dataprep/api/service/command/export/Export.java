@@ -50,7 +50,7 @@ public class Export extends PreparationCommand<InputStream> {
             final Preparation preparation = getPreparation(input.getPreparationId());
             name = preparation.getName();
             actions = getPreparationActions(preparation, input.getStepId());
-            content = getDatasetContent(preparation.getDataSetId(), false, true);
+            content = getDatasetContent(preparation.getDataSetId());
         } else {
             // Get name from data set
             String dataSetId = input.getDatasetId();
@@ -58,11 +58,11 @@ public class Export extends PreparationCommand<InputStream> {
             //
             name = datasetDetails.get("metadata").get("name").textValue();
             actions = Collections.emptyList();
-            content = getDatasetContent(dataSetId, false, true);
+            content = getDatasetContent(dataSetId);
         }
         // Set response headers
         response.setContentType(input.getExportType().getMimeType());
-        response.setHeader("Content-Disposition", "attachment; filename=" + name + input.getExportType().getExtension());
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + name + input.getExportType().getExtension() + "\"");
         // Get dataset content and call export service
         final String encodedActions = serializeActions(actions);
         final String uri = getTransformationUri(input.getExportType(), input.getArguments());

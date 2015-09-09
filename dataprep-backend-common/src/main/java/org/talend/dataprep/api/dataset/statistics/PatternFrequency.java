@@ -39,12 +39,18 @@ public class PatternFrequency implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PatternFrequency)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PatternFrequency)) {
+            return false;
+        }
 
         PatternFrequency that = (PatternFrequency) o;
 
-        if (occurrences != that.occurrences) return false;
+        if (occurrences != that.occurrences) {
+            return false;
+        }
         return pattern.equals(that.pattern);
 
     }

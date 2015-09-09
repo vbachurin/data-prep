@@ -40,12 +40,6 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
     @Autowired
     ContentStoreRouter store;
 
-    @Autowired
-    ApplicationContext applicationContext;
-
-    @Autowired
-    Jackson2ObjectMapperBuilder builder;
-
     /**
      * Analyse the dataset metadata quality.
      *

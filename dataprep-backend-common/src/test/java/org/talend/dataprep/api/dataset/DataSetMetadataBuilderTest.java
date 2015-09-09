@@ -1,10 +1,14 @@
 package org.talend.dataprep.api.dataset;
 
 import static org.junit.Assert.assertEquals;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.location.HttpLocation;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.schema.SchemaParserResult;
 
 public class DataSetMetadataBuilderTest {
 
@@ -12,7 +16,7 @@ public class DataSetMetadataBuilderTest {
 
     @Before
     public void setUp() throws Exception {
-        builder = DataSetMetadata.Builder.metadata();
+        builder = metadata();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -34,8 +38,8 @@ public class DataSetMetadataBuilderTest {
 
     @Test
     public void testName() throws Exception {
-        builder.id("1234").author("name");
-        assertEquals("name", builder.build().getAuthor());
+        builder.id("1234").name("name");
+        assertEquals("name", builder.build().getName());
     }
 
     @Test
@@ -64,7 +68,7 @@ public class DataSetMetadataBuilderTest {
 
     @Test
     public void testContentAnalyzed() throws Exception {
-        final DataSetMetadata metadata = builder.id("1234").build();
+        final DataSetMetadata metadata = builder.id("1234").contentAnalyzed(false).build();
         assertEquals(false, metadata.getLifecycle().contentIndexed());
         metadata.getLifecycle().contentIndexed(true);
         assertEquals(true, metadata.getLifecycle().contentIndexed());
@@ -73,16 +77,16 @@ public class DataSetMetadataBuilderTest {
     @Test
     public void testSchemaAnalyzed() throws Exception {
         builder.id("1234").build();
-        final DataSetMetadata metadata = builder.id("1234").build();
+        final DataSetMetadata metadata = builder.id("1234").schemaAnalyzed(false).build();
         assertEquals(false, metadata.getLifecycle().schemaAnalyzed());
-        metadata.getLifecycle().contentIndexed(true);
-        assertEquals(true, metadata.getLifecycle().contentIndexed());
+        metadata.getLifecycle().schemaAnalyzed(true);
+        assertEquals(true, metadata.getLifecycle().schemaAnalyzed());
     }
 
     @Test
     public void testQualityAnalyzed() throws Exception {
         builder.id("1234").build();
-        final DataSetMetadata metadata = builder.id("1234").build();
+        final DataSetMetadata metadata = builder.id("1234").qualityAnalyzed(false).build();
         assertEquals(false, metadata.getLifecycle().qualityAnalyzed());
         metadata.getLifecycle().qualityAnalyzed(true);
         assertEquals(true, metadata.getLifecycle().qualityAnalyzed());
@@ -138,8 +142,19 @@ public class DataSetMetadataBuilderTest {
 
     @Test
     public void testCopy() throws Exception {
-        final DataSetMetadata build = DataSetMetadata.Builder.metadata().id("1234").build();
+        final DataSetMetadata build = metadata().id("1234") //
+                .row(column().type(Type.STRING).name("col0"), column().type(Type.STRING).name("col1")) //
+                .build();
         builder.copy(build);
-        assertEquals("1234", builder.build().getId());
+        final DataSetMetadata metadata = builder.build();
+        assertEquals("1234", metadata.getId());
+        assertEquals("col0", metadata.getRow().getColumns().get(0).getName());
+        assertEquals("col1", metadata.getRow().getColumns().get(1).getName());
+    }
+
+    @Test
+    public void testSchemaParserResult() throws Exception {
+        builder.id("1234").schemaParserResult(SchemaParserResult.Builder.parserResult().sheetName("sheetName").build());
+        assertEquals("sheetName", builder.build().getSchemaParserResult().getSheetName());
     }
 }

@@ -14,7 +14,6 @@ import org.talend.dataquality.statistics.numeric.quantile.QuantileStatistics;
 import org.talend.dataquality.statistics.numeric.summary.SummaryStatistics;
 import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.dataquality.statistics.text.TextLengthStatistics;
-import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
 
 public class StatisticsUtils {
@@ -22,10 +21,9 @@ public class StatisticsUtils {
     private StatisticsUtils() {
     }
 
-
-    public static void setStatistics(List<ColumnMetadata> columns, Analyzer<Analyzers.Result> analyzer) {
+    public static void setStatistics(List<ColumnMetadata> columns, List<Analyzers.Result> results) {
         final Iterator<ColumnMetadata> columnIterator = columns.iterator();
-        for (Analyzers.Result result : analyzer.getResult()) {
+        for (Analyzers.Result result : results) {
             final ColumnMetadata currentColumn = columnIterator.next();
             final boolean isNumeric = Type.NUMERIC.isAssignableFrom(Type.get(currentColumn.getType()));
             final boolean isString = Type.STRING.isAssignableFrom(Type.get(currentColumn.getType()));

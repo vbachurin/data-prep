@@ -26,6 +26,7 @@ import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataquality.statistics.cardinality.CardinalityAnalyzer;
 import org.talend.dataquality.statistics.frequency.DataFrequencyAnalyzer;
 import org.talend.dataquality.statistics.frequency.PatternFrequencyAnalyzer;
@@ -37,7 +38,6 @@ import org.talend.dataquality.statistics.text.TextLengthAnalyzer;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.type.DataType;
-import org.talend.dataprep.lock.DistributedLock;
 
 @Component
 public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
@@ -49,12 +49,6 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
 
     @Autowired
     ContentStoreRouter store;
-
-    @Autowired
-    ApplicationContext applicationContext;
-
-    @Autowired
-    Jackson2ObjectMapperBuilder builder;
 
     @JmsListener(destination = Destinations.STATISTICS_ANALYSIS)
     public void analyzeQuality(Message message) {
@@ -93,7 +87,6 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
                     LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
                 LOGGER.warn("dataset {} generates an error", dataSetId, e);
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
             }
@@ -103,6 +96,12 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
 
     }
 
+    /**
+     * Compute the statistics for the given dataset metadata and content.
+     *
+     * @param metadata the metadata to compute the statistics for.
+     * @param stream the content to compute the statistics from.
+     */
     public void computeStatistics(DataSetMetadata metadata, Stream<DataSetRow> stream) {
         // Create a content with the expected format for the StatisticsClientJson class
         final List<ColumnMetadata> columns = metadata.getRow().getColumns();
@@ -149,9 +148,12 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
         stream.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
         analyzer.end();
         // Store results back in data set
-        StatisticsUtils.setStatistics(columns, analyzer);
+        StatisticsUtils.setStatistics(columns, analyzer.getResult());
     }
 
+    /**
+     * @see AsynchronousDataSetAnalyzer#destination()
+     */
     @Override
     public String destination() {
         return Destinations.STATISTICS_ANALYSIS;
