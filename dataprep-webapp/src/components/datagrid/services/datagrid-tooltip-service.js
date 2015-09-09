@@ -61,7 +61,7 @@
                 var column = grid.getColumns()[cell.cell];
                 var value = item[column.id];
                 //convert to string
-                value +="";
+                value +='';
 
                 if (shouldShowTooltip(value, cell)) {
                     tooltipShowPromise = $timeout(function () {
@@ -118,7 +118,7 @@
 
             //convert to string
             var textConverted = text ;
-            textConverted +="";
+            textConverted +='';
 
             if (textConverted === '') {
                 return false;
