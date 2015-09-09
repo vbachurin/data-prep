@@ -53,7 +53,7 @@ public class PreviewAdd extends PreviewAbstract {
         final String newEncodedActions = serializeActions(modifiedActions.values());
 
         // get dataset content
-        final InputStream content = getDatasetContent(dataSetId, false, true);
+        final InputStream content = getDatasetContent(dataSetId);
         // get usable tdpIds
         final String encodedTdpIds = serializeIds(input.getTdpIds());
 
