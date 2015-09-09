@@ -34,7 +34,7 @@
                 var renderTimeout;
                 var container = attrs.id;
 
-                var margin = {top: 5, right: 25, bottom: 10, left: 10};
+                var margin = {top: 5, right: 25, bottom: 10, left: 20};
                 var width = attrs.width - margin.left - margin.right;
                 var height = attrs.height - margin.top - margin.bottom;
 

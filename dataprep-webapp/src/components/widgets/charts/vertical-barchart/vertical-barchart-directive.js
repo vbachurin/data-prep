@@ -40,9 +40,9 @@
 
 					var margin = {
 						top: 20,
-						right: 20,
-						bottom: 110,
-						left: 40
+						right: 25,
+						bottom: 20,
+						left: 20
 						},
 						w = width - margin.left - margin.right,
 						h = height - margin.top - margin.bottom;
@@ -56,7 +56,7 @@
 						.scale(x)
 						.orient("bottom");
 
-					var yAxis = d3.svg.axis()
+					var yAxis = d3.svg.axis().tickFormat(d3.format('d'))
 						.scale(y)
 						.orient("left");
 
