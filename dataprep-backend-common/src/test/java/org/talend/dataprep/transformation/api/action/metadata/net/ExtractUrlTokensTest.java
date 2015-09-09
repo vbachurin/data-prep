@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.dataprep.transformation.api.action.metadata.web;
+package org.talend.dataprep.transformation.api.action.metadata.net;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
@@ -268,15 +268,15 @@ public class ExtractUrlTokensTest {
 
     @Test
     public void testProtocolExtractor() throws URISyntaxException {
-        assertEquals("http", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("http://www.yahoo.fr")));
-        assertEquals("mailto", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("mailto:smallet@talend.com")));
-        assertEquals("ftp", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("ftp://server:21/this/is/a/resource")));
-        assertEquals("http", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("HTTP://www.yahoo.fr")));
-        assertEquals("http", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI(
+        assertEquals("http", UrlTokenExtractors.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("http://www.yahoo.fr")));
+        assertEquals("mailto", UrlTokenExtractors.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("mailto:smallet@talend.com")));
+        assertEquals("ftp", UrlTokenExtractors.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("ftp://server:21/this/is/a/resource")));
+        assertEquals("http", UrlTokenExtractors.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("HTTP://www.yahoo.fr")));
+        assertEquals("http", UrlTokenExtractors.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI(
                 "http:10.42.10.99:80/home/datasets?datasetid=c522a037")));
-        assertEquals("file", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("file://server:21/this/is/a/resource")));
-        assertEquals("mvn", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("mvn://server:21/this/is/a/resource")));
-        assertEquals("tagada", ExtractUrlTokens.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("tagada://server:21/this/is/a/resource")));
+        assertEquals("file", UrlTokenExtractors.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("file://server:21/this/is/a/resource")));
+        assertEquals("mvn", UrlTokenExtractors.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("mvn://server:21/this/is/a/resource")));
+        assertEquals("tagada", UrlTokenExtractors.PROTOCOL_TOKEN_EXTRACTOR.extractToken(new URI("tagada://server:21/this/is/a/resource")));
     }
 
 }
