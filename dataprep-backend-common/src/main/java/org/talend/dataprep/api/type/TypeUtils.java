@@ -56,7 +56,11 @@ public class TypeUtils {
      * @return A display name for the semantic type's suggested category or empty string if none found.
      */
     public static String getDomainLabel(SemanticType semanticType) {
-        return getDomainLabel(semanticType.getSuggestedCategory());
+        if (semanticType == null) {
+            return StringUtils.EMPTY;
+        } else {
+            return getDomainLabel(semanticType.getSuggestedCategory());
+        }
     }
 
     /**
@@ -65,7 +69,11 @@ public class TypeUtils {
      * @see SemanticCategoryEnum
      */
     public static String getDomainLabel(String categoryId) {
-        final SemanticCategoryEnum category = SemanticCategoryEnum.getCategoryById(categoryId.toUpperCase());
-        return category == null ? StringUtils.EMPTY : category.getDisplayName();
+        if (categoryId == null) {
+            return StringUtils.EMPTY;
+        } else {
+            final SemanticCategoryEnum category = SemanticCategoryEnum.getCategoryById(categoryId.toUpperCase());
+            return category == null ? StringUtils.EMPTY : category.getDisplayName();
+        }
     }
 }
