@@ -54,6 +54,12 @@
     &:hover {
       background-color: darken($grid-items-background, 5%);
       box-shadow: 5px 4px 6px -4px $dark-gray;
+
+      .actions a {
+        &.trash {
+          display: block;
+        }
+      }
     }
 
     .one-line {
@@ -109,6 +115,7 @@
 
       &.trash {
         font-size: 1.3em;
+        display: none;
       }
     }
   }
