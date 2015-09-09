@@ -2,6 +2,7 @@ package org.talend.dataprep.dataset.store.metadata.file;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
@@ -73,7 +74,7 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
         try (ObjectInputStream input = new ObjectInputStream(new FileInputStream(file))) {
             return (DataSetMetadata) input.readObject();
         } catch (ClassNotFoundException | IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_METADATA, TDPExceptionContext.build().put("id", id));
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_METADATA, e, TDPExceptionContext.build().put("id", id));
         }
     }
 
@@ -106,17 +107,22 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
     @Override
     public Iterable<DataSetMetadata> list() {
         File folder = getRootFolder();
-        final Stream<DataSetMetadata> stream = Arrays.stream(folder.listFiles()).map(f -> {
+        final File[] files = folder.listFiles();
+        if (files == null) {
+            return Collections.emptyList();
+        } else {
+            final Stream<DataSetMetadata> stream = Arrays.stream(files).map(f -> {
 
-            try (ObjectInputStream input = new ObjectInputStream(new FileInputStream(f))) {
-                return (DataSetMetadata) input.readObject();
-            } catch (ClassNotFoundException | IOException e) {
-                LOG.error("error reading metadata file {}", f.getAbsolutePath(), e);
-                throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_METADATA, e);
-            }
+                try (ObjectInputStream input = new ObjectInputStream(new FileInputStream(f))) {
+                    return (DataSetMetadata) input.readObject();
+                } catch (ClassNotFoundException | IOException e) {
+                    LOG.error("error reading metadata file {}", f.getAbsolutePath(), e);
+                    throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_METADATA, e);
+                }
 
-        });
-        return stream::iterator;
+            });
+            return stream::iterator;
+        }
     }
 
     /**

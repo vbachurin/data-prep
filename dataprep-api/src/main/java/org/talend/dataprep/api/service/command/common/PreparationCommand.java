@@ -96,24 +96,20 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
      * Get the full dataset records.
      *
      * @param dataSetId the dataset id.
-     * @param metadata true to return metadata.
-     * @param columns true to return columns info.
      * @return the resulting input stream records
      */
-    protected InputStream getDatasetContent(final String dataSetId, boolean metadata, boolean columns) {
-        return getDatasetContent(dataSetId, metadata, columns, null);
+    protected InputStream getDatasetContent(final String dataSetId) {
+        return getDatasetContent(dataSetId, null);
     }
 
     /**
      * Get dataset records
      *
      * @param dataSetId the dataset id.
-     * @param metadata true to return metadata.
-     * @param columns true to return columns info.
      * @param sample the wanted sample size (if null or <=0, the full dataset content is returned).
      * @return the resulting input stream records
      */
-    protected InputStream getDatasetContent(final String dataSetId, boolean metadata, boolean columns, Long sample) {
+    protected InputStream getDatasetContent(final String dataSetId, Long sample) {
         final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, dataSetId, false, true, sample);
         return retrieveDataSet.execute();
     }
@@ -157,9 +153,9 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
                 + "/actions/" + stepId);
         try {
             InputStream content = client.execute(actionsRetrieval).getEntity().getContent();
-            return builder
-                    .build()
-                    .reader(new TypeReference<List<Action>>() {})
+            return builder.build() //
+                    .reader(new TypeReference<List<Action>>() { //
+                    }) //
                     .readValue(content);
         } finally {
             actionsRetrieval.releaseConnection();
@@ -219,11 +215,11 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
             }
             // Did not find any cache for retrieve preparation details, starts over from original dataset
             if (Step.ROOT_STEP.id().equals(transformationStartStep)) {
-                ctx.content = getDatasetContent(preparation.getDataSetId(), false, true, sample);
+                ctx.content = getDatasetContent(preparation.getDataSetId(), sample);
             }
         } else {
             // Don't allow to work from intermediate cached steps, so start over from root (data set content).
-            ctx.content = getDatasetContent(preparation.getDataSetId(), false, true, sample);
+            ctx.content = getDatasetContent(preparation.getDataSetId(), sample);
             transformationStartStep = stepId;
         }
         // Build the actions to execute
