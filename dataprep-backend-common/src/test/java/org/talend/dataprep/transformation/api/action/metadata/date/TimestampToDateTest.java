@@ -18,6 +18,7 @@ import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.junit.Before;
@@ -82,7 +83,7 @@ public class TimestampToDateTest {
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", "0");
-        expectedValues.put("0003", "1970-01-01");
+        expectedValues.put("0003", "01-01-1970");
         expectedValues.put("0002", "01/01/2015");
 
         // when
@@ -119,10 +120,10 @@ public class TimestampToDateTest {
 
     @Test
     public void testApply(){
-        assertEquals("1970-01-01", action.apply("0"));
-        assertEquals("2015-09-09",action.apply("1441815638"));
-        assertEquals("",action.apply(""));
-        assertEquals("",action.apply(null));
+        assertEquals("1970-01-01", action.apply("0", DateTimeFormatter.ISO_LOCAL_DATE));
+        assertEquals("2015-09-09",action.apply("1441815638", DateTimeFormatter.ISO_LOCAL_DATE));
+        assertEquals("",action.apply("", DateTimeFormatter.ISO_LOCAL_DATE));
+        assertEquals("",action.apply(null, DateTimeFormatter.ISO_LOCAL_DATE));
     }
 
     /**
@@ -140,8 +141,8 @@ public class TimestampToDateTest {
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", "1441815638");
-        expectedValues.put("0004", "2015-09-09");
-        expectedValues.put("0003", "2015-09-09");
+        expectedValues.put("0004", "09-09-2015");
+        expectedValues.put("0003", "09-09-2015");
         expectedValues.put("0002", "01/01/2015");
 
         // when

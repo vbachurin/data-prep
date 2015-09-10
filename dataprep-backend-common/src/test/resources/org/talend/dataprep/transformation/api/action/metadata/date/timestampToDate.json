@@ -5,6 +5,7 @@
       "parameters": {
         "column_id": "0001",
         "column_name": "timestamp",
+        "new_pattern": "dd-MM-yyyy",
         "scope": "column"
       }
     }
