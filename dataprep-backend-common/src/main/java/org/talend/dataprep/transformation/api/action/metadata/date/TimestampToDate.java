@@ -26,7 +26,7 @@ import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.talend.dataprep.api.type.Type.STRING;
 
 @Component(TimestampToDate.ACTION_BEAN_PREFIX + TimestampToDate.ACTION_NAME)
-public class TimestampToDate extends AbstractActionMetadata implements ColumnAction {
+public class TimestampToDate extends AbstractActionMetadata implements ColumnAction, DatePatternParamModel {
 
     /**
      * The action name.
@@ -37,15 +37,6 @@ public class TimestampToDate extends AbstractActionMetadata implements ColumnAct
      * The column appendix.
      */
     public static final String APPENDIX = "_as_date"; //$NON-NLS-1$
-
-    /** Name of the new date pattern parameter. */
-    protected static final String NEW_PATTERN = "new_pattern"; //$NON-NLS-1$
-
-    /** The parameter object for the custom new pattern. */
-    private static final String CUSTOM_PATTERN = "custom_date_pattern"; //$NON-NLS-1$
-
-    /** The parameter object for the custom new pattern. */
-    private static final Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, STRING.getName(), EMPTY);
 
     /**
      * @see ActionMetadata#getName()
@@ -71,26 +62,10 @@ public class TimestampToDate extends AbstractActionMetadata implements ColumnAct
         return ActionCategory.DATE.getDisplayName();
     }
 
-    /**
-     * @see ActionMetadata#getItems()@return
-     */
-    @Override
     @Nonnull
+    @Override
     public Item[] getItems() {
-
-        ResourceBundle patterns = ResourceBundle.getBundle(
-                "org.talend.dataprep.transformation.api.action.metadata.date.date_patterns", Locale.ENGLISH);
-        Enumeration<String> keys = patterns.getKeys();
-        List<Item.Value> values = new ArrayList<>();
-        while (keys.hasMoreElements()) {
-            Item.Value currentValue = new Item.Value(patterns.getString(keys.nextElement()));
-            values.add(currentValue);
-        }
-
-        values.add(new Item.Value("custom", CUSTOM_PATTERN_PARAMETER));
-        values.get(0).setDefault(true);
-
-        return new Item[] { new Item(NEW_PATTERN, "patterns", values.toArray(new Item.Value[values.size()])) };
+        return getItemsForDatePattern();
     }
 
     /**
@@ -134,32 +109,6 @@ public class TimestampToDate extends AbstractActionMetadata implements ColumnAct
                 .type(Type.DATE) //
                 .headerSize(column.getHeaderSize()) //
                 .build();
-    }
-
-    /**
-     * @param pattern the date pattern.
-     * @return the simple date format out of the parameters.
-     */
-    private DateTimeFormatter getDateFormat(String pattern) {
-        try {
-            if (StringUtils.isEmpty(pattern)) {
-                throw new IllegalArgumentException();
-            }
-            return DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH);
-        } catch (IllegalArgumentException iae) {
-            throw new IllegalArgumentException("pattern '" + pattern + "' is not a valid date pattern", iae);
-        }
-
-    }
-
-    /**
-     * Get the new pattern from parameters
-     *
-     * @param parameters the parameters map
-     * @return the new date pattern
-     */
-    private String getNewPattern(Map<String, String> parameters) {
-        return "custom".equals(parameters.get(NEW_PATTERN)) ? parameters.get(CUSTOM_PATTERN) : parameters.get(NEW_PATTERN);
     }
 
 }
