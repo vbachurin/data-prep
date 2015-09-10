@@ -415,5 +415,8 @@
     "dynamic": false,
     "description": "Creates an exact copy of this column",
     "label": "Duplicate"
+  },
+  {
+    "name":"timestamp_to_date"
   }
 ]

@@ -1,16 +1,11 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.api.type.Type.STRING;
-
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -21,25 +16,15 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
-import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Change the date pattern on a 'date' column.
  */
 @Component(ChangeDatePattern.ACTION_BEAN_PREFIX + ChangeDatePattern.ACTION_NAME)
-public class ChangeDatePattern extends AbstractDate implements ColumnAction {
+public class ChangeDatePattern extends AbstractDate implements ColumnAction, DatePatternParamModel {
 
     /** Action name. */
     public static final String ACTION_NAME = "change_date_pattern"; //$NON-NLS-1$
-
-    /** Name of the new date pattern parameter. */
-    protected static final String NEW_PATTERN = "new_pattern"; //$NON-NLS-1$
-
-    /** The parameter object for the custom new pattern. */
-    private static final String CUSTOM_PATTERN = "custom_date_pattern"; //$NON-NLS-1$
-
-    /** The parameter object for the custom new pattern. */
-    private static final Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, STRING.getName(), EMPTY);
 
     /**
      * @see ActionMetadata#getName()
@@ -55,22 +40,8 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
     @Override
     @Nonnull
     public Item[] getItems() {
-
-        ResourceBundle patterns = ResourceBundle.getBundle(
-                "org.talend.dataprep.transformation.api.action.metadata.date.date_patterns", Locale.ENGLISH);
-        Enumeration<String> keys = patterns.getKeys();
-        List<Item.Value> values = new ArrayList<>();
-        while (keys.hasMoreElements()) {
-            Item.Value currentValue = new Item.Value(patterns.getString(keys.nextElement()));
-            values.add(currentValue);
-        }
-
-        values.add(new Item.Value("custom", CUSTOM_PATTERN_PARAMETER));
-        values.get(0).setDefault(true);
-
-        return new Item[] { new Item(NEW_PATTERN, "patterns", values.toArray(new Item.Value[values.size()])) };
+        return getItemsForDatePattern();
     }
-
 
     /**
      * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
@@ -78,8 +49,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
 
-        String newPattern = getNewPattern(parameters);
-        DateTimeFormatter newDateFormat = getDateFormat(newPattern);
+        DatePattern newPattern = getDateFormat(parameters);
 
         // checks for fail fast
         final RowMetadata rowMetadata = row.getRowMetadata();
@@ -99,7 +69,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
         }
         // if the new pattern is not yet present (ie: we're probably working on the first line)
         if (!isNewPatternRegistered) {
-            statistics.getPatternFrequencies().add(new PatternFrequency(newPattern, 1));
+            statistics.getPatternFrequencies().add(new PatternFrequency(newPattern.getPattern(), 1));
             column.setStatistics(statistics);
         }
         // Change the date pattern
@@ -109,36 +79,10 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
         }
         try {
             final LocalDateTime date = superParse(value, row, columnId);
-            row.set(columnId, newDateFormat.format(date));
+            row.set(columnId, newPattern.getFormatter().format(date));
         } catch (DateTimeException e) {
             // cannot parse the date, let's leave it as is
         }
-    }
-
-    /**
-     * @param pattern the date pattern.
-     * @return the simple date format out of the parameters.
-     */
-    private DateTimeFormatter getDateFormat(String pattern) {
-        try {
-            if (StringUtils.isEmpty(pattern)) {
-                throw new IllegalArgumentException();
-            }
-            return DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH);
-        } catch (IllegalArgumentException iae) {
-            throw new IllegalArgumentException("pattern '" + pattern + "' is not a valid date pattern", iae);
-        }
-
-    }
-
-    /**
-     * Get the new pattern from parameters
-     *
-     * @param parameters the parameters map
-     * @return the new date pattern
-     */
-    private String getNewPattern(Map<String, String> parameters) {
-        return "custom".equals(parameters.get(NEW_PATTERN)) ? parameters.get(CUSTOM_PATTERN) : parameters.get(NEW_PATTERN);
     }
 
 }
