@@ -387,6 +387,11 @@
                     recipeStateBeforePreview = null;
                     recipe = newRecipe;
 
+                    var allDisabledCables = angular.element('.recipe').eq(0).find('.single-maillon-cables-disabled').toArray();
+                    _.each(allDisabledCables, function(cable) {
+                        cable.setAttribute('class', '');
+                    });
+
                     return {
                         'old': oldRecipe,
                         'new': newRecipe

@@ -10,7 +10,7 @@
      * <recipe-bullet step='step'></recipe-bullet>
      * @param {object} step The bound step
      */
-    function RecipeBullet($timeout) {
+    function RecipeBullet($timeout, $rootScope) {
         return {
             restrict: 'E',
             scope: {
@@ -129,19 +129,29 @@
 
                 /**
                  * @ngdoc method
+                 * @name activateBottomCable
+                 * @methodOf data-prep.recipe-bullet.directive:RecipeBullet
+                 * @description [PRIVATE] Activate the bottom cable at a specific index
+                 * @param {number} index The index of the element toactivate
+                 */
+                function activateBottomCable(index) {
+                    var bullet = index === ctrl.stepIndex ? iElement.find('.all-svg-cls') : getBulletSvgAtIndex(index);
+                    var branch = bullet.find('>path').eq(1)[0];
+                    branch.setAttribute('class', '');
+                }
+
+                /**
+                 * @ngdoc method
                  * @name updateSVGSizes
                  * @methodOf data-prep.recipe-bullet.directive:RecipeBullet
                  * @description [PRIVATE] Calculate and set the svg size infos (circle position, cables size)
                  */
                 var updateSVGSizes = function() {
-                    var parentHeight = iElement.parent().height();
-                    var circleSize = 20;
-                    var distanceBetweenBullets = 5;
-                    var remainingHeight = ((parentHeight - circleSize) / 2) + distanceBetweenBullets;
-
-                    var topPath = 'M 15 0 L 15 ' + remainingHeight + ' Z';
-                    var circleCenterY = remainingHeight + 10;
-                    var bottomPath = 'M 15 ' + (circleCenterY + 12) + ' L 15 ' + (circleCenterY + 10 + remainingHeight) + ' Z';
+                    ctrl.height = iElement.height() + 5;
+                    //circle Size = 20;
+                    var topPath = 'M 15 0 L 15 11 Z';
+                    var circleCenterY = 21;
+                    var bottomPath = 'M 15 31 L 15 ' + ctrl.height + ' Z';
 
                     bulletTopCable.setAttribute('d', topPath);
                     bulletCircleElement.setAttribute('cy', circleCenterY);
@@ -158,10 +168,12 @@
                 var mouseEnterListener = function () {
                     ctrl.stepHoverStart();
                     var allBulletsSvgs = getAllBulletsCircle();
-
                     bulletsToBeChanged = ctrl.getBulletsToChange(allBulletsSvgs);
+
                     var newClass = ctrl.step.inactive ? 'maillon-circle-disabled-hovered' : 'maillon-circle-enabled-hovered';
                     _.each(bulletsToBeChanged, setClass(newClass));
+
+                    updateSVGSizes();
                 };
 
                 /**
@@ -174,6 +186,7 @@
                 var mouseLeaveListener = function () {
                     ctrl.stepHoverEnd();
                     _.each(bulletsToBeChanged, setClass(''));
+                    updateSVGSizes();
                 };
 
                 /**
@@ -186,7 +199,6 @@
                 var circleClickListener = function (event) {
                     event.stopPropagation();
                     ctrl.toggleStep();
-
                     activateAllCables();
                     if (!ctrl.step.inactive && !ctrl.isStartChain()) {
                         deActivateBottomCable(ctrl.stepIndex - 1);
@@ -195,11 +207,47 @@
                     }
                 };
 
-                iElement.mouseenter(mouseEnterListener);
-                iElement.mouseleave(mouseLeaveListener);
+
+                /**
+                 * @ngdoc method
+                 * @name updateAllBullets
+                 * @methodOf data-prep.recipe-bullet.directive:RecipeBullet
+                 * @description [PRIVATE] redraw all bullet recipe
+                 */
+                var updateAllBullets = function () {
+                    $timeout(function(){
+                        //update all step accordion
+                        $( ".accordion" ).each(function() {
+                            $(this).trigger('mouseover');
+                        });
+                    },200);
+                };
+
+
+                bulletCircleElement.addEventListener('mouseenter', mouseEnterListener);
+                bulletCircleElement.addEventListener('mouseleave', mouseLeaveListener);
                 bulletCircleElement.addEventListener('click', circleClickListener);
 
+
+                iElement.closest('.accordion').mouseover(function(){
+                    $timeout(updateSVGSizes);
+                });
+
+                iElement.closest('.accordion').mouseleave(function(){
+                    $timeout(updateSVGSizes);
+                });
+
+                iElement.closest('.accordion').click(function(){
+                    updateAllBullets();
+                });
+
                 $timeout(updateSVGSizes);
+
+                scope.$watch(ctrl.height, function() {
+                    updateAllBullets();
+                });
+
+
             }
         };
     }

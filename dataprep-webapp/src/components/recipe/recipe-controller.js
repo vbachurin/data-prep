@@ -60,6 +60,7 @@
 
             PlaygroundService.updateStep(step, newParams)
                 .then(function() {
+                    debugger;
                     vm.showModal = {};
                 });
         };
