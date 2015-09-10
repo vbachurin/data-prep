@@ -50,12 +50,6 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
     @Autowired
     ContentStoreRouter store;
 
-    @Autowired
-    ApplicationContext applicationContext;
-
-    @Autowired
-    Jackson2ObjectMapperBuilder builder;
-
     @JmsListener(destination = Destinations.STATISTICS_ANALYSIS)
     public void analyzeQuality(Message message) {
         try {
@@ -102,6 +96,12 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
 
     }
 
+    /**
+     * Compute the statistics for the given dataset metadata and content.
+     *
+     * @param metadata the metadata to compute the statistics for.
+     * @param stream the content to compute the statistics from.
+     */
     public void computeStatistics(DataSetMetadata metadata, Stream<DataSetRow> stream) {
         // Create a content with the expected format for the StatisticsClientJson class
         final List<ColumnMetadata> columns = metadata.getRow().getColumns();
@@ -148,9 +148,12 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
         stream.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
         analyzer.end();
         // Store results back in data set
-        StatisticsUtils.setStatistics(columns, analyzer);
+        StatisticsUtils.setStatistics(columns, analyzer.getResult());
     }
 
+    /**
+     * @see AsynchronousDataSetAnalyzer#destination()
+     */
     @Override
     public String destination() {
         return Destinations.STATISTICS_ANALYSIS;

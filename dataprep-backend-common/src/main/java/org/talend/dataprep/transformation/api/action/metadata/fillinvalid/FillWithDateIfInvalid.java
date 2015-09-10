@@ -1,19 +1,5 @@
 package org.talend.dataprep.transformation.api.action.metadata.fillinvalid;
 
-import java.time.DateTimeException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
-
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +12,21 @@ import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataUtils;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+
+import javax.annotation.Nonnull;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 
 @Component(value = FillWithDateIfInvalid.ACTION_BEAN_PREFIX + FillWithDateIfInvalid.FILL_INVALID_ACTION_NAME)
 public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
@@ -71,8 +71,7 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
         }
 
         try {
-            final Set<String> invalidValues = column.getQuality().getInvalidValues();
-            if (StringUtils.isEmpty(value) || invalidValues.contains(value)) {
+            if (StringUtils.isEmpty(value) || ActionMetadataUtils.checkInvalidValue(column, value)) {
                 // we assume all controls have been made in the ui.
                 String newDateStr = parameters.get(DEFAULT_VALUE_PARAMETER);
 
@@ -85,7 +84,14 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
                 // format the result
                 String newDateWithFormat = DEFAULT_FORMATTER.format(temp);
 
+                // set the result
                 row.set(columnId, newDateWithFormat);
+
+                // update invalid values to prevent future unnecessary analysis
+                if (!StringUtils.isEmpty(value)) {
+                    final Set<String> invalidValues = column.getQuality().getInvalidValues();
+                    invalidValues.add(value);
+                }
             }
         } catch (Exception e) {
             LOGGER.warn("skip error parsing date", e);

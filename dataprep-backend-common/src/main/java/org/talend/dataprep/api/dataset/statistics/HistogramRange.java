@@ -30,12 +30,16 @@ public class HistogramRange implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof HistogramRange)) return false;
-
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof HistogramRange)) {
+            return false;
+        }
         HistogramRange that = (HistogramRange) o;
-
-        if (occurrences != that.occurrences) return false;
+        if (occurrences != that.occurrences) {
+            return false;
+        }
         return range.equals(that.range);
 
     }

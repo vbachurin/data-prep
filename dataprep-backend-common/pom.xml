@@ -11,8 +11,6 @@
     </parent>
     <packaging>jar</packaging>
     <artifactId>dataprep-backend-common</artifactId>
-    <version>1.0.m8-SNAPSHOT</version>
-    <name>dataprep-backend-common</name>
     <dependencies>
         <dependency>
             <groupId>org.talend.dataquality</groupId>
@@ -94,12 +92,17 @@
         </dependency>
         <dependency>
             <groupId>org.talend.dataquality</groupId>
-            <artifactId>org.talend.datascience.common</artifactId>
+            <artifactId>org.talend.dataquality.common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.talend.dataquality</groupId>
+            <artifactId>org.talend.dataquality.record.linkage</artifactId>
         </dependency>
         <dependency>
             <groupId>org.talend.dataquality</groupId>
             <artifactId>org.talend.dataquality.semantic</artifactId>
         </dependency>
+
         <!-- UNIT TEST DEPENDENCIES -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -135,6 +138,8 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
-        
+
     </dependencies>
+    <version>1.0.m8-SNAPSHOT</version>
+    <name>dataprep-backend-common</name>
 </project>

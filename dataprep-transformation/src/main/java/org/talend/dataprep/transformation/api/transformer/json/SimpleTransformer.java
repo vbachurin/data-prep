@@ -144,7 +144,7 @@ class SimpleTransformer implements Transformer {
                     // Use analyzer (for empty values, semantic...)
                     if (!r.isDeleted()) {
                         final DataSetRow row = r.order(r.getRowMetadata().getColumns());
-                        configureAnalyzer(context).analyze(row.toArray());
+                        configureAnalyzer(context).analyze(row.toArray(DataSetRow.SKIP_TDP_ID));
                     }
                 }
                 return r;
@@ -174,7 +174,6 @@ class SimpleTransformer implements Transformer {
                 writer.fieldName("columns");
                 final RowMetadata row = context.getTransformedRowMetadata();
                 final Analyzer<Analyzers.Result> analyzer = (Analyzer<Analyzers.Result>) context.get(CONTEXT_ANALYZER);
-                analyzer.end();
                 // Set metadata information (not in statistics).
                 final List<ColumnMetadata> dataSetColumns = row.getColumns();
                 final List<Analyzers.Result> results = analyzer.getResult();
@@ -196,7 +195,8 @@ class SimpleTransformer implements Transformer {
                     }
                 }
                 // Set the statistics
-                StatisticsUtils.setStatistics(row.getColumns(), analyzer);
+                analyzer.end(); // TODO SemanticAnalyzer is erased on end(), call end after metadata is set (wait for TDQ-10970).
+                StatisticsUtils.setStatistics(row.getColumns(), analyzer.getResult());
                 writer.write(context.getTransformedRowMetadata());
             }
             writer.endObject();
