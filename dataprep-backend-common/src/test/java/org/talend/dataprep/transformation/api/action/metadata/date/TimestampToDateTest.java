@@ -19,7 +19,10 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +39,7 @@ import org.talend.dataprep.transformation.api.action.metadata.text.Split;
 /**
  * Test class for Split action. Creates one consumer, and test it.
  *
- * @see Split
+ * @see TimestampToDate
  */
 public class TimestampToDateTest {
 
@@ -119,11 +122,12 @@ public class TimestampToDateTest {
     }
 
     @Test
-    public void testApply(){
-        assertEquals("1970-01-01", action.apply("0", DateTimeFormatter.ISO_LOCAL_DATE));
-        assertEquals("2015-09-09",action.apply("1441815638", DateTimeFormatter.ISO_LOCAL_DATE));
-        assertEquals("",action.apply("", DateTimeFormatter.ISO_LOCAL_DATE));
-        assertEquals("",action.apply(null, DateTimeFormatter.ISO_LOCAL_DATE));
+    public void testgetTimeStamp(){
+        assertEquals("1970-01-01", action.getTimeStamp("0", DateTimeFormatter.ISO_LOCAL_DATE));
+        assertEquals("2015-09-09",action.getTimeStamp("1441815638", DateTimeFormatter.ISO_LOCAL_DATE));
+        assertEquals("2015-09-09T16:20:38",action.getTimeStamp("1441815638", DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        assertEquals("",action.getTimeStamp("", DateTimeFormatter.ISO_LOCAL_DATE));
+        assertEquals("",action.getTimeStamp(null, DateTimeFormatter.ISO_LOCAL_DATE));
     }
 
     /**

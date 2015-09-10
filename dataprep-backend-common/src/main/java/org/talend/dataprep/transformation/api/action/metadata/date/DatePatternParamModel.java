@@ -1,36 +1,38 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import org.apache.commons.lang.StringUtils;
-import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
-import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.api.type.Type.STRING;
 
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.api.type.Type.STRING;
+import org.apache.commons.lang.StringUtils;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * This interface is designed to be implemented by actions that have a date pattern as parameter.
  */
-public interface DatePatternParamModel extends ColumnAction {
+public interface DatePatternParamModel {
 
     /**
      * Name of the new date pattern parameter.
      */
-    static final String NEW_PATTERN = "new_pattern"; //$NON-NLS-1$
+    String NEW_PATTERN = "new_pattern"; //$NON-NLS-1$
 
     /**
      * The parameter object for the custom new pattern.
      */
-    static final String CUSTOM_PATTERN = "custom_date_pattern"; //$NON-NLS-1$
+    String CUSTOM_PATTERN = "custom_date_pattern"; //$NON-NLS-1$
 
     /**
      * The parameter object for the custom new pattern.
      */
-    static final Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, STRING.getName(), EMPTY);
+    Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, STRING.getName(), EMPTY);
 
+    /**
+     * @return the Items to display for the date related action.
+     */
     default Item[] getItemsForDatePattern() {
 
         ResourceBundle patterns = ResourceBundle.getBundle(
