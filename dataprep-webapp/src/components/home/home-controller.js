@@ -243,7 +243,6 @@
                 })
                 .catch(function () {
                     dataset.error = true;
-                    MessageService.error('UPLOAD_ERROR_TITLE', 'UPLOAD_ERROR');
                 });
         };
 
@@ -274,7 +273,6 @@
                 })
                 .catch(function () {
                     dataset.error = true;
-                    MessageService.error('UPLOAD_ERROR_TITLE', 'UPLOAD_ERROR');
                 });
         };
 
