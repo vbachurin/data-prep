@@ -91,10 +91,13 @@ public class RemoveNonNumCharsTest {
     public void test_some_values(){
         assertEquals("10",action.apply("€10k"));
         assertEquals("10",action.apply("10"));
-        assertEquals("10",action.apply("€10-"));
+        assertEquals("0123456789",action.apply("0123456789"));
+        assertEquals("10-",action.apply("€10-"));
         assertEquals("10.5",action.apply("€10.5K"));
-        assertEquals("10,5",action.apply("$10,5K"));
+        assertEquals("-10,5",action.apply("-$10,5K"));
         assertEquals("1010",action.apply("aa10aa10"));
+        assertEquals(" 1 2 3- ,",action.apply("A 1 b2 ç3!%£*ê}~(-+*/&\":# ,"));
+        assertEquals(" 123",action.apply("é@ àèÏ123éç"));
     }
 
     @Test

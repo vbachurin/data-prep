@@ -57,6 +57,6 @@ public class RemoveNonNumChars extends AbstractActionMetadata implements ColumnA
         if (from == null) {
             return "";
         }
-        return from.replaceAll("[^0-9.,]", "");
+        return from.replaceAll("[^0-9., -]", "");
     }
 }

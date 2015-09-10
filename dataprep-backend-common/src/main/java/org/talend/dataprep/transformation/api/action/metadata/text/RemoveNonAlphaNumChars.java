@@ -57,6 +57,6 @@ public class RemoveNonAlphaNumChars extends AbstractActionMetadata implements Co
         if (from == null) {
             return "";
         }
-        return from.replaceAll("[^0-9a-zA-Z]", "");
+        return from.replaceAll("[\\p{Punct}]", "");
     }
 }
