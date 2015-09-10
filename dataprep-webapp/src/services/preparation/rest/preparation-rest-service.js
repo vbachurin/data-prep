@@ -207,12 +207,11 @@
          * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @param {string} preparationId The preaparation id to update
          * @param {string} stepId The step to delete
-         * @param {boolean} singleMode Delete only the target step if true, all steps from target otherwise
          * @description Delete a step
          * @returns {promise} The DELETE promise
          */
-        function removeStep(preparationId, stepId, singleMode) {
-            var url = RestURLs.preparationUrl + '/' + preparationId + '/actions/' + stepId + (singleMode ? '?single=true' : '');
+        function removeStep(preparationId, stepId) {
+            var url = RestURLs.preparationUrl + '/' + preparationId + '/actions/' + stepId;
             return $http.delete(url);
         }
 

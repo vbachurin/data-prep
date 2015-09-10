@@ -911,6 +911,56 @@ describe('Recipe service', function () {
                 recipe[3].actionParameters
             ]);
         }));
+
+        it('should return the last step', inject(function(RecipeService) {
+            //given
+            var recipe = [
+                {transformation: {stepId: '0'}, actionParameters: {action: 'action0'}},
+                {transformation: {stepId: '1'}, actionParameters: {action: 'action1'}},
+                {transformation: {stepId: '2'}, actionParameters: {action: 'action2'}},
+                {transformation: {stepId: '3'}, actionParameters: {action: 'action3'}}
+            ];
+            RecipeService.getRecipe().push(recipe[0], recipe[1], recipe[2], recipe[3]);
+
+            //when
+            var lastStep = RecipeService.getLastStep();
+
+            //then
+            expect(lastStep).toBe(recipe[3]);
+        }));
+
+        it('should return the last step', inject(function(RecipeService) {
+            //given
+            var recipe = [
+                {transformation: {stepId: '0'}, actionParameters: {action: 'action0'}},
+                {transformation: {stepId: '1'}, actionParameters: {action: 'action1'}},
+                {transformation: {stepId: '2'}, actionParameters: {action: 'action2'}},
+                {transformation: {stepId: '3'}, actionParameters: {action: 'action3'}}
+            ];
+            RecipeService.getRecipe().push(recipe[0], recipe[1], recipe[2], recipe[3]);
+
+            //when
+            var lastStep = RecipeService.getLastStep();
+
+            //then
+            expect(lastStep).toBe(recipe[3]);
+        }));
+
+        it('should return the initial state if recipe is empty', inject(function($rootScope, RecipeService) {
+            //given
+            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            RecipeService.refresh();
+            $rootScope.$digest();
+
+            var recipe = RecipeService.getRecipe();
+            recipe.splice(0, recipe.length)
+
+            //when
+            var lastStep = RecipeService.getLastStep();
+
+            //then
+            expect(lastStep).toEqual({ transformation: {stepId: 'f6e172c33bdacbc69bca9d32b2bd78174712a171' }});
+        }));
     });
 
     describe('early preview', function() {

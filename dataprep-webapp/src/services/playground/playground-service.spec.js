@@ -363,7 +363,9 @@ describe('Playground Service', function () {
     describe('transformation steps', function() {
         var preparationHeadContent, metadata;
         var lastStepId = 'a151e543456413ef51';
+        var previousLastStepId = '3248fa65e45f588cb464';
         var lastStep = {transformation: {stepId: lastStepId}};
+        var previousLastStep = {transformation: {stepId: previousLastStepId}};
         beforeEach(inject(function($rootScope, $q, PlaygroundService, PreparationService, DatagridService, RecipeService, HistoryService) {
             preparationHeadContent = {
                 'records': [{
@@ -399,6 +401,9 @@ describe('Playground Service', function () {
             spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: preparationHeadContent}));
             spyOn(DatagridService, 'updateData').and.returnValue();
             spyOn(RecipeService, 'getLastStep').and.returnValue(lastStep);
+            spyOn(RecipeService, 'getPreviousStep').and.callFake(function(step) {
+                return step === lastStep ? previousLastStep : null;
+            });
             spyOn(HistoryService, 'addAction').and.returnValue();
         }));
 
@@ -587,7 +592,7 @@ describe('Playground Service', function () {
                     undo();
 
                     //then
-                    expect(PreparationService.setHead).toHaveBeenCalledWith(preparationId, lastStepId);
+                    expect(PreparationService.setHead).toHaveBeenCalledWith(preparationId, previousLastStepId);
                 }));
 
                 it('should refresh recipe on UNDO', inject(function($rootScope, DatagridService, RecipeService) {
@@ -788,17 +793,6 @@ describe('Playground Service', function () {
                     parameters: {value: 'toto', column_id: '0001'}
                 }
             };
-
-            var previousStepId = '897f486516ef549cf845';
-            var previousStep = {
-                column:{id:'0001'},
-                transformation: {stepId: previousStepId},
-                actionParameters: {
-                    action: 'touppercase',
-                    parameters: {column_id: '0001'}
-                }
-            };
-
             var preparationId = '43ab15436f12e3456';
 
             var allActionsFromStepToDelete = [
@@ -808,7 +802,6 @@ describe('Playground Service', function () {
             ];
 
             beforeEach(inject(function(RecipeService) {
-                spyOn(RecipeService, 'getPreviousStep').and.returnValue(previousStep);
                 spyOn(RecipeService, 'getAllActionsFrom').and.returnValue(allActionsFromStepToDelete);
             }));
 
@@ -820,7 +813,7 @@ describe('Playground Service', function () {
                 PlaygroundService.removeStep(stepToDelete);
 
                 //then
-                expect(PreparationService.removeStep).toHaveBeenCalledWith(preparationId, stepToDeleteId, true);
+                expect(PreparationService.removeStep).toHaveBeenCalledWith(preparationId, stepToDeleteId);
             }));
 
             it('should show/hide loading', inject(function ($rootScope, PlaygroundService) {
@@ -1021,6 +1014,9 @@ describe('Playground Service', function () {
             spyOn(DatagridService, 'updateData').and.returnValue();
             spyOn(RecipeService, 'getLastStep').and.returnValue({
                 transformation: {stepId: 'a151e543456413ef51'}
+            });
+            spyOn(RecipeService, 'getPreviousStep').and.returnValue({
+                transformation: {stepId: '84f654a8e64fc5'}
             });
             spyOn(StateService, 'showRecipe').and.returnValue();
             spyOn(StateService, 'hideRecipe').and.returnValue();

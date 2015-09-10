@@ -342,9 +342,6 @@
                         return preparation;
                     });
 
-            //save the head before transformation for undo
-            var previousHead = RecipeService.getLastStep().transformation.stepId;
-
             return prepCreation
                 //append step
                 .then(function(preparation) {
@@ -357,9 +354,11 @@
                 })
                 //add entry in history for undo/redo
                 .then(function() {
-                    var actualHead = RecipeService.getLastStep().transformation.stepId;
-                    var undo = setPreparationHead.bind(service, state.playground.preparation.id, previousHead);
-                    var redo = setPreparationHead.bind(service, state.playground.preparation.id, actualHead, parameters.column_id);
+                    var actualHead = RecipeService.getLastStep();
+                    var previousHead = RecipeService.getPreviousStep(actualHead);
+
+                    var undo = setPreparationHead.bind(service, state.playground.preparation.id, previousHead.transformation.stepId);
+                    var redo = setPreparationHead.bind(service, state.playground.preparation.id, actualHead.transformation.stepId, parameters.column_id);
                     HistoryService.addAction(undo, redo);
                 })
                 //hide loading screen
@@ -422,7 +421,7 @@
             //save the head before transformation for undo
             var previousHead = RecipeService.getLastStep().transformation.stepId;
 
-            return PreparationService.removeStep(state.playground.preparation.id, step.transformation.stepId, true)
+            return PreparationService.removeStep(state.playground.preparation.id, step.transformation.stepId)
                 //update recipe and datagrid
                 .then(function() {
                     return $q.all([updateRecipe(), updatePreparationDatagrid()]);

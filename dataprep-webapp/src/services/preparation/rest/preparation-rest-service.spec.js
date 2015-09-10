@@ -347,36 +347,17 @@ describe('Preparation REST Service', function () {
             //then : update request to have been called
         }));
 
-        it('should remove a transformation step in the current preparation in cascade mode', inject(function($rootScope, RestURLs, PreparationRestService) {
+        it('should remove a transformation step in the preparation', inject(function($rootScope, RestURLs, PreparationRestService) {
             //given
             var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
             var stepId = '856980bacf0890c89bc318856980bacf0890c89b';
-            var singleMode = false;
 
             $httpBackend
                 .expectDELETE(RestURLs.preparationUrl + '/' + preparationId + '/actions/' + stepId)
                 .respond(200);
 
             //when
-            PreparationRestService.removeStep(preparationId, stepId, singleMode);
-            $httpBackend.flush();
-            $rootScope.$digest();
-
-            //then : delete request to have been called
-        }));
-
-        it('should remove a transformation step in the current preparation in single mode', inject(function($rootScope, RestURLs, PreparationRestService) {
-            //given
-            var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
-            var stepId = '856980bacf0890c89bc318856980bacf0890c89b';
-            var singleMode = true;
-
-            $httpBackend
-                .expectDELETE(RestURLs.preparationUrl + '/' + preparationId + '/actions/' + stepId + '?single=true')
-                .respond(200);
-
-            //when
-            PreparationRestService.removeStep(preparationId, stepId, singleMode);
+            PreparationRestService.removeStep(preparationId, stepId);
             $httpBackend.flush();
             $rootScope.$digest();
 

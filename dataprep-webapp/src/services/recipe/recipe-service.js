@@ -224,7 +224,7 @@
          * @returns {object} The last step
          */
         function getLastStep() {
-            return recipe[recipe.length - 1];
+            return recipe.length > 0 ? recipe[recipe.length - 1] : initialState;
         }
 
         /**
