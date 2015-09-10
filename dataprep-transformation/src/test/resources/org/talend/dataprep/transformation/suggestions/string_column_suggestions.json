@@ -800,5 +800,8 @@
     "dynamic": false,
     "description": "Remove specified text from cells in this column",
     "label": "Remove part of the text..."
+  },
+  {
+    "name":"normalize"
   }
 ]

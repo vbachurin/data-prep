@@ -1010,5 +1010,8 @@
     "dynamic": false,
     "description": "Rename this column",
     "label": "Rename"
+  },
+  {
+    "name":"normalize"
   }
 ]
