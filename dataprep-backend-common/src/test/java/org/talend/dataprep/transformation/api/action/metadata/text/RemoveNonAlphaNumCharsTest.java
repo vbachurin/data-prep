@@ -89,15 +89,16 @@ public class RemoveNonAlphaNumCharsTest {
 
     @Test
     public void test_some_values(){
-        assertEquals("10k€",action.apply("-10k€"));
-        assertEquals("€105K",action.apply("€10.5K"));
+        assertEquals("10k",action.apply("-10k€"));
+        assertEquals("105K",action.apply("€10.5K"));
         assertEquals("105K",action.apply("$10,5K"));
         assertEquals("aa10aa10",action.apply("aa10aa10"));
 
         assertEquals(" une belle voiture ",action.apply(" une belle voiture "));
         assertEquals("voiciuntest",action.apply("-voici_un#test"));
 
-        assertEquals("àéïOù",action.apply("àéïOù"));
+        assertEquals("àéïOù23",action.apply("àéïOù&~23"));
+        assertEquals("",action.apply("£µ§€¥"));
     }
 
     @Test
