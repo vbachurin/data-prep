@@ -97,6 +97,6 @@ public class Normalize extends AbstractActionMetadata implements ColumnAction {
         // versions of the string should be equivalent. This also means
         // we do not need to convert the string back to composed Unicode
         // before returning it.
-        return result.toString();
+        return result.toString().trim();
     }
 }

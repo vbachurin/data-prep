@@ -116,6 +116,7 @@ public class NormalizeTest {
         assertEquals("r&d",action.normalize("R&d"));
         assertEquals("eecauou",action.normalize("éèçàüöù"));
         assertEquals("cœur",action.normalize("cœur"));
+        assertEquals("c'est ouf",action.normalize(" c'est ouf "));
     }
 
     @Test
