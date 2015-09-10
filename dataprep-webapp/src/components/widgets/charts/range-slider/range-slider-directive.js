@@ -34,7 +34,7 @@
                 var renderTimeout;
                 var container = attrs.id;
 
-                var margin = {top: 5, right: 25, bottom: 10, left: 20};
+                var margin = {top: 5, right: 20, bottom: 10, left: 15};
                 var width = attrs.width - margin.left - margin.right;
                 var height = attrs.height - margin.top - margin.bottom;
 
@@ -254,6 +254,7 @@
                             //It will propagate the new filter limits to the rest of the app, it's triggered when the user finishes a brush
                             .on('brushend', function brushend() {
                                 var s = scope.brush.extent();
+                                filterToApply = scope.brush.extent();
                                 //the user is moving the whole brush
                                 if(scope.oldRangeLimits[0] !== s[0] && scope.oldRangeLimits[1] !== s[1]){
                                     //trigger filter process in the datagrid
@@ -278,7 +279,7 @@
                     svg.append('g')
                         .attr('class', 'x axis')
                         .attr('transform', 'translate(0,' + (margin.top + 20) + ')')
-                        .call(d3.svg.axis().scale(scale).orient('bottom').ticks(Math.abs(scale.range()[1] - scale.range()[0]) / 50)
+                        .call(d3.svg.axis().scale(scale).orient('top').ticks(Math.abs(scale.range()[1] - scale.range()[0]) / 50)
                             .tickFormat(function (d) {
                                 if (d > 1e4 || d < -1e4) {
                                     return d3.format('e')(d);
@@ -288,12 +289,12 @@
                                 }
                             })
                         )
-                        .selectAll('text').attr('y', 13);
+                        .selectAll('text').attr('y', -13);
 
                     svg.append('g').append('text')
                         .attr('class', 'the-minimum-label')
                         .attr('x', -10)
-                        .attr('y', margin.top + 5)
+                        .attr('y', height/2)
                         .attr('text-anchor', 'start')
                         .attr('fill', 'grey')
                         .text(function(){
@@ -303,7 +304,7 @@
                     svg.append('g').append('text')
                         .attr('class', 'the-maximum-label')
                         .attr('x', width+10)
-                        .attr('y', margin.top + 5)
+                        .attr('y', height/2)
                         .attr('text-anchor', 'end')
                         .attr('fill', 'grey')
                         .text(function(){

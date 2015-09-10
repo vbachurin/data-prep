@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function ColumnProfileCtrl($scope, state, StatisticsService, PlaygroundService, PreparationService, RecipeService) {
+    function ColumnProfileCtrl($scope, state, StatisticsService, PlaygroundService, RecipeService) {
         var vm = this;
         vm.statisticsService = StatisticsService;
         vm.chartConfig = {};
@@ -10,9 +10,8 @@
             return StatisticsService.addFilter(item.data);
         };
 
-        vm.vBarchartClickFn = function vBarchartClickFn (item){
-            var jsonRange = JSON.parse('['+item.data.replace('...',',')+']');
-            return StatisticsService.addRangeFilter(jsonRange);
+        vm.vBarchartClickFn = function vBarchartClickFn (item, from){
+            return StatisticsService.addRangeFilter(item.data, from);
         };
         
         //------------------------------------------------------------------------------------------------------

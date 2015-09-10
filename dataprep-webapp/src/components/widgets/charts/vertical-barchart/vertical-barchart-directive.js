@@ -25,12 +25,15 @@
 				visuData: '=',
 				keyField: '@',
 				valueField: '@',
-				keyLabel:'@'
+				keyLabel:'@',
+				existentFilter:'='
 			},
 			link: function (scope, element, attrs) {
 				var xField = scope.keyField;//occurences
 				var yField = scope.valueField;
-				var renderTimeout;
+				var labelTooltip = scope.keyLabel;
+				var existentFilter = scope.existentFilter;
+				var renderTimeout, updateBarsTimeout;
 				var tip;
 
 				function renderVBarchart(statData) {
@@ -40,53 +43,39 @@
 
 					var margin = {
 						top: 20,
-						right: 25,
-						bottom: 20,
-						left: 20
+						right: 20,
+						bottom: 10,
+						left: 15
 						},
 						w = width - margin.left - margin.right,
 						h = height - margin.top - margin.bottom;
 
 					var x = d3.scale.ordinal()
-						.rangeRoundBands([0, w], .3);
+						.rangeRoundBands([0, w], 0.2);
 					var y = d3.scale.linear()
 						.range([h, 0]);
 
 					var xAxis = d3.svg.axis()
 						.scale(x)
-						.orient("bottom");
-
-					var yAxis = d3.svg.axis().tickFormat(d3.format('d'))
-						.scale(y)
-						.orient("left");
+						.orient('bottom');
 
 					tip = d3.tip()
 						.attr('class', 'vertical-barchart-cls d3-tip')
 						.offset([0, -11])
 						.direction('w')
 						.html(function(d) {
-							return 	'<strong>Occurences:</strong> <span style="color:yellow">' + d[yField] + '</span>'+
+							return 	'<strong>'+labelTooltip+':</strong> <span style="color:yellow">' + d[yField] + '</span>'+
 								'<br/>'+
 								'<br/>'+
-								'<strong>Range:</strong> <span style="color:yellow">'+ d[xField] + '</span>';
+								'<strong>Range:</strong> <span style="color:yellow">['+ d[xField] + ']</span>';
 						});
-/*
-					var line = d3.svg.line()
-						.interpolate("monotone")
-						//    .interpolate("step-after")
-						.x(function(d) {
-							return x(d[xField]);
-						})
-						.y(function(d) {
-							return y(d[yField]);
-						});
-*/
-					var svg = d3.select("#"+container).append("svg")
+
+					var svg = d3.select('#'+container).append('svg')
 						.attr('class', 'vertical-barchart-cls')
-						.attr("width", w + margin.left + margin.right)
-						.attr("height", h + margin.top + margin.bottom)
-						.append("g")
-						.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+						.attr('width', w + margin.left + margin.right)
+						.attr('height', h + margin.top + margin.bottom)
+						.append('g')
+						.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
 					svg.call(tip);
 
@@ -103,50 +92,59 @@
 						return d[yField];
 					})]);
 
-					svg.append("g")
-						.attr("class", "x axis")
-						.attr("transform", "translate(0," + h + ")")
-						.call(xAxis)
-						.selectAll("text")
-						/*.attr("y", 0)
-						.attr("x", 9)
-						.attr("dy", ".35em")
-						.attr("transform", "rotate(90)")
-						.style("text-anchor", "start")
-						*/
-						.attr('display','none');
-
-					svg.append("g")
-						.attr("class", "y axis")
-						.call(yAxis)
-						/*.append("text")
-						 .attr("transform", "rotate(-90)")
-						 .attr("y", 6)
-						 .attr("dy", ".71em")
-						 .style("text-anchor", "end")
-						 .text("Frequency")*/;
-
-					var buckets = svg.selectAll(".bar")
+					svg.append('g').selectAll('.bar')
 						.data(statData)
-						.enter().append("rect")
-						.attr("class", "bar")
-						.attr("x", function(d) {
+						.enter().append('rect')
+						.attr('class', 'bar')
+						.attr('x', function(d) {
 							return x(d[xField]);
 						})
-						.attr("width", x.rangeBand())
-						.attr("y", function(d) {
+						.attr('width', x.rangeBand())
+						.attr('y', function() {
 							return y(0);
 						})
-						.attr("height", 0)
-						.transition().delay(function(d,i){
-							return i*30;
+						.attr('height', 0)
+						.transition().ease('cubic').delay(function(d,i){
+							return i*10;
 						})
-						.attr("height", function(d) {
+						.attr('height', function(d) {
 							return h - y(d[yField]);
 						})
-						.attr("y", function(d) {
+						.attr('y', function(d) {
 							return y(d[yField]);
 						});
+
+					scope.buckets = d3.selectAll('rect.bar');
+
+					svg.append('g')
+						.attr('class', 'x axis')
+						.attr('transform', 'translate(0,' + h + ')')
+						.call(xAxis)
+						.selectAll('text')
+							.attr('display','none');
+
+					var hGrid = svg.append('g')
+						.attr('class', 'grid')
+						.call(d3.svg.axis()
+							.scale(y)
+							.orient('right')
+							.tickSize(w, 0, 0)
+							.tickFormat(d3.format(','))
+					);
+
+					hGrid.selectAll('.tick text')
+						.attr('y', -5)
+						.attr('x',w/2)
+						.attr('dy', '.15em')
+						.style('text-anchor', 'middle');
+
+					svg.append('g')
+						.append('text')
+						.attr('x', -h/2)
+						.attr('y', -2)
+						.attr('transform', 'rotate(-90)')
+						.style('text-anchor', 'middle')
+						.text('Occurrences');
 
 					/************btgrect*********/
 					var bgBar = svg.selectAll('g.bg-rect')
@@ -171,31 +169,27 @@
 							tip.hide(d);
 						})
 						.on('click', function (d) {
-							scope.onClick()(d);
+							scope.onClick()(d,'bar');
 						});
+				}
 
-					/**************** Connecting Line*****************/
-/*					var gLine = svg.append("g")
-						.attr("transform", "translate(" + x.rangeBand() / 2 + ",0)");
-
-					gLine.append("path")
-						.datum(statData)
-						.attr("class", "line")
-						.attr("d", line);
-
-					gLine.selectAll(".dot")
-						.data(statData)
-						.enter().append("circle")
-						.attr("class", "dot")
-						.attr("cx", line.x())
-						.attr("cy", line.y())
-
-						.attr("r", .5)
-						.transition().delay(function(d,i){
-							return i*30;
-						})//.duration(1000)
-						.attr("r", 4.5);
-*/
+				function updateBarsLookFeel (){
+					if(existentFilter){
+						scope.buckets.transition()
+							.delay(function(d,i){
+								return i*10;
+							})
+							.style('opacity', function(d,i) {
+								if((d.data)[0] >= existentFilter[0] &&  (d.data)[1] <= existentFilter[1]){
+									if(d3.select(scope.buckets[0][i]).style('opacity')==='.4'){
+										return '1';
+									}
+								}
+								else {
+									return '.4';
+								}
+							});
+					}
 				}
 
 				scope.$watch('visuData',
@@ -207,6 +201,17 @@
 						if (statData) {
 							clearTimeout(renderTimeout);
 							renderTimeout = setTimeout(renderVBarchart.bind(this, statData), 100);
+						}
+					});
+
+				scope.$watch('existentFilter',
+					function (newFilter) {
+						if (newFilter) {
+							clearTimeout(updateBarsTimeout);
+							updateBarsTimeout = setTimeout(function(){
+								existentFilter = newFilter;
+								updateBarsLookFeel();
+							}, 600);
 						}
 					});
 			}

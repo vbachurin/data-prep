@@ -104,12 +104,12 @@
         function initRangeHistogram(histoData) {
             var rangeData = _.map(histoData, function (histDatum) {
                 return {
-                    'data': histDatum.range.min + ' ... ' + histDatum.range.max,
+                    'data': [histDatum.range.min ,histDatum.range.max ],
                     'occurrences': histDatum.occurrences
                 };
             });
 
-            initVerticalHistogram('data', 'occurrences', rangeData);
+            initVerticalHistogram('occurrences', 'Occurrences', rangeData);
         }
 
         /**
@@ -147,7 +147,8 @@
                 numData: dataTable,
                 key: key,
                 label: label,
-                column: service.selectedColumn
+                column: service.selectedColumn,
+                existentFilter:null//[service.selectedColumn.statistics.min, service.selectedColumn.statistics.max]
             };
         }
 
@@ -158,6 +159,7 @@
          * @description Set the range slider limits
          */
         function initRangeLimits() {
+            //service.histogram.existentFilter = null;
             var column = service.selectedColumn;
             var currentRangeFilter = _.find(FilterService.filters, function(filter){
                 return filter.colId === column.id && filter.type === 'inside_range';
@@ -211,6 +213,7 @@
                         maxBrush : currentRangeFilter.args.interval[1]
                     };
                 }
+                service.histogram.existentFilter = [service.rangeLimits.minBrush, service.rangeLimits.maxBrush];
             }
             else {
                 service.rangeLimits = {
@@ -220,7 +223,6 @@
                     maxBrush : undefined
                 };
             }
-
         }
 
         /**
@@ -357,10 +359,12 @@
          * @param {Array} interval of the filter
          * @description Adds a rangefilter in the angular context
          */
-        function addRangeFilter(interval) {
+        function addRangeFilter(interval, from) {
             var removeFilterFn = function removeFilterFn(filter) {
                 if (service.selectedColumn && filter.colId === service.selectedColumn.id) {
                     initRangeLimits();
+                    //to reset the bars colors
+                    service.histogram.existentFilter = [service.selectedColumn.statistics.min, service.selectedColumn.statistics.max];
                 }
             };
 
@@ -373,6 +377,10 @@
             var column = service.selectedColumn;
             var filterFn = FilterService.addFilter.bind(null, 'inside_range', column.id, column.name, {interval: interval}, removeFilterFn);
             $timeout(filterFn);
+            service.histogram.existentFilter = interval;
+            if(from === 'bar'){
+                $timeout(initRangeLimits);
+            }
         }
 
         //--------------------------------------------------------------------------------------------------------------

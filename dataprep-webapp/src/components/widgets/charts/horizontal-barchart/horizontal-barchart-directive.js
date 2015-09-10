@@ -131,7 +131,7 @@
                         });
 
                     bgBar.append('rect')
-                        .attr('width', w + 100)
+                        .attr('width', w)
                         .attr('height', y.rangeBand() + 4)
                         .attr('class', 'bg-rect')
                         .style('opacity', 0)

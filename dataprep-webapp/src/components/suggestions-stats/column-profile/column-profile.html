@@ -26,21 +26,22 @@
     </div>
 
     <horizontal-barchart id="hBarChart"
-                         width="310"
-                height="400"
-                on-click="columnProfileCtrl.barchartClickFn"
-                visu-data="columnProfileCtrl.histogram.data"
-                value-field="formattedValue"
-                key-field="{{columnProfileCtrl.histogram.key}}"
-                key-label="{{columnProfileCtrl.histogram.label}}"></horizontal-barchart>
+                        width="320"
+                        height="400"
+                        on-click="columnProfileCtrl.barchartClickFn"
+                        visu-data="columnProfileCtrl.histogram.data"
+                        value-field="formattedValue"
+                        key-field="{{columnProfileCtrl.histogram.key}}"
+                        key-label="{{columnProfileCtrl.histogram.label}}"></horizontal-barchart>
 
     <vertical-barchart id="vBarChart"
-                         width="310"
+                         width="320"
                          height="400"
                          on-click="columnProfileCtrl.vBarchartClickFn"
                          visu-data="columnProfileCtrl.histogram.numData"
-                         value-field="occurrences"
-                         key-field="{{columnProfileCtrl.histogram.key}}"
+                         value-field="{{columnProfileCtrl.histogram.key}}"
+                         key-field="data"
+                        existent-filter="columnProfileCtrl.histogram.existentFilter"
                          key-label="{{columnProfileCtrl.histogram.label}}"></vertical-barchart>
 
     <highchart id="geochart"
