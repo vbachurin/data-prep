@@ -2,6 +2,7 @@ describe('Home controller', function () {
     'use strict';
 
     var ctrl, createController, scope, $httpBackend;
+    var DATA_INVENTORY_PANEL_KEY = 'org.talend.dataprep.data_inventory_panel_display';
 
     beforeEach(module('data-prep.home'));
 
@@ -22,6 +23,10 @@ describe('Home controller', function () {
                 $scope: scope
             });
         };
+    }));
+
+    afterEach(inject(function($window) {
+        $window.localStorage.removeItem(DATA_INVENTORY_PANEL_KEY);
     }));
 
     it('should init upload list to empty array', function () {
@@ -57,22 +62,24 @@ describe('Home controller', function () {
 
         }));
 
-        it('should toggle right panel flag', function () {
+        it('should toggle right panel flag', inject(function ($window) {
             //given
-            expect(ctrl.showRightPanel).toBe(true);
+            expect(ctrl.showRightPanel).toBe(false);
+            expect(JSON.parse($window.localStorage.getItem(DATA_INVENTORY_PANEL_KEY))).toBeFalsy();
 
+            //when
+            ctrl.toggleRightPanel();
+
+            //then
+            expect(ctrl.showRightPanel).toBe(true);
+            expect(JSON.parse($window.localStorage.getItem(DATA_INVENTORY_PANEL_KEY))).toBeTruthy();
             //when
             ctrl.toggleRightPanel();
 
             //then
             expect(ctrl.showRightPanel).toBe(false);
-
-            //when
-            ctrl.toggleRightPanel();
-
-            //then
-            expect(ctrl.showRightPanel).toBe(true);
-        });
+            expect(JSON.parse($window.localStorage.getItem(DATA_INVENTORY_PANEL_KEY))).toBeFalsy();
+        }));
 
         it('should remove file extension for name init and display name modal on step 1', function () {
             //given
