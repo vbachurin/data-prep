@@ -1,12 +1,10 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -18,12 +16,8 @@ import org.talend.dataprep.transformation.api.action.metadata.common.AbstractAct
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
-import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 import javax.annotation.Nonnull;
-
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.api.type.Type.STRING;
 
 @Component(TimestampToDate.ACTION_BEAN_PREFIX + TimestampToDate.ACTION_NAME)
 public class TimestampToDate extends AbstractActionMetadata implements ColumnAction, DatePatternParamModel {
@@ -74,8 +68,7 @@ public class TimestampToDate extends AbstractActionMetadata implements ColumnAct
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
 
-        String newPattern = getNewPattern(parameters);
-        DateTimeFormatter newDateFormat = getDateFormat(newPattern);
+        DatePattern newPattern = getDateFormat(parameters);
 
         // create new column and append it after current column
         final RowMetadata rowMetadata = row.getRowMetadata();
@@ -83,7 +76,7 @@ public class TimestampToDate extends AbstractActionMetadata implements ColumnAct
         final String newColumn = rowMetadata.insertAfter(columnId, createNewColumn(column));
 
         final String value = row.get(columnId);
-        row.set(newColumn, apply(value, newDateFormat));
+        row.set(newColumn, apply(value, newPattern.getFormatter()));
     }
 
     protected String apply(String from, DateTimeFormatter dateTimeFormatter) {

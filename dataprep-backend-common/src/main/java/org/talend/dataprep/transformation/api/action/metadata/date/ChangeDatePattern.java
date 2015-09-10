@@ -1,16 +1,11 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.api.type.Type.STRING;
-
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -21,7 +16,6 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
-import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Change the date pattern on a 'date' column.
@@ -55,8 +49,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
 
-        String newPattern = getNewPattern(parameters);
-        DateTimeFormatter newDateFormat = getDateFormat(newPattern);
+        DatePattern newPattern = getDateFormat(parameters);
 
         // checks for fail fast
         final RowMetadata rowMetadata = row.getRowMetadata();
@@ -76,7 +69,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
         }
         // if the new pattern is not yet present (ie: we're probably working on the first line)
         if (!isNewPatternRegistered) {
-            statistics.getPatternFrequencies().add(new PatternFrequency(newPattern, 1));
+            statistics.getPatternFrequencies().add(new PatternFrequency(newPattern.getPattern(), 1));
             column.setStatistics(statistics);
         }
         // Change the date pattern
@@ -86,7 +79,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
         }
         try {
             final LocalDateTime date = superParse(value, row, columnId);
-            row.set(columnId, newDateFormat.format(date));
+            row.set(columnId, newPattern.getFormatter().format(date));
         } catch (DateTimeException e) {
             // cannot parse the date, let's leave it as is
         }
