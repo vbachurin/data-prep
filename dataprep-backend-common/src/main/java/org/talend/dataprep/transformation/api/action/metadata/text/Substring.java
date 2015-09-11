@@ -1,6 +1,6 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.QUICKFIX;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.STRINGS;
 
 import java.util.Map;
 
@@ -54,7 +54,7 @@ public class Substring extends AbstractActionMetadata implements ColumnAction {
      */
     @Override
     public String getCategory() {
-        return QUICKFIX.getDisplayName();
+        return STRINGS.getDisplayName();
     }
 
     /**

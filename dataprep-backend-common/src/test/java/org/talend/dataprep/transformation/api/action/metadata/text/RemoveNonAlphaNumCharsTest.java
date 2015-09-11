@@ -60,7 +60,7 @@ public class RemoveNonAlphaNumCharsTest {
 
     @Test
     public void testCategory() throws Exception {
-        assertThat(action.getCategory(), is(ActionCategory.QUICKFIX.getDisplayName()));
+        assertThat(action.getCategory(), is(ActionCategory.STRINGS_ADVANCED.getDisplayName()));
     }
 
     /**
