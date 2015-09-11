@@ -58,7 +58,13 @@ public class Normalize extends AbstractActionMetadata implements ColumnAction {
         }
     }
 
-    protected String normalize(String string) {
+    /**
+     * Return the normalized given string.
+     *
+     * @param string the string to normalized.
+     * @return the normalized given string.
+     */
+    protected String normalize(final String string) {
         // Convert input string to decomposed Unicode (NFD) so that the
         // diacritical marks used in many European scripts (such as the
         // "C WITH CIRCUMFLEX" → ĉ) become separate characters.
@@ -66,13 +72,13 @@ public class Normalize extends AbstractActionMetadata implements ColumnAction {
         // that have the exact same meaning as one or more other
         // characters (such as "㎏" → "kg" or "ﾋ" → "ヒ"), match when
         // comparing them.
-        string = Normalizer.normalize(string, Normalizer.Form.NFKD);
+        String normalized = Normalizer.normalize(string, Normalizer.Form.NFKD);
 
         StringBuilder result = new StringBuilder();
 
-        int offset = 0, strLen = string.length();
+        int offset = 0, strLen = normalized.length();
         while (offset < strLen) {
-            int character = string.codePointAt(offset);
+            int character = normalized.codePointAt(offset);
             offset += Character.charCount(character);
 
             // Only process characters that are not combining Unicode
