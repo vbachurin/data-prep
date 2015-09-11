@@ -31,6 +31,8 @@ import java.util.List;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
@@ -169,7 +171,7 @@ public class PreparationAPITest extends DataPrepTest {
     //------------------------------------------------------STEPS-------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------
     @Test
-    public void testPreparationAppendAction() throws Exception {
+    public void should_append_action_after_actual_head() throws Exception {
         // when
         final String preparationId = createPreparationFromDataset("1234", "testPreparation");
 
@@ -185,7 +187,22 @@ public class PreparationAPITest extends DataPrepTest {
     }
 
     @Test
-    public void testPreparationUpdateAction() throws Exception {
+    public void should_save_created_columns_ids_on_append() throws Exception {
+        // when
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparation", "text/csv");
+
+        // when
+        applyActionFromFile(preparationId, "transformation/copy_firstname.json");
+
+        // then
+        final JsonPath jsonPath = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath();
+        final List<String> createdColumns = jsonPath.getList("diff[0].createdColumns");
+        assertThat(createdColumns, hasSize(1));
+        assertThat(createdColumns, hasItem("0006"));
+    }
+
+    @Test
+    public void should_update_action() throws Exception {
         // given
         final String preparationId = createPreparationFromDataset("1234", "testPreparation");
         applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
@@ -212,49 +229,17 @@ public class PreparationAPITest extends DataPrepTest {
     }
 
     @Test
-    public void should_delete_preparation_action_in_cascade_mode() throws Exception {
+    public void should_delete_preparation_action() throws Exception {
         // given
-        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparation", "text/csv");
         applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
         applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
 
         List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         final String firstStep = steps.get(1);
 
-        // when : delete (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") cascading upper_case_firstname
+        // when
         given().delete("/api/preparations/{preparation}/actions/{action}", preparationId, firstStep)
-                .then()
-                .statusCode(is(200));
-
-        // then : Steps id should have changed due to update
-        steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
-        assertThat(steps.size(), is(1));
-        assertThat(steps.get(0), is(ROOT_STEP.id()));
-    }
-
-    @Test
-    public void should_delete_preparation_action_in_single_mode() throws Exception {
-        // when : delete unknown preparation action
-        final Response response = given().delete("/api/preparations/{preparation}/actions/{action}?single=true", "unknown_prep", "unkown_step");
-
-        //then : should have preparation service error
-        response.then()
-                .statusCode(is(400))
-                .body("code", is("TDP_PS_PREPARATION_DOES_NOT_EXIST"));
-    }
-
-    @Test
-    public void should_redirect_delete_error_properly_on_delete_step() throws Exception {
-        // given
-        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
-        applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
-        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
-
-        List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
-        final String firstStep = steps.get(1);
-
-        // when : delete (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") only, it will rewrite upper_case_firstname id
-        given().delete("/api/preparations/{preparation}/actions/{action}?single=true", preparationId, firstStep)
                 .then()
                 .statusCode(is(200));
 
@@ -263,6 +248,17 @@ public class PreparationAPITest extends DataPrepTest {
         assertThat(steps.size(), is(2));
         assertThat(steps.get(0), is(ROOT_STEP.id()));
         assertThat(steps.get(1), is("3c7b40baca3680c22f8bd7142c95697f7424e37f"));
+    }
+
+    @Test
+    public void should_throw_error_when_preparation_doesnt_exist_on_delete() throws Exception {
+        // when : delete unknown preparation action
+        final Response response = given().delete("/api/preparations/{preparation}/actions/{action}", "unknown_prep", "unkown_step");
+
+        //then : should have preparation service error
+        response.then()
+                .statusCode(is(400))
+                .body("code", is("TDP_PS_PREPARATION_DOES_NOT_EXIST"));
     }
 
     @Test

@@ -16,6 +16,7 @@ import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.APIErrorCodes;
+import org.talend.dataprep.api.preparation.AppendStep;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.api.PreviewAddInput;
 import org.talend.dataprep.api.service.api.PreviewDiffInput;
@@ -161,13 +162,13 @@ public class PreparationAPI extends APIService {
     @ApiOperation(value = "Adds an action at the end of preparation.", notes = "Does not return any value, client may expect successful operation based on HTTP status code.")
     @Timed
     public void addPreparationAction(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
-            @ApiParam("Action to add at end of the preparation.") InputStream body) {
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") final String preparationId,
+            @RequestBody @ApiParam("Action to add at end of the preparation.") final AppendStep step) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Adding action to preparation (pool: {} )...", getConnectionManager().getTotalStats());
         }
         final HttpClient client = getClient();
-        final HystrixCommand<Void> command = getCommand(PreparationAddAction.class, client, preparationId, body);
+        final HystrixCommand<Void> command = getCommand(PreparationAddAction.class, client, preparationId, step);
         command.execute();
         LOG.debug("Added action to preparation (pool: {} )...", getConnectionManager().getTotalStats());
     }
@@ -194,12 +195,11 @@ public class PreparationAPI extends APIService {
     @Timed
     public void deletePreparationAction(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") final String preparationId,
-            @PathVariable(value = "stepId") @ApiParam(name = "stepId", value = "Step id to delete.") final String stepId,
-            @RequestParam(value = "single", defaultValue = "false") @ApiParam(name = "single", value = "Remove only the targeted step if 'true'. Else delete cascade from step to the head") final boolean single) {
-        LOG.debug("Deleting preparation action at step #{} (pool: {} ) with single mode '{}'...", stepId, getConnectionManager().getTotalStats(), single);
+            @PathVariable(value = "stepId") @ApiParam(name = "stepId", value = "Step id to delete.") final String stepId) {
+        LOG.debug("Deleting preparation action at step #{} (pool: {} ) ...", stepId, getConnectionManager().getTotalStats());
 
         final HttpClient client = getClient();
-        final HystrixCommand<Void> command = getCommand(PreparationDeleteAction.class, client, preparationId, stepId, single);
+        final HystrixCommand<Void> command = getCommand(PreparationDeleteAction.class, client, preparationId, stepId);
         command.execute();
 
         LOG.debug("Deleting preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
