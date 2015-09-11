@@ -40,7 +40,7 @@ describe('Single recipeBullet directive ', function () {
 
         createElement = function () {
             scope = $rootScope.$new();
-            scope['step0'] = steps[0];
+            scope.step0 = steps[0];
             var template = '<recipe-bullet style="height: 100px;" step="step0"></recipe-bullet>';
             element = $compile(template)(scope);
             $timeout.flush();
