@@ -134,7 +134,7 @@
                  * @description [PRIVATE] Calculate and set the svg size infos (circle position, cables size)
                  */
                 var updateSVGSizes = function() {
-                    ctrl.height = iElement.height() + 5;
+                    ctrl.height = iElement.height() + 5; // 5 : marge/padding
                     //circle Size = 20;
                     var topPath = 'M 15 0 L 15 11 Z';
                     var circleCenterY = 21;
