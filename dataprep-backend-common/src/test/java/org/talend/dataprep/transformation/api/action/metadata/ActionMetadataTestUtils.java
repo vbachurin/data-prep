@@ -2,6 +2,8 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -55,5 +57,22 @@ public class ActionMetadataTestUtils {
         final ObjectMapper mapper = new ObjectMapper();
         final Statistics statistics = mapper.readValue(statisticsContent, Statistics.class);
         row.getRowMetadata().getById(columnId).setStatistics(statistics);
+    }
+
+    /**
+     * Return a new dataset row with the given values.
+     *
+     * @param values the row values.
+     * @return a new dataset row that have the given values.
+     */
+    public static DataSetRow getRow(String... values) {
+        DecimalFormat format = new DecimalFormat("0000");
+        Map<String, String> rowValues = new HashMap<>();
+        int i=1;
+        for (String value : values) {
+            rowValues.put(format.format(i), value);
+            i++;
+        }
+        return new DataSetRow(rowValues);
     }
 }

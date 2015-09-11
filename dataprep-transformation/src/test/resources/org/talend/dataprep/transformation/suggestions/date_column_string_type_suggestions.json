@@ -663,6 +663,18 @@
             "default": false
           },
           {
+            "name": "-",
+            "parameters": [
+            ],
+            "default": false
+          },
+          {
+            "name": ",",
+            "parameters": [
+            ],
+            "default": false
+          },
+          {
             "name": "other",
             "parameters": [
               {
@@ -998,5 +1010,14 @@
     "dynamic": false,
     "description": "Rename this column",
     "label": "Rename"
+  },
+  {
+    "name":"remove_non_num_chars"
+  },
+  {
+    "name":"remove_non_alpha_num_chars"
+  },
+  {
+    "name":"normalize"
   }
 ]
