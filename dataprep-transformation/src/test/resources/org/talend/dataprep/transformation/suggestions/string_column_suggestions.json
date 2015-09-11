@@ -35,7 +35,6 @@
         "default": ""
       }
     ],
-    "category": "quickfix",
     "items": [
     ],
     "dynamic": false,
@@ -78,7 +77,6 @@
         "default": ""
       }
     ],
-    "category": "quickfix",
     "items": [],
     "dynamic": false,
     "description": "Fill invalid cells of this column with given value",
@@ -120,7 +118,6 @@
         "default": ""
       }
     ],
-    "category": "cleansing",
     "items": [
     ],
     "dynamic": false,
@@ -129,7 +126,6 @@
   },
   {
     "name": "delete_invalid",
-    "category": "cleansing",
     "items": [
     ],
     "parameters": [
@@ -164,7 +160,6 @@
   },
   {
     "name": "delete_empty",
-    "category": "cleansing",
     "items": [
     ],
     "parameters": [
@@ -233,7 +228,6 @@
         "canBeBlank": false
       }
     ],
-    "category": "columns",
     "name": "rename_column",
     "items": [
     ],
@@ -277,7 +271,6 @@
     "label": "Duplicate"
   },
   {
-    "category": "quickfix",
     "items": [
       {
         "name": "separator",
@@ -372,7 +365,6 @@
     "label": "Split the text in parts..."
   },
   {
-    "category": "case",
     "name": "lowercase",
     "items": [
     ],
@@ -407,7 +399,6 @@
     "label": "Change case to lower"
   },
   {
-    "category": "quickfix",
     "name": "textclustering",
     "dynamic": true,
     "items": [
@@ -442,7 +433,6 @@
     "label": "Find and group similar text..."
   },
   {
-    "category": "quickfix",
     "items": [
     ],
     "name": "trim",
@@ -477,7 +467,6 @@
     "label": "Remove trailing and leading spaces"
   },
   {
-    "category": "quickfix",
     "name": "extractemaildomain",
     "items": [
     ],
@@ -512,7 +501,6 @@
     "label": "Extract email tokens"
   },
   {
-    "category": "quickfix",
     "items": [
       {
         "name": "from_mode",
@@ -603,7 +591,6 @@
     "label": "Substring"
   },
   {
-    "category": "quickfix",
     "name": "compute_length",
     "items": [
     ],
@@ -638,7 +625,6 @@
     "label": "Compute length"
   },
   {
-    "category": "quickfix",
     "name": "replace_on_value",
     "parameters": [
       {
@@ -689,7 +675,6 @@
     "label": "Replace cells that match..."
   },
   {
-    "category": "case",
     "name": "propercase",
     "items": [
     ],
@@ -724,7 +709,6 @@
     "label": "Change case to Title"
   },
   {
-    "category": "case",
     "name": "uppercase",
     "items": [
     ],
@@ -759,7 +743,6 @@
     "label": "Change case to UPPER"
   },
   {
-    "category": "quickfix",
     "name": "cut",
     "parameters": [
       {

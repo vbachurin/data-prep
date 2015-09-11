@@ -35,7 +35,6 @@
         "default": "0"
       }
     ],
-    "category": "quickfix",
     "items": [
     ],
     "dynamic": false,
@@ -78,7 +77,6 @@
         "default": "0"
       }
     ],
-    "category": "quickfix",
     "items": [],
     "dynamic": false,
     "description": "Fill invalid cells of this column with given value",
@@ -120,7 +118,6 @@
         "default": ""
       }
     ],
-    "category": "cleansing",
     "items": [
     ],
     "dynamic": false,
@@ -129,7 +126,6 @@
   },
   {
     "name": "delete_invalid",
-    "category": "cleansing",
     "items": [
     ],
     "parameters": [
@@ -164,7 +160,6 @@
   },
   {
     "name": "delete_empty",
-    "category": "cleansing",
     "items": [
     ],
     "parameters": [
