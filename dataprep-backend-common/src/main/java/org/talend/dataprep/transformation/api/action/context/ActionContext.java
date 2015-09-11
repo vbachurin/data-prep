@@ -1,5 +1,6 @@
 package org.talend.dataprep.transformation.api.action.context;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -9,9 +10,9 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 
 public class ActionContext {
 
-    private final Map<String, ColumnMetadata> columns = new HashMap<>();
-
     private final TransformationContext parent;
+
+    private Map<String, ColumnMetadata> columns = new HashMap<>();
 
     public ActionContext(TransformationContext parent) {
         this.parent = parent;
@@ -52,4 +53,9 @@ public class ActionContext {
         }
     }
 
+    public ActionContext asImmutable() {
+        final ActionContext actionContext = new ActionContext(parent);
+        actionContext.columns = Collections.unmodifiableMap(this.columns);
+        return actionContext;
+    }
 }

@@ -86,4 +86,8 @@ public final class TransformationContext {
             return actionContext;
         }
     }
+
+    public void freezeActionContexts() {
+        contexts.replaceAll((actionMetadata, actionContext) -> actionContext.asImmutable());
+    }
 }
