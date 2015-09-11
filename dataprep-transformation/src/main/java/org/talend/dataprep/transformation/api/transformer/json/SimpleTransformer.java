@@ -128,13 +128,14 @@ class SimpleTransformer implements Transformer {
             final List<DataSetRowAction> rowActions = parsedActions.getRowTransformers();
             final boolean transformColumns = !input.getColumns().isEmpty();
             TransformationContext context = configuration.getTransformationContext();
+            final AtomicBoolean wroteMetadata = new AtomicBoolean(false);
             // Row transformations
             Stream<DataSetRow> records = input.getRecords();
             writer.fieldName("records");
             writer.startArray();
             // Apply actions to records
             for (DataSetRowAction action : rowActions) {
-                records = records.map(r -> action.apply(r.clone(), context));
+                records = records.map(r -> action.apply(r, context));
             }
             records = records.map(r -> {
                 //
@@ -150,7 +151,6 @@ class SimpleTransformer implements Transformer {
                 return r;
             });
             // Write transformed records to stream
-            final AtomicBoolean wroteMetadata = new AtomicBoolean(false);
             records.forEach(row -> {
                 try {
                     if (writer.requireMetadataForHeader() && !wroteMetadata.get()) {
@@ -159,6 +159,7 @@ class SimpleTransformer implements Transformer {
                     }
                     if (row.shouldWrite()) {
                         writer.write(row);
+                        context.freezeActionContexts();
                     }
                 } catch (IOException e) {
                     throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
