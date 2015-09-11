@@ -1,10 +1,9 @@
 {
   "actions": [
     {
-      "action": "cut",
+      "action": "remove_non_num_chars",
       "parameters": {
-        "column_id": "0001",
-        "pattern": "The ",
+        "column_id": "entity",
         "scope": "column"
       }
     }

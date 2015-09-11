@@ -302,6 +302,18 @@
             "default": false
           },
           {
+            "name": "-",
+            "parameters": [
+            ],
+            "default": false
+          },
+          {
+            "name": ",",
+            "parameters": [
+            ],
+            "default": false
+          },
+          {
             "name": "other",
             "parameters": [
               {
@@ -788,5 +800,11 @@
     "dynamic": false,
     "description": "Remove specified text from cells in this column",
     "label": "Remove part of the text..."
+  },
+  {
+    "name":"remove_non_num_chars"
+  },
+  {
+    "name":"remove_non_alpha_num_chars"
   }
 ]
