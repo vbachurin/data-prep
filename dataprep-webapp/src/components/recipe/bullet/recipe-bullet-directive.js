@@ -208,8 +208,14 @@
                 };
 
 
-                bulletCircleElement.addEventListener('mouseenter', mouseEnterListener);
-                bulletCircleElement.addEventListener('mouseleave', mouseLeaveListener);
+                if(!ctrl.isEndChain()){
+                    iElement.mouseenter(mouseEnterListener);
+                    iElement.mouseleave(mouseLeaveListener);
+                }else {
+                    bulletCircleElement.addEventListener('mouseenter', mouseEnterListener);
+                    bulletCircleElement.addEventListener('mouseleave', mouseLeaveListener);
+                }
+
                 bulletCircleElement.addEventListener('click', circleClickListener);
 
 
