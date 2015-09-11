@@ -172,8 +172,6 @@
 
                     var newClass = ctrl.step.inactive ? 'maillon-circle-disabled-hovered' : 'maillon-circle-enabled-hovered';
                     _.each(bulletsToBeChanged, setClass(newClass));
-
-                    updateSVGSizes();
                 };
 
                 /**
@@ -186,7 +184,6 @@
                 var mouseLeaveListener = function () {
                     ctrl.stepHoverEnd();
                     _.each(bulletsToBeChanged, setClass(''));
-                    updateSVGSizes();
                 };
 
                 /**
@@ -241,12 +238,11 @@
                     updateAllBullets();
                 });
 
-                $timeout(updateSVGSizes);
-
                 scope.$watch(ctrl.height, function() {
                     updateAllBullets();
                 });
 
+                $timeout(updateSVGSizes);
 
             }
         };
