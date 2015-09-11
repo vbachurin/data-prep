@@ -789,5 +789,8 @@
   },
   {
     "name":"remove_non_alpha_num_chars"
+  },
+  {
+    "name":"normalize"
   }
 ]
