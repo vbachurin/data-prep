@@ -953,7 +953,7 @@ describe('Recipe service', function () {
             $rootScope.$digest();
 
             var recipe = RecipeService.getRecipe();
-            recipe.splice(0, recipe.length)
+            recipe.splice(0, recipe.length);
 
             //when
             var lastStep = RecipeService.getLastStep();
