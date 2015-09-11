@@ -10,7 +10,7 @@
      * <recipe-bullet step='step'></recipe-bullet>
      * @param {object} step The bound step
      */
-    function RecipeBullet($timeout, $rootScope) {
+    function RecipeBullet($timeout) {
         return {
             restrict: 'E',
             scope: {
@@ -129,19 +129,6 @@
 
                 /**
                  * @ngdoc method
-                 * @name activateBottomCable
-                 * @methodOf data-prep.recipe-bullet.directive:RecipeBullet
-                 * @description [PRIVATE] Activate the bottom cable at a specific index
-                 * @param {number} index The index of the element toactivate
-                 */
-                function activateBottomCable(index) {
-                    var bullet = index === ctrl.stepIndex ? iElement.find('.all-svg-cls') : getBulletSvgAtIndex(index);
-                    var branch = bullet.find('>path').eq(1)[0];
-                    branch.setAttribute('class', '');
-                }
-
-                /**
-                 * @ngdoc method
                  * @name updateSVGSizes
                  * @methodOf data-prep.recipe-bullet.directive:RecipeBullet
                  * @description [PRIVATE] Calculate and set the svg size infos (circle position, cables size)
@@ -214,7 +201,7 @@
                 var updateAllBullets = function () {
                     $timeout(function(){
                         //update all step accordion
-                        $( ".accordion" ).each(function() {
+                        $( '.accordion' ).each(function() {
                             $(this).trigger('mouseover');
                         });
                     },200);
