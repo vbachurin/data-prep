@@ -10,8 +10,8 @@
             return StatisticsService.addFilter(item.data);
         };
 
-        vm.vBarchartClickFn = function vBarchartClickFn (item, from){
-            return StatisticsService.addRangeFilter(item.data, from);
+        vm.vBarchartClickFn = function vBarchartClickFn (item){
+            return StatisticsService.addRangeFilter(item.data);
         };
         
         //------------------------------------------------------------------------------------------------------

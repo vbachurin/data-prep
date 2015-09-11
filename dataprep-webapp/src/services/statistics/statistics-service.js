@@ -359,7 +359,7 @@
          * @param {Array} interval of the filter
          * @description Adds a rangefilter in the angular context
          */
-        function addRangeFilter(interval, from) {
+        function addRangeFilter(interval) {
             var removeFilterFn = function removeFilterFn(filter) {
                 if (service.selectedColumn && filter.colId === service.selectedColumn.id) {
                     initRangeLimits();
@@ -378,9 +378,7 @@
             var filterFn = FilterService.addFilter.bind(null, 'inside_range', column.id, column.name, {interval: interval}, removeFilterFn);
             $timeout(filterFn);
             service.histogram.existentFilter = interval;
-            if(from === 'bar'){
-                $timeout(initRangeLimits);
-            }
+            $timeout(initRangeLimits);
         }
 
         //--------------------------------------------------------------------------------------------------------------

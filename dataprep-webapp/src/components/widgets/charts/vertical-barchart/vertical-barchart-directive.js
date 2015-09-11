@@ -35,6 +35,7 @@
 				var existentFilter = scope.existentFilter;
 				var renderTimeout, updateBarsTimeout;
 				var tip;
+				scope.finishedRendering = false;
 
 				function renderVBarchart(statData) {
 					var container = attrs.id;
@@ -54,10 +55,6 @@
 						.rangeRoundBands([0, w], 0.2);
 					var y = d3.scale.linear()
 						.range([h, 0]);
-
-					var xAxis = d3.svg.axis()
-						.scale(x)
-						.orient('bottom');
 
 					tip = d3.tip()
 						.attr('class', 'vertical-barchart-cls d3-tip')
@@ -115,21 +112,15 @@
 						});
 
 					scope.buckets = d3.selectAll('rect.bar');
-
-					svg.append('g')
-						.attr('class', 'x axis')
-						.attr('transform', 'translate(0,' + h + ')')
-						.call(xAxis)
-						.selectAll('text')
-							.attr('display','none');
-
+					/****************** Horizontal grid **********************/
 					var hGrid = svg.append('g')
 						.attr('class', 'grid')
 						.call(d3.svg.axis()
 							.scale(y)
 							.orient('right')
 							.tickSize(w, 0, 0)
-							.tickFormat(d3.format(','))
+							.tickFormat(d3.format(',d'))
+							.ticks(10)
 					);
 
 					hGrid.selectAll('.tick text')
@@ -138,6 +129,7 @@
 						.attr('dy', '.15em')
 						.style('text-anchor', 'middle');
 
+					/********************* Y axis label *********************/
 					svg.append('g')
 						.append('text')
 						.attr('x', -h/2)
@@ -146,7 +138,7 @@
 						.style('text-anchor', 'middle')
 						.text('Occurrences');
 
-					/************btgrect*********/
+					/************background Rect*********/
 					var bgBar = svg.selectAll('g.bg-rect')
 						.data(statData)
 						.enter().append('g')
@@ -169,8 +161,9 @@
 							tip.hide(d);
 						})
 						.on('click', function (d) {
-							scope.onClick()(d,'bar');
+							scope.onClick()(d);
 						});
+					scope.finishedRendering = true;
 				}
 
 				function updateBarsLookFeel (){
@@ -199,21 +192,28 @@
 							tip.hide();
 						}
 						if (statData) {
+							scope.finishedRendering = false;
 							clearTimeout(renderTimeout);
 							renderTimeout = setTimeout(renderVBarchart.bind(this, statData), 100);
 						}
-					});
+					}
+				);
 
 				scope.$watch('existentFilter',
 					function (newFilter) {
 						if (newFilter) {
+							var wait = 600;
+							if(scope.finishedRendering){
+								wait = 100;
+							}
 							clearTimeout(updateBarsTimeout);
 							updateBarsTimeout = setTimeout(function(){
 								existentFilter = newFilter;
 								updateBarsLookFeel();
-							}, 600);
+							}, wait);
 						}
-					});
+					}
+				);
 			}
 		};
 	}
