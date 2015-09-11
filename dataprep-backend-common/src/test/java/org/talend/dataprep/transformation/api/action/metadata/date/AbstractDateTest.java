@@ -1,6 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
 import static org.junit.Assert.assertEquals;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.setStatistics;
 
 import java.io.IOException;
@@ -13,10 +14,14 @@ import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
+import org.talend.dataprep.api.type.Type;
 
 /**
- * Created by stef on 17/08/15.
+ * Unit test for the AbstractDate class.
+ * @see AbstractDate
  */
 public class AbstractDateTest {
 
@@ -26,7 +31,6 @@ public class AbstractDateTest {
     @Before
     public void init() throws IOException {
         action = new AbstractDate() {
-
             @Override
             public String getName() {
                 return null;
@@ -36,7 +40,7 @@ public class AbstractDateTest {
 
     @Test(expected = DateTimeException.class)
     public void shouldNotParseNull() {
-        action.superParse(null, Collections.emptyList());
+        action.parseDateFromPatterns(null, Collections.emptyList());
     }
 
     @Test
@@ -51,7 +55,8 @@ public class AbstractDateTest {
         setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_with_different_test_cases.json"));
 
         // when
-        List<DatePattern> actual = action.getPatterns(row, "0001");
+        final List<PatternFrequency> patternFrequencies = row.getRowMetadata().getById("0001").getStatistics().getPatternFrequencies();
+        List<DatePattern> actual = action.getPatterns(patternFrequencies);
 
         // then
         List<DatePattern> expected = new ArrayList<>();
@@ -63,7 +68,7 @@ public class AbstractDateTest {
     }
 
     @Test
-    public void testSuperParse() throws ParseException {
+    public void testParseDate() throws ParseException {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         TemporalAccessor date = LocalDate.of(2015, 8, 17);
         String expected = dtf.format(date);
@@ -73,13 +78,13 @@ public class AbstractDateTest {
         patterns.add(new DatePattern(1, "MM-dd-yy"));
         patterns.add(new DatePattern(1, "yy/dd/MM"));
 
-        assertEquals(expected, dtf.format(action.superParse("2015/08/17", action.computeDateTimeFormatter(patterns))));
-        assertEquals(expected, dtf.format(action.superParse("08-17-15", action.computeDateTimeFormatter(patterns))));
-        assertEquals(expected, dtf.format(action.superParse("15/17/08", action.computeDateTimeFormatter(patterns))));
+        assertEquals(expected, dtf.format(action.parseDateFromPatterns("2015/08/17", action.computeDateTimeFormatter(patterns))));
+        assertEquals(expected, dtf.format(action.parseDateFromPatterns("08-17-15", action.computeDateTimeFormatter(patterns))));
+        assertEquals(expected, dtf.format(action.parseDateFromPatterns("15/17/08", action.computeDateTimeFormatter(patterns))));
     }
 
     @Test
-    public void testSuperParseWithZarbPattern() throws ParseException {
+    public void testParseDateWithWeirdPattern() throws ParseException {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         TemporalAccessor date = LocalDate.of(2015, 8, 17);
         String expected = dtf.format(date);
@@ -88,11 +93,11 @@ public class AbstractDateTest {
         patterns.add(new DatePattern(10, "aaaaaaa"));
         patterns.add(new DatePattern(2, "yyyy/MM/dd"));
 
-        assertEquals(expected, dtf.format(action.superParse("2015/08/17", action.computeDateTimeFormatter(patterns))));
+        assertEquals(expected, dtf.format(action.parseDateFromPatterns("2015/08/17", action.computeDateTimeFormatter(patterns))));
     }
 
     @Test
-    public void testSuperParseWithEmptyPattern() throws ParseException {
+    public void testParseDateWithEmptyPattern() throws ParseException {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         TemporalAccessor date = LocalDate.of(2015, 8, 17);
         String expected = dtf.format(date);
@@ -101,7 +106,47 @@ public class AbstractDateTest {
         patterns.add(new DatePattern(1, ""));
         patterns.add(new DatePattern(2, "yyyy/MM/dd"));
 
-        assertEquals(expected, dtf.format(action.superParse("2015/08/17", action.computeDateTimeFormatter(patterns))));
+        assertEquals(expected, dtf.format(action.parseDateFromPatterns("2015/08/17", action.computeDateTimeFormatter(patterns))));
+    }
+
+    @Test
+    public void shouldComputePatternFromDQ() {
+        assertEquals(new DatePattern(1, "d/M/yyyy"), action.guessPattern("01/02/2015"));
+        assertEquals(new DatePattern(1, "yyyy-M-d"), action.guessPattern("2015-01-02"));
+        assertEquals(new DatePattern(1, "9999"), action.guessPattern("2015"));
+        assertEquals(new DatePattern(1, "MMMM d yyyy"), action.guessPattern("July 14 2015"));
+    }
+
+    @Test(expected = DateTimeException.class)
+    public void shouldNotComputePatternFromDQBecauseEmptyValue() {
+        action.guessPattern("");
+    }
+
+    @Test(expected = DateTimeException.class)
+    public void shouldNotComputePatternFromDQBecauseNullValue() {
+        action.guessPattern(null);
+    }
+
+    @Test(expected = DateTimeException.class)
+    public void shouldNotComputePatternFromDQBecauseInvalidValue() {
+        action.guessPattern("not a date");
+    }
+
+
+    @Test
+    public void shouldUpdateColumnStatisticsWithNewDatePattern() {
+
+        // given
+        ColumnMetadata column = getColumn(Type.DATE);
+        column.getStatistics().getPatternFrequencies().add(new PatternFrequency("yyyy", 19));
+
+        // when
+        action.guessAndParse("01/02/2015", column);
+
+        // then
+        final List<PatternFrequency> actual = column.getStatistics().getPatternFrequencies();
+        assertEquals(2, actual.size());
+        assertEquals(new PatternFrequency("d/M/yyyy", 1), actual.get(1));
     }
 
     @Test

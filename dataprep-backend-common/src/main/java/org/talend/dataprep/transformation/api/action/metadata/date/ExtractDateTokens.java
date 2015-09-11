@@ -143,7 +143,7 @@ public class ExtractDateTokens extends AbstractDate implements ColumnAction {
         }
         TemporalAccessor temporalAccessor = null;
         try {
-            temporalAccessor = superParse(value, row, columnId);
+            temporalAccessor = parse(value, row.getRowMetadata().getById(columnId));
         } catch (DateTimeException e) {
             // temporalAccessor is left null, this will be used bellow to set empty new value for all fields
             LOGGER.debug("Unable to parse date {}.", value, e);
