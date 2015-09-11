@@ -1,5 +1,6 @@
 package org.talend.dataprep.transformation.api.action.metadata.net;
 
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.api.type.Type.STRING;
 
 import java.util.Map;
@@ -75,13 +76,17 @@ public class ExtractEmailDomain extends AbstractActionMetadata implements Column
         final String originalValue = row.get(columnId);
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
-
         // Perform metadata level actions (add local + domain columns).
-        final ColumnMetadata newColumnMetadataLocal = createLocalNewColumn(column);
-        final String local = rowMetadata.insertAfter(columnId, newColumnMetadataLocal);
-        final ColumnMetadata newColumnMetadataDomain = createDomainNewColumn(column);
-        final String domain = rowMetadata.insertAfter(local, newColumnMetadataDomain);
-
+        final String local = context.in(this).column(
+                column.getName() + LOCAL,
+                () -> column().name(column.getName() + LOCAL).type(Type.STRING).build(),
+                (c) -> rowMetadata.insertAfter(columnId, c)
+        );
+        final String domain = context.in(this).column(
+                column.getName() + DOMAIN,
+                () -> column().name(column.getName() + DOMAIN).type(Type.STRING).build(),
+                (c) -> rowMetadata.insertAfter(local, c)
+        );
         // Set the values in newly created columns
         if (originalValue == null) {
             return;
@@ -91,39 +96,6 @@ public class ExtractEmailDomain extends AbstractActionMetadata implements Column
         row.set(local, localPart);
         final String domainPart = split.length >= 2 ? split[1] : StringUtils.EMPTY;
         row.set(domain, domainPart);
-    }
-
-    /**
-     * Create a new "domain" column
-     *
-     * @param column the current column
-     * @return the new column
-     */
-    private ColumnMetadata createDomainNewColumn(final ColumnMetadata column) {
-        return ColumnMetadata.Builder //
-                .column() //
-                .name(column.getName() + DOMAIN) //
-                .type(Type.get(column.getType())) //
-                .empty(column.getQuality().getEmpty()) //
-                .invalid(column.getQuality().getInvalid()) //
-                .valid(column.getQuality().getValid()) //
-                .headerSize(column.getHeaderSize()) //
-                .build();
-    }
-
-    /**
-     * Create a new "local" column
-     *
-     * @param column the current column
-     * @return the new column
-     */
-    private ColumnMetadata createLocalNewColumn(final ColumnMetadata column) {
-        return ColumnMetadata.Builder //
-                .column() //
-                .name(column.getName() + LOCAL) //
-                .type(Type.get(column.getType())) //
-                .headerSize(column.getHeaderSize()) //
-                .build();
     }
 
 }
