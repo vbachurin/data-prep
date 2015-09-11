@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.daikon.exception.TalendExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,7 +56,7 @@ public class PreparationUpdateAction extends DataPrepCommand<Void> {
                 throw new TDPException(errorCode);
             }
 
-            throw new TDPException(UNABLE_TO_UPDATE_ACTION_IN_PREPARATION, TDPExceptionContext.build().put("id", id));
+            throw new TDPException(UNABLE_TO_UPDATE_ACTION_IN_PREPARATION, TalendExceptionContext.build().put("id", id));
         } finally {
             actionAppend.releaseConnection();
         }

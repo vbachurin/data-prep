@@ -4,17 +4,17 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.talend.dataprep.exception.error.ErrorCode;
+import org.talend.daikon.exception.error.ErrorCode;
 
 /**
  * Preparation error codes.
  */
 public enum PreparationErrorCodes implements ErrorCode {
-    PREPARATION_DOES_NOT_EXIST(400, "id"),
-    PREPARATION_STEP_DOES_NOT_EXIST(400, "id", "stepId"),
-    PREPARATION_STEP_CANNOT_BE_DELETED_IN_SINGLE_MODE(403, "id", "stepId"),
-    PREPARATION_ROOT_STEP_CANNOT_BE_DELETED(403, "id", "stepId"),
-    UNABLE_TO_SERVE_PREPARATION_CONTENT(400, "id", "version");
+                                                        PREPARATION_DOES_NOT_EXIST(400, "id"),
+                                                        PREPARATION_STEP_DOES_NOT_EXIST(400, "id", "stepId"),
+                                                        PREPARATION_STEP_CANNOT_BE_DELETED_IN_SINGLE_MODE(403, "id", "stepId"),
+                                                        PREPARATION_ROOT_STEP_CANNOT_BE_DELETED(403, "id", "stepId"),
+                                                        UNABLE_TO_SERVE_PREPARATION_CONTENT(400, "id", "version");
 
     /** The http status to use. */
     private int httpStatus;
@@ -60,5 +60,10 @@ public enum PreparationErrorCodes implements ErrorCode {
     @Override
     public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
+    }
+
+    @Override
+    public String getCode() {
+        return this.toString();
     }
 }

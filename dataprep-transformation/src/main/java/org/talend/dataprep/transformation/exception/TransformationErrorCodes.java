@@ -8,25 +8,28 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.talend.dataprep.exception.error.ErrorCode;
+import org.talend.daikon.exception.error.ErrorCode;
 
 /**
  * Transformation error codes.
  */
 public enum TransformationErrorCodes implements ErrorCode {
-    // 400
-    UNABLE_TO_PARSE_JSON(BAD_REQUEST), // TODO what is the difference with CommonErrorCodes.UNABLE_TO_PARSE_JSON ?
+                                                           // 400
+                                                           UNABLE_TO_PARSE_JSON(BAD_REQUEST), // TODO what is the
+                                                                                              // difference with
+                                                                                              // CommonErrorCodes.UNABLE_TO_PARSE_JSON
+                                                                                              // ?
 
-    // 404
-    UNKNOWN_DYNAMIC_ACTION(NOT_FOUND, "value"),
+                                                           // 404
+                                                           UNKNOWN_DYNAMIC_ACTION(NOT_FOUND, "value"),
 
-    // 415
-    OUTPUT_TYPE_NOT_SUPPORTED(UNSUPPORTED_MEDIA_TYPE),
+                                                           // 415
+                                                           OUTPUT_TYPE_NOT_SUPPORTED(UNSUPPORTED_MEDIA_TYPE),
 
-    // 500
-    UNABLE_TO_COMPUTE_DATASET_ACTIONS(INTERNAL_SERVER_ERROR),
-    UNABLE_TRANSFORM_DATASET(INTERNAL_SERVER_ERROR),
-    UNEXPECTED_EXCEPTION(INTERNAL_SERVER_ERROR);
+                                                           // 500
+                                                           UNABLE_TO_COMPUTE_DATASET_ACTIONS(INTERNAL_SERVER_ERROR),
+                                                           UNABLE_TRANSFORM_DATASET(INTERNAL_SERVER_ERROR),
+                                                           UNEXPECTED_EXCEPTION(INTERNAL_SERVER_ERROR);
 
     /** The http status to use. */
     private int httpStatus;
@@ -85,5 +88,10 @@ public enum TransformationErrorCodes implements ErrorCode {
     @Override
     public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
+    }
+
+    @Override
+    public String getCode() {
+        return this.toString();
     }
 }

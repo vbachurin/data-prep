@@ -17,7 +17,7 @@ import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.daikon.exception.TalendExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -71,7 +71,7 @@ public class DataSetPreview extends DataPrepCommand<InputStream> {
             } else if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
                 Exception cause = new Exception(response.getStatusLine().getStatusCode() + ":" //
                         + response.getStatusLine().getReasonPhrase());
-                throw new TDPException(APIErrorCodes.DATASET_REDIRECT, cause, TDPExceptionContext.build().put("id", dataSetId));
+                throw new TDPException(APIErrorCodes.DATASET_REDIRECT, cause, TalendExceptionContext.build().put("id", dataSetId));
             }
         } else if (statusCode >= 400) { // Error (4xx & 5xx codes)
             final ObjectMapper build = builder.build();
@@ -81,7 +81,7 @@ public class DataSetPreview extends DataPrepCommand<InputStream> {
         }
         Exception cause = new Exception(response.getStatusLine().getStatusCode() + ":"
                 + response.getStatusLine().getReasonPhrase());
-        throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, cause, TDPExceptionContext.build().put("id",
+        throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, cause, TalendExceptionContext.build().put("id",
                 dataSetId));
     }
 }

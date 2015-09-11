@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.talend.daikon.exception.error.ErrorCode;
+
 public enum CommonErrorCodes implements ErrorCode {
                                                    UNEXPECTED_EXCEPTION(500),
                                                    UNABLE_TO_PARSE_JSON(500),
@@ -83,5 +85,10 @@ public enum CommonErrorCodes implements ErrorCode {
     @Override
     public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
+    }
+
+    @Override
+    public String getCode() {
+        return this.toString();
     }
 }

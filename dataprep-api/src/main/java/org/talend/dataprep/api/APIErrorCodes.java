@@ -5,35 +5,35 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.talend.dataprep.exception.error.ErrorCode;
+import org.talend.daikon.exception.error.ErrorCode;
 
 public enum APIErrorCodes implements ErrorCode {
-    UNABLE_TO_DELETE_PREPARATION(400),
-    UNABLE_TO_CREATE_DATASET(400),
-    UNABLE_TO_CREATE_OR_UPDATE_DATASET(400),
-    UNABLE_TO_CERTIFY_DATASET(400),
-    UNABLE_TO_DELETE_DATASET(400, "dataSetId"),
-    UNABLE_TO_RETRIEVE_DATASET_CONTENT(400, "id"),
-    UNABLE_TO_RETRIEVE_DATASET_CONTENT_DATASET_NOT_READY(400, "id"),
-    UNABLE_TO_RETRIEVE_DATASET_METADATA(400),
-    UNABLE_TO_LIST_DATASETS(400),
-    UNABLE_TO_LIST_ERRORS(500),
-    UNABLE_TO_ACTIONS_TO_PREPARATION(400, "id"),
-    UNABLE_TO_CREATE_PREPARATION(500), // can also be 400 ?
-    UNABLE_TO_RETRIEVE_PREPARATION_LIST(400),
-    UNABLE_TO_RETRIEVE_PREPARATION_CONTENT(400),
-    UNABLE_TO_UPDATE_PREPARATION(400, "id"),
-    UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS(400, "columnName", "dataSetId"),
-    UNABLE_TO_FIND_COMMAND(500, "class", "args"),
-    UNABLE_TO_GET_PREPARATION_DETAILS(400),
-    UNABLE_TO_TRANSFORM_DATASET(400, "dataSetId"),
-    UNABLE_TO_UPDATE_ACTION_IN_PREPARATION(400, "id"),
-    UNABLE_TO_DELETE_ACTION_IN_PREPARATION(400, "id", "stepId"),
-    UNABLE_TO_EXPORT_CONTENT(400),
-    UNABLE_TO_GET_DYNAMIC_ACTION_PARAMS(400),
-    UNABLE_TO_SET_FAVORITE_DATASET(400, "id"),
-    DATASET_STILL_IN_USE(409, "dataSetId", "preparations"),
-    UNABLE_TO_UPDATE_COLUMN(400, "id"),
+                                                UNABLE_TO_DELETE_PREPARATION(400),
+                                                UNABLE_TO_CREATE_DATASET(400),
+                                                UNABLE_TO_CREATE_OR_UPDATE_DATASET(400),
+                                                UNABLE_TO_CERTIFY_DATASET(400),
+                                                UNABLE_TO_DELETE_DATASET(400, "dataSetId"),
+                                                UNABLE_TO_RETRIEVE_DATASET_CONTENT(400, "id"),
+                                                UNABLE_TO_RETRIEVE_DATASET_CONTENT_DATASET_NOT_READY(400, "id"),
+                                                UNABLE_TO_RETRIEVE_DATASET_METADATA(400),
+                                                UNABLE_TO_LIST_DATASETS(400),
+                                                UNABLE_TO_LIST_ERRORS(500),
+                                                UNABLE_TO_ACTIONS_TO_PREPARATION(400, "id"),
+                                                UNABLE_TO_CREATE_PREPARATION(500), // can also be 400 ?
+                                                UNABLE_TO_RETRIEVE_PREPARATION_LIST(400),
+                                                UNABLE_TO_RETRIEVE_PREPARATION_CONTENT(400),
+                                                UNABLE_TO_UPDATE_PREPARATION(400, "id"),
+                                                UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS(400, "columnName", "dataSetId"),
+                                                UNABLE_TO_FIND_COMMAND(500, "class", "args"),
+                                                UNABLE_TO_GET_PREPARATION_DETAILS(400),
+                                                UNABLE_TO_TRANSFORM_DATASET(400, "dataSetId"),
+                                                UNABLE_TO_UPDATE_ACTION_IN_PREPARATION(400, "id"),
+                                                UNABLE_TO_DELETE_ACTION_IN_PREPARATION(400, "id", "stepId"),
+                                                UNABLE_TO_EXPORT_CONTENT(400),
+                                                UNABLE_TO_GET_DYNAMIC_ACTION_PARAMS(400),
+                                                UNABLE_TO_SET_FAVORITE_DATASET(400, "id"),
+                                                DATASET_STILL_IN_USE(409, "dataSetId", "preparations"),
+                                                UNABLE_TO_UPDATE_COLUMN(400, "id"),
                                                 DATASET_REDIRECT(301);
 
     /** The http status to use. */
@@ -93,5 +93,10 @@ public enum APIErrorCodes implements ErrorCode {
     @Override
     public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
+    }
+
+    @Override
+    public String getCode() {
+        return this.toString();
     }
 }

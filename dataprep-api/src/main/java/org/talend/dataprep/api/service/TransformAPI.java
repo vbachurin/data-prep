@@ -25,7 +25,7 @@ import org.talend.dataprep.api.service.command.transformation.SuggestActionParam
 import org.talend.dataprep.api.service.command.transformation.SuggestColumnActions;
 import org.talend.dataprep.api.service.command.transformation.Transform;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.daikon.exception.TalendExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.metrics.Timed;
 
@@ -63,7 +63,7 @@ public class TransformAPI extends APIService {
             outputStream.flush();
         } catch (IOException e) {
             LOG.error("error while applying transform " + e.getMessage(), e);
-            throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e, TDPExceptionContext.build().put("dataSetId",
+            throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e, TalendExceptionContext.build().put("dataSetId",
                     dataSetId));
         }
 
