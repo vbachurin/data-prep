@@ -2,6 +2,8 @@ package org.talend.dataprep.transformation.api.action.context;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
@@ -15,6 +17,8 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
  * @see ActionMetadata#create(Map)
  */
 public final class TransformationContext {
+
+    private final Map<ActionMetadata, ActionContext> contexts = new HashMap<>();
 
     /** The row metadata. */
     private RowMetadata transformedRowMetadata;
@@ -30,13 +34,6 @@ public final class TransformationContext {
     }
 
     /**
-     * @param transformedRowMetadata the row metadata to build this context from.
-     */
-    public void setTransformedRowMetadata(RowMetadata transformedRowMetadata) {
-        this.transformedRowMetadata = transformedRowMetadata;
-    }
-
-    /**
      * @return immutable row metadata.
      */
     public RowMetadata getTransformedRowMetadata() {
@@ -44,6 +41,13 @@ public final class TransformationContext {
             throw new IllegalStateException("transformed row metadata was not set. Did ColumnsTypeTransformer set it ?");
         }
         return transformedRowMetadata;
+    }
+
+    /**
+     * @param transformedRowMetadata the row metadata to build this context from.
+     */
+    public void setTransformedRowMetadata(RowMetadata transformedRowMetadata) {
+        this.transformedRowMetadata = transformedRowMetadata;
     }
 
     /**
@@ -66,4 +70,20 @@ public final class TransformationContext {
         return context.get(key);
     }
 
+    /**
+     * Returns a transformation context specific to the current action. Use this to create columns (see
+     * {@link ActionContext#column(String, Supplier, Consumer)} for more details).
+     * 
+     * @param actionMetadata An instance of action used as key for finding context
+     * @return An {@link ActionContext context} ready to be used.
+     */
+    public ActionContext in(ActionMetadata actionMetadata) {
+        if (contexts.containsKey(actionMetadata)) {
+            return contexts.get(actionMetadata);
+        } else {
+            ActionContext actionContext = new ActionContext(this);
+            contexts.put(actionMetadata, actionContext);
+            return actionContext;
+        }
+    }
 }

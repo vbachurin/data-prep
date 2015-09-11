@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
+
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -8,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
@@ -72,31 +73,11 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements Column
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
-        final ColumnMetadata newColumnMetadata = createNewColumn(column);
-        final String copyColumn = rowMetadata.insertAfter(columnId, newColumnMetadata);
-
+        final String copyColumn = context.in(this).column(
+                column.getName() + COPY_APPENDIX,
+                () -> column().copy(column).name(column.getName() + COPY_APPENDIX).build(),
+                (c) -> rowMetadata.insertAfter(columnId, c)
+        );
         row.set(copyColumn, row.get(columnId));
     }
-
-    /**
-     * Copy the current column
-     *
-     * @param column the current column
-     * @return the copied column
-     */
-    private ColumnMetadata createNewColumn(final ColumnMetadata column) {
-        return ColumnMetadata.Builder //
-                .column() //
-                .name(column.getName() + COPY_APPENDIX) //
-                .type(Type.get(column.getType())) //
-                .statistics(column.getStatistics()) //
-                .headerSize(column.getHeaderSize()) //
-                .domain( column.getDomain() ) //
-                .domainLabel( column.getDomainLabel() ) //
-                .domainFrequency( column.getDomainFrequency() ) //
-                .semanticDomains( column.getSemanticDomains() ) //
-                .build();
-    }
-
-
 }
