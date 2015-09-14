@@ -25,6 +25,9 @@ public class SemanticDomain implements Serializable {
     @JsonProperty("frequency")
     private float frequency;
 
+    /**
+     * Default empty constructor.
+     */
     public SemanticDomain() {
         // empty default constructor
     }
