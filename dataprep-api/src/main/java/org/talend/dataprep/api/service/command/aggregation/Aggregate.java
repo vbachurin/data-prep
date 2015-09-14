@@ -56,6 +56,12 @@ public class Aggregate extends DataPrepCommand<InputStream> {
     @Override
     protected InputStream run() throws Exception {
 
+        // must work on either a dataset or a preparation, if both parameters are set, an error is thrown
+        if (StringUtils.isNotBlank(parameters.getDatasetId()) && StringUtils.isNotBlank(parameters.getPreparationId())) {
+            LOG.error("Cannot aggregate on both dataset id & preparation id : {}", parameters);
+            throw new TDPException(CommonErrorCodes.BAD_AGGREGATION_PARAMETERS);
+        }
+
         // get the content to work on
         InputStream content;
         if (parameters.getDatasetId() != null) {

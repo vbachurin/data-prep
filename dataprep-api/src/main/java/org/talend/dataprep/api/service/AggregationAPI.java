@@ -39,9 +39,7 @@ public class AggregationAPI extends APIService {
      */
     @RequestMapping(value = "/api/aggregate", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Compute aggregation", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE, notes = "Compute aggregation according to the given parameters")
-    public void compute(@RequestBody
-    @Valid
-    final AggregationParameters input, final HttpServletResponse response) {
+    public void compute(@RequestBody @Valid final AggregationParameters input, final HttpServletResponse response) {
 
         LOG.debug("Aggregation computation requested (pool: {} )...", getConnectionManager().getTotalStats());
 
