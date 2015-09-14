@@ -57,7 +57,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
         if (column == null) {
             return;
         }
-        // parse and checks the new date pattern
+        // parse and checks the new date pattern        action = new ChangeDatePattern();
         // register the new pattern in column stats, to be able to process date action later
         final Statistics statistics = column.getStatistics();
         boolean isNewPatternRegistered = false;
@@ -78,7 +78,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
             return;
         }
         try {
-            final LocalDateTime date = parse(value, row.getRowMetadata().getById(columnId));
+            final LocalDateTime date = dateParser.parse(value, row.getRowMetadata().getById(columnId));
             row.set(columnId, newPattern.getFormatter().format(date));
         } catch (DateTimeException e) {
             // cannot parse the date, let's leave it as is

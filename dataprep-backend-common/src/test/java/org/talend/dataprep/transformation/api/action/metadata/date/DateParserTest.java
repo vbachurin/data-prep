@@ -12,31 +12,22 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.api.type.Type;
 
 /**
- * Unit test for the AbstractDate class.
- * @see AbstractDate
+ * Unit test for the DateParser class.
+ * @see DateParser
  */
-public class AbstractDateTest {
+public class DateParserTest extends BaseDateTests {
 
     /** The action to test. */
-    private AbstractDate action;
-
-    @Before
-    public void init() throws IOException {
-        action = new AbstractDate() {
-            @Override
-            public String getName() {
-                return null;
-            }
-        };
-    }
+    @Autowired
+    private DateParser action;
 
     @Test(expected = DateTimeException.class)
     public void shouldNotParseNull() {
