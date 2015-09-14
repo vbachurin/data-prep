@@ -59,9 +59,7 @@
                 var item = DatagridService.dataView.getItem(row);
 
                 var column = grid.getColumns()[cell.cell];
-                var value = item[column.id];
-                //convert to string
-                value += '';
+                var value = item[column.id] + '';
 
                 if (shouldShowTooltip(value, cell)) {
                     tooltipShowPromise = $timeout(function () {
