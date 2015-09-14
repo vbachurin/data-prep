@@ -31,10 +31,9 @@ import java.util.List;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
@@ -204,7 +203,7 @@ public class PreparationAPITest extends DataPrepTest {
     @Test
     public void should_update_action() throws Exception {
         // given
-        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparation", "text/csv");
         applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
         applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
 
@@ -216,7 +215,8 @@ public class PreparationAPITest extends DataPrepTest {
 
         // when : Update first action (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") with another action
         final String actionContent3 = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/lower_case_lastname.json"));
-        given().body(actionContent3)
+        given().contentType(ContentType.JSON)
+                .body(actionContent3)
                 .put("/api/preparations/{preparation}/actions/{action}", preparationId,
                         "c713d4988879e2aaab916853b45e4ddf9debe303").then().statusCode(is(200));
 
@@ -226,6 +226,31 @@ public class PreparationAPITest extends DataPrepTest {
         assertThat(steps.get(0), is(ROOT_STEP.id()));
         assertThat(steps.get(1), is("cd3cefd02aa2eec8755bd6fdd77934a6ae958414"));
         assertThat(steps.get(2), is("1e76900b00817d10f81084b71dc97d023085a49b"));
+    }
+
+    @Test
+    public void should_save_created_columns_ids_on_update() throws Exception {
+        // given
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparation", "text/csv");
+        applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
+        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
+
+        final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        assertThat(steps.get(1), is("c713d4988879e2aaab916853b45e4ddf9debe303")); // <- transformation/upper_case_lastname
+
+        // when : Update first action (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59")
+        // with another action that create a column
+        final String updateAction = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/copy_firstname.json"));
+        given().contentType(ContentType.JSON)
+                .body(updateAction)
+                .put("/api/preparations/{preparation}/actions/{action}", preparationId,
+                        "c713d4988879e2aaab916853b45e4ddf9debe303").then().statusCode(is(200));
+
+        // then
+        final JsonPath jsonPath = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath();
+        final List<String> createdColumns = jsonPath.getList("diff[0].createdColumns");
+        assertThat(createdColumns, hasSize(1));
+        assertThat(createdColumns, hasItem("0006"));
     }
 
     @Test

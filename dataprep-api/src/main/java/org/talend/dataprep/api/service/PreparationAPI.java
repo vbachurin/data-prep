@@ -1,16 +1,9 @@
 package org.talend.dataprep.api.service;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
+import com.netflix.hystrix.HystrixCommand;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
@@ -26,10 +19,15 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.metrics.Timed;
 
-import com.netflix.hystrix.HystrixCommand;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 @Api(value = "api", basePath = "/api", description = "Data Preparation API")
@@ -179,13 +177,13 @@ public class PreparationAPI extends APIService {
     public void updatePreparationAction(
             @PathVariable(value = "preparationId") @ApiParam(name = "preparationId", value = "Preparation id.") final String preparationId,
             @PathVariable(value = "stepId") @ApiParam(name = "stepId", value = "Step id in the preparation.") final String stepId,
-            @ApiParam("New content for the action.") InputStream body) {
+            @RequestBody @ApiParam("New content for the action.") final AppendStep step) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Updating preparation action at step #{} (pool: {} )...", stepId,
                     getConnectionManager().getTotalStats());
         }
         final HttpClient client = getClient();
-        final HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationId, stepId, body);
+        final HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationId, stepId, step);
         command.execute();
         LOG.debug("Updated preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
     }

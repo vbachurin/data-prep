@@ -30,6 +30,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationActions;
+import org.talend.dataprep.api.preparation.PreparationUtils;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.preparation.Application;
 import org.talend.dataprep.preparation.store.PreparationRepository;
@@ -326,13 +327,28 @@ public class PreparationServiceTest {
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
 
         final Step head = repository.get(expectedStepId, Step.class);
-        assertThat(head.getParent(), is(ROOT_STEP.getId()));
-        assertThat(head.getDiff().getCreatedColumns(), hasSize(1));
-        assertThat(head.getDiff().getCreatedColumns(), hasItem("0006"));
-
         final PreparationActions headAction = repository.get(head.getContent(), PreparationActions.class);
         assertThat(headAction.getActions(), hasSize(1));
         assertThat(headAction.getActions().get(0).getAction(), is("copy"));
+    }
+
+    @Test
+    public void should_save_step_diff() throws Exception {
+        // given
+        final String preparationId = createPreparation("1234", "my preparation");
+        final Preparation preparation = repository.get(preparationId, Preparation.class);
+
+        assertThat(preparation.getStep().id(), is(ROOT_STEP.getId()));
+
+        // when
+        applyTransformation(preparationId, "copy_lastname.json");
+
+        // then
+        final String expectedStepId = "c042e685cbe92a6c67a8fb8e41f2369327029b26";
+        final Step head = repository.get(expectedStepId, Step.class);
+        assertThat(head.getParent(), is(ROOT_STEP.getId()));
+        assertThat(head.getDiff().getCreatedColumns(), hasSize(1));
+        assertThat(head.getDiff().getCreatedColumns(), hasItem("0006"));
     }
 
     @Test
@@ -441,6 +457,37 @@ public class PreparationServiceTest {
     }
 
     @Test
+    public void should_save_updated_step_diff_and_shift_columns_ids() throws Exception {
+        // given
+        final String preparationId = createPreparation("1234", "my preparation");
+        final String step0 = applyTransformation(preparationId, "update/0.copy_birth.json");
+        final String step1 = applyTransformation(preparationId, "update/1.split_2_columns.json");
+        final String step2 = applyTransformation(preparationId, "update/2.copy_firstname_after_split.json");
+        final String step3 = applyTransformation(preparationId, "update/3.rename_copy_firstname.json");
+        final String step4 = applyTransformation(preparationId, "update/4.copy_lastname.json");
+
+        assertThatStepHasCreatedColumns(step0, "0007");
+        assertThatStepHasCreatedColumns(step1, "0008", "0009");
+        assertThatStepHasCreatedColumns(step2, "0010");
+        assertThatStepIsOnColumn(step3, "0010");
+        assertThatStepHasCreatedColumns(step4, "0011");
+
+        // when : +1 column
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("update/1bis.split_3_columns.json")))
+                .contentType(ContentType.JSON).when()
+                .put("/preparations/{id}/actions/{action}", preparationId, step1);
+
+        // then
+        final Preparation preparation = repository.get(preparationId, Preparation.class);
+        final List<String> stepIds = PreparationUtils.listStepsIds(preparation.getStep(), repository);
+        assertThatStepHasCreatedColumns(stepIds.get(1), "0007"); // id < 0009 : do not change
+        assertThatStepHasCreatedColumns(stepIds.get(2), "0008", "0009", "0010"); // +1 column
+        assertThatStepHasCreatedColumns(stepIds.get(3), "0011"); // id >= 0009 : shift +1
+        assertThatStepIsOnColumn(stepIds.get(4), "0011"); // id >= 0009 : shift + 1
+        assertThatStepHasCreatedColumns(stepIds.get(5), "0012"); // id >= 0009 : shift + 1
+    }
+
+    @Test
     public void should_return_error_when_scope_is_not_consistent_on_transformation_update() throws Exception {
         //given
         final String preparationId = createPreparation("1234", "my preparation");
@@ -462,7 +509,6 @@ public class PreparationServiceTest {
     //------------------------------------------------------------------------------------------------------------------
     //---------------------------------------------------DELETE STEP----------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------
-
     @Test
     public void should_delete_single_step() throws Exception {
         // given
@@ -662,4 +708,30 @@ public class PreparationServiceTest {
         return preparation.getStep().id();
     }
 
+    /**
+     * Assert that step has exactly the wanted created columns ids
+     * @param stepId        The step id
+     * @param columnsIds    The created columns ids
+     */
+    private void assertThatStepHasCreatedColumns(final String stepId, final String... columnsIds) {
+        final Step head = repository.get(stepId, Step.class);
+        assertThat(head.getDiff().getCreatedColumns(), hasSize(columnsIds.length));
+        for(final String columnId : columnsIds) {
+            assertThat(head.getDiff().getCreatedColumns(), hasItem(columnId));
+        }
+    }
+
+    /**
+     * Assert that the step is on the wanted column id
+     * @param stepId    The step id
+     * @param columnId  The column id
+     */
+    private void assertThatStepIsOnColumn(final String stepId, final String columnId) {
+        final Step step = repository.get(stepId, Step.class);
+        final PreparationActions stepActions = repository.get(step.getContent(), PreparationActions.class);
+        final int stepActionIndex = stepActions.getActions().size() - 1;
+
+        final Map<String, String> stepParameters = stepActions.getActions().get(stepActionIndex).getParameters();
+        assertThat(stepParameters.get("column_id"), is(columnId));
+    }
 }

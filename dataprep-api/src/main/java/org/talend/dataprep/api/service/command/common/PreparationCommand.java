@@ -1,28 +1,34 @@
 package org.talend.dataprep.api.service.command.common;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.hystrix.HystrixCommandGroupKey;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.InputStreamBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.api.preparation.StepDiff;
 import org.talend.dataprep.api.service.command.dataset.DataSetGet;
 import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.cache.ContentCacheKey;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.netflix.hystrix.HystrixCommandGroupKey;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
+import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 
 public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
@@ -53,6 +59,48 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
     protected PreparationCommand(final HystrixCommandGroupKey groupKey, final HttpClient client) {
         super(groupKey, client);
+    }
+
+    /**
+     * Get the diff metadata containing the created columns ids by adding the 'actionsToAdd' to the preparation (preparationId) at the 'insertionStepId
+     * @param preparationId     The preparation id
+     * @param insertionStepId   The step id where we want to add the actions
+     * @param actionsToAdd      The actions to add
+     */
+    protected StepDiff getDiffMetadata(final String preparationId, final String insertionStepId, final List<Action> actionsToAdd) throws IOException {
+        // get preparation details
+        final Preparation preparation = getPreparation(preparationId);
+        final String dataSetId = preparation.getDataSetId();
+
+        // get dataset content with 1 row
+        final InputStream content = getDatasetContent(dataSetId, 1L);
+
+        // extract insertion point actions
+        final List<Action> actions = getPreparationActions(preparation, insertionStepId);
+        final String serializedParentActions = serializeActions(actions);
+
+        final List<Action> addedActions = new ArrayList<>(actions);
+        addedActions.addAll(actionsToAdd);
+        final String serializedActions = serializeActions(addedActions);
+
+        // get created columns ids
+        final HttpEntity reqEntity = MultipartEntityBuilder.create()
+                .addPart("stepActions", new StringBody(serializedActions, TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
+                .addPart("parentActions", new StringBody(serializedParentActions, TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
+                .addPart("content", new InputStreamBody(content, APPLICATION_JSON)) //$NON-NLS-1$
+                .build();
+
+        final String uri = transformationServiceUrl + "/transform/diff";
+        final HttpPost transformationCall = new HttpPost(uri);
+        try {
+            transformationCall.setEntity(reqEntity);
+            final InputStream diffInputStream = client.execute(transformationCall).getEntity().getContent();
+            final ObjectMapper mapper = builder.build();
+            return mapper.readValue(diffInputStream, StepDiff.class);
+        }
+        finally {
+            transformationCall.releaseConnection();
+        }
     }
 
     /**

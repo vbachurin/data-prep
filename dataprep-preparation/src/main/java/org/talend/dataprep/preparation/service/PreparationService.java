@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Collections.emptyList;
@@ -172,21 +173,36 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/actions/{stepId}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Updates an action in a preparation", notes = "Modifies an action in preparation's steps.")
     @Timed
-    public void updateAction(@PathVariable("id") final String id, //
+    public void updateAction(@PathVariable("id") final String preparationId, //
                              @PathVariable("stepId") final String stepToModifyId, //
                              @RequestBody final AppendStep newStep) {
         checkActionStepConsistency(newStep);
 
-        LOGGER.debug("Modifying actions in preparation #{}", id);
-        final Preparation preparation = getPreparation(id);
-        LOGGER.debug("Current head for preparation #{}: {}", id, preparation.getStep());
+        LOGGER.debug("Modifying actions in preparation #{}", preparationId);
+        final Preparation preparation = getPreparation(preparationId);
+        LOGGER.debug("Current head for preparation #{}: {}", preparationId, preparation.getStep());
 
         // Get steps from "step to modify" to the head
         final List<String> steps = extractSteps(preparation, stepToModifyId); // throws an exception if stepId is not in the preparation
         LOGGER.debug("Rewriting history for {} steps.", steps.size());
 
+        // Extract created columns ids diff infos
+        final Step stm = getStep(stepToModifyId);
+        final List<String> originalCreatedColumns = stm.getDiff().getCreatedColumns();
+        final List<String> updatedCreatedColumns = newStep.getDiff().getCreatedColumns();
+
+        final List<String> deletedColumns = originalCreatedColumns.stream() // columns that the step was creating but not anymore
+                .filter(id -> !updatedCreatedColumns.contains(id))
+                .collect(toList());
+        final List<String> addedColumns = updatedCreatedColumns.stream() // columns created by the new step but not by the step before update
+                .filter(id -> !originalCreatedColumns.contains(id))
+                .collect(toList());
+
+        final int columnsDiffNumber = addedColumns.size() - deletedColumns.size();
+        final int maxCreatedColumnIdBeforeUpdate = (originalCreatedColumns.isEmpty()) ? MAX_VALUE : originalCreatedColumns.stream().mapToInt(Integer::parseInt).max().getAsInt();
+
         // Build list of actions from modified one to the head
-        final List<AppendStep> actionsSteps = extractActionsAfterStep(steps, stepToModifyId);
+        final List<AppendStep> actionsSteps = getStepsWithShiftedColumnIds(steps, stepToModifyId, deletedColumns, maxCreatedColumnIdBeforeUpdate, columnsDiffNumber);
         actionsSteps.add(0, newStep);
 
         // Rebuild history from modified step
@@ -222,47 +238,14 @@ public class PreparationService {
 
         // get created columns by step to delete
         final Step std = getStep(stepToDeleteId);
-        final List<String> createdColumnsIds = std.getDiff().getCreatedColumns();
-        final int numberOfCreatedColumns = createdColumnsIds.size();
-        final int maxCreatedColumnId = (createdColumnsIds.isEmpty()) ? MAX_VALUE : createdColumnsIds.stream().mapToInt(Integer::parseInt).max().getAsInt();
+        final List<String> deletedColumns = std.getDiff().getCreatedColumns();
+        final int columnsDiffNumber = - deletedColumns.size();
+        final int maxCreatedColumnIdBeforeUpdate = (deletedColumns.isEmpty()) ? MAX_VALUE : deletedColumns.stream().mapToInt(Integer::parseInt).max().getAsInt();
 
         LOGGER.debug("Deleting actions in preparation #{} at step #{}", id, stepToDeleteId); //$NON-NLS-1$
 
         // get new actions to rewrite history from deleted step
-        final List<AppendStep> originalActions = extractActionsAfterStep(steps, stepToDeleteId);
-        final DecimalFormat format = new DecimalFormat("0000"); //$NON-NLS-1$
-        final List<AppendStep> actions = originalActions.stream()
-                // rule 1 : remove all steps that modify one of the step to delete created columns
-                .filter(step -> {
-                    final String columnId = step.getActions().get(0).getParameters().get("column_id"); //$NON-NLS-1$
-                    return !createdColumnsIds.contains(columnId);
-                })
-                // rule 2 : we have to shift all columns ids created after the step to delete, in the column_id parameters
-                // For example, if the step to delete creates columns 0010 and 0011, all steps that apply to column 0012 should now apply to 0012 - (2 created columns) = 0010
-                .map(step -> {
-                    final Map<String, String> parameters = step.getActions().get(0).getParameters();
-                    final int columnId = Integer.parseInt(step.getActions().get(0).getParameters().get("column_id")); //$NON-NLS-1$
-                    if (columnId > maxCreatedColumnId) {
-                        parameters.put("column_id", format.format(columnId - numberOfCreatedColumns)); //$NON-NLS-1$
-                    }
-                    return step;
-                })
-                // rule 3 :  we have to shift all columns ids created after the step to delete, in the steps diff
-                .map(step -> {
-                    final List<String> stepCreatedCols = step.getDiff().getCreatedColumns();
-                    final List<String> shiftedStepCreatedCols = stepCreatedCols.stream()
-                            .map(colIdStr -> {
-                                final int columnId = Integer.parseInt(colIdStr);
-                                if (columnId > maxCreatedColumnId) {
-                                    return format.format(columnId - numberOfCreatedColumns);
-                                }
-                                return colIdStr;
-                            })
-                            .collect(toList());
-                    step.getDiff().setCreatedColumns(shiftedStepCreatedCols);
-                    return step;
-                })
-                .collect(toList());
+        final List<AppendStep> actions = getStepsWithShiftedColumnIds(steps, stepToDeleteId, deletedColumns, maxCreatedColumnIdBeforeUpdate, columnsDiffNumber);
 
         // rewrite history
         final Step stepToDelete = getStep(stepToDeleteId);
@@ -476,6 +459,63 @@ public class PreparationService {
     //------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------HISTORY------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------
+    /**
+     * 1. Get the steps with ids after 'afterStepId'
+     * 2. Rule 1 : Remove (filter) the steps which action is on one of the 'deletedColumns'
+     * 3. Rule 2 : For all actions on columns ids > 'shiftColumnAfterId', we shift the column_id parameter with a 'columnShiftNumber' value.
+     * (New_column_id = column_id + columnShiftNumber, only if column_id > 'shiftColumnAfterId')
+     * 4. Rule 3 : The columns created AFTER 'shiftColumnAfterId' are shifted with the same rules as rule 2.
+     * (New_created_column_id = created_column_id + columnShiftNumber, only if created_column_id > 'shiftColumnAfterId')
+     * @param stepsIds              The steps ids
+     * @param afterStepId           The (EXCLUDED) step where the extraction starts
+     * @param deletedColumns        The column ids that will be removed
+     * @param shiftColumnAfterId    The (EXCLUDED) column id where we start the shift
+     * @param columnShiftNumber     The shift number. new_column_id = old_columns_id + columnShiftNumber
+     * @return The adapted steps
+     */
+    private List<AppendStep> getStepsWithShiftedColumnIds(final List<String> stepsIds, final String afterStepId, final List<String> deletedColumns, final int shiftColumnAfterId, final int columnShiftNumber) {
+        final DecimalFormat format = new DecimalFormat("0000"); //$NON-NLS-1$
+        Stream<AppendStep> stream = extractActionsAfterStep(stepsIds, afterStepId).stream();
+
+        // rule 1 : remove all steps that modify one of the STD created columns
+        if(deletedColumns.size() > 0) {
+            stream = stream.filter(step -> {
+                final String columnId = step.getActions().get(0).getParameters().get("column_id"); //$NON-NLS-1$
+                return columnId == null || !deletedColumns.contains(columnId);
+            });
+        }
+
+        if(columnShiftNumber != 0) {
+            // rule 2 : we have to shift all columns ids created after the step to delete, in the column_id parameters
+            // For example, if the step to delete creates columns 0010 and 0011, all steps that apply to column 0012 should now apply to 0012 - (2 created columns) = 0010
+            stream = stream.map(step -> {
+                final Map<String, String> parameters = step.getActions().get(0).getParameters();
+                final int columnId = Integer.parseInt(step.getActions().get(0).getParameters().get("column_id")); //$NON-NLS-1$
+                if (columnId > shiftColumnAfterId) {
+                    parameters.put("column_id", format.format(columnId + columnShiftNumber)); //$NON-NLS-1$
+                }
+                return step;
+            })
+
+                    // rule 3 :  we have to shift all columns ids created after the step to delete, in the steps diff
+                    .map(step -> {
+                        final List<String> stepCreatedCols = step.getDiff().getCreatedColumns();
+                        final List<String> shiftedStepCreatedCols = stepCreatedCols.stream()
+                                .map(colIdStr -> {
+                                    final int columnId = Integer.parseInt(colIdStr);
+                                    if (columnId > shiftColumnAfterId) {
+                                        return format.format(columnId + columnShiftNumber);
+                                    }
+                                    return colIdStr;
+                                })
+                                .collect(toList());
+                        step.getDiff().setCreatedColumns(shiftedStepCreatedCols);
+                        return step;
+                    });
+        }
+
+        return stream.collect(toList());
+    }
 
     /**
      * Update the head step of a preparation
