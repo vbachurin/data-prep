@@ -61,7 +61,7 @@
                 var column = grid.getColumns()[cell.cell];
                 var value = item[column.id];
                 //convert to string
-                value +='';
+                value += '';
 
                 if (shouldShowTooltip(value, cell)) {
                     tooltipShowPromise = $timeout(function () {
@@ -115,28 +115,24 @@
          */
         function shouldShowTooltip(text, cell) {
             //do NOT show if content is empty
-
-            //convert to string
-            var textConverted = text ;
-            textConverted +='';
-
-            if (textConverted === '') {
+            if (text === '') {
                 return false;
             }
+
             //show if content is multiline (avoid too loud check with div size)
-            else if (textConverted.indexOf('\n') > -1) {
+            var textConverted = text + '';
+            if (textConverted.indexOf('\n') > -1) {
                 return true;
             }
-            //heavy check based on div size
-            else {
-                var ruler = service.tooltipRuler;
-                ruler.text(textConverted);
-                var box = grid.getCellNodeBox(cell.row, cell.cell);
 
-                // return if the content is bigger than the displayed box by computing the diff between the displayed box
-                // and the hidden tooltip ruler size minus the cell padding
-                return (box.right - box.left - 12 ) <= ruler.width() || (box.bottom - box.top) < ruler.height();
-            }
+            //heavy check based on div size
+            var box = grid.getCellNodeBox(cell.row, cell.cell);
+            var ruler = service.tooltipRuler;
+            ruler.text(textConverted);
+
+            // return if the content is bigger than the displayed box by computing the diff between the displayed box
+            // and the hidden tooltip ruler size minus the cell padding
+            return (box.right - box.left - 12 ) <= ruler.width() || (box.bottom - box.top) < ruler.height();
         }
 
         /**
