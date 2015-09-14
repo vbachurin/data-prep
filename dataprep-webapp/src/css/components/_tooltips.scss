@@ -16,3 +16,7 @@ div[data-prep-tooltip]:hover:after {
   color: $white;
   z-index: 1000;
 }
+
+div[data-prep-tooltip=""]:hover:after, div:not([data-prep-tooltip]):hover:after {
+  content: none;
+}
