@@ -364,10 +364,10 @@
                             if(scope.brush){
                                 var existingMinBrush = +(scope.brush.extent()[0]).toFixed(scope.nbDecimals);
                                 var existingMaxBrush = +(scope.brush.extent()[1]).toFixed(scope.nbDecimals);
-                                if(existingMinBrush === rangeLimits.minBrush
-                                    && existingMaxBrush === rangeLimits.maxBrush
-                                    && scope.minimum === rangeLimits.min
-                                    && scope.maximum === rangeLimits.max){
+                                if(existingMinBrush === rangeLimits.minBrush &&
+                                    existingMaxBrush === rangeLimits.maxBrush &&
+                                    scope.minimum === rangeLimits.min &&
+                                    scope.maximum === rangeLimits.max){
                                     console.log('DO NOT RERENDER RANGE SLIDER');
                                 }
                                 else {
