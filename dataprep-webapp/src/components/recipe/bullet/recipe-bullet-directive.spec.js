@@ -1,4 +1,114 @@
-describe('recipeBullet directive', function () {
+describe('Single recipeBullet directive ', function () {
+    'use strict';
+
+    var createElement, element, scope, steps;
+
+    function getSvgElementAttribute(elementName, elementIndex, attr) {
+        var allSvg = element.find('svg');
+
+        var result = [];
+        allSvg.each(function (index) {
+            result.push(allSvg.eq(index).find(elementName).eq(elementIndex).attr(attr));
+        });
+
+        return result;
+    }
+
+    function getTopCablesDimensions() {
+        return getSvgElementAttribute('path', 0, 'd');
+    }
+
+    function getBottomCablesDimensions() {
+        return getSvgElementAttribute('path', 1, 'd');
+    }
+
+    function getCircleYPosition() {
+        return getSvgElementAttribute('circle', 0, 'cy');
+    }
+
+    beforeEach(module('data-prep.recipe-bullet'));
+    beforeEach(module('htmlTemplates'));
+    beforeEach(inject(function ($rootScope, $compile, $timeout, RecipeService, RecipeBulletService) {
+        steps = [
+            {
+                column: {id: 'col2'},
+                transformation: {name: 'uppercase', label: 'To uppercase', category: 'case', parameters: [], items: []},
+                inactive: false
+            }
+        ];
+
+
+        createElement = function () {
+            scope = $rootScope.$new();
+            scope.step0 = steps[0];
+            var template = '<recipe-bullet style="height: 100px;" step="step0"></recipe-bullet>';
+            element = $compile(template)(scope);
+            $timeout.flush();
+            scope.$digest();
+        };
+
+        spyOn(RecipeBulletService, 'stepHoverStart').and.returnValue();
+        spyOn(RecipeBulletService, 'stepHoverEnd').and.returnValue();
+        spyOn(RecipeBulletService, 'toggleStep').and.returnValue();
+    }));
+
+    afterEach(function () {
+        scope.$destroy();
+        element.remove();
+    });
+
+    describe('Middle bullet ', function () {
+
+        beforeEach(inject(function ($rootScope, $compile, $timeout, RecipeService) {
+
+            spyOn(RecipeService, 'isFirstStep').and.callFake(function () {
+                return false;
+            });
+            spyOn(RecipeService, 'isLastStep').and.callFake(function () {
+                return false;
+            });
+            spyOn(RecipeService, 'getActiveThresholdStepIndex').and.callFake(function () {
+                return 1;
+            });
+            spyOn(RecipeService, 'getStepIndex').and.callFake(function () {
+                return 1;
+            });
+
+        }));
+
+        it('should init circle position', function () {
+            //when
+            createElement();
+
+            //then
+            var positions = getCircleYPosition();
+            expect(positions[0]).toBe('21');
+        });
+
+        it('should init top cable dimensions', function () {
+            //when
+            createElement();
+
+
+            //then
+            var dimensions = getTopCablesDimensions();
+            expect(dimensions[0]).toBe('M 15 0 L 15 11 Z');
+        });
+
+        it('should init bottom cable dimensions', function () {
+            //when
+            createElement();
+            //then
+            var dimensions = getBottomCablesDimensions();
+            expect(dimensions[0]).toBe('M 15 31 L 15 105 Z');
+        });
+
+    });
+
+});
+
+
+describe('Multi recipeBullet directive', function () {
     'use strict';
 
     var createElement, element, scope, steps;
@@ -19,18 +129,6 @@ describe('recipeBullet directive', function () {
 
     function getBottomCablesClasses() {
         return getSvgElementAttribute('path', 1, 'class');
-    }
-
-    function getTopCablesDimensions() {
-        return getSvgElementAttribute('path', 0, 'd');
-    }
-
-    function getBottomCablesDimensions() {
-        return getSvgElementAttribute('path', 1, 'd');
-    }
-
-    function getCircleYPosition() {
-        return getSvgElementAttribute('circle', 0, 'cy');
     }
 
     function getCircleClasses() {
@@ -76,9 +174,10 @@ describe('recipeBullet directive', function () {
             {
                 column: {id: 'col1'},
                 transformation: {name: 'rename', label: 'To uppercase', category: 'case', parameters: [], items: []},
-                inactive: true
+                inactive: false
             }
         ];
+
 
         createElement = function () {
             scope = $rootScope.$new();
@@ -133,7 +232,7 @@ describe('recipeBullet directive', function () {
         expect(element.find('.all-svg-cls').eq(1).attr('class').indexOf('maillon-circle') > -1).toBe(true);
         expect(element.find('.all-svg-cls').eq(2).attr('class').indexOf('maillon-circle-disabled') > -1).toBe(true);
         expect(element.find('.all-svg-cls').eq(3).attr('class').indexOf('maillon-circle-disabled') > -1).toBe(true);
-        expect(element.find('.all-svg-cls').eq(4).attr('class').indexOf('maillon-circle-disabled') > -1).toBe(true);
+        expect(element.find('.all-svg-cls').eq(4).attr('class').indexOf('maillon-circle') > -1).toBe(true);
     });
 
     it('should hide top cable on first step only', function () {
@@ -162,44 +261,6 @@ describe('recipeBullet directive', function () {
         expect(classes[4] && classes[4].indexOf('ng-hide') > -1).toBeTruthy();
     });
 
-    it('should init circle position', function () {
-        //when
-        createElement();
-
-        //then
-        var positions = getCircleYPosition();
-        expect(positions[0]).toBe('30');
-        expect(positions[1]).toBe('25');
-        expect(positions[2]).toBe('20');
-        expect(positions[3]).toBe('15');
-        expect(positions[4]).toBe('10');
-    });
-
-    it('should init top cable dimensions', function () {
-        //when
-        createElement();
-
-        //then
-        var dimensions = getTopCablesDimensions();
-        expect(dimensions[0]).toBe('M 15 0 L 15 20 Z');
-        expect(dimensions[1]).toBe('M 15 0 L 15 15 Z');
-        expect(dimensions[2]).toBe('M 15 0 L 15 10 Z');
-        expect(dimensions[3]).toBe('M 15 0 L 15 5 Z');
-        expect(dimensions[4]).toBe('M 15 0 L 15 0 Z');
-    });
-
-    it('should init bottom cable dimensions', function () {
-        //when
-        createElement();
-
-        //then
-        var dimensions = getBottomCablesDimensions();
-        expect(dimensions[0]).toBe('M 15 42 L 15 60 Z');
-        expect(dimensions[1]).toBe('M 15 37 L 15 50 Z');
-        expect(dimensions[2]).toBe('M 15 32 L 15 40 Z');
-        expect(dimensions[3]).toBe('M 15 27 L 15 30 Z');
-        expect(dimensions[4]).toBe('M 15 22 L 15 20 Z');
-    });
 
     it('should call hover start actions on mouseover', inject(function (RecipeBulletService) {
         //given
@@ -260,24 +321,24 @@ describe('recipeBullet directive', function () {
     }));
 
     it('should remove "inactive hover class" on mouseleave', function() {
-    	//given
-    	createElement();
-    	var enterEvent = new angular.element.Event('mouseenter');
-    	element.find('recipe-bullet').eq(3).trigger(enterEvent);
+        //given
+        createElement();
+        var enterEvent = new angular.element.Event('mouseenter');
+        element.find('recipe-bullet').eq(3).trigger(enterEvent);
 
         var classes = getCircleClasses();
         expect(classes[2]).toBe('maillon-circle-disabled-hovered');
         expect(classes[3]).toBe('maillon-circle-disabled-hovered');
 
-    	var leaveEvent = new angular.element.Event('mouseleave');
+        var leaveEvent = new angular.element.Event('mouseleave');
 
-    	//when
-    	element.find('recipe-bullet').eq(3).trigger(leaveEvent);
+        //when
+        element.find('recipe-bullet').eq(3).trigger(leaveEvent);
 
-    	//then
-    	classes = getCircleClasses();
-    	expect(classes[2]).toBeFalsy();
-    	expect(classes[3]).toBeFalsy();
+        //then
+        classes = getCircleClasses();
+        expect(classes[2]).toBeFalsy();
+        expect(classes[3]).toBeFalsy();
     });
 
 });

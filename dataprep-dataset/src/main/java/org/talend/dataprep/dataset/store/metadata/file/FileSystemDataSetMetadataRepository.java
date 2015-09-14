@@ -150,14 +150,14 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
      * @return the file where to read/write the metadata.
      */
     private File getFile(String metadataId) {
-        return new File(storeLocation + "/metadata/" + metadataId);
+        return new File(storeLocation + '/' + metadataId);
     }
 
     /**
      * @return the metadata root folder.
      */
     private File getRootFolder() {
-        return new File(storeLocation + "/metadata/");
+        return new File(storeLocation + '/');
     }
 
     /**
