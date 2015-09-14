@@ -1,10 +1,9 @@
 {
   "actions": [
     {
-      "action": "cut",
+      "action": "normalize",
       "parameters": {
-        "column_id": "0001",
-        "pattern": "The ",
+        "column_id": "entity",
         "scope": "column"
       }
     }

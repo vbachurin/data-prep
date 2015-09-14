@@ -1,10 +1,11 @@
 {
   "actions": [
     {
-      "action": "cut",
+      "action": "timestamp_to_date",
       "parameters": {
         "column_id": "0001",
-        "pattern": "The ",
+        "column_name": "timestamp",
+        "new_pattern": "dd-MM-yyyy",
         "scope": "column"
       }
     }
