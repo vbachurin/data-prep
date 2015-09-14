@@ -11,6 +11,16 @@
     function RecipeBulletCtrl(RecipeService, RecipeBulletService) {
         var vm = this;
 
+
+        /**
+         * @ngdoc property
+         * @name height
+         * @propertyOf data-prep.recipe.controller:RecipeBulletCtrl
+         * @description the height by default of a recipe bullet
+         * @type {number}
+         */
+        vm.height = 36;
+
         /**
          * @ngdoc property
          * @name stepIndex

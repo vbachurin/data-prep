@@ -152,9 +152,8 @@
                 scope.$watch('visuData',
                     function (statData) {
                         element.empty();
-						if(tip){
-							tip.hide();
-						}
+                        //because the tooltip is not a child of the horizontal barchart element
+                        d3.selectAll('.horizontal-barchart-cls.d3-tip').remove();
                         if (statData) {
                             clearTimeout(renderTimeout);
                             renderTimeout = setTimeout(renderHBarchart.bind(this, statData), 100);

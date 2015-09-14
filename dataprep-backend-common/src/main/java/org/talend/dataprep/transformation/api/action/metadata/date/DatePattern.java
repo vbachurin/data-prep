@@ -19,6 +19,11 @@ class DatePattern implements Comparable {
         this.pattern = pattern;
     }
 
+    public DatePattern(String pattern, DateTimeFormatter formatter) {
+        this.pattern = pattern;
+        this.formatter = formatter;
+    }
+
     /**
      * @return the Occurences
      */
