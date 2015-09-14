@@ -387,6 +387,13 @@
                     recipeStateBeforePreview = null;
                     recipe = newRecipe;
 
+                    //TODO : Move this in a recipe-bullet-directive
+                    //remove "single-maillon-cables-disabled" class of bullet cables when refreshing recipe
+                    var allDisabledCables = angular.element('.recipe').eq(0).find('.single-maillon-cables-disabled').toArray();
+                    _.each(allDisabledCables, function(cable) {
+                        cable.setAttribute('class', '');
+                    });
+
                     return {
                         'old': oldRecipe,
                         'new': newRecipe
