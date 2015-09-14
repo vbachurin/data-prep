@@ -17,6 +17,6 @@ div[data-prep-tooltip]:hover:after {
   z-index: 1000;
 }
 
-div[data-prep-tooltip=""]:hover:after, div:not([data-prep-tooltip]):hover:after {
+div[data-prep-tooltip=""]:hover:after{
   content: none;
 }
