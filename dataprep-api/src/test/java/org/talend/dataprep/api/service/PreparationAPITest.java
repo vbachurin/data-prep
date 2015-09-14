@@ -72,22 +72,6 @@ public class PreparationAPITest extends ApiServiceTestBase {
     }
 
     @Test
-    public void test_TDP_402() throws Exception {
-        // given
-        final String dataSetId = createDataset("dataset/dataset_TDP-402.csv", "testDataset", "text/csv");
-        final String actions = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/TDP-402.json"));
-        final InputStream expectedContent = PreparationAPITest.class
-                .getResourceAsStream("dataset/dataset_TDP-402_expected.json");
-
-        // when
-        final String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
-                .asString();
-
-        // then
-        assertThat(transformed, sameJSONAsFile(expectedContent));
-    }
-
-    @Test
     public void testEmptyPreparationList() throws Exception {
         assertThat(when().get("/api/preparations").asString(), sameJSONAs("[]"));
         assertThat(when().get("/api/preparations/?format=short").asString(), sameJSONAs("[]"));

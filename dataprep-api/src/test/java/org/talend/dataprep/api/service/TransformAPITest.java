@@ -1,14 +1,18 @@
 package org.talend.dataprep.api.service;
 
 import static com.jayway.restassured.RestAssured.given;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
+import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
 
 /**
@@ -84,4 +88,44 @@ public class TransformAPITest extends ApiServiceTestBase {
         response.then().statusCode(400);
     }
 
+    /**
+     * see TDP-280 (text clustering parameters exceed url length limit)
+     */
+    @Test
+    public void should_not_exeed_url_length_limit() throws Exception {
+
+        // given
+        final String preparationId = createPreparationFromFile("bugfix/TDP-280.csv", "cars", "text/csv");
+
+        // parameters for text clustering are complicated and computed by the front. Since computing them is not
+        // the point of this test, let's just get them from a file.
+        final String actions = IOUtils.toString(this.getClass().getResourceAsStream("bugfix/TDP-280_action.json"));
+
+        // when
+        final int addActionResponseCode = given().contentType(ContentType.JSON).body(actions).when().post("/api/preparations/{id}/actions", preparationId).getStatusCode();
+
+        // then
+        assertEquals(200, addActionResponseCode);
+        final String actualContent = given().get("/api/preparations/{id}/content?version=head&sample=100", preparationId).asString();
+        assertThat(actualContent, sameJSONAsFile(this.getClass().getResourceAsStream("bugfix/TDP-280_expected.json")));
+    }
+
+    /**
+     * see TDP-402 (Allow to adapt all dates to the selected pattern)
+     */
+    @Test
+    public void should_use_all_date_patterns() throws Exception {
+        // given
+        final String dataSetId = createDataset("dataset/dataset_TDP-402.csv", "testDataset", "text/csv");
+        final String actions = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/TDP-402.json"));
+        final InputStream expectedContent = PreparationAPITest.class
+                .getResourceAsStream("dataset/dataset_TDP-402_expected.json");
+
+        // when
+        final String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
+                .asString();
+
+        // then
+        assertThat(transformed, sameJSONAsFile(expectedContent));
+    }
 }
