@@ -18,7 +18,7 @@ import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.cache.ContentCacheKey;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.daikon.exception.TalendExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,6 +64,6 @@ public class UpdateColumn extends DataPrepCommand<Void> {
             contentUpdate.releaseConnection();
         }
         throw new TDPException(APIErrorCodes.UNABLE_TO_CREATE_OR_UPDATE_DATASET,
-                TDPExceptionContext.build().put("id", dataSetId));
+                TalendExceptionContext.build().put("id", dataSetId));
     }
 }

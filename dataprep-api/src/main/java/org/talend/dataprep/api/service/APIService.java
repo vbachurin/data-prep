@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.daikon.exception.TalendExceptionContext;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
@@ -81,7 +81,7 @@ public class APIService {
         try {
             return context.getBean(clazz, args);
         } catch (BeansException e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_FIND_COMMAND, e, TDPExceptionContext.build().put("class", clazz)
+            throw new TDPException(APIErrorCodes.UNABLE_TO_FIND_COMMAND, e, TalendExceptionContext.build().put("class", clazz)
                     .put("args", args));
         }
     }
