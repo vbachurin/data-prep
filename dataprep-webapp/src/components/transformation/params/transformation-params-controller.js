@@ -20,7 +20,7 @@
             var params = {};
             if (vm.transformation.parameters) {
                 _.forEach(vm.transformation.parameters, function (paramItem) {
-                    params[paramItem.name] = paramItem.value;
+                    params[paramItem.name] = paramItem.value? paramItem.value : paramItem.default;
                 });
             }
 
