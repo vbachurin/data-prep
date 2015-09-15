@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.exception.error.ErrorCode;
+import org.talend.daikon.exception.error.ErrorCode;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

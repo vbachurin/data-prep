@@ -18,9 +18,16 @@ public class Step extends Identifiable implements Serializable {
 
     private String contentId;
 
+    private StepDiff diff;
+
     public Step(final String parentId, final String contentId) {
+       this(parentId, contentId, null);
+    }
+
+    public Step(final String parentId, final String contentId, final StepDiff diff) {
         setParent(parentId);
         setContent(contentId);
+        setDiff(diff);
     }
 
     public String getContent() {
@@ -37,6 +44,14 @@ public class Step extends Identifiable implements Serializable {
 
     public void setParent(String parent) {
         this.parentId = parent;
+    }
+
+    public StepDiff getDiff() {
+        return diff;
+    }
+
+    public void setDiff(StepDiff diff) {
+        this.diff = diff;
     }
 
     @Override

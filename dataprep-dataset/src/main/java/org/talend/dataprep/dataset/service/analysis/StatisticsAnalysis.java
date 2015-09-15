@@ -105,6 +105,10 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
     public void computeStatistics(DataSetMetadata metadata, Stream<DataSetRow> stream) {
         // Create a content with the expected format for the StatisticsClientJson class
         final List<ColumnMetadata> columns = metadata.getRow().getColumns();
+        if (columns.isEmpty()) {
+            LOGGER.debug("Skip statistics of {} (no column information).", metadata.getId());
+            return;
+        }
         DataType.Type[] types = TypeUtils.convert(columns);
         // Set min and max for each column in histogram
         final HistogramParameter histogramParameter = new HistogramParameter();
@@ -114,7 +118,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
             if (isNumeric) {
                 final HistogramColumnParameter columnParameter = new HistogramColumnParameter();
                 final Statistics statistics = column.getStatistics();
-                columnParameter.setParameters(statistics.getMin(), statistics.getMax(), 20);
+                columnParameter.setParameters(statistics.getMin(), statistics.getMax(), 8);
                 histogramParameter.putColumnParameter(i, columnParameter);
             }
         }

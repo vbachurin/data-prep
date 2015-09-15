@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.talend.dataprep.exception.error.ErrorCode;
+import org.talend.daikon.exception.error.ErrorCode;
 
 public enum APIErrorCodes implements ErrorCode {
     UNABLE_TO_DELETE_PREPARATION(400),
@@ -34,7 +34,7 @@ public enum APIErrorCodes implements ErrorCode {
     UNABLE_TO_SET_FAVORITE_DATASET(400, "id"),
     DATASET_STILL_IN_USE(409, "dataSetId", "preparations"),
     UNABLE_TO_UPDATE_COLUMN(400, "id"),
-                                                DATASET_REDIRECT(301);
+    DATASET_REDIRECT(301);
 
     /** The http status to use. */
     private int httpStatus;
@@ -93,5 +93,10 @@ public enum APIErrorCodes implements ErrorCode {
     @Override
     public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
+    }
+
+    @Override
+    public String getCode() {
+        return this.toString();
     }
 }

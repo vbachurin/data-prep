@@ -744,7 +744,40 @@ describe('Statistics service', function () {
             });
         }));
 
-        it('should update histogram data from REST call result and aggregation infos', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+        it('should update histogram data from REST call result and aggregation infos on dataset', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+            //given
+            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
+
+            //when
+            StatisticsService.processAggregation(datasetId, null, stepId, sampleSize, column, aggregation);
+            $rootScope.$digest();
+
+            //then
+            expect(StatisticsRestService.getAggregations).toHaveBeenCalledWith({
+                datasetId: 'abcd',
+                preparationId: null,
+                stepId: '9878645468',
+                sampleSize: 500,
+                operations: [{operator: 'MAX', columnId: '0002'}],
+                groupBy: ['0001']
+            });
+            expect(StatisticsService.histogram).toEqual({
+                data: [
+                    {'data': 'Lansing', 'max': 15, 'formattedValue': 'Lansing'},
+                    {'data': 'Helena', 'max': 5, 'formattedValue': 'Helena'},
+                    {'data': 'Baton Rouge', 'max': 64, 'formattedValue': 'Baton Rouge'},
+                    {'data': 'Annapolis', 'max': 4, 'formattedValue': 'Annapolis'},
+                    {'data': 'Pierre', 'max': 104, 'formattedValue': 'Pierre'}
+                ],
+                key: 'MAX',
+                label: 'MAX',
+                column: StatisticsService.selectedColumn,
+                aggregationColumn: column,
+                aggregation: aggregation
+            });
+        }));
+
+        it('should update histogram data from REST call result and aggregation infos on preparation', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
             //given
             spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
 
@@ -754,7 +787,7 @@ describe('Statistics service', function () {
 
             //then
             expect(StatisticsRestService.getAggregations).toHaveBeenCalledWith({
-                datasetId: 'abcd',
+                datasetId: null,
                 preparationId: '2132548345365',
                 stepId: '9878645468',
                 sampleSize: 500,
