@@ -4,30 +4,68 @@ import java.io.Serializable;
 
 import org.talend.dataprep.i18n.MessagesBundle;
 
+/**
+ * Bean that models action parameter.
+ */
 public class Parameter implements Serializable {
 
+    /** The parameter name. */
     private final String name;
 
+    /** The parameter type. */
     private final String type;
 
+    /** The parameter default value. */
     private final String defaultValue;
 
+    /** True if the parameter is not displayed to the user. */
     private final boolean implicit;
 
+    /** True if the parameter can be blank. */
     private final boolean canBeBlank;
 
+    /**
+     * Minimal default constructor.
+     *
+     * @param name The parameter name.
+     * @param type The parameter type.
+     */
     public Parameter(String name, String type) {
         this(name, type, null, false);
     }
 
+    /**
+     * Constructor with a default value.
+     *
+     * @param name The parameter name.
+     * @param type The parameter type.
+     * @param defaultValue the parameter default value.
+     */
     public Parameter(String name, String type, String defaultValue) {
         this(name, type, defaultValue, false);
     }
 
+    /**
+     * Constructor with a default value and the implicit flag.
+     *
+     * @param name The parameter name.
+     * @param type The parameter type.
+     * @param defaultValue the parameter default value.
+     * @param implicit true if the parameter is implicit.
+     */
     public Parameter(final String name, final String type, final String defaultValue, final boolean implicit) {
         this(name, type, defaultValue, implicit, true);
     }
 
+    /**
+     * Full constructor.
+     *
+     * @param name The parameter name.
+     * @param type The parameter type.
+     * @param defaultValue the parameter default value.
+     * @param implicit true if the parameter is implicit.
+     * @param canBeBlank True if the parameter can be blank.
+     */
     public Parameter(final String name, final String type, final String defaultValue, final boolean implicit,
             final boolean canBeBlank) {
         this.name = name;

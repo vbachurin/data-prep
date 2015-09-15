@@ -2,6 +2,7 @@ package org.talend.dataprep.transformation.api.action.parameters;
 
 import org.talend.dataprep.i18n.MessagesBundle;
 
+@Deprecated
 public class Item {
 
     private final String name;

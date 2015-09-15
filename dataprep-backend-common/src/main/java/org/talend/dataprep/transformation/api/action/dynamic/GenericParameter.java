@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.action.parameters;
+package org.talend.dataprep.transformation.api.action.dynamic;
 
 /**
  * Representation of a "Generic" Parameter.

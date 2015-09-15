@@ -93,8 +93,7 @@ public interface ActionMetadata {
     }
 
     /**
-     * @return Returns the list of input parameters required for this Action to be executed. represent as text input
-     * field on the front end.
+     * @return The list of parameters required for this Action to be executed.
      **/
     List<Parameter> getParameters();
 
@@ -105,6 +104,7 @@ public interface ActionMetadata {
      * @return A list of {@link org.talend.dataprep.transformation.api.action.parameters.Item items}. This should never
      * return null, actions with no item should return empty list.
      **/
+    @Deprecated
     Item[] getItems();
 
     //------------------------------------------------------------------------------------------------------------------
