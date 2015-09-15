@@ -1,0 +1,9 @@
+{
+  "name": "column_id",
+  "type": "string",
+  "implicit": true,
+  "canBeBlank": false,
+  "label": "Column",
+  "description": "The column on which apply this action to",
+  "default": "0001"
+}

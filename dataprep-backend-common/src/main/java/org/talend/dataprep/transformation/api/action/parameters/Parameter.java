@@ -1,8 +1,12 @@
 package org.talend.dataprep.transformation.api.action.parameters;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.talend.dataprep.i18n.MessagesBundle;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Bean that models action parameter.
@@ -11,18 +15,18 @@ public class Parameter implements Serializable {
 
     /** The parameter name. */
     private final String name;
-
     /** The parameter type. */
     private final String type;
-
     /** The parameter default value. */
     private final String defaultValue;
-
     /** True if the parameter is not displayed to the user. */
     private final boolean implicit;
-
     /** True if the parameter can be blank. */
     private final boolean canBeBlank;
+
+    /** The configuration. */
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private Map<String, Object> configuration;
 
     /**
      * Minimal default constructor.
@@ -73,6 +77,11 @@ public class Parameter implements Serializable {
         this.defaultValue = defaultValue;
         this.implicit = implicit;
         this.canBeBlank = canBeBlank;
+        this.configuration = new HashMap<>();
+    }
+
+    protected void addConfiguration(String name, Object configuration) {
+        this.configuration.put(name, configuration);
     }
 
     /**
@@ -122,5 +131,12 @@ public class Parameter implements Serializable {
      */
     public boolean isCanBeBlank() {
         return canBeBlank;
+    }
+
+    /**
+     * @return the parameter configuration
+     */
+    public Map<String, Object> getConfiguration() {
+        return configuration;
     }
 }
