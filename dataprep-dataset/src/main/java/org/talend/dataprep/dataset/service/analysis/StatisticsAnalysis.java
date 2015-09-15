@@ -114,7 +114,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
             if (isNumeric) {
                 final HistogramColumnParameter columnParameter = new HistogramColumnParameter();
                 final Statistics statistics = column.getStatistics();
-                columnParameter.setParameters(statistics.getMin(), statistics.getMax(), 20);
+                columnParameter.setParameters(statistics.getMin(), statistics.getMax(), 8);
                 histogramParameter.putColumnParameter(i, columnParameter);
             }
         }
