@@ -24,7 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.TalendExceptionContext;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
@@ -268,7 +268,7 @@ public class PreparationService {
             //TODO JSO : pb when action to delete create a column how can we test if an action transform the new created column ?
             if(actionsTransformColumn(actions, stepToDeleteColumnId)) {
                 throw new TDPException(PREPARATION_STEP_CANNOT_BE_DELETED_IN_SINGLE_MODE,
-                        TalendExceptionContext.build()
+                        ExceptionContext.build()
                                 .put("id", id)
                                 .put("stepId", stepToDeleteId));
             }
@@ -296,7 +296,7 @@ public class PreparationService {
             final Step step = preparationRepository.get(stepId, Step.class);
             return preparationRepository.get(step.getContent(), PreparationActions.class).getActions();
         } else {
-            throw new TDPException(PREPARATION_DOES_NOT_EXIST, TalendExceptionContext.build().put("id", id));
+            throw new TDPException(PREPARATION_DOES_NOT_EXIST, ExceptionContext.build().put("id", id));
         }
     }
 
@@ -369,7 +369,7 @@ public class PreparationService {
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
         if (preparation == null) {
             LOGGER.error("Preparation #{} does not exist", id);
-            throw new TDPException(PREPARATION_DOES_NOT_EXIST, TalendExceptionContext.build().put("id", id));
+            throw new TDPException(PREPARATION_DOES_NOT_EXIST, ExceptionContext.build().put("id", id));
         }
         return preparation;
     }
@@ -408,7 +408,7 @@ public class PreparationService {
         final List<String> steps = PreparationUtils.listSteps(preparation.getStep(), fromStepId, preparationRepository);
         if(!fromStepId.equals(steps.get(0))) {
             throw new TDPException(PREPARATION_STEP_DOES_NOT_EXIST,
-                    TalendExceptionContext.build()
+                    ExceptionContext.build()
                             .put("id", preparation.getId())
                             .put("stepId", fromStepId));
         }

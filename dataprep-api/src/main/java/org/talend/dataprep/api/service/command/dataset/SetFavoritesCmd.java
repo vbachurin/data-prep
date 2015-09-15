@@ -21,7 +21,7 @@ import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.TalendExceptionContext;
+import org.talend.daikon.exception.ExceptionContext;
 
 /**
  * API command to call the dataset favorite api
@@ -49,7 +49,7 @@ public class SetFavoritesCmd extends DataPrepCommand<String> {
         if (statusCode >= 200) {
             return null;
         }
-        throw new TDPException(APIErrorCodes.UNABLE_TO_SET_FAVORITE_DATASET, TalendExceptionContext.build().put("id", dataSetId));
+        throw new TDPException(APIErrorCodes.UNABLE_TO_SET_FAVORITE_DATASET, ExceptionContext.build().put("id", dataSetId));
     }
 
 }
