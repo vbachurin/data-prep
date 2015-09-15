@@ -8,7 +8,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -70,7 +69,9 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
                 dataSetContent.setFormatGuessId(bestGuess.getBeanId());
                 dataSetContent.setMediaType(bestGuess.getMediaType());
 
+                LOG.info("Parsing column information...");
                 parseColumnNameInformation(dataSetId, metadata, bestGuess);
+                LOG.info("Parsed column information.");
 
                 repository.add(metadata);
                 LOG.info("format analysed for dataset: '{}'", dataSetId);
@@ -92,12 +93,14 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
     private Set<FormatGuesser.Result> guessMediaTypes(String dataSetId, DataSetMetadata metadata) {
         Set<FormatGuesser.Result> mediaTypes = new HashSet<>();
         for (FormatGuesser guesser : guessers) {
+            LOG.info("Using guesser {}", guesser.getClass());
             try (InputStream content = store.getAsRaw(metadata)) {
                 FormatGuesser.Result mediaType = guesser.guess(content);
                 mediaTypes.add(mediaType);
             } catch (IOException e) {
                 LOG.debug("Unable to use guesser '" + guesser + "' on data set #" + dataSetId, e);
             }
+            LOG.info("Done using guesser {}", guesser.getClass());
         }
         return mediaTypes;
     }

@@ -43,8 +43,8 @@ public class StatisticsUtils {
                 statistics.setDuplicateCount(cardinalityStatistics.getDuplicateCount());
             }
             // Frequencies (data)
-            final DataFrequencyStatistics dataFrequencyStatistics = result.get(DataFrequencyStatistics.class);
             if (result.exist(DataFrequencyStatistics.class)) {
+                final DataFrequencyStatistics dataFrequencyStatistics = result.get(DataFrequencyStatistics.class);
                 final Map<String, Long> topTerms = dataFrequencyStatistics.getTopK(15);
                 if (topTerms != null) {
                     statistics.getDataFrequencies().clear();

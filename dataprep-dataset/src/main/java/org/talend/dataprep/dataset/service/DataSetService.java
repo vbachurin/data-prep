@@ -26,6 +26,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.talend.daikon.exception.TalendExceptionContext;
 import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
@@ -37,7 +38,6 @@ import org.talend.dataprep.dataset.service.locator.DataSetLocatorService;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.TalendExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.lock.DistributedLock;
@@ -121,7 +121,8 @@ public class DataSetService {
      * @param id the dataset id.
      * @param analysersToSkip the list of analysers to skip.
      */
-    private void queueEvents(String id, Class<? extends DataSetAnalyzer>... analysersToSkip) {
+    @SafeVarargs
+    private final void queueEvents(String id, Class<? extends DataSetAnalyzer>... analysersToSkip) {
 
         List<Class<? extends DataSetAnalyzer>> toSkip = Arrays.asList(analysersToSkip);
 
@@ -130,7 +131,9 @@ public class DataSetService {
             if (toSkip.contains(synchronousDataSetAnalyzer.getClass())) {
                 continue;
             }
+            LOG.info("Running {}", synchronousDataSetAnalyzer.getClass());
             synchronousDataSetAnalyzer.analyze(id);
+            LOG.info("Done running {}", synchronousDataSetAnalyzer.getClass());
         }
 
         // Then use JMS queue for all optional analysis
@@ -222,6 +225,7 @@ public class DataSetService {
             @RequestHeader("Content-Type") String contentType, @ApiParam(value = "content") InputStream content,
             HttpServletResponse response) throws IOException {
 
+        LOG.info("Creating...");
         response.setHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE); //$NON-NLS-1$
         final String id = UUID.randomUUID().toString();
 
@@ -244,13 +248,16 @@ public class DataSetService {
         dataSetMetadata.getLifecycle().importing(true); // Indicate data set is being imported
 
         // Save data set content
+        LOG.info("Storing content...");
         contentStore.storeAsRaw(dataSetMetadata, content);
+        LOG.info("Content stored.");
 
         // Create the new data set
         dataSetMetadataRepository.add(dataSetMetadata);
 
         // Queue events (format analysis, content indexing for search...)
         queueEvents(id);
+        LOG.info("Created!");
         return id;
     }
 
@@ -275,8 +282,7 @@ public class DataSetService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId, //
             HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
-        lock.lock();
+        LOG.info("Get...");
         try {
             DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
             if (dataSetMetadata == null) {
@@ -300,17 +306,21 @@ public class DataSetService {
             }
 
             if (sample != null && sample > 0) {
+                LOG.info("Sampling...");
                 dataSet.setRecords(contentStore.sample(dataSetMetadata, sample));
+                LOG.info("Sample done.");
                 // computes the statistics only if columns are required
                 if (columns) {
+                    LOG.info("Sample statistics...");
                     computeSampleStatistics(dataSetMetadata, sample);
+                    LOG.info("Sample statistics done.");
                 }
             } else {
                 dataSet.setRecords(contentStore.stream(dataSetMetadata));
             }
             return dataSet;
         } finally {
-            lock.unlock();
+            LOG.info("Get done.");
         }
     }
 
@@ -756,7 +766,11 @@ public class DataSetService {
         copy.setMetadata(dataSetMetadata);
         copy.setColumns(dataSetMetadata.getRow().getColumns());
         // Compute quality and statistics on sample only
-        qualityAnalyzer.computeQuality(copy.getMetadata(), contentStore.sample(dataSetMetadata, sample));
-        statisticsAnalysis.computeStatistics(copy.getMetadata(), contentStore.sample(dataSetMetadata, sample));
+        try (Stream<DataSetRow> stream = contentStore.sample(dataSetMetadata, sample)) {
+            qualityAnalyzer.computeQuality(copy.getMetadata(), stream, sample);
+        }
+        try (Stream<DataSetRow> stream = contentStore.sample(dataSetMetadata, sample)) {
+            statisticsAnalysis.computeStatistics(copy.getMetadata(), stream);
+        }
     }
 }
