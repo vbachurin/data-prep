@@ -210,24 +210,25 @@ public class TransformationService {
     }
 
     /**
-     * Return the created columns at a step
+     * Compare the results of 2 sets of actions, and return the diff metadata
+     * Ex : the created columns ids
      */
-    @RequestMapping(value = "/transform/diff", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ApiOperation(value = "Apply a diff between 2 sets of actions and return the created columns ids", notes = "This operation returns the created columns ids of a diff", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @RequestMapping(value = "/transform/diff/metadata", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value = "Apply a diff between 2 sets of actions and return the diff (containing created columns ids for example)", notes = "This operation returns the diff metadata", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @VolumeMetered
-    public StepDiff getCreatedColumns(@ApiParam(value = "Parent step actions.") @RequestPart(value = "parentActions", required = true) final Part parentActions, //
-                                  @ApiParam(value = "Step actions.") @RequestPart(value = "stepActions", required = true) final Part stepActions, //
+    public StepDiff getCreatedColumns(@ApiParam(value = "Actions that is considered as reference in the diff.") @RequestPart(value = "referenceActions", required = true) final Part referenceActions, //
+                                  @ApiParam(value = "Actions which result will be compared to reference result.") @RequestPart(value = "diffActions", required = true) final Part diffActions, //
                                   @ApiParam(value = "Data set content as JSON. It should contains only 1 records, and the columns metadata") @RequestPart(value = "content", required = true) final Part content) {
         final ObjectMapper mapper = builder.build();
         final OutputStream output = new ByteArrayOutputStream();
         try (JsonParser parser = mapper.getFactory().createParser(content.getInputStream())) {
             //decode parts
-            final String decodedParentActions = parentActions == null ? null : IOUtils.toString(parentActions.getInputStream());
-            final String decodedStepActions = stepActions == null ? null : IOUtils.toString(stepActions.getInputStream());
+            final String decodedReferenceActions = referenceActions == null ? null : IOUtils.toString(referenceActions.getInputStream());
+            final String decodedDiffActions = diffActions == null ? null : IOUtils.toString(diffActions.getInputStream());
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
 
             //call diff
-            executePreview(decodedStepActions, decodedParentActions, null, dataSet, output);
+            executePreview(decodedDiffActions, decodedReferenceActions, null, dataSet, output);
 
             //extract created columns ids
             final JsonNode node = mapper.readTree(output.toString());

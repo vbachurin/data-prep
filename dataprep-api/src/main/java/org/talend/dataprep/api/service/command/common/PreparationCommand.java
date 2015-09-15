@@ -62,7 +62,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
     }
 
     /**
-     * Get the diff metadata containing the created columns ids by adding the 'actionsToAdd' to the preparation (preparationId) at the 'insertionStepId
+     * Get the diff metadata (containing the created columns ids) by adding the 'actionsToAdd' to the preparation (preparationId) at the 'insertionStepId'
      * @param preparationId     The preparation id
      * @param insertionStepId   The step id where we want to add the actions
      * @param actionsToAdd      The actions to add
@@ -77,20 +77,20 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
         // extract insertion point actions
         final List<Action> actions = getPreparationActions(preparation, insertionStepId);
-        final String serializedParentActions = serializeActions(actions);
+        final String serializedReferenceActions = serializeActions(actions);
 
-        final List<Action> addedActions = new ArrayList<>(actions);
-        addedActions.addAll(actionsToAdd);
-        final String serializedActions = serializeActions(addedActions);
+        final List<Action> diffActions = new ArrayList<>(actions);
+        diffActions.addAll(actionsToAdd);
+        final String serializedActions = serializeActions(diffActions);
 
         // get created columns ids
         final HttpEntity reqEntity = MultipartEntityBuilder.create()
-                .addPart("stepActions", new StringBody(serializedActions, TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
-                .addPart("parentActions", new StringBody(serializedParentActions, TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
+                .addPart("diffActions", new StringBody(serializedActions, TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
+                .addPart("referenceActions", new StringBody(serializedReferenceActions, TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
                 .addPart("content", new InputStreamBody(content, APPLICATION_JSON)) //$NON-NLS-1$
                 .build();
 
-        final String uri = transformationServiceUrl + "/transform/diff";
+        final String uri = transformationServiceUrl + "/transform/diff/metadata";
         final HttpPost transformationCall = new HttpPost(uri);
         try {
             transformationCall.setEntity(reqEntity);

@@ -47,11 +47,11 @@ public class DiffTests extends TransformationServiceBaseTests {
 
         // when
         final String response = given() //
-                .multiPart("parentActions", parentAction) //
-                .multiPart("stepActions", newStepAction) //
+                .multiPart("referenceActions", parentAction) //
+                .multiPart("diffActions", newStepAction) //
                 .multiPart("content", datasetContent) //
                 .when() //
-                .post("/transform/diff")
+                .post("/transform/diff/metadata")
                 .asString();
 
         // then
@@ -68,11 +68,11 @@ public class DiffTests extends TransformationServiceBaseTests {
 
         // when
         final String response = given() //
-                .multiPart("parentActions", parentAction) //
-                .multiPart("stepActions", newStepAction) //
+                .multiPart("referenceActions", parentAction) //
+                .multiPart("diffActions", newStepAction) //
                 .multiPart("content", datasetContent) //
                 .when() //
-                .post("/transform/diff")
+                .post("/transform/diff/metadata")
                 .asString();
 
         // then
