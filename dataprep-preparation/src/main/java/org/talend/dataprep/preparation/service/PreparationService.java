@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
@@ -259,7 +259,7 @@ public class PreparationService {
         final Step head = getStep(headId);
         if (head == null) {
             throw new TDPException(PREPARATION_STEP_DOES_NOT_EXIST,
-                    TDPExceptionContext.build()
+                    ExceptionContext.build()
                             .put("id", preparationId)
                             .put("stepId", headId));
         }
@@ -280,7 +280,7 @@ public class PreparationService {
             final Step step = getStep(stepId);
             return getActions(step);
         } else {
-            throw new TDPException(PREPARATION_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", id));
+            throw new TDPException(PREPARATION_DOES_NOT_EXIST, ExceptionContext.build().put("id", id));
         }
     }
 
@@ -366,7 +366,7 @@ public class PreparationService {
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
         if (preparation == null) {
             LOGGER.error("Preparation #{} does not exist", id);
-            throw new TDPException(PREPARATION_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", id));
+            throw new TDPException(PREPARATION_DOES_NOT_EXIST, ExceptionContext.build().put("id", id));
         }
         return preparation;
     }
@@ -419,7 +419,7 @@ public class PreparationService {
         final List<String> steps = PreparationUtils.listStepsIds(preparation.getStep(), fromStepId, preparationRepository);
         if (!fromStepId.equals(steps.get(0))) {
             throw new TDPException(PREPARATION_STEP_DOES_NOT_EXIST,
-                    TDPExceptionContext.build()
+                    ExceptionContext.build()
                             .put("id", preparation.getId())
                             .put("stepId", fromStepId));
         }

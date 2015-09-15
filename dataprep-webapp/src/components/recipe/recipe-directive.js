@@ -20,15 +20,12 @@
                     _.forEach(recipe, function(step) {
                         var stepId = step.transformation.stepId;
                         var hasDiff = step.diff && step.diff.createdColumns && step.diff.createdColumns.length;
-                        var createdColumns = step.diff.createdColumns;
 
                         function shouldBeRemoved(stepToTest) {
                             /*jshint camelcase: false */
-                            // current step
-                            return stepToTest.transformation.stepId === stepId ||
-                                    //step on a column that will be removed
+                            return stepToTest.transformation.stepId === stepId || // current step
                                     (hasDiff && stepToTest.actionParameters &&
-                                        createdColumns.indexOf(stepToTest.actionParameters.parameters.column_id) > -1);
+                                    step.diff.createdColumns.indexOf(stepToTest.actionParameters.parameters.column_id) > -1); //step on a column that will be removed
                         }
 
                         var stepsToRemove = _.chain(recipe)

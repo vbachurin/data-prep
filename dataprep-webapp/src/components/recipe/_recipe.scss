@@ -7,8 +7,6 @@
   font-size: 0.95em;
 
   .recipe-step {
-    @include transition(background-color 0.5s ease);
-
     &.preview {
       background-color: $new-color;
     }

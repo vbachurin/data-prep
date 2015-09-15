@@ -34,7 +34,7 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.StepDiff;
 import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
@@ -310,7 +310,7 @@ public class TransformationService {
                                           @ApiParam(value = "Data set content as JSON") final InputStream content) {
         final DynamicType actionType = DynamicType.fromAction(action);
         if (actionType == null) {
-            final TDPExceptionContext exceptionContext = TDPExceptionContext.build().put("name", action);
+            final ExceptionContext exceptionContext = ExceptionContext.build().put("name", action);
             throw new TDPException(TransformationErrorCodes.UNKNOWN_DYNAMIC_ACTION, exceptionContext);
         }
         final ObjectMapper mapper = builder.build();

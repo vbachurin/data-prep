@@ -14,6 +14,7 @@ import org.talend.dataprep.api.preparation.StepDiff;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.common.PreparationCommand;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCode;
 
 import java.io.ByteArrayInputStream;

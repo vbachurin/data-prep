@@ -17,7 +17,7 @@ import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepositoryAdapter;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.lock.DistributedLock;
 
 /**
@@ -55,7 +55,7 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
         } catch (IOException e) {
             LOG.error("Error saving {}", metadata, e);
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_METADATA, e,
-                    TDPExceptionContext.build().put("id", metadata.getId()));
+                    ExceptionContext.build().put("id", metadata.getId()));
         }
     }
 
@@ -74,7 +74,7 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
         try (ObjectInputStream input = new ObjectInputStream(new FileInputStream(file))) {
             return (DataSetMetadata) input.readObject();
         } catch (ClassNotFoundException | IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_METADATA, e, TDPExceptionContext.build().put("id", id));
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_METADATA, e, ExceptionContext.build().put("id", id));
         }
     }
 
