@@ -34,6 +34,7 @@
                 var renderTimeout;
                 var container = attrs.id;
 
+				//the left and right margins MUST be the same as the verticalBarchart ones
                 var margin = {top: 5, right: 20, bottom: 10, left: 15};
                 var width = attrs.width - margin.left - margin.right;
                 var height = attrs.height - margin.top - margin.bottom;
@@ -368,7 +369,8 @@
                                     existingMaxBrush === rangeLimits.maxBrush &&
                                     scope.minimum === rangeLimits.min &&
                                     scope.maximum === rangeLimits.max){
-                                    console.log('DO NOT RERENDER RANGE SLIDER');
+                                    //DO NOT RERENDER RANGE SLIDER
+                                    return ;
                                 }
                                 else {
                                     element.empty();

@@ -140,7 +140,7 @@
          * @param {string} key The value key
          * @param {string} label The value label
          * @param {Array} dataTable The table to display
-         * @description Set the frequency table that fit the histogram format
+         * @description Set the records frequency ranges table that fit the histogram format
          */
         function initVerticalHistogram(key, label, dataTable) {
             service.histogram = {
@@ -148,7 +148,7 @@
                 key: key,
                 label: label,
                 column: service.selectedColumn,
-                existentFilter:null//[service.selectedColumn.statistics.min, service.selectedColumn.statistics.max]
+                existingFilter: null
             };
         }
 
@@ -156,10 +156,10 @@
          * @ngdoc method
          * @name initRangeLimits
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @description Set the range slider limits
+         * @description Set the range slider limits to update the rangeSlider handlers
+         * and the active/inactive bars of the vertical barchart
          */
         function initRangeLimits() {
-            //service.histogram.existentFilter = null;
             var column = service.selectedColumn;
             var currentRangeFilter = _.find(FilterService.filters, function(filter){
                 return filter.colId === column.id && filter.type === 'inside_range';
@@ -213,7 +213,7 @@
                         maxBrush : currentRangeFilter.args.interval[1]
                     };
                 }
-                service.histogram.existentFilter = [service.rangeLimits.minBrush, service.rangeLimits.maxBrush];
+                service.histogram.existingFilter = [service.rangeLimits.minBrush, service.rangeLimits.maxBrush];
             }
             else {
                 service.rangeLimits = {
@@ -364,7 +364,7 @@
                 if (service.selectedColumn && filter.colId === service.selectedColumn.id) {
                     initRangeLimits();
                     //to reset the bars colors
-                    service.histogram.existentFilter = [service.selectedColumn.statistics.min, service.selectedColumn.statistics.max];
+                    service.histogram.existingFilter = [service.selectedColumn.statistics.min, service.selectedColumn.statistics.max];
                 }
             };
 
@@ -376,9 +376,10 @@
 
             var column = service.selectedColumn;
             var filterFn = FilterService.addFilter.bind(null, 'inside_range', column.id, column.name, {interval: interval}, removeFilterFn);
-            $timeout(filterFn);
-            service.histogram.existentFilter = interval;
-            $timeout(initRangeLimits);
+            $timeout(function(){
+                filterFn();
+                initRangeLimits();
+            });
         }
 
         //--------------------------------------------------------------------------------------------------------------

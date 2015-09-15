@@ -7,14 +7,15 @@
      * @description This directive renders the horizontal bar chart.
      * @restrict E
      * @usage
-     *     <horizontal-barchart id="barChart"
-     *             width="250"
-     *             height="400"
-     *             on-click="columnProfileCtrl.barchartClickFn"
-     *             visu-data="columnProfileCtrl.processedData"
-     *             key-field="occurrences"
-     *             value-field="data"
-     *         ></horizontal-barchart>
+     * <horizontal-barchart id="hBarChart"
+     *    width="320"
+     *    height="400"
+     *    on-click="columnProfileCtrl.barchartClickFn"
+     *    visu-data="columnProfileCtrl.histogram.data"
+     *    value-field="formattedValue"
+     *    key-field="{{columnProfileCtrl.histogram.key}}"
+     *    key-label="{{columnProfileCtrl.histogram.label}}">
+     * </horizontal-barchart>
      * */
 
     function HorizontalBarchart() {
@@ -47,7 +48,6 @@
 
                     var xAxis = d3.svg.axis().scale(x).tickFormat(d3.format('d')).orient('top').tickSize(-h).ticks(Math.abs(x.range()[1] - x.range()[0]) / 50),
                         yAxis = d3.svg.axis().scale(y).orient('left').tickSize(0);
-
 
                     if(!scope.keyField) {
                         scope.keyField = 'occurrences'; //Value by default
@@ -108,6 +108,8 @@
                     svg.append('g')
                         .attr('class', 'x axis')
                         .call(xAxis);
+
+                    svg.selectAll('.tick text').style('text-anchor','end');
 
                     svg.append('g')
                         .attr('class', 'y axis')

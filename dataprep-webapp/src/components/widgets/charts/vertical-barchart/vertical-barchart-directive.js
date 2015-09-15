@@ -3,18 +3,20 @@
 
 	/**
 	 * @ngdoc directive
-	 * @name talend.widget.directive:horizontalBarchart???????????
-	 * @description This directive renders the horizontal bar chart.???????????
-	 * @restrict E???????????
-	 * @usage???????????
-	 *     <vertical-barchart id="barChart"???????????
-	 *             width="250"???????????
-	 *             height="400"???????????
-	 *             on-click="columnProfileCtrl.barchartClickFn"???????????
-	 *             visu-data="columnProfileCtrl.processedData"???????????
-	 *             key-field="occurrences"???????????
-	 *             value-field="data"
-	 *         ></vertical-barchart>
+	 * @name talend.widget.directive:verticalBarchart
+	 * @description This directive renders the vertical bar chart.
+	 * @restrict E
+	 * @usage
+	 * <vertical-barchart id="vBarChart"
+	 *	 width="320"
+	 *	 height="400"
+	 *	 on-click="columnProfileCtrl.vBarchartClickFn"
+	 *	 visu-data="columnProfileCtrl.histogram.numData"
+	 *	 value-field="{{columnProfileCtrl.histogram.key}}"
+	 *	 key-field="data"
+	 *	 existing-filter="columnProfileCtrl.histogram.existingFilter"
+	 *	 key-label="{{columnProfileCtrl.histogram.label}}">
+ 	 * </vertical-barchart>
 	 * */
 
 	function VerticalBarchart() {
@@ -26,13 +28,13 @@
 				keyField: '@',
 				valueField: '@',
 				keyLabel:'@',
-				existentFilter:'='
+				existingFilter:'='
 			},
 			link: function (scope, element, attrs) {
 				var xField = scope.keyField;//occurences
 				var yField = scope.valueField;
 				var labelTooltip = scope.keyLabel;
-				var existentFilter = scope.existentFilter;
+				var existingFilter = scope.existingFilter;
 				var renderTimeout, updateBarsTimeout;
 				var tip;
 				scope.finishedRendering = false;
@@ -42,12 +44,8 @@
 					var width = +attrs.width;
 					var height = +attrs.height;
 
-					var margin = {
-						top: 20,
-						right: 20,
-						bottom: 10,
-						left: 15
-						},
+					//the left and right margins MUST be the same as the rangeSlider ones
+					var margin = {top: 20,right: 20,bottom: 10,left: 15},
 						w = width - margin.left - margin.right,
 						h = height - margin.top - margin.bottom;
 
@@ -167,13 +165,15 @@
 				}
 
 				function updateBarsLookFeel (){
-					if(existentFilter){
+					if(existingFilter){
 						scope.buckets.transition()
 							.delay(function(d,i){
 								return i*10;
 							})
 							.style('opacity', function(d,i) {
-								if((d.data)[0] >= existentFilter[0] &&  (d.data)[1] <= existentFilter[1]){
+								if(((d.data)[0] >= existingFilter[0] && (d.data)[1] <= existingFilter[1]) ||
+									((d.data)[0] < existingFilter[1] && (d.data)[1] > existingFilter[0])
+								){
 									if(d3.select(scope.buckets[0][i]).style('opacity')==='.4'){
 										return '1';
 									}
@@ -188,9 +188,8 @@
 				scope.$watch('visuData',
 					function (statData) {
 						element.empty();
-						if(tip){
-							tip.hide();
-						}
+						//because the tooltip is not a child of the vertical barchart element
+						d3.selectAll('.vertical-barchart-cls.d3-tip').remove();
 						if (statData) {
 							scope.finishedRendering = false;
 							clearTimeout(renderTimeout);
@@ -199,7 +198,7 @@
 					}
 				);
 
-				scope.$watch('existentFilter',
+				scope.$watch('existingFilter',
 					function (newFilter) {
 						if (newFilter) {
 							var wait = 600;
@@ -208,7 +207,7 @@
 							}
 							clearTimeout(updateBarsTimeout);
 							updateBarsTimeout = setTimeout(function(){
-								existentFilter = newFilter;
+								existingFilter = newFilter;
 								updateBarsLookFeel();
 							}, wait);
 						}
