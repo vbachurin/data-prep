@@ -19,7 +19,7 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.content.DataSetContentStoreAdapter;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.daikon.exception.TalendExceptionContext;
 import org.talend.dataprep.schema.Serializer;
 
 /**
@@ -47,7 +47,7 @@ public class LocalHDFSContentStore extends DataSetContentStoreAdapter {
             IOUtils.copy(dataSetContent, outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, TDPExceptionContext.build().put("id",
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, TalendExceptionContext.build().put("id",
                     dataSetMetadata.getId()));
         }
     }
@@ -78,7 +78,7 @@ public class LocalHDFSContentStore extends DataSetContentStoreAdapter {
         try {
             fileSystem.delete(getPath(dataSetMetadata), true);
         } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, e, TDPExceptionContext.build().put("dataSetId",
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, e, TalendExceptionContext.build().put("dataSetId",
                     dataSetMetadata.getId()));
         }
     }

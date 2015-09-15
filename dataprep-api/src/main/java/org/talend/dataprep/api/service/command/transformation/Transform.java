@@ -18,7 +18,7 @@ import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.daikon.exception.TalendExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 @Component
@@ -54,7 +54,7 @@ public class Transform extends DataPrepCommand<InputStream> {
             int statusCode = response.getStatusLine().getStatusCode();
             // 400 and 500 errors
             if (statusCode >= 400) {
-                TDPExceptionContext context = TDPExceptionContext.build() //
+                TalendExceptionContext context = TalendExceptionContext.build() //
                         .put("url", uri) //
                         .put("cause", response.getStatusLine());
                 throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, context);
