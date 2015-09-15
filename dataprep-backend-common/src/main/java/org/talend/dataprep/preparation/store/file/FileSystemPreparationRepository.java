@@ -125,7 +125,12 @@ public class FileSystemPreparationRepository implements PreparationRepository {
     @Override
     public <T extends Identifiable> Collection<T> listAll(Class<T> clazz) {
         //@formatter:off
-        Collection<T> result =  Arrays.stream(getRootFolder().listFiles())
+        File[] files = getRootFolder().listFiles();
+        if(files == null) {
+            LOG.error("error listing preparations");
+            files = new File[0];
+        }
+        Collection<T> result =  Arrays.stream(files)
                 .map(file ->  readRaw(file))                                // read all files
                 .filter(entry -> clazz.isAssignableFrom(entry.getClass()))  // filter out the unwanted objects
                 .map(entry -> (T) entry)                                    // cast to wanted class
