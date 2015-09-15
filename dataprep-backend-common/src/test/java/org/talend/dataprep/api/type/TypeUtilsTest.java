@@ -11,7 +11,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 import org.talend.dataquality.semantic.classifier.custom.UserDefinedCategory;
 import org.talend.dataquality.semantic.recognizer.CategoryFrequency;
-import org.talend.datascience.common.inference.semantic.SemanticType;
+import org.talend.dataquality.semantic.statistics.SemanticType;
 import org.talend.datascience.common.inference.type.DataType;
 
 public class TypeUtilsTest {

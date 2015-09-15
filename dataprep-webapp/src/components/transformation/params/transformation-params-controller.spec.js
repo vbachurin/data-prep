@@ -44,6 +44,24 @@ describe('Transform params controller', function () {
         expect(extractedParams).toEqual({ param1: 'param1Value', param2: 4 });
     });
 
+    it('should extract param with default value', function() {
+        //given
+        transformation = {
+            name: 'uppercase',
+            category: 'case',
+            parameters: [
+                {name: 'param1', type: 'text', default: ''},
+                {name: 'param2', type: 'integer', default: '5'}
+            ]
+        };
+        var ctrl = createController(transformation);
+        //when
+        ctrl.transformWithParam();
+
+        //then
+        expect(extractedParams).toEqual({ param1: '', param2: '5'});
+    });
+
     it('should extract simple choice param', function() {
         //given
         transformation = {
