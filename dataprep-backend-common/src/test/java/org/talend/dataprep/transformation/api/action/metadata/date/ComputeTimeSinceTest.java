@@ -255,9 +255,9 @@ public class ComputeTimeSinceTest {
     @Test
     public void should_compute_twice_diff_units() throws IOException {
         //given
-        final String date = "07/16/2014 12:00";
-        final String resultInMonth = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.MONTHS);
-        final String resultInYears = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.YEARS);
+        final String date = "07/15/2014 12:00";
+        final String resultInMonth = computeTimeSince(date, "M/d/yyyy HH:mm", ChronoUnit.MONTHS);
+        final String resultInYears = computeTimeSince(date, "M/d/yyyy HH:mm", ChronoUnit.YEARS);
 
         final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
         row.set("0001", date);

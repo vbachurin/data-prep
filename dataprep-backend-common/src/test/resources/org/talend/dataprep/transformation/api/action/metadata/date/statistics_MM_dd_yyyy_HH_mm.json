@@ -73,7 +73,7 @@
   ],
   "patternFrequencyTable": [
     {
-      "pattern": "MM/dd/yyyy HH:mm",
+      "pattern": "M/d/yyyy HH:mm",
       "occurrences": 47
     },
     {
