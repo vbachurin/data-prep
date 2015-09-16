@@ -31,7 +31,7 @@
 				existingFilter:'='
 			},
 			link: function (scope, element, attrs) {
-				var xField = scope.keyField;//occurences
+				var xField = scope.keyField;//data
 				var yField = scope.valueField;
 				var labelTooltip = scope.keyLabel;
 				var existingFilter = scope.existingFilter;
@@ -134,7 +134,7 @@
 						.attr('y', -2)
 						.attr('transform', 'rotate(-90)')
 						.style('text-anchor', 'middle')
-						.text('Occurrences');
+						.text(labelTooltip);
 
 					/************background Rect*********/
 					var bgBar = svg.selectAll('g.bg-rect')

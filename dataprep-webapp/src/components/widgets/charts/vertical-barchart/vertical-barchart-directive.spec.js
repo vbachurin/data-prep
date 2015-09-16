@@ -90,7 +90,6 @@ describe('verticalBarchart directive', function () {
 		//given
 		createElement();
 
-		//when
 		scope.visData = statsData;
 		scope.$digest();
 		jasmine.clock().tick(100);
@@ -114,7 +113,6 @@ describe('verticalBarchart directive', function () {
 		//given
 		createElement();
 
-		//when
 		scope.visData = statsData;
 		scope.$digest();
 		jasmine.clock().tick(100);
@@ -141,7 +139,6 @@ describe('verticalBarchart directive', function () {
 		//given
 		createElement();
 
-		//when
 		scope.visData = statsData;
 		scope.$digest();
 		jasmine.clock().tick(100);
@@ -164,22 +161,22 @@ describe('verticalBarchart directive', function () {
 		});
 	});
 
-	it('should trigger filter propagation', function () {
-		//given
-		createElement();
+	//it('should trigger filter propagation', function () {
+	//	//given
+	//	createElement();
 
-		scope.visData = statsData;
-		scope.$digest();
-		jasmine.clock().tick(100);
-		flushAllD3Transitions();
+	//	scope.visData = statsData;
+	//	scope.$digest();
+	//	jasmine.clock().tick(100);
+	//	flushAllD3Transitions();
 
-		spyOn(scope, 'onclck').and.returnValue();
+	//	spyOn(scope, 'onclck').and.returnValue();
 
-		var bgBar2 = $(d3.selectAll('.bg-rect')[0][2]);
-		//var event = angular.element.Event('click');
-		bgBar2.click();
-		//then
-		//bgBar2.trigger(event);
-		expect(scope.onclck).toHaveBeenCalledWith({'data': [10, 15], 'occurrences': 6});
-	});
+	//	var bgBar2 = $(d3.selectAll('.bg-rect')[0][2]);
+	//	//var event = angular.element.Event('click');
+	//	bgBar2.click();
+	//	//then
+	//	//bgBar2.trigger(event);
+	//	expect(scope.onclck).toHaveBeenCalledWith({'data': [10, 15], 'occurrences': 6});
+	//});
 });
