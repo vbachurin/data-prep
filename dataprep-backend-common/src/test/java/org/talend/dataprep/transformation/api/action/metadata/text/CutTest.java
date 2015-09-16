@@ -48,7 +48,7 @@ public class CutTest {
 
     @Test
     public void testCategory() throws Exception {
-        assertThat(action.getCategory(), is(ActionCategory.QUICKFIX.getDisplayName()));
+        assertThat(action.getCategory(), is(ActionCategory.STRINGS.getDisplayName()));
     }
 
     @Test

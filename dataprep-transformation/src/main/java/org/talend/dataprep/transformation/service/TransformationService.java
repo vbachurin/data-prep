@@ -1,19 +1,24 @@
 package org.talend.dataprep.transformation.service;
 
+import static java.util.stream.Collectors.toList;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -26,9 +31,10 @@ import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.preparation.StepDiff;
 import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
@@ -143,6 +149,29 @@ public class TransformationService {
     }
 
     /**
+     * Execute the preview and write result in the provided output stream
+     * @param actions The actions to execute to diff with reference
+     * @param referenceActions The reference actions
+     * @param indexes The record indexes to diff. If null, it will process all records
+     * @param dataSet The dataset (column metadata and records)
+     * @param output The output stream where to write the result
+     */
+    private void executePreview(final String actions, final String referenceActions, final String indexes, final DataSet dataSet, final OutputStream output) {
+        final PreviewConfiguration configuration = PreviewConfiguration.preview() //
+                .withActions(actions) //
+                .withIndexes(indexes) //
+                .fromReference( //
+                        Configuration.builder() //
+                                .format(ExportType.JSON) //
+                                .output(output) //
+                                .actions(referenceActions) //
+                                .build() //
+                ) //
+                .build();
+        factory.get(configuration).transform(dataSet, configuration);
+    }
+
+    /**
      * This operation allow client to create a diff between 2 list of actions starting from the same data. For example,
      * sending:
      * <ul>
@@ -174,18 +203,45 @@ public class TransformationService {
             final String decodedNewActions = newActions == null ? null : IOUtils.toString(newActions.getInputStream());
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
 
-            final PreviewConfiguration configuration = PreviewConfiguration.preview() //
-                    .withActions(decodedNewActions) //
-                    .withIndexes(decodedIndexes) //
-                    .fromReference( //
-                            Configuration.builder() //
-                                    .format(ExportType.JSON) //
-                                    .output(response.getOutputStream()) //
-                                    .actions(decodedOldActions) //
-                                    .build() //
-                    ) //
-                    .build();
-            factory.get(configuration).transform(dataSet, configuration);
+            executePreview(decodedNewActions, decodedOldActions, decodedIndexes, dataSet, response.getOutputStream());
+        } catch (IOException e) {
+            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
+        }
+    }
+
+    /**
+     * Compare the results of 2 sets of actions, and return the diff metadata
+     * Ex : the created columns ids
+     */
+    @RequestMapping(value = "/transform/diff/metadata", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value = "Apply a diff between 2 sets of actions and return the diff (containing created columns ids for example)", notes = "This operation returns the diff metadata", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @VolumeMetered
+    public StepDiff getCreatedColumns(@ApiParam(value = "Actions that is considered as reference in the diff.") @RequestPart(value = "referenceActions", required = true) final Part referenceActions, //
+                                  @ApiParam(value = "Actions which result will be compared to reference result.") @RequestPart(value = "diffActions", required = true) final Part diffActions, //
+                                  @ApiParam(value = "Data set content as JSON. It should contains only 1 records, and the columns metadata") @RequestPart(value = "content", required = true) final Part content) {
+        final ObjectMapper mapper = builder.build();
+        final OutputStream output = new ByteArrayOutputStream();
+        try (JsonParser parser = mapper.getFactory().createParser(content.getInputStream())) {
+            //decode parts
+            final String decodedReferenceActions = referenceActions == null ? null : IOUtils.toString(referenceActions.getInputStream());
+            final String decodedDiffActions = diffActions == null ? null : IOUtils.toString(diffActions.getInputStream());
+            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+
+            //call diff
+            executePreview(decodedDiffActions, decodedReferenceActions, null, dataSet, output);
+
+            //extract created columns ids
+            final JsonNode node = mapper.readTree(output.toString());
+            final JsonNode columnsNode = node.get("columns");
+            final List<String> createdColumns = StreamSupport.stream(columnsNode.spliterator(), false)
+                    .filter(col -> "new".equals(col.path("__tdpColumnDiff").asText()))
+                    .map(col -> col.path("id").asText())
+                    .collect(toList());
+
+            //create/return diff
+            final StepDiff diff = new StepDiff();
+            diff.setCreatedColumns(createdColumns);
+            return diff;
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
@@ -208,7 +264,7 @@ public class TransformationService {
         return Stream.of(allActions) //
                 .filter(am -> am.acceptColumn(column)) //
                 .map(am -> am.adapt(column)) //
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     /**
@@ -256,7 +312,7 @@ public class TransformationService {
                                           @ApiParam(value = "Data set content as JSON") final InputStream content) {
         final DynamicType actionType = DynamicType.fromAction(action);
         if (actionType == null) {
-            final TDPExceptionContext exceptionContext = TDPExceptionContext.build().put("name", action);
+            final ExceptionContext exceptionContext = ExceptionContext.build().put("name", action);
             throw new TDPException(TransformationErrorCodes.UNKNOWN_DYNAMIC_ACTION, exceptionContext);
         }
         final ObjectMapper mapper = builder.build();

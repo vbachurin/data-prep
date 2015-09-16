@@ -8,8 +8,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -95,7 +93,12 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
      */
     public void computeQuality(DataSetMetadata dataset, Stream<DataSetRow> records) {
         // Compute valid / invalid / empty count, need data types for analyzer first
-        DataType.Type[] types = TypeUtils.convert(dataset.getRow().getColumns());
+        final List<ColumnMetadata> columns = dataset.getRow().getColumns();
+        if (columns.isEmpty()) {
+            LOGGER.debug("Skip analysis of {} (no column information).", dataset.getId());
+            return;
+        }
+        DataType.Type[] types = TypeUtils.convert(columns);
         // Run analysis
         final ValueQualityAnalyzer valueQualityAnalyzer = new ValueQualityAnalyzer(types);
         valueQualityAnalyzer.setStoreInvalidValues(true);
@@ -103,7 +106,7 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
         records.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
         // Determine content size
         final List<Analyzers.Result> result = analyzer.getResult();
-        final Iterator<ColumnMetadata> iterator = dataset.getRow().getColumns().iterator();
+        final Iterator<ColumnMetadata> iterator = columns.iterator();
         for (Analyzers.Result analyzerResult : result) {
             final ValueQualityStatistics valueQuality = analyzerResult.get(ValueQualityStatistics.class);
             final SummaryStatistics summaryStatistics = analyzerResult.get(SummaryStatistics.class);

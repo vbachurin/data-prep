@@ -36,7 +36,7 @@ public class Trim extends AbstractActionMetadata implements ColumnAction {
      */
     @Override
     public String getCategory() {
-        return ActionCategory.QUICKFIX.getDisplayName();
+        return ActionCategory.STRINGS.getDisplayName();
     }
 
     /**

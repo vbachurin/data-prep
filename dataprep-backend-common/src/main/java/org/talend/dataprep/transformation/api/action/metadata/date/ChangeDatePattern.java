@@ -79,7 +79,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
             return;
         }
         try {
-            final LocalDateTime date = superParse(value, row, columnId);
+            final LocalDateTime date = dateParser.parse(value, row.getRowMetadata().getById(columnId));
             row.set(columnId, newPattern.getFormatter().format(date));
         } catch (DateTimeException e) {
             // cannot parse the date, let's leave it as is

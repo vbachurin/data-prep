@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -30,16 +31,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @see ChangeDatePattern
  */
-public class ExtractDateTokensTest {
+public class ExtractDateTokensTest extends BaseDateTests {
 
     /** The action to test. */
+    @Autowired
     private ExtractDateTokens action;
 
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        action = new ExtractDateTokens();
 
         parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
