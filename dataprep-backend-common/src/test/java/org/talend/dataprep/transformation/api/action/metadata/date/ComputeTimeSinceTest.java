@@ -30,6 +30,7 @@ import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -47,17 +48,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @see ComputeTimeSince
  */
-public class ComputeTimeSinceTest {
+public class ComputeTimeSinceTest extends BaseDateTests {
 
     /** The action to test. */
+    @Autowired
     private ComputeTimeSince action;
 
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        action = new ComputeTimeSince();
-
         final ComputeTimeSince currentAction = new ComputeTimeSince();
         final InputStream json = ComputeTimeSince.class.getResourceAsStream("computeTimeSinceAction.json");
         parameters = ActionMetadataTestUtils.parseParameters(currentAction, json);
@@ -255,9 +255,9 @@ public class ComputeTimeSinceTest {
     @Test
     public void should_compute_twice_diff_units() throws IOException {
         //given
-        final String date = "07/16/2014 12:00";
-        final String resultInMonth = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.MONTHS);
-        final String resultInYears = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.YEARS);
+        final String date = "07/15/2014 12:00";
+        final String resultInMonth = computeTimeSince(date, "M/d/yyyy HH:mm", ChronoUnit.MONTHS);
+        final String resultInYears = computeTimeSince(date, "M/d/yyyy HH:mm", ChronoUnit.YEARS);
 
         final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
         row.set("0001", date);

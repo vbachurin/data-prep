@@ -156,7 +156,9 @@
           "label": "",
           "frequency": 100.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     },
     {
       "name": "departement",
@@ -245,57 +247,57 @@
           {
             "occurrences": 2,
             "range": {
-              "min": 1.0,
-              "max": 25.875
+              "min": 13.0,
+              "max": 22.875
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 22.875,
+              "max": 32.75
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 32.75,
+              "max": 42.625
             }
           },
           {
             "occurrences": 1,
             "range": {
-              "min": 25.875,
-              "max": 50.75
+              "min": 42.625,
+              "max": 52.5
             }
           },
           {
-            "occurrences": 9,
+            "occurrences": 2,
             "range": {
-              "min": 50.75,
-              "max": 75.625
+              "min": 52.5,
+              "max": 62.375
             }
           },
           {
             "occurrences": 3,
             "range": {
-              "min": 75.625,
-              "max": 100.5
+              "min": 62.375,
+              "max": 72.25
             }
           },
           {
-            "occurrences": 0,
+            "occurrences": 5,
             "range": {
-              "min": 100.5,
-              "max": 125.375
+              "min": 72.25,
+              "max": 82.125
             }
           },
           {
-            "occurrences": 0,
+            "occurrences": 2,
             "range": {
-              "min": 125.375,
-              "max": 150.25
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 150.25,
-              "max": 175.125
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 175.125,
-              "max": 200.0
+              "min": 82.125,
+              "max": 92.0
             }
           }
         ],
@@ -314,7 +316,9 @@
           "label": "",
           "frequency": 100.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     },
     {
       "name": "birth",
@@ -427,7 +431,9 @@
           "label": "",
           "frequency": 100.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     },
     {
       "name": "order_id",
@@ -540,7 +546,9 @@
           "label": "",
           "frequency": 100.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     },
     {
       "name": "order_date",
@@ -649,7 +657,9 @@
           "label": "",
           "frequency": 100.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     },
     {
       "name": "total",
@@ -724,58 +734,58 @@
         },
         "histogram": [
           {
-            "occurrences": 9,
+            "occurrences": 11,
             "range": {
-              "min": 1.0,
-              "max": 25.875
+              "min": 16.7,
+              "max": 39.6125
             }
           },
           {
-            "occurrences": 3,
+            "occurrences": 1,
             "range": {
-              "min": 25.875,
-              "max": 50.75
-            }
-          },
-          {
-            "occurrences": 2,
-            "range": {
-              "min": 50.75,
-              "max": 75.625
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 75.625,
-              "max": 100.5
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 100.5,
-              "max": 125.375
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 125.375,
-              "max": 150.25
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 150.25,
-              "max": 175.125
+              "min": 39.6125,
+              "max": 62.525
             }
           },
           {
             "occurrences": 2,
             "range": {
-              "min": 175.125,
+              "min": 62.525,
+              "max": 85.4375
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 85.4375,
+              "max": 108.35
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 108.35,
+              "max": 131.2625
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 131.2625,
+              "max": 154.17499999999998
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 154.17499999999998,
+              "max": 177.08749999999998
+            }
+          },
+          {
+            "occurrences": 2,
+            "range": {
+              "min": 177.08749999999998,
               "max": 200.0
             }
           }
@@ -795,7 +805,9 @@
           "label": "",
           "frequency": 100.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     },
     {
       "name": "nb_tshirts",
@@ -850,59 +862,59 @@
         },
         "histogram": [
           {
-            "occurrences": 16,
+            "occurrences": 9,
             "range": {
               "min": 1.0,
-              "max": 25.875
+              "max": 1.875
+            }
+          },
+          {
+            "occurrences": 3,
+            "range": {
+              "min": 1.875,
+              "max": 2.75
+            }
+          },
+          {
+            "occurrences": 2,
+            "range": {
+              "min": 2.75,
+              "max": 3.625
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 25.875,
-              "max": 50.75
+              "min": 3.625,
+              "max": 4.5
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 50.75,
-              "max": 75.625
+              "min": 4.5,
+              "max": 5.375
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 75.625,
-              "max": 100.5
+              "min": 5.375,
+              "max": 6.25
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 100.5,
-              "max": 125.375
+              "min": 6.25,
+              "max": 7.125
             }
           },
           {
-            "occurrences": 0,
+            "occurrences": 2,
             "range": {
-              "min": 125.375,
-              "max": 150.25
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 150.25,
-              "max": 175.125
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 175.125,
-              "max": 200.0
+              "min": 7.125,
+              "max": 8.0
             }
           }
         ],
@@ -921,7 +933,9 @@
           "label": "",
           "frequency": 100.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     },
     {
       "name": "tshirt_price",
@@ -976,59 +990,59 @@
         },
         "histogram": [
           {
-            "occurrences": 16,
+            "occurrences": 5,
             "range": {
-              "min": 1.0,
-              "max": 25.875
+              "min": 16.7,
+              "max": 17.7375
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 25.875,
-              "max": 50.75
+              "min": 17.7375,
+              "max": 18.775000000000002
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 50.75,
-              "max": 75.625
+              "min": 18.775000000000002,
+              "max": 19.812500000000004
+            }
+          },
+          {
+            "occurrences": 6,
+            "range": {
+              "min": 19.812500000000004,
+              "max": 20.850000000000005
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 75.625,
-              "max": 100.5
+              "min": 20.850000000000005,
+              "max": 21.887500000000006
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 100.5,
-              "max": 125.375
+              "min": 21.887500000000006,
+              "max": 22.925000000000008
             }
           },
           {
-            "occurrences": 0,
+            "occurrences": 1,
             "range": {
-              "min": 125.375,
-              "max": 150.25
+              "min": 22.925000000000008,
+              "max": 23.96250000000001
             }
           },
           {
-            "occurrences": 0,
+            "occurrences": 4,
             "range": {
-              "min": 150.25,
-              "max": 175.125
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 175.125,
-              "max": 200.0
+              "min": 23.96250000000001,
+              "max": 25.0
             }
           }
         ],
@@ -1047,7 +1061,9 @@
           "label": "",
           "frequency": 100.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     },
     {
       "name": "category",
@@ -1125,7 +1141,9 @@
           "label": "Full Name",
           "frequency": 50.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     }
   ],
   "records": [

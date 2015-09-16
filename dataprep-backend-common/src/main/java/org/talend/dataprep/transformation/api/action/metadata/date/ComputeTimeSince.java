@@ -91,7 +91,7 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
         // parse the date
         final String value = row.get(columnId);
         try {
-            final LocalDateTime temporalAccessor = superParse(value, row, columnId);
+            final LocalDateTime temporalAccessor = dateParser.parse(value, row.getRowMetadata().getById(columnId));
             final Temporal valueAsDate = LocalDateTime.from(temporalAccessor);
             final long newValue = unit.between(valueAsDate, now);
             row.set(newColumnMetadata.getId(), newValue + "");

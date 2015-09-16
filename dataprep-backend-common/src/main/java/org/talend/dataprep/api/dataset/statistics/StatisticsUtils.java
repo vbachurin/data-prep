@@ -29,22 +29,22 @@ public class StatisticsUtils {
             final boolean isString = Type.STRING.isAssignableFrom(Type.get(currentColumn.getType()));
             final Statistics statistics = currentColumn.getStatistics();
             // Value quality (empty / invalid / ...)
-            final ValueQualityStatistics valueQualityStatistics = result.get(ValueQualityStatistics.class);
-            if (valueQualityStatistics != null) {
+            if (result.exist(ValueQualityStatistics.class)) {
+                final ValueQualityStatistics valueQualityStatistics = result.get(ValueQualityStatistics.class);
                 statistics.setCount(valueQualityStatistics.getCount());
                 statistics.setEmpty(valueQualityStatistics.getEmptyCount());
                 statistics.setInvalid(valueQualityStatistics.getInvalidCount());
                 statistics.setValid(valueQualityStatistics.getValidCount());
             }
             // Cardinality (distinct + duplicates)
-            final CardinalityStatistics cardinalityStatistics = result.get(CardinalityStatistics.class);
-            if (cardinalityStatistics != null) {
+            if (result.exist(CardinalityStatistics.class)) {
+                final CardinalityStatistics cardinalityStatistics = result.get(CardinalityStatistics.class);
                 statistics.setDistinctCount(cardinalityStatistics.getDistinctCount());
                 statistics.setDuplicateCount(cardinalityStatistics.getDuplicateCount());
             }
             // Frequencies (data)
             final DataFrequencyStatistics dataFrequencyStatistics = result.get(DataFrequencyStatistics.class);
-            if (dataFrequencyStatistics != null) {
+            if (result.exist(DataFrequencyStatistics.class)) {
                 final Map<String, Long> topTerms = dataFrequencyStatistics.getTopK(15);
                 if (topTerms != null) {
                     statistics.getDataFrequencies().clear();
@@ -52,8 +52,8 @@ public class StatisticsUtils {
                 }
             }
             // Frequencies (pattern)
-            final PatternFrequencyStatistics patternFrequencyStatistics = result.get(PatternFrequencyStatistics.class);
-            if (patternFrequencyStatistics != null) {
+            if (result.exist(PatternFrequencyStatistics.class)) {
+                final PatternFrequencyStatistics patternFrequencyStatistics = result.get(PatternFrequencyStatistics.class);
                 final Map<String, Long> topTerms = patternFrequencyStatistics.getTopK(15);
                 if (topTerms != null) {
                     statistics.getPatternFrequencies().clear();
@@ -61,24 +61,24 @@ public class StatisticsUtils {
                 }
             }
             // Quantiles
-            final QuantileStatistics quantileStatistics = result.get(QuantileStatistics.class);
-            if (quantileStatistics != null && isNumeric) {
+            if (result.exist(QuantileStatistics.class)) {
+                final QuantileStatistics quantileStatistics = result.get(QuantileStatistics.class);
                 final Quantiles quantiles = statistics.getQuantiles();
                 quantiles.setLowerQuantile(quantileStatistics.getLowerQuantile());
                 quantiles.setMedian(quantileStatistics.getMedian());
                 quantiles.setUpperQuantile(quantileStatistics.getUpperQuantile());
             }
             // Summary (min, max, mean, variance)
-            final SummaryStatistics summaryStatistics = result.get(SummaryStatistics.class);
-            if (summaryStatistics != null) {
+            if (result.exist(SummaryStatistics.class)) {
+                final SummaryStatistics summaryStatistics = result.get(SummaryStatistics.class);
                 statistics.setMax(summaryStatistics.getMax());
                 statistics.setMin(summaryStatistics.getMin());
                 statistics.setMean(summaryStatistics.getMean());
                 statistics.setVariance(summaryStatistics.getVariance());
             }
             // Histogram
-            final HistogramStatistics histogramStatistics = result.get(HistogramStatistics.class);
-            if (histogramStatistics != null && isNumeric) {
+            if (isNumeric && result.exist(HistogramStatistics.class)) {
+                final HistogramStatistics histogramStatistics = result.get(HistogramStatistics.class);
                 statistics.getHistogram().clear();
                 histogramStatistics.getHistogram().forEach((r, v) -> {
                     final HistogramRange range = new HistogramRange();
@@ -89,8 +89,8 @@ public class StatisticsUtils {
                 });
             }
             // Text length
-            final TextLengthStatistics textLengthStatistics = result.get(TextLengthStatistics.class);
-            if (textLengthStatistics != null && isString) {
+            if (isString && result.exist(TextLengthStatistics.class)) {
+                final TextLengthStatistics textLengthStatistics = result.get(TextLengthStatistics.class);
                 final TextLengthSummary textLengthSummary = statistics.getTextLengthSummary();
                 textLengthSummary.setAverageLength(textLengthStatistics.getAvgTextLength());
                 textLengthSummary.setMinimalLength(textLengthStatistics.getMinTextLength());

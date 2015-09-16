@@ -7,14 +7,40 @@ import java.io.OutputStreamWriter;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 
+import static java.util.stream.Collectors.toList;
+
 public class PreparationUtils {
 
     private PreparationUtils() {
+    }
+
+    /**
+     * Return a list of all steps ids from root step to the provided step
+     * @param step          The last step to get
+     * @param repository    The identifiable repository
+     * @return The list of step ids from root to step
+     */
+    public static List<String> listStepsIds(final Step step, final PreparationRepository repository) {
+        return listStepsIds(step, PreparationActions.ROOT_CONTENT.getId(), repository);
+    }
+
+    /**
+     * Return a list of all steps ids from limit step to the provided step
+     * @param step          The last step to get
+     * @param limit         The starting step
+     * @param repository    The identifiable repository
+     * @return The list of step ids from starting (limit) to step
+     */
+    public static List<String> listStepsIds(final Step step, final String limit, final PreparationRepository repository) {
+        return listSteps(step, limit, repository).stream()
+                .map(Step::id)
+                .collect(toList());
     }
 
     /**
@@ -30,7 +56,7 @@ public class PreparationUtils {
      * @see Step#id()
      * @see Step#getParent()
      */
-    public static List<String> listSteps(Step step, PreparationRepository repository) {
+    public static List<Step> listSteps(Step step, PreparationRepository repository) {
         return listSteps(step, PreparationActions.ROOT_CONTENT.getId(), repository);
     }
 
@@ -45,7 +71,7 @@ public class PreparationUtils {
      * @see Step#id()
      * @see Step#getParent()
      */
-    public static List<String> listSteps(Step step, String limit, PreparationRepository repository) {
+    public static List<Step> listSteps(final Step step, final String limit, final PreparationRepository repository) {
         if (repository == null) {
             throw new IllegalArgumentException("Repository cannot be null.");
         }
@@ -55,21 +81,20 @@ public class PreparationUtils {
         if (step == null) {
             return Collections.emptyList();
         }
-        List<String> versions = new LinkedList<>();
-        __listSteps(versions, limit, step, repository);
-        return versions;
+        final List<Step> steps = new LinkedList<>();
+        __listSteps(steps, limit, step, repository);
+        return steps;
     }
 
-    // Internal method for recursion
-    private static void __listSteps(List<String> versions, String limit, Step step, PreparationRepository repository) {
+    private static void __listSteps(final List<Step> steps, final String limit, final Step step, final PreparationRepository repository) {
         if (step == null) {
             return;
         }
-        versions.add(0, step.id());
+        steps.add(0, step);
         if (limit.equals(step.getId())) {
             return;
         }
-        __listSteps(versions, limit, repository.get(step.getParent(), Step.class), repository);
+        __listSteps(steps, limit, repository.get(step.getParent(), Step.class), repository);
     }
 
     private static void prettyPrint(PreparationRepository repository, Step step, OutputStream out) {

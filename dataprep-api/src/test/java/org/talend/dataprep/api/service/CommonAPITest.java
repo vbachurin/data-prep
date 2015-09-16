@@ -1,53 +1,47 @@
 package org.talend.dataprep.api.service;
 
-import com.jayway.restassured.RestAssured;
-import org.junit.After;
-import org.junit.Before;
+import static com.jayway.restassured.RestAssured.when;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.WebIntegrationTest;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.mock.env.MockPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.talend.dataprep.api.Application;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@WebIntegrationTest
-public class CommonAPITest
-{
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-    @Value("${local.server.port}")
-    public int port;
-
-    @Autowired
-    ConfigurableEnvironment environment;
-
-    @Before
-    public void setUp() {
-        RestAssured.port = port;
-
-        // Overrides connection information with random port value
-        MockPropertySource connectionInformation = new MockPropertySource()
-            .withProperty("dataset.service.url", "http://localhost:" + port)
-            .withProperty("transformation.service.url", "http://localhost:" + port)
-            .withProperty("preparation.service.url", "http://localhost:" + port);
-        environment.getPropertySources().addFirst(connectionInformation);
-    }
-
-    @After
-    public void tearDown() {
-        // no op
-    }
+/**
+ * Common Unit test for the dataset service API.
+ */
+public class CommonAPITest extends ApiServiceTestBase {
 
     @Test
-    public void get_all_types() throws Exception {
-        String json = RestAssured.when().get("/api/types").asString();
-        System.out.println("json:"+ json);
-
+    public void testCORSHeaders() throws Exception {
+        when().post("/transform").then().header("Access-Control-Allow-Origin", "*")
+                .header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT")
+                .header("Access-Control-Max-Age", "3600")
+                .header("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
     }
 
+
+    /**
+     * Test that errors are properly listed and displayed.
+     */
+    @Test
+    public void shouldListErrors() throws IOException {
+        // given
+        final ObjectMapper mapper = new ObjectMapper();
+
+        // when
+        final String errors = when().get("/api/errors").asString();
+
+        // then : content is not checked, only mandatory fields
+        final JsonNode rootNode = mapper.readTree(errors);
+        assertTrue(rootNode.isArray());
+        assertTrue(rootNode.size() > 0);
+        for (final JsonNode errorCode : rootNode) {
+            assertTrue(errorCode.has("code"));
+            assertTrue(errorCode.has("http-status-code"));
+        }
+    }
 }

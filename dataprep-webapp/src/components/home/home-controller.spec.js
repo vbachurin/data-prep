@@ -200,7 +200,7 @@ describe('Home controller', function () {
 
                 //then
                 expect(DatasetService.create).toHaveBeenCalled();
-                expect(ctrl.uploadingDatasets[0].error).toBeTruthy();
+                expect(ctrl.uploadingDatasets.length).toBe(0);
                 expect(MessageService.error).toHaveBeenCalledWith('UPLOAD_ERROR_TITLE', 'UPLOAD_ERROR');
             }));
         });
@@ -297,7 +297,7 @@ describe('Home controller', function () {
 
                 //then
                 expect(DatasetService.update).toHaveBeenCalled();
-                expect(ctrl.uploadingDatasets[0].error).toBeTruthy();
+                expect(ctrl.uploadingDatasets.length).toBe(0);
                 expect(MessageService.error).toHaveBeenCalledWith('UPLOAD_ERROR_TITLE', 'UPLOAD_ERROR');
             }));
 

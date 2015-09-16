@@ -441,7 +441,7 @@
             service.stateDistribution = null;
 
             var aggregationParameters = {
-                datasetId: datasetId,
+                datasetId: preparationId ? null : datasetId,
                 preparationId: preparationId,
                 stepId: stepId,
                 sampleSize: sampleSize,

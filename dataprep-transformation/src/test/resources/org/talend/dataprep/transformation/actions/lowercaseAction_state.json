@@ -1,0 +1,11 @@
+{
+  "actions": [
+    {
+      "action": "lowercase",
+      "parameters": {
+        "column_id": "state",
+        "scope": "column"
+      }
+    }
+  ]
+}
