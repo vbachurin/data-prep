@@ -3,6 +3,8 @@ package org.talend.dataprep.transformation.api.action.metadata;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -15,9 +17,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
-import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 /**
  * Test that a translation exists for i18n keys label/desc for each action and each params/item.
@@ -75,44 +76,37 @@ public class TestI18nKeysForActionsTest {
                 assertI18nKeyExists("parameter." + pname + ".desc");
 
                 LOGGER.trace("  - " + pname + " | " + plabel + " | " + pdesc);
-            }
 
-            for (Item item : actionMetadata.getItems()) {
-                String pname = item.getName();
-                assertNotNull(pname);
-                assertNotEquals("", pname);
+                if (param instanceof SelectParameter) {
 
-                String plabel = item.getLabel();
-                assertNotNull(plabel);
-                assertNotEquals("", plabel);
-                assertI18nKeyExists("parameter." + pname + ".label");
+                    List<SelectParameter.Item> values = (List<SelectParameter.Item>) param.getConfiguration().get("values");
 
-                String pdesc = item.getDescription();
-                assertNotNull(pdesc);
-                assertNotEquals("", pdesc);
-                assertI18nKeyExists("parameter." + pname + ".desc");
+                    for (SelectParameter.Item value : values) {
+                        LOGGER.trace("    - " + value);
 
-                LOGGER.trace("  - " + pname + " | " + plabel + " | " + pdesc);
-                for (Value value : item.getValues()) {
-                    LOGGER.trace("    - " + value);
+                        final Parameter parameter = value.getInlineParameter();
+                        if (param == null) {
+                            continue;
+                        }
 
-                    for (Parameter param : value.getParameters()) {
-                        String oname = param.getName();
+                        String oname = parameter.getName();
                         assertNotNull(oname);
                         assertNotEquals("", oname);
 
-                        String olabel = param.getLabel();
+                        String olabel = parameter.getLabel();
                         assertNotNull(olabel);
                         assertNotEquals("", olabel);
                         assertI18nKeyExists("parameter." + oname + ".label");
 
-                        String odesc = param.getDescription();
+                        String odesc = parameter.getDescription();
                         assertNotNull(odesc);
                         assertNotEquals("", odesc);
                         assertI18nKeyExists("parameter." + oname + ".desc");
 
                         LOGGER.trace("      - " + oname + " | " + olabel + " | " + odesc);
+
                     }
+
                 }
             }
             LOGGER.debug("");

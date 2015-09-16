@@ -31,7 +31,7 @@ public class SelectParameter extends Parameter {
     /**
      * Models a select item.
      */
-    private static class Item {
+    public static class Item {
 
         /** The item name. */
         private String name;
@@ -55,6 +55,16 @@ public class SelectParameter extends Parameter {
             this.name = name;
             this.value = value;
             this.inlineParameter = parameter;
+        }
+
+        /**
+         * Create a select Item.
+         *
+         * @param name the item name.
+         * @param value the item value.
+         */
+        public Item(String name, String value) {
+            this(name, value, null);
         }
 
         /**
@@ -179,6 +189,17 @@ public class SelectParameter extends Parameter {
         }
 
         /**
+         * Add all items to the select parameter builder.
+         *
+         * @param items the item name.
+         * @return the builder to carry on building the column.
+         */
+        public SelectParameter.Builder items(List<Item> items) {
+            this.items = items;
+            return this;
+        }
+
+        /**
          * Build the column with the previously entered values.
          *
          * @return the built column metadata.
@@ -186,6 +207,7 @@ public class SelectParameter extends Parameter {
         public SelectParameter build() {
             return new SelectParameter(name, defaultValue, implicit, canBeBlank, items, multiple);
         }
+
 
     }
 

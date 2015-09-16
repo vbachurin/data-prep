@@ -2,9 +2,8 @@ package org.talend.dataprep.transformation.api.action.metadata.date;
 
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
-import java.util.*;
-
-import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -15,7 +14,7 @@ import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Change the date pattern on a 'date' column.
@@ -34,13 +33,15 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
         return ACTION_NAME;
     }
 
+
     /**
-     * @see ActionMetadata#getItems()@return
+     * @see ActionMetadata#getParameters()
      */
     @Override
-    @Nonnull
-    public Item[] getItems() {
-        return getItemsForDatePattern();
+    public List<Parameter> getParameters() {
+        List<Parameter> parameters = super.getParameters();
+        parameters.addAll(getParametersForDatePattern());
+        return parameters;
     }
 
     /**

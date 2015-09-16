@@ -1,13 +1,14 @@
 package org.talend.dataprep.transformation.api.action.metadata.fillinvalid;
 
-import javax.annotation.Nonnull;
+import java.util.List;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
-import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 @Component(FillWithBooleanIfInvalid.ACTION_BEAN_PREFIX + FillWithBooleanIfInvalid.FILL_EMPTY_ACTION_NAME)
 public class FillWithBooleanIfInvalid extends AbstractFillIfInvalid {
@@ -19,11 +20,21 @@ public class FillWithBooleanIfInvalid extends AbstractFillIfInvalid {
         return FILL_EMPTY_ACTION_NAME;
     }
 
+    /**
+     * @see ActionMetadata#getParameters()
+     */
     @Override
-    @Nonnull
-    public Item[] getItems() {
-        final Value[] values = new Value[] { new Value("True", true), new Value("False") }; //$NON-NLS-1$//$NON-NLS-2$
-        return new Item[] { new Item(DEFAULT_VALUE_PARAMETER, "categ", values) }; //$NON-NLS-1$
+    public List<Parameter> getParameters() {
+        List<Parameter> parameters = ImplicitParameters.getParameters();
+
+        parameters.add(SelectParameter.Builder.builder() //
+                .name(DEFAULT_VALUE_PARAMETER) //
+                .item("True", "True") //
+                .item("False", "False") //
+                .defaultValue("True") //
+                .build());
+
+        return parameters;
     }
 
     /**

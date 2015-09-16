@@ -62,7 +62,7 @@ public class TimestampToDate extends AbstractActionMetadata implements ColumnAct
     @Override
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = ImplicitParameters.getParameters();
-        parameters.addAll(getItemsForDatePattern());
+        parameters.addAll(getParametersForDatePattern());
         return parameters;
     }
 
