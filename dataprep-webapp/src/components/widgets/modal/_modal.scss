@@ -51,13 +51,12 @@
   }
 
   .modal-window { // overlay
-    @include position(fixed, 0px 0px 0px 0px);
+    @include position(absolute, 0px 0px 0px 0px);
     background: $background-transparent;
     opacity: 0;
     padding-top: 0.6em;
     text-align: left;
     visibility: hidden;
-    z-index: 100;
 
     @include media($large-screen) {
       padding-top: 8em;
@@ -201,7 +200,6 @@
 
   .modal-state:checked + .modal-window {
     visibility: visible;
-    //z-index: 1000 !important;
     opacity: 1;
     @include animation(fadeIn 0.25s);
   }
