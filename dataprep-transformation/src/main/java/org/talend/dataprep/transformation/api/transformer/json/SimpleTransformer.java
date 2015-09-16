@@ -81,7 +81,7 @@ class SimpleTransformer implements Transformer {
                     if (isNumeric) {
                         final HistogramColumnParameter columnParameter = new HistogramColumnParameter();
                         final Statistics statistics = column.getStatistics();
-                        columnParameter.setParameters(statistics.getMin(), statistics.getMax(), 8);
+                        columnParameter.setParameters(statistics.getMin(), statistics.getMax(), 20);
                         histogramParameter.putColumnParameter(i, columnParameter);
                     }
                 }
