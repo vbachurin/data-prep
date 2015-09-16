@@ -1,6 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.STRING;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,9 +21,9 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
-import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
+import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 /**
  * Split a cell value on a separator.
@@ -76,24 +77,23 @@ public class Split extends AbstractActionMetadata implements ColumnAction {
     @Nonnull
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        parameters.add(new Parameter(LIMIT, Type.INTEGER.getName(), "2"));
+        parameters.add(new Parameter(LIMIT, ParameterType.INTEGER.asString(), "2"));
+        //@formatter:off
+        parameters.add(SelectParameter.Builder.builder()
+                        .name(SEPARATOR_PARAMETER)
+                        .item(SEPARATOR_PARAMETER, ":")
+                        .item(SEPARATOR_PARAMETER, "@")
+                        .item(SEPARATOR_PARAMETER, " ")
+                        .item(SEPARATOR_PARAMETER, ",")
+                        .item(SEPARATOR_PARAMETER, "-")
+                        .item(SEPARATOR_PARAMETER, "other", new Parameter(MANUAL_SEPARATOR_PARAMETER,
+                                                                          STRING.asString(),
+                                                                          EMPTY))
+                        .defaultValue(":")
+                        .build()
+        );
+        //@formatter:on
         return parameters;
-    }
-
-    /**
-     * @see ActionMetadata#getItems()@return
-     */
-    @Override
-    @Nonnull
-    public Item[] getItems() {
-        final Value[] values = new Value[]{ //
-                new Value(":", true), //
-                new Value("@"), //
-                new Value(" "), //
-                new Value(","), //
-                new Value("-"), //
-                new Value("other", new Parameter(MANUAL_SEPARATOR_PARAMETER, Type.STRING.getName(), EMPTY))};
-        return new Item[]{new Item(SEPARATOR_PARAMETER, "categ", values)};
     }
 
     /**

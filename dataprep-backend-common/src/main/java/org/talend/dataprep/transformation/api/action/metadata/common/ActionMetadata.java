@@ -10,7 +10,6 @@ import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -96,16 +95,6 @@ public interface ActionMetadata {
      * @return The list of parameters required for this Action to be executed.
      **/
     List<Parameter> getParameters();
-
-    /**
-     * Returns the list of multiple valued parameters required for this Action to be executed. represented as list box
-     * on the front end.
-     *
-     * @return A list of {@link org.talend.dataprep.transformation.api.action.parameters.Item items}. This should never
-     * return null, actions with no item should return empty list.
-     **/
-    @Deprecated
-    Item[] getItems();
 
     //------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------CHECKERS------------------------------------------------------

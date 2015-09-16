@@ -167,6 +167,18 @@ public class SelectParameter extends Parameter {
         }
 
         /**
+         * Add an item to the select parameter builder.
+         *
+         * @param name the item name.
+         * @param value the item value.
+         * @return the builder to carry on building the column.
+         */
+        public SelectParameter.Builder item(String name, String value) {
+            this.items.add(new Item(name, value, null));
+            return this;
+        }
+
+        /**
          * Build the column with the previously entered values.
          *
          * @return the built column metadata.

@@ -18,14 +18,11 @@ import static org.talend.dataprep.transformation.api.action.metadata.common.Impl
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
 
@@ -141,17 +138,6 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
     @Override
     public List<Parameter> getParameters() {
         return ImplicitParameters.getParameters();
-    }
-
-    /**
-     * By default, no Item.
-     *
-     * @see ActionMetadata#getItems()
-     */
-    @Override
-    @Nonnull
-    public Item[] getItems() {
-        return new Item[0];
     }
 
 }

@@ -31,13 +31,16 @@ public interface DatePatternParamModel {
     Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, STRING.getName(), EMPTY);
 
     /**
-     * @return the Items to display for the date related action.
+     * @return the Parameters to display for the date related action.
      */
-    default Item[] getItemsForDatePattern() {
+    default List<Parameter> getItemsForDatePattern() {
 
-        ResourceBundle patterns = ResourceBundle.getBundle(
-                "org.talend.dataprep.transformation.api.action.metadata.date.date_patterns", Locale.ENGLISH);
+        ResourceBundle patterns = ResourceBundle
+                .getBundle("org.talend.dataprep.transformation.api.action.metadata.date.date_patterns", Locale.ENGLISH);
         Enumeration<String> keys = patterns.getKeys();
+
+        List<Parameter> parameters = new ArrayList<>();
+
         List<Item.Value> values = new ArrayList<>();
         while (keys.hasMoreElements()) {
             Item.Value currentValue = new Item.Value(patterns.getString(keys.nextElement()));
