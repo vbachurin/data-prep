@@ -42,12 +42,7 @@
                 case 'valid_records':
                     return 'valid records';
                 case 'inside_range':
-                    if (args.interval[0] > 1e4 || args.interval[1] > 1e4 || args.interval[0] < -1e4 || args.interval[1] < -1e4) {
-                        return 'in [' + args.interval[0].toExponential() + ' ... ' + args.interval[1].toExponential() + ']';
-                    }
-                    else {
-                        return 'in [' + args.interval[0] + ' ... ' + args.interval[1] + ']';
-                    }
+                    return 'in [' + d3.format(',')(args.interval[0]) + ' .. ' + d3.format(',')(args.interval[1]) + ']';
             }
         });
     }

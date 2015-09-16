@@ -85,8 +85,8 @@
                     function fillInputs() {
                         hideMsgErr();
                         var s = scope.brush.extent();
-                        document.getElementsByName('minRange')[0].value = s[0] > 1e4 || s[0] < -1e4 ? d3.format('e')(s[0].toFixed(scope.nbDecimals)) : s[0].toFixed(scope.nbDecimals);
-                        document.getElementsByName('maxRange')[0].value = s[1] > 1e4 || s[1] < -1e4 ? d3.format('e')(s[1].toFixed(scope.nbDecimals)) : s[1].toFixed(scope.nbDecimals);
+                        document.getElementsByName('minRange')[0].value = s[0].toFixed(scope.nbDecimals);
+                        document.getElementsByName('maxRange')[0].value = s[1].toFixed(scope.nbDecimals);
                         return s;
                     }
 
@@ -99,8 +99,8 @@
                                 scope.rangeLimits.minFilterVal,
                                 scope.rangeLimits.maxFilterVal
                             ];
-                            document.getElementsByName('minRange')[0].value = m[0] > 1e4 || m[0] < -1e4 ? d3.format('e')(m[0].toFixed(scope.nbDecimals)) : m[0].toFixed(scope.nbDecimals);
-                            document.getElementsByName('maxRange')[0].value = m[1] > 1e4 || m[1] < -1e4 ? d3.format('e')(m[1].toFixed(scope.nbDecimals)) : m[1].toFixed(scope.nbDecimals);
+                            document.getElementsByName('minRange')[0].value = m[0].toFixed(scope.nbDecimals);
+                            document.getElementsByName('maxRange')[0].value = m[1].toFixed(scope.nbDecimals);
                         }
                         else {
                             //initialize the filterToApply, it will be updated when the user types values,
@@ -234,16 +234,16 @@
                                 var s = scope.brush.extent();
                                 //the user is moving the whole brush
                                 if(scope.oldRangeLimits[0] !== s[0] && scope.oldRangeLimits[1] !== s[1]){
-                                    document.getElementsByName('minRange')[0].value = s[0] > 1e4 || s[0] < -1e4 ? d3.format('e')(s[0].toFixed(scope.nbDecimals)) : s[0].toFixed(scope.nbDecimals);
-                                    document.getElementsByName('maxRange')[0].value = s[1] > 1e4 || s[1] < -1e4 ? d3.format('e')(s[1].toFixed(scope.nbDecimals)) : s[1].toFixed(scope.nbDecimals);
+                                    document.getElementsByName('minRange')[0].value = s[0].toFixed(scope.nbDecimals);
+                                    document.getElementsByName('maxRange')[0].value = s[1].toFixed(scope.nbDecimals);
                                 }
                                 //the user is moving the left brush handler
                                 else if(scope.oldRangeLimits[0] !== s[0]){
-                                    document.getElementsByName('minRange')[0].value = s[0] > 1e4 || s[0] < -1e4 ? d3.format('e')(s[0].toFixed(scope.nbDecimals)) : s[0].toFixed(scope.nbDecimals);
+                                    document.getElementsByName('minRange')[0].value = s[0].toFixed(scope.nbDecimals);
                                 }
                                 //the user is moving the right brush handler
                                 else if(scope.oldRangeLimits[1] !== s[1]){
-                                    document.getElementsByName('maxRange')[0].value = s[1] > 1e4 || s[1] < -1e4 ? d3.format('e')(s[1].toFixed(scope.nbDecimals)) : s[1].toFixed(scope.nbDecimals);
+                                    document.getElementsByName('maxRange')[0].value = s[1].toFixed(scope.nbDecimals);
                                 }
 
                                 if (scope.brush.empty()) {
@@ -277,17 +277,16 @@
                     //--------------------------------------------------------------------------------------------------
                     //----------------------------------------------X AXIS----------------------------------------------
                     //--------------------------------------------------------------------------------------------------
+                    var axisTicksNumber = scope.maximum > 1e12 || scope.minimum < 1e-10 ? 2: 3;
                     svg.append('g')
                         .attr('class', 'x axis')
                         .attr('transform', 'translate(0,' + (margin.top + 20) + ')')
-                        .call(d3.svg.axis().scale(scale).orient('top').ticks(Math.abs(scale.range()[1] - scale.range()[0]) / 50)
+                        .call(d3.svg.axis()
+                            .scale(scale)
+                            .orient('top')
+                            .ticks(axisTicksNumber)
                             .tickFormat(function (d) {
-                                if (d > 1e4 || d < -1e4) {
-                                    return d3.format('e')(d);
-                                }
-                                else {
-                                    return d3.format(',')(d);
-                                }
+                                return d3.format(',')(d);
                             })
                         )
                         .selectAll('text').attr('y', -13);
@@ -299,7 +298,7 @@
                         .attr('text-anchor', 'start')
                         .attr('fill', 'grey')
                         .text(function(){
-                            return scope.minimum < -1e4 || scope.minimum > 1e4 ? d3.format('e')(scope.minimum): d3.format(',')(scope.minimum);
+                            return d3.format(',')(scope.minimum);
                         });
 
                     svg.append('g').append('text')
@@ -309,7 +308,7 @@
                         .attr('text-anchor', 'end')
                         .attr('fill', 'grey')
                         .text(function(){
-                            return scope.maximum < -1e4 || scope.maximum > 1e4 ? d3.format('e')(scope.maximum): d3.format(',')(scope.maximum);
+                            return d3.format(',')(scope.maximum);
                         });
                     //--------------------------------------------------------------------------------------------------
                     //--------------------------------------------ERROR TEXT--------------------------------------------
