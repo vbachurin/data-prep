@@ -33,9 +33,6 @@ public class SelectParameter extends Parameter {
      */
     public static class Item {
 
-        /** The item name. */
-        private String name;
-
         /** the item value. */
         private String value;
 
@@ -47,12 +44,10 @@ public class SelectParameter extends Parameter {
         /**
          * Create a select Item.
          *
-         * @param name the item name.
          * @param value the item value.
          * @param parameter the item optional parameter.
          */
-        public Item(String name, String value, Parameter parameter) {
-            this.name = name;
+        public Item(String value, Parameter parameter) {
             this.value = value;
             this.inlineParameter = parameter;
         }
@@ -60,18 +55,10 @@ public class SelectParameter extends Parameter {
         /**
          * Create a select Item.
          *
-         * @param name the item name.
          * @param value the item value.
          */
-        public Item(String name, String value) {
-            this(name, value, null);
-        }
-
-        /**
-         * @return the Name
-         */
-        public String getName() {
-            return name;
+        public Item(String value) {
+            this(value, null);
         }
 
         /**
@@ -94,7 +81,7 @@ public class SelectParameter extends Parameter {
      */
     public static class Builder {
 
-        /** The column name. */
+        /** The parameter name. */
         private String name = "";
 
         /** List of items. */
@@ -129,6 +116,7 @@ public class SelectParameter extends Parameter {
             this.name = name;
             return this;
         }
+
 
         /**
          * Set the defaultValue of the select parameter.
@@ -166,25 +154,23 @@ public class SelectParameter extends Parameter {
         /**
          * Add an item to the select parameter builder.
          *
-         * @param name the item name.
          * @param value the item value.
          * @param parameter the item optional parameter.
          * @return the builder to carry on building the column.
          */
-        public SelectParameter.Builder item(String name, String value, Parameter parameter) {
-            this.items.add(new Item(name, value, parameter));
+        public SelectParameter.Builder item(String value, Parameter parameter) {
+            this.items.add(new Item(value, parameter));
             return this;
         }
 
         /**
          * Add an item to the select parameter builder.
          *
-         * @param name the item name.
          * @param value the item value.
          * @return the builder to carry on building the column.
          */
-        public SelectParameter.Builder item(String name, String value) {
-            this.items.add(new Item(name, value, null));
+        public SelectParameter.Builder item(String value) {
+            this.items.add(new Item(value, null));
             return this;
         }
 

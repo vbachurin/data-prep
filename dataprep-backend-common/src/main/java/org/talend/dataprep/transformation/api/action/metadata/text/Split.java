@@ -81,14 +81,12 @@ public class Split extends AbstractActionMetadata implements ColumnAction {
         //@formatter:off
         parameters.add(SelectParameter.Builder.builder()
                         .name(SEPARATOR_PARAMETER)
-                        .item(SEPARATOR_PARAMETER, ":")
-                        .item(SEPARATOR_PARAMETER, "@")
-                        .item(SEPARATOR_PARAMETER, " ")
-                        .item(SEPARATOR_PARAMETER, ",")
-                        .item(SEPARATOR_PARAMETER, "-")
-                        .item(SEPARATOR_PARAMETER, "other", new Parameter(MANUAL_SEPARATOR_PARAMETER,
-                                                                          STRING.asString(),
-                                                                          EMPTY))
+                        .item(":")
+                        .item("@")
+                        .item(" ")
+                        .item(",")
+                        .item("-")
+                        .item("other", new Parameter(MANUAL_SEPARATOR_PARAMETER, STRING.asString(), EMPTY))
                         .defaultValue(":")
                         .build()
         );

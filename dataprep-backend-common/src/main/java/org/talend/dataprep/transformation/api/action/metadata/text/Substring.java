@@ -66,16 +66,16 @@ public class Substring extends AbstractActionMetadata implements ColumnAction {
         // from parameter
         parameters.add(SelectParameter.Builder.builder() //
                 .name(FROM_MODE_PARAMETER) //
-                .item(FROM_BEGINNING, FROM_BEGINNING) //
-                .item("From index", "From index", new Parameter(FROM_INDEX_PARAMETER, Type.INTEGER.getName(), "0")) //
+                .item(FROM_BEGINNING) //
+                .item("From index", new Parameter(FROM_INDEX_PARAMETER, Type.INTEGER.getName(), "0")) //
                 .defaultValue(FROM_BEGINNING) //
                 .build());
 
         // to parameter
         parameters.add(SelectParameter.Builder.builder() //
                 .name(TO_MODE_PARAMETER) //
-                .item("To end", "To end") //
-                .item("To index", "To index", new Parameter(TO_INDEX_PARAMETER, Type.INTEGER.getName(), "5")) //
+                .item("To end") //
+                .item("To index", new Parameter(TO_INDEX_PARAMETER, Type.INTEGER.getName(), "5")) //
                 .defaultValue("To index") //
                 .build());
 

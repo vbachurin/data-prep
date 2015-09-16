@@ -66,9 +66,9 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
         List<Parameter> parameters = super.getParameters();
         parameters.add(SelectParameter.Builder.builder() //
                 .name(TIME_UNIT_PARAMETER) //
-                .item(ChronoUnit.YEARS.name(), ChronoUnit.YEARS.name()) //
-                .item(ChronoUnit.MONTHS.name(), ChronoUnit.MONTHS.name()) //
-                .item(ChronoUnit.HOURS.name(), ChronoUnit.HOURS.name()) //
+                .item(ChronoUnit.YEARS.name()) //
+                .item(ChronoUnit.MONTHS.name()) //
+                .item(ChronoUnit.HOURS.name()) //
                 .defaultValue(ChronoUnit.HOURS.name()) //
                 .build());
 

@@ -9,15 +9,12 @@
   "configuration": {
     "values": [
       {
-        "name": "first choice",
-        "value": "1"
+        "value": "first choice"
       },
       {
-        "name": "second choice",
         "value": "2"
       },
       {
-        "name": "your choice",
         "value": "your choice",
         "parameter": {
           "name": "limit",

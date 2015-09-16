@@ -43,14 +43,15 @@ public interface DatePatternParamModel {
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
             String value = patterns.getString(key);
-            items.add(new SelectParameter.Item(value, value));
+            items.add(new SelectParameter.Item(value));
         }
 
         List<Parameter> parameters = new ArrayList<>();
         parameters.add(SelectParameter.Builder.builder() //
                 .name(NEW_PATTERN) //
                 .items(items) //
-                .item("custom", "custom", CUSTOM_PATTERN_PARAMETER).defaultValue(items.get(0).getValue()) //
+                .item("custom", CUSTOM_PATTERN_PARAMETER) //
+                .defaultValue(items.get(0).getValue()) //
                 .build());
 
         return parameters;

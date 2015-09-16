@@ -27,8 +27,8 @@ public class FillWithBooleanIfEmpty extends AbstractFillIfEmpty {
         final List<Parameter> parameters = super.getParameters();
         parameters.add(SelectParameter.Builder.builder() //
                 .name(DEFAULT_VALUE_PARAMETER) //
-                .item("True", "True") //
-                .item("False", "False") //
+                .item("True") //
+                .item("False") //
                 .defaultValue("True") //
                 .build());
         return parameters;
