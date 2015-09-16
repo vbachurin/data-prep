@@ -1,4 +1,30 @@
 {
+  "columns": [
+    {
+      "name": "firstname",
+      "headerSize": 0,
+      "type": "string",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2,
+        "invalidValues": []
+      },
+      "id": "firstname"
+    },
+    {
+      "name": "lastname",
+      "headerSize": 0,
+      "type": "string",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2,
+        "invalidValues": []
+      },
+      "id": "lastname"
+    }
+  ],
   "records": [
     {
       "avgAmount": "668.61",

@@ -1,14 +1,18 @@
 <talend-accordions>
     <talend-accordions-item ng-repeat="step in recipeCtrl.recipe track by step.transformation.stepId"
+                            id="step-{{step.transformation.stepId}}"
                             on-open="recipeCtrl.resetParams(step)"
                             default="$index === (recipeCtrl.recipe.length - 1)"
+                            class="recipe-step"
                             ng-class="::{'preview': step.preview}">
         <div class="trigger step-description"
              ng-click="recipeCtrl.showModal[$index] = !!recipeCtrl.hasDynamicParams(step)"
              ng-switch="step.actionParameters.parameters.scope">
 
-            <i data-icon="e" ng-click="recipeCtrl.remove(step, 'single')" style="color: #8abc00;" class="action-icon animated"></i>
-            <i data-icon="e" ng-click="recipeCtrl.remove(step, 'cascade')" style="color: #ce6564;" class="action-icon animated"></i>
+            <i data-icon="e"
+               id="step-remove-{{step.transformation.stepId}}"
+               ng-click="recipeCtrl.remove(step)"
+               class="remove-icon animated"></i>
             {{$index + 1}}.
             <span class="recipe-description">{{::step.transformation.label}}</span>
 

@@ -17,7 +17,7 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.content.DataSetContentStoreAdapter;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.TalendExceptionContext;
+import org.talend.daikon.exception.ExceptionContext;
 
 /**
  * Local dataset content that stores content in files.
@@ -60,7 +60,7 @@ public class LocalFileContentStore extends DataSetContentStoreAdapter {
                 LOGGER.debug("Ignore update of data set #{} as content seems empty", dataSetMetadata.getId());
             }
         } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, TalendExceptionContext.build().put("id",
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, ExceptionContext.build().put("id",
                     dataSetMetadata.getId()));
         }
     }
@@ -79,7 +79,7 @@ public class LocalFileContentStore extends DataSetContentStoreAdapter {
     public void delete(DataSetMetadata dataSetMetadata) {
         if (getFile(dataSetMetadata).exists()) {
             if (!getFile(dataSetMetadata).delete()) {
-                throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, TalendExceptionContext.build().put("dataSetId",
+                throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, ExceptionContext.build().put("dataSetId",
                         dataSetMetadata.getId()));
             }
         } else {

@@ -1,0 +1,15 @@
+{
+  "actions": [
+    {
+      "action": "copy",
+      "parameters": {
+        "column_name": "firstname",
+        "column_id": "0000",
+        "scope": "column"
+      }
+    }
+  ],
+  "diff": {
+    "createdColumns": ["0007"]
+  }
+}

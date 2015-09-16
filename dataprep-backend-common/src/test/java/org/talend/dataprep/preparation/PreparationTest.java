@@ -1,22 +1,5 @@
 package org.talend.dataprep.preparation;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
-import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
-import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.io.output.NullOutputStream;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.Is;
 import org.junit.Test;
@@ -27,8 +10,22 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.talend.dataprep.api.preparation.*;
+import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.PreparationActions;
+import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.preparation.store.PreparationRepository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.lessThan;
+import static org.junit.Assert.assertEquals;
+import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
+import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -84,70 +81,6 @@ public class PreparationTest {
     }
 
     @Test
-    public void stepList() {
-        final List<Action> actions = getSimpleAction("uppercase", "column_name", "lastname");
-        final PreparationActions newContent1 = ROOT_CONTENT.append(actions);
-        repository.add(newContent1);
-        final PreparationActions newContent2 = newContent1.append(actions);
-        repository.add(newContent2);
-        // Steps
-        final Step s1 = new Step(ROOT_STEP.id(), newContent1.id());
-        repository.add(s1);
-        final Step s2 = new Step(s1.id(), newContent2.id());
-        repository.add(s2);
-        // Preparation list tests
-        List<String> strings = PreparationUtils.listSteps(s1, repository);
-        assertThat(strings, hasItem(ROOT_STEP.getId()));
-        assertThat(strings, hasItem(s1.getId()));
-        assertThat(strings, not(hasItem(s2.getId())));
-
-        strings = PreparationUtils.listSteps(s2, repository);
-        assertThat(strings, hasItem(ROOT_STEP.getId()));
-        assertThat(strings, hasItem(s1.getId()));
-        assertThat(strings, hasItem(s2.getId()));
-    }
-
-    @Test
-    public void stepListLimit() {
-        final List<Action> actions = getSimpleAction("uppercase", "column_name", "lastname");
-        final PreparationActions newContent1 = ROOT_CONTENT.append(actions);
-        repository.add(newContent1);
-        final PreparationActions newContent2 = newContent1.append(actions);
-        repository.add(newContent2);
-        // Steps
-        final Step s1 = new Step(ROOT_STEP.id(), newContent1.id());
-        repository.add(s1);
-        final Step s2 = new Step(s1.id(), newContent2.id());
-        repository.add(s2);
-        // Preparation list tests
-        List<String> strings = PreparationUtils.listSteps(s2, s1.getId(), repository);
-        assertThat(strings, not(hasItem(ROOT_STEP.getId())));
-        assertThat(strings, hasItem(s1.getId()));
-        assertThat(strings, hasItem(s2.getId()));
-
-        strings = PreparationUtils.listSteps(s2, s2.getId(), repository);
-        assertThat(strings, not(hasItem(ROOT_STEP.getId())));
-        assertThat(strings, not(hasItem(s1.getId())));
-        assertThat(strings, hasItem(s2.getId()));
-    }
-
-    @Test
-    public void nullArgs() throws Exception {
-        assertThat(repository.get(null, Step.class), nullValue());
-        assertThat(repository.get("cdcd5c9a3a475f2298b5ee3f4258f8207ba10879", null), notNullValue());
-        Class<? extends Identifiable> objectClass = repository.get("cdcd5c9a3a475f2298b5ee3f4258f8207ba10879", null).getClass();
-        assertThat(PreparationActions.class.isAssignableFrom(objectClass), Is.is(true));
-        assertThat(repository.get(null, null), nullValue());
-        assertThat(PreparationUtils.listSteps(null, repository), empty());
-        try {
-            PreparationUtils.listSteps(ROOT_STEP, null, repository);
-            fail();
-        } catch (IllegalArgumentException e) {
-            // Expected
-        }
-    }
-
-    @Test
     public void initialStep() {
         final List<Action> actions = getSimpleAction("uppercase", "column_name", "lastname");
 
@@ -200,22 +133,6 @@ public class PreparationTest {
         repository.add(preparation);
 
         MatcherAssert.assertThat(preparation.id(), Is.is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
-    }
-
-    @Test
-    public void prettyPrint() throws Exception {
-        final List<Action> actions = getSimpleAction("uppercase", "column_name", "lastname");
-        final PreparationActions newContent = new PreparationActions(actions);
-        repository.add(newContent);
-
-        final Step s = new Step(ROOT_STEP.id(), newContent.id());
-        repository.add(s);
-
-        final Preparation preparation = new Preparation("1234", s);
-        repository.add(preparation);
-
-        PreparationUtils.prettyPrint(repository, preparation, new NullOutputStream()); // Basic walk through code, no
-        // assert.
     }
 
     @Test

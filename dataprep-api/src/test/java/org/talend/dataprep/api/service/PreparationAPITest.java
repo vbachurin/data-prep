@@ -1,76 +1,32 @@
 package org.talend.dataprep.api.service;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
-import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.cache.ContentCacheKey;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.cache.ContentCacheKey;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 public class PreparationAPITest extends ApiServiceTestBase {
 
-    @Test
-    public void testTransformNoOp() throws Exception {
-        // given
-        final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
-        final String expectedContent = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_columns.json"));
-
-        // when
-        final String transformed = given().contentType(ContentType.JSON).body("").when().post("/api/transform/" + dataSetId)
-                .asString();
-
-        // then
-        assertThat(transformed, sameJSONAs(expectedContent).allowingExtraUnexpectedFields());
-    }
-
-    @Test
-    public void testTransformOneAction() throws Exception {
-        // given
-        final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
-
-        final InputStream expectedContent = PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_firstname_uppercase.json");
-        final String actions = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/upper_case_firstname.json"));
-
-        // when
-        final String transformed = given().contentType(ContentType.JSON).body(actions).when().log().ifValidationFails()
-                .post("/api/transform/" + dataSetId).asString();
-
-        // then
-        assertThat(transformed, sameJSONAsFile(expectedContent));
-    }
-
-    @Test
-    public void testTransformTwoActions() throws Exception {
-        // given
-        final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
-        final String actions = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/upper_case_lastname_firstname.json"));
-        final InputStream expectedContent = PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_lastname_firstname_uppercase.json");
-
-        // when
-        final String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
-                .asString();
-
-        // then
-        assertThat(transformed, sameJSONAsFile(expectedContent));
-    }
-
+    //------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------GETTER-------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
     @Test
     public void testEmptyPreparationList() throws Exception {
         assertThat(when().get("/api/preparations").asString(), sameJSONAs("[]"));
@@ -104,6 +60,22 @@ public class PreparationAPITest extends ApiServiceTestBase {
         assertThat(((List) longFormat.getList("actions").get(0)).size(), is(0));
     }
 
+    @Test
+    public void testPreparationGet() throws Exception {
+        // when
+        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+
+        // then
+        final JsonPath longFormat = given().get("/api/preparations/{id}/details", preparationId).jsonPath();
+        assertThat(longFormat.getString("dataSetId"), is("1234"));
+        assertThat(longFormat.getString("author"), is("anonymousUser"));
+        assertThat(longFormat.getString("id"), is("6726763ed6f12386064d41d61ff6580f1cfabc2d"));
+        assertThat(longFormat.getList("actions").size(), is(0));
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------LIFECYCLE-----------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
     @Test
     public void testPreparationUpdate() throws Exception {
         // given
@@ -141,21 +113,11 @@ public class PreparationAPITest extends ApiServiceTestBase {
         assertEquals("[]", list);
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------STEPS-------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
     @Test
-    public void testPreparationGet() throws Exception {
-        // when
-        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
-
-        // then
-        final JsonPath longFormat = given().get("/api/preparations/{id}/details", preparationId).jsonPath();
-        assertThat(longFormat.getString("dataSetId"), is("1234"));
-        assertThat(longFormat.getString("author"), is("anonymousUser"));
-        assertThat(longFormat.getString("id"), is("6726763ed6f12386064d41d61ff6580f1cfabc2d"));
-        assertThat(longFormat.getList("actions").size(), is(0));
-    }
-
-    @Test
-    public void testPreparationAppendAction() throws Exception {
+    public void should_append_action_after_actual_head() throws Exception {
         // when
         final String preparationId = createPreparationFromDataset("1234", "testPreparation");
 
@@ -171,9 +133,42 @@ public class PreparationAPITest extends ApiServiceTestBase {
     }
 
     @Test
-    public void testPreparationUpdateAction() throws Exception {
+    public void should_save_created_columns_ids_on_append() throws Exception {
+        // when
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparation", "text/csv");
+
+        // when
+        applyActionFromFile(preparationId, "transformation/copy_firstname.json");
+
+        // then
+        final JsonPath jsonPath = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath();
+        final List<String> createdColumns = jsonPath.getList("diff[0].createdColumns");
+        assertThat(createdColumns, hasSize(1));
+        assertThat(createdColumns, hasItem("0006"));
+    }
+
+    @Test
+    public void should_fail_properly_on_append_error() throws Exception {
         // given
+        final String missingScopeAction = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/upper_case_firstname_without_scope.json"));
         final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+
+        // when
+        final Response request = given().contentType(ContentType.JSON)//
+                .body(missingScopeAction)//
+                .when()//
+                .post("/api/preparations/{id}/actions", preparationId);
+
+        //then
+        request.then()//
+                .statusCode(400)//
+                .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE")) ;
+    }
+
+    @Test
+    public void should_update_action() throws Exception {
+        // given
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparation", "text/csv");
         applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
         applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
 
@@ -185,7 +180,8 @@ public class PreparationAPITest extends ApiServiceTestBase {
 
         // when : Update first action (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") with another action
         final String actionContent3 = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/lower_case_lastname.json"));
-        given().body(actionContent3)
+        given().contentType(ContentType.JSON)
+                .body(actionContent3)
                 .put("/api/preparations/{preparation}/actions/{action}", preparationId,
                         "c713d4988879e2aaab916853b45e4ddf9debe303").then().statusCode(is(200));
 
@@ -198,49 +194,65 @@ public class PreparationAPITest extends ApiServiceTestBase {
     }
 
     @Test
-    public void should_delete_preparation_action_in_cascade_mode() throws Exception {
+    public void should_save_created_columns_ids_on_update() throws Exception {
         // given
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparation", "text/csv");
+        applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
+        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
+
+        final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        assertThat(steps.get(1), is("c713d4988879e2aaab916853b45e4ddf9debe303")); // <- transformation/upper_case_lastname
+
+        // when : Update first action (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59")
+        // with another action that create a column
+        final String updateAction = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/copy_firstname.json"));
+        given().contentType(ContentType.JSON)
+                .body(updateAction)
+                .put("/api/preparations/{preparation}/actions/{action}", preparationId,
+                        "c713d4988879e2aaab916853b45e4ddf9debe303").then().statusCode(is(200));
+
+        // then
+        final JsonPath jsonPath = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath();
+        final List<String> createdColumns = jsonPath.getList("diff[0].createdColumns");
+        assertThat(createdColumns, hasSize(1));
+        assertThat(createdColumns, hasItem("0006"));
+    }
+
+    @Test
+    public void should_fail_properly_on_update_error() throws Exception {
+        // given
+        final String missingScopeAction = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/upper_case_firstname_without_scope.json"));
         final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+        applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
+        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
+
+        final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        final String firstStep = steps.get(1);
+
+        // when
+        final Response request = given().contentType(ContentType.JSON)//
+                .body(missingScopeAction)//
+                .when()//
+                .put("/api/preparations/{id}/actions/{step}", preparationId, firstStep);
+
+        // then
+        request.then()//
+                .statusCode(400)//
+                .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE")) ;
+    }
+
+    @Test
+    public void should_delete_preparation_action() throws Exception {
+        // given
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparation", "text/csv");
         applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
         applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
 
         List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         final String firstStep = steps.get(1);
 
-        // when : delete (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") cascading upper_case_firstname
+        // when
         given().delete("/api/preparations/{preparation}/actions/{action}", preparationId, firstStep)
-                .then()
-                .statusCode(is(200));
-
-        // then : Steps id should have changed due to update
-        steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
-        assertThat(steps.size(), is(1));
-        assertThat(steps.get(0), is(ROOT_STEP.id()));
-    }
-
-    @Test
-    public void should_delete_preparation_action_in_single_mode() throws Exception {
-        // when : delete unknown preparation action
-        final Response response = given().delete("/api/preparations/{preparation}/actions/{action}?single=true", "unknown_prep", "unkown_step");
-
-        //then : should have preparation service error
-        response.then()
-                .statusCode(is(400))
-                .body("code", is("TDP_PS_PREPARATION_DOES_NOT_EXIST"));
-    }
-
-    @Test
-    public void should_redirect_delete_error_properly() throws Exception {
-        // given
-        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
-        applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
-        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
-
-        List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
-        final String firstStep = steps.get(1);
-
-        // when : delete (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") only, it will rewrite upper_case_firstname id
-        given().delete("/api/preparations/{preparation}/actions/{action}?single=true", preparationId, firstStep)
                 .then()
                 .statusCode(is(200));
 
@@ -251,6 +263,56 @@ public class PreparationAPITest extends ApiServiceTestBase {
         assertThat(steps.get(1), is("3c7b40baca3680c22f8bd7142c95697f7424e37f"));
     }
 
+    @Test
+    public void should_throw_error_when_preparation_doesnt_exist_on_delete() throws Exception {
+        // when : delete unknown preparation action
+        final Response response = given().delete("/api/preparations/{preparation}/actions/{action}", "unknown_prep", "unkown_step");
+
+        //then : should have preparation service error
+        response.then()
+                .statusCode(is(400))
+                .body("code", is("TDP_PS_PREPARATION_DOES_NOT_EXIST"));
+    }
+
+    @Test
+    public void should_change_preparation_head() throws Exception {
+        //given
+        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
+
+        Preparation preparation = preparationRepository.get(preparationId, Preparation.class);
+        final String newHead = preparation.getStep().getParent();
+
+        //when
+        given().when()//
+                .put("/api/preparations/{id}/head/{stepId}", preparationId, newHead)//
+                .then()//
+                .statusCode(200);
+
+        //then
+        preparation = preparationRepository.get(preparationId, Preparation.class);
+        assertThat(preparation.getStep().id(), is(newHead));
+    }
+
+    @Test
+    public void should_throw_exception_on_preparation_head_change_with_unknown_step() throws Exception {
+        //given
+        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+
+        //when
+        final Response response = given().when()//
+                .put("/api/preparations/{id}/head/{stepId}", preparationId, "unknown_step_id");
+
+        //then
+        response.then()//
+                .statusCode(400)//
+                .assertThat()//
+                .body("code", is("TDP_PS_PREPARATION_STEP_DOES_NOT_EXIST"));
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------CONTENT------------------------------------------------------
+    //-------------------------------------------------------------------------------------------------------------------
     @Test
     public void testPreparationInitialContent() throws Exception {
         // given
@@ -361,7 +423,9 @@ public class PreparationAPITest extends ApiServiceTestBase {
         assertThat(records.size(), is(100));
     }
 
-
+    //------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------PREVIEW------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
     @Test
     public void testPreparationDiffPreview() throws Exception {
         // given
@@ -489,47 +553,4 @@ public class PreparationAPITest extends ApiServiceTestBase {
         // then
         assertThat(preview, sameJSONAsFile(expectedPreviewStream));
     }
-
-
-    @Test
-    public void preparation_append_step_should_fail_properly() throws Exception {
-        // given
-        final String missingScopeAction = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/upper_case_firstname_without_scope.json"));
-        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
-
-        // when
-        final Response request = given().contentType(ContentType.JSON)//
-                .body(missingScopeAction)//
-                .when()//
-                .post("/api/preparations/{id}/actions", preparationId);
-
-        //then
-        request.then()//
-                .statusCode(400)//
-                .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE")) ;
-    }
-
-    @Test
-    public void preparation_update_step_should_fail_properly() throws Exception {
-        // given
-        final String missingScopeAction = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/upper_case_firstname_without_scope.json"));
-        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
-        applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
-        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
-
-        final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
-        final String firstStep = steps.get(1);
-
-        // when
-        final Response request = given().contentType(ContentType.JSON)//
-                .body(missingScopeAction)//
-                .when()//
-                .put("/api/preparations/{id}/actions/{step}", preparationId, firstStep);
-
-        // then
-        request.then()//
-                .statusCode(400)//
-                .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE")) ;
-    }
-
 }
