@@ -28,18 +28,19 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.*;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Test class for Split action. Creates one consumer, and test it.
@@ -254,9 +255,9 @@ public class ComputeTimeSinceTest {
     @Test
     public void should_compute_twice_diff_units() throws IOException {
         //given
-        final String date = "07/16/2014 12:00";
-        final String resultInMonth = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.MONTHS);
-        final String resultInYears = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.YEARS);
+        final String date = "07/15/2014 12:00";
+        final String resultInMonth = computeTimeSince(date, "M/d/yyyy HH:mm", ChronoUnit.MONTHS);
+        final String resultInYears = computeTimeSince(date, "M/d/yyyy HH:mm", ChronoUnit.YEARS);
 
         final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
         row.set("0001", date);
@@ -415,23 +416,6 @@ public class ComputeTimeSinceTest {
     }
 
     /**
-     * Return a ComputeTimeSince closure with the given unit.
-     *
-     * @param unit the unit to use.
-     * @return a ComputeTimeSince closure with the given unit.
-     */
-    private DataSetRowAction getClosure(String unit) throws IOException {
-        ComputeTimeSince currentAction = new ComputeTimeSince();
-        InputStream json = ComputeTimeSince.class.getResourceAsStream("computeTimeSinceAction.json");
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters(currentAction, json);
-
-        parameters.put(TIME_UNIT_PARAMETER, unit);
-
-        Action alternativeAction = currentAction.create(parameters);
-        return alternativeAction.getRowAction();
-    }
-
-    /**
      * @param statisticsFileName the statistics file name to use.
      * @return a row with default settings for the tests.
      */
@@ -439,7 +423,8 @@ public class ComputeTimeSinceTest {
 
         List<ColumnMetadata> columns = new ArrayList<>(3);
         columns.add(ColumnMetadata.Builder.column().name("recipe").type(Type.STRING).build());
-        String statistics = IOUtils.toString(ComputeTimeSinceTest.class.getResourceAsStream(statisticsFileName));
+        ObjectMapper mapper = new ObjectMapper();
+        final Statistics statistics = mapper.reader(Statistics.class).readValue(ComputeTimeSinceTest.class.getResourceAsStream(statisticsFileName));
         columns.add(ColumnMetadata.Builder.column().name("last update").type(Type.DATE).statistics(statistics).build());
         columns.add(ColumnMetadata.Builder.column().name("steps").type(Type.STRING).build());
 
@@ -456,7 +441,8 @@ public class ComputeTimeSinceTest {
 
     private ColumnMetadata createMetadata(String id, String name, Type type, String statisticsFileName) throws IOException {
         ColumnMetadata column = createMetadata(id, name, type);
-        String statistics = IOUtils.toString(ComputeTimeSinceTest.class.getResourceAsStream(statisticsFileName));
+        ObjectMapper mapper = new ObjectMapper();
+        final Statistics statistics = mapper.reader(Statistics.class).readValue(ComputeTimeSinceTest.class.getResourceAsStream(statisticsFileName));
         column.setStatistics(statistics);
         return column;
     }

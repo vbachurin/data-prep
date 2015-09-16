@@ -1,10 +1,12 @@
 package org.talend.dataprep.api.dataset;
 
+import static java.util.stream.StreamSupport.stream;
 import static org.talend.dataprep.api.dataset.diff.Flag.*;
 
-import java.io.Serializable;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.diff.FlagNames;
@@ -13,8 +15,13 @@ import org.talend.dataprep.api.type.Type;
 /**
  * A DataSetRow is a row of a dataset. Values in data set row are <b>alphabetically</b> ordered by name.
  */
-public class DataSetRow implements Cloneable, Serializable {
+public class DataSetRow implements Cloneable {
     public static final String TDP_ID = "tdpId";
+
+    /**
+     * Filter for {@link #toArray(Predicate[])} that filters out TDP_ID column in results.
+     */
+    public static final Predicate<Map.Entry<String, String>> SKIP_TDP_ID = e -> !DataSetRow.TDP_ID.equals(e.getKey());
 
     /** Metadata information (columns...) about this DataSetRow */
     private RowMetadata rowMetadata;
@@ -32,7 +39,7 @@ public class DataSetRow implements Cloneable, Serializable {
     private Long tdpId;
 
     /**
-     * Default empty constructor.
+     * Constructor with values.
      */
     public DataSetRow(RowMetadata rowMetadata) {
         this.rowMetadata = rowMetadata;
@@ -267,6 +274,25 @@ public class DataSetRow implements Cloneable, Serializable {
         final DataSetRow dataSetRow = new DataSetRow(rowMetadata);
         dataSetRow.values = orderedValues;
         return dataSetRow;
+    }
+
+    /**
+     * Returns the current row as an array of Strings.
+     * @param filters An optional set of {@link Predicate filters} to be used to filter values. See {@link #SKIP_TDP_ID} for example.
+     * @return The current row as array of String eventually with filtered out columns depending on filter.
+     */
+    @SafeVarargs
+    public final String[] toArray(Predicate<Map.Entry<String, String>>... filters) {
+        Stream<Map.Entry<String, String>> stream = stream(values.entrySet().spliterator(), false);
+        // Apply filters
+        for (Predicate<Map.Entry<String, String>> filter : filters) {
+            stream = stream.filter(filter);
+        }
+        // Get as string array the selected columns
+        final List<String> strings = stream.map(Map.Entry::getValue) //
+                .map(String::valueOf) //
+                .collect(Collectors.<String> toList());
+        return strings.toArray(new String[strings.size()]);
     }
 
     public Long getTdpId() {

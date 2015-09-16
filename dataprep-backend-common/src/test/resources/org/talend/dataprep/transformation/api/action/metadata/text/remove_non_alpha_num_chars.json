@@ -1,0 +1,11 @@
+{
+  "actions": [
+    {
+      "action": "remove_non_alpha_num_chars",
+      "parameters": {
+        "column_id": "entity",
+        "scope": "column"
+      }
+    }
+  ]
+}

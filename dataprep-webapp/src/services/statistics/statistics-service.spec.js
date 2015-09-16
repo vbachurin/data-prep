@@ -99,9 +99,7 @@ describe('Statistics service', function () {
             ],
             textLengthSummary: {
                 averageLength: 10.13248646854654,
-                averageLengthIgnoreBlank: 11.783242375675245,
                 minimalLength: 12,
-                minimalLengthIgnoreBlank: 13,
                 maximalLength: 14
             },
             count: 4,
@@ -144,9 +142,7 @@ describe('Statistics service', function () {
             ],
             textLengthSummary: {
                 averageLength: 10.13248646854654,
-                averageLengthWithBlank: 11.783242375675245,
                 minimalLength: 12,
-                minimalLengthWithBlank: 13,
                 maximalLength: 14
             },
             count: 4,
@@ -587,9 +583,7 @@ describe('Statistics service', function () {
                     valid: 9,
                     textLengthSummary: {
                         averageLength: 10.13248646854654,
-                        averageLengthIgnoreBlank: 11.783242375675245,
                         minimalLength: 12,
-                        minimalLengthIgnoreBlank: 13,
                         maximalLength: 14
                     }
                 }
@@ -610,10 +604,8 @@ describe('Statistics service', function () {
                 INVALID: 8
             });
             expect(StatisticsService.statistics.specific).toEqual({
-                AVG_LENGTH: 11.78,
-                AVG_LENGTH_WITH_BLANK: 10.13,
-                MIN_LENGTH: 13,
-                MIN_LENGTH_WITH_BLANK: 12,
+                AVG_LENGTH: 10.13,
+                MIN_LENGTH: 12,
                 MAX_LENGTH: 14
             });
         }));
@@ -735,7 +727,40 @@ describe('Statistics service', function () {
             });
         }));
 
-        it('should update histogram data from REST call result and aggregation infos', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+        it('should update histogram data from REST call result and aggregation infos on dataset', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+            //given
+            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
+
+            //when
+            StatisticsService.processAggregation(datasetId, null, stepId, sampleSize, column, aggregation);
+            $rootScope.$digest();
+
+            //then
+            expect(StatisticsRestService.getAggregations).toHaveBeenCalledWith({
+                datasetId: 'abcd',
+                preparationId: null,
+                stepId: '9878645468',
+                sampleSize: 500,
+                operations: [{operator: 'MAX', columnId: '0002'}],
+                groupBy: ['0001']
+            });
+            expect(StatisticsService.histogram).toEqual({
+                data: [
+                    {'data': 'Lansing', 'max': 15, 'formattedValue': 'Lansing'},
+                    {'data': 'Helena', 'max': 5, 'formattedValue': 'Helena'},
+                    {'data': 'Baton Rouge', 'max': 64, 'formattedValue': 'Baton Rouge'},
+                    {'data': 'Annapolis', 'max': 4, 'formattedValue': 'Annapolis'},
+                    {'data': 'Pierre', 'max': 104, 'formattedValue': 'Pierre'}
+                ],
+                key: 'MAX',
+                label: 'MAX',
+                column: StatisticsService.selectedColumn,
+                aggregationColumn: column,
+                aggregation: aggregation
+            });
+        }));
+
+        it('should update histogram data from REST call result and aggregation infos on preparation', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
             //given
             spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
 
@@ -745,7 +770,7 @@ describe('Statistics service', function () {
 
             //then
             expect(StatisticsRestService.getAggregations).toHaveBeenCalledWith({
-                datasetId: 'abcd',
+                datasetId: null,
                 preparationId: '2132548345365',
                 stepId: '9878645468',
                 sampleSize: 500,

@@ -28,9 +28,10 @@
             //preparation steps lifecycle
             copyImplicitParameters: copyImplicitParameters,
             paramsHasChanged: paramsHasChanged,
-            appendStep: appendStep,
+            appendStep: PreparationRestService.appendStep,
             updateStep: updateStep,
-            removeStep: removeStep,
+            removeStep: PreparationRestService.removeStep,
+            setHead: PreparationRestService.setHead,
 
             //preview
             getPreviewDiff: getPreviewDiff,
@@ -193,20 +194,6 @@
 
         /**
          * @ngdoc method
-         * @name appendStep
-         * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {string} preparationId The preparation id
-         * @param {object | array} actionParams The transformation(s) configuration {action: string, parameters: {object}}
-         * @param {string} insertionStepId The insertion point step id. (Head = 'head' | falsy | head_step_id)
-         * @description Append a step.
-         * @returns {promise} The PUT promise
-         */
-        function appendStep(preparationId, actionParams, insertionStepId) {
-            return PreparationRestService.appendStep(preparationId, actionParams, insertionStepId);
-        }
-
-        /**
-         * @ngdoc method
          * @name updateStep
          * @methodOf data-prep.services.preparation.service:PreparationService
          * @param {string} preparationId The preparation id
@@ -221,20 +208,6 @@
                 step.transformation.stepId,
                 {action: step.transformation.name, parameters: parameters}
             );
-        }
-
-        /**
-         * @ngdoc method
-         * @name removeStep
-         * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {string} preparationId The preparation id
-         * @param {object} stepId The step to delete
-         * @param {boolean} singleMode Delete only the target step if true, all steps from target otherwise
-         * @description Delete a step.
-         * @returns {promise} The DELETE promise
-         */
-        function removeStep(preparationId, stepId, singleMode) {
-            return PreparationRestService.removeStep(preparationId, stepId, singleMode);
         }
 
         /**

@@ -1,0 +1,12 @@
+{
+  "actions": [
+    {
+      "action": "extract_url_tokens",
+      "parameters": {
+        "column_id": "0001",
+        "column_name": "url",
+        "scope": "column"
+      }
+    }
+  ]
+}

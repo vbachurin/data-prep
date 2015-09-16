@@ -46,11 +46,10 @@
          * @name createTooltip
          * @methodOf data-prep.datagrid.service:DatagridTooltipService
          * @param {object} event The Slickgrid cell enter event
-         * @description Update the tooltip component and display with a delay (except for the index column)
+         * @description Update the tooltip component and display with a delay
          */
         function createTooltip(event) {
             tooltipTimeout = setTimeout(function () {
-
                 var cell = grid.getCellFromEvent(event);
                 if (!cell) {
                     return;
@@ -60,21 +59,19 @@
                 var item = DatagridService.dataView.getItem(row);
 
                 var column = grid.getColumns()[cell.cell];
+                var value = item[column.id] + '';
 
-                if (column.id !== 'tdpId') {
-                    var value = item[column.id];
-                    if (shouldShowTooltip(value, cell)) {
-                        tooltipShowPromise = $timeout(function () {
-                            service.tooltip = {
-                                position: {
-                                    x: event.clientX,
-                                    y: event.clientY
-                                },
-                                htmlStr: TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(value)
-                            };
-                            service.showTooltip = true;
-                        });
-                    }
+                if (shouldShowTooltip(value, cell)) {
+                    tooltipShowPromise = $timeout(function () {
+                        service.tooltip = {
+                            position: {
+                                x: event.clientX,
+                                y: event.clientY
+                            },
+                            htmlStr: TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(value)
+                        };
+                        service.showTooltip = true;
+                    });
                 }
             }, tooltipDelay);
         }
@@ -119,20 +116,21 @@
             if (text === '') {
                 return false;
             }
+
             //show if content is multiline (avoid too loud check with div size)
-            else if (text.indexOf('\n') > -1) {
+            var textConverted = text + '';
+            if (textConverted.indexOf('\n') > -1) {
                 return true;
             }
-            //heavy check based on div size
-            else {
-                var ruler = service.tooltipRuler;
-                ruler.text(text);
-                var box = grid.getCellNodeBox(cell.row, cell.cell);
 
-                // return if the content is bigger than the displayed box by computing the diff between the displayed box
-                // and the hidden tooltip ruler size minus the cell padding
-                return (box.right - box.left - 11 ) <= ruler.width() || (box.bottom - box.top) < ruler.height();
-            }
+            //heavy check based on div size
+            var box = grid.getCellNodeBox(cell.row, cell.cell);
+            var ruler = service.tooltipRuler;
+            ruler.text(textConverted);
+
+            // return if the content is bigger than the displayed box by computing the diff between the displayed box
+            // and the hidden tooltip ruler size minus the cell padding
+            return (box.right - box.left - 12 ) <= ruler.width() || (box.bottom - box.top) < ruler.height();
         }
 
         /**

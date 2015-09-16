@@ -22,8 +22,8 @@ describe('Datagrid tooltip service', function() {
         '0001': '  tetetetetetetetetetetetetetetetetetetete ',  // should show tooltip with trailing spaces
         '0002': 'titititititititititititititititititi',         // should show tooltip because of length
         '0003': 'toto\ntoto',                                   // should show tooltip because of height
-        '0004': '',                                              // should not show tooltip
-        'tdpId': '16678678678686786788888888888888888886872'                                              // should not show tooltip
+        '0004': '',                                             // should not show tooltip
+        'tdpId': 16678678678686786788888888888888888886872      // should show tooltip because of length
     };
 
     //columns metadata
@@ -251,15 +251,12 @@ describe('Datagrid tooltip service', function() {
             }
         }));
 
-
-        it('should NOT show tooltip with index column (column 5)', inject(function($timeout, DatagridTooltipService) {
+        it('should show tooltip after a 300ms delay with column tdpId', inject(function($timeout, DatagridTooltipService) {
             //given
             DatagridTooltipService.init(gridMock);
-
             var box = {left: 400, right: 500, top: 10, bottom: 40}; //width: 100
-            var cell = {row: 1, cell: 5};                           // '16678678678686786788888888888888888886872'
+            var cell = {row: 1, cell: 5}; //contains 16678678678686786788888888888888888886872
             gridMock.initCellMock(cell, box);
-
 
             //when
             var mouseEnterHandler = gridMock.onMouseEnter.subscribe.calls.argsFor(0)[0];
@@ -272,15 +269,14 @@ describe('Datagrid tooltip service', function() {
 
             //when
             jasmine.clock().tick(300);
-            try {
-                $timeout.flush();
-                throw Error('Should have thrown exception, because no timeout is waiting');
-            }
-                //then
-            catch(error) {
-                expect(DatagridTooltipService.tooltip).toEqual({});
-                expect(DatagridTooltipService.showTooltip).toBeFalsy();
-            }
+            $timeout.flush();
+
+            //then
+            expect(DatagridTooltipService.tooltip).toEqual({
+                position: {x: 500, y: 300},
+                htmlStr: '1.6678678678686786e+40'
+            });
+            expect(DatagridTooltipService.showTooltip).toBeTruthy();
         }));
     });
 

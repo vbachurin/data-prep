@@ -50,8 +50,7 @@ public class SchemaParserResult implements Serializable {
         @JsonProperty("columnMetadatas")
         private List<ColumnMetadata> columnMetadatas;
 
-        public SheetContent()
-        {
+        public SheetContent() {
             // no op
         }
 
@@ -64,20 +63,19 @@ public class SchemaParserResult implements Serializable {
             return name;
         }
 
+        public void setName(String name) {
+            this.name = name;
+        }
+
         public List<ColumnMetadata> getColumnMetadatas() {
             return columnMetadatas;
         }
 
-        public void setName( String name )
-        {
-            this.name = name;
-        }
-
-        public void setColumnMetadatas( List<ColumnMetadata> columnMetadatas )
-        {
+        public void setColumnMetadatas(List<ColumnMetadata> columnMetadatas) {
             this.columnMetadatas = columnMetadatas;
         }
 
+        @Override
         public SheetContent clone() {
             List<ColumnMetadata> columns = null;
             if (this.columnMetadatas != null) {
@@ -88,13 +86,10 @@ public class SchemaParserResult implements Serializable {
             }
             return new SheetContent(this.name, columns);
         }
+
         @Override
-        public String toString()
-        {
-            return "SheetContent{" +
-                "name='" + name + '\'' +
-                ", columnMetadatas=" + columnMetadatas +
-                '}';
+        public String toString() {
+            return "SheetContent{" + "name='" + name + '\'' + ", columnMetadatas=" + columnMetadatas + '}';
         }
     }
 

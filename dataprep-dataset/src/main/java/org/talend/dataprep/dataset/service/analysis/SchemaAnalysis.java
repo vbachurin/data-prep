@@ -1,13 +1,10 @@
 package org.talend.dataprep.dataset.service.analysis;
 
-import static java.util.stream.StreamSupport.stream;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
@@ -15,7 +12,6 @@ import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -30,10 +26,10 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataquality.semantic.recognizer.CategoryFrequency;
 import org.talend.dataquality.semantic.recognizer.CategoryRecognizerBuilder;
+import org.talend.dataquality.semantic.statistics.SemanticAnalyzer;
+import org.talend.dataquality.semantic.statistics.SemanticType;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
-import org.talend.datascience.common.inference.semantic.SemanticAnalyzer;
-import org.talend.datascience.common.inference.semantic.SemanticType;
 import org.talend.datascience.common.inference.type.DataType;
 import org.talend.datascience.common.inference.type.DataTypeAnalyzer;
 
@@ -47,9 +43,6 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
 
     @Autowired
     ContentStoreRouter store;
-
-    @Autowired
-    Jackson2ObjectMapperBuilder builder;
 
     @Override
     public void analyze(String dataSetId) {
@@ -78,13 +71,7 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
                 final SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(builder);
                 final Analyzer<Analyzers.Result> analyzer = Analyzers.with(dataTypeAnalyzer, semanticAnalyzer);
                 // Determine schema for the content (on the 20 first rows).
-                stream.limit(20).map(row -> {
-                    final Map<String, Object> rowValues = row.values();
-                    final List<String> strings = stream(rowValues.values().spliterator(), false) //
-                            .map(String::valueOf) //
-                            .collect(Collectors.<String> toList());
-                    return strings.toArray(new String[strings.size()]);
-                }).forEach(analyzer::analyze);
+                stream.limit(20).map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
                 // Find the best suitable type
                 List<Analyzers.Result> columnTypes = analyzer.getResult();
                 final Iterator<ColumnMetadata> columns = metadata.getRow().getColumns().iterator();

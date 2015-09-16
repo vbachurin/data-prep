@@ -55,7 +55,7 @@ public class JsonWriterTest {
         writer.flush();
 
         // then
-        assertThat(output.toString(), sameJSONAs(expectedOutput));
+        assertThat(output.toString(), sameJSONAs(expectedOutput).allowingExtraUnexpectedFields());
     }
 
     @Test

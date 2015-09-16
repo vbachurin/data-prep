@@ -98,6 +98,7 @@
                 id: colIndexName,
                 name: colIndexNameTemplate,
                 field: colIndexName,
+                maxWidth: 45,
                 formatter: function formatterIndex(row, cell, value) {
                     return '<div class="index-cell">' + value + '</div>';
                 },

@@ -8,7 +8,6 @@
      * @requires talend.widget
      * @requires data-prep.transformation-params
      * @requires data-prep.type-transformation-menu
-     * @requires data-prep.services.preparation
      * @requires data-prep.services.playground
      * @requires data-prep.services.transformation
      * @requires data-prep.services.state
@@ -17,7 +16,6 @@
         'talend.widget',
         'data-prep.transformation-params',
         'data-prep.type-transformation-menu',
-        'data-prep.services.preparation',
         'data-prep.services.playground',
         'data-prep.services.transformation',
         'data-prep.services.state'

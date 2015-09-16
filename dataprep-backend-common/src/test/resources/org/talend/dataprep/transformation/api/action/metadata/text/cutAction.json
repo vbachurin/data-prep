@@ -3,7 +3,7 @@
     {
       "action": "cut",
       "parameters": {
-        "column_id": "name",
+        "column_id": "0001",
         "pattern": "The ",
         "scope": "column"
       }

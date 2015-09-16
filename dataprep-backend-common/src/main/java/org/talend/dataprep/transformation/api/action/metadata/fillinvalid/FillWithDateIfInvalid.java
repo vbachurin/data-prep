@@ -1,16 +1,5 @@
 package org.talend.dataprep.transformation.api.action.metadata.fillinvalid;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +7,26 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataUtils;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.annotation.Nonnull;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 
 @Component(value = FillWithDateIfInvalid.ACTION_BEAN_PREFIX + FillWithDateIfInvalid.FILL_INVALID_ACTION_NAME)
 public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
@@ -70,47 +71,73 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
         }
 
         try {
-            final Set<String> invalidValues = column.getQuality().getInvalidValues();
-            if (StringUtils.isEmpty(value) || invalidValues.contains(value)) {
+            if (StringUtils.isEmpty(value) || ActionMetadataUtils.checkInvalidValue(column, value)) {
                 // we assume all controls have been made in the ui.
                 String newDateStr = parameters.get(DEFAULT_VALUE_PARAMETER);
 
-                // we search the most used pattern
+                // get the most used pattern
                 String mostUsedPattern = findMostUsedDatePattern(column);
 
-                String newDateWithFormat = DateTimeFormatter.ofPattern(mostUsedPattern) //
-                        .format(LocalDateTime.parse(newDateStr, DEFAULT_FORMATTER));
+                // parse the date
+                TemporalAccessor temp = parseDateTime(newDateStr, mostUsedPattern);
 
+                // format the result
+                String newDateWithFormat = DEFAULT_FORMATTER.format(temp);
+
+                // set the result
                 row.set(columnId, newDateWithFormat);
+
+                // update invalid values to prevent future unnecessary analysis
+                if (!StringUtils.isEmpty(value)) {
+                    final Set<String> invalidValues = column.getQuality().getInvalidValues();
+                    invalidValues.add(value);
+                }
             }
         } catch (Exception e) {
             LOGGER.warn("skip error parsing date", e);
         }
     }
 
-    protected String findMostUsedDatePattern(final ColumnMetadata column) {
+    /**
+     * Return the parsed dated of the given date value.
+     *
+     * @param dateTimeOrDate the string to parse.
+     * @param pattern the pattern to use to parse the date.
+     * @return the parsed dated of the given date value.
+     */
+    private TemporalAccessor parseDateTime(String dateTimeOrDate, String pattern) {
 
-        // get the date pattern to write the date with
-        final JsonFactory jsonFactory = new JsonFactory();
-        final ObjectMapper mapper = new ObjectMapper(jsonFactory);
-
-        // register the new pattern in column stats, to be able to process date action later
-        final JsonNode rootNode = getStatisticsNode(mapper, column);
-        final JsonNode patternFrequencyTable = rootNode.get("patternFrequencyTable"); //$NON-NLS-1$
-
-        int maxOccurence = 0, maxOccurenceIdx = 0;
-
-        for (int i = 0, size = patternFrequencyTable.size(); i < size; i++) {
-            int occurrences = patternFrequencyTable.get(i).get("occurrences").asInt();
-            if (occurrences > maxOccurence) {
-                maxOccurenceIdx = i;
-                maxOccurence = occurrences;
+        // first try the LocalDateTime
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        try {
+            return LocalDateTime.parse(dateTimeOrDate, formatter);
+        } catch (DateTimeException e) {
+            // if it fails, let's try the LocalDate
+            try {
+                LocalDate temp = LocalDate.parse(dateTimeOrDate, formatter);
+                return temp.atStartOfDay();
+            } catch (DateTimeException e2) {
+                // nothing to do here, just throw the exception...
+                throw e2;
             }
         }
+    }
 
-        String mostUsedPattern = patternFrequencyTable.get(maxOccurenceIdx).get("pattern").asText();
-
-        return mostUsedPattern;
+    protected String findMostUsedDatePattern(final ColumnMetadata column) {
+        // get the date pattern to write the date with
+        // register the new pattern in column stats, to be able to process date action later
+        final Statistics statistics = column.getStatistics();
+        final Stream<PatternFrequency> stream = statistics.getPatternFrequencies().stream();
+        final Optional<PatternFrequency> mostUsed = stream.sorted((pf1, pf2) -> {
+            if (pf1.getOccurrences() - pf2.getOccurrences() == 0) {
+                return 0;
+            } else if(pf1.getOccurrences() - pf2.getOccurrences() > 0) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }).findFirst();
+        return mostUsed.get().getPattern();
     }
 
     /**

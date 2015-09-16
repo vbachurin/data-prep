@@ -224,7 +224,7 @@
          * @returns {object} The last step
          */
         function getLastStep() {
-            return recipe[recipe.length - 1];
+            return recipe.length > 0 ? recipe[recipe.length - 1] : initialState;
         }
 
         /**
@@ -334,6 +334,7 @@
             var stepId = actionStep[0];
             var actionValues = actionStep[1];
             var metadata = actionStep[2];
+            var diff = actionStep[3];
 
             var item = {
                 column: {
@@ -350,7 +351,8 @@
                     items: metadata.items,
                     dynamic: metadata.dynamic
                 },
-                actionParameters: actionValues
+                actionParameters: actionValues,
+                diff: diff
             };
 
             TransformationService.initParamsValues(item.transformation, actionValues.parameters);
@@ -380,12 +382,19 @@
 
                     var oldRecipe = recipe;
                     var newRecipe = _.chain(steps)
-                        .zip(resp.data.actions, resp.data.metadata)
+                        .zip(resp.data.actions, resp.data.metadata, resp.data.diff)
                         .map(createItem)
                         .value();
                     activeThresholdStep = null;
                     recipeStateBeforePreview = null;
                     recipe = newRecipe;
+
+                    //TODO : Move this in a recipe-bullet-directive
+                    //remove "single-maillon-cables-disabled" class of bullet cables when refreshing recipe
+                    var allDisabledCables = angular.element('.recipe').eq(0).find('.single-maillon-cables-disabled').toArray();
+                    _.each(allDisabledCables, function(cable) {
+                        cable.setAttribute('class', '');
+                    });
 
                     return {
                         'old': oldRecipe,

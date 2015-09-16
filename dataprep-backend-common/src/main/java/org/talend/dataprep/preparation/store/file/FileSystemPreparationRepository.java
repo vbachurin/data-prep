@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Identifiable;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 
@@ -67,7 +67,7 @@ public class FileSystemPreparationRepository implements PreparationRepository {
         } catch (IOException e) {
             LOG.error("Error saving {}", object, e);
             throw new TDPException(CommonErrorCodes.UNABLE_TO_SAVE_PREPARATION, e,
-                    TDPExceptionContext.build().put("id", object.id()));
+                    ExceptionContext.build().put("id", object.id()));
         }
         LOG.debug("preparation #{} saved", object.id());
 
@@ -98,7 +98,7 @@ public class FileSystemPreparationRepository implements PreparationRepository {
             }
 
         } catch (ClassNotFoundException | IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_PREPARATION, e, TDPExceptionContext.build().put("id", id));
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PREPARATION, e, ExceptionContext.build().put("id", id));
         }
     }
 
@@ -125,7 +125,12 @@ public class FileSystemPreparationRepository implements PreparationRepository {
     @Override
     public <T extends Identifiable> Collection<T> listAll(Class<T> clazz) {
         //@formatter:off
-        Collection<T> result =  Arrays.stream(getRootFolder().listFiles())
+        File[] files = getRootFolder().listFiles();
+        if(files == null) {
+            LOG.error("error listing preparations");
+            files = new File[0];
+        }
+        Collection<T> result =  Arrays.stream(files)
                 .map(file ->  readRaw(file))                                // read all files
                 .filter(entry -> clazz.isAssignableFrom(entry.getClass()))  // filter out the unwanted objects
                 .map(entry -> (T) entry)                                    // cast to wanted class

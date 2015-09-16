@@ -1,33 +1,45 @@
 package org.talend.dataprep.dataset.service.analysis;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.spark.SparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.DataSet;
-import org.talend.dataprep.api.dataset.DataSetAnalysis;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.statistics.Statistics;
+import org.talend.dataprep.api.dataset.statistics.StatisticsUtils;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.lock.DistributedLock;
+import org.talend.dataquality.statistics.cardinality.CardinalityAnalyzer;
+import org.talend.dataquality.statistics.frequency.DataFrequencyAnalyzer;
+import org.talend.dataquality.statistics.frequency.PatternFrequencyAnalyzer;
+import org.talend.dataquality.statistics.numeric.histogram.HistogramAnalyzer;
+import org.talend.dataquality.statistics.numeric.histogram.HistogramColumnParameter;
+import org.talend.dataquality.statistics.numeric.histogram.HistogramParameter;
+import org.talend.dataquality.statistics.numeric.quantile.QuantileAnalyzer;
+import org.talend.dataquality.statistics.numeric.summary.SummaryAnalyzer;
+import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
+import org.talend.dataquality.statistics.text.TextLengthAnalyzer;
+import org.talend.datascience.common.inference.Analyzer;
+import org.talend.datascience.common.inference.Analyzers;
+import org.talend.datascience.common.inference.type.DataType;
 
 @Component
-@ConditionalOnProperty("dataset.spark.master")
 public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsAnalysis.class);
@@ -37,15 +49,6 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
 
     @Autowired
     ContentStoreRouter store;
-
-    @Autowired
-    ApplicationContext applicationContext;
-
-    @Autowired
-    SparkContext sparkContext;
-
-    @Autowired
-    Jackson2ObjectMapperBuilder builder;
 
     @JmsListener(destination = Destinations.STATISTICS_ANALYSIS)
     public void analyzeQuality(Message message) {
@@ -70,17 +73,14 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
         datasetLock.lock();
         try {
             DataSetMetadata metadata = repository.get(dataSetId);
-            try (Stream<DataSetRow> stream = store.streamWithoutRowId(metadata)) {
+            try (Stream<DataSetRow> stream = store.stream(metadata)) {
                 if (metadata != null) {
                     if (!metadata.getLifecycle().schemaAnalyzed()) {
                         LOGGER.debug("Schema information must be computed before quality analysis can be performed, ignoring message");
                         return; // no acknowledge to allow re-poll.
                     }
-                    // Create a content with the expected format for the StatisticsClientJson class
-                    DataSet dataSet = new DataSet();
-                    dataSet.setMetadata(metadata);
-                    dataSet.setRecords(stream);
-                    DataSetAnalysis.computeStatistics(dataSet, sparkContext, builder);
+                    computeStatistics(metadata, stream);
+                    // Tag data set quality: now analyzed
                     metadata.getLifecycle().qualityAnalyzed(true);
                     repository.add(metadata);
                 } else {
@@ -96,6 +96,60 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
 
     }
 
+    /**
+     * Compute the statistics for the given dataset metadata and content.
+     *
+     * @param metadata the metadata to compute the statistics for.
+     * @param stream the content to compute the statistics from.
+     */
+    public void computeStatistics(DataSetMetadata metadata, Stream<DataSetRow> stream) {
+        // Create a content with the expected format for the StatisticsClientJson class
+        final List<ColumnMetadata> columns = metadata.getRow().getColumns();
+        if (columns.isEmpty()) {
+            LOGGER.debug("Skip statistics of {} (no column information).", metadata.getId());
+            return;
+        }
+        DataType.Type[] types = TypeUtils.convert(columns);
+        // Set min and max for each column in histogram
+        final HistogramParameter histogramParameter = new HistogramParameter();
+        for (int i = 0; i < columns.size(); i++) {
+            ColumnMetadata column = columns.get(i);
+            final boolean isNumeric = Type.NUMERIC.isAssignableFrom(Type.get(column.getType()));
+            if (isNumeric) {
+                final HistogramColumnParameter columnParameter = new HistogramColumnParameter();
+                final Statistics statistics = column.getStatistics();
+                columnParameter.setParameters(statistics.getMin(), statistics.getMax(), 8);
+                histogramParameter.putColumnParameter(i, columnParameter);
+            }
+        }
+        final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types, histogramParameter);
+        // Select all analysis
+        Analyzer[] allAnalyzers = new Analyzer[] {
+                new ValueQualityAnalyzer(types),
+                // Cardinality (distinct + duplicate)
+                new CardinalityAnalyzer(),
+                // Frequency analysis (Pattern + data)
+                new DataFrequencyAnalyzer(),
+                new PatternFrequencyAnalyzer(),
+                // Quantile analysis
+                new QuantileAnalyzer(types),
+                // Summary (min, max, mean, variance)
+                new SummaryAnalyzer(types),
+                // Histogram
+                histogramAnalyzer,
+                // Text length analysis (for applicable columns)
+                new TextLengthAnalyzer()
+        };
+        final Analyzer<Analyzers.Result> analyzer = Analyzers.with(allAnalyzers);
+        stream.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
+        analyzer.end();
+        // Store results back in data set
+        StatisticsUtils.setStatistics(columns, analyzer.getResult());
+    }
+
+    /**
+     * @see AsynchronousDataSetAnalyzer#destination()
+     */
     @Override
     public String destination() {
         return Destinations.STATISTICS_ANALYSIS;

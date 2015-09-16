@@ -1,5 +1,7 @@
 package org.talend.dataprep.api.dataset.location;
 
+import java.util.Objects;
+
 import org.talend.dataprep.api.dataset.DataSetLocation;
 
 /**
@@ -18,6 +20,7 @@ public class LocalStoreLocation implements DataSetLocation {
         return NAME;
     }
 
+
     /**
      * @see Object#equals(Object)
      */
@@ -30,6 +33,14 @@ public class LocalStoreLocation implements DataSetLocation {
             return true;
         }
         return !(o == null || getClass() != o.getClass());
+    }
+
+    /**
+     * @see Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(getClass());
     }
 
 }

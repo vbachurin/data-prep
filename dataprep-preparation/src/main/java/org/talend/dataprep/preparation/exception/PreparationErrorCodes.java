@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.talend.dataprep.exception.error.ErrorCode;
+import org.talend.daikon.exception.error.ErrorCode;
 
 /**
  * Preparation error codes.
@@ -60,5 +60,10 @@ public enum PreparationErrorCodes implements ErrorCode {
     @Override
     public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
+    }
+
+    @Override
+    public String getCode() {
+        return this.toString();
     }
 }

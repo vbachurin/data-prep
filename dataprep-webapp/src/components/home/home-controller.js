@@ -109,12 +109,13 @@
 
             DatasetService.import(importParameters)
                 .then(function (event) {
-                    vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                     DatasetService.getDatasetById(event.data).then(UploadWorkflowService.openDataset);
                 })
                 .catch(function () {
                     dataset.error = true;
                     MessageService.error('IMPORT_ERROR_TITLE', 'IMPORT_ERROR');
+                }).finally(function () {
+                    vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                 });
         };
 
@@ -136,12 +137,14 @@
 
             DatasetService.import(importParameters)
                 .then(function (event) {
-                    vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                     DatasetService.getDatasetById(event.data).then(UploadWorkflowService.openDataset);
                 })
                 .catch(function () {
                     dataset.error = true;
                     MessageService.error('IMPORT_ERROR_TITLE', 'IMPORT_ERROR');
+                })
+                .finally(function () {
+                    vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                 });
         };
 
@@ -238,12 +241,14 @@
                     dataset.progress = parseInt(100.0 * event.loaded / event.total);
                 })
                 .then(function (event) {
-                    vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                     DatasetService.getDatasetById(event.data).then(UploadWorkflowService.openDataset);
                 })
                 .catch(function () {
                     dataset.error = true;
                     MessageService.error('UPLOAD_ERROR_TITLE', 'UPLOAD_ERROR');
+                })
+                .finally(function () {
+                    vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                 });
         };
 
@@ -264,7 +269,6 @@
                     dataset.progress = parseInt(100.0 * event.loaded / event.total);
                 })
                 .then(function () {
-                    vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                     MessageService.success('DATASET_UPDATE_SUCCESS_TITLE', 'DATASET_UPDATE_SUCCESS', {dataset: dataset.name});
 
                     //Force the update currentMetadata of the dataset
@@ -275,6 +279,9 @@
                 .catch(function () {
                     dataset.error = true;
                     MessageService.error('UPLOAD_ERROR_TITLE', 'UPLOAD_ERROR');
+                })
+                .finally(function () {
+                    vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                 });
         };
 

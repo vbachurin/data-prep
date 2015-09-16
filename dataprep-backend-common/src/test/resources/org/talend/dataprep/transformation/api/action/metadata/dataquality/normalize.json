@@ -1,0 +1,11 @@
+{
+  "actions": [
+    {
+      "action": "normalize",
+      "parameters": {
+        "column_id": "entity",
+        "scope": "column"
+      }
+    }
+  ]
+}
