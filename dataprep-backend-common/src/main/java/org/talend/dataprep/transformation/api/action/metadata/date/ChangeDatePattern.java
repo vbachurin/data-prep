@@ -57,7 +57,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
         if (column == null) {
             return;
         }
-        // parse and checks the new date pattern        action = new ChangeDatePattern();
+        // parse and checks the new date pattern
         // register the new pattern in column stats, to be able to process date action later
         final Statistics statistics = column.getStatistics();
         boolean isNewPatternRegistered = false;

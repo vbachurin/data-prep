@@ -23,8 +23,8 @@ public class DateParser {
     /**
      * Parse the date time out of the given value based on the column date pattern.
      *
-     * At first uses the known date patterns from the column statistics. If it fails, the DQ library is called to
-     * try to get the pattern.
+     * At first uses the known date patterns from the column statistics. If it fails, the DQ library is called to try to
+     * get the pattern.
      *
      * @param value the value to get the date time from.
      * @param column the column to get the date patterns from.
@@ -68,7 +68,7 @@ public class DateParser {
     protected DatePattern guessPattern(String value) {
 
         if (StringUtils.isEmpty(value)) {
-            throw new DateTimeException("No pattern can be found out of '"+ value +"'");
+            throw new DateTimeException("No pattern can be found out of '" + value + "'");
         }
         // call DQ on the given value
         final PatternFrequencyAnalyzer analyzer = new PatternFrequencyAnalyzer();
@@ -84,7 +84,7 @@ public class DateParser {
         // get & check the results
         final List<DatePattern> results = getPatterns(patterns);
         if (results.isEmpty()) {
-            throw new DateTimeException("DQ did not find any pattern for '"+ value +"'");
+            throw new DateTimeException("DQ did not find any pattern for '" + value + "'");
         }
 
         // as Christopher L. said : "there can be only one" :-)
@@ -144,8 +144,6 @@ public class DateParser {
         Collections.sort(patterns);
         return computeDateTimeFormatter(patterns);
     }
-
-
 
     /**
      * Return true if the given pattern is already held in the list of patterns.
