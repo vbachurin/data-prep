@@ -10,7 +10,7 @@
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.playground.service:PreviewService
      */
-    function DatagridExternalService($window, $timeout, StatisticsService, SuggestionService, PreviewService, StateService, DatagridService) {
+    function DatagridExternalService($timeout, StatisticsService, SuggestionService, PreviewService) {
         var grid;
         var suggestionTimeout;
         var scrollTimeout;
@@ -19,57 +19,20 @@
 
         return {
             init: init,
-            updateSuggestionPanel: updateSuggestionPanel,
-            getColumnSelected: getColumnSelected
+            updateSuggestionPanel: updateSuggestionPanel
         };
-
-        //--------------------------------------------------------------------------------------------------------------
-
-        /**
-         * @ngdoc method
-         * @name getLocalStorageKey
-         * @methodOf data-prep.datagrid.service:DatagridSizeService
-         * @description Get the actual dataset column selected. This key is used in localStorage
-         */
-        function getLocalStorageKey() {
-            return 'org.talend.dataprep.col_selected_' + DatagridService.metadata.id;
-        }
-
-        /**
-         * @ngdoc method
-         * @name saveColumnSelected
-         * @methodOf data-prep.datagrid.service:DatagridSizeService
-         * @description Save the selected column  of the dataset in localstorage
-         */
-        function saveColumnSelected(col) {
-            var localKey = getLocalStorageKey();
-            $window.localStorage.setItem(localKey, col.id);
-        }
-
-
-        /**
-         * @ngdoc method
-         * @name getColumnSelected
-         * @methodOf data-prep.datagrid.service:DatagridSizeService
-         * @description Get the actual dataset column selected. This value is stored in localStorage
-         */
-        function getColumnSelected() {
-            var localKey = getLocalStorageKey();
-            return $window.localStorage.getItem(localKey);
-        }
 
         /**
          * @ngdoc method
          * @name updateSuggestionPanel
          * @methodOf data-prep.datagrid.service:DatagridExternalService
          * @param {string} column The selected column
-         * @param {number} row The row number
          * @param {string} tab The suggestion tab to select
          * @description Set the selected column into external services except the index column. This will trigger actions that use this property
          * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
          */
 
-        function updateSuggestionPanel(column, row, tab) {
+        function updateSuggestionPanel(column, tab) {
             if (column.id === 'tdpId') {
                 $timeout(function () {
                     lastSelectedColumn = null;
@@ -90,7 +53,6 @@
                 suggestionTimeout = $timeout(function () {
                     lastSelectedColumn = column.tdpColMetadata;
                     lastSelectedTab = tab;
-                    StateService.setGridSelection(lastSelectedColumn, row);
 
                     if (tabHasChanged) {
                         SuggestionService.selectTab(lastSelectedTab);
@@ -98,7 +60,6 @@
                     if (columnHasChanged) {
                         StatisticsService.processData(lastSelectedColumn);
                         SuggestionService.setColumn(lastSelectedColumn);
-                        saveColumnSelected(lastSelectedColumn);
                     }
                 }, 200);
             }
@@ -115,7 +76,7 @@
             grid.onActiveCellChanged.subscribe(function (e, args) {
                 if (angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
-                    updateSuggestionPanel(column, args.row, 'COLUMN'); //TODO : change this to CELL when cell actions are supported
+                    updateSuggestionPanel(column, 'COLUMN'); //TODO : change this to CELL when cell actions are supported
                 }
             });
         }
@@ -130,7 +91,7 @@
             function attachColumnCallback(args) {
                 var columnId = args.column.id;
                 var column = _.find(grid.getColumns(), {id: columnId});
-                updateSuggestionPanel(column, null, 'COLUMN');
+                updateSuggestionPanel(column, 'COLUMN');
             }
 
             grid.onHeaderContextMenu.subscribe(function (e, args) {

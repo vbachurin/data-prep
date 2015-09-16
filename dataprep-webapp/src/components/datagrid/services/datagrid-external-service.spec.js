@@ -2,7 +2,6 @@ describe('Datagrid external service', function () {
     'use strict';
 
     var gridMock;
-    var storageKey = 'org.talend.dataprep.col_size_12345';
 
     var gridColumns = [
         {id: '0000', field: 'col0', tdpColMetadata: {id: '0000', name: 'col0'}},
@@ -14,9 +13,8 @@ describe('Datagrid external service', function () {
     ];
 
     beforeEach(module('data-prep.datagrid'));
-    beforeEach(module('data-prep.suggestions-stats'));
 
-    beforeEach(inject(function (StatisticsService, SuggestionService, DatagridService) {
+    beforeEach(inject(function (StatisticsService, SuggestionService) {
         /*global SlickGridMock:false */
         gridMock = new SlickGridMock();
         gridMock.initColumnsMock(gridColumns);
@@ -29,18 +27,15 @@ describe('Datagrid external service', function () {
         spyOn(StatisticsService, 'processData').and.returnValue();
         spyOn(SuggestionService, 'setColumn').and.returnValue();
         spyOn(SuggestionService, 'selectTab').and.returnValue();
-
-        DatagridService.metadata = {id : "12345"};
     }));
 
     beforeEach(function () {
         jasmine.clock().install();
     });
 
-    afterEach(inject(function ($window) {
+    afterEach(function () {
         jasmine.clock().uninstall();
-        $window.localStorage.removeItem(storageKey);
-    }));
+    });
 
     describe('on creation', function () {
         it('should add grid active cell change listener', inject(function (DatagridExternalService) {
@@ -80,8 +75,8 @@ describe('Datagrid external service', function () {
         it('should update playground right panel on active cell changed after a 200ms delay', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
             //given
             DatagridExternalService.init(gridMock);
-            var args = {cell: 0};
-            var columnMetadata = gridColumns[0].tdpColMetadata;
+            var args = {cell: 1};
+            var columnMetadata = gridColumns[1].tdpColMetadata;
 
             //when
             var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
@@ -97,7 +92,6 @@ describe('Datagrid external service', function () {
             expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
             expect(SuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
             expect(SuggestionService.selectTab).toHaveBeenCalledWith('COLUMN');
-            expect(DatagridExternalService.getColumnSelected()).toBe("0000");
 
         }));
 
@@ -222,7 +216,6 @@ describe('Datagrid external service', function () {
             expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
             expect(SuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
             expect(SuggestionService.selectTab).toHaveBeenCalledWith('COLUMN');
-            expect(DatagridExternalService.getColumnSelected()).toBe("0001");
         }));
 
         it('should update playground right panel on header right click after a 200ms delay', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
@@ -247,7 +240,6 @@ describe('Datagrid external service', function () {
             expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
             expect(SuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
             expect(SuggestionService.selectTab).toHaveBeenCalledWith('COLUMN');
-            expect(DatagridExternalService.getColumnSelected()).toBe("0001");
         }));
 
         it('should NOT update playground right panel on header click when column and tab are the same', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {

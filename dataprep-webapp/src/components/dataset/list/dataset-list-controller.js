@@ -20,8 +20,8 @@
      * @requires data-prep.services.state.service:StateService
      * @requires data-prep.services.onboarding:OnboardingService
      */
-    function DatasetListCtrl($timeout, $state, $stateParams, DatasetService, DatasetListSortService, PlaygroundService,
-                             TalendConfirmService, MessageService, UploadWorkflowService, StateService, OnboardingService, DatagridExternalService) {
+    function DatasetListCtrl($stateParams, DatasetService, DatasetListSortService, PlaygroundService,
+                             TalendConfirmService, MessageService, UploadWorkflowService, StateService) {
         var vm = this;
 
         vm.datasetService = DatasetService;
@@ -118,38 +118,9 @@
          */
         var open = function(dataset) {
             PlaygroundService.initPlayground(dataset)
-                .then(showPlayground);
+                .then(StateService.showPlayground);
         };
 
-        /**
-         * @ngdoc method
-         * @name showPlayground
-         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description [PRIVATE] Display a new preparation from dataset
-         */
-        var showPlayground = function() {
-            StateService.showPlayground();
-
-            var tourId = 'preparation';
-            if ($state.current.name === 'nav.home.datasets' && $state.params.datasetid && OnboardingService.shouldStartTour(tourId)) {
-                $timeout(function(){
-                    OnboardingService.startTour(tourId);
-                    //Select the first column by default
-                    $('div[id^="slickgrid_"][id$="0000"]').each(function () {
-                        this.click();
-                    });
-
-                },200);
-            } else {
-                $timeout(function(){
-                    var colSelected = DatagridExternalService.getColumnSelected();
-                    //Select the column selected previously
-                    $('div[id^="slickgrid_"][id$="'+colSelected+'"]').each(function () {
-                        this.click();
-                    });
-                },200);
-            }
-        };
         /**
          * @ngdoc method
          * @name delete

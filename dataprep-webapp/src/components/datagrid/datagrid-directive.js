@@ -13,6 +13,7 @@
      *         <li>Filters : reset the styles</li>
      * </ul>
      *
+     * @requires data-prep.services.state.constant:state
      * @requires data-prep.datagrid.service:DatagridGridService
      * @requires data-prep.datagrid.service:DatagridColumnService
      * @requires data-prep.datagrid.service:DatagridStyleService
@@ -23,7 +24,7 @@
      * @requires data-prep.services.filter.service:FilterService
      * @restrict E
      */
-    function Datagrid(DatagridGridService, DatagridColumnService, DatagridStyleService, DatagridSizeService,
+    function Datagrid(state, DatagridGridService, DatagridColumnService, DatagridStyleService, DatagridSizeService,
                       DatagridTooltipService, DatagridExternalService, DatagridService, FilterService) {
         return {
             restrict: 'E',
@@ -96,13 +97,16 @@
                     if (data) {
                         initGridIfNeeded();
                         var columns;
+                        var selectedColumn = state.playground.column;
+                        var hasSelectedColumn = !data.preview && selectedColumn;
 
                         //create columns, manage style and size, set columns in grid, and insert headers
                         clearTimeout(columnTimeout);
                         columnTimeout = setTimeout(function() {
-
                             columns = DatagridColumnService.createColumns(data.columns, data.preview);
-                            DatagridStyleService.manageColumnStyle(columns, data.preview);
+
+                            var selectedGridColumn = hasSelectedColumn ? _.find(columns, {id: selectedColumn.id}) : null;
+                            DatagridStyleService.updateColumnClass(columns, selectedGridColumn);
                             DatagridSizeService.autosizeColumns(columns); // IMPORTANT : this set columns in the grid
 
                             DatagridColumnService.renewAllColumns(false);
@@ -110,12 +114,10 @@
 
                         //manage column selection (external)
                         clearTimeout(externalTimeout);
-                        if(!data.preview) {
+                        if(hasSelectedColumn) {
                             externalTimeout = setTimeout(function() {
-                                var selectedColumn = DatagridStyleService.selectedColumn(columns);
-                                if (selectedColumn) {
-                                    DatagridExternalService.updateSuggestionPanel(selectedColumn);
-                                }
+                                var selectedGridColumn = _.find(columns, {id: selectedColumn.id});
+                                DatagridExternalService.updateSuggestionPanel(selectedGridColumn);
                             }, 0);
                         }
 

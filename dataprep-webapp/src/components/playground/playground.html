@@ -8,7 +8,7 @@
             <li translate="FILE_DETAILS" translate-value-name="{{playgroundCtrl.state.playground.dataset.name}}" translate-value-records="{{playgroundCtrl.state.playground.dataset.records}}"></li>
             <li>
                 <span>Sample size</span>
-                <select id="dataset-sampling-select"
+                <select id="playground-sampling-select"
                         ng-model="playgroundCtrl.selectedSampleSize"
                         ng-options="size.display for size in playgroundCtrl.sampleSizes"
                         ng-change="playgroundCtrl.playgroundService.changeSampleSize()"

@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    var preparationTour = [
+    var playgroundTour = [
         {
             element: '.no-js',
             title: 'Welcome to Talend Data Preparation!',
@@ -9,7 +9,7 @@
             position: 'right'
         },
         {
-            element: '#dataset-sampling-select',
+            element: '#playground-sampling-select',
             title: 'Dataset sampling',
             content: 'Click here to select a sample size.',
             position: 'right'
@@ -17,5 +17,5 @@
     ];
 
     angular.module('data-prep.services.onboarding')
-        .constant('preparationTour', preparationTour);
+        .constant('playgroundTour', playgroundTour);
 })();
