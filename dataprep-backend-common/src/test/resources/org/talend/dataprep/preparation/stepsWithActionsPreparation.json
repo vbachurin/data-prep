@@ -19,7 +19,6 @@
     {
       "category": "case",
       "name": "uppercase",
-      "items": [],
       "parameters": [
         {
           "name": "column_id",
