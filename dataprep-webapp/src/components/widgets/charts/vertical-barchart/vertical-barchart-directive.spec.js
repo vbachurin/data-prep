@@ -25,10 +25,9 @@ describe('verticalBarchart directive', function () {
 			scope = $rootScope.$new();
 			scope.visData = null;
 			scope.existingFilter = null;
-			scope.clicked = false;
-			scope.onclck = function () {
-				scope.clicked = true;
-			};
+			scope.onclck = function(obj){
+				console.log(obj);
+			};//jasmine.createSpy('spy');
 
 			element = angular.element('<vertical-barchart id="barChart" width="250" height="400"' +
 				'on-click="onclck"' +
@@ -163,5 +162,24 @@ describe('verticalBarchart directive', function () {
 			opac = +opac.toFixed(1);
 			expect(opac).toBe(opacities[index]);
 		});
+	});
+
+	it('should trigger filter propagation', function () {
+		//given
+		createElement();
+
+		scope.visData = statsData;
+		scope.$digest();
+		jasmine.clock().tick(100);
+		flushAllD3Transitions();
+
+		spyOn(scope, 'onclck').and.returnValue();
+
+		var bgBar2 = $(d3.selectAll('.bg-rect')[0][2]);
+		//var event = angular.element.Event('click');
+		bgBar2.click();
+		//then
+		//bgBar2.trigger(event);
+		expect(scope.onclck).toHaveBeenCalledWith({'data': [10, 15], 'occurrences': 6});
 	});
 });
