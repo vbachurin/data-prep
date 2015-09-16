@@ -1,7 +1,11 @@
 package org.talend.dataprep.api.dataset.statistics;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -79,11 +83,20 @@ public class StatisticsUtils {
             // Histogram
             if (isNumeric && result.exist(HistogramStatistics.class)) {
                 final HistogramStatistics histogramStatistics = result.get(HistogramStatistics.class);
+                // Build a decimal format based on most frequent pattern
+                final String pattern = statistics.getPatternFrequencies().get(0).getPattern().replace('9', '#');
+                final NumberFormat format;
+                if (pattern.indexOf('a') < 0) {
+                    format = new DecimalFormat(pattern, DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+                } else {
+                    format = DecimalFormat.getInstance(Locale.ENGLISH);
+                }
+                // Set histogram ranges
                 statistics.getHistogram().clear();
                 histogramStatistics.getHistogram().forEach((r, v) -> {
                     final HistogramRange range = new HistogramRange();
-                    range.getRange().setMax(r.getUpper());
-                    range.getRange().setMin(r.getLower());
+                    range.getRange().setMax(new Double(format.format(r.getUpper())));
+                    range.getRange().setMin(new Double(format.format(r.getLower())));
                     range.setOccurrences(v);
                     statistics.getHistogram().add(range);
                 });
