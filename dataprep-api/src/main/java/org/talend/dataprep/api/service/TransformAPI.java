@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.api.DynamicParamsInput;
 import org.talend.dataprep.api.service.command.dataset.DataSetGet;
@@ -25,7 +26,6 @@ import org.talend.dataprep.api.service.command.transformation.SuggestActionParam
 import org.talend.dataprep.api.service.command.transformation.SuggestColumnActions;
 import org.talend.dataprep.api.service.command.transformation.Transform;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.metrics.Timed;
 
@@ -131,7 +131,7 @@ public class TransformAPI extends APIService {
 
 
             response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-            // trigger calls and return last call content
+            // trigger calls and return last execute content
             final ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(getActionDynamicParams.execute(), outputStream);
             outputStream.flush();

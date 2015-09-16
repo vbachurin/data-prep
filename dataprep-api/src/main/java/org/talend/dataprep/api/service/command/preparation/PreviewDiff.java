@@ -52,7 +52,7 @@ public class PreviewDiff extends PreviewAbstract {
         // get usable tdpIds
         final String encodedTdpIds = serializeIds(input.getTdpIds());
 
-        // call transformation preview with content and the 2 transformations
+        // execute transformation preview with content and the 2 transformations
         return previewTransformation(content, oldEncodedActions, newEncodedActions, encodedTdpIds);
     }
 

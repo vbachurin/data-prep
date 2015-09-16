@@ -63,7 +63,7 @@ public class Export extends PreparationCommand<InputStream> {
         // Set response headers
         response.setContentType(input.getExportType().getMimeType());
         response.setHeader("Content-Disposition", "attachment; filename=\"" + name + input.getExportType().getExtension() + "\"");
-        // Get dataset content and call export service
+        // Get dataset content and execute export service
         final String encodedActions = serializeActions(actions);
         final String uri = getTransformationUri(input.getExportType(), input.getArguments());
         final HttpPost transformationCall = new HttpPost(uri);
