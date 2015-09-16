@@ -54,7 +54,7 @@ public class TextClusteringTest {
 
     @Test
     public void testCategory() throws Exception {
-        assertThat(textClustering.getCategory(), is(ActionCategory.QUICKFIX.getDisplayName()));
+        assertThat(textClustering.getCategory(), is(ActionCategory.STRINGS_ADVANCED.getDisplayName()));
     }
 
     @Test
