@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.data.annotation.PersistenceConstructor;
 
 public class Step extends Identifiable implements Serializable {
 
@@ -24,6 +25,7 @@ public class Step extends Identifiable implements Serializable {
        this(parentId, contentId, null);
     }
 
+    @PersistenceConstructor
     public Step(final String parentId, final String contentId, final StepDiff diff) {
         setParent(parentId);
         setContent(contentId);

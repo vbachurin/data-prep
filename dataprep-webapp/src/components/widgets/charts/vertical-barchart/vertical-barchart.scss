@@ -1,50 +1,55 @@
-.horizontal-barchart-cls{
-  font-family: $inconsolota;
+.vertical-barchart-cls{
+  .grid .tick {
+    stroke: lightgrey;
+    opacity: 0.7;
+    text{
+      opacity: 0.7;
+      font-size: .8em;
+      stroke: black;
+    }
+  }
+  .grid path {
+    stroke-width: 0;
+  }
+
   .bg-rect{
     fill: $medium-gray;
     cursor: pointer;
   }
 
-  .bar rect {
-    fill: $dark-blue;
+  .bar {
+    fill: $blue;
   }
 
-  .bar text.value {
-    font-size: .8em;
-    fill: $dark-green;
+  .bar:hover {
+    fill: brown;
   }
 
   .axis {
+    font: 10px sans-serif;
+  }
+
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
     shape-rendering: crispEdges;
   }
 
-  .axis path {
+  .x.axis path {
+    display: block;
+  }
+
+  .line {
     fill: none;
+    stroke: darkorange;
+    stroke-width: 1.5px;
   }
 
-  .x.axis line {
-    stroke: #fff;
-    //stroke-opacity: .2;
-    stroke-opacity: .0;
-  }
-
-  .x.axis text {
-    font-size: .8em;
-    fill: $medium-gray;
-  }
-
-  .y.axis path {
-    stroke: $shadow-gray;
-  }
-
-  .y.axis text {
-    display: none;
-  }
-
-  .hiddenChars {
-    background-color: #E9E9E9;
-    border: 1px dotted #BABABA;
-    white-space: pre;
+  .dot {
+    fill: white;
+    stroke: steelblue;
+    stroke-width: 1.5px;
   }
 
   .foreign-object-body{
@@ -59,6 +64,8 @@
     overflow: hidden;
   }
 
+  /**************** d3 tooltip *********************************/
+
   &.d3-tip {
     line-height: 1;
     font-family: $inconsolota;
@@ -66,29 +73,27 @@
     font-weight: 400;
     padding: 12px;
     background: rgba(0, 0, 0, 0.6);
-    color: $white;
+    color: #fff;
     border-radius: 2px;
     z-index: 100000;
-    right: 15px;
   }
-
-  /* Creates a small triangle extender for the tooltip */
   &.d3-tip:after {
     box-sizing: border-box;
     display: inline;
     width: 100%;
     line-height: 1;
     color: rgba(0, 0, 0, 0.8);
-    content: "\25BC";
-    position: absolute;
-    text-align: center;
+    content: "\25BA";
+    position: relative;
+    text-align: end;
+    float: right;
+    margin-right: -22px;
   }
 
-  /* Style northward tooltips differently */
+
   &.d3-tip.n:after {
     margin: -1px 0 0 0;
     top: 100%;
     left: 0;
   }
-
 }
