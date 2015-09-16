@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
 import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.datascience.common.inference.type.DataType;
@@ -39,10 +40,26 @@ public class ActionMetadataUtils {
      */
     public static Map<String, String> parseParameters(Iterator<Map.Entry<String, JsonNode>> parameters,
             ActionMetadata actionMetadata) {
+
+        // get parameters ids
         final List<String> paramIds = actionMetadata.getParameters()
                 .stream() //
                 .map(Parameter::getName) //
                 .collect(toList()); //
+
+        // add ids from select parameters
+        actionMetadata.getParameters().stream() //
+                .filter(p -> p instanceof SelectParameter).forEach(p -> {
+                    List<SelectParameter.Item> values = (List<SelectParameter.Item>) p.getConfiguration().get("values");
+                    for (SelectParameter.Item item : values) {
+                        paramIds.add(item.getValue());
+                        // don't forget the inline parameter
+                        if (item.getInlineParameter() != null) {
+                            paramIds.add(item.getInlineParameter().getName());
+                        }
+                    }
+                });
+
         final Map<String, String> parsedParameters = new HashMap<>();
         while (parameters.hasNext()) {
             Map.Entry<String, JsonNode> currentParameter = parameters.next();
