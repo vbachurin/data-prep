@@ -1,6 +1,6 @@
 package org.talend.dataprep.transformation.api.action.metadata.delete;
 
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.CLEANSING;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
 
 import java.util.Map;
 
@@ -21,7 +21,7 @@ public abstract class AbstractDelete extends AbstractActionMetadata implements C
      */
     @Override
     public String getCategory() {
-        return CLEANSING.getDisplayName();
+        return DATA_CLEANSING.getDisplayName();
     }
 
     /**
