@@ -85,7 +85,7 @@
          */
         function refreshCurrentDomain() {
             vm.currentDomain = vm.column.domain ? vm.column.domain : vm.column.type.toUpperCase();
-            vm.currentSimplifiedDomain = vm.column.domain ? vm.column.domain : vm.column.type;
+            vm.currentSimplifiedDomain = vm.column.domain ? vm.column.domain : ConverterService.simplifyType(vm.column.type);
         }
 
         /**

@@ -57,7 +57,7 @@
                 _.template(gridHeaderPreviewTemplate)({
                     name: col.name,
                     diffClass: DatagridStyleService.getColumnPreviewStyle(col),
-                    simpleType: col.domain ? col.domain : col.type
+                    simpleType: col.domain ? col.domain : ConverterService.simplifyType(col.type)
                 }) :
                 '';
             var translatedMsg = $translate.instant('APPLY_TO_ALL_CELLS');
