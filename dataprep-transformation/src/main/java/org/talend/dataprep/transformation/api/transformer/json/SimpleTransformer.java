@@ -185,7 +185,8 @@ class SimpleTransformer implements Transformer {
                     if (!(metadata.isDomainForced() || metadata.isTypeForced()) && !forcedColumns.contains(metadata.getId())) {
                         // Semantic types
                         final SemanticType semanticType = result.get(SemanticType.class);
-                        metadata.setDomain(TypeUtils.getDomainLabel(semanticType));
+                        metadata.setDomain(semanticType.getSuggestedCategory());
+                        metadata.setDomainLabel(TypeUtils.getDomainLabel(semanticType));
                     }
                 }
                 // Set the statistics
