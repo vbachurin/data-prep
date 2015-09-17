@@ -27,7 +27,7 @@
             <recipe-bullet class="step-trigger" step="step" ></recipe-bullet>
         </div>
 
-        <div class="content tooltip-right" ng-if="recipeCtrl.hasParameters(step)">
+        <div class="content" ng-if="recipeCtrl.hasParameters(step)">
             <transform-params ng-if="recipeCtrl.hasStaticParams(step)"
                               transformation="step.transformation"
                               on-submit="recipeCtrl.stepUpdateClosure(step)(params)"

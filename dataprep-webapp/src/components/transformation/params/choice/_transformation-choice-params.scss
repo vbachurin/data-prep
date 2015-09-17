@@ -21,8 +21,10 @@
     padding: 10px;
 
     .param-name {
-      @include flex-basis(40px);
+      @include flex-basis(45px);
       @include flex-grow(1);
+
+      padding-right: 5px;
     }
 
     .param-input {
