@@ -19,8 +19,7 @@
             init: init,
             resetCellStyles: resetCellStyles,
             resetColumnStyles: resetColumnStyles,
-            selectedColumn: selectedColumn,
-            manageColumnStyle: manageColumnStyle,
+            updateColumnClass: updateColumnClass,
             columnFormatter: columnFormatter,
             getColumnPreviewStyle: getColumnPreviewStyle
         };
@@ -47,22 +46,6 @@
          */
         function resetColumnStyles() {
             lastSelectedColumnId = null;
-        }
-
-        /**
-         * @ngdoc method
-         * @name selectedColumn
-         * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @description returns the selected column object (the one from provided array with the selected id)
-         * @param {array} columns The grid columns
-         * @return {object}
-         */
-        function selectedColumn(columns) {
-            if (lastSelectedColumnId) {
-                return _.find(columns, function (column) {
-                    return column.id === lastSelectedColumnId;
-                });
-            }
         }
 
         /**
@@ -128,33 +111,6 @@
             if (selectedCol) {
                 lastSelectedColumnId = selectedCol.id;
             }
-        }
-
-        /**
-         * @ngdoc method
-         * @name manageColumnStyle
-         * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * * @param {object} columns The columns array
-         * @param {boolean} isPreview Flag that indicate if the data IS in preview mode
-         * @description Update column style classes accordingly to the active cell.
-         * This is usefull when data changes, the column style is reset but the active cell does not change.
-         */
-        function manageColumnStyle(columns, isPreview) {
-            var selectedColumn;
-
-            if (!isPreview) {
-                var activeCell = grid.getActiveCell();
-                if (activeCell) {
-                    selectedColumn = columns[activeCell.cell];
-                }
-                else if (lastSelectedColumnId) {
-                    selectedColumn = _.find(columns, function (col) {
-                        return col.id === lastSelectedColumnId;
-                    });
-                }
-            }
-
-            updateColumnClass(columns, selectedColumn);
         }
 
         /**

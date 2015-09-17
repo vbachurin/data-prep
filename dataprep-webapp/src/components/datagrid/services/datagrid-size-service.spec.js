@@ -3,7 +3,7 @@ describe('Datagrid size service', function () {
 
     var gridMock, windowMock, gridColumns;
 
-    var storageKey = 'dataprep.col_size_00000000';
+    var storageKey = 'org.talend.dataprep.col_size_00000000';
 
     beforeEach(module('data-prep.datagrid', function ($provide) {
         $provide.factory('$window', function () {

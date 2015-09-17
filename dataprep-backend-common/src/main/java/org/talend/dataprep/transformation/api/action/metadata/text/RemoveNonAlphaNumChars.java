@@ -33,7 +33,7 @@ public class RemoveNonAlphaNumChars extends AbstractActionMetadata implements Co
      */
     @Override
     public String getCategory() {
-        return ActionCategory.QUICKFIX.getDisplayName();
+        return ActionCategory.STRINGS_ADVANCED.getDisplayName();
     }
 
     /**

@@ -17,10 +17,11 @@
      * @requires data-prep.services.statistics.service:StatisticsService
      * @requires data-prep.services.history.service:HistoryService
      * @requires data-prep.services.state.service:StateService
+     * @requires data-prep.services.onboarding:OnboardingService
      */
     function PlaygroundService($rootScope, $q, state, DatasetService, DatagridService, PreviewService, FilterService,
                                RecipeService, TransformationCacheService, SuggestionService, PreparationService,
-                               MessageService, StatisticsService, HistoryService, StateService) {
+                               MessageService, StatisticsService, HistoryService, StateService, OnboardingService) {
         var DEFAULT_NAME = 'Preparation draft';
 
         var service = {
@@ -47,10 +48,10 @@
             selectedSampleSize:{},
 
             //init/load
-            initPlayground: initPlayground,
-            load: load,
-            loadStep: loadStep,
-            changeSampleSize: changeSampleSize,
+            initPlayground: initPlayground,     // load dataset
+            load: load,                         // load preparation
+            loadStep: loadStep,                 // load preparation step
+            changeSampleSize: changeSampleSize, // load dataset/preparation with a sample size
 
             // dataset
             updateColumn: updateColumn,
@@ -116,6 +117,14 @@
                         reset(dataset, data);
                         StateService.hideRecipe();
                         StateService.setNameEditionMode(true);
+
+                        return data;
+                    })
+                    .then(function(data) {
+                        if(OnboardingService.shouldStartTour('playground')) {
+                            StateService.setGridSelection(data.columns[0]);
+                            setTimeout(OnboardingService.startTour.bind(null, 'playground'), 200);
+                        }
                     });
             }
             else {

@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -24,16 +25,16 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
  *
  * @see ChangeDatePattern
  */
-public class ChangeDatePatternTest {
+public class ChangeDatePatternTest extends BaseDateTests {
 
     /** The action to test. */
+    @Autowired
     private ChangeDatePattern action;
 
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        action = new ChangeDatePattern();
         parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 ChangeDatePatternTest.class.getResourceAsStream("changeDatePatternAction.json"));

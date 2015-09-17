@@ -43,7 +43,6 @@
          * @name createColumnDefinition
          * @methodOf data-prep.datagrid.service:DatagridColumnService
          * @param {object} col The column metadata to adapt
-         * @param {number} index The column index
          * @param {boolean} preview Flag that indicates if we are in the preview mode
          * @description Adapt column metadata to slick column.
          * <ul>

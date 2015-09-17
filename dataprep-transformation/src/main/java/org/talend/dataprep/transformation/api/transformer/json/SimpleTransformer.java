@@ -81,7 +81,7 @@ class SimpleTransformer implements Transformer {
                     if (isNumeric) {
                         final HistogramColumnParameter columnParameter = new HistogramColumnParameter();
                         final Statistics statistics = column.getStatistics();
-                        columnParameter.setParameters(statistics.getMin(), statistics.getMax(), 8);
+                        columnParameter.setParameters(statistics.getMin(), statistics.getMax(), 20);
                         histogramParameter.putColumnParameter(i, columnParameter);
                     }
                 }
@@ -185,7 +185,8 @@ class SimpleTransformer implements Transformer {
                     if (!(metadata.isDomainForced() || metadata.isTypeForced()) && !forcedColumns.contains(metadata.getId())) {
                         // Semantic types
                         final SemanticType semanticType = result.get(SemanticType.class);
-                        metadata.setDomain(TypeUtils.getDomainLabel(semanticType));
+                        metadata.setDomain(semanticType.getSuggestedCategory());
+                        metadata.setDomainLabel(TypeUtils.getDomainLabel(semanticType));
                     }
                 }
                 // Set the statistics
