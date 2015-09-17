@@ -14,6 +14,9 @@ div[data-prep-tooltip]:hover:after {
   color: $white;
   z-index: 1000;
 
-  font-size: .80em;
+  font-size: .90em;
+  white-space: pre-wrap;
+  font-family: $monospace;
+
   min-width: 110px;
 }
