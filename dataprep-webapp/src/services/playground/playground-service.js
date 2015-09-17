@@ -166,7 +166,7 @@
 
             return PreparationService.getContent(state.playground.preparation.id, step.transformation.stepId, service.selectedSampleSize.value)
                 .then(function(response) {
-                    DatagridService.setDataset(state.playground.dataset, response.data);
+                    DatagridService.updateData(response.data);
                 })
                 .finally(function() {
                     $rootScope.$emit('talend.loading.stop');
@@ -192,7 +192,7 @@
                         MessageService.error('INVALID_DATASET_TITLE', 'INVALID_DATASET');
                         throw Error('Empty data');
                     }
-                    DatagridService.setDataset(state.playground.dataset, data);
+                    DatagridService.updateData(data);
                 })
                 .finally(function() {
                     $rootScope.$emit('talend.loading.stop');
@@ -242,7 +242,7 @@
          * @description Load a specific step content in the current preparation, and update the recipe
          * @returns {Promise} The process promise
          */
-        function loadStep(step, focusColumnId) {
+        function loadStep(step) {
             //step already loaded
             if(RecipeService.getActiveThresholdStep() === step) {
                 return;
@@ -251,8 +251,7 @@
             $rootScope.$emit('talend.loading.start');
             return PreparationService.getContent(state.playground.preparation.id, step.transformation.stepId, service.selectedSampleSize.value)
                 .then(function(response) {
-                    DatagridService.setDataset(state.playground.dataset, response.data);
-                    DatagridService.focusedColumn = focusColumnId;
+                    DatagridService.updateData(response.data);
                     RecipeService.disableStepsAfter(step);
                     PreviewService.reset(false);
                 })
@@ -313,7 +312,7 @@
                     // We have to wait for the recipe update to complete
                     .then(function() {
                         var activeStep = RecipeService.getStep(lastActiveStepIndex, true);
-                        return loadStep(activeStep, columnToFocus);
+                        return loadStep(activeStep);
                     });
             }
             //load the recipe and grid head in parallel
@@ -398,9 +397,8 @@
                 .then(updateRecipe)
                 //get step id to load and update datagrid with it
                 .then(function() {
-                    var columnToFocus = step.column.id;
                     var activeStep = RecipeService.getStep(lastActiveStepIndex, true);
-                    return loadStep(activeStep, columnToFocus);
+                    return loadStep(activeStep);
                 })
                 //add entry in history for undo/redo
                 .then(function() {
@@ -565,10 +563,9 @@
          * @param {string} focusColumnId The column id to focus on
          * @description Perform an datagrid refresh with the preparation head
          */
-        function updatePreparationDatagrid(focusColumnId) {
+        function updatePreparationDatagrid() {
             return PreparationService.getContent(state.playground.preparation.id, 'head', service.selectedSampleSize.value)
                 .then(function(response) {
-                    DatagridService.focusedColumn = focusColumnId;
                     DatagridService.updateData(response.data);
                     PreviewService.reset(false);
                 });
