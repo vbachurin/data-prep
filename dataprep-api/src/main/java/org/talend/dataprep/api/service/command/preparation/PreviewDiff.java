@@ -14,7 +14,6 @@ import org.talend.dataprep.api.service.api.PreviewDiffInput;
 @Scope("request")
 public class PreviewDiff extends PreviewAbstract {
 
-    /** The all the preview parameters. */
     private final PreviewDiffInput input;
 
     public PreviewDiff(final HttpClient client, final PreviewDiffInput input) {
@@ -53,7 +52,8 @@ public class PreviewDiff extends PreviewAbstract {
         final String encodedTdpIds = serializeIds(input.getTdpIds());
 
         // execute transformation preview with content and the 2 transformations
-        return previewTransformation(content, oldEncodedActions, newEncodedActions, encodedTdpIds);
+        setContext(oldEncodedActions, newEncodedActions, content, encodedTdpIds);
+        return super.run();
     }
 
 
