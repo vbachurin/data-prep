@@ -44,8 +44,14 @@ public class GenericCommand<T> extends HystrixCommand<T> {
     @Autowired
     protected ApplicationContext context;
 
+    @Value("${transformation.service.url}")
+    protected String transformationServiceUrl;
+
     @Value("${dataset.service.url}")
     protected String datasetServiceUrl;
+
+    @Value("${preparation.service.url}")
+    protected String preparationServiceUrl;
 
     protected HttpClient client;
 
@@ -143,11 +149,17 @@ public class GenericCommand<T> extends HystrixCommand<T> {
         }
 
         public static BiFunction<HttpRequestBase, HttpResponse, String> emptyString() {
-            return (request, response) -> StringUtils.EMPTY;
+            return (request, response) -> {
+                request.releaseConnection();
+                return StringUtils.EMPTY;
+            };
         }
 
         public static BiFunction<HttpRequestBase, HttpResponse, InputStream> emptyStream() {
-            return (request, response) -> new ByteArrayInputStream(new byte[0]);
+            return (request, response) -> {
+                request.releaseConnection();
+                return new ByteArrayInputStream(new byte[0]);
+            };
         }
 
         public static BiFunction<HttpRequestBase, HttpResponse, InputStream> pipeStream() {
