@@ -42,9 +42,10 @@
                switch (type.toLowerCase()) {
                    case 'numeric':
                    case 'integer':
+                       return 'integer';
                    case 'double':
                    case 'float':
-                       return 'number';
+                       return 'decimal';
                    case 'boolean':
                        return 'boolean';
                    case 'string':

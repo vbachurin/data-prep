@@ -140,6 +140,9 @@
   "AVERAGE": "Average",
   "GROUP_BY": "group by ",
 
-  "APPLY_TO_ALL_CELLS": "Apply to all cells with this value"
+  "APPLY_TO_ALL_CELLS": "Apply to all cells with this value",
+
+
+  "FLOAT": "DECIMAL"
 
 }
