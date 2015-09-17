@@ -83,7 +83,7 @@
          */
         function updateNumbersClass(column) {
             var simplifiedType = ConverterService.simplifyType(column.tdpColMetadata.type);
-            if (simplifiedType === 'number') {
+            if (simplifiedType === 'integer' || simplifiedType === 'decimal') {
                 addClass(column, 'numbers');
             }
         }

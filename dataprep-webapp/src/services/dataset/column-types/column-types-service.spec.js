@@ -13,6 +13,7 @@ describe('Column types Service', function () {
         {'id': 'DATE', 'name': 'date', 'labelKey': 'DATE'}
     ];
 
+
     beforeEach(module('data-prep.services.dataset'));
 
     beforeEach(inject(function ($rootScope, $injector) {
@@ -30,6 +31,7 @@ describe('Column types Service', function () {
         ColumnTypesService.getTypes().then(function (response) {
             result = response.data;
         });
+
         $httpBackend.flush();
         $rootScope.$digest();
 

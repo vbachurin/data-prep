@@ -25,7 +25,29 @@
 
         ColumnTypesService.getTypes()
             .then(function (types) {
-                vm.types = types;
+                console.log("yup");
+                vm.types = [];
+                // TDP-399 we limit numeric types to integer and float (displayed as decimal)
+                _.forEach( types,function(type){
+                  if (type.id){
+                      switch ( type.id.toLowerCase() ) {
+                          case 'integer':
+                          case 'float':
+                          case 'boolean':
+                          case 'string':
+                          case 'char':
+                          case 'date':
+                              vm.types.push( type );
+                              break;
+                          case 'double':
+                          case 'numeric':
+                          case 'any':
+                          default:
+                              // ignoring others
+                      }
+                  }
+                } );
+
             });
 
         /**

@@ -115,7 +115,7 @@ describe('Type transform menu controller', function () {
         expect(ctrl.column.domainLabel).toBe('');
         expect(ctrl.column.domainFrequency).toBe(0);
         expect(ctrl.currentDomain).toBe('INTEGER');
-        expect(ctrl.currentSimplifiedDomain).toBe('number');
+        expect(ctrl.currentSimplifiedDomain).toBe('integer');
         expect(PlaygroundService.addUpdateColumnTypeStep).toHaveBeenCalledWith('0001', {id:'integer'});
     }));
 

@@ -45,6 +45,7 @@
                        return 'integer';
                    case 'double':
                    case 'float':
+                   case 'decimal':
                        return 'decimal';
                    case 'boolean':
                        return 'boolean';
