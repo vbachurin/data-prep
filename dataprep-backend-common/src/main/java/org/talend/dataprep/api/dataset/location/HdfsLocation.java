@@ -4,19 +4,13 @@ import java.util.Objects;
 
 import org.talend.dataprep.api.dataset.DataSetLocation;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Location used for remote hdfs dataset.
  */
-public class HdfsLocation implements DataSetLocation {
+public class HdfsLocation extends AbstractUrlLocation implements DataSetLocation {
 
     /** Name of the http location. */
     public static final String NAME = "hdfs";
-
-    /** The dataset http url. */
-    @JsonProperty("url")
-    private String url;
 
     /**
      * @see DataSetLocation#getLocationType()
@@ -24,20 +18,6 @@ public class HdfsLocation implements DataSetLocation {
     @Override
     public String getLocationType() {
         return NAME;
-    }
-
-    /**
-     * @return the Url
-     */
-    public String getUrl() {
-        return url;
-    }
-
-    /**
-     * @param url the url to set.
-     */
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     /**
