@@ -3,50 +3,41 @@ package org.talend.dataprep.api.service.command.preparation;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.talend.dataprep.api.APIErrorCodes.UNABLE_TO_UPDATE_PREPARATION;
+import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.asString;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.APIService;
-import org.talend.dataprep.api.service.command.common.DataPrepCommand;
+import org.talend.dataprep.api.service.command.common.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.ExceptionContext;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Component
 @Scope("request")
-public class PreparationUpdate extends DataPrepCommand<String> {
-
-    private final String id;
-
-    private final Preparation preparation;
+public class PreparationUpdate extends GenericCommand<String> {
 
     private PreparationUpdate(HttpClient client, String id, Preparation preparation) {
         super(APIService.PREPARATION_GROUP, client);
-        this.id = id;
-        this.preparation = preparation;
-    }
-
-    @Override
-    protected String run() throws Exception {
-        final byte[] preparationJSONValue = getJsonWriter().writeValueAsBytes(preparation);
-        final HttpPut preparationCreation = new HttpPut(preparationServiceUrl + "/preparations/" + id);
-        try {
-            preparationCreation.setHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE);
-            preparationCreation.setEntity(new ByteArrayEntity(preparationJSONValue));
-
-            final HttpResponse response = client.execute(preparationCreation);
-            final int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode == 200) {
-                return IOUtils.toString(response.getEntity().getContent());
+        execute(() -> {
+            try {
+                final byte[] preparationJSONValue = builder.build().writeValueAsBytes(preparation);
+                final HttpPut preparationCreation = new HttpPut(preparationServiceUrl + "/preparations/" + id);
+                preparationCreation.setHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE);
+                preparationCreation.setEntity(new ByteArrayEntity(preparationJSONValue));
+                return preparationCreation;
+            } catch (JsonProcessingException e) {
+                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
             }
-            throw new TDPException(UNABLE_TO_UPDATE_PREPARATION, ExceptionContext.build().put("id", id));
-        } finally {
-            preparationCreation.releaseConnection();
-        }
+        });
+        onError(e -> new TDPException(UNABLE_TO_UPDATE_PREPARATION, e, ExceptionContext.build().put("id", id)));
+        on(HttpStatus.OK).then(asString());
     }
 }

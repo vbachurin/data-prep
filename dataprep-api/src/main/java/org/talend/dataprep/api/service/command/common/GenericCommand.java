@@ -1,5 +1,7 @@
 package org.talend.dataprep.api.service.command.common;
 
+import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.passthrough;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +38,7 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 public class GenericCommand<T> extends HystrixCommand<T> {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(GenericCommand.class);
+
     private final Map<HttpStatus, BiFunction<HttpRequestBase, HttpResponse, T>> behavior = new EnumMap<>(HttpStatus.class);
 
     @Autowired
@@ -57,7 +60,7 @@ public class GenericCommand<T> extends HystrixCommand<T> {
 
     private Supplier<HttpRequestBase> httpCall;
 
-    private Function<Exception, RuntimeException> onError = (e) -> new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+    private Function<Exception, RuntimeException> onError = passthrough();
 
     protected GenericCommand(HystrixCommandGroupKey group, HttpClient client) {
         super(group);
@@ -133,6 +136,10 @@ public class GenericCommand<T> extends HystrixCommand<T> {
      * A helper class for common behavior definition.
      */
     public static class Defaults {
+
+        public static Function<Exception, RuntimeException> passthrough() {
+            return (e) -> (RuntimeException) e;
+        }
 
         public static <T> BiFunction<HttpRequestBase, HttpResponse, T> asNull() {
             return (request, response) -> null;
