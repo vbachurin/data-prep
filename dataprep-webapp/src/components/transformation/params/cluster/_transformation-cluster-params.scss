@@ -45,8 +45,10 @@
       padding: 0px;
 
       .param-name {
-        @include flex-basis(30px);
-        @include flex-grow(2);
+        @include flex-basis(45px);
+        @include flex-grow(1);
+
+        padding-right: 5px;
       }
 
       .param-input {
