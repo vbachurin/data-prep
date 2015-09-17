@@ -1,47 +1,19 @@
-.tooltip-right {
+div[data-prep-tooltip]:hover:after {
+  $background: rgba(89, 89, 100, 0.9);
 
-  div[data-prep-tooltip]:hover:after {
-    $background: rgba(89, 89, 100, 0.9);
+  content: attr(data-prep-tooltip);
 
-    content: attr(data-prep-tooltip);
+  position: absolute;
+  display: table-cell;
+  bottom: 10%;
+  left: 180px;
+  padding: 4px 8px;
 
-    position: absolute;
-    display: table-cell;
-    bottom: 25%;
-    left: 200px;
-    padding: 4px 8px;
+  background-color: $background;
+  box-shadow: $box-shadow;
+  color: $white;
+  z-index: 1000;
 
-    background-color: $background;
-    box-shadow: $box-shadow;
-    color: $white;
-    z-index: 1000;
-
-    font-size: .80em;
-    min-width: 80px;
-  }
-
-}
-
-.tooltip-left {
-
-  div[data-prep-tooltip]:hover:after {
-    $background: rgba(89, 89, 100, 0.9);
-
-    content: attr(data-prep-tooltip);
-
-    position: absolute;
-    display: table-cell;
-    bottom: 25%;
-    left: 200px;
-    padding: 4px 8px;
-
-    background-color: $background;
-    box-shadow: $box-shadow;
-    color: $white;
-    z-index: 1000;
-
-    font-size: .80em;
-    min-width: 80px;
-  }
-
+  font-size: .80em;
+  min-width: 110px;
 }
