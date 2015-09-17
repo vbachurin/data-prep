@@ -30,11 +30,11 @@ public class RemoteHDFSContentStore extends DataSetContentStoreAdapter {
     public InputStream getAsRaw(DataSetMetadata dataSetMetadata) {
 
         // defensive programming
-        if (dataSetMetadata.getLocation() instanceof HdfsLocation == false) {
+        if (!(dataSetMetadata.getLocation() instanceof HdfsLocation)) {
             throw new IllegalArgumentException(this.getClass().getName() + " does not manage " + dataSetMetadata.getLocation());
         }
 
-        // opens the location
+            // opens the location
         HdfsLocation location = (HdfsLocation) dataSetMetadata.getLocation();
         URI uri = URI.create(location.getUrl());
         Configuration conf = new Configuration();
@@ -47,7 +47,6 @@ public class RemoteHDFSContentStore extends DataSetContentStoreAdapter {
             LOGGER.error("error reading remote HDFS dataset {}", location, e);
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_REMOTE_DATASET_CONTENT, e);
         }
-
     }
 
     /**
