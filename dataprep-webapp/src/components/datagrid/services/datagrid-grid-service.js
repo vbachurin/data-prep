@@ -60,9 +60,6 @@
                     var column = grid.getColumns()[args.cell];
                     StateService.setGridSelection(column, args.row);
                 }
-                else {
-                    StateService.setGridSelection();
-                }
             });
 
             grid.onHeaderContextMenu.subscribe(function (e, args) {
