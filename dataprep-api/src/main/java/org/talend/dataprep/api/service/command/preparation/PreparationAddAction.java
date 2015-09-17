@@ -1,6 +1,8 @@
 package org.talend.dataprep.api.service.command.preparation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -9,15 +11,14 @@ import org.apache.http.message.BasicHeader;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.talend.daikon.exception.json.JsonErrorCode;
 import org.talend.dataprep.api.preparation.AppendStep;
 import org.talend.dataprep.api.preparation.StepDiff;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.common.PreparationCommand;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.json.JsonErrorCode;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 @Scope("request")
