@@ -36,8 +36,6 @@
       }
     ],
     "category": "data cleansing",
-    "items": [
-    ],
     "dynamic": false,
     "description": "Delete rows that have a specific value in cell in this column",
     "label": "Delete lines that match..."
@@ -78,15 +76,12 @@
         "default": "0"
       }
     ],
-    "items": [],
     "dynamic": false,
     "description": "Fill invalid cells of this column with given value",
     "label": "Fill invalid cells with value..."
   },
   {
     "name": "delete_invalid",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -119,8 +114,6 @@
   },
   {
     "name": "delete_empty",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -154,8 +147,6 @@
   {
     "name": "ceil",
     "category": "math",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -189,8 +180,6 @@
   {
     "name": "floor",
     "category": "math",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -224,8 +213,6 @@
   {
     "category": "math",
     "name": "absolute_float",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -259,8 +246,6 @@
   {
     "name": "round",
     "category": "math",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -329,16 +314,12 @@
     ],
     "category": "columns",
     "name": "rename_column",
-    "items": [
-    ],
     "dynamic": false,
     "description": "Rename this column",
     "label": "Rename"
   },
   {
     "category": "columns",
-    "items": [
-    ],
     "name": "copy",
     "parameters": [
       {

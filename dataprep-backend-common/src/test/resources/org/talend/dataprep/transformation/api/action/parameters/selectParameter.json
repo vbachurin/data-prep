@@ -16,15 +16,17 @@
       },
       {
         "value": "your choice",
-        "parameter": {
-          "name": "limit",
-          "type": "integer",
-          "implicit": false,
-          "canBeBlank": false,
-          "label": "Limit",
-          "description": "Number of token to split the value in",
-          "default": ""
-        }
+        "parameters": [
+          {
+            "name": "limit",
+            "type": "integer",
+            "implicit": false,
+            "canBeBlank": false,
+            "label": "Limit",
+            "description": "Number of token to split the value in",
+            "default": ""
+          }
+        ]
       }
     ],
     "multiple": false

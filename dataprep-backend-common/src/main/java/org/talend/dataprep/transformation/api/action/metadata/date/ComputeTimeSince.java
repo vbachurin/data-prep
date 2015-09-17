@@ -68,6 +68,7 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
                 .name(TIME_UNIT_PARAMETER) //
                 .item(ChronoUnit.YEARS.name()) //
                 .item(ChronoUnit.MONTHS.name()) //
+                .item(ChronoUnit.DAYS.name()) //
                 .item(ChronoUnit.HOURS.name()) //
                 .defaultValue(ChronoUnit.HOURS.name()) //
                 .build());

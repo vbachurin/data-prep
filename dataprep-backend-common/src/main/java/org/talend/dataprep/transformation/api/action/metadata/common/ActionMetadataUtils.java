@@ -53,9 +53,9 @@ public class ActionMetadataUtils {
                     List<SelectParameter.Item> values = (List<SelectParameter.Item>) p.getConfiguration().get("values");
                     for (SelectParameter.Item item : values) {
                         paramIds.add(item.getValue());
-                        // don't forget the inline parameter
-                        if (item.getInlineParameter() != null) {
-                            paramIds.add(item.getInlineParameter().getName());
+                        // don't forget the inline parameters
+                        for (Parameter inlineParam : item.getInlineParameters()) {
+                            paramIds.add(inlineParam.getName());
                         }
                     }
                 });

@@ -1,8 +1,6 @@
 [
   {
     "name": "delete_empty",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -35,8 +33,6 @@
   },
   {
     "name": "delete_invalid",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -104,16 +100,12 @@
     ],
     "category": "columns",
     "name": "rename_column",
-    "items": [
-    ],
     "dynamic": false,
     "description": "Rename this column",
     "label": "Rename"
   },
   {
     "category": "columns",
-    "items": [
-    ],
     "name": "copy",
     "parameters": [
       {
@@ -147,40 +139,6 @@
   },
   {
     "category": "dates",
-    "items": [
-      {
-        "name": "time_unit",
-        "category": "categ",
-        "values": [
-          {
-            "name": "YEARS",
-            "parameters": [
-            ],
-            "default": true
-          },
-          {
-            "name": "MONTHS",
-            "parameters": [
-            ],
-            "default": false
-          },
-          {
-            "name": "DAYS",
-            "parameters": [
-            ],
-            "default": false
-          },
-          {
-            "name": "HOURS",
-            "parameters": [
-            ],
-            "default": false
-          }
-        ],
-        "description": "The unit in which you want the result",
-        "label": "Time unit"
-      }
-    ],
     "name": "compute_time_since",
     "parameters": [
       {
@@ -206,6 +164,32 @@
         "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
         "label": "Scope",
         "default": ""
+      },
+      {
+        "name": "time_unit",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": "YEARS"
+            },
+            {
+              "value": "MONTHS"
+            },
+            {
+              "value": "DAYS"
+            },
+            {
+              "value": "HOURS"
+            }
+          ],
+          "multiple": false
+        },
+        "description": "The unit in which you want the result",
+        "label": "Time unit",
+        "default": "HOURS"
       }
     ],
     "dynamic": false,
@@ -214,54 +198,6 @@
   },
   {
     "category": "dates",
-    "items": [
-      {
-        "name": "new_pattern",
-        "category": "patterns",
-        "values": [
-          {
-            "name": "MM.dd.yyyy",
-            "parameters": [
-            ],
-            "default": true
-          },
-          {
-            "name": "MMM.dd.yyyy",
-            "parameters": [
-            ],
-            "default": false
-          },
-          {
-            "name": "MMMM dd yyyy",
-            "parameters": [
-            ],
-            "default": false
-          },
-          {
-            "name": "MM.dd.yyyy HH:mm:ss",
-            "parameters": [
-            ],
-            "default": false
-          },
-          {
-            "name": "custom",
-            "parameters": [
-              {
-                "name": "custom_date_pattern",
-                "type": "string",
-                "implicit": false,
-                "description": "e.g. dd/MM/yyyy for day/month/year",
-                "label": "Enter your own date pattern",
-                "default": ""
-              }
-            ],
-            "default": false
-          }
-        ],
-        "description": "Choose the date pattern to use in the list or make your own",
-        "label": "New date pattern to use"
-      }
-    ],
     "name": "change_date_pattern",
     "parameters": [
       {
@@ -287,6 +223,45 @@
         "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
         "label": "Scope",
         "default": ""
+      },
+      {
+        "name": "new_pattern",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": "MM.dd.yyyy"
+            },
+            {
+              "value": "MMM.dd.yyyy"
+            },
+            {
+              "value": "MMMM dd yyyy"
+            },
+            {
+              "value": "MM.dd.yyyy HH:mm:ss"
+            },
+            {
+              "value": "custom",
+              "parameters": [
+                {
+                  "name": "custom_date_pattern",
+                  "type": "string",
+                  "implicit": false,
+                  "description": "e.g. dd/MM/yyyy for day/month/year",
+                  "label": "Enter your own date pattern",
+                  "default": ""
+                }
+              ]
+            }
+          ],
+          "multiple": false
+        },
+        "description": "Choose the date pattern to use in the list or make your own",
+        "label": "New date pattern to use",
+        "default": "MM.dd.yyyy"
       }
     ],
     "dynamic": false,
@@ -410,8 +385,6 @@
         "default": "false"
       }
     ],
-    "items": [
-    ],
     "dynamic": false,
     "description": "Creates columns with year, month, day, etc...",
     "label": "Extract date tokens"
@@ -452,7 +425,6 @@
         "default": "01/01/1970 10:00:00"
       }
     ],
-    "items": [],
     "dynamic": false,
     "description": "Fill invalid cells of this column with given value",
     "label": "Fill invalid cells with value..."

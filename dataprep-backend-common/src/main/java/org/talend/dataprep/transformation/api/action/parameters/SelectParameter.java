@@ -1,6 +1,8 @@
 package org.talend.dataprep.transformation.api.action.parameters;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -9,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Parameter that should be displayed as a select box in the UI.
  */
-public class SelectParameter extends Parameter {
+public class SelectParameter extends Parameter implements Serializable {
 
     /**
      * Private constructor to ensure the use of builder.
@@ -37,19 +39,19 @@ public class SelectParameter extends Parameter {
         private String value;
 
         /** The optional inline parameter. */
-        @JsonProperty("parameter")
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        private Parameter inlineParameter;
+        @JsonProperty("parameters")
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        private List<Parameter> inlineParameters;
 
         /**
          * Create a select Item.
          *
          * @param value the item value.
-         * @param parameter the item optional parameter.
+         * @param parameters the item optional parameters.
          */
-        public Item(String value, Parameter parameter) {
+        public Item(String value, List<Parameter> parameters) {
             this.value = value;
-            this.inlineParameter = parameter;
+            this.inlineParameters = parameters;
         }
 
         /**
@@ -58,7 +60,7 @@ public class SelectParameter extends Parameter {
          * @param value the item value.
          */
         public Item(String value) {
-            this(value, null);
+            this(value, Collections.<Parameter> emptyList());
         }
 
         /**
@@ -69,10 +71,10 @@ public class SelectParameter extends Parameter {
         }
 
         /**
-         * @return the InlineParameter
+         * @return the InlineParameters
          */
-        public Parameter getInlineParameter() {
-            return inlineParameter;
+        public List<Parameter> getInlineParameters() {
+            return inlineParameters;
         }
     }
 
@@ -155,11 +157,23 @@ public class SelectParameter extends Parameter {
          * Add an item to the select parameter builder.
          *
          * @param value the item value.
+         * @param parameters the item optional parameters.
+         * @return the builder to carry on building the column.
+         */
+        public SelectParameter.Builder item(String value, List<Parameter> parameters) {
+            this.items.add(new Item(value, parameters));
+            return this;
+        }
+
+        /**
+         * Add an item to the select parameter builder.
+         *
+         * @param value the item value.
          * @param parameter the item optional parameter.
          * @return the builder to carry on building the column.
          */
         public SelectParameter.Builder item(String value, Parameter parameter) {
-            this.items.add(new Item(value, parameter));
+            this.items.add(new Item(value, Collections.singletonList(parameter)));
             return this;
         }
 
@@ -170,7 +184,7 @@ public class SelectParameter extends Parameter {
          * @return the builder to carry on building the column.
          */
         public SelectParameter.Builder item(String value) {
-            this.items.add(new Item(value, null));
+            this.items.add(new Item(value, Collections.emptyList()));
             return this;
         }
 

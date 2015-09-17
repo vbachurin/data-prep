@@ -84,26 +84,25 @@ public class TestI18nKeysForActionsTest {
                     for (SelectParameter.Item value : values) {
                         LOGGER.trace("    - " + value);
 
-                        final Parameter parameter = value.getInlineParameter();
-                        if (param == null) {
-                            continue;
+
+                        for (Parameter inlineParam : value.getInlineParameters()) {
+
+                            String oname = inlineParam.getName();
+                            assertNotNull(oname);
+                            assertNotEquals("", oname);
+
+                            String olabel = inlineParam.getLabel();
+                            assertNotNull(olabel);
+                            assertNotEquals("", olabel);
+                            assertI18nKeyExists("parameter." + oname + ".label");
+
+                            String odesc = inlineParam.getDescription();
+                            assertNotNull(odesc);
+                            assertNotEquals("", odesc);
+                            assertI18nKeyExists("parameter." + oname + ".desc");
+
+                            LOGGER.trace("      - " + oname + " | " + olabel + " | " + odesc);
                         }
-
-                        String oname = parameter.getName();
-                        assertNotNull(oname);
-                        assertNotEquals("", oname);
-
-                        String olabel = parameter.getLabel();
-                        assertNotNull(olabel);
-                        assertNotEquals("", olabel);
-                        assertI18nKeyExists("parameter." + oname + ".label");
-
-                        String odesc = parameter.getDescription();
-                        assertNotNull(odesc);
-                        assertNotEquals("", odesc);
-                        assertI18nKeyExists("parameter." + oname + ".desc");
-
-                        LOGGER.trace("      - " + oname + " | " + olabel + " | " + odesc);
 
                     }
 

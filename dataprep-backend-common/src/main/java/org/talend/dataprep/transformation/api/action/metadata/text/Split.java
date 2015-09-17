@@ -19,7 +19,6 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
@@ -58,7 +57,7 @@ public class Split extends AbstractActionMetadata implements ColumnAction {
     private static final String LIMIT = "limit"; //$NON-NLS-1$
 
     /**
-     * @see ActionMetadata#getName()
+     * @see org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata#getName()
      */
     @Override
     public String getName() {
@@ -66,7 +65,7 @@ public class Split extends AbstractActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ActionMetadata#getCategory()
+     * @see org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata#getCategory()
      */
     @Override
     public String getCategory() {
@@ -95,7 +94,7 @@ public class Split extends AbstractActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ActionMetadata#acceptColumn(ColumnMetadata)
+     * @see org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata#acceptColumn(ColumnMetadata)
      */
     @Override
     public boolean acceptColumn(ColumnMetadata column) {
