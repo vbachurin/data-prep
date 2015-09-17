@@ -58,16 +58,16 @@
             grid.onActiveCellChanged.subscribe(function (e, args) {
                 if (angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
-                    StateService.setGridSelection(column, args.row);
+                    StateService.setGridSelection(column.tdpColMetadata, args.row);
                 }
             });
 
             grid.onHeaderContextMenu.subscribe(function (e, args) {
-                StateService.setGridSelection(args.column);
+                StateService.setGridSelection(args.column.tdpColMetadata);
             });
 
             grid.onHeaderClick.subscribe(function (e, args) {
-                StateService.setGridSelection(args.column);
+                StateService.setGridSelection(args.column.tdpColMetadata);
             });
         }
 
