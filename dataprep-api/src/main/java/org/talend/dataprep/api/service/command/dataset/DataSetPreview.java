@@ -48,14 +48,14 @@ public class DataSetPreview extends GenericCommand<InputStream> {
         on(org.springframework.http.HttpStatus.NO_CONTENT).then(emptyStream());
         on(HttpStatus.ACCEPTED).then(emptyStream());
         on(HttpStatus.OK).then(pipeStream());
-        // Move permanently & temporarily behaviors
+        // Move permanently/temporarily behaviors
         BiFunction<HttpRequestBase, HttpResponse, InputStream> move = (req, res) -> {
             Exception cause = new Exception(res.getStatusLine().getStatusCode() + ":" //
                     + res.getStatusLine().getReasonPhrase());
             throw new TDPException(APIErrorCodes.DATASET_REDIRECT, cause, ExceptionContext.build().put("id", dataSetId));
         };
         on(HttpStatus.MOVED_PERMANENTLY).then(move);
-        on(HttpStatus.FOUND).then(pipeStream());
+        on(HttpStatus.FOUND).then(move);
 
     }
 

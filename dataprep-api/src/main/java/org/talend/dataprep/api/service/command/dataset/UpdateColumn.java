@@ -38,7 +38,7 @@ public class UpdateColumn extends GenericCommand<Void> {
                 ExceptionContext.build().put("id", dataSetId)));
         on(HttpStatus.OK).then((req, res) -> {
             contentCache.evict(new ContentCacheKey(dataSetId));
-            return null;
+            return Defaults.<Void>asNull().apply(req, res);
         });
     }
 

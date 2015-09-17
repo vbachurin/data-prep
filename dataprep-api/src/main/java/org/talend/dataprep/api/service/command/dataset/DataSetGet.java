@@ -30,18 +30,6 @@ public class DataSetGet extends GenericCommand<InputStream> {
      * @param dataSetId the requested dataset id.
      * @param metadata true if the metadata is requested.
      * @param columns true if the columns is requested.
-     */
-    public DataSetGet(HttpClient client, String dataSetId, boolean metadata, boolean columns) {
-        this(client, dataSetId, metadata, columns, null);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param client the http client to use.
-     * @param dataSetId the requested dataset id.
-     * @param metadata true if the metadata is requested.
-     * @param columns true if the columns is requested.
      * @param sample optional sample size (if null or <=0, the full dataset is returned).
      */
     public DataSetGet(HttpClient client, String dataSetId, boolean metadata, boolean columns, Long sample) {

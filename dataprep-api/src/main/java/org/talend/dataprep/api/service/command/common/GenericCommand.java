@@ -14,6 +14,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -33,6 +35,7 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 @Scope("request")
 public class GenericCommand<T> extends HystrixCommand<T> {
 
+    public static final Logger LOGGER = LoggerFactory.getLogger(GenericCommand.class);
     private final Map<HttpStatus, BiFunction<HttpRequestBase, HttpResponse, T>> behavior = new EnumMap<>(HttpStatus.class);
 
     @Autowired
@@ -72,15 +75,21 @@ public class GenericCommand<T> extends HystrixCommand<T> {
         final HttpResponse response = client.execute(request);
         final HttpStatus status = HttpStatus.valueOf(response.getStatusLine().getStatusCode());
         BiFunction<HttpRequestBase, HttpResponse, T> defaultValue = (req, res) -> {
-            try {
-                JsonErrorCode code = builder.build().reader(JsonErrorCode.class).readValue(res.getEntity().getContent());
-                code.setHttpStatus(res.getStatusLine().getStatusCode());
-                final TDPException cause = new TDPException(code);
-                throw onError.apply(cause);
-            } catch (IOException e) {
-                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-            } finally {
-                req.releaseConnection();
+            final int statusCode = res.getStatusLine().getStatusCode();
+            if (statusCode >= 400) {
+                try {
+                    JsonErrorCode code = builder.build().reader(JsonErrorCode.class).readValue(res.getEntity().getContent());
+                    code.setHttpStatus(statusCode);
+                    final TDPException cause = new TDPException(code);
+                    throw onError.apply(cause);
+                } catch (IOException e) {
+                    throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+                } finally {
+                    req.releaseConnection();
+                }
+            } else {
+                LOGGER.error("Unable to process message for request {} (response code: {}).", request, statusCode);
+                return Defaults.<T>asNull().apply(req, res);
             }
         };
         return behavior.getOrDefault(status, defaultValue).apply(request, response);
