@@ -51,4 +51,5 @@ function SlickGridMock () {
         updateRowCount: function() {}
     };
 }
+
 /* jshint ignore:end */

@@ -166,6 +166,7 @@ $datagrid-cell-font-size: .80em;
     font-size: $datagrid-cell-font-size;
     font-family: $monospace;
     white-space: pre;
+    z-index: auto;
 
     &.selected {
       background-color: #DFE8F6;
