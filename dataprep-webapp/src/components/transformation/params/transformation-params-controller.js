@@ -88,8 +88,6 @@
             var choiceParams = getChoiceParams();
             var clusterParams = getClusterParams();
             return _.merge(_.merge(params, choiceParams), clusterParams);
-            //var dateParams = getDateParams();
-            //return _.merge(_.merge(_.merge(params, choiceParams), clusterParams),dateParams);
         };
 
         /**
@@ -125,6 +123,35 @@
             var params = gatherParams();
             vm.onSubmitHoverOff({params: params});
         };
+
+        /**
+         * @ngdoc method
+         * @name getParameterType
+         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
+         * @description Return the parameter type to display
+         * @param {object} parameter The parameter
+         */
+        vm.getParameterType = function(parameter) {
+
+            switch (parameter.type.toLowerCase()) {
+                case 'numeric':
+                case 'integer':
+                case 'double':
+                case 'float':
+                case 'string':
+                    return 'simple';
+                case 'select':
+                    return 'choice';
+                case 'cluster':
+                    return 'cluster';
+                case 'date':
+                    return 'date';
+                default:
+                    return 'simple';
+            }
+
+        };
+
     }
 
     angular.module('data-prep.transformation-params')

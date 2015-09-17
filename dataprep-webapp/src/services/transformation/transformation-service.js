@@ -46,9 +46,6 @@
                 //params
                 var filteredParameters = _.filter(menu.parameters, isExplicitParameter);
                 menu.parameters = filteredParameters.length ? filteredParameters : null;
-
-                //items
-                menu.items = menu.items.length ? menu.items : null;
             });
         }
 
@@ -63,6 +60,12 @@
             if(menu.parameters) {
                 _.forEach(menu.parameters, function(param) {
                     param.inputType = ConverterService.toInputType(param.type);
+                    // also take care of select parameters
+                    if (param.configuration && param.configuration.values) {
+                        _.forEach(param.configuration.values, function(selectItem) {
+                            selectItem.inputType = ConverterService.toInputType(selectItem.type);
+                        });
+                    }
                 });
             }
         }

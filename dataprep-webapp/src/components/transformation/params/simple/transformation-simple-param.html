@@ -1,0 +1,27 @@
+<div class="param">
+    <div class="param-row" data-prep-tooltip="{{::simpleParamCtrl.parameter.description}}">
+        <div class="param-name" ng-if="::(simpleParamCtrl.label !== 'false')">
+            {{simpleParamCtrl.label}}{{::simpleParamCtrl.parameter.label}}:
+        </div>
+
+        <div class="param-input" ng-if="::(simpleParamCtrl.editableSelect)">
+            <editable-select
+                    list="parameter.list"
+                    ng-model="parameter.value"></editable-select>
+        </div>
+        <div class="param-input" ng-if="::(!simpleParamCtrl.editableSelect)">
+            <input name="{{::(simpleParamCtrl.parameter.name)}}"
+                   type="{{::simpleParamCtrl.parameter.inputType}}"
+                   ng-model="simpleParamCtrl.parameter.value"
+                   ng-trim="false"
+                   is-type="{{::simpleParamCtrl.parameter.type}}"
+                   can-be-blank="{{::simpleParamCtrl.parameter.canBeBlank}}"/>
+            <span ng-if="::(simpleParamCtrl.parameter.type === 'boolean')">{{simpleParamCtrl.parameter.name}}</span>
+        </div>
+
+        <div class="param-error error"
+             ng-if="paramCtrl.paramForm[simpleParamCtrl.parameter.name].$error.isTypeValidation || paramsCtrl.paramForm[simpleParamCtrl.parameter.name].$error.number">
+            This must be a {{::simpleParamCtrl.parameter.type}}
+        </div>
+    </div>
+</div>
