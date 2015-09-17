@@ -17,6 +17,10 @@
       font-weight: bold;
       text-align: center;
       cursor: pointer;
+      &:hover{
+        color: $dark-blue;
+        text-decoration: underline;
+      }
     }
   }
 
