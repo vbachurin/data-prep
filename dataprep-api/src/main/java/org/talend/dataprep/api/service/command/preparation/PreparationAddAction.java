@@ -1,6 +1,8 @@
 package org.talend.dataprep.api.service.command.preparation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -16,8 +18,7 @@ import org.talend.dataprep.api.service.command.common.PreparationCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.json.JsonErrorCode;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 @Scope("request")
@@ -40,7 +41,7 @@ public class PreparationAddAction extends PreparationCommand<Void> {
 
         final HttpPost actionAppend = new HttpPost(preparationServiceUrl + "/preparations/" + preparationId + "/actions"); //$NON-NLS-1$ //$NON-NLS-2$
         try {
-            final String stepAsString = getObjectMapper().writeValueAsString(step);
+            final String stepAsString = builder.build().writeValueAsString(step);
             final InputStream stepInputStream = new ByteArrayInputStream(stepAsString.getBytes());
 
             actionAppend.setHeader(new BasicHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)); //$NON-NLS-1$

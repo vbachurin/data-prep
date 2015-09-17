@@ -1,6 +1,12 @@
 package org.talend.dataprep.api.service.command.preparation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
@@ -14,15 +20,9 @@ import org.talend.dataprep.api.preparation.StepDiff;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.common.PreparationCommand;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCode;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 @Scope("request")
@@ -48,7 +48,7 @@ public class PreparationUpdateAction extends PreparationCommand<Void> {
 
         final HttpPut actionAppend = new HttpPut(preparationServiceUrl + "/preparations/" + preparationId + "/actions/" + stepId); //$NON-NLS-1$ //$NON-NLS-2$
         try {
-            final String stepAsString = getObjectMapper().writeValueAsString(updatedStep);
+            final String stepAsString = builder.build().writeValueAsString(updatedStep);
             final InputStream stepInputStream = new ByteArrayInputStream(stepAsString.getBytes());
 
             actionAppend.setHeader(new BasicHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE));
