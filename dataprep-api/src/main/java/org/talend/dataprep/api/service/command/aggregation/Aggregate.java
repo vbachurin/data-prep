@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.talend.daikon.exception.json.JsonErrorCode;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
@@ -22,7 +23,6 @@ import org.talend.dataprep.api.service.command.dataset.DataSetGet;
 import org.talend.dataprep.api.service.command.preparation.PreparationGetContent;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.exception.json.JsonErrorCode;
 import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
