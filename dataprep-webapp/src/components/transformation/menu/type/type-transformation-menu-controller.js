@@ -25,7 +25,6 @@
 
         ColumnTypesService.getTypes()
             .then(function (types) {
-                console.log("yup");
                 vm.types = [];
                 // TDP-399 we limit numeric types to integer and float (displayed as decimal)
                 _.forEach( types,function(type){
