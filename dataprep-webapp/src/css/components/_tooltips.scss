@@ -1,18 +1,47 @@
-div[data-prep-tooltip]:hover:after {
-  $background: rgba(89, 89, 100, 0.9);
+.tooltip-right {
 
-  content: attr(data-prep-tooltip);
+  div[data-prep-tooltip]:hover:after {
+    $background: rgba(89, 89, 100, 0.9);
 
-  position: absolute;
-  display: table-cell;
-  top: 100%;
-  left: 0;
-  padding: 4px 8px;
+    content: attr(data-prep-tooltip);
 
-  max-width: 200px;
+    position: absolute;
+    display: table-cell;
+    bottom: 25%;
+    left: 200px;
+    padding: 4px 8px;
 
-  background-color: $background;
-  box-shadow: $box-shadow;
-  color: $white;
-  z-index: 1000;
+    background-color: $background;
+    box-shadow: $box-shadow;
+    color: $white;
+    z-index: 1000;
+
+    font-size: .80em;
+    min-width: 80px;
+  }
+
+}
+
+.tooltip-left {
+
+  div[data-prep-tooltip]:hover:after {
+    $background: rgba(89, 89, 100, 0.9);
+
+    content: attr(data-prep-tooltip);
+
+    position: absolute;
+    display: table-cell;
+    bottom: 25%;
+    left: 200px;
+    padding: 4px 8px;
+
+    background-color: $background;
+    box-shadow: $box-shadow;
+    color: $white;
+    z-index: 1000;
+
+    font-size: .80em;
+    min-width: 80px;
+  }
+
 }
