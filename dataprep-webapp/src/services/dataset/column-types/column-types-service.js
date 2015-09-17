@@ -22,8 +22,8 @@
             }
             return $http.get(RestURLs.serverUrl + '/api/types').then(function (response) {
                 types = [];
+                // TDP-399 we limit numeric types to integer and float (displayed as decimal)
                 _.forEach( response.data,function(type){
-                    //console.log('type:'+type.id);
                     switch (type.id.toLowerCase()) {
 
                         case 'integer':
@@ -49,11 +49,6 @@
 
                     }
                 } );
-                /*console.log('display');
-                _.forEach(types,function(type){
-                    console.log('type.id:'+type.id);
-                });
-                */
                 return types;
             });
         };
