@@ -1,8 +1,8 @@
 describe('Dataset list sort service', function () {
     'use strict';
 
-    var sortKey = 'dataprep.dataset.sort';
-    var orderKey = 'dataprep.dataset.order';
+    var sortKey = 'org.talend.dataprep.dataset.sort';
+    var orderKey = 'org.talend.dataprep.dataset.order';
 
     beforeEach(module('data-prep.dataset-list'));
 

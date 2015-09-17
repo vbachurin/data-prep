@@ -9,11 +9,10 @@
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.transformation.service:TransformationService
      * @requires data-prep.services.transformation.service:TransformationApplicationService
-     * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.playground.service:EarlyPreviewService
      */
     function ActionsSuggestionsCtrl(state, SuggestionService, ColumnSuggestionService, TransformationService,
-                                    PreparationService, TransformationApplicationService, EarlyPreviewService) {
+                                    TransformationApplicationService, EarlyPreviewService) {
 
         var vm = this;
         vm.columnSuggestionService = ColumnSuggestionService;

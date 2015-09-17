@@ -26,7 +26,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.talend.daikon.exception.TalendExceptionContext;
 import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
@@ -38,6 +37,7 @@ import org.talend.dataprep.dataset.service.locator.DataSetLocatorService;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.lock.DistributedLock;
@@ -181,7 +181,7 @@ public class DataSetService {
                 comparisonOrder = Comparator.reverseOrder();
                 break;
             default:
-                throw new TDPException(DataSetErrorCodes.ILLEGAL_ORDER_FOR_LIST, TalendExceptionContext.build().put("order", order));
+                throw new TDPException(DataSetErrorCodes.ILLEGAL_ORDER_FOR_LIST, ExceptionContext.build().put("order", order));
         }
         // Select comparator for sort (either by name or date)
         final Comparator<DataSetMetadata> comparator;
@@ -193,7 +193,7 @@ public class DataSetService {
                 comparator = Comparator.comparing(dataSetMetadata -> String.valueOf(dataSetMetadata.getCreationDate()), comparisonOrder);
                 break;
             default:
-                throw new TDPException(DataSetErrorCodes.ILLEGAL_SORT_FOR_LIST, TalendExceptionContext.build().put("sort", order));
+                throw new TDPException(DataSetErrorCodes.ILLEGAL_SORT_FOR_LIST, ExceptionContext.build().put("sort", order));
         }
         // Return sorted results
         return stream.filter(metadata -> !metadata.getLifecycle().importing()) //
@@ -292,7 +292,7 @@ public class DataSetService {
             if (dataSetMetadata.getLifecycle().importing()) {
                 // Data set is being imported, this is an error since user should not have an id to a being-created
                 // data set (create() operation is a blocking operation).
-                final TalendExceptionContext context = TalendExceptionContext.build().put("id", dataSetId); //$NON-NLS-1$
+                final ExceptionContext context = ExceptionContext.build().put("id", dataSetId); //$NON-NLS-1$
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, context);
             }
             // Build the result
@@ -584,7 +584,7 @@ public class DataSetService {
             DataSetMetadata previous = dataSetMetadataRepository.get(dataSetId);
             if (previous == null) {
                 // No need to silently create the data set metadata: associated content will most likely not exist.
-                throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST, TalendExceptionContext.build().put("id", dataSetId));
+                throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST, ExceptionContext.build().put("id", dataSetId));
             }
             try {
                 // Update existing data set metadata with new one.
@@ -676,7 +676,7 @@ public class DataSetService {
                 userDataRepository.save(userData);
             }
         } else {// no dataset found so throws an error
-            throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST, TalendExceptionContext.build().put("id", dataSetId));
+            throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST, ExceptionContext.build().put("id", dataSetId));
         }
     }
 
@@ -703,7 +703,7 @@ public class DataSetService {
             final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
             if (dataSetMetadata == null) {
                 throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST,
-                        TalendExceptionContext.build().put("id", dataSetId));
+                        ExceptionContext.build().put("id", dataSetId));
             }
 
             LOG.debug("update dataset column for #{} with type {} and/or domain {}", dataSetId, parameters.getType(), parameters.getDomain());
@@ -712,7 +712,7 @@ public class DataSetService {
             final ColumnMetadata column = dataSetMetadata.getRow().getById(columnId);
             if (column == null) {
                 throw new TDPException(DataSetErrorCodes.COLUMN_DOES_NOT_EXIST, //
-                        TalendExceptionContext.build() //
+                        ExceptionContext.build() //
                                 .put("id", dataSetId) //
                                 .put("columnid", columnId));
             }

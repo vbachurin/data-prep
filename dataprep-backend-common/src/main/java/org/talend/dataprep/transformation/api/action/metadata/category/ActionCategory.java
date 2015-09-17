@@ -5,12 +5,13 @@ package org.talend.dataprep.transformation.api.action.metadata.category;
  */
 public enum ActionCategory {
     COLUMNS("columns"), //
-    QUICKFIX("quickfix"), //
     MATH("math"), //
-    CASE("case"), //
-    DATE("date"), //
+    STRINGS("strings"), //
+    STRINGS_ADVANCED("strings advanced"), //
+    SPLIT("split"), //
+    DATE("dates"), //
     BOOLEAN("boolean"), //
-    CLEANSING("cleansing");
+    DATA_CLEANSING("data cleansing");
 
     /** The category display name. */
     private final String displayName;

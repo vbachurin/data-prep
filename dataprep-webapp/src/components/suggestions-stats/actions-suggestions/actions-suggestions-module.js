@@ -13,7 +13,6 @@
     angular.module('data-prep.actions-suggestions', [
         'talend.widget',
         'data-prep.services.transformation',
-        'data-prep.services.preparation',
         'data-prep.services.state'
     ]);
 })();

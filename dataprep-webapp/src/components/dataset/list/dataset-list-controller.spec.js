@@ -13,6 +13,8 @@ describe('Dataset list controller', function () {
     ];
 
     beforeEach(module('data-prep.dataset-list'));
+    beforeEach(module('data-prep.services.onboarding'));
+    beforeEach(module('data-prep.datagrid'));
 
     beforeEach(inject(function ($rootScope, $controller, $q, $state, DatasetService, PlaygroundService, MessageService, DatasetListSortService, StateService) {
         var datasetsValues = [datasets, refreshedDatasets];

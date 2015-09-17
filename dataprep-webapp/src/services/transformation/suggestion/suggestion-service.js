@@ -75,6 +75,7 @@
          * @description Reset the suggestions
          */
         function reset() {
+            service.currentColumn = null;
             ColumnSuggestionService.reset();
         }
     }

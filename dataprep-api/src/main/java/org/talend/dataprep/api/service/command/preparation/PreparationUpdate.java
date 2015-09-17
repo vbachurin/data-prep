@@ -15,7 +15,7 @@ import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.TalendExceptionContext;
+import org.talend.daikon.exception.ExceptionContext;
 
 @Component
 @Scope("request")
@@ -44,7 +44,7 @@ public class PreparationUpdate extends DataPrepCommand<String> {
             if (statusCode == 200) {
                 return IOUtils.toString(response.getEntity().getContent());
             }
-            throw new TDPException(UNABLE_TO_UPDATE_PREPARATION, TalendExceptionContext.build().put("id", id));
+            throw new TDPException(UNABLE_TO_UPDATE_PREPARATION, ExceptionContext.build().put("id", id));
         } finally {
             preparationCreation.releaseConnection();
         }

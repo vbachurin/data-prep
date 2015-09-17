@@ -1,26 +1,68 @@
 package org.talend.dataprep.api.service;
 
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.response.Response;
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+
+import java.io.InputStream;
+import java.util.List;
+
 import static com.jayway.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
-import java.io.InputStream;
-import java.util.List;
-
-import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.response.Response;
-
 /**
  * Unit test for Transformation API.
  */
 public class TransformAPITest extends ApiServiceTestBase {
 
+    @Test
+    public void testTransformNoOp() throws Exception {
+        // given
+        final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
+        final String expectedContent = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_columns.json"));
 
+        // when
+        final String transformed = given().contentType(ContentType.JSON).body("").when().post("/api/transform/" + dataSetId)
+                .asString();
+
+        // then
+        assertThat(transformed, sameJSONAs(expectedContent).allowingExtraUnexpectedFields());
+    }
+
+    @Test
+    public void testTransformOneAction() throws Exception {
+        // given
+        final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
+
+        final InputStream expectedContent = PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_firstname_uppercase.json");
+        final String actions = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/upper_case_firstname.json"));
+
+        // when
+        final String transformed = given().contentType(ContentType.JSON).body(actions).when().log().ifValidationFails()
+                .post("/api/transform/" + dataSetId).asString();
+
+        // then
+        assertThat(transformed, sameJSONAsFile(expectedContent));
+    }
+
+    @Test
+    public void testTransformTwoActions() throws Exception {
+        // given
+        final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
+        final String actions = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("transformation/upper_case_lastname_firstname.json"));
+        final InputStream expectedContent = PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_lastname_firstname_uppercase.json");
+
+        // when
+        final String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
+                .asString();
+
+        // then
+        assertThat(transformed, sameJSONAsFile(expectedContent));
+    }
 
     @Test
     public void testSuggestActionParams_should_return_dynamic_params_with_dataset() throws Exception {
@@ -92,7 +134,7 @@ public class TransformAPITest extends ApiServiceTestBase {
      * see TDP-280 (text clustering parameters exceed url length limit)
      */
     @Test
-    public void should_not_exeed_url_length_limit() throws Exception {
+    public void should_not_exceed_url_length_limit() throws Exception {
 
         // given
         final String preparationId = createPreparationFromFile("bugfix/TDP-280.csv", "cars", "text/csv");

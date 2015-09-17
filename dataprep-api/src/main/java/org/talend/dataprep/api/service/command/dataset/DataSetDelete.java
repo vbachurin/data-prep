@@ -22,7 +22,7 @@ import org.talend.dataprep.api.service.command.preparation.PreparationListForDat
 import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.cache.ContentCacheKey;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.TalendExceptionContext;
+import org.talend.daikon.exception.ExceptionContext;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,7 +68,7 @@ public class DataSetDelete extends DataPrepCommand<Void> {
         // if the dataset is used by preparation(s), the deletion is forbidden
         if (preparations.size() > 0) {
             LOG.debug("DataSet {} is used by {} preparation(s) and cannot be deleted", dataSetId, preparations.size());
-            throw new TDPException(DATASET_STILL_IN_USE, TalendExceptionContext.build()
+            throw new TDPException(DATASET_STILL_IN_USE, ExceptionContext.build()
                     .put("dataSetId", dataSetId).put("preparations", preparations));
         }
 
@@ -103,7 +103,7 @@ public class DataSetDelete extends DataPrepCommand<Void> {
             contentCache.evict(new ContentCacheKey(dataSetId));
             return null;
         }
-        throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET, TalendExceptionContext.build().put("dataSetId", dataSetId));
+        throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET, ExceptionContext.build().put("dataSetId", dataSetId));
     }
 
 }

@@ -56,7 +56,7 @@ public class ExtractEmailDomain extends AbstractActionMetadata implements Column
      */
     @Override
     public String getCategory() {
-        return ActionCategory.QUICKFIX.getDisplayName();
+        return ActionCategory.SPLIT.getDisplayName();
     }
 
     /**

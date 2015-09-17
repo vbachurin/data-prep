@@ -1,0 +1,87 @@
+{
+  "records": [
+    {
+      "state": "nc",
+      "tdpId": 1
+    },
+    {
+      "state": "ny",
+      "tdpId": 2
+    },
+    {
+      "state": "az",
+      "tdpId": 3
+    },
+    {
+      "state": "ca",
+      "tdpId": 4
+    }
+  ],
+  "columns": [
+    {
+      "name": "state",
+      "headerSize": 0,
+      "type": "string",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 4,
+        "invalidValues": []
+      },
+      "id": "state",
+      "statistics": {
+        "count": 4,
+        "valid": 4,
+        "invalid": 0,
+        "empty": 0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
+        "duplicateCount": 0,
+        "distinctCount": 4,
+        "frequencyTable": [
+          {
+            "data": "nc",
+            "occurrences": 1
+          },
+          {
+            "data": "az",
+            "occurrences": 1
+          },
+          {
+            "data": "ny",
+            "occurrences": 1
+          },
+          {
+            "data": "ca",
+            "occurrences": 1
+          }
+        ],
+        "patternFrequencyTable": [
+          {
+            "pattern": "aa",
+            "occurrences": 4
+          }
+        ],
+        "quantiles": {
+          "median": "NaN",
+          "lowerQuantile": "NaN",
+          "upperQuantile": "NaN"
+        },
+        "histogram": [],
+        "textLengthSummary": {
+          "minimalLength": 2.0,
+          "maximalLength": 2.0,
+          "averageLength": 2.0
+        }
+      },
+      "domain": "US_STATE_CODE",
+      "domainLabel": "US State Code",
+      "domainFrequency": 0.0,
+      "semanticDomains": [],
+      "domainForced": false,
+      "typeForced": false
+    }
+  ]
+}

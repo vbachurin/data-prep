@@ -1,6 +1,6 @@
 package org.talend.dataprep.exception;
 
-import org.talend.daikon.exception.TalendExceptionContext;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.ErrorCode;
 import org.talend.daikon.exception.json.JsonErrorCode;
@@ -19,7 +19,7 @@ public class TDPException extends TalendRuntimeException {
      * @param cause the root cause of this error.
      * @param context the context of the error when it occurred (used to detail the user error message in frontend).
      */
-    public TDPException(ErrorCode code, Throwable cause, TalendExceptionContext context) {
+    public TDPException(ErrorCode code, Throwable cause, ExceptionContext context) {
         super(code, cause, context);
     }
 
@@ -39,7 +39,7 @@ public class TDPException extends TalendRuntimeException {
      * @param code the error code that holds all the .
      * @param context the exception context.
      */
-    public TDPException(ErrorCode code, TalendExceptionContext context) {
+    public TDPException(ErrorCode code, ExceptionContext context) {
         super(code, null, context);
     }
 
@@ -49,7 +49,7 @@ public class TDPException extends TalendRuntimeException {
      * @param code an error code serialized to JSON.
      */
     public TDPException(JsonErrorCode code) {
-        super(code, TalendExceptionContext.build().from(code.getContext()));
+        super(code, ExceptionContext.build().from(code.getContext()));
     }
 
     /**

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,9 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+
+import static java.util.stream.Collectors.toList;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
 /**
  * Serialize preparations in json.
@@ -34,6 +39,8 @@ public class PreparationJsonSerializer extends JsonSerializer<Preparation> {
     @Autowired
     private Collection<ActionMetadata> actionMetadata;
 
+    final Predicate<Step> isNotRootStep = step -> !ROOT_STEP.id().equals(step.id());
+
     /**
      * @see JsonSerializer#serialize(Object, JsonGenerator, SerializerProvider)
      */
@@ -49,14 +56,20 @@ public class PreparationJsonSerializer extends JsonSerializer<Preparation> {
             generator.writeNumberField("creationDate", preparation.getCreationDate()); //$NON-NLS-1$
             generator.writeNumberField("lastModificationDate", preparation.getLastModificationDate()); //$NON-NLS-1$
             if (versionRepository != null && preparation.getStep() != null) {
-                // Steps
-                final List<String> steps = PreparationUtils.listSteps(preparation.getStep(), versionRepository);
-                generator.writeObjectField("steps", steps); //$NON-NLS-1$
+                final List<Step> steps = PreparationUtils.listSteps(preparation.getStep(), versionRepository);
+
+                // Steps ids
+                final List<String> ids = steps.stream().map(Step::id).collect(toList());
+                generator.writeObjectField("steps", ids); //$NON-NLS-1$
+
+                // Steps diff metadata
+                final List<StepDiff> diffs = steps.stream().filter(isNotRootStep).map(Step::getDiff).collect(toList());
+                generator.writeObjectField("diff", diffs); //$NON-NLS-1$
 
                 // Actions
-                Step step = versionRepository.get(preparation.getStep().id(), Step.class);
-                PreparationActions prepActions = versionRepository.get(step.getContent(), PreparationActions.class);
-                List<Action> actions = prepActions.getActions();
+                final Step head = versionRepository.get(preparation.getStep().id(), Step.class);
+                final PreparationActions prepActions = versionRepository.get(head.getContent(), PreparationActions.class);
+                final List<Action> actions = prepActions.getActions();
                 generator.writeObjectField("actions", actions); //$NON-NLS-1$
 
                 // Actions metadata

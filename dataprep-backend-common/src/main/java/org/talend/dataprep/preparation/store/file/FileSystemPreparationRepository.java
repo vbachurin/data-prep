@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Identifiable;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.TalendExceptionContext;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 
@@ -67,7 +67,7 @@ public class FileSystemPreparationRepository implements PreparationRepository {
         } catch (IOException e) {
             LOG.error("Error saving {}", object, e);
             throw new TDPException(CommonErrorCodes.UNABLE_TO_SAVE_PREPARATION, e,
-                    TalendExceptionContext.build().put("id", object.id()));
+                    ExceptionContext.build().put("id", object.id()));
         }
         LOG.debug("preparation #{} saved", object.id());
 
@@ -98,7 +98,7 @@ public class FileSystemPreparationRepository implements PreparationRepository {
             }
 
         } catch (ClassNotFoundException | IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_PREPARATION, e, TalendExceptionContext.build().put("id", id));
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PREPARATION, e, ExceptionContext.build().put("id", id));
         }
     }
 
