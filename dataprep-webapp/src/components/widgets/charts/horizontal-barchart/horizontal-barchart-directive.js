@@ -7,14 +7,15 @@
      * @description This directive renders the horizontal bar chart.
      * @restrict E
      * @usage
-     *     <horizontal-barchart id="barChart"
-     *             width="250"
-     *             height="400"
-     *             on-click="columnProfileCtrl.barchartClickFn"
-     *             visu-data="columnProfileCtrl.processedData"
-     *             key-field="occurrences"
-     *             value-field="data"
-     *         ></horizontal-barchart>
+     * <horizontal-barchart id="hBarChart"
+     *    width="320"
+     *    height="400"
+     *    on-click="columnProfileCtrl.barchartClickFn"
+     *    visu-data="columnProfileCtrl.histogram.data"
+     *    value-field="formattedValue"
+     *    key-field="{{columnProfileCtrl.histogram.key}}"
+     *    key-label="{{columnProfileCtrl.histogram.label}}">
+     * </horizontal-barchart>
      * */
 
     function HorizontalBarchart() {
@@ -33,7 +34,7 @@
                 var renderTimeout;
 				var tip;
 
-                function renderBarchart(statData) {
+                function renderHBarchart(statData) {
                     var container = attrs.id;
                     var width = +attrs.width;
                     var height = Math.ceil(((+attrs.height) / 15) * (statData.length + 1));
@@ -47,7 +48,6 @@
 
                     var xAxis = d3.svg.axis().scale(x).tickFormat(d3.format('d')).orient('top').tickSize(-h).ticks(Math.abs(x.range()[1] - x.range()[0]) / 50),
                         yAxis = d3.svg.axis().scale(y).orient('left').tickSize(0);
-
 
                     if(!scope.keyField) {
                         scope.keyField = 'occurrences'; //Value by default
@@ -109,6 +109,8 @@
                         .attr('class', 'x axis')
                         .call(xAxis);
 
+                    svg.selectAll('.tick text').style('text-anchor','end');
+
                     svg.append('g')
                         .attr('class', 'y axis')
                         .call(yAxis);
@@ -131,7 +133,7 @@
                         });
 
                     bgBar.append('rect')
-                        .attr('width', w + 100)
+                        .attr('width', w)
                         .attr('height', y.rangeBand() + 4)
                         .attr('class', 'bg-rect')
                         .style('opacity', 0)
@@ -152,12 +154,11 @@
                 scope.$watch('visuData',
                     function (statData) {
                         element.empty();
-						if(tip){
-							tip.hide();
-						}
+                        //because the tooltip is not a child of the horizontal barchart element
+                        d3.selectAll('.horizontal-barchart-cls.d3-tip').remove();
                         if (statData) {
                             clearTimeout(renderTimeout);
-                            renderTimeout = setTimeout(renderBarchart.bind(this, statData), 100);
+                            renderTimeout = setTimeout(renderHBarchart.bind(this, statData), 100);
                         }
                     });
             }

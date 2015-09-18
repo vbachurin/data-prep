@@ -51,7 +51,7 @@
   }
 
   .modal-window { // overlay
-    @include position(fixed, 0px 0px 0px 0px);
+    @include position(absolute, 0px 0px 0px 0px);
     background: $background-transparent;
     opacity: 0;
     padding-top: 0.6em;

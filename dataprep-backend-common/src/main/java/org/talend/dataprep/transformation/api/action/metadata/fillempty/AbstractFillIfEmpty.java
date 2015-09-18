@@ -1,6 +1,6 @@
 package org.talend.dataprep.transformation.api.action.metadata.fillempty;
 
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.QUICKFIX;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ public abstract class AbstractFillIfEmpty extends AbstractActionMetadata impleme
 
     @Override
     public String getCategory() {
-        return QUICKFIX.getDisplayName();
+        return DATA_CLEANSING.getDisplayName();
     }
 
 

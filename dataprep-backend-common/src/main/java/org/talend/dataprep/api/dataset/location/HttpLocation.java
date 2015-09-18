@@ -4,19 +4,13 @@ import java.util.Objects;
 
 import org.talend.dataprep.api.dataset.DataSetLocation;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Location used for remote http dataset.
  */
-public class HttpLocation implements DataSetLocation {
+public class HttpLocation extends AbstractUrlLocation implements DataSetLocation {
 
     /** Name of the http location. */
     public static final String NAME = "http";
-
-    /** The dataset http url. */
-    @JsonProperty("url")
-    private String url;
 
     /**
      * @see DataSetLocation#getLocationType()
@@ -24,20 +18,6 @@ public class HttpLocation implements DataSetLocation {
     @Override
     public String getLocationType() {
         return NAME;
-    }
-
-    /**
-     * @return the Url
-     */
-    public String getUrl() {
-        return url;
-    }
-
-    /**
-     * @param url the url to set.
-     */
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     /**

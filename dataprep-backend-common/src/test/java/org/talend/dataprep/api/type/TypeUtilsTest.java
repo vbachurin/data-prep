@@ -8,6 +8,10 @@ import java.util.Collections;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
+import org.talend.dataquality.semantic.classifier.custom.UserDefinedCategory;
+import org.talend.dataquality.semantic.recognizer.CategoryFrequency;
+import org.talend.dataquality.semantic.statistics.SemanticType;
 import org.talend.datascience.common.inference.type.DataType;
 
 public class TypeUtilsTest {
@@ -59,4 +63,17 @@ public class TypeUtilsTest {
         assertThat(types[0], is(DataType.Type.DATE));
     }
 
+    @Test
+    public void testNullSemanticDomainType() throws Exception {
+        assertThat(TypeUtils.getDomainLabel(((SemanticType) null)), is(""));
+        assertThat(TypeUtils.getDomainLabel(((String) null)), is(""));
+    }
+
+    @Test
+    public void testSemanticDomainType() throws Exception {
+        final SemanticType semanticType = new SemanticType();
+        semanticType.increment(new CategoryFrequency(new UserDefinedCategory(SemanticCategoryEnum.AIRPORT.getId())), 1);
+        assertThat(TypeUtils.getDomainLabel(semanticType), is(SemanticCategoryEnum.AIRPORT.getDisplayName()));
+        assertThat(TypeUtils.getDomainLabel(SemanticCategoryEnum.AIRPORT.getId()), is(SemanticCategoryEnum.AIRPORT.getDisplayName()));
+    }
 }

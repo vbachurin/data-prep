@@ -69,7 +69,7 @@ public class Split extends AbstractActionMetadata implements ColumnAction {
      */
     @Override
     public String getCategory() {
-        return ActionCategory.QUICKFIX.getDisplayName();
+        return ActionCategory.SPLIT.getDisplayName();
     }
 
     @Override
@@ -90,6 +90,8 @@ public class Split extends AbstractActionMetadata implements ColumnAction {
                 new Value(":", true), //
                 new Value("@"), //
                 new Value(" "), //
+                new Value(","), //
+                new Value("-"), //
                 new Value("other", new Parameter(MANUAL_SEPARATOR_PARAMETER, Type.STRING.getName(), EMPTY))};
         return new Item[]{new Item(SEPARATOR_PARAMETER, "categ", values)};
     }

@@ -4,12 +4,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getRow;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 /**
@@ -21,12 +27,16 @@ public class CutTest {
 
     /** The action to test. */
     private Cut action;
+    /** The action parameters. */
+    private Map<String, String> parameters;
 
     /**
      * Constructor.
      */
     public CutTest() throws IOException {
         action = new Cut();
+        final InputStream parametersSource = SplitTest.class.getResourceAsStream("cutAction.json");
+        parameters = ActionMetadataTestUtils.parseParameters(action, parametersSource);
     }
 
     @Test
@@ -38,7 +48,33 @@ public class CutTest {
 
     @Test
     public void testCategory() throws Exception {
-        assertThat(action.getCategory(), is(ActionCategory.QUICKFIX.getDisplayName()));
+        assertThat(action.getCategory(), is(ActionCategory.STRINGS.getDisplayName()));
+    }
+
+    @Test
+    public void should_apply_on_column(){
+        // given
+        DataSetRow row = getRow("Wait for it...", "The value that gets cut !", "Done !");
+        DataSetRow expected = getRow("Wait for it...", "value that gets cut !", "Done !");
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+
+        // then
+        assertEquals(expected, row);
+    }
+
+    @Test
+    public void should_not_apply_on_column(){
+        // given
+        DataSetRow row = getRow("Wait for it...", "The value that gets cut !", "Done !");
+        DataSetRow expected = getRow("Wait for it...", "The value that gets cut !", "Done !");
+
+        // when (apply on a column that does not exists)
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0010");
+
+        // then (row should not be changed)
+        assertEquals(expected, row);
     }
 
     @Test

@@ -104,7 +104,7 @@ $datagrid-cell-font-size: .80em;
   //-------------------------------------------------Slickgrid hack-----------------------------------------------------
   //not frozen columns width to fit resizable container
   .slick-pane-right {
-    width: calc(100% - 80px) !important;
+    width: calc(100% - 45px) !important;
   }
 
   //not frozen viewport should fit its container size (slick-pane-right)

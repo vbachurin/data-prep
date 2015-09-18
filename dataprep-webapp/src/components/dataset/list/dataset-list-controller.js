@@ -18,6 +18,7 @@
      * @requires data-prep.services.utils.service:MessageService
      * @requires data-prep.services.uploadWorkflowService.service:UploadWorkflowService
      * @requires data-prep.services.state.service:StateService
+     * @requires data-prep.services.onboarding:OnboardingService
      */
     function DatasetListCtrl($stateParams, DatasetService, DatasetListSortService, PlaygroundService,
                              TalendConfirmService, MessageService, UploadWorkflowService, StateService) {

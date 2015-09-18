@@ -372,70 +372,16 @@ describe('Recipe controller', function() {
             spyOn(PlaygroundService, 'removeStep').and.returnValue();
         }));
 
-        it('should prompt a confirm popup on cascade mode', inject(function($q, TalendConfirmService) {
+        it('should remove step', inject(function(PlaygroundService) {
             //given
-            spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when());
             var ctrl = createController();
-            var mode = 'cascade';
-
-            expect(TalendConfirmService.confirm).not.toHaveBeenCalled();
 
             //when
-            ctrl.remove(step, mode);
-
-            //then
-            expect(TalendConfirmService.confirm).toHaveBeenCalledWith(
-                {disableEnter: true},
-                [ 'DELETE_STEP', 'DELETE_STEP_CASCADE_MODE_WARNING' ],
-                { action: 'Replace empty value ...', column: 'firstname' }
-            );
-        }));
-
-        it('should prompt a confirm popup on single mode', inject(function($q, TalendConfirmService) {
-            //given
-            spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when());
-            var ctrl = createController();
-            var mode = 'single';
-
-            expect(TalendConfirmService.confirm).not.toHaveBeenCalled();
-
-            //when
-            ctrl.remove(step, mode);
-
-            //then
-            //then
-            expect(TalendConfirmService.confirm).toHaveBeenCalledWith(
-                {disableEnter: true},
-                [ 'DELETE_STEP' ],
-                { action: 'Replace empty value ...', column: 'firstname' }
-            );
-        }));
-
-        it('should remove step in cascade mode on user confirmation', inject(function($q, PlaygroundService, TalendConfirmService) {
-            //given
-            spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when());
-            var ctrl = createController();
-            var mode = 'cascade';
-
-            //when
-            ctrl.remove(step, mode);
+            ctrl.remove(step);
             scope.$digest();
 
             //then
-            expect(PlaygroundService.removeStep).toHaveBeenCalledWith(step, mode);
-        }));
-
-        it('should NOT remove step on user dismiss', inject(function($q, PlaygroundService, TalendConfirmService) {
-            //given
-            spyOn(TalendConfirmService, 'confirm').and.returnValue($q.reject());
-            var ctrl = createController();
-
-            //when
-            ctrl.remove(step, 'cascade');
-            scope.$digest();
-
-            //then
-            expect(PlaygroundService.removeStep).not.toHaveBeenCalled();
+            expect(PlaygroundService.removeStep).toHaveBeenCalledWith(step);
         }));
     });
 });

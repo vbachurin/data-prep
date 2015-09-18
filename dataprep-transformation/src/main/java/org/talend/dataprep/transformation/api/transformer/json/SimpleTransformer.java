@@ -28,10 +28,14 @@ import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 import org.talend.dataquality.semantic.recognizer.CategoryRecognizerBuilder;
+import org.talend.dataquality.semantic.statistics.SemanticAnalyzer;
+import org.talend.dataquality.semantic.statistics.SemanticType;
 import org.talend.dataquality.statistics.cardinality.CardinalityAnalyzer;
 import org.talend.dataquality.statistics.frequency.DataFrequencyAnalyzer;
 import org.talend.dataquality.statistics.frequency.PatternFrequencyAnalyzer;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramAnalyzer;
+import org.talend.dataquality.statistics.numeric.histogram.HistogramColumnParameter;
+import org.talend.dataquality.statistics.numeric.histogram.HistogramParameter;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileAnalyzer;
 import org.talend.dataquality.statistics.numeric.summary.SummaryAnalyzer;
 import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
@@ -39,8 +43,6 @@ import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.dataquality.statistics.text.TextLengthAnalyzer;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
-import org.talend.datascience.common.inference.semantic.SemanticAnalyzer;
-import org.talend.datascience.common.inference.semantic.SemanticType;
 import org.talend.datascience.common.inference.type.DataType;
 
 /**
@@ -71,27 +73,19 @@ class SimpleTransformer implements Transformer {
                         .ddPath(ddPath) //
                         .kwPath(kwPath) //
                         .setMode(CategoryRecognizerBuilder.Mode.LUCENE);
-                // Find global min and max for histogram
-                double min = Double.MAX_VALUE;
-                double max = Double.MIN_VALUE;
-                boolean hasMetNumeric = false;
-                for (ColumnMetadata column : columns) {
+                // Set min and max for each column in histogram
+                final HistogramParameter histogramParameter = new HistogramParameter();
+                for (int i = 0; i < columns.size(); i++) {
+                    ColumnMetadata column = columns.get(i);
                     final boolean isNumeric = Type.NUMERIC.isAssignableFrom(Type.get(column.getType()));
                     if (isNumeric) {
+                        final HistogramColumnParameter columnParameter = new HistogramColumnParameter();
                         final Statistics statistics = column.getStatistics();
-                        if (statistics.getMax() > max) {
-                            max = statistics.getMax();
-                        }
-                        if (statistics.getMin() < min) {
-                            min = statistics.getMin();
-                        }
-                        hasMetNumeric = true;
+                        columnParameter.setParameters(statistics.getMin(), statistics.getMax(), 20);
+                        histogramParameter.putColumnParameter(i, columnParameter);
                     }
                 }
-                final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types);
-                if (hasMetNumeric) {
-                    histogramAnalyzer.init(min, max, 8);
-                }
+                final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types, histogramParameter);
                 analyzer = Analyzers.with(new ValueQualityAnalyzer(types),
                         // Cardinality (distinct + duplicate)
                         new CardinalityAnalyzer(),
@@ -144,7 +138,7 @@ class SimpleTransformer implements Transformer {
                     // Use analyzer (for empty values, semantic...)
                     if (!r.isDeleted()) {
                         final DataSetRow row = r.order(r.getRowMetadata().getColumns());
-                        configureAnalyzer(context).analyze(row.toArray());
+                        configureAnalyzer(context).analyze(row.toArray(DataSetRow.SKIP_TDP_ID));
                     }
                 }
                 return r;
@@ -174,7 +168,6 @@ class SimpleTransformer implements Transformer {
                 writer.fieldName("columns");
                 final RowMetadata row = context.getTransformedRowMetadata();
                 final Analyzer<Analyzers.Result> analyzer = (Analyzer<Analyzers.Result>) context.get(CONTEXT_ANALYZER);
-                analyzer.end();
                 // Set metadata information (not in statistics).
                 final List<ColumnMetadata> dataSetColumns = row.getColumns();
                 final List<Analyzers.Result> results = analyzer.getResult();
@@ -192,11 +185,13 @@ class SimpleTransformer implements Transformer {
                     if (!(metadata.isDomainForced() || metadata.isTypeForced()) && !forcedColumns.contains(metadata.getId())) {
                         // Semantic types
                         final SemanticType semanticType = result.get(SemanticType.class);
-                        metadata.setDomain(TypeUtils.getDomainLabel(semanticType));
+                        metadata.setDomain(semanticType.getSuggestedCategory());
+                        metadata.setDomainLabel(TypeUtils.getDomainLabel(semanticType));
                     }
                 }
                 // Set the statistics
-                StatisticsUtils.setStatistics(row.getColumns(), analyzer);
+                analyzer.end(); // TODO SemanticAnalyzer is erased on end(), call end after metadata is set (wait for TDQ-10970).
+                StatisticsUtils.setStatistics(row.getColumns(), analyzer.getResult());
                 writer.write(context.getTransformedRowMetadata());
             }
             writer.endObject();

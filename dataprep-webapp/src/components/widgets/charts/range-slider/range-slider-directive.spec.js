@@ -202,11 +202,11 @@ describe('rangeSlider directive', function () {
         flushAllD3Transitions();
 
         //then
-        expect(element.find('text.the-minimum-label').eq(0).text()).toBe('-5e+4');
-        expect(element.find('text.the-maximum-label').eq(0).text()).toBe('2e+4');
+        expect(element.find('text.the-minimum-label').eq(0).text()).toBe('-50,000');
+        expect(element.find('text.the-maximum-label').eq(0).text()).toBe('20,000');
 
-        expect(document.getElementsByName('minRange')[0].value).toBe('-2e+4');
-        expect(document.getElementsByName('maxRange')[0].value).toBe('1.0001e+4');
+        expect(document.getElementsByName('minRange')[0].value).toBe('-20000');
+        expect(document.getElementsByName('maxRange')[0].value).toBe('10001');
     });
 
     it('should set min and max inputs in the right format when minFilterVal and maxFilterVal are undefined', function () {
@@ -222,8 +222,8 @@ describe('rangeSlider directive', function () {
         flushAllD3Transitions();
 
         //then
-        expect(document.getElementsByName('minRange')[0].value).toBe('-2e+4');
-        expect(document.getElementsByName('maxRange')[0].value).toBe('1.0001e+4');
+        expect(document.getElementsByName('minRange')[0].value).toBe('-20000');
+        expect(document.getElementsByName('maxRange')[0].value).toBe('10001');
     });
 
     it('should set the new typed range manually and submit with Enter', function () {

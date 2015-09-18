@@ -7,8 +7,8 @@
      * @description Dataset list sort parameters service
      */
     function DatasetListSortService($window) {
-        var sortLocalStorageKey = 'dataprep.dataset.sort';
-        var orderLocalStorageKey = 'dataprep.dataset.order';
+        var sortLocalStorageKey = 'org.talend.dataprep.dataset.sort';
+        var orderLocalStorageKey = 'org.talend.dataprep.dataset.order';
 
         /**
          * @ngdoc property

@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
-import org.talend.datascience.common.inference.semantic.SemanticType;
+import org.talend.dataquality.semantic.statistics.SemanticType;
 import org.talend.datascience.common.inference.type.DataType;
 
 public class TypeUtils {
@@ -52,11 +52,15 @@ public class TypeUtils {
     }
 
     /**
-     * @param semanticType A {@link SemanticType semantic type} as returned by the DQ's {@link org.talend.datascience.common.inference.semantic.SemanticAnalyzer}.
+     * @param semanticType A {@link SemanticType semantic type} as returned by the DQ's {@link org.talend.dataquality.semantic.statistics.SemanticAnalyzer}.
      * @return A display name for the semantic type's suggested category or empty string if none found.
      */
     public static String getDomainLabel(SemanticType semanticType) {
-        return getDomainLabel(semanticType.getSuggestedCategory());
+        if (semanticType == null) {
+            return StringUtils.EMPTY;
+        } else {
+            return getDomainLabel(semanticType.getSuggestedCategory());
+        }
     }
 
     /**
@@ -65,7 +69,11 @@ public class TypeUtils {
      * @see SemanticCategoryEnum
      */
     public static String getDomainLabel(String categoryId) {
-        final SemanticCategoryEnum category = SemanticCategoryEnum.getCategoryById(categoryId.toUpperCase());
-        return category == null ? StringUtils.EMPTY : category.getDisplayName();
+        if (categoryId == null) {
+            return StringUtils.EMPTY;
+        } else {
+            final SemanticCategoryEnum category = SemanticCategoryEnum.getCategoryById(categoryId.toUpperCase());
+            return category == null ? StringUtils.EMPTY : category.getDisplayName();
+        }
     }
 }

@@ -316,4 +316,23 @@ public class ActionTests extends TransformationServiceBaseTests {
         assertEquals(expectedContent, transformedContent, false);
     }
 
+    @Test
+    public void transformStateColumn() throws Exception {
+        // given
+        final String actions = IOUtils.toString(Application.class.getResourceAsStream("actions/lowercaseAction_state.json"));
+        final String initialContent = IOUtils.toString(Application.class.getResourceAsStream("actions/input_state.json"));
+        final String expectedContent = IOUtils
+                .toString(Application.class.getResourceAsStream("actions/lowercaseAction_state_expected.json"));
+
+        // when
+        final String transformedContent = given() //
+                .multiPart("actions", actions) //
+                .multiPart("content", initialContent) //
+                .when() //
+                .post("/transform/JSON") //
+                .asString();
+
+        // then
+        assertEquals(expectedContent, transformedContent, false);
+    }
 }

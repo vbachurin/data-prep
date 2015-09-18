@@ -1,12 +1,14 @@
 (function () {
     'use strict';
 
-    function NavbarCtrl($state, OnboardingService, $timeout, DatasetService) {
+    function NavbarCtrl($state, OnboardingService, DatasetService) {
+
+        var tourId = 'dataset';
         this.startTour = OnboardingService.startTour;
 
-        if ($state.current.name === 'nav.home.datasets' && !$state.params.datasetid && OnboardingService.shouldStartTour()) {
+        if ($state.current.name === 'nav.home.datasets' && !$state.params.datasetid && OnboardingService.shouldStartTour(tourId)) {
             DatasetService.getDatasets().then(function () {
-                $timeout(OnboardingService.startTour);
+                setTimeout(OnboardingService.startTour.bind(null, tourId), 100);
             });
         }
     }

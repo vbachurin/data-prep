@@ -10,8 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -31,6 +29,8 @@ import org.talend.dataquality.statistics.cardinality.CardinalityAnalyzer;
 import org.talend.dataquality.statistics.frequency.DataFrequencyAnalyzer;
 import org.talend.dataquality.statistics.frequency.PatternFrequencyAnalyzer;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramAnalyzer;
+import org.talend.dataquality.statistics.numeric.histogram.HistogramColumnParameter;
+import org.talend.dataquality.statistics.numeric.histogram.HistogramParameter;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileAnalyzer;
 import org.talend.dataquality.statistics.numeric.summary.SummaryAnalyzer;
 import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
@@ -49,12 +49,6 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
 
     @Autowired
     ContentStoreRouter store;
-
-    @Autowired
-    ApplicationContext applicationContext;
-
-    @Autowired
-    Jackson2ObjectMapperBuilder builder;
 
     @JmsListener(destination = Destinations.STATISTICS_ANALYSIS)
     public void analyzeQuality(Message message) {
@@ -102,31 +96,33 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
 
     }
 
+    /**
+     * Compute the statistics for the given dataset metadata and content.
+     *
+     * @param metadata the metadata to compute the statistics for.
+     * @param stream the content to compute the statistics from.
+     */
     public void computeStatistics(DataSetMetadata metadata, Stream<DataSetRow> stream) {
         // Create a content with the expected format for the StatisticsClientJson class
         final List<ColumnMetadata> columns = metadata.getRow().getColumns();
+        if (columns.isEmpty()) {
+            LOGGER.debug("Skip statistics of {} (no column information).", metadata.getId());
+            return;
+        }
         DataType.Type[] types = TypeUtils.convert(columns);
-        // Find global min and max for histogram
-        double min = Double.MAX_VALUE;
-        double max = Double.MIN_VALUE;
-        boolean hasMetNumeric = false;
-        for (ColumnMetadata column : columns) {
+        // Set min and max for each column in histogram
+        final HistogramParameter histogramParameter = new HistogramParameter();
+        for (int i = 0; i < columns.size(); i++) {
+            ColumnMetadata column = columns.get(i);
             final boolean isNumeric = Type.NUMERIC.isAssignableFrom(Type.get(column.getType()));
             if (isNumeric) {
+                final HistogramColumnParameter columnParameter = new HistogramColumnParameter();
                 final Statistics statistics = column.getStatistics();
-                if (statistics.getMax() > max) {
-                    max = statistics.getMax();
-                }
-                if (statistics.getMin() < min) {
-                    min = statistics.getMin();
-                }
-                hasMetNumeric = true;
+                columnParameter.setParameters(statistics.getMin(), statistics.getMax(), 20);
+                histogramParameter.putColumnParameter(i, columnParameter);
             }
         }
-        final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types);
-        if (hasMetNumeric) {
-            histogramAnalyzer.init(min, max, 8);
-        }
+        final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types, histogramParameter);
         // Select all analysis
         Analyzer[] allAnalyzers = new Analyzer[] {
                 new ValueQualityAnalyzer(types),
@@ -148,9 +144,12 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
         stream.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
         analyzer.end();
         // Store results back in data set
-        StatisticsUtils.setStatistics(columns, analyzer);
+        StatisticsUtils.setStatistics(columns, analyzer.getResult());
     }
 
+    /**
+     * @see AsynchronousDataSetAnalyzer#destination()
+     */
     @Override
     public String destination() {
         return Destinations.STATISTICS_ANALYSIS;

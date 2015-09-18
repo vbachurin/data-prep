@@ -41,13 +41,21 @@ public class TextLengthSummary implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof TextLengthSummary)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof TextLengthSummary)) {
+            return false;
+        }
 
         TextLengthSummary that = (TextLengthSummary) o;
 
-        if (Double.compare(that.minimalLength, minimalLength) != 0) return false;
-        if (Double.compare(that.maximalLength, maximalLength) != 0) return false;
+        if (Double.compare(that.minimalLength, minimalLength) != 0) {
+            return false;
+        }
+        if (Double.compare(that.maximalLength, maximalLength) != 0) {
+            return false;
+        }
         return Double.compare(that.averageLength, averageLength) == 0;
 
     }

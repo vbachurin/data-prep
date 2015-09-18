@@ -1,16 +1,8 @@
 package org.talend.dataprep.api.dataset;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.io.StringWriter;
 import java.text.DecimalFormat;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.diff.FlagNames;
@@ -237,9 +229,10 @@ public class ColumnMetadata implements Serializable {
      */
     public void setStatistics(Statistics statistics) {
         if (statistics == null) {
-            statistics = new Statistics();
+            this.statistics = new Statistics();
+        } else {
+            this.statistics = statistics;
         }
-        this.statistics = statistics;
     }
 
     public void setDomain(String domain) {

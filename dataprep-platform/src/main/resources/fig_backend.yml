@@ -1,5 +1,5 @@
 mongodb:
-    image: mongo:3.0.4
+    image: mongo:3.0
     volumes:
         - runtime/mongodb:/data/db
     expose:
@@ -31,7 +31,7 @@ transform:
 dataset:
     image: talend/dataprep-dataset:1.0.m8-SNAPSHOT
     volumes:
-        - runtime/dataset/store:/store
+        - runtime/store:/store
     expose:
         - 8080
     links:

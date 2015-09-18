@@ -1,7 +1,5 @@
 package org.talend.dataprep.transformation.api.action.metadata.fillinvalid;
 
-import java.time.DateTimeException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
@@ -17,6 +15,7 @@ import javax.annotation.Nonnull;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -26,17 +25,21 @@ import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataUtils;
+import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 @Component(value = FillWithDateIfInvalid.ACTION_BEAN_PREFIX + FillWithDateIfInvalid.FILL_INVALID_ACTION_NAME)
 public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
 
+    /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(FillWithDateIfInvalid.class);
 
+    /** The action name. */
     public static final String FILL_INVALID_ACTION_NAME = "fillinvalidwithdefaultdate"; //$NON-NLS-1$
 
     /**
-     * if changing pattern you must change the pattern in the ui as well
+     * If changing pattern you must change the pattern in the ui as well
      * dataprep-webapp/src/components/transformation/params/date/transformation-date-params.html
      * Yup as usual those bloody Javascript hipsters reinvented the wheel and didn't want to use
      * same pattern as the old school Java guys!!
@@ -46,6 +49,9 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
     private static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
     private static final String DEFAULT_DATE_VALUE = DEFAULT_FORMATTER.format( LocalDateTime.of( 1970, Month.JANUARY, 1, 10, 0 ) );
+
+    @Autowired
+    private DateParser dateParser;
 
     @Override
     public String getName() {
@@ -71,21 +77,24 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
         }
 
         try {
-            final Set<String> invalidValues = column.getQuality().getInvalidValues();
-            if (StringUtils.isEmpty(value) || invalidValues.contains(value)) {
-                // we assume all controls have been made in the ui.
+            if (StringUtils.isEmpty(value) || ActionMetadataUtils.checkInvalidValue(column, value)) {
+
+                // we assume all controls have been made in the ui, parse the new date to set
                 String newDateStr = parameters.get(DEFAULT_VALUE_PARAMETER);
+                TemporalAccessor newValueToSet = DEFAULT_FORMATTER.parse(newDateStr);
 
-                // get the most used pattern
+                // format the result with the most used pattern in the column
                 String mostUsedPattern = findMostUsedDatePattern(column);
+                String newDateWithFormat = formatResult(newValueToSet, mostUsedPattern);
 
-                // parse the date
-                TemporalAccessor temp = parseDateTime(newDateStr, mostUsedPattern);
-
-                // format the result
-                String newDateWithFormat = DEFAULT_FORMATTER.format(temp);
-
+                // set the result
                 row.set(columnId, newDateWithFormat);
+
+                // update invalid values to prevent future unnecessary analysis
+                if (!StringUtils.isEmpty(value)) {
+                    final Set<String> invalidValues = column.getQuality().getInvalidValues();
+                    invalidValues.add(value);
+                }
             }
         } catch (Exception e) {
             LOGGER.warn("skip error parsing date", e);
@@ -93,30 +102,23 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
     }
 
     /**
-     * Return the parsed dated of the given date value.
+     * The formatted date with the given pattern.
      *
-     * @param dateTimeOrDate the string to parse.
-     * @param pattern the pattern to use to parse the date.
-     * @return the parsed dated of the given date value.
+     * @param toFormat the date(time) to format.
+     * @param pattern the pattern to use to format.
+     * @return The formatted date with the given pattern.
      */
-    private TemporalAccessor parseDateTime(String dateTimeOrDate, String pattern) {
-
-        // first try the LocalDateTime
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-        try {
-            return LocalDateTime.parse(dateTimeOrDate, formatter);
-        } catch (DateTimeException e) {
-            // if it fails, let's try the LocalDate
-            try {
-                LocalDate temp = LocalDate.parse(dateTimeOrDate, formatter);
-                return temp.atStartOfDay();
-            } catch (DateTimeException e2) {
-                // nothing to do here, just throw the exception...
-                throw e2;
-            }
-        }
+    private String formatResult(TemporalAccessor toFormat, String pattern) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        return formatter.format(toFormat);
     }
 
+    /**
+     * Return the most used date pattern in the column, using the columne statistics.
+     *
+     * @param column the column to inspect.
+     * @return the most used date pattern.
+     */
     protected String findMostUsedDatePattern(final ColumnMetadata column) {
         // get the date pattern to write the date with
         // register the new pattern in column stats, to be able to process date action later
@@ -148,3 +150,4 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
     }
 
 }
+

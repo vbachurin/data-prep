@@ -7,8 +7,9 @@
         <ul class="left-header">
             <li translate="FILE_DETAILS" translate-value-name="{{playgroundCtrl.state.playground.dataset.name}}" translate-value-records="{{playgroundCtrl.state.playground.dataset.records}}"></li>
             <li>
-                <span>Sample size</span>
-                <select ng-model="playgroundCtrl.selectedSampleSize"
+                <span class="sample_label">{{ 'SAMPLE_SIZE' | translate }}: </span>
+                <select id="playground-sampling-select"
+                        ng-model="playgroundCtrl.selectedSampleSize"
                         ng-options="size.display for size in playgroundCtrl.sampleSizes"
                         ng-change="playgroundCtrl.playgroundService.changeSampleSize()"
                         class="sample">
@@ -23,7 +24,7 @@
                     <span class="previewBadgeElement">Preview</span>
                 </div>
             </li>
-            <li class="export">
+            <li>
                 <export></export>
             </li>
             <li>
@@ -54,7 +55,7 @@
                            ng-model="playgroundCtrl.preparationName"
                            ng-model-options="{updateOn: 'default blur'}" />
                     <div>
-                        <a class="check-btn" data-icon="c" ng-click="playgroundCtrl.confirmPrepNameEdition()"></a>
+                        <a class="check-btn" data-icon="b" ng-click="playgroundCtrl.confirmPrepNameEdition()"></a>
                         <a class="cancel-btn" data-icon="d" ng-click="playgroundCtrl.cancelPrepNameEdition()"></a>
                     </div>
                 </div>

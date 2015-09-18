@@ -156,7 +156,9 @@
           "label": "",
           "frequency": 100.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     },
     {
       "name": "departement",
@@ -245,57 +247,141 @@
           {
             "occurrences": 2,
             "range": {
-              "min": 1.0,
-              "max": 25.875
+              "min": 13.0,
+              "max": 17.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 17.0,
+              "max": 21.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 21.0,
+              "max": 25.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 25.0,
+              "max": 29.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 29.0,
+              "max": 33.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 33.0,
+              "max": 37.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 37.0,
+              "max": 41.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 41.0,
+              "max": 45.0
             }
           },
           {
             "occurrences": 1,
             "range": {
-              "min": 25.875,
-              "max": 50.75
+              "min": 45.0,
+              "max": 49.0
             }
           },
           {
-            "occurrences": 9,
+            "occurrences": 0,
             "range": {
-              "min": 50.75,
-              "max": 75.625
+              "min": 49.0,
+              "max": 53.0
+            }
+          },
+          {
+            "occurrences": 2,
+            "range": {
+              "min": 53.0,
+              "max": 56.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 56.0,
+              "max": 60.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 60.0,
+              "max": 64.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 64.0,
+              "max": 68.0
             }
           },
           {
             "occurrences": 3,
             "range": {
-              "min": 75.625,
-              "max": 100.5
+              "min": 68.0,
+              "max": 72.0
+            }
+          },
+          {
+            "occurrences": 4,
+            "range": {
+              "min": 72.0,
+              "max": 76.0
+            }
+          },
+          {
+            "occurrences": 1,
+            "range": {
+              "min": 76.0,
+              "max": 80.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 100.5,
-              "max": 125.375
+              "min": 80.0,
+              "max": 84.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 125.375,
-              "max": 150.25
+              "min": 84.0,
+              "max": 88.0
             }
           },
           {
-            "occurrences": 0,
+            "occurrences": 2,
             "range": {
-              "min": 150.25,
-              "max": 175.125
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 175.125,
-              "max": 200.0
+              "min": 88.0,
+              "max": 92.0
             }
           }
         ],
@@ -314,7 +400,9 @@
           "label": "",
           "frequency": 100.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     },
     {
       "name": "birth",
@@ -427,7 +515,9 @@
           "label": "",
           "frequency": 100.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     },
     {
       "name": "order_id",
@@ -540,7 +630,9 @@
           "label": "",
           "frequency": 100.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     },
     {
       "name": "order_date",
@@ -649,7 +741,9 @@
           "label": "",
           "frequency": 100.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     },
     {
       "name": "total",
@@ -726,56 +820,140 @@
           {
             "occurrences": 9,
             "range": {
-              "min": 1.0,
-              "max": 25.875
-            }
-          },
-          {
-            "occurrences": 3,
-            "range": {
-              "min": 25.875,
-              "max": 50.75
+              "min": 16.7,
+              "max": 25.9
             }
           },
           {
             "occurrences": 2,
             "range": {
-              "min": 50.75,
-              "max": 75.625
+              "min": 25.9,
+              "max": 35.0
+            }
+          },
+          {
+            "occurrences": 1,
+            "range": {
+              "min": 35.0,
+              "max": 44.2
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 75.625,
-              "max": 100.5
+              "min": 44.2,
+              "max": 53.4
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 100.5,
-              "max": 125.375
+              "min": 53.4,
+              "max": 62.5
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 125.375,
-              "max": 150.25
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 150.25,
-              "max": 175.125
+              "min": 62.5,
+              "max": 71.7
             }
           },
           {
             "occurrences": 2,
             "range": {
-              "min": 175.125,
+              "min": 71.7,
+              "max": 80.9
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 80.9,
+              "max": 90.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 90.0,
+              "max": 99.2
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 99.2,
+              "max": 108.4
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 108.4,
+              "max": 117.5
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 117.5,
+              "max": 126.7
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 126.7,
+              "max": 135.8
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 135.8,
+              "max": 145.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 145.0,
+              "max": 154.2
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 154.2,
+              "max": 163.3
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 163.3,
+              "max": 172.5
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 172.5,
+              "max": 181.7
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 181.7,
+              "max": 190.8
+            }
+          },
+          {
+            "occurrences": 2,
+            "range": {
+              "min": 190.8,
               "max": 200.0
             }
           }
@@ -795,7 +973,9 @@
           "label": "",
           "frequency": 100.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     },
     {
       "name": "nb_tshirts",
@@ -850,59 +1030,143 @@
         },
         "histogram": [
           {
-            "occurrences": 16,
+            "occurrences": 9,
             "range": {
               "min": 1.0,
-              "max": 25.875
+              "max": 1.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 25.875,
-              "max": 50.75
+              "min": 1.0,
+              "max": 2.0
+            }
+          },
+          {
+            "occurrences": 3,
+            "range": {
+              "min": 2.0,
+              "max": 2.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 50.75,
-              "max": 75.625
+              "min": 2.0,
+              "max": 2.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 75.625,
-              "max": 100.5
+              "min": 2.0,
+              "max": 3.0
+            }
+          },
+          {
+            "occurrences": 2,
+            "range": {
+              "min": 3.0,
+              "max": 3.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 100.5,
-              "max": 125.375
+              "min": 3.0,
+              "max": 3.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 125.375,
-              "max": 150.25
+              "min": 3.0,
+              "max": 4.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 150.25,
-              "max": 175.125
+              "min": 4.0,
+              "max": 4.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 175.125,
-              "max": 200.0
+              "min": 4.0,
+              "max": 4.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 4.0,
+              "max": 5.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 5.0,
+              "max": 5.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 5.0,
+              "max": 6.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 6.0,
+              "max": 6.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 6.0,
+              "max": 6.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 6.0,
+              "max": 7.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 7.0,
+              "max": 7.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 7.0,
+              "max": 7.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 7.0,
+              "max": 8.0
+            }
+          },
+          {
+            "occurrences": 2,
+            "range": {
+              "min": 8.0,
+              "max": 8.0
             }
           }
         ],
@@ -921,7 +1185,9 @@
           "label": "",
           "frequency": 100.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     },
     {
       "name": "tshirt_price",
@@ -976,59 +1242,143 @@
         },
         "histogram": [
           {
-            "occurrences": 16,
+            "occurrences": 5,
             "range": {
-              "min": 1.0,
-              "max": 25.875
+              "min": 16.7,
+              "max": 17.1
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 25.875,
-              "max": 50.75
+              "min": 17.1,
+              "max": 17.5
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 50.75,
-              "max": 75.625
+              "min": 17.5,
+              "max": 17.9
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 75.625,
-              "max": 100.5
+              "min": 17.9,
+              "max": 18.4
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 100.5,
-              "max": 125.375
+              "min": 18.4,
+              "max": 18.8
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 125.375,
-              "max": 150.25
+              "min": 18.8,
+              "max": 19.2
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 150.25,
-              "max": 175.125
+              "min": 19.2,
+              "max": 19.6
+            }
+          },
+          {
+            "occurrences": 6,
+            "range": {
+              "min": 19.6,
+              "max": 20.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 175.125,
-              "max": 200.0
+              "min": 20.0,
+              "max": 20.4
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 20.4,
+              "max": 20.8
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 20.8,
+              "max": 21.3
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 21.3,
+              "max": 21.7
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 21.7,
+              "max": 22.1
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 22.1,
+              "max": 22.5
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 22.5,
+              "max": 22.9
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 22.9,
+              "max": 23.3
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 23.3,
+              "max": 23.8
+            }
+          },
+          {
+            "occurrences": 1,
+            "range": {
+              "min": 23.8,
+              "max": 24.2
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 24.2,
+              "max": 24.6
+            }
+          },
+          {
+            "occurrences": 4,
+            "range": {
+              "min": 24.6,
+              "max": 25.0
             }
           }
         ],
@@ -1047,7 +1397,9 @@
           "label": "",
           "frequency": 100.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     },
     {
       "name": "category",
@@ -1125,7 +1477,9 @@
           "label": "Full Name",
           "frequency": 50.0
         }
-      ]
+      ],
+      "domainForced": false,
+      "typeForced": false
     }
   ],
   "records": [

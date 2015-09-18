@@ -1,10 +1,5 @@
 package org.talend.dataprep.transformation.api.action.metadata.type;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -12,6 +7,12 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.column.TypeChange;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class ChangeTypeTest {
 
@@ -62,12 +63,12 @@ public class ChangeTypeTest {
         for (Type type : Type.values()) {
 
             ColumnMetadata columnMetadata = ColumnMetadata.Builder.column() //
-                .type(type) //
-                .computedId("0002") //
-                .domain("FR_BEER") //
-                .domainFrequency(1) //
-                .domainLabel("French Beer") //
-                .build();
+                    .type(type) //
+                    .computedId("0002") //
+                    .domain("FR_BEER") //
+                    .domainFrequency(1) //
+                    .domainLabel("French Beer") //
+                    .build();
 
             Assertions.assertThat(typeChange.acceptColumn(columnMetadata)).isFalse();
         }

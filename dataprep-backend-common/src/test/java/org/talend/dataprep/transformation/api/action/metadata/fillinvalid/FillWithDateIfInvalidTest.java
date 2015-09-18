@@ -8,7 +8,9 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -40,38 +42,6 @@ public class FillWithDateIfInvalidTest {
     }
 
     @Test
-    public void should_fill_non_valid_date() throws Exception {
-
-        // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0001", "David Bowie");
-        values.put("0002", "N");
-        values.put("0003", "Something");
-
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata
-                .setColumns(
-                        asList(ColumnMetadata.Builder.column() //
-                                .type(Type.DATE) //
-                                .computedId("0002") //
-                                .invalidValues(newHashSet("N")) //
-                .statistics(getStatistics(this.getClass().getResourceAsStream("fillInvalidDateAction_statistics.json")))
-                                .build()));
-
-        final DataSetRow row = new DataSetRow(values);
-        row.setRowMetadata(rowMetadata);
-
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters(action, //
-                this.getClass().getResourceAsStream("fillInvalidDateAction.json"));
-
-        // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
-
-        // then
-        assertEquals("07/09/2015 00:00:00", row.get("0002"));
-    }
-
-    @Test
     public void should_fill_non_valid_datetime() throws Exception {
 
         // given
@@ -80,14 +50,14 @@ public class FillWithDateIfInvalidTest {
         values.put("0002", "N");
         values.put("0003", "Something");
 
+        final Statistics statistics = getStatistics(this.getClass().getResourceAsStream("fillInvalidDateTimeAction_statistics.json"));
+
         final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata
-                .setColumns(asList(ColumnMetadata.Builder.column() //
+        rowMetadata.setColumns(asList(ColumnMetadata.Builder.column() //
                         .type(Type.DATE) //
                         .computedId("0002") //
                         .invalidValues(newHashSet("N")) //
-                                .statistics(getStatistics(
-                                        this.getClass().getResourceAsStream("fillInvalidDateTimeAction_statistics.json")))
+                        .statistics(statistics) //
                         .build()));
 
         final DataSetRow row = new DataSetRow(values);
@@ -101,6 +71,46 @@ public class FillWithDateIfInvalidTest {
 
         // then
         assertEquals("07/09/2015 13:31:36", row.get("0002"));
+    }
+
+    /**
+     * see https://jira.talendforge.org/browse/TDP-457
+     */
+    @Test
+    public void should_fill_non_valid_date_not_in_invalid_values() throws Exception {
+
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0001", "David Bowie");
+        values.put("0002", "not a date !!!!"); // invalid date
+        values.put("0003", "Something");
+
+        final Statistics statistics = getStatistics(this.getClass().getResourceAsStream("fillInvalidDateAction_statistics.json"));
+
+        final RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.setColumns(
+                asList(ColumnMetadata.Builder.column() //
+                        .type(Type.DATE) //
+                        .computedId("0002") //
+                        .invalidValues(new HashSet<>()) // no invalid values
+                        .statistics(statistics) //
+                        .build()));
+
+        final DataSetRow row = new DataSetRow(values);
+        row.setRowMetadata(rowMetadata);
+
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters(action, //
+                this.getClass().getResourceAsStream("fillInvalidDateTimeAction.json"));
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+
+        // then
+        assertEquals("07/09/2015", row.get("0002"));
+
+        final Set<String> invalidValues = row.getRowMetadata().getById("0002").getQuality().getInvalidValues();
+        assertEquals(1, invalidValues.size());
+        assertTrue(invalidValues.contains("not a date !!!!"));
     }
 
     @Test

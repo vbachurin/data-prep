@@ -4,6 +4,7 @@ describe('Statistics service', function () {
     var barChartNumCol = {
         'domain': 'barchartAndNumeric',
         'type': 'numeric',
+        'id':'0000',
         'statistics': {
             'frequencyTable': [],
             'histogram': [
@@ -242,31 +243,44 @@ describe('Statistics service', function () {
         it('should update rangeLimits brush on new "inside_range" filter add', inject(function (StatisticsService, FilterService, $timeout) {
             //given
             StatisticsService.rangeLimits = {};
+            StatisticsService.histogram = {};
             StatisticsService.selectedColumn = {id: '0000', statistics: {min: 5, max: 55}};
 
             //when
+            FilterService.filters = [{colId:'0000', type:'inside_range', args:{interval:[10, 22]}}];
             StatisticsService.addRangeFilter([10,22]);
             $timeout.flush();
 
             //then
             expect(StatisticsService.rangeLimits.minBrush).toBe(10);
             expect(StatisticsService.rangeLimits.maxBrush).toBe(22);
+            expect(StatisticsService.histogram.existingFilter).toEqual([10, 22]);
         }));
 
         it('should reinit range limits on "inside_range" filter remove when the selected column is the same', inject(function (StatisticsService, FilterService, $timeout) {
             //given
             var originalRangeLimits = {};
+            StatisticsService.histogram = {};
             StatisticsService.rangeLimits = originalRangeLimits;
             StatisticsService.selectedColumn = {id: '0000', statistics: {min: 5, max: 55}};
 
+            FilterService.filters = [{colId:'0000', type:'inside_range', args:{interval:[0, 22]}}];
             StatisticsService.addRangeFilter([0,22]);
             $timeout.flush();
 
-            expect(StatisticsService.rangeLimits).toBe(originalRangeLimits);
+            expect(StatisticsService.rangeLimits).toEqual({
+                min: 5,
+                max: 55,
+                minBrush: 5,
+                maxBrush: 22,
+                minFilterVal: 0,
+                maxFilterVal: 22
+            });
             expect(FilterService.addFilter).toHaveBeenCalled();
             var removeCallback = FilterService.addFilter.calls.argsFor(0)[4];
 
             //when
+            FilterService.filters = [];
             removeCallback({colId: '0000'});
 
             //then
@@ -277,18 +291,20 @@ describe('Statistics service', function () {
                 minBrush: undefined,
                 maxBrush: undefined
             });
+            expect(StatisticsService.histogram.existingFilter).toEqual([StatisticsService.selectedColumn.statistics.min, StatisticsService.selectedColumn.statistics.max]);
         }));
 
         it('should do nothing on "inside_range" filter remove when the selected column is NOT the same', inject(function (StatisticsService, FilterService, $timeout) {
             //given
             var originalRangeLimits = {};
             StatisticsService.rangeLimits = originalRangeLimits;
+            StatisticsService.histogram = {};
             StatisticsService.selectedColumn = {id: '0000', statistics: {min: 5, max: 55}};
-
-            StatisticsService.addRangeFilter([0,22]);
+            //FilterService.filters = [{colId:'0000', type:'inside_range', args:{interval:[0, 22]}}];
+            StatisticsService.addRangeFilter([0, 22]);
             $timeout.flush();
 
-            expect(StatisticsService.rangeLimits).toBe(originalRangeLimits);
+            //expect(StatisticsService.rangeLimits).toBe(originalRangeLimits);
             expect(FilterService.addFilter).toHaveBeenCalled();
             var removeCallback = FilterService.addFilter.calls.argsFor(0)[4];
 
@@ -296,7 +312,8 @@ describe('Statistics service', function () {
             removeCallback({colId: '0001'});
 
             //then
-            expect(StatisticsService.rangeLimits).toBe(originalRangeLimits);
+            expect(StatisticsService.rangeLimits).toEqual(
+                { min: 5, max: 55, minBrush: undefined, maxBrush: undefined});
         }));
     });
 
@@ -327,7 +344,7 @@ describe('Statistics service', function () {
             }));
         });
 
-        describe('Histogram data', function () {
+        describe('Histogram data H/V barchart', function () {
             it('should reset non histogram data when column type is "string"', inject(function (StatisticsService) {
                 //given
                 StatisticsService.boxPlot = {};
@@ -411,7 +428,7 @@ describe('Statistics service', function () {
                 StatisticsService.processData(barChartNumCol);
 
                 //then
-                expect(StatisticsService.histogram.data[1].data).toBe(barChartNumCol.statistics.histogram[1].range.min + ' ... ' + barChartNumCol.statistics.histogram[1].range.max);
+                expect(StatisticsService.histogram.numData[1].data).toEqual([barChartNumCol.statistics.histogram[1].range.min, barChartNumCol.statistics.histogram[1].range.max]);
             }));
         });
 
@@ -727,7 +744,40 @@ describe('Statistics service', function () {
             });
         }));
 
-        it('should update histogram data from REST call result and aggregation infos', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+        it('should update histogram data from REST call result and aggregation infos on dataset', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+            //given
+            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
+
+            //when
+            StatisticsService.processAggregation(datasetId, null, stepId, sampleSize, column, aggregation);
+            $rootScope.$digest();
+
+            //then
+            expect(StatisticsRestService.getAggregations).toHaveBeenCalledWith({
+                datasetId: 'abcd',
+                preparationId: null,
+                stepId: '9878645468',
+                sampleSize: 500,
+                operations: [{operator: 'MAX', columnId: '0002'}],
+                groupBy: ['0001']
+            });
+            expect(StatisticsService.histogram).toEqual({
+                data: [
+                    {'data': 'Lansing', 'max': 15, 'formattedValue': 'Lansing'},
+                    {'data': 'Helena', 'max': 5, 'formattedValue': 'Helena'},
+                    {'data': 'Baton Rouge', 'max': 64, 'formattedValue': 'Baton Rouge'},
+                    {'data': 'Annapolis', 'max': 4, 'formattedValue': 'Annapolis'},
+                    {'data': 'Pierre', 'max': 104, 'formattedValue': 'Pierre'}
+                ],
+                key: 'MAX',
+                label: 'MAX',
+                column: StatisticsService.selectedColumn,
+                aggregationColumn: column,
+                aggregation: aggregation
+            });
+        }));
+
+        it('should update histogram data from REST call result and aggregation infos on preparation', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
             //given
             spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
 
@@ -737,7 +787,7 @@ describe('Statistics service', function () {
 
             //then
             expect(StatisticsRestService.getAggregations).toHaveBeenCalledWith({
-                datasetId: 'abcd',
+                datasetId: null,
                 preparationId: '2132548345365',
                 stepId: '9878645468',
                 sampleSize: 500,
@@ -840,6 +890,7 @@ describe('Statistics service', function () {
                 minBrush : undefined,
                 maxBrush : undefined
             });
+            expect(StatisticsService.histogram.existingFilter).toBe(null);
         }));
 
         it('should update the brush limits to the existent ones', inject(function (StatisticsService, FilterService) {
@@ -876,6 +927,7 @@ describe('Statistics service', function () {
                 minBrush :5,
                 maxBrush :10
             });
+            expect(StatisticsService.histogram.existingFilter).toEqual([5,10]);
         }));
 
         it('should update the brush limits to the minimum', inject(function (StatisticsService, FilterService) {

@@ -13,7 +13,6 @@ describe('Datagrid external service', function () {
     ];
 
     beforeEach(module('data-prep.datagrid'));
-    beforeEach(module('data-prep.suggestions-stats'));
 
     beforeEach(inject(function (StatisticsService, SuggestionService) {
         /*global SlickGridMock:false */
@@ -93,6 +92,7 @@ describe('Datagrid external service', function () {
             expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
             expect(SuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
             expect(SuggestionService.selectTab).toHaveBeenCalledWith('COLUMN');
+
         }));
 
         it('should NOT update playground right panel on active cell changed if column and tab are the same', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
