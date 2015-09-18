@@ -6,6 +6,7 @@ import java.util.*;
 import org.springframework.data.annotation.Id;
 import org.talend.dataprep.api.dataset.location.LocalStoreLocation;
 import org.talend.dataprep.schema.SchemaParserResult;
+import org.talend.dataprep.schema.io.CSVSerializer;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -81,6 +82,14 @@ public class DataSetMetadata implements Serializable {
      */
     @JsonProperty("favorite")
     private transient boolean favorite;
+
+    /**
+     * indicates what encoding should be used to read raw content. Defaults to UTF-8 but may be changed depending on
+     * content.
+     * @see CSVSerializer#serialize(java.io.InputStream, org.talend.dataprep.api.dataset.DataSetMetadata)
+     */
+    @JsonProperty("encoding")
+    private String encoding = "UTF-8";
 
     /**
      * Default empty constructor.
@@ -241,6 +250,21 @@ public class DataSetMetadata implements Serializable {
      */
     public boolean isFavorite() {
         return this.favorite;
+    }
+
+    /**
+     * @return The data set content's encoding
+     */
+    public String getEncoding() {
+        return encoding;
+    }
+
+    /**
+     * Changes the encoding of the data set content.
+     * @param encoding The new encoding. Must be supported by current JVM.
+     */
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
     }
 
     /**

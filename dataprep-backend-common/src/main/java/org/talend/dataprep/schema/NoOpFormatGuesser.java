@@ -13,7 +13,7 @@ public class NoOpFormatGuesser implements FormatGuesser {
     private NoOpFormatGuess noOpFormatGuess;
 
     @Override
-    public FormatGuesser.Result guess(InputStream stream) {
+    public FormatGuesser.Result guess(InputStream stream, String encoding) {
         return new FormatGuesser.Result(noOpFormatGuess, Collections.emptyMap());
     }
 

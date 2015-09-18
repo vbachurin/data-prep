@@ -52,7 +52,7 @@ public class XlsFormatTest {
     @Test
     public void read_bad_xls_file() throws Exception {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("fake.xls")) {
-            FormatGuess formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
+            FormatGuess formatGuess = formatGuesser.guess(inputStream, "UTF-8").getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof NoOpFormatGuess);
         }
@@ -60,7 +60,7 @@ public class XlsFormatTest {
 
     @Test
     public void read_null_xls_file() throws Exception {
-        FormatGuess formatGuess = formatGuesser.guess(null).getFormatGuess();
+        FormatGuess formatGuess = formatGuesser.guess(null, "UTF-8").getFormatGuess();
         Assert.assertNotNull(formatGuess);
         Assert.assertTrue(formatGuess instanceof NoOpFormatGuess);
     }
@@ -73,7 +73,7 @@ public class XlsFormatTest {
         FormatGuess formatGuess;
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
+            formatGuess = formatGuesser.guess(inputStream, "UTF-8").getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
             Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
@@ -113,7 +113,7 @@ public class XlsFormatTest {
         FormatGuess formatGuess;
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
+            formatGuess = formatGuesser.guess(inputStream, "UTF-8").getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
             Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
@@ -138,7 +138,7 @@ public class XlsFormatTest {
         DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").build();
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
+            formatGuess = formatGuesser.guess(inputStream, "UTF-8").getFormatGuess();
         }
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
@@ -211,7 +211,7 @@ public class XlsFormatTest {
         DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").build();
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
+            formatGuess = formatGuesser.guess(inputStream, "UTF-8").getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
             Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
@@ -267,7 +267,7 @@ public class XlsFormatTest {
         DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").build();
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
+            formatGuess = formatGuesser.guess(inputStream, "UTF-8").getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
             Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
@@ -321,7 +321,7 @@ public class XlsFormatTest {
         DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").sheetName("sheet-1").build();
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
+            formatGuess = formatGuesser.guess(inputStream, "UTF-8").getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
             Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
@@ -402,7 +402,7 @@ public class XlsFormatTest {
                 .row(column().name("id").id(0).type(Type.INTEGER), column().name("value1").id(1).type(Type.INTEGER)).build();
         FormatGuess formatGuess;
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("excel_numbers.xls")) {
-            formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
+            formatGuess = formatGuesser.guess(inputStream, "UTF-8").getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
             Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
@@ -423,7 +423,7 @@ public class XlsFormatTest {
         FormatGuess formatGuess;
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
+            formatGuess = formatGuesser.guess(inputStream, "UTF-8").getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
             Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
@@ -453,7 +453,7 @@ public class XlsFormatTest {
         FormatGuess formatGuess;
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
+            formatGuess = formatGuesser.guess(inputStream, "UTF-8").getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
             Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());

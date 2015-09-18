@@ -24,7 +24,7 @@ public class XlsFormatGuesser implements FormatGuesser {
     private NoOpFormatGuess fallbackGuess;
 
     @Override
-    public FormatGuesser.Result guess(InputStream stream) {
+    public FormatGuesser.Result guess(InputStream stream, String encoding) {
         try {
             Workbook workbook = XlsUtils.getWorkbook(stream);
             // if poi can read it we assume it's correct excel file

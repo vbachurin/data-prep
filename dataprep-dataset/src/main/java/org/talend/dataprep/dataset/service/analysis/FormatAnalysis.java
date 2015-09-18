@@ -2,13 +2,13 @@ package org.talend.dataprep.dataset.service.analysis;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -18,10 +18,7 @@ import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.lock.DistributedLock;
-import org.talend.dataprep.schema.FormatGuess;
-import org.talend.dataprep.schema.FormatGuesser;
-import org.talend.dataprep.schema.SchemaParser;
-import org.talend.dataprep.schema.SchemaParserResult;
+import org.talend.dataprep.schema.*;
 
 /**
  * Analyzes the raw content of a dataset and determine the best format (XLS, CSV...) for the data set raw content. It
@@ -67,6 +64,9 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
                 FormatGuess bestGuess = bestGuessResult.getFormatGuess();
                 DataSetContent dataSetContent = metadata.getContent();
                 dataSetContent.setParameters(bestGuessResult.getParameters());
+                if (bestGuessResult.getParameters().containsKey("ENCODING")) {
+                    metadata.setEncoding(bestGuessResult.getParameters().get("ENCODING"));
+                }
                 dataSetContent.setFormatGuessId(bestGuess.getBeanId());
                 dataSetContent.setMediaType(bestGuess.getMediaType());
 
@@ -92,14 +92,36 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
     private Set<FormatGuesser.Result> guessMediaTypes(String dataSetId, DataSetMetadata metadata) {
         Set<FormatGuesser.Result> mediaTypes = new HashSet<>();
         for (FormatGuesser guesser : guessers) {
-            try (InputStream content = store.getAsRaw(metadata)) {
-                FormatGuesser.Result mediaType = guesser.guess(content);
-                mediaTypes.add(mediaType);
-            } catch (IOException e) {
-                LOG.debug("Unable to use guesser '" + guesser + "' on data set #" + dataSetId, e);
+            // Try to read content given supported encodings
+            final Collection<Charset> availableCharsets = getSupportedCharsets();
+            for (Charset charset : availableCharsets) {
+                try (InputStream content = store.getAsRaw(metadata)) {
+                    FormatGuesser.Result mediaType = guesser.guess(content, charset.name());
+                    mediaTypes.add(mediaType);
+                    if (!(mediaType.getFormatGuess() instanceof NoOpFormatGuess)) {
+                        break;
+                    }
+                } catch (IOException e) {
+                    LOG.debug("Unable to use guesser '" + guesser + "' on data set #" + dataSetId, e);
+                }
             }
         }
         return mediaTypes;
+    }
+
+    /**
+     * @return The list of supported encodings in data prep (could be {@link Charset#availableCharsets()}, but requires
+     * extensive tests, so a sub set is returned to ease testing).
+     */
+    private Collection<Charset> getSupportedCharsets() {
+        return Arrays.asList( //
+                Charset.forName("UTF-8"), //
+                Charset.forName("UTF-16"), //
+                Charset.forName("UTF-16LE"), //
+                Charset.forName("windows-1252"), //
+                Charset.forName("ISO-8859-1"), //
+                Charset.forName("x-MacRoman") //
+        );
     }
 
     /**
