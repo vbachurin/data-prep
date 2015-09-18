@@ -5,16 +5,16 @@
     <talend-tabs tab="actionsSuggestionsCtrl.tab" ng-if="actionsSuggestionsCtrl.columnSuggestions">
         <talend-tabs-item tab-title="_"></talend-tabs-item>
         <talend-tabs-item tab-title="Text">
-            <div class="tab-item-container">Coming soon ...</div>
+            <div>Coming soon ...</div>
         </talend-tabs-item>
         <talend-tabs-item tab-title="Cell">
-            <div class="tab-item-container">Coming soon ...</div>
+            <div>Coming soon ...</div>
         </talend-tabs-item>
         <talend-tabs-item tab-title="Line">
-            <div class="tab-item-container">Coming soon ...</div>
+            <div>Coming soon ...</div>
         </talend-tabs-item>
         <talend-tabs-item tab-title="Column" default="true">
-            <talend-accordions class="menu tab-item-container">
+            <talend-accordions class="menu">
                 <talend-accordions-item ng-switch="!!(transfo.parameters || transfo.items)"
                                         ng-repeat="transfo in actionsSuggestionsCtrl.columnSuggestions track by transfo.name">
                     <!--with dynamic parameters-->
@@ -44,7 +44,7 @@
         </talend-tabs-item>
 
         <talend-tabs-item tab-title="Table">
-            <div class="tab-item-container">
+            <div>
                 <talend-accordions class="menu">
                     <talend-accordions-item>
                         <a>Remove Empty Lines</a>
