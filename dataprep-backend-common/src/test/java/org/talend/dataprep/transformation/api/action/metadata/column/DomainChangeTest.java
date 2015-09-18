@@ -1,7 +1,5 @@
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
-import java.util.*;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -9,13 +7,14 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.action.metadata.column.DomainChange;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.talend.dataprep.transformation.api.action.metadata.column.DomainChange.NEW_DOMAIN_FREQUENCY_PARAMETER_KEY;
-import static org.talend.dataprep.transformation.api.action.metadata.column.DomainChange.NEW_DOMAIN_ID_PARAMETER_KEY;
-import static org.talend.dataprep.transformation.api.action.metadata.column.DomainChange.NEW_DOMAIN_LABEL_PARAMETER_KEY;
+import static org.talend.dataprep.transformation.api.action.metadata.column.DomainChange.*;
 
 public class DomainChangeTest {
     private DomainChange domainChange;
@@ -104,10 +103,10 @@ public class DomainChangeTest {
                     .domainFrequency(1) //
                     .domainLabel("French Beer") //
                     .build();
-            
+
             //when
             final boolean accepted = domainChange.acceptColumn(columnMetadata);
-               
+
             //then
             assertThat(accepted).isFalse();
         }

@@ -1,22 +1,21 @@
 package org.talend.dataprep.api.dataset;
 
+import org.junit.Test;
+import org.talend.dataprep.api.dataset.diff.Flag;
+import org.talend.dataprep.api.type.Type;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.diff.Flag.UPDATE;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.junit.Test;
-import org.talend.dataprep.api.dataset.diff.Flag;
-import org.talend.dataprep.api.type.Type;
-
 /**
  * Unit test for the RowMetadata class.
- * 
+ *
  * @see RowMetadata
  */
 public class RowMetadataTest {
@@ -185,7 +184,7 @@ public class RowMetadataTest {
 
     /**
      * @param name the column name.
-     * @param id the column id.
+     * @param id   the column id.
      * @return a new column.
      */
     private ColumnMetadata getColumnMetadata(String name, int id) {
