@@ -1,9 +1,12 @@
 package org.talend.dataprep.api.dataset;
 
+import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.diff.Flag.UPDATE;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -87,13 +90,12 @@ public class RowMetadataTest {
     }
 
     @Test
-    public void should_diff_updated_columns() {
-
+    public void should_diff_updated_columns_when_name_has_changed() {
         // given
-        List<ColumnMetadata> columns = new ArrayList<>();
+        final List<ColumnMetadata> columns = new ArrayList<>();
         columns.add(getColumnMetadata("toto"));
 
-        List<ColumnMetadata> expected = new ArrayList<>();
+        final List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(getColumnMetadata("tata"));
         expected.add(getColumnMetadata("titi"));
 
@@ -102,23 +104,60 @@ public class RowMetadataTest {
         temp.addAll(expected);
         RowMetadata reference = new RowMetadata(temp);
 
-        // when
         temp = new ArrayList<>();
         temp.addAll(columns);
         temp.add(getColumnMetadata("new tata name")); // updated name
         temp.add(getColumnMetadata("new titi name")); // updated name
         RowMetadata row = new RowMetadata(temp);
+
+        // when
         row.diff(reference);
 
         // then (collect the columns with the new flag only and compare them with
         // the expected result)
-        List<ColumnMetadata> actual = row.getColumns().stream() //
-                .filter(column -> Flag.UPDATE.getValue().equals(column.getDiffFlagValue())) //
+        final List<ColumnMetadata> actual = row.getColumns().stream() //
+                .filter(column -> UPDATE.getValue().equals(column.getDiffFlagValue())) //
                 .collect(Collectors.toList());
 
         assertEquals(actual.size(), 2);
         assertThat(actual.get(0).getId(), is("0001"));
         assertThat(actual.get(1).getId(), is("0002"));
+    }
+
+    @Test
+    public void should_diff_updated_columns_when_domain_has_changed() {
+        // given
+        final ColumnMetadata referenceColumn = getColumnMetadata("toto");
+        referenceColumn.setDomain("country");
+        final RowMetadata reference = new RowMetadata(singletonList(referenceColumn));
+
+        final ColumnMetadata rowColumn = getColumnMetadata("toto");
+        rowColumn.setDomain("firstname");
+        final RowMetadata row = new RowMetadata(singletonList(rowColumn));
+
+        // when
+        row.diff(reference);
+
+        // then
+        assertThat(rowColumn.getDiffFlagValue(), is(UPDATE.getValue()));
+    }
+
+    @Test
+    public void should_diff_updated_columns_when_type_has_changed() {
+        // given
+        final ColumnMetadata referenceColumn = getColumnMetadata("toto");
+        referenceColumn.setType("string");
+        final RowMetadata reference = new RowMetadata(singletonList(referenceColumn));
+
+        final ColumnMetadata rowColumn = getColumnMetadata("toto");
+        rowColumn.setType("integer");
+        final RowMetadata row = new RowMetadata(singletonList(rowColumn));
+
+        // when
+        row.diff(reference);
+
+        // then
+        assertThat(rowColumn.getDiffFlagValue(), is(UPDATE.getValue()));
     }
 
     @Test

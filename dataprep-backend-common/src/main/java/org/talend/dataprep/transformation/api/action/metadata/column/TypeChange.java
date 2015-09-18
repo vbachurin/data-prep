@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.action.metadata.type;
+package org.talend.dataprep.transformation.api.action.metadata.column;
 
 import java.util.Map;
 
@@ -29,7 +29,7 @@ public class TypeChange extends AbstractActionMetadata implements ColumnAction, 
      */
     public static final String TYPE_CHANGE_ACTION_NAME = "type_change"; //$NON-NLS-1$
 
-    public static final String NEW_TYPE_PARAMETER_KEY = "NEW_TYPE";
+    public static final String NEW_TYPE_PARAMETER_KEY = "new_type";
 
     /**
      * @see ActionMetadata#getName()
@@ -61,23 +61,23 @@ public class TypeChange extends AbstractActionMetadata implements ColumnAction, 
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
 
-        LOGGER.debug("applyOnColumn for columnId {} with parameters {} ", columnId, parameters);
+        LOGGER.debug("TypeChange for columnId {} with parameters {} ", columnId, parameters);
 
-        ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
+        final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
         if (columnMetadata == null) {
             // FIXME exception?
             return;
         }
-        String newType = parameters.get(NEW_TYPE_PARAMETER_KEY);
+        final String newType = parameters.get(NEW_TYPE_PARAMETER_KEY);
 
         if (StringUtils.isNotEmpty(newType)) {
             columnMetadata.setType(newType);
             columnMetadata.setTypeForced(true);
             // erase domain
             columnMetadata.setDomain("");
-            columnMetadata.setDomainLabel( "" );
-            columnMetadata.setDomainFrequency( 0 );
-            forceColumn( context, columnId );
+            columnMetadata.setDomainLabel("");
+            columnMetadata.setDomainFrequency(0);
+            forceColumn(context, columnId);
         }
     }
 

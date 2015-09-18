@@ -42,9 +42,10 @@
             var parameters = {
                 scope: 'column',
                 column_id: vm.column.id,
-                NEW_DOMAIN_ID: domain.id,
-                NEW_DOMAIN_LABEL: domain.label,
-                NEW_DOMAIN_FREQUENCY: domain.frequency
+                column_name: vm.column.name,
+                new_domain_id: domain.id,
+                new_domain_label: domain.label,
+                new_domain_frequency: domain.frequency
             };
             PlaygroundService.appendStep('domain_change', parameters)
                 .catch(setColumnDomainAndType.bind(vm, originalDomain));
@@ -66,7 +67,8 @@
             var parameters = {
                 scope: 'column',
                 column_id: vm.column.id,
-                NEW_TYPE: type.id
+                column_name: vm.column.name,
+                new_type: type.id
             };
             PlaygroundService.appendStep('type_change', parameters)
                 .catch(setColumnDomainAndType.bind(vm, originalDomain, originalType));
