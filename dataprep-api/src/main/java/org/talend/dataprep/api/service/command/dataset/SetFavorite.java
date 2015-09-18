@@ -12,44 +12,32 @@
 // ============================================================================
 package org.talend.dataprep.api.service.command.dataset;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.api.service.command.common.DataPrepCommand;
+import org.talend.dataprep.api.service.command.common.Defaults;
+import org.talend.dataprep.api.service.command.common.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.ExceptionContext;
 
 /**
- * API command to call the dataset favorite api
+ * API command to execute the dataset favorite api
  *
  */
 @Component
 @Scope("request")
-public class SetFavoritesCmd extends DataPrepCommand<String> {
+public class SetFavorite extends GenericCommand<String> {
 
-    private String dataSetId;
-
-    private boolean unset;
-
-    private SetFavoritesCmd(HttpClient client, String dataSetId, boolean unset) {
+    private SetFavorite(HttpClient client, String dataSetId, boolean unset) {
         super(PreparationAPI.DATASET_GROUP, client);
-        this.dataSetId = dataSetId;
-        this.unset = unset;
-    }
-
-    @Override
-    protected String run() throws Exception {
-        HttpPut contentRetrieval = new HttpPut(datasetServiceUrl + "/datasets/" + dataSetId + "/favorite?unset=" + unset);
-        HttpResponse response = client.execute(contentRetrieval);
-        int statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode >= 200) {
-            return null;
-        }
-        throw new TDPException(APIErrorCodes.UNABLE_TO_SET_FAVORITE_DATASET, ExceptionContext.build().put("id", dataSetId));
+        execute(() -> new HttpPut(datasetServiceUrl + "/datasets/" + dataSetId + "/favorite?unset=" + unset));
+        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_SET_FAVORITE_DATASET, e,
+                ExceptionContext.build().put("id", dataSetId)));
+        on(HttpStatus.OK).then(Defaults.<String> asNull());
     }
 
 }

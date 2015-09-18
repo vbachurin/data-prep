@@ -1,39 +1,31 @@
 package org.talend.dataprep.api.service.command.dataset;
 
+import static org.talend.dataprep.api.service.command.common.Defaults.asString;
+import static org.talend.dataprep.api.service.command.common.Defaults.emptyString;
+
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.InputStreamEntity;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.api.service.command.common.DataPrepCommand;
+import org.talend.dataprep.api.service.command.common.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
-
-import com.netflix.hystrix.HystrixCommand;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 /**
  * Command used to create a dataset. Basically pass through all data to the DataSet low level API.
  */
 @Component
 @Scope("request")
-public class CreateDataSet extends DataPrepCommand<String> {
-
-    /** The dataset name. */
-    private final String name;
-
-    /** The dataset content or import parameters in json for remote datasets. */
-    private final InputStream dataSetContent;
-
-    /** The dataset content type. */
-    private final String contentType;
+public class CreateDataSet extends GenericCommand<String> {
 
     /**
      * Default constructor.
@@ -45,34 +37,20 @@ public class CreateDataSet extends DataPrepCommand<String> {
      */
     private CreateDataSet(HttpClient client, String name, String contentType, InputStream dataSetContent) {
         super(PreparationAPI.DATASET_GROUP, client);
-        this.name = name;
-        this.contentType = contentType;
-        this.dataSetContent = dataSetContent;
+        execute(() -> onExecute(name, contentType, dataSetContent));
+        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_CREATE_DATASET, e));
+        on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyString());
+        on(HttpStatus.OK).then(asString());
     }
 
-    /**
-     * @see HystrixCommand#run()
-     */
-    @Override
-    protected String run() throws Exception {
-
-        HttpPost contentCreation = new HttpPost(datasetServiceUrl + "/datasets/?name=" + URLEncoder.encode(name, "UTF-8")); //$NON-NLS-1$ //$NON-NLS-2$
-        contentCreation.addHeader("Content-Type", contentType); //$NON-NLS-1$
-
+    private HttpRequestBase onExecute(String name, String contentType, InputStream dataSetContent) {
         try {
-            contentCreation.setEntity(new InputStreamEntity(dataSetContent));
-            HttpResponse response = client.execute(contentCreation);
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode >= 200) {
-                if (statusCode == HttpStatus.SC_NO_CONTENT) {
-                    return StringUtils.EMPTY;
-                } else if (statusCode == HttpStatus.SC_OK) {
-                    return IOUtils.toString(response.getEntity().getContent());
-                }
-            }
-        } finally {
-            contentCreation.releaseConnection();
+            final HttpPost post = new HttpPost(datasetServiceUrl + "/datasets/?name=" + URLEncoder.encode(name, "UTF-8"));//$NON-NLS-1$ //$NON-NLS-2$
+            post.addHeader("Content-Type", contentType); //$NON-NLS-1$
+            post.setEntity(new InputStreamEntity(dataSetContent));
+            return post;
+        } catch (UnsupportedEncodingException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
-        throw new TDPException(APIErrorCodes.UNABLE_TO_CREATE_DATASET);
     }
 }

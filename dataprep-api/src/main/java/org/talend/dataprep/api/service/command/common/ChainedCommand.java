@@ -5,7 +5,7 @@ import org.apache.http.client.HttpClient;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 
-public abstract class ChainedCommand<O, I> extends DataPrepCommand<O> {
+public abstract class ChainedCommand<O, I> extends GenericCommand<O> {
 
     private final HystrixCommand<I> input;
 
