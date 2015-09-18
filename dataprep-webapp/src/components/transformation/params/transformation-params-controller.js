@@ -21,31 +21,19 @@
             if (vm.transformation.parameters) {
                 _.forEach(vm.transformation.parameters, function (paramItem) {
                     params[paramItem.name] = paramItem.value? paramItem.value : paramItem.default;
+
+                    // deal with select inline parameters
+                    if (paramItem.type === 'select') {
+                        var selectedValue = _.find(paramItem.configuration.values, {value: paramItem.value});
+                        if (selectedValue.parameters) {
+                            _.forEach(selectedValue.parameters, function (choiceParamItem) {
+                                params[choiceParamItem.name] = choiceParamItem.value;
+                            });
+                        }
+                    }
+
                 });
             }
-
-            return params;
-        };
-
-        /**
-         * @ngdoc method
-         * @name getChoiceParams
-         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
-         * @description [PRIVATE] Get item choice and choice parameters into one object for REST call
-         * @returns {object} - the parameters
-         */
-        var getChoiceParams = function () {
-            var params = {};
-            _.forEach(vm.transformation.items, function (item) {
-                var selectedChoice = item.selectedValue;
-                params[item.name] = selectedChoice.name;
-
-                if (selectedChoice.parameters) {
-                    _.forEach(selectedChoice.parameters, function (choiceParamItem) {
-                        params[choiceParamItem.name] = choiceParamItem.value;
-                    });
-                }
-            });
 
             return params;
         };
@@ -85,9 +73,8 @@
          */
         var gatherParams = function() {
             var params = getParams();
-            var choiceParams = getChoiceParams();
             var clusterParams = getClusterParams();
-            return _.merge(_.merge(params, choiceParams), clusterParams);
+            return _.merge(params, clusterParams);
         };
 
         /**

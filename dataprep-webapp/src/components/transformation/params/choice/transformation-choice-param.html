@@ -1,0 +1,23 @@
+<div class="param">
+    <span>
+        <div class="param-row" data-prep-tooltip="{{::choiceParamCtrl.parameter.description}}">
+            <div class="param-name">{{choiceParamCtrl.parameter.label}}:</div>
+
+            <div class="param-input">
+                <select ng-model="choiceParamCtrl.parameter.value"
+                        ng-options="option.value as option.value for option in choiceParamCtrl.parameter.configuration.values"
+                        required></select>
+            </div>
+        </div>
+
+        <div ng-repeat="option in choiceParamCtrl.parameter.configuration.values">
+            <transform-simple-param
+                    class="param-no-space"
+                    ng-repeat="inlineParam in option.parameters"
+                    ng-if="option.parameters && choiceParamCtrl.parameter.value === option.value"
+                    parameter="inlineParam">
+            </transform-simple-param>
+        </div>
+
+    </span>
+</div>

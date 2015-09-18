@@ -10,20 +10,13 @@
                     parameter="parameter">
             </transform-simple-param>
 
-            <div ng-switch-when="choice"> {{parameter.name}} is a select box</div>
+            <transform-choice-param
+                    ng-switch-when="choice"
+                    parameter="parameter">
+            </transform-choice-param>
+
             <div ng-switch-when="date"> {{parameter.name}} is a date</div>
         </div>
-
-        <!-- Menu item param
-
-        -->
-
-        <!-- Choice
-        <transform-choice-params
-                ng-if="paramsCtrl.transformation.items.length"
-                choices="paramsCtrl.transformation.items">
-        </transform-choice-params>
-        -->
 
         <!-- Cluster
         <transform-cluster-params

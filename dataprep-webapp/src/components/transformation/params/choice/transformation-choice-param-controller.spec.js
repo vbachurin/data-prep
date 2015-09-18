@@ -1,7 +1,7 @@
 describe('Transform choice params controller', function () {
     'use strict';
 
-    var createController, scope, extractedParams, choices;
+    var createController, scope, extractedParams, parameter;
 
     beforeEach(module('data-prep.transformation-params'));
 
@@ -10,28 +10,32 @@ describe('Transform choice params controller', function () {
         scope = $rootScope.$new();
 
         createController = function () {
-            var ctrlFn = $controller('TransformChoiceParamsCtrl', {
+            var ctrlFn = $controller('TransformChoiceParamCtrl', {
                 $scope: scope
             }, true);
-            ctrlFn.instance.choices = choices;
+            ctrlFn.instance.parameter = parameter;
             return ctrlFn();
         };
     }));
 
     it('should init choice default value', function() {
         //given
-        choices = [{
+        parameter = {
             name: 'mode',
-            values: [
-                {name: 'regex'},
-                {name: 'index', default: true}
-            ]
-        }];
+            type: 'select',
+            configuration: {
+                values: [
+                    {value: 'regex'},
+                    {value: 'index'}
+                ]
+            },
+            default: 'index'
+        };
 
         //when
         var ctrl = createController();
 
         //then
-        expect(ctrl.choices[0].selectedValue).toEqual({name: 'index', default: true});
+        expect(ctrl.parameter.value).toEqual('index');
     });
 });
