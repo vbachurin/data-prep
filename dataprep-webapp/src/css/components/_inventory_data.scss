@@ -1,24 +1,22 @@
 .inventory-data {
   $width: 240px;
 
-  @include slidable-size($width, 0px);
+  &.slide-right {
+    @include slidable-right($width, 0);
 
-  .content {
-    .content-container {
-      min-width: $width;
-      padding: 20px;
+    .content {
+      .content-container {
+        min-width: $width;
+        padding: 20px;
 
-      .title {
-        font-size: 1.5em;
-      }
+        .title {
+          font-size: 1.5em;
+        }
 
-      .empty {
-        text-align: center;
+        .empty {
+          text-align: center;
+        }
       }
     }
-  }
-
-  .action {
-    display: none;
   }
 }

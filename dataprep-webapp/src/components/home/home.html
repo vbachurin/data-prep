@@ -126,7 +126,11 @@
         </div>
     </div>
 
-    <talend-slidable visible="homeCtrl.showRightPanel" side="right" class="flex-right-panel inventory-data" resizable="inventory-data">
+    <talend-slidable class="flex-right-panel inventory-data"
+                     visible="homeCtrl.showRightPanel"
+                     side="right"
+                     control-bar="false"
+                     resizable="inventory-data">
         <p class="title">{{ ::'INVENTORY_DATA' | translate }}</p>
         <hr/>
         <p class="empty">

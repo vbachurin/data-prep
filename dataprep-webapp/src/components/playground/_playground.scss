@@ -2,6 +2,7 @@
   @include flex-row();
 
   .playground-center {
+    position: relative;
     @extend .flex-center;
 
     .filter-list {
@@ -58,6 +59,10 @@
         vertical-align: middle;
       }
     }
+  }
+
+  #playground-lookup-icon {
+    vertical-align: middle;
   }
 }
 

@@ -1,4 +1,5 @@
-<div class="slidable" ng-class="{'slide-right': slidableCtrl.side === 'right', 'slide-hide': !slidableCtrl.visible}">
+<div class="slidable"
+     ng-class="{'left': slidableCtrl.side === 'left', 'right': slidableCtrl.side === 'right', 'top': slidableCtrl.side === 'top', 'bottom': slidableCtrl.side === 'bottom' , 'slide-hide': !slidableCtrl.visible }">
     <div class="content">
         <div class="content-container">
             <ng-transclude class="fixed-content"></ng-transclude>
@@ -6,8 +7,10 @@
 
     </div>
 
-    <div class="action" ng-class="::{right: (slidableCtrl.side === 'right')}" ng-click="slidableCtrl.toggle()">
-        <span ng-if="::(slidableCtrl.side !== 'right')">
+    <div class="action {{slidableCtrl.actionCssClass}}"
+         ng-if="slidableCtrl.hasControlButton"
+         ng-click="slidableCtrl.toggle()">
+        <span ng-if="::(slidableCtrl.side == 'left')">
             <span ng-show="slidableCtrl.visible">&#8249;</span>
             <span ng-show="!slidableCtrl.visible">&#8250;</span>
         </span>

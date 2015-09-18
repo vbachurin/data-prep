@@ -1,50 +1,113 @@
-@mixin slidable-size($size, $actionSize) {
-  $width: $size - $actionSize;
-  @include flex(0 $size);
+@mixin slidable-common($size, $actionSize) {
+  @include flex(0 0 $size);
 
-  &.slide-hide {
-    @include flex(0 $actionSize);
+  @include display(flex);
+  @include flex-wrap(nowrap);
+  @include justify-content(space-between);
 
+  &.slide-hide-add,
+  &.slide-hide-remove.slide-hide-remove-active {
     > .content {
-      width: 0;
+      overflow: hidden;
     }
   }
 
-  &.slide-hide-add,
-  &.slide-hide-remove.slide-hide-remove-active{
+  > .action {
+    @include flex(0 0 $actionSize);
+  }
+}
+
+@mixin slidable-width($size, $actionSize) {
+  $width: $size - $actionSize;
+  @include slidable-common($size, $actionSize);
+  @include flex-direction(row);
+  @include transition(0.15s ease flex);
+
+  &.slide-hide {
+    @include flex(0 0 $actionSize);
+    flex: 0 0 $actionSize !important;
     > .content {
-      overflow: hidden;
+      width: 0;
     }
   }
 
   > .content {
     @include transition(0.25s ease width);
     width: $width;
+    overflow-x: hidden;
+    overflow-y: auto;
 
     > .content-container {
-      padding-left: 0px;
       min-width: $width;
     }
   }
+}
 
-  > .action {
-    @include flex(0 $actionSize);
+@mixin slidable-height($size, $actionSize) {
+  $height: $size - $actionSize;
+  @include slidable-common($size, $actionSize);
+  @include flex-direction(column);
+  @include transition(0.25s ease transform);
+
+  position: absolute;
+  bottom: 0;
+  background: $white;
+  width: 100%;
+  z-index: 100;
+
+  > .content {
+    height: $height;
+    overflow: auto;
+
+    > .content-container {
+      min-height: $height;
+    }
+  }
+}
+
+@mixin slidable-left($size, $actionSize) {
+  @include slidable-width($size, $actionSize);
+}
+
+@mixin slidable-right($size, $actionSize) {
+  @include slidable-width($size, $actionSize);
+}
+
+@mixin slidable-top($size, $actionSize) {
+  @include slidable-height($size, $actionSize);
+  &.slide-hide {
+    transform: translateY(-100%);
+  }
+}
+
+@mixin slidable-bottom($size, $actionSize) {
+  @include slidable-height($size, $actionSize);
+  &.slide-hide {
+    transform: translateY(100%);
   }
 }
 
 .slidable {
-  @include slidable-size(350px, 20px);
+  position: relative; //important for jquery ui resizable
 
-  @include transition(0.25s ease flex);
+  &.slide-left {
+    @include slidable-left(350px, 20px);
+  }
 
-  @include display(flex);
-  @include flex-flow(row wrap);
-  @include justify-content(space-between);
+  &.slide-right {
+    @include slidable-right(350px, 20px);
+  }
+
+  &.slide-top {
+    @include slidable-top(350px, 20px);
+  }
+
+  &.slide-bottom {
+    @include slidable-bottom(350px, 20px);
+  }
 
   > .content {
     order: 2;
-    overflow-x: hidden;
-    overflow-y: auto;
   }
 
   > .action {
@@ -57,12 +120,13 @@
 
     order: 3;
 
-    &.right {
+    &.right,
+    &.bottom {
       order: 1;
     }
   }
 
   &.no-transition {
-    transition-duration: 0s;
+    transition : none !important;
   }
 }
