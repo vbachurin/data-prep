@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.talend.daikon.exception.json.JsonErrorCode;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.common.GenericCommand;
 import org.talend.dataprep.api.service.command.dataset.DataSetGet;
