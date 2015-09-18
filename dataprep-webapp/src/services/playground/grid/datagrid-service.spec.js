@@ -29,7 +29,7 @@ describe('Datagrid service', function () {
             {tdpId: 7, firstname: 'Pepe 2', __tdpDiff: {firstname: 'update'}}, //firstname is updated in preview
             {tdpId: 8, firstname: 'Pipi'}
         ],
-        columns: [{id: '0000', name: 'lastname'}, {id: '0001', name: 'firstname'}]
+        columns: [{id: '0000', name: 'lastname'}, {id: '0001', name: 'firstname'}, {id: '0002', name: 'age'}]
     };
 
     function DataViewMock() {
@@ -540,6 +540,7 @@ describe('Datagrid service', function () {
             DatagridService.execute(executor);
 
             //then
+            expect(DatagridService.focusedColumn).toBe('0002');
             expect(DatagridService.dataView.insertItem).toHaveBeenCalledWith(2, {
                 tdpId: 2,
                 firstname: 'Titi Bis',
@@ -571,6 +572,7 @@ describe('Datagrid service', function () {
 
             //then
             expect(reverter.columns).toBe(originalData.columns);
+            expect(DatagridService.focusedColumn).toBe('0002');
             expect(reverter.preview).toBeFalsy();
             expect(reverter.instructions).toEqual([
                 {type: 'DELETE', row: {tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new'}},
@@ -596,6 +598,7 @@ describe('Datagrid service', function () {
 
             //then
             expect(DatagridService.data).not.toBe(originalData);
+            expect(DatagridService.focusedColumn).toBe('0002');
             expect(DatagridService.data.preview).toBe(true);
             expect(DatagridService.data.columns).toBe(diff.columns);
             expect(DatagridService.data.records).toBe(originalData.records); // same array but modified by executor

@@ -87,7 +87,6 @@ describe('Datagrid style service', function () {
             var args = {column: gridColumns[1]};
 
             assertColumnsHasNoStyles();
-            DatagridStyleService.resetColumnStyles();
 
             //when
             var onHeaderClick = gridMock.onHeaderClick.subscribe.calls.argsFor(0)[0];
