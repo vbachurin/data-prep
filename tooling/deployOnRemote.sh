@@ -4,7 +4,7 @@
 #  Launch entire docker stack on a remote server
 #======================================================================================
 
-path='/home/talend/deployedByJenkins'
+path=$HOME'/deployedByJenkins'
 server_host=$1
 registry='talend-registry:5000'
 
