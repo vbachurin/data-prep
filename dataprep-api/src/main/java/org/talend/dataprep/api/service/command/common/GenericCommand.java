@@ -25,6 +25,7 @@ import org.talend.daikon.exception.json.JsonErrorCode;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 
@@ -114,6 +115,26 @@ public class GenericCommand<T> extends HystrixCommand<T> {
                 code.setHttpStatus(statusCode);
                 final TDPException cause = new TDPException(code);
                 throw onError.apply(cause);
+            } catch (JsonMappingException e) {
+                // Failed to parse JSON error, returns an unexpected code with returned HTTP code
+                final TDPException exception = new TDPException(new JsonErrorCode() {
+
+                    @Override
+                    public String getProduct() {
+                        return CommonErrorCodes.UNEXPECTED_EXCEPTION.getProduct();
+                    }
+
+                    @Override
+                    public String getCode() {
+                        return CommonErrorCodes.UNEXPECTED_EXCEPTION.getCode();
+                    }
+
+                    @Override
+                    public int getHttpStatus() {
+                        return statusCode;
+                    }
+                });
+                throw onError.apply(exception);
             } catch (IOException e) {
                 throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
             } finally {
