@@ -3,6 +3,12 @@
   $menu-color: tint($black, 20%);
   $menu-background: $super-light-gray;
 
+  .tab-item-container {
+    height: calc(45vh - 100px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
   .menu {
     color: $menu-color;
 

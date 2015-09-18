@@ -19,7 +19,19 @@
       padding: 25px 10px 5px 10px;
       text-transform: uppercase;
     }
+
+    height: calc(100vh - 56px);
+
+    .suggestions-part-div {
+      height: 45vh;
+    }
+
+    .stats-part-div {
+      height: calc(55vh - 56px);
+    }
   }
+
+
 }
 
 @import "actions-suggestions/action-suggestions";
