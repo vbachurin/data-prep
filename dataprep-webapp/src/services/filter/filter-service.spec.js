@@ -135,7 +135,7 @@ describe('Filter service', function() {
             expect(filterInfo.type).toBe('inside_range');
             expect(filterInfo.colId).toBe('col1');
             expect(filterInfo.colName).toBe('column name');
-            expect(filterInfo.value).toBe('in [0 ... 22]');
+            expect(filterInfo.value).toBe('in [0 .. 22]');
             expect(filterInfo.editable).toBe(false);
             expect(filterInfo.args).toEqual({interval: [0, 22]});
             expect(filterInfo.filterFn({col1:'5'})).toBeTruthy();
@@ -147,7 +147,7 @@ describe('Filter service', function() {
             expect(filterInfo2.type).toBe('inside_range');
             expect(filterInfo2.colId).toBe('col2');
             expect(filterInfo2.colName).toBe('column name2');
-            expect(filterInfo2.value).toBe('in [0e+0 ... 1e+6]');
+            expect(filterInfo2.value).toBe('in [0 .. 1,000,000]');
             expect(filterInfo2.editable).toBe(false);
             expect(filterInfo2.args).toEqual({interval:  [0, 1000000]});
             expect(filterInfo2.filterFn({col2: '1000'})).toBeTruthy();
@@ -283,7 +283,7 @@ describe('Filter service', function() {
             expect(filterInfo2.type).toBe('inside_range');
             expect(filterInfo2.colId).toBe('col1');
             expect(filterInfo2.colName).toBe('column name');
-            expect(filterInfo2.value).toBe('in [5 ... 10]');
+            expect(filterInfo2.value).toBe('in [5 .. 10]');
             expect(filterInfo2.editable).toBe(false);
             expect(filterInfo2.args).toEqual({interval:  [5, 10]});
             expect(filterInfo2.filterFn({col1: '8'})).toBeTruthy();
@@ -333,7 +333,7 @@ describe('Filter service', function() {
             expect(newFilter.colId).toBe('col1');
             expect(newFilter.colName).toBe('column 1');
             expect(newFilter.args.interval).toEqual([0,22]);
-            expect(newFilter.value).toBe('in [0 ... 22]');
+            expect(newFilter.value).toBe('in [0 .. 22]');
             expect(DatagridService.updateFilter).toHaveBeenCalledWith(filter.filterFn, newFilter.filterFn);
         }));
     });

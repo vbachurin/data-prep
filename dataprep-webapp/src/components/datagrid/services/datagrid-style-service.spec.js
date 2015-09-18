@@ -221,6 +221,37 @@ describe('Datagrid style service', function () {
             expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
+        it('should NOT change "selected" column class if it has not changed', inject(function (DatagridStyleService) {
+            //given
+            DatagridStyleService.init(gridMock);
+            var args = {cell: 1};
+
+            assertColumnsHasNoStyles();
+
+            var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
+            onActiveCellChanged(null, args);
+            jasmine.clock().tick(200);
+
+            expect(gridColumns[0].cssClass).toBeFalsy();
+            expect(gridColumns[1].cssClass.indexOf('selected') > -1).toBe(true);
+            expect(gridColumns[2].cssClass).toBeFalsy();
+            expect(gridColumns[3].cssClass).toBeFalsy();
+            expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
+
+            //when
+            onActiveCellChanged(null, args);
+            jasmine.clock().tick(200);
+
+            //then
+            expect(gridColumns[0].cssClass).toBeFalsy();
+            expect(gridColumns[1].cssClass.indexOf('selected') > -1).toBe(true);
+            expect(gridColumns[2].cssClass).toBeFalsy();
+            expect(gridColumns[3].cssClass).toBeFalsy();
+            expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
+        }));
+
         it('should invalidate grid', inject(function (DatagridStyleService) {
             //given
             DatagridStyleService.init(gridMock);
@@ -280,13 +311,10 @@ describe('Datagrid style service', function () {
             //given
             DatagridStyleService.init(gridMock);
             assertColumnsHasNoStyles();
-
-            var isPreview = false;
-            var activeCell = {cell: 1};
-            gridMock.initActiveCellMock(activeCell);
+            var selectedColumn = gridColumns[1];
 
             //when
-            DatagridStyleService.manageColumnStyle(gridColumns, isPreview);
+            DatagridStyleService.updateColumnClass(gridColumns, selectedColumn);
 
             //then
             expect(gridColumns[0].cssClass).toBeFalsy();
@@ -297,107 +325,17 @@ describe('Datagrid style service', function () {
             expect(gridColumns[5].cssClass).toBe('index-column');
         }));
 
-        it('should NOT set "selected" class on active cell column when this is a preview', inject(function (DatagridStyleService) {
+        it('should set "number" class on number column', inject(function (DatagridStyleService) {
             //given
             DatagridStyleService.init(gridMock);
             assertColumnsHasNoStyles();
 
-            var isPreview = true;
-            var activeCell = {cell: 1};
-            gridMock.initActiveCellMock(activeCell);
-
             //when
-            DatagridStyleService.manageColumnStyle(gridColumns, isPreview);
-
-            //then
-            expect(gridColumns[0].cssClass).toBeFalsy();
-            expect(gridColumns[1].cssClass.indexOf('selected') > -1).toBe(false);
-            expect(gridColumns[2].cssClass).toBeFalsy();
-            expect(gridColumns[3].cssClass).toBeFalsy();
-            expect(gridColumns[4].cssClass).toBeFalsy();
-            expect(gridColumns[5].cssClass).toBe('index-column');
-        }));
-
-        it('should NOT set "selected" class without active cell', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            DatagridStyleService.resetColumnStyles();
-            assertColumnsHasNoStyles();
-
-            var isPreview = false;
-            gridMock.initActiveCellMock();
-
-            //when
-            DatagridStyleService.manageColumnStyle(gridColumns, isPreview);
-
-            //then
-            expect(gridColumns[0].cssClass).toBeFalsy();
-            expect(gridColumns[1].cssClass.indexOf('selected') > -1).toBe(false);
-            expect(gridColumns[2].cssClass).toBeFalsy();
-            expect(gridColumns[3].cssClass).toBeFalsy();
-            expect(gridColumns[4].cssClass).toBeFalsy();
-            expect(gridColumns[5].cssClass).toBe('index-column');
-        }));
-
-        it('should set "number" class on number column on preview mode', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            assertColumnsHasNoStyles();
-
-            var isPreview = true;
-
-            //when
-            DatagridStyleService.manageColumnStyle(gridColumns, isPreview);
+            DatagridStyleService.updateColumnClass(gridColumns);
 
             //then
             expect(gridColumns[0].cssClass).toBeFalsy();
             expect(gridColumns[1].cssClass.indexOf('number') > -1).toBe(true);
-            expect(gridColumns[2].cssClass).toBeFalsy();
-            expect(gridColumns[3].cssClass).toBeFalsy();
-            expect(gridColumns[4].cssClass).toBeFalsy();
-            expect(gridColumns[5].cssClass).toBe('index-column');
-        }));
-
-        it('should set "number" class on number column on NON preview mode with active cell', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            assertColumnsHasNoStyles();
-
-            var isPreview = false;
-            var activeCell = {cell: 1};
-            gridMock.initActiveCellMock(activeCell);
-
-            //when
-            DatagridStyleService.manageColumnStyle(gridColumns, isPreview);
-
-            //then
-            expect(gridColumns[0].cssClass).toBeFalsy();
-            expect(gridColumns[1].cssClass.indexOf('number') > -1).toBe(true);
-            expect(gridColumns[2].cssClass).toBeFalsy();
-            expect(gridColumns[3].cssClass).toBeFalsy();
-            expect(gridColumns[4].cssClass).toBeFalsy();
-            expect(gridColumns[5].cssClass).toBe('index-column');
-        }));
-
-        it('should apply "selected" class to last selected column before preview', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-
-            gridMock.initActiveCellMock({cell: 1}); // a cell from column 1
-            DatagridStyleService.manageColumnStyle(gridColumns, false); // will select column 1
-            expect(gridColumns[1].cssClass.indexOf('selected') > -1).toBe(true);
-
-            DatagridStyleService.manageColumnStyle(gridColumns, true); // will unselect column 1
-            expect(gridColumns[1].cssClass.indexOf('selected') > -1).toBe(false);
-
-            gridMock.initActiveCellMock(); // no active cell anymore, it should take last selected column id
-
-            //when
-            DatagridStyleService.manageColumnStyle(gridColumns, false);
-
-            //then
-            expect(gridColumns[0].cssClass).toBeFalsy();
-            expect(gridColumns[1].cssClass.indexOf('selected') > -1).toBe(true);
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
@@ -630,35 +568,6 @@ describe('Datagrid style service', function () {
 
             //then
             expect(diffClass).toBe('');
-        }));
-    });
-
-    describe('column selection management', function() {
-        it('should return selected column', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-
-            //given : set selected column
-            var activeCell = {cell: 1};
-            gridMock.initActiveCellMock(activeCell);
-            DatagridStyleService.manageColumnStyle(gridColumns, false);
-
-            //when
-            var selectedColumn = DatagridStyleService.selectedColumn(gridColumns);
-
-            //then
-            expect(selectedColumn).toBe(gridColumns[1]);
-        }));
-
-        it('should undefined when there is no selected column', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-
-            //when
-            var selectedColumn = DatagridStyleService.selectedColumn(gridColumns);
-
-            //then
-            expect(selectedColumn).not.toBeDefined();
         }));
     });
 });

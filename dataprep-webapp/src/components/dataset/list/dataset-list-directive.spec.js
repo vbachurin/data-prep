@@ -33,6 +33,9 @@ describe('Dataset list directive', function () {
     ];
 
     beforeEach(module('data-prep.dataset-list'));
+    beforeEach(module('data-prep.services.onboarding'));
+    beforeEach(module('data-prep.datagrid'));
+
     beforeEach(module('htmlTemplates'));
     beforeEach(module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {

@@ -56,6 +56,7 @@
             playgroundState.line = null;
             playgroundState.dataset = null;
             playgroundState.preparation = null;
+            playgroundState.nameEditionMode = false;
         }
     }
 

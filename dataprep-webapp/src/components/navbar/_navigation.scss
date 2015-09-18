@@ -26,7 +26,15 @@ header.navigation {
         color: lighten($medium-gray, 10%);
       }
 
-      &.t-top-bar_notification {
+      &.onboarding-icon {
+        padding-left: 20px;
+      }
+
+      &.marketplace-icon {
+        padding-left: 20px;
+      }
+
+      &.notification-icon {
         top: -4px;
         font-weight: 700;
         font-size: .9rem;
@@ -43,8 +51,8 @@ header.navigation {
 
       }
 
-      &.t-top-bar_profile {
-        //width: 52px;
+      &.profile-icon {
+        padding-left: 20px;
       }
     }
   }

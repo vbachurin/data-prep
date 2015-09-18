@@ -1,0 +1,23 @@
+{
+  "columns": [
+    {
+      "id": "state",
+      "name": "state",
+      "type": "string"
+    }
+  ],
+  "records":[
+    {
+      "state":"NC"
+    },
+    {
+      "state":"NY"
+    },
+    {
+      "state":"AZ"
+    },
+    {
+      "state":"CA"
+    }
+  ]
+}

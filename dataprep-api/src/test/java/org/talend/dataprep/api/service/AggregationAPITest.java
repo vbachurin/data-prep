@@ -78,4 +78,20 @@ public class AggregationAPITest extends ApiServiceTestBase {
         assertThat(response, sameJSONAsFile(this.getClass().getResourceAsStream("aggregation/aggregation_exected.json")));
     }
 
+    @Test
+    public void should_not_aggregate_because_dataset_and_preparation_id_are_set() throws IOException {
+
+        // given
+        AggregationParameters params = getAggregationParameters("aggregation/aggregation_parameters.json");
+        params.setDatasetId("ds#753874");
+
+        // when
+        final Response response = given().contentType(ContentType.JSON)//
+                .body(builder.build().writer().writeValueAsString(params))//
+                .when()//
+                .post("/api/aggregate");
+
+        // then
+        assertEquals(400, response.getStatusCode());
+    }
 }

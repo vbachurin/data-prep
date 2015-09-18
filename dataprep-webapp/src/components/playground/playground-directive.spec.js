@@ -19,7 +19,8 @@ describe('Playground directive', function () {
     beforeEach(module('htmlTemplates'));
     beforeEach(module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'FILE_DETAILS': 'File: {{name}} ({{records}} lines)'
+            'FILE_DETAILS': 'File: {{name}} ({{records}} lines)',
+            'SAMPLE_SIZE': 'Below is a sample size of'
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -68,7 +69,7 @@ describe('Playground directive', function () {
         //check header is present and contains description and search filter
         expect(playgroundModal.find('.modal-header').length).toBe(1);
         expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).text().trim()).toBe('File: US States (3 lines)');
-        expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(1).find('span').text().trim()).toBe('Sample size');
+        expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(1).find('span').text().trim()).toBe('Below is a sample size of:');
 
         //check left slidable is hidden recipe with left slide action
         expect(playground.eq(0).find('.slidable').eq(0).hasClass('recipe')).toBe(true);

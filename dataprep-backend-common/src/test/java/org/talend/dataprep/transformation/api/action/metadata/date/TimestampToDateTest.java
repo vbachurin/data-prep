@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -41,19 +42,16 @@ import org.talend.dataprep.transformation.api.action.metadata.text.Split;
  *
  * @see TimestampToDate
  */
-public class TimestampToDateTest {
+public class TimestampToDateTest extends BaseDateTests {
 
-    /**
-     * The action to test.
-     */
+    /** The action to test. */
+    @Autowired
     private TimestampToDate action;
 
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        action = new TimestampToDate();
-
         parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 TimestampToDateTest.class.getResourceAsStream("timestampToDate.json"));

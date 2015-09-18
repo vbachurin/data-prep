@@ -1,7 +1,6 @@
 [
   {
     "name": "delete_empty",
-    "category": "cleansing",
     "items": [
     ],
     "parameters": [
@@ -36,7 +35,6 @@
   },
   {
     "name": "delete_invalid",
-    "category": "cleansing",
     "items": [
     ],
     "parameters": [
@@ -148,7 +146,7 @@
     "label": "Duplicate"
   },
   {
-    "category": "date",
+    "category": "dates",
     "items": [
       {
         "name": "time_unit",
@@ -215,7 +213,7 @@
     "label": "Compute time since"
   },
   {
-    "category": "date",
+    "category": "dates",
     "items": [
       {
         "name": "new_pattern",
@@ -296,7 +294,7 @@
     "label": "Change date pattern"
   },
   {
-    "category": "date",
+    "category": "dates",
     "name": "extract_date_tokens",
     "parameters": [
       {
@@ -454,7 +452,6 @@
         "default": "01/01/1970 10:00:00"
       }
     ],
-    "category": "quickfix",
     "items": [],
     "dynamic": false,
     "description": "Fill invalid cells of this column with given value",

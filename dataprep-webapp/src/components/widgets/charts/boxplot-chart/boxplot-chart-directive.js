@@ -198,7 +198,7 @@
                         .attr('class', 'max-min-labels')
                         .attr('x', width / 2)
                         .attr('y', vScale(boxValues.min) / 2)
-                        .text(boxValues.max)
+                        .text(d3.format(',')(boxValues.max))
                         .style('opacity', 1)
                         .attr('text-anchor', 'middle')
                         .transition()
@@ -210,7 +210,7 @@
                         .attr('class', 'max-min-labels')
                         .attr('x', width / 2)
                         .attr('y', vScale(boxValues.min) / 2)
-                        .text(boxValues.min)
+                        .text(d3.format(',')(boxValues.min))
                         .style('opacity', 1)
                         .attr('text-anchor', 'middle')
                         .transition()
@@ -231,7 +231,7 @@
                                 return vScale(boxValues.mean) - 10;
                             }
                         })
-                        .text('Mean : ' + boxValues.mean)
+                        .text('Mean : ' + d3.format(',')(boxValues.mean))
                         .style('opacity', 1e-6)
                         .attr('text-anchor', 'middle')
                         .transition()
@@ -243,7 +243,7 @@
                         .attr('class', 'low-quantile-labels')
                         .attr('x', width + 5)
                         .attr('y', vScale(boxValues.min) / 2)
-                        .text(boxValues.q1)
+                        .text(d3.format(',')(boxValues.q1))
                         .style('opacity', 1)
                         .attr('text-anchor', 'start')
                         .transition()
@@ -279,7 +279,7 @@
                         .attr('class', 'up-quantile-labels')
                         .attr('x', width + 5)
                         .attr('y', vScale(boxValues.min) / 2)
-                        .text(boxValues.q2)
+                        .text(d3.format(',')(boxValues.q2))
                         .style('opacity', 1)
                         .attr('text-anchor', 'start')
                         .transition()
@@ -289,7 +289,7 @@
                     //median value
                     gTexts.append('text')
                         .attr('x', width - 5)
-                        .text(boxValues.median)
+                        .text(d3.format(',')(boxValues.median))
                         .style('opacity', 1e-6)
                         .attr('text-anchor', 'end')
                         .attr('y', function () {

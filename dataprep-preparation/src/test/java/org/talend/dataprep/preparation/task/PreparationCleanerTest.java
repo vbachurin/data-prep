@@ -12,7 +12,9 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockPropertySource;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.preparation.Application;
@@ -21,6 +23,7 @@ import org.talend.dataprep.preparation.store.PreparationRepository;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebIntegrationTest
+@TestPropertySource(properties={"dataset.metadata.store: in-memory", "preparation.store.remove.hours: 2"})
 public class PreparationCleanerTest {
     @Autowired
     private PreparationCleaner cleaner;
@@ -31,14 +34,11 @@ public class PreparationCleanerTest {
     @Autowired
     ConfigurableEnvironment environment;
 
-    @Before
-    public void setUp() {
-        final MockPropertySource repositoryInformation = new MockPropertySource().withProperty("dataset.metadata.store", "in-memory");
-        environment.getPropertySources().addFirst(repositoryInformation);
-    }
+    @Autowired
+    private WebApplicationContext context;
 
     @Test
-    public void removeOrphanSteps_should_remove_orphan_step() {
+    public void removeOrphanSteps_should_remove_orphan_step_after_at_least_X_hours() {
         //given
         final Step firstStep = new Step(ROOT_STEP.getId(), "first");
         final Step secondStep = new Step(firstStep.getId(), "second");
@@ -50,7 +50,19 @@ public class PreparationCleanerTest {
         repository.add(orphanStep);
         repository.add(preparation);
 
-        //when
+        //when: after 0 hour - should not remove
+        cleaner.removeOrphanSteps();
+        assertNotNull(repository.get(orphanStep.getId(), Step.class));
+        assertNotNull(repository.get(firstStep.getId(), Step.class));
+        assertNotNull(repository.get(secondStep.getId(), Step.class));
+
+        //when: after 1 hour - should not remove
+        cleaner.removeOrphanSteps();
+        assertNotNull(repository.get(orphanStep.getId(), Step.class));
+        assertNotNull(repository.get(firstStep.getId(), Step.class));
+        assertNotNull(repository.get(secondStep.getId(), Step.class));
+
+        //when: after 2 hours
         cleaner.removeOrphanSteps();
 
         //then
@@ -76,7 +88,9 @@ public class PreparationCleanerTest {
         repository.add(secondPreparation);
 
         //when
-        cleaner.removeOrphanSteps();
+        cleaner.removeOrphanSteps(); //0 hour
+        cleaner.removeOrphanSteps(); //1 hour
+        cleaner.removeOrphanSteps(); //2 hour
 
         //then
         assertNotNull(repository.get(firstStep.getId(), Step.class));
@@ -91,7 +105,9 @@ public class PreparationCleanerTest {
         assertNotNull(repository.get(ROOT_STEP.getId(), Step.class));
 
         //when
-        cleaner.removeOrphanSteps();
+        cleaner.removeOrphanSteps(); //0 hour
+        cleaner.removeOrphanSteps(); //1 hour
+        cleaner.removeOrphanSteps(); //2 hour
 
         //then
         assertNotNull(repository.get(ROOT_STEP.getId(), Step.class));
