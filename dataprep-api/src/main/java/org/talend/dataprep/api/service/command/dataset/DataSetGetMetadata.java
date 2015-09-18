@@ -1,6 +1,6 @@
 package org.talend.dataprep.api.service.command.dataset;
 
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.asNull;
+import static org.talend.dataprep.api.service.command.common.Defaults.asNull;
 
 import java.io.IOException;
 

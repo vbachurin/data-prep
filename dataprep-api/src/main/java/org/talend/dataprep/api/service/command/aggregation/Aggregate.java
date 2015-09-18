@@ -1,6 +1,6 @@
 package org.talend.dataprep.api.service.command.aggregation;
 
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.pipeStream;
+import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
 
 import java.io.InputStream;
 
@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.InputStreamBody;
@@ -44,40 +45,42 @@ public class Aggregate extends GenericCommand<InputStream> {
      */
     public Aggregate(final HttpClient client, final AggregationParameters parameters) {
         super(APIService.TRANSFORM_GROUP, client);
-        execute(() -> {
-            // must work on either a dataset or a preparation, if both parameters are set, an error is thrown
-            if (StringUtils.isNotBlank(parameters.getDatasetId()) && StringUtils.isNotBlank(parameters.getPreparationId())) {
-                LOG.error("Cannot aggregate on both dataset id & preparation id : {}", parameters);
-                throw new TDPException(CommonErrorCodes.BAD_AGGREGATION_PARAMETERS);
-            }
-            try {
-                InputStream content;
-                if (parameters.getDatasetId() != null) {
-                    content = getDataSetContent(client, parameters.getDatasetId(), parameters.getSampleSize());
-                } else {
-                    content = getPreparationContent(client, //
-                            parameters.getPreparationId(), //
-                            parameters.getStepId(), //
-                            parameters.getSampleSize());
-                }
-
-                // call the transformation service to compute the aggregation
-                String uri = transformationServiceUrl + "/aggregate"; //$NON-NLS-1$
-                HttpPost aggregateCall = new HttpPost(uri);
-
-                String paramsAsJson = builder.build().writer().writeValueAsString(parameters);
-
-                HttpEntity reqEntity = MultipartEntityBuilder.create()
-                        .addPart("parameters", new StringBody(paramsAsJson, ContentType.APPLICATION_JSON.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
-                        .addPart("content", new InputStreamBody(content, ContentType.APPLICATION_JSON)) //$NON-NLS-1$
-                        .build();
-                aggregateCall.setEntity(reqEntity);
-                return aggregateCall;
-            } catch (JsonProcessingException e) {
-                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-            }
-        });
+        execute(() -> onExecute(client, parameters));
         on(HttpStatus.OK).then(pipeStream());
+    }
+
+    private HttpRequestBase onExecute(HttpClient client, AggregationParameters parameters) {
+        // must work on either a dataset or a preparation, if both parameters are set, an error is thrown
+        if (StringUtils.isNotBlank(parameters.getDatasetId()) && StringUtils.isNotBlank(parameters.getPreparationId())) {
+            LOG.error("Cannot aggregate on both dataset id & preparation id : {}", parameters);
+            throw new TDPException(CommonErrorCodes.BAD_AGGREGATION_PARAMETERS);
+        }
+        try {
+            InputStream content;
+            if (parameters.getDatasetId() != null) {
+                content = getDataSetContent(client, parameters.getDatasetId(), parameters.getSampleSize());
+            } else {
+                content = getPreparationContent(client, //
+                        parameters.getPreparationId(), //
+                        parameters.getStepId(), //
+                        parameters.getSampleSize());
+            }
+
+            // call the transformation service to compute the aggregation
+            String uri = transformationServiceUrl + "/aggregate"; //$NON-NLS-1$
+            HttpPost aggregateCall = new HttpPost(uri);
+
+            String paramsAsJson = builder.build().writer().writeValueAsString(parameters);
+
+            HttpEntity reqEntity = MultipartEntityBuilder.create()
+                    .addPart("parameters", new StringBody(paramsAsJson, ContentType.APPLICATION_JSON.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
+                    .addPart("content", new InputStreamBody(content, ContentType.APPLICATION_JSON)) //$NON-NLS-1$
+                    .build();
+            aggregateCall.setEntity(reqEntity);
+            return aggregateCall;
+        } catch (JsonProcessingException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
     }
 
     /**

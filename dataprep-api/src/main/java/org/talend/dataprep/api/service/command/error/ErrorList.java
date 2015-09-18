@@ -1,12 +1,13 @@
 package org.talend.dataprep.api.service.command.error;
 
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.emptyStream;
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.pipeStream;
+import static org.talend.dataprep.api.service.command.common.Defaults.emptyStream;
+import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
 
 import java.io.InputStream;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -32,27 +33,28 @@ public class ErrorList extends GenericCommand<InputStream> {
      */
     private ErrorList(HttpClient client, HystrixCommandGroupKey groupKey, ServiceType type) {
         super(groupKey, client);
-        execute(() -> {
-            final String serviceUrl;
-            switch (type) {
-                case DATASET:
-                    serviceUrl = datasetServiceUrl + "/datasets/errors";
-                    break;
-                case TRANSFORMATION:
-                    serviceUrl = transformationServiceUrl + "/transform/errors";
-                    break;
-                case PREPARATION:
-                    serviceUrl =preparationServiceUrl + "/preparations/errors";
-                    break;
-                default:
-                    throw new IllegalArgumentException("Type '" + type + "' is not supported.");
-            }
-            return new HttpGet(serviceUrl);
-        });
+        execute(() -> onExecute(type));
         onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_LIST_ERRORS, e));
-        on(HttpStatus.NO_CONTENT).then(emptyStream());
-        on(HttpStatus.ACCEPTED).then(emptyStream());
+        on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyStream());
         on(HttpStatus.OK).then(pipeStream());
+    }
+
+    private HttpRequestBase onExecute(ServiceType type) {
+        final String serviceUrl;
+        switch (type) {
+            case DATASET:
+                serviceUrl = datasetServiceUrl + "/datasets/errors";
+                break;
+            case TRANSFORMATION:
+                serviceUrl = transformationServiceUrl + "/transform/errors";
+                break;
+            case PREPARATION:
+                serviceUrl =preparationServiceUrl + "/preparations/errors";
+                break;
+            default:
+                throw new IllegalArgumentException("Type '" + type + "' is not supported.");
+        }
+        return new HttpGet(serviceUrl);
     }
 
     public enum ServiceType {

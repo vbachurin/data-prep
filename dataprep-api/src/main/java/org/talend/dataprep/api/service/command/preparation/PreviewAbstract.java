@@ -1,12 +1,13 @@
 package org.talend.dataprep.api.service.command.preparation;
 
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.pipeStream;
+import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
 
 import java.io.InputStream;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.InputStreamBody;
@@ -42,21 +43,23 @@ public abstract class PreviewAbstract extends PreparationCommand<InputStream> {
         if (oldEncodedActions == null || newEncodedActions == null || content == null || encodedTdpIds == null) {
             throw new IllegalStateException("Missing context.");
         }
-        execute(() -> {
-            final String uri = this.transformationServiceUrl + "/transform/preview";
-            HttpPost transformationCall = new HttpPost(uri);
-
-            HttpEntity reqEntity = MultipartEntityBuilder.create()
-                    .addPart("oldActions", new StringBody(oldEncodedActions, ContentType.TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
-                    .addPart("newActions", new StringBody(newEncodedActions, ContentType.TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
-                    .addPart("indexes", new StringBody(encodedTdpIds, ContentType.TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
-                    .addPart("content", new InputStreamBody(content, ContentType.APPLICATION_JSON)) //$NON-NLS-1$
-                    .build();
-            transformationCall.setEntity(reqEntity);
-            return transformationCall;
-        });
+        execute(this::onExecute);
         on(HttpStatus.OK).then(pipeStream());
         return super.run();
+    }
+
+    private HttpRequestBase onExecute() {
+        final String uri = this.transformationServiceUrl + "/transform/preview";
+        HttpPost transformationCall = new HttpPost(uri);
+
+        HttpEntity reqEntity = MultipartEntityBuilder.create()
+                .addPart("oldActions", new StringBody(oldEncodedActions, ContentType.TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
+                .addPart("newActions", new StringBody(newEncodedActions, ContentType.TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
+                .addPart("indexes", new StringBody(encodedTdpIds, ContentType.TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
+                .addPart("content", new InputStreamBody(content, ContentType.APPLICATION_JSON)) //$NON-NLS-1$
+                .build();
+        transformationCall.setEntity(reqEntity);
+        return transformationCall;
     }
 
     protected void setContext(String oldEncodedActions, String newEncodedActions, InputStream content, String encodedTdpIds) {

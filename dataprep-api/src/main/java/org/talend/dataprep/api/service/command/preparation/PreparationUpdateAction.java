@@ -2,7 +2,7 @@ package org.talend.dataprep.api.service.command.preparation;
 
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.asNull;
+import static org.talend.dataprep.api.service.command.common.Defaults.asNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -10,6 +10,7 @@ import java.io.InputStream;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicHeader;
 import org.springframework.context.annotation.Scope;
@@ -38,22 +39,24 @@ public class PreparationUpdateAction extends PreparationCommand<Void> {
         this.stepId = stepId;
         this.updatedStep = updatedStep;
         this.preparationId = preparationId;
-        execute(() -> {
-            try {
-                final StepDiff diff = getDiffMetadata();
-                updatedStep.setDiff(diff);
-                final HttpPut actionAppend = new HttpPut(preparationServiceUrl + "/preparations/" + preparationId + "/actions/" + stepId); //$NON-NLS-1$ //$NON-NLS-2$
-                final String stepAsString = builder.build().writeValueAsString(updatedStep);
-                final InputStream stepInputStream = new ByteArrayInputStream(stepAsString.getBytes());
-
-                actionAppend.setHeader(new BasicHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE));
-                actionAppend.setEntity(new InputStreamEntity(stepInputStream));
-                return actionAppend;
-            } catch (IOException e) {
-                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-            }
-        });
+        execute(() -> onExecute(preparationId, stepId, updatedStep));
         on(HttpStatus.OK).then(asNull());
+    }
+
+    private HttpRequestBase onExecute(String preparationId, String stepId, AppendStep updatedStep) {
+        try {
+            final StepDiff diff = getDiffMetadata();
+            updatedStep.setDiff(diff);
+            final HttpPut actionAppend = new HttpPut(preparationServiceUrl + "/preparations/" + preparationId + "/actions/" + stepId); //$NON-NLS-1$ //$NON-NLS-2$
+            final String stepAsString = builder.build().writeValueAsString(updatedStep);
+            final InputStream stepInputStream = new ByteArrayInputStream(stepAsString.getBytes());
+
+            actionAppend.setHeader(new BasicHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE));
+            actionAppend.setEntity(new InputStreamEntity(stepInputStream));
+            return actionAppend;
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
     }
 
     /**

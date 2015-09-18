@@ -1,7 +1,7 @@
 package org.talend.dataprep.api.service.command.dataset;
 
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.asString;
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.emptyString;
+import static org.talend.dataprep.api.service.command.common.Defaults.asString;
+import static org.talend.dataprep.api.service.command.common.Defaults.emptyString;
 
 import java.io.InputStream;
 

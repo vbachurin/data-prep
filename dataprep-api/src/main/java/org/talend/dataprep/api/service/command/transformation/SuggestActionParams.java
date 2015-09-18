@@ -1,6 +1,6 @@
 package org.talend.dataprep.api.service.command.transformation;
 
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.pipeStream;
+import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
 
 import java.io.InputStream;
 

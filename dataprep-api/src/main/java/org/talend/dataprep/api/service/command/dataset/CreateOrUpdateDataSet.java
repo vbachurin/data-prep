@@ -1,7 +1,7 @@
 package org.talend.dataprep.api.service.command.dataset;
 
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.asString;
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.emptyString;
+import static org.talend.dataprep.api.service.command.common.Defaults.asString;
+import static org.talend.dataprep.api.service.command.common.Defaults.emptyString;
 
 import java.io.InputStream;
 
@@ -46,8 +46,7 @@ public class CreateOrUpdateDataSet extends GenericCommand<String> {
             return put;
         });
         onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_CREATE_OR_UPDATE_DATASET, e));
-        on(HttpStatus.NO_CONTENT).then(emptyString());
-        on(HttpStatus.ACCEPTED).then(emptyString());
+        on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyString());
         on(HttpStatus.OK).then((req, res) -> {
             contentCache.evict(new ContentCacheKey(id)); // clear the cache (dataset and all its preparations)
             return asString().apply(req, res); // Return response as String

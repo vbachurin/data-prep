@@ -1,6 +1,6 @@
 package org.talend.dataprep.api.service.command.preparation;
 
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.asNull;
+import static org.talend.dataprep.api.service.command.common.Defaults.asNull;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;

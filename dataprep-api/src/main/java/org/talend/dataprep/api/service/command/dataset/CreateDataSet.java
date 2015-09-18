@@ -1,7 +1,7 @@
 package org.talend.dataprep.api.service.command.dataset;
 
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.asString;
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.emptyString;
+import static org.talend.dataprep.api.service.command.common.Defaults.asString;
+import static org.talend.dataprep.api.service.command.common.Defaults.emptyString;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -9,6 +9,7 @@ import java.net.URLEncoder;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.InputStreamEntity;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
@@ -36,19 +37,20 @@ public class CreateDataSet extends GenericCommand<String> {
      */
     private CreateDataSet(HttpClient client, String name, String contentType, InputStream dataSetContent) {
         super(PreparationAPI.DATASET_GROUP, client);
-        execute(() -> {
-            try {
-                final HttpPost post = new HttpPost(datasetServiceUrl + "/datasets/?name=" + URLEncoder.encode(name, "UTF-8"));//$NON-NLS-1$ //$NON-NLS-2$
-                post.addHeader("Content-Type", contentType); //$NON-NLS-1$
-                post.setEntity(new InputStreamEntity(dataSetContent));
-                return post;
-            } catch (UnsupportedEncodingException e) {
-                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-            }
-        });
+        execute(() -> onExecute(name, contentType, dataSetContent));
         onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_CREATE_DATASET, e));
-        on(HttpStatus.NO_CONTENT).then(emptyString());
-        on(HttpStatus.ACCEPTED).then(emptyString());
+        on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyString());
         on(HttpStatus.OK).then(asString());
+    }
+
+    private HttpRequestBase onExecute(String name, String contentType, InputStream dataSetContent) {
+        try {
+            final HttpPost post = new HttpPost(datasetServiceUrl + "/datasets/?name=" + URLEncoder.encode(name, "UTF-8"));//$NON-NLS-1$ //$NON-NLS-2$
+            post.addHeader("Content-Type", contentType); //$NON-NLS-1$
+            post.setEntity(new InputStreamEntity(dataSetContent));
+            return post;
+        } catch (UnsupportedEncodingException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
     }
 }

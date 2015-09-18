@@ -1,6 +1,6 @@
 package org.talend.dataprep.api.service.command.export;
 
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.pipeStream;
+import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.InputStreamBody;
@@ -38,45 +39,47 @@ public class Export extends PreparationCommand<InputStream> {
 
     private Export(final HttpClient client, final ExportParameters input, final HttpServletResponse response) {
         super(APIService.TRANSFORM_GROUP, client);
-        execute(() -> {
-            try {
-                String name;
-                List<Action> actions;
-                InputStream content;
-                if (StringUtils.isNotBlank(input.getPreparationId())) {
-                    final Preparation preparation = getPreparation(input.getPreparationId());
-                    name = preparation.getName();
-                    actions = getPreparationActions(preparation, input.getStepId());
-                    content = getDatasetContent(preparation.getDataSetId());
-                } else {
-                    // Get name from data set
-                    String dataSetId = input.getDatasetId();
-                    final JsonNode datasetDetails = getDatasetDetails(dataSetId);
-                    //
-                    name = datasetDetails.get("metadata").get("name").textValue();
-                    actions = Collections.emptyList();
-                    content = getDatasetContent(dataSetId);
-                }
-                // Set response headers
-                response.setContentType(input.getExportType().getMimeType());
-                response.setHeader("Content-Disposition", "attachment; filename=\"" + name + input.getExportType().getExtension() + "\"");
-                // Get dataset content and execute export service
-                final String encodedActions = serializeActions(actions);
-                final String uri = getTransformationUri(input.getExportType(), input.getArguments());
-                final HttpPost transformationCall = new HttpPost(uri);
-
-                HttpEntity reqEntity = MultipartEntityBuilder.create()
-                        .addPart("actions", new StringBody(encodedActions, ContentType.TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$
-                        .addPart("content", new InputStreamBody(content, ContentType.APPLICATION_JSON)) //$NON-NLS-1$
-                        .build();
-
-                transformationCall.setEntity(reqEntity);
-                return transformationCall;
-            } catch (IOException e) {
-                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-            }
-        });
+        execute(() -> onExecute(input, response));
         on(HttpStatus.OK).then(pipeStream());
+    }
+
+    private HttpRequestBase onExecute(ExportParameters input, HttpServletResponse response) {
+        try {
+            String name;
+            List<Action> actions;
+            InputStream content;
+            if (StringUtils.isNotBlank(input.getPreparationId())) {
+                final Preparation preparation = getPreparation(input.getPreparationId());
+                name = preparation.getName();
+                actions = getPreparationActions(preparation, input.getStepId());
+                content = getDatasetContent(preparation.getDataSetId());
+            } else {
+                // Get name from data set
+                String dataSetId = input.getDatasetId();
+                final JsonNode datasetDetails = getDatasetDetails(dataSetId);
+                //
+                name = datasetDetails.get("metadata").get("name").textValue();
+                actions = Collections.emptyList();
+                content = getDatasetContent(dataSetId);
+            }
+            // Set response headers
+            response.setContentType(input.getExportType().getMimeType());
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + name + input.getExportType().getExtension() + "\"");
+            // Get dataset content and execute export service
+            final String encodedActions = serializeActions(actions);
+            final String uri = getTransformationUri(input.getExportType(), input.getArguments());
+            final HttpPost transformationCall = new HttpPost(uri);
+
+            HttpEntity reqEntity = MultipartEntityBuilder.create()
+                    .addPart("actions", new StringBody(encodedActions, ContentType.TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$
+                    .addPart("content", new InputStreamBody(content, ContentType.APPLICATION_JSON)) //$NON-NLS-1$
+                    .build();
+
+            transformationCall.setEntity(reqEntity);
+            return transformationCall;
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
     }
 
     /**

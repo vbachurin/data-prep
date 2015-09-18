@@ -1,7 +1,7 @@
 package org.talend.dataprep.api.service.command.preparation;
 
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.emptyStream;
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.pipeStream;
+import static org.talend.dataprep.api.service.command.common.Defaults.emptyStream;
+import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
 
 import java.io.InputStream;
 
@@ -23,8 +23,7 @@ public class PreparationGet extends GenericCommand<InputStream> {
         super(APIService.PREPARATION_GROUP, client);
         execute(() -> new HttpGet(preparationServiceUrl + "/preparations/" + id));
         onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_PREPARATION_LIST, e));
-        on(HttpStatus.NO_CONTENT).then(emptyStream());
-        on(HttpStatus.ACCEPTED).then(emptyStream());
+        on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyStream());
         on(HttpStatus.OK).then(pipeStream());
     }
 

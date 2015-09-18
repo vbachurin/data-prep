@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,28 +55,30 @@ public class DataSetDelete extends GenericCommand<Void> {
     private DataSetDelete(HttpClient client, String dataSetId) {
         super(PreparationAPI.DATASET_GROUP, client);
         this.dataSetId = dataSetId;
-        execute(() -> {
-            try {
-                List<Preparation> preparations = getPreparationsForDataSet();
-                // if the dataset is used by preparation(s), the deletion is forbidden
-                if (preparations.size() > 0) {
-                    LOG.debug("DataSet {} is used by {} preparation(s) and cannot be deleted", dataSetId, preparations.size());
-                    final ExceptionContext context = ExceptionContext.build() //
-                            .put("dataSetId", dataSetId) //
-                            .put("preparations", preparations);
-                    throw new TDPException(DATASET_STILL_IN_USE, context);
-                }
-                return new HttpDelete(datasetServiceUrl + "/datasets/" + dataSetId);
-            } catch (IOException e) {
-                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-            }
-        });
+        execute(() -> onExecute(dataSetId));
         onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET, e,
                 ExceptionContext.build().put("dataSetId", dataSetId)));
         on(HttpStatus.OK).then((req, res) -> {
             contentCache.evict(new ContentCacheKey(dataSetId)); // clear the cache (dataset and all its preparations)
             return null;
         });
+    }
+
+    private HttpRequestBase onExecute(String dataSetId) {
+        try {
+            List<Preparation> preparations = getPreparationsForDataSet();
+            // if the dataset is used by preparation(s), the deletion is forbidden
+            if (preparations.size() > 0) {
+                LOG.debug("DataSet {} is used by {} preparation(s) and cannot be deleted", dataSetId, preparations.size());
+                final ExceptionContext context = ExceptionContext.build() //
+                        .put("dataSetId", dataSetId) //
+                        .put("preparations", preparations);
+                throw new TDPException(DATASET_STILL_IN_USE, context);
+            }
+            return new HttpDelete(datasetServiceUrl + "/datasets/" + dataSetId);
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
     }
 
     /**

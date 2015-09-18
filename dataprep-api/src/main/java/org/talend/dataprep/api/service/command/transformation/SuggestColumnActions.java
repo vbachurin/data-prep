@@ -1,7 +1,7 @@
 package org.talend.dataprep.api.service.command.transformation;
 
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.asNull;
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.pipeStream;
+import static org.talend.dataprep.api.service.command.common.Defaults.asNull;
+import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
 
 import java.io.InputStream;
 
@@ -10,6 +10,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
@@ -39,9 +40,8 @@ public class SuggestColumnActions extends GenericCommand<InputStream> {
             return post;
         });
         onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, e));
-        on(org.springframework.http.HttpStatus.NO_CONTENT).then(asNull());
-        on(org.springframework.http.HttpStatus.ACCEPTED).then(asNull());
-        on(org.springframework.http.HttpStatus.OK).then(pipeStream());
+        on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(asNull());
+        on(HttpStatus.OK).then(pipeStream());
     }
 
 }

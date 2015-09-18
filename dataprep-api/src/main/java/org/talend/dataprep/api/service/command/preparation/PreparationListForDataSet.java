@@ -1,7 +1,7 @@
 package org.talend.dataprep.api.service.command.preparation;
 
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.emptyStream;
-import static org.talend.dataprep.api.service.command.common.GenericCommand.Defaults.pipeStream;
+import static org.talend.dataprep.api.service.command.common.Defaults.emptyStream;
+import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
 
 import java.io.InputStream;
 
@@ -16,7 +16,7 @@ import org.talend.dataprep.api.service.command.common.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 
 /**
- * Command used to retreive the preparations used by a given dataset.
+ * Command used to retrieve the preparations used by a given dataset.
  */
 @Component
 @Scope("request")
@@ -34,8 +34,7 @@ public class PreparationListForDataSet extends GenericCommand<InputStream> {
             return new HttpGet(preparationServiceUrl + "/preparations?dataSetId=" + dataSetId); //$NON-NLS-1$
         });
         onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_PREPARATION_LIST, e));
-        on(HttpStatus.NO_CONTENT).then(emptyStream());
-        on(HttpStatus.ACCEPTED).then(emptyStream());
+        on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyStream());
         on(HttpStatus.OK).then(pipeStream());
     }
 
