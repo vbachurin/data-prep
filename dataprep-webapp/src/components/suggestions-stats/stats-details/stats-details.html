@@ -5,7 +5,7 @@
     <talend-tabs ng-if="statsDetailsCtrl.statistics">
         <talend-tabs-item tab-title="_"></talend-tabs-item>
         <talend-tabs-item class="tab-container" tab-title="Viz" default="true">
-            <div>
+            <div class="stat-detail-tab-items">
                 <column-profile></column-profile>
                 <range-slider id="rangeSliderId"
                               width="320"
@@ -16,7 +16,7 @@
             </div>
         </talend-tabs-item>
         <talend-tabs-item tab-title="Value">
-            <div class="two-columns-values">
+            <div class="two-columns-values stat-detail-tab-items">
                 <table class="stat-table">
                     <tr ng-repeat="(key, val) in statsDetailsCtrl.statistics.common track by $index">
                         <td class="stat-key">{{key | translate}}: </td>
@@ -32,7 +32,7 @@
             </div>
         </talend-tabs-item>
         <talend-tabs-item tab-title="Pattern">
-            <div>
+            <div class="stat-detail-tab-items">
                 <horizontal-barchart id="patternBarChart"
                                      width="310"
                                      height="400"
@@ -45,7 +45,7 @@
             </div>
         </talend-tabs-item>
         <talend-tabs-item tab-title="Others">
-            <div>
+            <div class="stat-detail-tab-items">
                 <boxplot-chart
                         id="boxplotId"
                         width="330"

@@ -22,12 +22,24 @@
 
     height: calc(100vh - 56px);
 
+    .split-handler {
+      background-color: #555964;
+    }
+
+    .action-suggestion-tab-items {
+      height: calc(47vh - 100px) ;
+    }
+
+    .stat-detail-tab-items{
+      height: calc(53vh - 51px - 100px);
+    }
+
     .suggestions-part-div {
-      height: 45vh;
+      height: 47vh;
     }
 
     .stats-part-div {
-      height: calc(55vh - 56px);
+      height: calc(53vh - 56px);
     }
   }
 
