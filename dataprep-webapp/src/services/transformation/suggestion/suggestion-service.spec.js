@@ -111,4 +111,15 @@ describe('Suggestion Service', function() {
         expect(ColumnSuggestionService.reset).toHaveBeenCalled();
     }));
 
+    it('should reset current column', inject(function(SuggestionService) {
+        //given
+        SuggestionService.currentColumn = {};
+
+        //when
+        SuggestionService.reset();
+
+        //then
+        expect(SuggestionService.currentColumn).toBeFalsy();
+    }));
+
 });

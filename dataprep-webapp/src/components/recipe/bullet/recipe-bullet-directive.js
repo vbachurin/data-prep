@@ -223,10 +223,6 @@
                     $timeout(updateSVGSizes);
                 });
 
-                iElement.closest('.accordion').mouseleave(function(){
-                    $timeout(updateSVGSizes);
-                });
-
                 iElement.closest('.accordion').click(function(){
                     updateAllBullets();
                 });

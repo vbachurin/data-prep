@@ -1,10 +1,12 @@
 package org.talend.dataprep.api.service.command.common;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.hystrix.HystrixCommandGroupKey;
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
+import static org.apache.http.entity.ContentType.TEXT_PLAIN;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
@@ -23,14 +25,13 @@ import org.talend.dataprep.api.service.command.dataset.DataSetGet;
 import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.cache.ContentCacheKey;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.hystrix.HystrixCommandGroupKey;
 
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
-import static org.apache.http.entity.ContentType.TEXT_PLAIN;
-
-public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
+public abstract class PreparationCommand<T> extends GenericCommand<T> {
 
     /**
      * <p>
@@ -134,7 +135,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         final HttpGet datasetRetrieval = new HttpGet(datasetServiceUrl + "/datasets/" + datasetId + "/metadata");
         try {
             InputStream content = client.execute(datasetRetrieval).getEntity().getContent();
-            return getJsonReader().readTree(content);
+            return builder.build().readTree(content);
         } finally {
             datasetRetrieval.releaseConnection();
         }
@@ -169,7 +170,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
      * @return the serialized actions
      */
     protected String serializeActions(final Collection<Action> stepActions) throws JsonProcessingException {
-        return "{\"actions\": " + getJsonWriter().writeValueAsString(stepActions) + "}";
+        return "{\"actions\": " + builder.build().writeValueAsString(stepActions) + "}";
     }
 
     /**
@@ -179,7 +180,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
      * @return the serialized and encoded list
      */
     protected String serializeIds(final List<Integer> listToEncode) throws JsonProcessingException {
-        return getJsonWriter().writeValueAsString(listToEncode);
+        return builder.build().writeValueAsString(listToEncode);
     }
 
     /**

@@ -6,8 +6,7 @@
                 <div id="help-import-local">
                     <talend-button-dropdown button-icon="m"
                                             button-text="{{ ::'IMPORT_DATASET' | translate }}"
-                                            button-action="homeCtrl.startDefaultImport()"
-                            >
+                                            button-action="homeCtrl.startDefaultImport()">
                         <ul>
                             <li ng-repeat="importType in homeCtrl.importTypes" ng-click="homeCtrl.startImport(importType)">
                                 {{importType.name}}

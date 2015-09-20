@@ -22,11 +22,22 @@
   float: left;
 }
 
+.sample_label{
+  color: $green;
+}
+
 .sample {
-  color: black;
+  color: $green;
   vertical-align: baseline;
   display: inline;
   margin-bottom: 0;
+  border-radius: 5px;
+  border: 1px solid $green;
+  background-color: transparent;
+  padding: 5px;
+  option{
+    color: $black;
+  }
 }
 
 .right-header {
@@ -34,7 +45,6 @@
   margin-right: 80px;
 
   .preview {
-    padding-top: 7px;
 
     .previewBadge {
       line-height: 36px;
@@ -48,10 +58,6 @@
         vertical-align: middle;
       }
     }
-  }
-
-  .export {
-    padding-top: 7px;
   }
 }
 

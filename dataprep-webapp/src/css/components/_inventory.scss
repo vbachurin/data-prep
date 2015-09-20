@@ -21,7 +21,6 @@ $inventory-sort-height: 50px;
   .inventory-list {
     @include calc(flex-basis, "100vh - 2 * " + $header-height + " - " + $footer-height + " - " + $inventory-sort-height);
     @include flex-column();
-    overflow-y: auto;
   }
 
   .inventory-entry {
@@ -75,7 +74,6 @@ $inventory-sort-height: 50px;
           left: 0;
           top: -5px;
           width: 25px;
-          z-index: 1;
         }
       }
     }
