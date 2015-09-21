@@ -20,3 +20,7 @@ div[data-prep-tooltip]:hover:after {
 
   min-width: 110px;
 }
+
+div[data-prep-tooltip=""]:hover:after{
+  content: none;
+}

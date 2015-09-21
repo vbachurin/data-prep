@@ -27,6 +27,7 @@ describe('Type transform menu controller', function () {
             });
             ctrl.column = {
                 id: '0001',
+                name: 'awesome cities',
                 domain: 'CITY',
                 domainLabel: 'CITY',
                 domainFrequency: 18,
@@ -78,9 +79,10 @@ describe('Type transform menu controller', function () {
         expect(PlaygroundService.appendStep).toHaveBeenCalledWith('domain_change', {
             scope: 'column',
             column_id: '0001',
-            NEW_DOMAIN_ID: 'COUNTRY',
-            NEW_DOMAIN_LABEL: 'COUNTRY',
-            NEW_DOMAIN_FREQUENCY: 17
+            column_name: 'awesome cities',
+            new_domain_id: 'COUNTRY',
+            new_domain_label: 'COUNTRY',
+            new_domain_frequency: 17
         });
     }));
 
@@ -128,7 +130,8 @@ describe('Type transform menu controller', function () {
         expect(PlaygroundService.appendStep).toHaveBeenCalledWith('type_change', {
             scope: 'column',
             column_id: '0001',
-            NEW_TYPE: 'integer'
+            column_name: 'awesome cities',
+            new_type: 'integer'
         });
     }));
 

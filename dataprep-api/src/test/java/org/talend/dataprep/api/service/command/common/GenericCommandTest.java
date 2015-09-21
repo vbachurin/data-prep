@@ -1,0 +1,206 @@
+package org.talend.dataprep.api.service.command.common;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.talend.dataprep.api.service.command.common.Defaults.asString;
+
+import java.util.function.Function;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.web.context.WebApplicationContext;
+import org.talend.dataprep.api.service.APIService;
+import org.talend.dataprep.dataset.Application;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = Application.class)
+@WebAppConfiguration
+@IntegrationTest
+public class GenericCommandTest {
+
+    private static TDPException lastException;
+
+    private final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+
+    @Value("${local.server.port}")
+    public int port;
+
+    @Autowired
+    private WebApplicationContext context;
+
+    private HttpClient httpClient;
+
+    private static RuntimeException error(Exception e) {
+        lastException = (TDPException) e;
+        return new RuntimeException(e);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        connectionManager.setMaxTotal(50);
+        connectionManager.setDefaultMaxPerRoute(50);
+        httpClient = HttpClientBuilder.create() //
+                .setConnectionManager(connectionManager) //
+                .build();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        lastException = null;
+    }
+
+    private TestCommand getCommand(String url, Function<Exception, RuntimeException> errorHandling) {
+        return context.getBean(TestCommand.class, httpClient, url, errorHandling);
+    }
+
+    @Test
+    public void testSuccess() throws Exception {
+        // Given
+        final GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/success", GenericCommandTest::error);
+        // When
+        final String result = command.run();
+        // Then
+        assertThat(result, is("success"));
+        assertThat(lastException, nullValue());
+    }
+
+    @Test
+    public void testSuccessWithMissingBehavior() throws Exception {
+        // Given
+        final GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/success_with_unknown", GenericCommandTest::error);
+        // When
+        final String result = command.run();
+        // Then
+        assertThat(result, nullValue()); // Missing behavior for 202 -> returns null.
+        assertThat(lastException, nullValue());
+    }
+
+
+    @Test
+    public void testFail_With_400() throws Exception {
+        // Given
+        GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/fail_with_400", GenericCommandTest::error);
+        try {
+            // When
+            command.run();
+        } catch (Exception e) {
+            // Then
+            // underlying was wrapped in another exception by error() method
+            assertThat(e.getCause(), is(lastException));
+            // underlying exception is a TDPException
+            assertThat(lastException, isA(TDPException.class));
+            // Underlying exception is expected to be MISSING_ACTION_SCOPE
+            assertThat(lastException.getCode().getCode(), is(CommonErrorCodes.MISSING_ACTION_SCOPE.getCode()));
+            // And status is 400.
+            assertThat(lastException.getCode().getHttpStatus(), is(400));
+        }
+    }
+
+    @Test
+    public void testFail_With_404() throws Exception {
+        // Given
+        GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/not_found", GenericCommandTest::error);
+        try {
+            // When
+            command.run();
+        } catch (Exception e) {
+            // Then
+            // underlying was wrapped in another exception by error() method
+            assertThat(e.getCause(), is(lastException));
+            // underlying exception is a TDPException
+            assertThat(lastException, isA(TDPException.class));
+            // Underlying exception is expected to be UNEXPECTED_EXCEPTION
+            assertThat(lastException.getCode().getCode(), is(CommonErrorCodes.UNEXPECTED_EXCEPTION.getCode()));
+            // and thrown because of a 404 error
+            assertThat(lastException.getCode().getHttpStatus(), is(404));
+        }
+    }
+
+    @Test
+    public void testFail_With_500() throws Exception {
+        // Given
+        GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/fail_with_500", GenericCommandTest::error);
+        try {
+            // When
+            command.run();
+        } catch (Exception e) {
+            // Then
+            // underlying was wrapped in another exception by error() method
+            assertThat(e.getCause(), is(lastException));
+            // underlying exception is a TDPException
+            assertThat(lastException, isA(TDPException.class));
+            // Underlying exception is expected to be UNABLE_TO_SERIALIZE_TO_JSON
+            assertThat(lastException.getCode().getCode(), is(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON.getCode()));
+            // And status is 500.
+            assertThat(lastException.getCode().getHttpStatus(), is(500));
+        }
+    }
+
+    @Test
+    public void testFail_With_Unknown() throws Exception {
+        // Given
+        GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/fail_with_unknown", GenericCommandTest::error);
+        try {
+            // When
+            command.run();
+        } catch (Exception e) {
+            // Then
+            // underlying was wrapped in another exception by error() method
+            assertThat(e.getCause(), is(lastException));
+            // underlying exception is a TDPException
+            assertThat(lastException, isA(TDPException.class));
+            // Underlying exception is expected to be UNEXPECTED_EXCEPTION
+            assertThat(lastException.getCode().getProduct(), is(CommonErrorCodes.UNEXPECTED_EXCEPTION.getProduct()));
+            assertThat(lastException.getCode().getCode(), is(CommonErrorCodes.UNEXPECTED_EXCEPTION.getCode()));
+            // And status is 418.
+            assertThat(lastException.getCode().getHttpStatus(), is(418));
+        }
+    }
+
+
+    @Test
+    public void testPassThrough() throws Exception {
+        // Given
+        GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/fail_with_500", Defaults.passthrough());
+        try {
+            // When
+            command.run();
+        } catch (TDPException e) {
+            // Then
+            // error() wasn't called, lastException must be null
+            assertThat(lastException, nullValue());
+            // underlying is returned as is (passthrough method).
+            assertThat(e.getCode().getCode(), is(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON.getCode()));
+        }
+    }
+
+    // Test command
+    @Component
+    @Scope("prototype")
+    private static class TestCommand extends GenericCommand<String> {
+
+        protected TestCommand(HttpClient client, String url, Function<Exception, RuntimeException> errorHandling) {
+            super(APIService.DATASET_GROUP, client);
+            execute(() -> new HttpGet(url));
+            onError(errorHandling);
+            on(HttpStatus.OK).then(asString());
+        }
+    }
+}
