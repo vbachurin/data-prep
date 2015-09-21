@@ -20,8 +20,8 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 public class Defaults {
 
     /**
-     * @return A default that returns the underlying exception as is. In other words, command will rethrow the
-     * original exception as its own.
+     * @return A default that returns the underlying exception as is. In other words, command will rethrow the original
+     * exception as its own.
      */
     public static Function<Exception, RuntimeException> passthrough() {
         return (e) -> (RuntimeException) e;
@@ -71,8 +71,8 @@ public class Defaults {
     }
 
     /**
-     * @return A stream to the underlying service's response (and release HTTP connection once returned stream is
-     * fully consumed).
+     * @return A stream to the underlying service's response (and release HTTP connection once returned stream is fully
+     * consumed).
      */
     public static BiFunction<HttpRequestBase, HttpResponse, InputStream> pipeStream() {
         return (request, response) -> {

@@ -42,25 +42,25 @@ public class ErrorList extends GenericCommand<InputStream> {
     private HttpRequestBase onExecute(ServiceType type) {
         final String serviceUrl;
         switch (type) {
-            case DATASET:
-                serviceUrl = datasetServiceUrl + "/datasets/errors";
-                break;
-            case TRANSFORMATION:
-                serviceUrl = transformationServiceUrl + "/transform/errors";
-                break;
-            case PREPARATION:
-                serviceUrl =preparationServiceUrl + "/preparations/errors";
-                break;
-            default:
-                throw new IllegalArgumentException("Type '" + type + "' is not supported.");
+        case DATASET:
+            serviceUrl = datasetServiceUrl + "/datasets/errors";
+            break;
+        case TRANSFORMATION:
+            serviceUrl = transformationServiceUrl + "/transform/errors";
+            break;
+        case PREPARATION:
+            serviceUrl = preparationServiceUrl + "/preparations/errors";
+            break;
+        default:
+            throw new IllegalArgumentException("Type '" + type + "' is not supported.");
         }
         return new HttpGet(serviceUrl);
     }
 
     public enum ServiceType {
-        DATASET,
-        TRANSFORMATION,
-        PREPARATION
+                             DATASET,
+                             TRANSFORMATION,
+                             PREPARATION
     }
 
 }

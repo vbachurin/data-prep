@@ -34,7 +34,7 @@ public class RemoteHDFSContentStore extends DataSetContentStoreAdapter {
             throw new IllegalArgumentException(this.getClass().getName() + " does not manage " + dataSetMetadata.getLocation());
         }
 
-            // opens the location
+        // opens the location
         HdfsLocation location = (HdfsLocation) dataSetMetadata.getLocation();
         URI uri = URI.create(location.getUrl());
         Configuration conf = new Configuration();
