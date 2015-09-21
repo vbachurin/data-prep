@@ -23,23 +23,25 @@
     height: calc(100vh - 56px);
 
     .split-handler {
-      background-color: #555964;
+      height: 20px;
+      background-color: white !important;
+      background: url("/assets/images/split_vertical.png")  no-repeat center;
     }
 
     .action-suggestion-tab-items {
-      height: calc(47vh - 100px) ;
+      height: calc(50vh - 100px) ;
     }
 
     .stat-detail-tab-items{
-      height: calc(53vh - 51px - 100px);
+      height: calc(50vh - 51px - 100px);
     }
 
     .suggestions-part-div {
-      height: 47vh;
+      height: 50vh;
     }
 
     .stats-part-div {
-      height: calc(53vh - 56px);
+      height: calc(50vh - 56px);
     }
   }
 
