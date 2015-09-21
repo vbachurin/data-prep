@@ -37,9 +37,9 @@
                           case 'date':
                               vm.types.push( type );
                               break;
-                          case 'double':
-                          case 'numeric':
-                          case 'any':
+                          //case 'double':
+                          //case 'numeric':
+                          //case 'any':
                           default:
                               // ignoring others
                       }

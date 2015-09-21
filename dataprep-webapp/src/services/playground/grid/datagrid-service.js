@@ -324,8 +324,7 @@
                     return !columnToSkip || column.id !== columnToSkip.id;
                 })
                 .filter(function(column) {
-                    return ConverterService.simplifyType(column.type) === 'integer'
-                        || ConverterService.simplifyType(column.type) === 'decimal';
+                    return ConverterService.simplifyType(column.type) === 'integer' || ConverterService.simplifyType(column.type) === 'decimal';
                 })
                 .value();
         };
