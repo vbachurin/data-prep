@@ -15,9 +15,11 @@
 
                 //Resize action-suggestion and stat-detail panels
                 $timeout(function(){
-                    var handler = angular.element('.split-handler');
-                    var panel1 = angular.element('.split-pane1');
-                    var panel2 = angular.element('.split-pane2');
+
+                    //These elements are created by bg-splitter
+                    var handler = iElement.find('.split-handler');
+                    var panel1 = iElement.find('.split-pane1');
+                    var panel2 = iElement.find('.split-pane2');
 
                     var drag = false;
 
@@ -25,8 +27,8 @@
                         if (!drag) {
                             return;
                         }
-                        angular.element('.action-suggestion-tab-items').css('height', panel1.height()-100 + 'px');
-                        angular.element('.stat-detail-tab-items').css('height', panel2.height()-100 + 'px');
+                        iElement.find('.action-suggestion-tab-items').css('height', panel1.height()-100 + 'px');
+                        iElement.find('.stat-detail-tab-items').css('height', panel2.height()-100 + 'px');
                     });
 
                     handler.bind('mousedown', function (ev) {
@@ -37,8 +39,7 @@
                     angular.element(document).bind('mouseup', function () {
                         drag = false;
                     });
-                }, 200);
-
+                });
             }
         };
     }
