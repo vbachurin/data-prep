@@ -12,6 +12,11 @@
     }
   }
 
+  .pane-container {
+    height: 100%;
+    overflow-y: hidden;
+  }
+
   .suggestions-stats-details {
     .title {
       font-size: 1.2em;
@@ -36,13 +41,6 @@
       height: calc(50vh - 51px - 100px);
     }
 
-    .suggestions-part-div {
-      height: 50vh;
-    }
-
-    .stats-part-div {
-      height: calc(50vh - 56px);
-    }
   }
 
 
