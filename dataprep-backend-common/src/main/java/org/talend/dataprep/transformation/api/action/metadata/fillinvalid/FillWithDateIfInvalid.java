@@ -145,9 +145,5 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
         return Type.DATE.equals(type);
     }
 
-    public boolean isDate() {
-        return true;
-    }
-
 }
 
