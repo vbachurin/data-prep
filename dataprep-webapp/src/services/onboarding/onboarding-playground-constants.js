@@ -5,7 +5,7 @@
         {
             element: '#datagrid .slick-header-columns-right > .slick-header-column',
             title: 'Columns',
-            content: 'Select a column to discover which actions you can do on this context',
+            content: 'Select a column to discover which actions you can apply on its cells, use the bar bellow to identify invalid or empty values.',
             position: 'right'
         },
         {
