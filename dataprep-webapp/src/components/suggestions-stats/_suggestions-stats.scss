@@ -12,6 +12,11 @@
     }
   }
 
+  .pane-container {
+    height: 100%;
+    overflow-y: hidden;
+  }
+
   .suggestions-stats-details {
     .title {
       font-size: 1.2em;
@@ -19,7 +24,33 @@
       padding: 25px 10px 5px 10px;
       text-transform: uppercase;
     }
+
+    height: calc(100vh - 56px);
+
+    .split-handler {
+      height: 20px;
+      background-color: white !important;
+      background: url("/assets/images/dataprep-panel-splitter.png")  no-repeat center;
+    }
+
+    .action-suggestion-tab-items {
+      height: calc(45vh - 100px) ;
+    }
+
+    .stat-detail-tab-items{
+      height: calc(55vh - 51px - 100px);
+    }
+
+    .suggestions-part-div {
+      height: 45vh;
+    }
+
+    .stats-part-div {
+      height: calc(55vh - 56px);
+    }
   }
+
+
 }
 
 @import "actions-suggestions/action-suggestions";

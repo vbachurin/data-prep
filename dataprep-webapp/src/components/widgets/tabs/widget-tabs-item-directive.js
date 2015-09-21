@@ -48,6 +48,20 @@
                 scope.$on('$destroy', function() {
                     tabsCtrl.unregister(ctrl);
                 });
+
+                scope.$watch(
+                    function() {
+                        return ctrl.tabTitle;
+                    },
+                    function() {
+                        //Force to resize tabs containers
+                        //TODO CNG: To do it with only CSS
+                        var panel1 = angular.element('.split-pane1');
+                        var panel2 = angular.element('.split-pane2');
+                        angular.element('.action-suggestion-tab-items').css('height', panel1.height()-100 + 'px');
+                        angular.element('.stat-detail-tab-items').css('height', panel2.height()-100 + 'px');
+                    }
+                );
             }
         };
     }
