@@ -17,6 +17,15 @@ describe('Type transform menu controller', function () {
         {'id': 'DATE', 'name': 'date', 'labelKey': 'DATE'}
     ];
 
+
+    var expectedTypes = [
+        {'id': 'STRING', 'name': 'string', 'labelKey': 'STRING'},
+        {'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER'},
+        {'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT'},
+        {'id': 'BOOLEAN', 'name': 'boolean', 'labelKey': 'BOOLEAN'},
+        {'id': 'DATE', 'name': 'date', 'labelKey': 'DATE'}
+    ];
+
     beforeEach(module('data-prep.type-transformation-menu'));
 
     beforeEach(inject(function ($rootScope, $controller, $q, state, ColumnTypesService) {
@@ -53,7 +62,7 @@ describe('Type transform menu controller', function () {
 
         //then
         expect(ColumnTypesService.getTypes).toHaveBeenCalled();
-        expect(ctrl.types).toBe(types);
+        expect(ctrl.types).toEqual(expectedTypes);
     }));
 
     it('should change domain locally and call backend to add a step', inject(function ($q, PlaygroundService) {

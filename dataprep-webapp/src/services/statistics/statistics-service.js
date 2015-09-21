@@ -288,7 +288,8 @@
 
             var specificStats = {};
             switch (colType) {
-                case 'number':
+                case 'integer':
+                case 'decimal':
                     specificStats.MIN = clean(stats.min);
                     specificStats.MAX = clean(stats.max);
                     specificStats.MEAN = clean(stats.mean);
@@ -405,7 +406,8 @@
          */
         function processNonMapData(column) {
             switch (ConverterService.simplifyType(column.type)) {
-                case 'number':
+                case 'integer':
+                case 'decimal':
                     initRangeHistogram(column.statistics.histogram);
                     updateBoxplotData();
                     initRangeLimits();
@@ -415,7 +417,7 @@
                     initClassicHistogram('occurrences', 'Occurrences', column.statistics.frequencyTable);
                     break;
                 default :
-                    console.log('nor a number neither a boolean neither a string');
+                    console.log('nor an integer neither a decimal neither a boolean neither a string');
             }
         }
 

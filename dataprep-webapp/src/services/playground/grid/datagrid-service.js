@@ -236,7 +236,9 @@
 
             if(excludeNumeric) {
                 cols = _.filter(cols, function (col) {
-                    return ConverterService.simplifyType(col.type) !== 'number';
+                    var simplifiedType = ConverterService.simplifyType(col.type);
+                    console.log('simplifiedType:'+simplifiedType);
+                    return simplifiedType !== 'integer' && simplifiedType !== 'decimal';
                 });
             }
             if(excludeBoolean) {
@@ -323,7 +325,8 @@
                     return !columnToSkip || column.id !== columnToSkip.id;
                 })
                 .filter(function(column) {
-                    return ConverterService.simplifyType(column.type) === 'number';
+                    return ConverterService.simplifyType(column.type) === 'integer'
+                        || ConverterService.simplifyType(column.type) === 'decimal';
                 })
                 .value();
         };
