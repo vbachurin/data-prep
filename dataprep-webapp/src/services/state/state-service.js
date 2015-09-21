@@ -20,7 +20,8 @@
             hideRecipe: PlaygroundStateService.hideRecipe,
 
             //playground - grid
-            setGridSelection: PlaygroundStateService.setGridSelection
+            setGridSelection: PlaygroundStateService.setGridSelection,
+            setLookupVisibility: PlaygroundStateService.setLookupVisibility
         };
     }
 

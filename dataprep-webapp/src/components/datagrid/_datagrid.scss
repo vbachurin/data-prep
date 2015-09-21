@@ -245,4 +245,11 @@ $datagrid-cell-font-size: .80em;
       border: 1px dotted #BABABA;
     }
   }
+
+  //--------------------------------------------------Data lookup-------------------------------------------------------
+  &.lookup {
+    .slick-cell.selected {
+      background: $lookup-selected-column;
+    }
+  }
 }

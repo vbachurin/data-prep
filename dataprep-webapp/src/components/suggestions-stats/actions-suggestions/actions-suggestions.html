@@ -4,11 +4,17 @@
     
     <talend-tabs tab="actionsSuggestionsCtrl.tab" ng-if="actionsSuggestionsCtrl.columnSuggestions">
         <talend-tabs-item tab-title="_"></talend-tabs-item>
-        <talend-tabs-item tab-title="Text">Coming soon ...</talend-tabs-item>
-        <talend-tabs-item tab-title="Cell">Coming soon ...</talend-tabs-item>
-        <talend-tabs-item tab-title="Line">Coming soon ...</talend-tabs-item>
+        <talend-tabs-item tab-title="Text">
+            <div class="action-suggestion-tab-items">Coming soon ...</div>
+        </talend-tabs-item>
+        <talend-tabs-item tab-title="Cell">
+            <div class="action-suggestion-tab-items">Coming soon ...</div>
+        </talend-tabs-item>
+        <talend-tabs-item tab-title="Line">
+            <div class="action-suggestion-tab-items">Coming soon ...</div>
+        </talend-tabs-item>
         <talend-tabs-item tab-title="Column" default="true">
-            <talend-accordions class="menu">
+            <talend-accordions class="menu action-suggestion-tab-items">
                 <talend-accordions-item ng-switch="!!(transfo.parameters || transfo.items)"
                                         ng-repeat="transfo in actionsSuggestionsCtrl.columnSuggestions track by transfo.name">
                     <!--with dynamic parameters-->
@@ -38,21 +44,23 @@
         </talend-tabs-item>
 
         <talend-tabs-item tab-title="Table">
-            <talend-accordions class="menu">
-                <talend-accordions-item>
-                    <a>Remove Empty Lines</a>
-                </talend-accordions-item>
-            </talend-accordions>
-            <talend-accordions class="menu">
-                <talend-accordions-item>
-                    <a>Create Email Addresses</a>
-                </talend-accordions-item>
-            </talend-accordions>
-            <talend-accordions class="menu">
-                <talend-accordions-item>
-                    <a>Correct Postal Addresses</a>
-                </talend-accordions-item>
-            </talend-accordions>
+            <div class="action-suggestion-tab-items">
+                <talend-accordions class="menu">
+                    <talend-accordions-item>
+                        <a>Remove Empty Lines</a>
+                    </talend-accordions-item>
+                </talend-accordions>
+                <talend-accordions class="menu">
+                    <talend-accordions-item>
+                        <a>Create Email Addresses</a>
+                    </talend-accordions-item>
+                </talend-accordions>
+                <talend-accordions class="menu">
+                    <talend-accordions-item>
+                        <a>Correct Postal Addresses</a>
+                    </talend-accordions-item>
+                </talend-accordions>
+            </div>
         </talend-tabs-item>
     </talend-tabs>
 
