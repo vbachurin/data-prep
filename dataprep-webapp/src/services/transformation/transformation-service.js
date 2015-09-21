@@ -36,12 +36,12 @@
         //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
-         * @name cleanParamsAndItems
+         * @name cleanParams
          * @methodOf data-prep.services.transformation.service:TransformationService
          * @param {object[]} menus - the menus to clean
          * @description Remove 'column_id' and 'column_name' parameters (automatically sent), and clean empty arrays (choices and params)
          */
-        function cleanParamsAndItems(menus) {
+        function cleanParams(menus) {
             return _.forEach(menus, function(menu) {
                 //params
                 var filteredParameters = _.filter(menu.parameters, isExplicitParameter);
@@ -101,7 +101,7 @@
         function getTransformations(stringifiedColumn) {
             return TransformationRestService.getTransformations(stringifiedColumn)
                 .then(function(response) {
-                    var menus = cleanParamsAndItems(response.data);
+                    var menus = cleanParams(response.data);
                     return adaptInputTypes(menus);
                 });
         }
@@ -172,28 +172,6 @@
                 .value();
         }
 
-        /**
-         * @ngdoc method
-         * @name initChoices
-         * @methodOf data-prep.services.recipe.service:RecipeService
-         * @param {object} choices The choices
-         * @param {object} paramValues The parameters and choice initial values
-         * @description Init choice initial value, including each choice params initial value and type
-         * @returns {object} The choices with initialized values
-         */
-        function initChoices(choices, paramValues) {
-            _.forEach(choices, function(choice) {
-                choice.selectedValue = choice.initialValue = _.find(choice.values, function(choiceItem) {
-                    return choiceItem.name === paramValues[choice.name];
-                });
-
-                _.forEach(choice.values, function(choiceItem) {
-                    initParameters(choiceItem.parameters, paramValues);
-                });
-            });
-
-            return choices;
-        }
 
         /**
          * @ngdoc method
@@ -236,9 +214,6 @@
             if(transformation.parameters) {
                 transformation.parameters = initParameters(transformation.parameters, paramValues);
             }
-            if(transformation.items) {
-                transformation.items = initChoices(transformation.items, paramValues);
-            }
             if(transformation.cluster) {
                 transformation.cluster = initCluster(transformation.cluster, paramValues);
             }
@@ -255,7 +230,6 @@
          */
         function resetParameters(transformation) {
             transformation.parameters = null;
-            transformation.items = null;
             transformation.cluster = null;
         }
 
