@@ -1,12 +1,20 @@
 package org.talend.dataprep.api.service.command.preparation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.HttpResponse;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.talend.dataprep.api.service.command.common.Defaults.asNull;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicHeader;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.AppendStep;
 import org.talend.dataprep.api.preparation.Preparation;
@@ -14,15 +22,7 @@ import org.talend.dataprep.api.preparation.StepDiff;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.common.PreparationCommand;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.ExceptionContext;
-import org.talend.dataprep.exception.json.JsonErrorCode;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 @Component
 @Scope("request")
@@ -39,33 +39,23 @@ public class PreparationUpdateAction extends PreparationCommand<Void> {
         this.stepId = stepId;
         this.updatedStep = updatedStep;
         this.preparationId = preparationId;
+        execute(() -> onExecute(preparationId, stepId, updatedStep));
+        on(HttpStatus.OK).then(asNull());
     }
 
-    @Override
-    protected Void run() throws Exception {
-        final StepDiff diff = getDiffMetadata();
-        updatedStep.setDiff(diff);
-
-        final HttpPut actionAppend = new HttpPut(preparationServiceUrl + "/preparations/" + preparationId + "/actions/" + stepId); //$NON-NLS-1$ //$NON-NLS-2$
+    private HttpRequestBase onExecute(String preparationId, String stepId, AppendStep updatedStep) {
         try {
-            final String stepAsString = getObjectMapper().writeValueAsString(updatedStep);
+            final StepDiff diff = getDiffMetadata();
+            updatedStep.setDiff(diff);
+            final HttpPut actionAppend = new HttpPut(preparationServiceUrl + "/preparations/" + preparationId + "/actions/" + stepId); //$NON-NLS-1$ //$NON-NLS-2$
+            final String stepAsString = builder.build().writeValueAsString(updatedStep);
             final InputStream stepInputStream = new ByteArrayInputStream(stepAsString.getBytes());
 
             actionAppend.setHeader(new BasicHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE));
             actionAppend.setEntity(new InputStreamEntity(stepInputStream));
-            final HttpResponse response = client.execute(actionAppend);
-            final int statusCode = response.getStatusLine().getStatusCode();
-
-            if (statusCode != 200) {
-                final ObjectMapper build = builder.build();
-                final JsonErrorCode errorCode = build.reader(JsonErrorCode.class).readValue(response.getEntity().getContent());
-                errorCode.setHttpStatus(statusCode);
-                throw new TDPException(errorCode);
-            }
-
-            return null;
-        } finally {
-            actionAppend.releaseConnection();
+            return actionAppend;
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 

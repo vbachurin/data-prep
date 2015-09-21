@@ -13,7 +13,6 @@
     angular.module('data-prep.type-transformation-menu', [
         'data-prep.services.dataset',
         'data-prep.services.playground',
-        'data-prep.services.state',
         'data-prep.services.utils'
     ]);
 })();

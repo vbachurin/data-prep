@@ -22,19 +22,45 @@
   float: left;
 }
 
+.sample_label{
+  color: $green;
+}
+
 .sample {
-  color: black;
+  color: $green;
   vertical-align: baseline;
   display: inline;
   margin-bottom: 0;
+  border-radius: 5px;
+  border: 1px solid $green;
+  background-color: transparent;
+  padding: 5px;
+  option{
+    color: $black;
+  }
 }
 
 .right-header {
   float: right;
   margin-right: 80px;
 
+  .onboarding-prep-icon {
+    color: $medium-gray;
+    font-size: 1.8em;
+    width: 40px;
+    height: 35px;
+    position: relative;
+    top: 6px;
+    padding-left: 20px;
+    padding-right: 20px;
+    @include filter(drop-shadow(0px 1px 1px #1f2024));
+
+    &:hover {
+      color: lighten($medium-gray, 10%);
+    }
+  }
+
   .preview {
-    padding-top: 7px;
 
     .previewBadge {
       line-height: 36px;
@@ -48,10 +74,6 @@
         vertical-align: middle;
       }
     }
-  }
-
-  .export {
-    padding-top: 7px;
   }
 }
 

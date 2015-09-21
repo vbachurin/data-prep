@@ -1,6 +1,4 @@
-package org.talend.dataprep.transformation.api.action.metadata.domain;
-
-import java.util.Map;
+package org.talend.dataprep.transformation.api.action.metadata.column;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -16,6 +14,8 @@ import org.talend.dataprep.transformation.api.action.metadata.common.AbstractAct
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
+import java.util.Map;
+
 /**
  * Change the domain of a column. <b>This action is not displayed in the UI it's here to ease recording it as a Step
  * It's available from column headers</b>
@@ -30,11 +30,11 @@ public class DomainChange extends AbstractActionMetadata implements ColumnAction
      */
     public static final String DOMAIN_CHANGE_ACTION_NAME = "domain_change"; //$NON-NLS-1$
 
-    public static final String NEW_DOMAIN_ID_PARAMETER_KEY = "NEW_DOMAIN_ID";
+    public static final String NEW_DOMAIN_ID_PARAMETER_KEY = "new_domain_id";
 
-    public static final String NEW_DOMAIN_LABEL_PARAMETER_KEY = "NEW_DOMAIN_LABEL";
+    public static final String NEW_DOMAIN_LABEL_PARAMETER_KEY = "new_domain_label";
 
-    public static final String NEW_DOMAIN_FREQUENCY_PARAMETER_KEY = "NEW_DOMAIN_FREQUENCY";
+    public static final String NEW_DOMAIN_FREQUENCY_PARAMETER_KEY = "new_domain_frequency";
 
     /**
      * @see ActionMetadata#getName()
@@ -66,23 +66,23 @@ public class DomainChange extends AbstractActionMetadata implements ColumnAction
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
 
-        LOGGER.debug("applyOnColumn for columnId {} with parameters {} ", columnId, parameters);
+        LOGGER.debug("DomainChange for columnId {} with parameters {} ", columnId, parameters);
 
-        ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
+        final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
         if (columnMetadata == null) {
             // FIXME exception?
             return;
         }
-        String newDomainId = parameters.get(NEW_DOMAIN_ID_PARAMETER_KEY);
-        String newDomainLabel = parameters.get(NEW_DOMAIN_LABEL_PARAMETER_KEY);
-        String newDomainFrequency = parameters.get(NEW_DOMAIN_FREQUENCY_PARAMETER_KEY);
+        final String newDomainId = parameters.get(NEW_DOMAIN_ID_PARAMETER_KEY);
+        final String newDomainLabel = parameters.get(NEW_DOMAIN_LABEL_PARAMETER_KEY);
+        final String newDomainFrequency = parameters.get(NEW_DOMAIN_FREQUENCY_PARAMETER_KEY);
 
         if (StringUtils.isNotEmpty(newDomainId)) {
             columnMetadata.setDomain(newDomainId);
-            columnMetadata.setDomainLabel( newDomainLabel );
-            columnMetadata.setDomainFrequency( NumberUtils.toFloat( newDomainFrequency, 0 ) );
-            columnMetadata.setDomainForced( true );
-            forceColumn( context, columnId );
+            columnMetadata.setDomainLabel(newDomainLabel);
+            columnMetadata.setDomainFrequency(NumberUtils.toFloat(newDomainFrequency, 0));
+            columnMetadata.setDomainForced(true);
+            forceColumn(context, columnId);
         }
 
     }

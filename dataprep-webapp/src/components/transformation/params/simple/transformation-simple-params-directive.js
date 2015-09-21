@@ -16,7 +16,6 @@
      </transform-params>
      * @param {object} parameters The transformation simple parameters
      * @param {object} label Do NOT display label if 'false'. Display it otherwise (by default).
-     * @param {object} tooltip Do NOT display tooltip if 'false'. Display it otherwise (by default).
      */
     function TransformSimpleParams() {
         return {
@@ -26,8 +25,7 @@
             scope: {
                 editableSelect: '=',
                 parameters: '=',
-                label: '@',
-                tooltip: '@'
+                label: '@'
             },
             bindToController: true,
             controllerAs: 'simpleParamsCtrl',

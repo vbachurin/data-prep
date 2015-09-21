@@ -26,25 +26,23 @@ header.navigation {
         color: lighten($medium-gray, 10%);
       }
 
-      &.t-top-bar_notification {
-        top: -4px;
-        font-weight: 700;
-        font-size: .9rem;
-        padding: 0px 0px 0px 0px;
-        color: #FFFFFF;
-        text-align: center;
-        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+      &.notification-icon {
         background: $color-error;
-        width: 24px;
-        height: 24px;
-        line-height: 21px;
         border: 2px solid #FFFFFF;
         border-radius: 50%;
+        color: #FFFFFF;
 
-      }
+        line-height: 21px;
+        margin-right: 5px;
+        padding: 0;
+        top: -4px;
 
-      &.t-top-bar_profile {
-        //width: 52px;
+        font-size: .9rem;
+        text-align: center;
+        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+
+        height: 24px;
+        width: 24px;
       }
     }
   }
