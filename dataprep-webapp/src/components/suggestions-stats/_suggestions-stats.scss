@@ -34,13 +34,20 @@
     }
 
     .action-suggestion-tab-items {
-      height: calc(50vh - 100px) ;
+      height: calc(45vh - 100px) ;
     }
 
     .stat-detail-tab-items{
-      height: calc(50vh - 51px - 100px);
+      height: calc(55vh - 51px - 100px);
     }
 
+    .suggestions-part-div {
+      height: 45vh;
+    }
+
+    .stats-part-div {
+      height: calc(55vh - 56px);
+    }
   }
 
 

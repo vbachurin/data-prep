@@ -36,7 +36,7 @@
             },
             link: function (scope, iElement, iAttrs, ctrl) {
 
-                //Resize tabs containers
+                //Force to resize tabs containers
                 $timeout(function(){
                     angular.element('.tabs-item').on('click', function(){
                         var panel1 = angular.element('.split-pane1');
