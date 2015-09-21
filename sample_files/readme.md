@@ -17,3 +17,5 @@
 | MQLs_this_week.csv                            | *sample file from Charlotte*                                                      |
 | Talend Desk - Tableau de Bord - 011214.xls    | *sample file from Charlotte*                                                      |
 | Talend_116941_TechTarget_1 December.xlsx      | *sample file from Charlotte*                                                      |
+| Exemple Export Report Fairsail.xls            | *from Emmanuel, to check date formats*                                            |
+
