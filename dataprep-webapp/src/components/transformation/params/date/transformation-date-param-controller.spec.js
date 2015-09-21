@@ -1,7 +1,7 @@
-describe('Transform date params controller', function () {
+describe('Transform date param controller', function () {
     'use strict';
 
-    var createController, scope, parameters;
+    var createController, scope, parameter;
 
     beforeEach(module('data-prep.transformation-params'));
 
@@ -9,24 +9,22 @@ describe('Transform date params controller', function () {
         scope = $rootScope.$new();
 
         createController = function () {
-            var ctrlFn = $controller('TransformDateParamsCtrl', {
+            var ctrlFn = $controller('TransformDateParamCtrl', {
                 $scope: scope
             }, true);
-            ctrlFn.instance.parameters = parameters;
+            ctrlFn.instance.parameter = parameter;
             return ctrlFn();
         };
     }));
 
     it('should set default', function() {
         //given
-        parameters = [
-            {name: 'param2', type: 'date', default: '02/01/2012 09:42:22'}
-        ];
+        parameter = {name: 'param2', type: 'date', default: '02/01/2012 09:42:22'};
 
         //when
         var ctrl = createController();
 
         //then
-        expect(ctrl.parameters[0].default).toBe('02/01/2012 09:42:22');
+        expect(ctrl.parameter.default).toBe('02/01/2012 09:42:22');
     });
 });

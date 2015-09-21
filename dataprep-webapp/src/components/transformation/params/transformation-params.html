@@ -15,7 +15,11 @@
                     parameter="parameter">
             </transform-choice-param>
 
-            <div ng-switch-when="date"> {{parameter.name}} is a date</div>
+            <transform-date-param
+                    ng-switch-when="date"
+                    parameter="parameter">
+            </transform-date-param>
+
         </div>
 
         <!-- Cluster
@@ -23,13 +27,6 @@
                 ng-if="paramsCtrl.transformation.cluster"
                 details="paramsCtrl.transformation.cluster">
         </transform-cluster-params>
-        -->
-
-        <!-- Date
-        <transform-date-params
-            ng-if="paramsCtrl.transformation.date"
-            parameters="paramsCtrl.transformation.parameters">
-        </transform-date-params>
         -->
 
     </form>

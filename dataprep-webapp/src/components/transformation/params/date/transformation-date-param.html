@@ -1,0 +1,27 @@
+<div class="param">
+
+    dateParamCtrl.parameter
+
+    <div class="param-row">
+        <div class="param-name" ng-if="::(dateParamCtrl.label !== 'false')">
+            {{dateParamCtrl.label}}{{::dateParamCtrl.parameter.label}}:
+        </div>
+
+        <talend-datetime-picker ng-model="dateParamCtrl.parameter.value"
+                                name="{{::(dateParamCtrl.parameter.name)}}"
+                                type="{{::dateParamCtrl.parameter.inputType}}"
+                                is-type="{{::dateParamCtrl.parameter.type}}"
+                                can-be-blank="{{::dateParamCtrl.parameter.canBeBlank}}"
+                                format="DD/MM/YYYY hh:mm:ss"
+                                formatTime="hh:mm:ss"
+                                formatDate="DD/MM/YYY"
+                                is-date-time>
+        </talend-datetime-picker>
+
+        <div class="param-error error"
+             ng-if="paramsCtrl.paramForm[dateParamCtrl.parameter.name].$error.typeValidation || paramsCtrl.paramForm[dateParamCtrl.parameter.name].$error.number">
+            This must be a {{::dateParamCtrl.parameter.type}}
+        </div>
+    </div>
+
+</div>
