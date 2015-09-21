@@ -6,11 +6,10 @@
      * @name data-prep.type-transformation-menu.controller:TypeTransformMenuCtrl
      * @description Type Transformation menu controller.
      * @requires data-prep.services.playground.service:PlaygroundService
-     * @requires data-prep.services.dataset.service:DatasetService
      * @requires data-prep.services.dataset.service:ColumnTypesService
      * @requires data-prep.services.utils.service:ConverterService
      */
-    function TypeTransformMenuCtrl(state, PlaygroundService, DatasetService, ColumnTypesService, ConverterService) {
+    function TypeTransformMenuCtrl(PlaygroundService, ColumnTypesService, ConverterService) {
 
         var vm = this;
 
@@ -37,10 +36,18 @@
          */
         vm.changeDomain = function changeDomain(domain) {
             var originalDomain = getOriginalDomain();
-
             setColumnDomainAndType(domain, null);
 
-            PlaygroundService.addUpdateColumnDomainStep(vm.column.id, domain)
+            /*jshint camelcase: false */
+            var parameters = {
+                scope: 'column',
+                column_id: vm.column.id,
+                column_name: vm.column.name,
+                new_domain_id: domain.id,
+                new_domain_label: domain.label,
+                new_domain_frequency: domain.frequency
+            };
+            PlaygroundService.appendStep('domain_change', parameters)
                 .catch(setColumnDomainAndType.bind(vm, originalDomain));
         };
 
@@ -52,13 +59,18 @@
          * @param {object} type The new type information
          */
         vm.changeType = function changeType(type) {
-
             var originalType = vm.column.type;
             var originalDomain = getOriginalDomain();
             setColumnDomainAndType({id: '', label: '', frequency: 0}, type.id);
-            vm.column.typeForced=true;
 
-            PlaygroundService.addUpdateColumnTypeStep(vm.column.id, type)
+            /*jshint camelcase: false */
+            var parameters = {
+                scope: 'column',
+                column_id: vm.column.id,
+                column_name: vm.column.name,
+                new_type: type.id
+            };
+            PlaygroundService.appendStep('type_change', parameters)
                 .catch(setColumnDomainAndType.bind(vm, originalDomain, originalType));
         };
 
@@ -66,7 +78,7 @@
          * @ngdoc method
          * @name adaptDomains
          * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
-         * @description Adapt the semantic domain list for ui. It also calculate the domain percentages
+         * @description Adapt the semantic domain list for ui.
          */
         vm.adaptDomains = function adaptDomains() {
             vm.domains = _.chain(vm.column.semanticDomains)

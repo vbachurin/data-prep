@@ -11,14 +11,12 @@
      */
     function DatagridStyleService(DatagridService, ConverterService, TextFormatService) {
         var grid;
-        var lastSelectedColumnId;
         var highlightCellTimeout;
         var columnClassTimeout;
 
         return {
             init: init,
             resetCellStyles: resetCellStyles,
-            resetColumnStyles: resetColumnStyles,
             updateColumnClass: updateColumnClass,
             columnFormatter: columnFormatter,
             getColumnPreviewStyle: getColumnPreviewStyle
@@ -35,17 +33,6 @@
         function resetCellStyles() {
             grid.resetActiveCell();
             grid.setCellCssStyles('highlight', {});
-        }
-
-        /**
-         * @ngdoc method
-         * @name resetColumnStyles
-         * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @description Reset the columns css.
-         * Currently there is only one visual style class : selected. We reset the lastSelected
-         */
-        function resetColumnStyles() {
-            lastSelectedColumnId = null;
         }
 
         /**
@@ -107,10 +94,6 @@
                     updateNumbersClass(column);
                 }
             });
-
-            if (selectedCol) {
-                lastSelectedColumnId = selectedCol.id;
-            }
         }
 
         /**
@@ -228,13 +211,11 @@
             var columns = grid.getColumns();
             var column = columns[colIndex];
 
-            if(lastSelectedColumnId !== column.id) {
-                clearTimeout(columnClassTimeout);
-                columnClassTimeout = setTimeout(function() {
-                    updateColumnClass(columns, column);
-                    grid.invalidate();
-                }, 100);
-            }
+            clearTimeout(columnClassTimeout);
+            columnClassTimeout = setTimeout(function() {
+                updateColumnClass(columns, column);
+                grid.invalidate();
+            }, 100);
         }
 
         /**

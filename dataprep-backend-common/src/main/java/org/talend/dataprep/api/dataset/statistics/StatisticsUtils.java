@@ -95,8 +95,13 @@ public class StatisticsUtils {
                 statistics.getHistogram().clear();
                 histogramStatistics.getHistogram().forEach((r, v) -> {
                     final HistogramRange range = new HistogramRange();
-                    range.getRange().setMax(new Double(format.format(r.getUpper())));
-                    range.getRange().setMin(new Double(format.format(r.getLower())));
+                    if (pattern.isEmpty()) {
+                        range.getRange().setMax(r.getUpper());
+                        range.getRange().setMin(r.getLower());
+                    } else {
+                        range.getRange().setMax(new Double(format.format(r.getUpper())));
+                        range.getRange().setMin(new Double(format.format(r.getLower())));
+                    }
                     range.setOccurrences(v);
                     statistics.getHistogram().add(range);
                 });

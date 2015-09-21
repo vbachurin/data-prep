@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -34,11 +35,10 @@ public class CSVSchemaParser implements SchemaParser {
         List<SchemaParserResult.SheetContent> sheetContents = new ArrayList<>();
         sheetContents.add(new SchemaParserResult.SheetContent(META_KEY, new ArrayList<>()));
         try {
-            final Map<String, String> parameters = request.getMetadata().getContent().getParameters();
+            final DataSetMetadata metadata = request.getMetadata();
+            final Map<String, String> parameters = metadata.getContent().getParameters();
             final char separator = parameters.get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
-            LOGGER.info("Init CSV Reader...");
-            CSVReader reader = new CSVReader(new InputStreamReader(request.getContent()), separator);
-            LOGGER.info("Init CSV Reader done.");
+            CSVReader reader = new CSVReader(new InputStreamReader(request.getContent(), metadata.getEncoding()), separator);
             // First line has column names
             String[] columns = reader.readNext();
             if (columns == null) { // Empty content?

@@ -17,6 +17,7 @@ describe('Playground Service', function () {
         createdPreparation = {id: '32cd7869f8426465e164ab85'};
 
         spyOn(DatagridService, 'setDataset').and.returnValue();
+        spyOn(DatagridService, 'updateData').and.returnValue();
         spyOn(DatasetService, 'getContent').and.returnValue($q.when(datasetContent));
         spyOn(FilterService, 'removeAllFilters').and.returnValue();
         spyOn(HistoryService, 'clear').and.returnValue();
@@ -339,7 +340,7 @@ describe('Playground Service', function () {
             stateMock.playground.preparation = preparation;
 
             //when
-            PlaygroundService.loadStep(step, '0001');
+            PlaygroundService.loadStep(step);
             expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
             $rootScope.$apply();
 
@@ -350,8 +351,7 @@ describe('Playground Service', function () {
             expect(RecipeService.refresh).not.toHaveBeenCalled();
             expect(RecipeService.disableStepsAfter).toHaveBeenCalledWith(step);
             expect(PreviewService.reset).toHaveBeenCalledWith(false);
-            expect(DatagridService.setDataset).toHaveBeenCalledWith(metadata, data);
-            expect(DatagridService.focusedColumn).toBe('0001');
+            expect(DatagridService.updateData).toHaveBeenCalledWith(data);
             expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
         }));
 
@@ -443,7 +443,6 @@ describe('Playground Service', function () {
             spyOn(PreparationService, 'updateStep').and.returnValue($q.when(true));
             spyOn(PreparationService, 'removeStep').and.returnValue($q.when(true));
             spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: preparationHeadContent}));
-            spyOn(DatagridService, 'updateData').and.returnValue();
             spyOn(RecipeService, 'getLastStep').and.returnValue(lastStep);
             spyOn(RecipeService, 'getPreviousStep').and.callFake(function (step) {
                 return step === lastStep ? previousLastStep : null;
@@ -589,7 +588,6 @@ describe('Playground Service', function () {
 
                 //then
                 expect(PreparationService.getContent).toHaveBeenCalledWith('15de46846f8a46', 'head', 'full');
-                expect(DatagridService.focusedColumn).toBe(parameters.column_id);
                 expect(DatagridService.updateData).toHaveBeenCalledWith(preparationHeadContent);
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
             }));
@@ -751,8 +749,7 @@ describe('Playground Service', function () {
 
                 //then
                 expect(PreparationService.getContent).toHaveBeenCalledWith('456415ae348e6046dc', lastActiveStep.transformation.stepId, 'full');
-                expect(DatagridService.focusedColumn).toBe(stepToUpdate.column.id);
-                expect(DatagridService.setDataset).toHaveBeenCalledWith(metadata, preparationHeadContent);
+                expect(DatagridService.updateData).toHaveBeenCalledWith(preparationHeadContent);
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
             }));
 
@@ -808,7 +805,7 @@ describe('Playground Service', function () {
                 it('should refresh datagrid content at the last active step on UNDO', inject(function ($rootScope, PreparationService, DatagridService, RecipeService) {
                     //given
                     expect(PreparationService.getContent.calls.count()).toBe(1);
-                    expect(DatagridService.setDataset.calls.count()).toBe(1);
+                    expect(DatagridService.updateData.calls.count()).toBe(1);
 
                     //when
                     undo();
@@ -819,10 +816,8 @@ describe('Playground Service', function () {
                     expect(PreparationService.getContent.calls.count()).toBe(2);
                     expect(PreparationService.getContent.calls.argsFor(1)[0]).toBe(preparationId);
                     expect(PreparationService.getContent.calls.argsFor(1)[1]).toBe(lastActiveStep.transformation.stepId);
-                    expect(DatagridService.setDataset.calls.count()).toBe(2);
-                    expect(DatagridService.focusedColumn).toBeFalsy();
-                    expect(DatagridService.setDataset.calls.argsFor(1)[0]).toBe(metadata);
-                    expect(DatagridService.setDataset.calls.argsFor(1)[1]).toBe(preparationHeadContent);
+                    expect(DatagridService.updateData.calls.count()).toBe(2);
+                    expect(DatagridService.updateData.calls.argsFor(1)[0]).toBe(preparationHeadContent);
                 }));
             });
         });
@@ -959,7 +954,6 @@ describe('Playground Service', function () {
 
                     //then
                     expect(PreparationService.getContent).toHaveBeenCalledWith(preparationId, 'head', 'full');
-                    expect(DatagridService.focusedColumn).toBe(stepToDelete.actionParameters.parameters.column_id);
                     expect(DatagridService.updateData).toHaveBeenCalledWith(preparationHeadContent);
                     expect(PreviewService.reset).toHaveBeenCalledWith(false);
                 }));
@@ -1055,7 +1049,6 @@ describe('Playground Service', function () {
                 RecipeService.getRecipe().push({});
                 return $q.when(true);
             });
-            spyOn(DatagridService, 'updateData').and.returnValue();
             spyOn(RecipeService, 'getLastStep').and.returnValue({
                 transformation: {stepId: 'a151e543456413ef51'}
             });
@@ -1140,7 +1133,6 @@ describe('Playground Service', function () {
                 RecipeService.getRecipe().push({});
                 return $q.when(true);
             });
-            spyOn(DatagridService, 'updateData').and.returnValue();
             spyOn(StateService, 'setNameEditionMode').and.returnValue();
         }));
 
@@ -1203,57 +1195,4 @@ describe('Playground Service', function () {
         }));
     });
 
-    describe('change column type', function () {
-
-        beforeEach(inject(function ($q, DatasetService, PreparationService, DatagridService) {
-            spyOn(DatasetService, 'updateColumn').and.returnValue($q.when({}));
-            spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: {}}));
-            spyOn(DatagridService, 'updateData').and.returnValue();
-        }));
-
-        it('should get preparation content', inject(function ($rootScope, PlaygroundService, PreparationService, DatasetService, PreviewService) {
-            //given
-            stateMock.playground.dataset = {id: 'gfkjqghflqsdgf'};
-            stateMock.playground.preparation = {id: '1324'};
-            PlaygroundService.selectedSampleSize = {value: 500};
-
-            var columnId = '0001';
-            var type = 'date';
-            var domain = '';
-
-            //when
-            PlaygroundService.updateColumn(columnId, type, domain);
-            $rootScope.$digest();
-
-            //then
-            expect(DatasetService.updateColumn).toHaveBeenCalledWith('gfkjqghflqsdgf', columnId, {
-                type: type,
-                domain: domain
-            });
-            expect(PreparationService.getContent).toHaveBeenCalledWith('1324', 'head', PlaygroundService.selectedSampleSize.value);
-            expect(PreviewService.reset).toHaveBeenCalledWith(false);
-        }));
-
-        it('should get dataset content', inject(function ($rootScope, PlaygroundService, PreparationService, DatasetService) {
-            //given
-            stateMock.playground.dataset = {id: 'gfkjqghflqsdgf'};
-            stateMock.playground.preparation = null;
-            PlaygroundService.selectedSampleSize = {value: 500};
-
-            var columnId = '0001';
-            var type = 'date';
-            var domain = '';
-
-            //when
-            PlaygroundService.updateColumn(columnId, type, domain);
-            $rootScope.$digest();
-
-            //then
-            expect(DatasetService.updateColumn).toHaveBeenCalledWith('gfkjqghflqsdgf', columnId, {
-                type: type,
-                domain: domain
-            });
-            expect(DatasetService.getContent).toHaveBeenCalledWith('gfkjqghflqsdgf', false, PlaygroundService.selectedSampleSize.value);
-        }));
-    });
 });

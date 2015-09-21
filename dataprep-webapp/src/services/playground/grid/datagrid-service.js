@@ -170,6 +170,9 @@
                 columns: self.data.columns
             };
 
+            if(self.data.columns.length < executor.columns.length){
+                self.focusedColumn = getLastNewColumnId(executor.columns);
+            }
             self.data = {
                 columns: executor.columns,
                 records: self.data.records,
