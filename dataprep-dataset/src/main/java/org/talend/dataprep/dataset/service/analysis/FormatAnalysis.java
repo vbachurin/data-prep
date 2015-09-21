@@ -64,11 +64,9 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
                 FormatGuess bestGuess = bestGuessResult.getFormatGuess();
                 DataSetContent dataSetContent = metadata.getContent();
                 dataSetContent.setParameters(bestGuessResult.getParameters());
-                if (bestGuessResult.getParameters().containsKey("ENCODING")) {
-                    metadata.setEncoding(bestGuessResult.getParameters().get("ENCODING"));
-                }
                 dataSetContent.setFormatGuessId(bestGuess.getBeanId());
                 dataSetContent.setMediaType(bestGuess.getMediaType());
+                metadata.setEncoding(bestGuessResult.getEncoding());
 
                 parseColumnNameInformation(dataSetId, metadata, bestGuess);
 

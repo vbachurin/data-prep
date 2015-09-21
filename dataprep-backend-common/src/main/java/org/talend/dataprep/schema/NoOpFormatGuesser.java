@@ -14,7 +14,7 @@ public class NoOpFormatGuesser implements FormatGuesser {
 
     @Override
     public FormatGuesser.Result guess(InputStream stream, String encoding) {
-        return new FormatGuesser.Result(noOpFormatGuess, Collections.emptyMap());
+        return new FormatGuesser.Result(noOpFormatGuess, "UTF-8", Collections.emptyMap());
     }
 
 }

@@ -18,7 +18,7 @@ public interface FormatGuesser {
      * {@link FormatGuess#getConfidence()}.
      */
     default Result guess(InputStream stream, String encoding) {
-        return new Result(new NoOpFormatGuess(), Collections.emptyMap());
+        return new Result(new NoOpFormatGuess(), "UTF-8", Collections.emptyMap());
     }
 
     class Result {
@@ -27,8 +27,11 @@ public interface FormatGuesser {
 
         private Map<String, String> parameters;
 
-        public Result(FormatGuess formatGuess, Map<String, String> parameters) {
+        private String encoding;
+
+        public Result(FormatGuess formatGuess, String encoding, Map<String, String> parameters) {
             this.formatGuess = formatGuess;
+            this.encoding = encoding;
             this.parameters = parameters;
         }
 
@@ -71,6 +74,10 @@ public interface FormatGuesser {
             int result = formatGuess.hashCode();
             result = 31 * result + parameters.hashCode();
             return result;
+        }
+
+        public String getEncoding() {
+            return encoding;
         }
     }
 }

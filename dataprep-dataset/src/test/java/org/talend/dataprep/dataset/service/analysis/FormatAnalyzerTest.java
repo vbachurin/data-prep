@@ -73,7 +73,6 @@ public class FormatAnalyzerTest {
         assertThat(actual.getContent().getFormatGuessId(), is(CSVFormatGuess.BEAN_ID));
         assertThat(actual.getContent().getMediaType(), is("text/csv"));
         assertThat(actual.getContent().getParameters().get("SEPARATOR"), is("\t"));
-        assertThat(actual.getContent().getParameters().get("ENCODING"), is("UTF-16"));
         assertThat(actual.getEncoding(), is("UTF-16"));
     }
 

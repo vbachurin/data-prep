@@ -40,10 +40,9 @@ public class LineBasedFormatGuesser implements FormatGuesser {
         if (sep != null && sep.getSeparator() != '\u0000' && sep.getSeparator() < 255) {
             Map<String, String> parameters = new HashMap<>();
             parameters.put(CSVFormatGuess.SEPARATOR_PARAMETER, String.valueOf(sep.getSeparator()));
-            parameters.put(CSVFormatGuess.ENCODING, encoding);
-            return new FormatGuesser.Result(csvFormatGuess, parameters);
+            return new FormatGuesser.Result(csvFormatGuess, encoding, parameters);
         }
-        return new FormatGuesser.Result(fallbackGuess, Collections.emptyMap()); // Fallback
+        return new FormatGuesser.Result(fallbackGuess, "UTF-8", Collections.emptyMap()); // Fallback
     }
 
     /**

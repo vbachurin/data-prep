@@ -92,7 +92,7 @@ public class XlsSerializer implements Serializer {
 
             generator.writeEndArray();
             generator.flush();
-            return new ByteArrayInputStream(writer.toString().getBytes(metadata.getEncoding()));
+            return new ByteArrayInputStream(writer.toString().getBytes("UTF-8"));
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }

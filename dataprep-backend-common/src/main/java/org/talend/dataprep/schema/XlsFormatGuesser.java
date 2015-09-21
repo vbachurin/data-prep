@@ -30,11 +30,11 @@ public class XlsFormatGuesser implements FormatGuesser {
             // if poi can read it we assume it's correct excel file
             // && at least one sheet
             if (workbook.getNumberOfSheets() > 0) {
-                return new FormatGuesser.Result(xlsFormatGuess, Collections.emptyMap());
+                return new FormatGuesser.Result(xlsFormatGuess, encoding, Collections.emptyMap());
             }
         } catch (IOException e) {
             LOGGER.debug("fail to read content: " + e.getMessage(), e);
         }
-        return new FormatGuesser.Result(fallbackGuess, Collections.emptyMap());
+        return new FormatGuesser.Result(fallbackGuess, "UTF-8", Collections.emptyMap());
     }
 }
