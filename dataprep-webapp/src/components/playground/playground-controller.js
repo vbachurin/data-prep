@@ -12,12 +12,15 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.playground.service:PreviewService
+     * @requires data-prep.services.onboarding.service:OnboardingService
      */
-    function PlaygroundCtrl($state, $stateParams, state, StateService, PlaygroundService, PreparationService, PreviewService, RecipeService, RecipeBulletService) {
+    function PlaygroundCtrl($state, $stateParams, state, StateService, PlaygroundService, PreparationService,
+                            PreviewService, RecipeService, RecipeBulletService, OnboardingService) {
         var vm = this;
         vm.playgroundService = PlaygroundService;
         vm.previewService = PreviewService;
         vm.recipeService = RecipeService;
+        vm.onboardingService = OnboardingService;
         vm.state = state;
 
         /**

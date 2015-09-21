@@ -33,7 +33,7 @@
             position: 'bottom'
         },
         {
-            element: '#nav_help',
+            element: '#onboarding-icon',
             title: 'Help',
             content: 'Click here if you want to see this help again.',
             position: 'bottom'

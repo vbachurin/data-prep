@@ -7,8 +7,9 @@
      * @description OnboardingService service. This service exposes functions to start onboarding tours
      * @requires data-prep.services.onboarding.constant:datasetTour
      * @requires data-prep.services.onboarding.constant:playgroundTour
+     * @requires data-prep.services.onboarding.constant:recipeTour
      */
-    function OnboardingService($window, datasetTour, playgroundTour) {
+    function OnboardingService($window, datasetTour, playgroundTour, recipeTour) {
 
         var TOUR_OPTIONS_KEY = 'org.talend.dataprep.tour_options';
 
@@ -81,6 +82,8 @@
                     return datasetTour;
                 case 'playground':
                     return playgroundTour;
+                case 'recipe':
+                    return recipeTour;
             }
         }
 

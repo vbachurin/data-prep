@@ -3,13 +3,14 @@
 
     var recipeTour = [
         {
-            element: '#prepNameInput',
+            element: '#help-preparation-name',
             title: 'Your new preparation',
             content: 'You can give a name to your brand new preparation.',
-            position: 'right'
+            position: 'right',
+            tooltipPosition: 'right'
         },
         {
-            element: '#help-recipe',
+            element: '#help-recipe > ul',
             title: 'Recipe',
             content: 'You can delete a step, see changes introduced by each step or change an existing step.',
             position: 'right'

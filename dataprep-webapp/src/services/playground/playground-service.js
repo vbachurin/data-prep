@@ -112,12 +112,10 @@
                         reset(dataset, data);
                         StateService.hideRecipe();
                         StateService.setNameEditionMode(true);
-
-                        return data;
+                        StateService.setGridSelection(data.columns[0]);
                     })
-                    .then(function(data) {
+                    .then(function() {
                         if(OnboardingService.shouldStartTour('playground')) {
-                            StateService.setGridSelection(data.columns[0]);
                             setTimeout(OnboardingService.startTour.bind(null, 'playground'), 200);
                         }
                     });
@@ -218,6 +216,7 @@
                         reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response.data, preparation);
                         StateService.showRecipe();
                         StateService.setNameEditionMode(false);
+                        StateService.setGridSelection(response.data.columns[0]);
                     })
                     .finally(function() {
                         $rootScope.$emit('talend.loading.stop');
