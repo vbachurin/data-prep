@@ -81,7 +81,6 @@
                 var onMetadataChange = function onMetadataChange() {
                     if (grid) {
                         DatagridStyleService.resetCellStyles();
-                        DatagridStyleService.resetColumnStyles();
                         grid.scrollRowToTop(0);
                         DatagridColumnService.renewAllColumns(true);
                     }
@@ -100,11 +99,14 @@
                         var selectedColumn = state.playground.column;
                         var hasSelectedColumn = !data.preview && selectedColumn;
 
-                        //create columns, manage style and size, set columns in grid, and insert headers
+                        //create columns, manage style and size, set columns in grid
                         clearTimeout(columnTimeout);
                         columnTimeout = setTimeout(function() {
-                            columns = DatagridColumnService.createColumns(data.columns, data.preview);
+                            if(!data.preview && !selectedColumn) {
+                                DatagridStyleService.resetCellStyles();
+                            }
 
+                            columns = DatagridColumnService.createColumns(data.columns, data.preview);
                             var selectedGridColumn = hasSelectedColumn ? _.find(columns, {id: selectedColumn.id}) : null;
                             DatagridStyleService.updateColumnClass(columns, selectedGridColumn);
                             DatagridSizeService.autosizeColumns(columns); // IMPORTANT : this set columns in the grid

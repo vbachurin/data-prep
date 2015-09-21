@@ -108,7 +108,7 @@ public class RowMetadata implements Serializable {
         // process the updated columns
         columns.forEach(column -> {
             ColumnMetadata referenceColumn = reference.getById(column.getId());
-            if (referenceColumn != null && !column.getName().equals(referenceColumn.getName())) {
+            if (referenceColumn != null && columnHasChanged(column, referenceColumn)) {
                 column.setDiffFlagValue(Flag.UPDATE.getValue());
             }
         });
@@ -122,6 +122,18 @@ public class RowMetadata implements Serializable {
             }
         });
 
+    }
+
+    /**
+     * Change detection between column and its reference (before the transformation)
+     * @param column    The column metadata
+     * @param reference The column reference
+     * @return True if the name, domain or type has changed
+     */
+    private boolean columnHasChanged(final ColumnMetadata column, final ColumnMetadata reference) {
+        return !column.getName().equals(reference.getName()) ||
+                ! column.getDomain().equals(reference.getDomain()) ||
+                ! column.getType().equals(reference.getType());
     }
 
     /**

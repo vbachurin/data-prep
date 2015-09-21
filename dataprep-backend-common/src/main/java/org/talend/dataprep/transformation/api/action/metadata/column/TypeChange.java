@@ -1,6 +1,4 @@
-package org.talend.dataprep.transformation.api.action.metadata.type;
-
-import java.util.Map;
+package org.talend.dataprep.transformation.api.action.metadata.column;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -9,11 +7,13 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.SchemaChangeAction;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.metadata.SchemaChangeAction;
+
+import java.util.Map;
 
 /**
  * Change the type of a column <b>This action is not displayed in the UI it's here to ease recording it as a Step It's
@@ -29,7 +29,7 @@ public class TypeChange extends AbstractActionMetadata implements ColumnAction, 
      */
     public static final String TYPE_CHANGE_ACTION_NAME = "type_change"; //$NON-NLS-1$
 
-    public static final String NEW_TYPE_PARAMETER_KEY = "NEW_TYPE";
+    public static final String NEW_TYPE_PARAMETER_KEY = "new_type";
 
     /**
      * @see ActionMetadata#getName()
@@ -61,23 +61,23 @@ public class TypeChange extends AbstractActionMetadata implements ColumnAction, 
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
 
-        LOGGER.debug("applyOnColumn for columnId {} with parameters {} ", columnId, parameters);
+        LOGGER.debug("TypeChange for columnId {} with parameters {} ", columnId, parameters);
 
-        ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
+        final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
         if (columnMetadata == null) {
             // FIXME exception?
             return;
         }
-        String newType = parameters.get(NEW_TYPE_PARAMETER_KEY);
+        final String newType = parameters.get(NEW_TYPE_PARAMETER_KEY);
 
         if (StringUtils.isNotEmpty(newType)) {
             columnMetadata.setType(newType);
             columnMetadata.setTypeForced(true);
             // erase domain
             columnMetadata.setDomain("");
-            columnMetadata.setDomainLabel( "" );
-            columnMetadata.setDomainFrequency( 0 );
-            forceColumn( context, columnId );
+            columnMetadata.setDomainLabel("");
+            columnMetadata.setDomainFrequency(0);
+            forceColumn(context, columnId);
         }
     }
 
