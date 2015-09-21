@@ -1,0 +1,17 @@
+.lookup {
+  .content-container {
+    background: url("assets/images/lookup/lookup-center.png") repeat-x !important;
+  }
+
+  &.slide-bottom {
+    @include slidable-bottom(320px, 0);
+  }
+
+  #lookup-left {
+    float: left;
+  }
+
+  #lookup-right {
+    float: right;
+  }
+}

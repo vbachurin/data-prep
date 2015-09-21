@@ -25,6 +25,13 @@
                 </div>
             </li>
             <li>
+                <a id="playground-lookup-icon"
+                   ng-click="playgroundCtrl.toggleLookup()"
+                   ng-class="{pressed: playgroundCtrl.state.playground.lookupVisibility}">
+                    <img src="assets/images/lookup/lookup-button.png">
+                </a>
+            </li>
+            <li>
                 <export></export>
             </li>
             <li>
@@ -34,7 +41,7 @@
     </div>
 
     <div class="modal-body playground">
-        <talend-slidable visible="playgroundCtrl.state.playground.recipe.visible" class="flex-side recipe">
+        <talend-slidable visible="playgroundCtrl.state.playground.recipe.visible" side="left" class="flex-side recipe">
             <!-- Recipe Header -->
             <div class="steps-header">
                 <label class="label-switch" ng-show="playgroundCtrl.hasRecipe">
@@ -72,6 +79,8 @@
             <div class="datagrid-container">
                 <datagrid></datagrid>
             </div>
+
+            <lookup visible="playgroundCtrl.state.playground.lookupVisibility"></lookup>
         </div>
 
         <talend-slidable visible="true" side="right" class="flex-side suggestions">

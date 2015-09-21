@@ -9,7 +9,7 @@
      * @usage
      *     <range-slider
      *             id="domId"
-     *             width="250"
+     *             width="300"
      *             height="100"
      *             range-limits="statsDetailsCtrl.rangeLimits"
      *             on-brush-end="statsDetailsCtrl.onBrushEndFn"
