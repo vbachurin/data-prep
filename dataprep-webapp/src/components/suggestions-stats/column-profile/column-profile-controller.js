@@ -7,7 +7,7 @@
         vm.chartConfig = {};
 
         vm.barchartClickFn = function barchartClickFn (item){
-            return StatisticsService.addFilter(item.data);
+            return StatisticsService.addExactFilter(item.data);
         };
 
         vm.vBarchartClickFn = function vBarchartClickFn (item){
