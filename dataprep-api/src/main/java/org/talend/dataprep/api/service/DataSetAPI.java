@@ -247,7 +247,7 @@ public class DataSetAPI extends APIService {
                     .getTotalStats());
         }
         HttpClient client = getClient();
-        HystrixCommand<String> creation = getCommand(SetFavoritesCmd.class, client, id, unset);
+        HystrixCommand<String> creation = getCommand(SetFavorite.class, client, id, unset);
         String result = creation.execute();
         LOG.debug("Set Favorite for user (can'tget user now) #{} done.", id);
         return result;

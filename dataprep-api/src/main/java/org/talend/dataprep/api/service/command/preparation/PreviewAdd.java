@@ -57,8 +57,9 @@ public class PreviewAdd extends PreviewAbstract {
         // get usable tdpIds
         final String encodedTdpIds = serializeIds(input.getTdpIds());
 
-        // call transformation preview with content and the 2 transformations
-        return previewTransformation(content, oldEncodedActions, newEncodedActions, encodedTdpIds);
+        // execute transformation preview with content and the 2 transformations
+        setContext(oldEncodedActions, newEncodedActions, content, encodedTdpIds);
+        return super.run();
     }
 
 }

@@ -41,10 +41,7 @@ public class PreparationGetContent extends PreparationCommand<InputStream> {
      * @param version the preparation version.
      */
     private PreparationGetContent(HttpClient client, String id, String version) {
-        super(APIService.PREPARATION_GROUP, client);
-        this.id = id;
-        this.version = version;
-        this.sample = null;
+        this(client, id, version, null);
     }
 
     /**
@@ -55,7 +52,9 @@ public class PreparationGetContent extends PreparationCommand<InputStream> {
      * @param version the preparation version.
      */
     private PreparationGetContent(HttpClient client, String id, String version, Long sample) {
-        this(client, id, version);
+        super(APIService.PREPARATION_GROUP, client);
+        this.id = id;
+        this.version = version;
         this.sample = sample;
     }
 
