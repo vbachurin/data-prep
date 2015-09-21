@@ -237,7 +237,6 @@
             if(excludeNumeric) {
                 cols = _.filter(cols, function (col) {
                     var simplifiedType = ConverterService.simplifyType(col.type);
-                    console.log('simplifiedType:'+simplifiedType);
                     return simplifiedType !== 'integer' && simplifiedType !== 'decimal';
                 });
             }

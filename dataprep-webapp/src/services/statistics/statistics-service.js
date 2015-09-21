@@ -405,7 +405,8 @@
          * @description Reset the map chart and calculate the needed data for visualization
          */
         function processNonMapData(column) {
-            switch (ConverterService.simplifyType(column.type)) {
+            var simplifiedType = ConverterService.simplifyType(column.type);
+            switch (simplifiedType) {
                 case 'integer':
                 case 'decimal':
                     initRangeHistogram(column.statistics.histogram);
@@ -417,7 +418,7 @@
                     initClassicHistogram('occurrences', 'Occurrences', column.statistics.frequencyTable);
                     break;
                 default :
-                    console.log('nor an integer neither a decimal neither a boolean neither a string');
+                    console.log('nor an integer neither a decimal neither a boolean neither a string but ' + simplifiedType);
             }
         }
 
