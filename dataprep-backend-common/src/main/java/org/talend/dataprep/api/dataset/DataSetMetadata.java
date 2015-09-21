@@ -402,6 +402,9 @@ public class DataSetMetadata implements Serializable {
         /** Dataset builder. */
         private ColumnMetadata.Builder[] columnBuilders;
 
+        /** Encoding of data set content */
+        private String encoding = "UTF8";
+
         public static DataSetMetadata.Builder metadata() {
             return new Builder();
         }
@@ -486,6 +489,11 @@ public class DataSetMetadata implements Serializable {
             return this;
         }
 
+        public Builder encoding(String encoding) {
+            this.encoding = encoding;
+            return this;
+        }
+
         public DataSetMetadata.Builder isFavorite(boolean isFavorite) {
             this.isFavorite = isFavorite;
             return this;
@@ -525,6 +533,7 @@ public class DataSetMetadata implements Serializable {
             this.schemaAnalyzed = original.getLifecycle().schemaAnalyzed();
             this.importing = original.getLifecycle().importing();
             this.parameters = original.getContent().getParameters();
+            this.encoding = original.getEncoding();
             List<ColumnMetadata.Builder> builders = new ArrayList<>();
             if (original.getRow() != null) {
                 for (ColumnMetadata col : original.getRow().getColumns()) {
@@ -562,6 +571,7 @@ public class DataSetMetadata implements Serializable {
             metadata.setSchemaParserResult(this.schemaParserResult);
 
             // Content information
+            metadata.setEncoding(encoding);
             DataSetContent currentContent = metadata.getContent();
             currentContent.setNbRecords(size);
             currentContent.setNbLinesInHeader(headerSize);
