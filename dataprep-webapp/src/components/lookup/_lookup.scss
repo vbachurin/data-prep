@@ -1,6 +1,7 @@
 .lookup {
-  background: url("assets/images/lookup/lookup-center.png") !important;
-  background-repeat: repeat-x !important;
+  .content-container {
+    background: url("assets/images/lookup/lookup-center.png") repeat-x !important;
+  }
 
   &.slide-bottom {
     @include slidable-bottom(320px, 0);

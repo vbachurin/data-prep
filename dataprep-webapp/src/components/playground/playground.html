@@ -25,8 +25,10 @@
                 </div>
             </li>
             <li>
-                <a ng-click="playgroundCtrl.toggleLookup()">
-                    <img id="playground-lookup-icon" src="assets/images/lookup/lookup-button.png">
+                <a id="playground-lookup-icon"
+                   ng-click="playgroundCtrl.toggleLookup()"
+                   ng-class="{pressed: playgroundCtrl.state.playground.lookupVisibility}">
+                    <img src="assets/images/lookup/lookup-button.png">
                 </a>
             </li>
             <li>

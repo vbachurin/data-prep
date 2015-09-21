@@ -13,7 +13,6 @@
      *         <li>Filters : reset the styles</li>
      * </ul>
      *
-     * @requires data-prep.services.state.constant:state
      * @requires data-prep.datagrid.service:DatagridGridService
      * @requires data-prep.datagrid.service:DatagridColumnService
      * @requires data-prep.datagrid.service:DatagridStyleService
@@ -24,7 +23,7 @@
      * @requires data-prep.services.filter.service:FilterService
      * @restrict E
      */
-    function Datagrid(state, DatagridGridService, DatagridColumnService, DatagridStyleService, DatagridSizeService,
+    function Datagrid(DatagridGridService, DatagridColumnService, DatagridStyleService, DatagridSizeService,
                       DatagridTooltipService, DatagridExternalService, DatagridService, FilterService) {
         return {
             restrict: 'E',
@@ -32,7 +31,7 @@
             bindToController: true,
             controllerAs: 'datagridCtrl',
             controller: 'DatagridCtrl',
-            link: function (scope, iElement) {
+            link: function (scope, iElement, iAttrs, ctrl) {
                 var grid;
                 var columnTimeout, externalTimeout, focusTimeout;
 
@@ -96,7 +95,7 @@
                     if (data) {
                         initGridIfNeeded();
                         var columns;
-                        var selectedColumn = state.playground.column;
+                        var selectedColumn = ctrl.state.playground.column;
                         var hasSelectedColumn = !data.preview && selectedColumn;
 
                         //create columns, manage style and size, set columns in grid

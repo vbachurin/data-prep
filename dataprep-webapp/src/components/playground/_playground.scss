@@ -62,7 +62,15 @@
   }
 
   #playground-lookup-icon {
-    vertical-align: middle;
+    padding: 8px;
+
+    > img {
+      vertical-align: middle;
+    }
+  }
+
+  .pressed {
+    @include background(linear-gradient(#4D4D50, #6E6D71) left repeat);
   }
 }
 
