@@ -113,6 +113,17 @@
                     getContentElement().slideDown('fast');
                     iElement.addClass('open');
                     ctrl.onOpen();
+
+                    //scroll to the bottom of accordion
+                    $timeout(function(){
+                        if (contentContainer.offset().top > ($('.split-handler').offset().top -  contentContainer.height())){
+                            var scroll_to = $('.action-suggestion-tab-items')[0].scrollTop + contentContainer.height();
+
+                            $('.action-suggestion-tab-items').animate({
+                                scrollTop: scroll_to
+                            }, 500);
+                        }
+                    },200);
                 };
 
                 /**
