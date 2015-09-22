@@ -129,10 +129,10 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer, Asynchronous
         valueQualityAnalyzer.setStoreInvalidValues(true);
         final Analyzer<Analyzers.Result> analyzer = Analyzers.with(valueQualityAnalyzer, new SummaryAnalyzer(types));
         if (limit > 0) { // Only limit number of rows if limit > 0 (use limit to speed up sync analysis.
-            LOGGER.info("Limit analysis to the first {}.", limit);
+            LOGGER.debug("Limit analysis to the first {}.", limit);
             records = records.limit(limit);
         } else {
-            LOGGER.info("Performing full analysis.");
+            LOGGER.debug("Performing full analysis.");
         }
         records.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
         // Determine content size

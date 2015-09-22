@@ -68,12 +68,12 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
                 dataSetContent.setMediaType(bestGuess.getMediaType());
                 metadata.setEncoding(bestGuessResult.getEncoding());
 
-                LOG.info("Parsing column information...");
+                LOG.debug("Parsing column information...");
                 parseColumnNameInformation(dataSetId, metadata, bestGuess);
-                LOG.info("Parsed column information.");
+                LOG.debug("Parsed column information.");
 
                 repository.add(metadata);
-                LOG.info("format analysed for dataset: '{}'", dataSetId);
+                LOG.debug("format analysed for dataset: '{}'", dataSetId);
             } else {
                 LOG.info("Data set #{} no longer exists.", dataSetId);
             }
@@ -105,7 +105,7 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
                     LOG.debug("Unable to use guesser '" + guesser + "' on data set #" + dataSetId, e);
                 }
             }
-            LOG.info("Done using guesser {}", guesser.getClass());
+            LOG.debug("Done using guesser {}", guesser.getClass());
         }
         return mediaTypes;
     }

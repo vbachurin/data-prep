@@ -46,17 +46,17 @@ public class CSVSchemaParser implements SchemaParser {
                 return SchemaParserResult.Builder.parserResult() //
                         .sheetContents(sheetContents).build();
             }
-            LOGGER.info("Columns found: {}", columns);
+            LOGGER.debug("Columns found: {}", columns);
             // By default, consider all columns as Strings (to be refined by deeper analysis).
-            LOGGER.info("Setting default type for columns...");
+            LOGGER.debug("Setting default type for columns...");
             for (int i = 0; i < columns.length; i++) {
                 sheetContents.stream().filter(sheetContent -> META_KEY.equals(sheetContent.getName())).findFirst() //
                         .get().getColumnMetadatas() //
                         .add(column().id(i).name(columns[i]).type(Type.STRING).build());
             }
-            bestGuess(reader, sheetContents);
-            LOGGER.info("Default types for columns set.");
             // Best guess (and naive) on data types
+            bestGuess(reader, sheetContents);
+            LOGGER.debug("Default types for columns set.");
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_CONTENT, e);
         }
