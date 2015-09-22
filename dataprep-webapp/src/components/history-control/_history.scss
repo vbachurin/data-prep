@@ -4,8 +4,6 @@
   > a {
     color: $white;
     float: left;
-    font-size: 2em;
-    padding: 0 5px;
     position: relative;
 
     &.inactive {
@@ -16,9 +14,11 @@
 
     &.redo {
       @include transform(rotate(90deg));
+      margin-left: 8px;
     }
     &.undo {
       @include transform(rotate(-90deg));
+      margin-right: 8px;
     }
   }
 }

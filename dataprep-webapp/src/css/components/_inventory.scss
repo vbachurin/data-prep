@@ -125,6 +125,7 @@ $inventory-sort-height: 50px;
       position: absolute;
       right: 0;
       top: 15px;
+      height: 40px;
 
       button {
         margin: 0 5px;
@@ -148,16 +149,17 @@ $inventory-sort-height: 50px;
 
 .divider {
   width: 1px;
-  margin: 0px 5px;
+  margin: 0 5px;
   background: $white;
 }
 
 .btn-icon{
-  padding: 0px 10px 0px 10px;
-  margin: 0px 5px 0px 5px;
+  padding: 0 10px 0 10px;
+  margin: 0 5px 0 5px;
   color: white;
-  font-family: icons-font;
-  font-size: 2em;
+  font-family: $iconsfont;
+  font-size: 1.2em;
+  line-height: 40px;
   &:hover{
     border-radius: 5px;
     color: white;

@@ -79,7 +79,6 @@ header.navigation {
   }
 
   ul.navigation-menu {
-    -webkit-transform-style: preserve-3d; // stop webkit flicker
     clear: both;
     display: none;
     margin: 0 auto;
@@ -156,7 +155,8 @@ header.navigation {
     }
 
     > a {
-      padding-right: 0.6em;
+      padding-left: 0.3em;
+      padding-right: 0.3em;
     }
 
     > a:after {
