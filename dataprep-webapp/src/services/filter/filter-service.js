@@ -102,6 +102,21 @@
         //--------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------FILTER FNs-------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
+        // To add a new filter function, you must follow this steps.
+        // A filter function has 2 levels of functions : (data) => (item) => {predicate}
+        // * the first level is the initialization level. It takes the data {columns: [], records: []} as parameter. The goal is to initialize the values for the closure it returns.
+        // * the second level is the predicate that is applied on every record item. It returns 'true' if it matches the predicate, 'false' otherwise.
+        //
+        // Example :
+        //    return function(data) {                                                       // first level: it init the list of invalid values, based on the current data. It returns the predicate that use this list.
+        //        var column = _.find(data.columns, {id: '0001'});
+        //        var invalidValues = column.quality.invalidValues;
+        //        return function (item) {                                                  // second level : returns true if the item is not in the invalid values list
+        //            return item['0001'] && invalidValues.indexOf(item['0001']) === -1;
+        //        };
+        //    };
+        //
+
         /**
          * @ngdoc method
          * @name createContainFilterFn
