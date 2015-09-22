@@ -514,7 +514,7 @@
          */
         function addExactFilter(value) {
             var column = service.selectedColumn;
-            var filterFn = FilterService.addFilter.bind(null, 'exact_filter', column.id, column.name, {phrase: value});
+            var filterFn = FilterService.addFilter.bind(null, 'exact', column.id, column.name, {phrase: value});
 
             $timeout(filterFn);
         }

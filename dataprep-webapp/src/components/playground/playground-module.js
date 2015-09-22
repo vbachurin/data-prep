@@ -13,6 +13,7 @@
      * @requires data-prep.history-control
      * @requires data-prep.lookup
      * @requires data-prep.recipe
+     * @requires data-prep.services.onboarding
      * @requires data-prep.services.preparation
      * @requires data-prep.services.playground
      * @requires data-prep.services.recipe
@@ -31,6 +32,7 @@
         'data-prep.lookup',
         'data-prep.recipe',
         'data-prep.suggestions-stats',
+        'data-prep.services.onboarding',
         'data-prep.services.preparation',
         'data-prep.services.playground',
         'data-prep.services.recipe',

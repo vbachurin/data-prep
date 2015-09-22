@@ -37,6 +37,17 @@ describe('Home controller', function () {
         expect(ctrl.uploadingDatasets).toEqual([]);
     });
 
+    it('should init right panel state with value from local storage', inject(function ($window) {
+        //given
+       $window.localStorage.setItem(DATA_INVENTORY_PANEL_KEY, 'true');
+
+        //when
+        ctrl = createController();
+
+        //then
+        expect(ctrl.showRightPanel).toBe(true);
+    }));
+
     describe('with created controller', function () {
         var uploadDefer;
         var dataset = {id: 'ec4834d9bc2af8', name: 'Customers (50 lines)', draft: false};
@@ -62,22 +73,36 @@ describe('Home controller', function () {
 
         }));
 
-        it('should toggle right panel flag', inject(function ($window) {
+        it('should toggle right panel flag', inject(function () {
             //given
             expect(ctrl.showRightPanel).toBe(false);
-            expect(JSON.parse($window.localStorage.getItem(DATA_INVENTORY_PANEL_KEY))).toBeFalsy();
 
             //when
             ctrl.toggleRightPanel();
 
             //then
             expect(ctrl.showRightPanel).toBe(true);
-            expect(JSON.parse($window.localStorage.getItem(DATA_INVENTORY_PANEL_KEY))).toBeTruthy();
+
             //when
             ctrl.toggleRightPanel();
 
             //then
             expect(ctrl.showRightPanel).toBe(false);
+        }));
+
+        it('should save toggled state in local storage', inject(function ($window) {
+            //given
+            expect(JSON.parse($window.localStorage.getItem(DATA_INVENTORY_PANEL_KEY))).toBeFalsy();
+
+            //when
+            ctrl.toggleRightPanel();
+
+            //then
+            expect(JSON.parse($window.localStorage.getItem(DATA_INVENTORY_PANEL_KEY))).toBeTruthy();
+            //when
+            ctrl.toggleRightPanel();
+
+            //then
             expect(JSON.parse($window.localStorage.getItem(DATA_INVENTORY_PANEL_KEY))).toBeFalsy();
         }));
 
