@@ -99,8 +99,14 @@ public class StatisticsUtils {
                         range.getRange().setMax(r.getUpper());
                         range.getRange().setMin(r.getLower());
                     } else {
-                        range.getRange().setMax(new Double(format.format(r.getUpper())));
-                        range.getRange().setMin(new Double(format.format(r.getLower())));
+                        try {
+                            range.getRange().setMax(new Double(format.format(r.getUpper())));
+                            range.getRange().setMin(new Double(format.format(r.getLower())));
+                        } catch (NumberFormatException e) {
+                            // Fallback to unformatted numbers (unable to parse numbers).
+                            range.getRange().setMax(r.getUpper());
+                            range.getRange().setMin(r.getLower());
+                        }
                     }
                     range.setOccurrences(v);
                     statistics.getHistogram().add(range);
