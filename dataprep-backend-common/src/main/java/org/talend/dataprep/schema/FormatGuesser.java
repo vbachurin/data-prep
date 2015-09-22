@@ -13,11 +13,12 @@ public interface FormatGuesser {
      * Guess the content type of the provided stream.
      *
      * @param stream The raw data set content.
+     * @param encoding The encoding to use to read content in <code>stream</code>.
      * @return A {@link org.talend.dataprep.schema.FormatGuess guess} that can never be null (see
      * {@link FormatGuess#getConfidence()}.
      */
-    default Result guess(InputStream stream) {
-        return new Result(new NoOpFormatGuess(), Collections.emptyMap());
+    default Result guess(InputStream stream, String encoding) {
+        return new Result(new NoOpFormatGuess(), "UTF-8", Collections.emptyMap());
     }
 
     class Result {
@@ -26,8 +27,11 @@ public interface FormatGuesser {
 
         private Map<String, String> parameters;
 
-        public Result(FormatGuess formatGuess, Map<String, String> parameters) {
+        private String encoding;
+
+        public Result(FormatGuess formatGuess, String encoding, Map<String, String> parameters) {
             this.formatGuess = formatGuess;
+            this.encoding = encoding;
             this.parameters = parameters;
         }
 
@@ -45,6 +49,35 @@ public interface FormatGuesser {
 
         public void setParameters(Map<String, String> parameters) {
             this.parameters = parameters;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof Result)) {
+                return false;
+            }
+
+            Result result = (Result) o;
+
+            if (!formatGuess.equals(result.formatGuess)) {
+                return false;
+            }
+            return parameters.equals(result.parameters);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = formatGuess.hashCode();
+            result = 31 * result + parameters.hashCode();
+            return result;
+        }
+
+        public String getEncoding() {
+            return encoding;
         }
     }
 }

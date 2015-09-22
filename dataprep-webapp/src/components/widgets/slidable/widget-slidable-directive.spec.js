@@ -89,7 +89,7 @@ describe('Slidable directive', function () {
         scope.visible = false;
 
         //when
-        createElement();
+        createElement('left');
 
         //then
         var actionOnlySpan = element.find('.action').eq(0).find('span').eq(0);
@@ -104,7 +104,7 @@ describe('Slidable directive', function () {
         scope.visible = true;
 
         //when
-        createElement();
+        createElement('left');
 
         //then
         var actionOnlySpan = element.find('.action').eq(0).find('span').eq(0);
@@ -162,38 +162,17 @@ describe('Slidable directive', function () {
         expect(element.find('.ui-resizable-handle').eq(0).hasClass('ui-resizable-w')).toBe(true);
     });
 
-    it('should reset flex css disable resize on slidable hide', function() {
+    it('should set flex constant size on slidable creation if there is a size in localStorage', inject(function($window) {
         //given
-        scope.visible = true;
-        createResizableElement('right');
-        element[0].style.flex = '0 250px';
+        $window.localStorage.setItem(widthStorageKey, '500px');
+        scope.visible = false;
 
         //when
-        scope.visible = false;
-        scope.$digest();
-
-        //then
-        expect(element.hasClass('ui-resizable-disabled')).toBe(true);
-        expect(element[0].style.flex).toBeFalsy();
-    });
-
-    it('should set flex constant size enable resize on slidable hide', function() {
-        //given
-        scope.visible = false;
         createResizableElement('right');
-        var width = element.width();
-
-        expect(element.hasClass('ui-resizable-disabled')).toBe(true);
-        expect(element[0].style.flex).toBeFalsy();
-
-        //when
-        scope.visible = true;
-        scope.$digest();
 
         //then
-        expect(element.hasClass('ui-resizable-disabled')).toBe(false);
-        expect(element[0].style.flex).toBe('0 ' + width + 'px');
-    });
+        expect(element[0].style.flex).toBe('0 0 500px');
+    }));
 
     it('should remove transition when resize start', function() {
         //given

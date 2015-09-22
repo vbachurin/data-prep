@@ -20,7 +20,7 @@
             var params = {};
             if (vm.transformation.parameters) {
                 _.forEach(vm.transformation.parameters, function (paramItem) {
-                    params[paramItem.name] = paramItem.value? paramItem.value : paramItem.default;
+                    params[paramItem.name] = typeof (paramItem.value) !== 'undefined'? paramItem.value : paramItem.default;
 
                     // deal with select inline parameters
                     if (paramItem.type === 'select') {

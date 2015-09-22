@@ -19,6 +19,9 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
  */
 public class Defaults {
 
+    private Defaults() {
+    }
+
     /**
      * @return A default that returns the underlying exception as is. In other words, command will rethrow the original
      * exception as its own.

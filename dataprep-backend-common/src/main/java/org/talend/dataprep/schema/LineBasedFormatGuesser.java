@@ -26,21 +26,23 @@ public class LineBasedFormatGuesser implements FormatGuesser {
     /** The csv format guesser. */
     @Autowired
     private CSVFormatGuess csvFormatGuess;
+
     /** The fallback guess if the input is not CSV compliant. */
     @Autowired
     private NoOpFormatGuess fallbackGuess;
 
     /**
-     * @see FormatGuesser#guess(InputStream)
+     * @see FormatGuesser#guess(InputStream, String)
      */
     @Override
-    public FormatGuesser.Result guess(InputStream stream) {
-        Separator sep = guessSeparator(stream, "UTF-8");
-        if (sep != null) {
-            return new FormatGuesser.Result(csvFormatGuess, //
-                    Collections.singletonMap(CSVFormatGuess.SEPARATOR_PARAMETER, String.valueOf(sep.getSeparator())));
+    public FormatGuesser.Result guess(InputStream stream, String encoding) {
+        Separator sep = guessSeparator(stream, encoding);
+        if (sep != null && sep.getSeparator() != '\u0000' && sep.getSeparator() < 255) {
+            Map<String, String> parameters = new HashMap<>();
+            parameters.put(CSVFormatGuess.SEPARATOR_PARAMETER, String.valueOf(sep.getSeparator()));
+            return new FormatGuesser.Result(csvFormatGuess, encoding, parameters);
         }
-        return new FormatGuesser.Result(fallbackGuess, Collections.emptyMap()); // Fallback
+        return new FormatGuesser.Result(fallbackGuess, "UTF-8", Collections.emptyMap()); // Fallback
     }
 
     /**

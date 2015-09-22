@@ -116,6 +116,7 @@ public class GenericCommand<T> extends HystrixCommand<T> {
                 final TDPException cause = new TDPException(code);
                 throw onError.apply(cause);
             } catch (JsonMappingException e) {
+                LOGGER.debug("Cannot parse response content as JSON.", e);
                 // Failed to parse JSON error, returns an unexpected code with returned HTTP code
                 final TDPException exception = new TDPException(new JsonErrorCode() {
 
