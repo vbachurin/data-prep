@@ -208,7 +208,7 @@ describe('Statistics service', function () {
             expect(FilterService.addFilter).toHaveBeenCalledWith('contains', 'toto', undefined, {phrase: 'volvo'});
         }));
 
-        it('should add a new "exact_filter" filter', inject(function (StatisticsService, FilterService, $timeout) {
+        it('should add a new "exact" filter', inject(function (StatisticsService, FilterService, $timeout) {
             //given
             StatisticsService.selectedColumn = {};
             StatisticsService.selectedColumn.id = 'toto';
@@ -218,7 +218,7 @@ describe('Statistics service', function () {
             $timeout.flush();
 
             //then
-            expect(FilterService.addFilter).toHaveBeenCalledWith('exact_filter', 'toto', undefined, {phrase: 'volvo'});
+            expect(FilterService.addFilter).toHaveBeenCalledWith('exact', 'toto', undefined, {phrase: 'volvo'});
         }));
 
         it('should add a new "empty" filter', inject(function (StatisticsService, FilterService, $timeout) {

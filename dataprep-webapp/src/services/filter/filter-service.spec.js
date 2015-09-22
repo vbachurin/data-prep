@@ -53,12 +53,12 @@ describe('Filter service', function() {
             expect(filterInfo.filterFn({col1: ' tata est ici'})).toBeFalsy();
         }));
 
-        it('should add "exact_filter" filter', inject(function(FilterService) {
+        it('should add "exact" filter', inject(function(FilterService) {
             //given
             expect(FilterService.filters.length).toBe(0);
 
             //when
-            FilterService.addFilter('exact_filter', 'col1', 'column name', {phrase: 'toici'});
+            FilterService.addFilter('exact', 'col1', 'column name', {phrase: 'toici'});
 
             //then
             expect(FilterService.filters.length).toBe(1);
@@ -305,10 +305,10 @@ describe('Filter service', function() {
             expect(DatagridService.updateFilter).toHaveBeenCalledWith(filter2.filterFn, newFilter2.filterFn);
         }));
 
-        it('should update "exact_filter" filter and update datagrid filter', inject(function(FilterService, DatagridService) {
+        it('should update "exact" filter and update datagrid filter', inject(function(FilterService, DatagridService) {
             //given
-            FilterService.addFilter('exact_filter', 'col1', 'column 1', {phrase: 'Toto'});
-            FilterService.addFilter('exact_filter', 'col2', 'column 2', {phrase: 'Toto'});
+            FilterService.addFilter('exact', 'col1', 'column 1', {phrase: 'Toto'});
+            FilterService.addFilter('exact', 'col2', 'column 2', {phrase: 'Toto'});
             var filter1 = FilterService.filters[0];
             var filter2 = FilterService.filters[1];
 
@@ -320,7 +320,7 @@ describe('Filter service', function() {
             expect(FilterService.filters.length).toBe(2);
             expect(FilterService.filters[0]).toBe(filter1);
             expect(newFilter2).not.toBe(filter2);
-            expect(newFilter2.type).toBe('exact_filter');
+            expect(newFilter2.type).toBe('exact');
             expect(newFilter2.colId).toBe('col2');
             expect(newFilter2.colName).toBe('column 2');
             expect(newFilter2.args.phrase).toBe('Tata');
@@ -347,7 +347,6 @@ describe('Filter service', function() {
             expect(newFilter.value).toBe('[0 .. 22]');
             expect(DatagridService.updateFilter).toHaveBeenCalledWith(filter.filterFn, newFilter.filterFn);
         }));
-
 
         it('should update "inside range" filter', inject(function(FilterService) {
             //given

@@ -24,8 +24,8 @@
             template: '<talend-dropdown class="button-dropdown" close-on-select="true">' +
                         '<div class="dropdown-container">' +
                         	'<button class="button-dropdown-main" ng-click="buttonDropdownCtrl.buttonAction()">' +
-                                '<i data-icon="{{buttonDropdownCtrl.buttonIcon}}" class="iconfont" ng-if="buttonDropdownCtrl.buttonIcon"></i>' +
-                                '{{buttonDropdownCtrl.buttonText}}' +
+                                '<i data-icon="{{buttonDropdownCtrl.buttonIcon}}" class="button-dropdown-main-icon" ng-if="buttonDropdownCtrl.buttonIcon"></i>' +
+                                '<div class="button-dropdown-main-text">{{buttonDropdownCtrl.buttonText}}<div>' +
                             '</button>' +
                         	'<div class="line-separator"></div>' +
 	                        '<button class="button-dropdown-side dropdown-action"></button>' +
