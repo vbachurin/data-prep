@@ -8,7 +8,6 @@ import org.apache.http.client.HttpClient;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Action;
-import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.CloneInputStream;
 import org.talend.dataprep.api.service.command.common.PreparationCommand;
@@ -87,12 +86,8 @@ public class PreparationGetContent extends PreparationCommand<InputStream> {
                                                   preparationContext.getVersion(),
                                                   sample);
         //@formatter:on
-        if (Step.ROOT_STEP.id().equals(preparationContext.getVersion())) {
-            return content;
-        } else {
-            final OutputStream newCacheEntry = contentCache.put(key, ContentCache.TimeToLive.DEFAULT);
-            return new CloneInputStream(content, newCacheEntry);
-        }
+        final OutputStream newCacheEntry = contentCache.put(key, ContentCache.TimeToLive.DEFAULT);
+        return new CloneInputStream(content, newCacheEntry);
     }
 
 }

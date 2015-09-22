@@ -54,7 +54,6 @@ public class CSVSerializer implements Serializer {
                 } finally {
                     try {
                         jsonOutput.close();
-                        pipe.close();
                     } catch (IOException e) {
                         LOGGER.error("Unable to close output", e);
                     }

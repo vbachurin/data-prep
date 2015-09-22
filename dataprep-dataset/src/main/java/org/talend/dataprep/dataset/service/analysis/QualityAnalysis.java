@@ -77,6 +77,10 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer, Asynchronous
                 LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
                 return;
             }
+            if (!metadata.getLifecycle().inProgress()) {
+                LOGGER.debug("No need to recompute quality of data set #{} (statistics are completed).", dataSetId);
+                return;
+            }
             try (Stream<DataSetRow> stream = store.stream(metadata)) {
                 if (!metadata.getLifecycle().schemaAnalyzed()) {
                     LOGGER.debug("Schema information must be computed before quality analysis can be performed, ignoring message");
@@ -91,12 +95,8 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer, Asynchronous
                     computeQuality(metadata, stream, dataSetSize == MAX_RECORD ? -1 : MAX_RECORD);
                 }
                 // Turn on / off "in progress" flag
-                if (isNewDataSet) {
-                    if (metadata.getContent().getNbRecords() < MAX_RECORD) {
-                        metadata.getLifecycle().inProgress(false);
-                    } else if (metadata.getContent().getNbRecords() >= MAX_RECORD) {
-                        metadata.getLifecycle().inProgress(true);
-                    }
+                if (isNewDataSet && metadata.getContent().getNbRecords() >= MAX_RECORD) {
+                    metadata.getLifecycle().inProgress(true);
                 } else {
                     metadata.getLifecycle().inProgress(false);
                 }

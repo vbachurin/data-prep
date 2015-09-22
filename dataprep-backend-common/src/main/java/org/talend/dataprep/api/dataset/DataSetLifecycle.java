@@ -124,17 +124,18 @@ public class DataSetLifecycle implements Serializable {
         return Objects.equals(importing, that.importing) && //
                 Objects.equals(contentAnalyzed, that.contentAnalyzed) && //
                 Objects.equals(schemaAnalyzed, that.schemaAnalyzed) && //
+                Objects.equals(inProgress, that.inProgress) && //
                 Objects.equals(qualityAnalyzed, that.qualityAnalyzed);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(importing, contentAnalyzed, schemaAnalyzed, qualityAnalyzed);
+        return Objects.hash(importing, contentAnalyzed, schemaAnalyzed, inProgress, qualityAnalyzed);
     }
 
     @Override
     public String toString() {
-        return "DataSetLifecycle{" + "importing=" + importing + ", contentAnalyzed=" + contentAnalyzed + ", schemaAnalyzed="
-                + schemaAnalyzed + ", qualityAnalyzed=" + qualityAnalyzed + '}';
+        return "DataSetLifecycle{" + "inProgress=" + inProgress + ", importing=" + importing + ", contentAnalyzed="
+                + contentAnalyzed + ", schemaAnalyzed=" + schemaAnalyzed + ", qualityAnalyzed=" + qualityAnalyzed + '}';
     }
 }
