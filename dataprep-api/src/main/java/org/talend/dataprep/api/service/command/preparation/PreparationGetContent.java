@@ -11,6 +11,7 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.CloneInputStream;
 import org.talend.dataprep.api.service.command.common.PreparationCommand;
+import org.talend.dataprep.api.service.command.dataset.DataSetGetMetadata;
 import org.talend.dataprep.api.service.command.transformation.Transform;
 import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.cache.ContentCacheKey;
@@ -86,8 +87,15 @@ public class PreparationGetContent extends PreparationCommand<InputStream> {
                                                   preparationContext.getVersion(),
                                                   sample);
         //@formatter:on
-        final OutputStream newCacheEntry = contentCache.put(key, ContentCache.TimeToLive.DEFAULT);
-        return new CloneInputStream(content, newCacheEntry);
+        DataSetGetMetadata getMetadata = context.getBean(DataSetGetMetadata.class, client, preparationContext.getPreparation().getDataSetId());
+        final boolean inProgress = getMetadata.execute().getLifecycle().inProgress();
+        if (!inProgress) {
+            // Statistics are done, can safely save to cache
+            final OutputStream newCacheEntry = contentCache.put(key, ContentCache.TimeToLive.DEFAULT);
+            return new CloneInputStream(content, newCacheEntry);
+        } else {
+            return content;
+        }
     }
 
 }
