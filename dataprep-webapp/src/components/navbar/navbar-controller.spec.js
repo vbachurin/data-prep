@@ -6,20 +6,24 @@ describe('Navbar controller', function () {
     beforeEach(module('data-prep.navbar'));
 
     beforeEach(inject(function ($rootScope, $controller, $q, DatasetService, OnboardingService) {
+        jasmine.clock().install();
         scope = $rootScope.$new();
         $stateMock = {};
 
         createController = function () {
-            var ctrl = $controller('NavbarCtrl', {
+            return $controller('NavbarCtrl', {
                 $scope: scope,
                 $state: $stateMock
             });
-            return ctrl;
         };
 
         spyOn(DatasetService, 'getDatasets').and.returnValue($q.when());
         spyOn(OnboardingService, 'startTour').and.returnValue();
     }));
+
+    afterEach(function() {
+        jasmine.clock().uninstall();
+    });
 
     describe('onboarding not completed yet', function() {
         beforeEach(inject(function(OnboardingService) {
@@ -40,10 +44,10 @@ describe('Navbar controller', function () {
             expect(OnboardingService.startTour).not.toHaveBeenCalled();
 
             //when
-            $timeout.flush();
+            jasmine.clock().tick(100);
 
             //then
-            expect(OnboardingService.startTour).toHaveBeenCalled();
+            expect(OnboardingService.startTour).toHaveBeenCalledWith('dataset');
         }));
 
         it('should not start tour on dataset playground page', inject(function (DatasetService, OnboardingService) {
@@ -54,6 +58,7 @@ describe('Navbar controller', function () {
             //when
             createController();
             scope.$digest();
+            jasmine.clock().tick(100);
 
             //then
             expect(DatasetService.getDatasets).not.toHaveBeenCalled();
@@ -68,6 +73,7 @@ describe('Navbar controller', function () {
             //when
             createController();
             scope.$digest();
+            jasmine.clock().tick(100);
 
             //then
             expect(DatasetService.getDatasets).not.toHaveBeenCalled();
@@ -88,6 +94,7 @@ describe('Navbar controller', function () {
             //when
             createController();
             scope.$digest();
+            jasmine.clock().tick(100);
 
             //then
             expect(DatasetService.getDatasets).not.toHaveBeenCalled();

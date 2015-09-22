@@ -36,7 +36,7 @@ public class CSVSerializer implements Serializer {
             generator.writeEndArray();
 
             generator.flush();
-            return new ByteArrayInputStream(writer.toString().getBytes("UTF-8")); //$NON-NLS-1$
+            return new ByteArrayInputStream(writer.toString().getBytes(metadata.getEncoding()));
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }

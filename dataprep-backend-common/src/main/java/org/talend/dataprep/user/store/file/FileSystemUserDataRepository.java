@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.user.store.UserDataRepository;
 
@@ -52,7 +52,7 @@ public class FileSystemUserDataRepository implements UserDataRepository {
         try (ObjectInputStream input = new ObjectInputStream(new FileInputStream(inputFile))) {
             return (UserData) input.readObject();
         } catch (ClassNotFoundException | IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_USER_DATA, e, TDPExceptionContext.build().put("id", userId));
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_USER_DATA, e, ExceptionContext.build().put("id", userId));
         }
     }
 

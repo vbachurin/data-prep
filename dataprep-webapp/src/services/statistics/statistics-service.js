@@ -22,6 +22,7 @@
 
             //filters
             addFilter: addFilter,
+            addExactFilter: addExactFilter,
             addRangeFilter: addRangeFilter,
 
             //statistics entry points
@@ -104,12 +105,12 @@
         function initRangeHistogram(histoData) {
             var rangeData = _.map(histoData, function (histDatum) {
                 return {
-                    'data': histDatum.range.min + ' ... ' + histDatum.range.max,
+                    'data': [histDatum.range.min ,histDatum.range.max ],
                     'occurrences': histDatum.occurrences
                 };
             });
 
-            initClassicHistogram('occurrences', 'Occurrences', rangeData);
+            initVerticalHistogram('occurrences', 'Occurrences', rangeData);
         }
 
         /**
@@ -135,9 +136,29 @@
 
         /**
          * @ngdoc method
+         * @name initVerticalHistogram
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {string} key The value key
+         * @param {string} label The value label
+         * @param {Array} dataTable The table to display
+         * @description Set the records frequency ranges table that fit the histogram format
+         */
+        function initVerticalHistogram(key, label, dataTable) {
+            service.histogram = {
+                numData: dataTable,
+                key: key,
+                label: label,
+                column: service.selectedColumn,
+                existingFilter: null
+            };
+        }
+
+        /**
+         * @ngdoc method
          * @name initRangeLimits
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @description Set the range slider limits
+         * @description Set the range slider limits to update the rangeSlider handlers
+         * and the active/inactive bars of the vertical barchart
          */
         function initRangeLimits() {
             var column = service.selectedColumn;
@@ -193,6 +214,7 @@
                         maxBrush : currentRangeFilter.args.interval[1]
                     };
                 }
+                service.histogram.existingFilter = [service.rangeLimits.minBrush, service.rangeLimits.maxBrush];
             }
             else {
                 service.rangeLimits = {
@@ -202,7 +224,6 @@
                     maxBrush : undefined
                 };
             }
-
         }
 
         /**
@@ -343,6 +364,8 @@
             var removeFilterFn = function removeFilterFn(filter) {
                 if (service.selectedColumn && filter.colId === service.selectedColumn.id) {
                     initRangeLimits();
+                    //to reset the bars colors
+                    service.histogram.existingFilter = [service.selectedColumn.statistics.min, service.selectedColumn.statistics.max];
                 }
             };
 
@@ -354,7 +377,10 @@
 
             var column = service.selectedColumn;
             var filterFn = FilterService.addFilter.bind(null, 'inside_range', column.id, column.name, {interval: interval}, removeFilterFn);
-            $timeout(filterFn);
+            $timeout(function(){
+                filterFn();
+                initRangeLimits();
+            });
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -441,7 +467,7 @@
             service.stateDistribution = null;
 
             var aggregationParameters = {
-                datasetId: datasetId,
+                datasetId: preparationId ? null : datasetId,
                 preparationId: preparationId,
                 stepId: stepId,
                 sampleSize: sampleSize,
@@ -475,6 +501,20 @@
             var filterFn = value ?
                 FilterService.addFilter.bind(null, 'contains', column.id, column.name, {phrase: value}) :
                 FilterService.addFilter.bind(null, 'empty_records', column.id, column.name, {});
+
+            $timeout(filterFn);
+        }
+
+        /**
+         * @ngdoc method
+         * @name addExactFilter
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {string} value The phrase to filter (clicked Hbarchart data)
+         * @description Add an exact filter in the angular context
+         */
+        function addExactFilter(value) {
+            var column = service.selectedColumn;
+            var filterFn = FilterService.addFilter.bind(null, 'exact_filter', column.id, column.name, {phrase: value});
 
             $timeout(filterFn);
         }

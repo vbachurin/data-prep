@@ -1,0 +1,15 @@
+{
+  "actions": [
+    {
+      "action": "split",
+      "parameters": {
+        "column_name": "firstname",
+        "column_id": "0000",
+        "scope": "column"
+      }
+    }
+  ],
+  "diff": {
+    "createdColumns": ["0008", "0009"]
+  }
+}

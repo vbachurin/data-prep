@@ -30,7 +30,6 @@ public class MongoDB {
      */
     @Bean
     public MappingMongoConverter getMappingMongoConverter() {
-
         MongoMappingContext mappingContext = new MongoMappingContext();
         DbRefResolver dbRefResolver = new DefaultDbRefResolver(mongoDbFactory);
         MappingMongoConverter mongoConverter = new MappingMongoConverter(dbRefResolver, mappingContext);

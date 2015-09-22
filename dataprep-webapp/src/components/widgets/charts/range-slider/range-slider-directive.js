@@ -9,7 +9,7 @@
      * @usage
      *     <range-slider
      *             id="domId"
-     *             width="250"
+     *             width="300"
      *             height="100"
      *             range-limits="statsDetailsCtrl.rangeLimits"
      *             on-brush-end="statsDetailsCtrl.onBrushEndFn"
@@ -34,7 +34,8 @@
                 var renderTimeout;
                 var container = attrs.id;
 
-                var margin = {top: 5, right: 25, bottom: 10, left: 10};
+				//the left and right margins MUST be the same as the verticalBarchart ones
+                var margin = {top: 5, right: 20, bottom: 10, left: 15};
                 var width = attrs.width - margin.left - margin.right;
                 var height = attrs.height - margin.top - margin.bottom;
 
@@ -47,20 +48,20 @@
                 function renderRangerSlider() {
                     var rangeLimits = scope.rangeLimits;
 
-                    var minimum = rangeLimits.min;
-                    var maximum = rangeLimits.max;
+                    scope.minimum = rangeLimits.min;
+                    scope.maximum = rangeLimits.max;
 
-                    var minBrush = typeof rangeLimits.minBrush !== 'undefined' ? rangeLimits.minBrush : minimum;
-                    var maxBrush = typeof rangeLimits.maxBrush !== 'undefined' ? rangeLimits.maxBrush : maximum;
+                    var minBrush = typeof rangeLimits.minBrush !== 'undefined' ? rangeLimits.minBrush : scope.minimum;
+                    var maxBrush = typeof rangeLimits.maxBrush !== 'undefined' ? rangeLimits.maxBrush : scope.maximum;
 
-                    var nbDecimals = d3.max([ctrl.decimalPlaces(minBrush), ctrl.decimalPlaces(maxBrush)]);
+                    scope.nbDecimals = d3.max([ctrl.decimalPlaces(minBrush), ctrl.decimalPlaces(maxBrush)]);
                     var centerValue = (minBrush + maxBrush) / 2;
                     var filterToApply;
                     //--------------------------------------------------------------------------------------------------
                     //----------------------------------------------BASE------------------------------------------------
                     //--------------------------------------------------------------------------------------------------
                     var scale = d3.scale.linear()
-                        .domain([minimum, maximum])
+                        .domain([scope.minimum, scope.maximum])
                         .range([0, width]);
 
                     var svg = d3.select('#' + container).append('svg')
@@ -84,8 +85,8 @@
                     function fillInputs() {
                         hideMsgErr();
                         var s = scope.brush.extent();
-                        document.getElementsByName('minRange')[0].value = s[0] > 1e4 || s[0] < -1e4 ? d3.format('e')(s[0].toFixed(nbDecimals)) : s[0].toFixed(nbDecimals);
-                        document.getElementsByName('maxRange')[0].value = s[1] > 1e4 || s[1] < -1e4 ? d3.format('e')(s[1].toFixed(nbDecimals)) : s[1].toFixed(nbDecimals);
+                        document.getElementsByName('minRange')[0].value = s[0].toFixed(scope.nbDecimals);
+                        document.getElementsByName('maxRange')[0].value = s[1].toFixed(scope.nbDecimals);
                         return s;
                     }
 
@@ -98,8 +99,8 @@
                                 scope.rangeLimits.minFilterVal,
                                 scope.rangeLimits.maxFilterVal
                             ];
-                            document.getElementsByName('minRange')[0].value = m[0] > 1e4 || m[0] < -1e4 ? d3.format('e')(m[0].toFixed(nbDecimals)) : m[0].toFixed(nbDecimals);
-                            document.getElementsByName('maxRange')[0].value = m[1] > 1e4 || m[1] < -1e4 ? d3.format('e')(m[1].toFixed(nbDecimals)) : m[1].toFixed(nbDecimals);
+                            document.getElementsByName('minRange')[0].value = m[0].toFixed(scope.nbDecimals);
+                            document.getElementsByName('maxRange')[0].value = m[1].toFixed(scope.nbDecimals);
                         }
                         else {
                             //initialize the filterToApply, it will be updated when the user types values,
@@ -200,8 +201,8 @@
                             return;
                         }
 
-                        nbDecimals = d3.max([ctrl.decimalPlaces(enteredMin), ctrl.decimalPlaces(enteredMax)]);
-                        var finalExtent = ctrl.adaptRangeValues(enteredMin, enteredMax, minimum, maximum, nbDecimals);
+                        scope.nbDecimals = d3.max([ctrl.decimalPlaces(enteredMin), ctrl.decimalPlaces(enteredMax)]);
+                        var finalExtent = ctrl.adaptRangeValues(enteredMin, enteredMax, scope.minimum, scope.maximum, scope.nbDecimals);
 
                         brushg.transition()
                             .call(scope.brush.extent(finalExtent));
@@ -214,7 +215,7 @@
                            +enteredMax !== scope.brush.extent()[1]
                         ) {
                             //trigger brush end callback
-                            filterToApply = enteredMin > enteredMax? [+enteredMax.toFixed(nbDecimals), +enteredMin.toFixed(nbDecimals)] : [+enteredMin.toFixed(nbDecimals), +enteredMax.toFixed(nbDecimals)];
+                            filterToApply = enteredMin > enteredMax? [+enteredMax.toFixed(scope.nbDecimals), +enteredMin.toFixed(scope.nbDecimals)] : [+enteredMin.toFixed(scope.nbDecimals), +enteredMax.toFixed(scope.nbDecimals)];
 
                             scope.onBrushEnd()(filterToApply);
                         }
@@ -233,20 +234,20 @@
                                 var s = scope.brush.extent();
                                 //the user is moving the whole brush
                                 if(scope.oldRangeLimits[0] !== s[0] && scope.oldRangeLimits[1] !== s[1]){
-                                    document.getElementsByName('minRange')[0].value = s[0] > 1e4 || s[0] < -1e4 ? d3.format('e')(s[0].toFixed(nbDecimals)) : s[0].toFixed(nbDecimals);
-                                    document.getElementsByName('maxRange')[0].value = s[1] > 1e4 || s[1] < -1e4 ? d3.format('e')(s[1].toFixed(nbDecimals)) : s[1].toFixed(nbDecimals);
+                                    document.getElementsByName('minRange')[0].value = s[0].toFixed(scope.nbDecimals);
+                                    document.getElementsByName('maxRange')[0].value = s[1].toFixed(scope.nbDecimals);
                                 }
                                 //the user is moving the left brush handler
                                 else if(scope.oldRangeLimits[0] !== s[0]){
-                                    document.getElementsByName('minRange')[0].value = s[0] > 1e4 || s[0] < -1e4 ? d3.format('e')(s[0].toFixed(nbDecimals)) : s[0].toFixed(nbDecimals);
+                                    document.getElementsByName('minRange')[0].value = s[0].toFixed(scope.nbDecimals);
                                 }
                                 //the user is moving the right brush handler
                                 else if(scope.oldRangeLimits[1] !== s[1]){
-                                    document.getElementsByName('maxRange')[0].value = s[1] > 1e4 || s[1] < -1e4 ? d3.format('e')(s[1].toFixed(nbDecimals)) : s[1].toFixed(nbDecimals);
+                                    document.getElementsByName('maxRange')[0].value = s[1].toFixed(scope.nbDecimals);
                                 }
 
                                 if (scope.brush.empty()) {
-                                    var exp = '1e-' + (nbDecimals + 1);
+                                    var exp = '1e-' + (scope.nbDecimals + 1);
                                     svg.select('.brush').call(scope.brush.clear().extent([s[0], s[1] + Number(exp)]));
                                 }
                             })
@@ -254,20 +255,21 @@
                             //It will propagate the new filter limits to the rest of the app, it's triggered when the user finishes a brush
                             .on('brushend', function brushend() {
                                 var s = scope.brush.extent();
+                                filterToApply = [+scope.brush.extent()[0].toFixed(scope.nbDecimals), +scope.brush.extent()[1].toFixed(scope.nbDecimals)];
                                 //the user is moving the whole brush
                                 if(scope.oldRangeLimits[0] !== s[0] && scope.oldRangeLimits[1] !== s[1]){
                                     //trigger filter process in the datagrid
                                     scope.onBrushEnd()(scope.brush.extent().map(function (n) {
-                                        return +n.toFixed(nbDecimals);
+                                        return +n.toFixed(scope.nbDecimals);
                                     }));
                                 }
                                 //the user is moving the left brush handler
                                 else if(scope.oldRangeLimits[0] !== s[0]){
-                                    scope.onBrushEnd()([+s[0].toFixed(nbDecimals), filterToApply[1]]);
+                                    scope.onBrushEnd()([+s[0].toFixed(scope.nbDecimals), filterToApply[1]]);
                                 }
                                 //the user is moving the right brush handler
                                 else if(scope.oldRangeLimits[1] !== s[1]){
-                                    scope.onBrushEnd()([filterToApply[0], +s[1].toFixed(nbDecimals)]);
+                                    scope.onBrushEnd()([filterToApply[0], +s[1].toFixed(scope.nbDecimals)]);
                                 }
                             });
                     }
@@ -275,39 +277,38 @@
                     //--------------------------------------------------------------------------------------------------
                     //----------------------------------------------X AXIS----------------------------------------------
                     //--------------------------------------------------------------------------------------------------
+                    var axisTicksNumber = scope.maximum > 1e12 || scope.minimum < 1e-10 ? 2: 3;
                     svg.append('g')
                         .attr('class', 'x axis')
                         .attr('transform', 'translate(0,' + (margin.top + 20) + ')')
-                        .call(d3.svg.axis().scale(scale).orient('bottom').ticks(Math.abs(scale.range()[1] - scale.range()[0]) / 50)
+                        .call(d3.svg.axis()
+                            .scale(scale)
+                            .orient('top')
+                            .ticks(axisTicksNumber)
                             .tickFormat(function (d) {
-                                if (d > 1e4 || d < -1e4) {
-                                    return d3.format('e')(d);
-                                }
-                                else {
-                                    return d3.format(',')(d);
-                                }
+                                return d3.format(',')(d);
                             })
                         )
-                        .selectAll('text').attr('y', 13);
+                        .selectAll('text').attr('y', -13);
 
                     svg.append('g').append('text')
                         .attr('class', 'the-minimum-label')
                         .attr('x', -10)
-                        .attr('y', margin.top + 5)
+                        .attr('y', height/2)
                         .attr('text-anchor', 'start')
                         .attr('fill', 'grey')
                         .text(function(){
-                            return minimum < -1e4 || minimum > 1e4 ? d3.format('e')(minimum): d3.format(',')(minimum);
+                            return d3.format(',')(scope.minimum);
                         });
 
                     svg.append('g').append('text')
                         .attr('class', 'the-maximum-label')
                         .attr('x', width+10)
-                        .attr('y', margin.top + 5)
+                        .attr('y', height/2)
                         .attr('text-anchor', 'end')
                         .attr('fill', 'grey')
                         .text(function(){
-                            return maximum < -1e4 || maximum > 1e4 ? d3.format('e')(maximum): d3.format(',')(maximum);
+                            return d3.format(',')(scope.maximum);
                         });
                     //--------------------------------------------------------------------------------------------------
                     //--------------------------------------------ERROR TEXT--------------------------------------------
@@ -341,8 +342,8 @@
 
                     //In case of a single value filter
                     if (scope.brush.empty()) {
-                        var exp = '1e-' + (nbDecimals + 1);
-                        if(maxBrush === maximum){
+                        var exp = '1e-' + (scope.nbDecimals + 1);
+                        if(maxBrush === scope.maximum){
                             svg.select('.brush').call(scope.brush.clear().extent([minBrush - Number(exp), maxBrush]));
                         }
                         else {
@@ -359,12 +360,39 @@
 
                 scope.$watch('rangeLimits',
                     function (rangeLimits) {
-                        element.empty();
-                        if ((rangeLimits) && (rangeLimits.min !== rangeLimits.max)) {
-                            clearTimeout(renderTimeout);
-                            renderTimeout = setTimeout(renderRangerSlider, 100);
+                        if(rangeLimits){
+                            if(scope.brush){
+                                var existingMinBrush = +(scope.brush.extent()[0]).toFixed(scope.nbDecimals);
+                                var existingMaxBrush = +(scope.brush.extent()[1]).toFixed(scope.nbDecimals);
+                                if(existingMinBrush === rangeLimits.minBrush &&
+                                    existingMaxBrush === rangeLimits.maxBrush &&
+                                    scope.minimum === rangeLimits.min &&
+                                    scope.maximum === rangeLimits.max){
+                                    //DO NOT RERENDER RANGE SLIDER
+                                    return ;
+                                }
+                                else {
+                                    element.empty();
+                                    if (rangeLimits.min !== rangeLimits.max) {
+                                        clearTimeout(renderTimeout);
+                                        renderTimeout = setTimeout(renderRangerSlider, 100);
+                                    }
+                                }
+                            }
+                            else{
+                                element.empty();
+                                if (rangeLimits.min !== rangeLimits.max) {
+                                    clearTimeout(renderTimeout);
+                                    renderTimeout = setTimeout(renderRangerSlider, 100);
+                                }
+                            }
                         }
-                    });
+                        else{
+                            element.empty();
+                            scope.brush = null;
+                        }
+                    }
+                );
             }
         };
     }

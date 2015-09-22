@@ -20,9 +20,9 @@ describe('ColumnProfile controller', function () {
         };
     }));
 
-    it('should call addFilter Function of the StatisticsService', inject(function (StatisticsService) {
+    it('should call addExactFilter Function of the StatisticsService', inject(function (StatisticsService) {
         //given
-        spyOn(StatisticsService, 'addFilter').and.returnValue();
+        spyOn(StatisticsService, 'addExactFilter').and.returnValue();
         var ctrl = createController();
         var obj = {'data': 'Ulysse', 'occurrences': 5};
 
@@ -30,7 +30,7 @@ describe('ColumnProfile controller', function () {
         ctrl.barchartClickFn(obj);
 
         //then
-        expect(StatisticsService.addFilter).toHaveBeenCalledWith(obj.data);
+        expect(StatisticsService.addExactFilter).toHaveBeenCalledWith(obj.data);
     }));
 
     describe('external bindings', function() {

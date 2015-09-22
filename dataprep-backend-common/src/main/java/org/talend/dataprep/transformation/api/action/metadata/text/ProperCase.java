@@ -29,7 +29,7 @@ public class ProperCase extends AbstractActionMetadata implements ColumnAction {
 
     @Override
     public String getCategory() {
-        return ActionCategory.CASE.getDisplayName();
+        return ActionCategory.STRINGS.getDisplayName();
     }
 
     /**

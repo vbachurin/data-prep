@@ -25,14 +25,24 @@
         </div>
     </div>
 
-    <horizontal-barchart id="barChart"
-                         width="310"
-                height="400"
-                on-click="columnProfileCtrl.barchartClickFn"
-                visu-data="columnProfileCtrl.histogram.data"
-                value-field="formattedValue"
-                key-field="{{columnProfileCtrl.histogram.key}}"
-                key-label="{{columnProfileCtrl.histogram.label}}"></horizontal-barchart>
+    <horizontal-barchart id="hBarChart"
+                        width="300"
+                        height="400"
+                        on-click="columnProfileCtrl.barchartClickFn"
+                        visu-data="columnProfileCtrl.histogram.data"
+                        value-field="formattedValue"
+                        key-field="{{columnProfileCtrl.histogram.key}}"
+                        key-label="{{columnProfileCtrl.histogram.label}}"></horizontal-barchart>
+
+    <vertical-barchart id="vBarChart"
+                         width="300"
+                         height="400"
+                         on-click="columnProfileCtrl.vBarchartClickFn"
+                         visu-data="columnProfileCtrl.histogram.numData"
+                         value-field="{{columnProfileCtrl.histogram.key}}"
+                         key-field="data"
+                         existing-filter="columnProfileCtrl.histogram.existingFilter"
+                         key-label="{{columnProfileCtrl.histogram.label}}"></vertical-barchart>
 
     <highchart id="geochart"
                ng-if="columnProfileCtrl.stateDistribution"

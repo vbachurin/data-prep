@@ -11,12 +11,13 @@
      * @requires data-prep.filter-search
      * @requires data-prep.filter-list
      * @requires data-prep.history-control
+     * @requires data-prep.lookup
      * @requires data-prep.recipe
-     * @requires data-prep.suggestions-stats
      * @requires data-prep.services.preparation
      * @requires data-prep.services.playground
      * @requires data-prep.services.recipe
      * @requires data-prep.services.state
+     * @requires data-prep.suggestions-stats
      */
     angular.module('data-prep.playground', [
         'ui.router',
@@ -27,6 +28,7 @@
         'data-prep.filter-search',
         'data-prep.filter-list',
         'data-prep.history-control',
+        'data-prep.lookup',
         'data-prep.recipe',
         'data-prep.suggestions-stats',
         'data-prep.services.preparation',

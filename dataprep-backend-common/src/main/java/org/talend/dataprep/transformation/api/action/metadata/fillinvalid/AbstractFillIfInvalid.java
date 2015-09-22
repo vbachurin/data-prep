@@ -1,16 +1,16 @@
 package org.talend.dataprep.transformation.api.action.metadata.fillinvalid;
 
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
+
+import java.util.Map;
+import java.util.Set;
+
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataUtils;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-
-import java.util.Map;
-import java.util.Set;
-
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.QUICKFIX;
 
 /**
  * Base class for all abstract fillIfInvalid actions.
@@ -22,7 +22,7 @@ public abstract class AbstractFillIfInvalid extends AbstractActionMetadata imple
 
     @Override
     public String getCategory() {
-        return QUICKFIX.getDisplayName();
+        return DATA_CLEANSING.getDisplayName();
     }
 
     @Override

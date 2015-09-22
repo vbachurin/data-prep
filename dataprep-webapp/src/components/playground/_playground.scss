@@ -2,6 +2,7 @@
   @include flex-row();
 
   .playground-center {
+    position: relative;
     @extend .flex-center;
 
     .filter-list {
@@ -22,11 +23,22 @@
   float: left;
 }
 
+.sample_label{
+  color: $green;
+}
+
 .sample {
-  color: black;
+  color: $green;
   vertical-align: baseline;
   display: inline;
   margin-bottom: 0;
+  border-radius: 5px;
+  border: 1px solid $green;
+  background-color: transparent;
+  padding: 5px;
+  option{
+    color: $black;
+  }
 }
 
 .right-header {
@@ -34,7 +46,6 @@
   margin-right: 80px;
 
   .preview {
-    padding-top: 7px;
 
     .previewBadge {
       line-height: 36px;
@@ -50,8 +61,16 @@
     }
   }
 
-  .export {
-    padding-top: 7px;
+  #playground-lookup-icon {
+    padding: 8px;
+
+    > img {
+      vertical-align: middle;
+    }
+  }
+
+  .pressed {
+    @include background(linear-gradient(#4D4D50, #6E6D71) left repeat);
   }
 }
 

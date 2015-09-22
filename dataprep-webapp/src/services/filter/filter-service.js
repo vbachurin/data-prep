@@ -35,6 +35,8 @@
             switch (self.type) {
                 case 'contains':
                     return self.args.phrase;
+                case 'exact_filter':
+                    return self.args.phrase;
                 case 'invalid_records':
                     return 'invalid records';
                 case 'empty_records':
@@ -42,12 +44,7 @@
                 case 'valid_records':
                     return 'valid records';
                 case 'inside_range':
-                    if (args.interval[0] > 1e4 || args.interval[1] > 1e4 || args.interval[0] < -1e4 || args.interval[1] < -1e4) {
-                        return 'in [' + args.interval[0].toExponential() + ' ... ' + args.interval[1].toExponential() + ']';
-                    }
-                    else {
-                        return 'in [' + args.interval[0] + ' ... ' + args.interval[1] + ']';
-                    }
+                    return '[' + d3.format(',')(args.interval[0]) + ' .. ' + d3.format(',')(args.interval[1]) + ']';
             }
         });
     }
@@ -121,6 +118,27 @@
                 // col could be removed by a step
                 if (item[colId]) {
                     return item[colId].toLowerCase().match(regexp);
+                }
+                else {
+                    return false;
+                }
+            };
+        }
+
+        /**
+         * @ngdoc method
+         * @name createExactFilterFn
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {string} colId The column id
+         * @param {string} phrase The phrase that the item must be exactly equal to
+         * @description [PRIVATE] Create a 'exact_filter' filter function
+         * @returns {function} The predicate function
+         */
+        function createExactFilterFn(colId, phrase) {
+            return function (item) {
+                // col could be removed by a step
+                if (item[colId]) {
+                    return item[colId] === phrase;
                 }
                 else {
                     return false;
@@ -209,6 +227,10 @@
                     filterFn = createContainFilterFn(colId, args.phrase);
                     filterInfo = new Filter(type, colId, colName, true, args, filterFn, removeFilterFn);
                     break;
+                case 'exact_filter':
+                    filterFn = createExactFilterFn(colId, args.phrase);
+                    filterInfo = new Filter(type, colId, colName, true, args, filterFn, removeFilterFn);
+                    break;
                 case 'invalid_records':
                     filterFn = createEqualFilterFn(colId, args.values);
                     filterInfo = new Filter(type, colId, colName, false, args, filterFn, removeFilterFn);
@@ -260,6 +282,11 @@
                 case 'contains':
                     newArgs.phrase = newValue;
                     newFilterFn = createContainFilterFn(oldFilter.colId, newValue);
+                    editableFilter = true;
+                    break;
+                case 'exact_filter':
+                    newArgs.phrase = newValue;
+                    newFilterFn = createExactFilterFn(oldFilter.colId, newValue);
                     editableFilter = true;
                     break;
                 case 'inside_range':

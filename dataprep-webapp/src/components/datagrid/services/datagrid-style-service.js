@@ -11,16 +11,13 @@
      */
     function DatagridStyleService(DatagridService, ConverterService, TextFormatService) {
         var grid;
-        var lastSelectedColumnId;
         var highlightCellTimeout;
         var columnClassTimeout;
 
         return {
             init: init,
             resetCellStyles: resetCellStyles,
-            resetColumnStyles: resetColumnStyles,
-            selectedColumn: selectedColumn,
-            manageColumnStyle: manageColumnStyle,
+            updateColumnClass: updateColumnClass,
             columnFormatter: columnFormatter,
             getColumnPreviewStyle: getColumnPreviewStyle
         };
@@ -36,33 +33,6 @@
         function resetCellStyles() {
             grid.resetActiveCell();
             grid.setCellCssStyles('highlight', {});
-        }
-
-        /**
-         * @ngdoc method
-         * @name resetColumnStyles
-         * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @description Reset the columns css.
-         * Currently there is only one visual style class : selected. We reset the lastSelected
-         */
-        function resetColumnStyles() {
-            lastSelectedColumnId = null;
-        }
-
-        /**
-         * @ngdoc method
-         * @name selectedColumn
-         * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @description returns the selected column object (the one from provided array with the selected id)
-         * @param {array} columns The grid columns
-         * @return {object}
-         */
-        function selectedColumn(columns) {
-            if (lastSelectedColumnId) {
-                return _.find(columns, function (column) {
-                    return column.id === lastSelectedColumnId;
-                });
-            }
         }
 
         /**
@@ -124,37 +94,6 @@
                     updateNumbersClass(column);
                 }
             });
-
-            if (selectedCol) {
-                lastSelectedColumnId = selectedCol.id;
-            }
-        }
-
-        /**
-         * @ngdoc method
-         * @name manageColumnStyle
-         * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * * @param {object} columns The columns array
-         * @param {boolean} isPreview Flag that indicate if the data IS in preview mode
-         * @description Update column style classes accordingly to the active cell.
-         * This is usefull when data changes, the column style is reset but the active cell does not change.
-         */
-        function manageColumnStyle(columns, isPreview) {
-            var selectedColumn;
-
-            if (!isPreview) {
-                var activeCell = grid.getActiveCell();
-                if (activeCell) {
-                    selectedColumn = columns[activeCell.cell];
-                }
-                else if (lastSelectedColumnId) {
-                    selectedColumn = _.find(columns, function (col) {
-                        return col.id === lastSelectedColumnId;
-                    });
-                }
-            }
-
-            updateColumnClass(columns, selectedColumn);
         }
 
         /**
@@ -272,13 +211,11 @@
             var columns = grid.getColumns();
             var column = columns[colIndex];
 
-            if(lastSelectedColumnId !== column.id) {
-                clearTimeout(columnClassTimeout);
-                columnClassTimeout = setTimeout(function() {
-                    updateColumnClass(columns, column);
-                    grid.invalidate();
-                }, 100);
-            }
+            clearTimeout(columnClassTimeout);
+            columnClassTimeout = setTimeout(function() {
+                updateColumnClass(columns, column);
+                grid.invalidate();
+            }, 100);
         }
 
         /**

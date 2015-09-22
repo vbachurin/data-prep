@@ -8,9 +8,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.talend.daikon.exception.error.ErrorCode;
 import org.talend.dataprep.api.dataset.DataSetLifecycle;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.exception.error.ErrorCode;
 
 /**
  * Dataset error codes.
@@ -26,50 +26,61 @@ public enum DataSetErrorCodes implements ErrorCode {
     UNABLE_TO_ANALYZE_COLUMN_TYPES(500),
     UNABLE_TO_ANALYZE_DATASET_QUALITY(500),
     /**
-     * Error returned in case the data set is in "importing" state, meaning all mandatory analysis prevents service to
-     * correctly serve data set's content.
-     * 
+     * Error returned in case the data set is in "importing" state,
+     * meaning all mandatory analysis prevents service to correctly
+     * serve data set's content.
+     *
      * @see DataSetLifecycle#importing()
      */
     UNABLE_TO_SERVE_DATASET_CONTENT(400, "id"),
-
     /**
-     * this one will happen when user do something on data whereas the data has been updated async in the backend and
-     * this action is not possible anymore (i.e preview whereas this dataset do not need any preview)
+     * this one will happen when user do something on data whereas the
+     * data has been updated async in the backend and this action is not
+     * possible anymore (i.e preview whereas this dataset do not need
+     * any preview)
      */
     REDIRECT_CONTENT(301),
     /**
-     * Error returned in case user tries to access to a data set that does not exist (or no longer exists).
-     * @see org.talend.dataprep.dataset.service.DataSetService#updateDataSet(String, DataSetMetadata)
+     * Error returned in case user tries to access to a data set that
+     * does not exist (or no longer exists).
+     *
+     * @see org.talend.dataprep.dataset.service.DataSetService#updateDataSet(String,
+     * DataSetMetadata)
      */
     DATASET_DOES_NOT_EXIST(400, "id"),
     /**
-     * Error returned when the json that contains the dataset location cannot be parsed.
-     * 
-     * @see org.talend.dataprep.dataset.service.DataSetService#create(String, String, InputStream, HttpServletResponse)
+     * Error returned when the json that contains the dataset location
+     * cannot be parsed.
+     *
+     * @see org.talend.dataprep.dataset.service.DataSetService#create(String,
+     * String, InputStream, HttpServletResponse)
      */
     UNABLE_TO_READ_DATASET_LOCATION(400),
-
     /**
-     * Error returned in case user tries to access to a column that does not exist (or no longer exists) for a data set .
-     * @see org.talend.dataprep.dataset.service.DataSetService#updateDataSet(String, DataSetMetadata)
+     * Error returned in case user tries to access to a column that does
+     * not exist (or no longer exists) for a data set .
+     *
+     * @see org.talend.dataprep.dataset.service.DataSetService#updateDataSet(String,
+     * DataSetMetadata)
      */
     COLUMN_DOES_NOT_EXIST(400, "id"),
     /**
      * Error returned when the order is not supported.
      *
-     * @see org.talend.dataprep.dataset.service.DataSetService#list(String, String)
+     * @see org.talend.dataprep.dataset.service.DataSetService#list(String,
+     * String)
      */
     ILLEGAL_ORDER_FOR_LIST(400, "order"),
     /**
      * Error returned when the sort is not supported.
      *
-     * @see org.talend.dataprep.dataset.service.DataSetService#list(String, String)
+     * @see org.talend.dataprep.dataset.service.DataSetService#list(String,
+     * String)
      */
     ILLEGAL_SORT_FOR_LIST(400, "sort"),
-                                                    /** Error returned when the dataset metadata could not be saved. */
+    /** Error returned when the dataset metadata could not be saved. */
     UNABLE_TO_STORE_DATASET_METADATA(500, "id"),
-                                                    /** Error returned when the dataset metadata could not be read. */
+    /** Error returned when the dataset metadata could not be read. */
     UNABLE_TO_READ_DATASET_METADATA(500, "id");
 
     /** The http status to use. */
@@ -129,5 +140,10 @@ public enum DataSetErrorCodes implements ErrorCode {
     @Override
     public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
+    }
+
+    @Override
+    public String getCode() {
+        return this.toString();
     }
 }

@@ -1,15 +1,19 @@
 (function() {
     'use strict';
 
-    function ColumnProfileCtrl($scope, state, StatisticsService, PlaygroundService, PreparationService, RecipeService) {
+    function ColumnProfileCtrl($scope, state, StatisticsService, PlaygroundService, RecipeService) {
         var vm = this;
         vm.statisticsService = StatisticsService;
         vm.chartConfig = {};
 
         vm.barchartClickFn = function barchartClickFn (item){
-            return StatisticsService.addFilter(item.data);
+            return StatisticsService.addExactFilter(item.data);
         };
-        
+
+        vm.vBarchartClickFn = function vBarchartClickFn (item){
+            return StatisticsService.addRangeFilter(item.data);
+        };
+
         //------------------------------------------------------------------------------------------------------
         //----------------------------------------------AGGREGATION---------------------------------------------
         //------------------------------------------------------------------------------------------------------
@@ -151,7 +155,11 @@
                             }
                         }
                     }
-                ]
+                ],
+                size: {
+                    width: 300,
+                    height: 400
+                }
             };
         };
 

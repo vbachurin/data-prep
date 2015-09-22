@@ -31,7 +31,7 @@
             bindToController: true,
             controllerAs: 'datagridCtrl',
             controller: 'DatagridCtrl',
-            link: function (scope, iElement) {
+            link: function (scope, iElement, iAttrs, ctrl) {
                 var grid;
                 var columnTimeout, externalTimeout, focusTimeout;
 
@@ -80,7 +80,6 @@
                 var onMetadataChange = function onMetadataChange() {
                     if (grid) {
                         DatagridStyleService.resetCellStyles();
-                        DatagridStyleService.resetColumnStyles();
                         grid.scrollRowToTop(0);
                         DatagridColumnService.renewAllColumns(true);
                     }
@@ -96,13 +95,19 @@
                     if (data) {
                         initGridIfNeeded();
                         var columns;
+                        var selectedColumn = ctrl.state.playground.column;
+                        var hasSelectedColumn = !data.preview && selectedColumn;
 
-                        //create columns, manage style and size, set columns in grid, and insert headers
+                        //create columns, manage style and size, set columns in grid
                         clearTimeout(columnTimeout);
                         columnTimeout = setTimeout(function() {
+                            if(!data.preview && !selectedColumn) {
+                                DatagridStyleService.resetCellStyles();
+                            }
 
                             columns = DatagridColumnService.createColumns(data.columns, data.preview);
-                            DatagridStyleService.manageColumnStyle(columns, data.preview);
+                            var selectedGridColumn = hasSelectedColumn ? _.find(columns, {id: selectedColumn.id}) : null;
+                            DatagridStyleService.updateColumnClass(columns, selectedGridColumn);
                             DatagridSizeService.autosizeColumns(columns); // IMPORTANT : this set columns in the grid
 
                             DatagridColumnService.renewAllColumns(false);
@@ -110,12 +115,10 @@
 
                         //manage column selection (external)
                         clearTimeout(externalTimeout);
-                        if(!data.preview) {
+                        if(hasSelectedColumn) {
                             externalTimeout = setTimeout(function() {
-                                var selectedColumn = DatagridStyleService.selectedColumn(columns);
-                                if (selectedColumn) {
-                                    DatagridExternalService.updateSuggestionPanel(selectedColumn);
-                                }
+                                var selectedGridColumn = _.find(columns, {id: selectedColumn.id});
+                                DatagridExternalService.updateSuggestionPanel(selectedGridColumn);
                             }, 0);
                         }
 

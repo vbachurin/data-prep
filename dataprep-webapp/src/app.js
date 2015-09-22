@@ -7,7 +7,8 @@
             'ui.router', //more advanced router
             'data-prep.navbar',
             'data-prep.home',
-            'data-prep.services.rest' //rest interceptors
+            'data-prep.services.rest', //rest interceptors
+            'bgDirectives'
         ])
 
         //Performance config

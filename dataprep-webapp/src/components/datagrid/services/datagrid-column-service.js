@@ -43,7 +43,6 @@
          * @name createColumnDefinition
          * @methodOf data-prep.datagrid.service:DatagridColumnService
          * @param {object} col The column metadata to adapt
-         * @param {number} index The column index
          * @param {boolean} preview Flag that indicates if we are in the preview mode
          * @description Adapt column metadata to slick column.
          * <ul>
@@ -98,7 +97,7 @@
                 id: colIndexName,
                 name: colIndexNameTemplate,
                 field: colIndexName,
-                maxWidth:43,
+                maxWidth: 45,
                 formatter: function formatterIndex(row, cell, value) {
                     return '<div class="index-cell">' + value + '</div>';
                 },

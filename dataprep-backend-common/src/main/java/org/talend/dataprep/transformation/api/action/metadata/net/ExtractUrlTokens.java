@@ -48,7 +48,7 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
      */
     @Override
     public String getCategory() {
-        return ActionCategory.QUICKFIX.getDisplayName();
+        return ActionCategory.SPLIT.getDisplayName();
     }
 
     /**

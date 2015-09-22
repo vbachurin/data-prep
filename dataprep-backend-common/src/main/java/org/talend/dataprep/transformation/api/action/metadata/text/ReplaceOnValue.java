@@ -49,7 +49,7 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
      */
     @Override
     public String getCategory() {
-        return ActionCategory.QUICKFIX.getDisplayName();
+        return ActionCategory.STRINGS.getDisplayName();
     }
 
     /**

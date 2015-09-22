@@ -5,6 +5,7 @@
      * @ngdoc service
      * @name data-prep.datagrid.service:DatagridGridService
      * @description Datagrid private service that init the grid
+     * @requires data-prep.state.service:StateService
      * @requires data-prep.datagrid.service:DatagridService
      * @requires data-prep.datagrid.service:DatagridStyleService
      * @requires data-prep.datagrid.service:DatagridColumnService
@@ -12,7 +13,7 @@
      * @requires data-prep.datagrid.service:DatagridExternalService
      * @requires data-prep.datagrid.service:DatagridTooltipService
      */
-    function DatagridGridService(DatagridService, DatagridStyleService, DatagridColumnService,
+    function DatagridGridService(StateService, DatagridService, DatagridStyleService, DatagridColumnService,
                                  DatagridSizeService, DatagridExternalService, DatagridTooltipService) {
         var grid = null;
         var gridServices = [
@@ -47,6 +48,28 @@
             });
         }
 
+        /**
+         * @ngdoc method
+         * @name attachGridStateListeners
+         * @methodOf data-prep.datagrid.service:DatagridGridService
+         * @description Attach listeners for saving the state of column id and line selection number
+         */
+        function attachGridStateListeners() {
+            grid.onActiveCellChanged.subscribe(function (e, args) {
+                if (angular.isDefined(args.cell)) {
+                    var column = grid.getColumns()[args.cell];
+                    StateService.setGridSelection(column.tdpColMetadata, args.row);
+                }
+            });
+
+            grid.onHeaderContextMenu.subscribe(function (e, args) {
+                StateService.setGridSelection(args.column.tdpColMetadata);
+            });
+
+            grid.onHeaderClick.subscribe(function (e, args) {
+                StateService.setGridSelection(args.column.tdpColMetadata);
+            });
+        }
 
         /**
          * @ngdoc method
@@ -98,6 +121,7 @@
 
             //listeners
             attachLongTableListeners();
+            attachGridStateListeners();
 
             //init other services
             initGridServices();

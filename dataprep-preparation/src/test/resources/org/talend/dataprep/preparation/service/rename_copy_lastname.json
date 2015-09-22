@@ -1,0 +1,16 @@
+{
+  "actions": [
+    {
+      "action": "rename_column",
+      "parameters": {
+        "column_name": "lastname",
+        "column_id": "0006",
+        "value": "toto_name",
+        "scope": "column"
+      }
+    }
+  ],
+  "diff": {
+    "createdColumns": []
+  }
+}

@@ -104,7 +104,7 @@ $datagrid-cell-font-size: .80em;
   //-------------------------------------------------Slickgrid hack-----------------------------------------------------
   //not frozen columns width to fit resizable container
   .slick-pane-right {
-    width: calc(100% - 43px) !important;
+    width: calc(100% - 45px) !important;
   }
 
   //not frozen viewport should fit its container size (slick-pane-right)
@@ -202,7 +202,7 @@ $datagrid-cell-font-size: .80em;
 
       textarea {
         height: auto !important;
-        padding: 0 0 0 2px;
+        padding: 1px 0 0 2px;
         margin: 0;
         min-width: 280px;
 
@@ -243,6 +243,13 @@ $datagrid-cell-font-size: .80em;
     .hiddenChars {
       background-color: #e9e9e9;
       border: 1px dotted #BABABA;
+    }
+  }
+
+  //--------------------------------------------------Data lookup-------------------------------------------------------
+  &.lookup {
+    .slick-cell.selected {
+      background: $lookup-selected-column;
     }
   }
 }

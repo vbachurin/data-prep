@@ -23,13 +23,11 @@ describe('Preparation Service', function () {
         spyOn(PreparationListService, 'delete').and.returnValue($q.when(true));
 
         spyOn(PreparationRestService, 'updateStep').and.returnValue($q.when(true));
-        spyOn(PreparationRestService, 'appendStep').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getContent').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getDetails').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getPreviewDiff').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getPreviewUpdate').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getPreviewAdd').and.returnValue($q.when(true));
-        spyOn(PreparationRestService, 'removeStep').and.returnValue($q.when(true));
     }));
 
     describe('getter/refresher', function() {
@@ -310,28 +308,6 @@ describe('Preparation Service', function () {
             expect(result).toBe(false);
         }));
 
-        it('should append step to preparation with completed parameters (add column id)', inject(function ($rootScope, PreparationService, PreparationRestService) {
-            //given
-            var preparationId = '6cd546546548a745';
-            var actionParams = {
-                action: 'cut',
-                parameters: {
-                    value: 'Toto',
-                    scope: 'column',
-                    column_name: 'firstname',
-                    column_id: '1'
-                }
-            };
-            var insertionPoint = '79c452a31354ef3514';
-
-            //when
-            PreparationService.appendStep(preparationId, actionParams, insertionPoint);
-            $rootScope.$digest();
-
-            //then
-            expect(PreparationRestService.appendStep).toHaveBeenCalledWith(preparationId, actionParams, insertionPoint);
-        }));
-
         it('should update a preparation step with provided parameters', inject(function ($rootScope, PreparationService, PreparationRestService) {
             //given
             var preparationId = '6cd546546548a745';
@@ -357,19 +333,6 @@ describe('Preparation Service', function () {
                     parameters: {value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column'} //params
                 }
             );
-        }));
-
-        it('should remove step', inject(function ($q, PreparationService, PreparationRestService) {
-            //given
-            var preparationId = '6cd546546548a745';
-            var stepId = '45ed65cf48981b51';
-            var singleMode = true;
-
-            //when
-            PreparationService.removeStep(preparationId, stepId, singleMode);
-
-            //then
-            expect(PreparationRestService.removeStep).toHaveBeenCalledWith(preparationId, stepId, singleMode);
         }));
     });
 

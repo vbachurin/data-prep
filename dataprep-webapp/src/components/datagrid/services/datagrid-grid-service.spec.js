@@ -90,7 +90,6 @@ describe('Datagrid grid service', function () {
         }));
     });
 
-
     describe('column navigation for focus purposes', function() {
         it('should go to the selected column after', inject(function (DatagridStyleService, DatagridService, DatagridGridService) {
             //given
