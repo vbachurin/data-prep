@@ -143,7 +143,7 @@
 
   "APPLY_TO_ALL_CELLS": "Apply to all cells with this value",
 
-
+  "STRING": "TEXT",
   "FLOAT": "DECIMAL"
 
 }
