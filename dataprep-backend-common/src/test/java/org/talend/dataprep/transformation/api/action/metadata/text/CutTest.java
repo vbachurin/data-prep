@@ -65,6 +65,23 @@ public class CutTest {
     }
 
     @Test
+    public void should_apply_on_column_with_regexp() throws IOException {
+        // given
+        DataSetRow row = getRow("Wait for it...", "The value that gets cut !", "Done !");
+        DataSetRow expected = getRow("Wait for it...", " cut !", "Done !");
+
+        Map<String, String> regexpParameters = ActionMetadataTestUtils.parseParameters(action,
+                SplitTest.class.getResourceAsStream("cutAction.json"));
+        regexpParameters.put("pattern", ".*gets");
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), regexpParameters, "0002");
+
+        // then
+        assertEquals(expected, row);
+    }
+
+    @Test
     public void should_not_apply_on_column(){
         // given
         DataSetRow row = getRow("Wait for it...", "The value that gets cut !", "Done !");
