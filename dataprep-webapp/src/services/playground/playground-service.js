@@ -496,6 +496,10 @@
                     if(RecipeService.getRecipe().length === 1) { //first step append
                         StateService.showRecipe();
                     }
+                    else if(OnboardingService.shouldStartTour('recipe') && RecipeService.getRecipe().length === 3) { //third step append : show onboarding
+                        StateService.showRecipe();
+                        setTimeout(OnboardingService.startTour.bind(null, 'recipe'), 200);
+                    }
                 });
         }
     }
