@@ -27,7 +27,7 @@ sed "s|$from|$to|g" /tmp/fig_custom_1.yml > /tmp/fig_custom.yml
 # Copy custom fig file to remote:
 scp /tmp/fig_custom.yml $username@$server_host:$path
 
-#ssh $username@$server_host fig -f $path'/fig_custom.yml' pull --allow-insecure-ssl
-#ssh $username@$server_host 'bash -s' < ../dataprep-platform/src/main/resources/clean.sh
-#ssh $username@$server_host 'fig -p tdp -f '$path'/fig_custom.yml up --allow-insecure-ssl > '$path'/fig.log &'
+ssh $username@$server_host fig -f $path'/fig_custom.yml' pull --allow-insecure-ssl
+ssh $username@$server_host 'bash -s' < ../dataprep-platform/src/main/resources/clean.sh
+ssh $username@$server_host 'fig -p tdp -f '$path'/fig_custom.yml up --allow-insecure-ssl > '$path'/fig.log &'
 

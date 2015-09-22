@@ -23,7 +23,7 @@
      * @param {boolean} default The default tab to select
      * @param {string} selectedTab The tab title to be updated
      */
-    function TalendTabs() {
+    function TalendTabs($timeout) {
         return {
             restrict: 'E',
             transclude: true,
@@ -35,6 +35,18 @@
                 tab: '='
             },
             link: function (scope, iElement, iAttrs, ctrl) {
+
+                //Force to resize tabs containers
+                //TODO CNG: To do it with only CSS
+                $timeout(function(){
+                    angular.element('.tabs-item').on('click', function(){
+                        var panel1 = angular.element('.split-pane1');
+                        var panel2 = angular.element('.split-pane2');
+                        angular.element('.action-suggestion-tab-items').css('height', panel1.height()-100 + 'px');
+                        angular.element('.stat-detail-tab-items').css('height', panel2.height()-100 + 'px');
+                    });
+                });
+
                 scope.$watch(
                     function () {
                         return ctrl.tab;

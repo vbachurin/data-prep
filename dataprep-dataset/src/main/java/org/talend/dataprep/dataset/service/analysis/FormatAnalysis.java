@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.*;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,8 +93,8 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
     private Set<FormatGuesser.Result> guessMediaTypes(String dataSetId, DataSetMetadata metadata) {
         Set<FormatGuesser.Result> mediaTypes = new HashSet<>();
         for (FormatGuesser guesser : guessers) {
-            // Try to read content given supported encodings
-            final Collection<Charset> availableCharsets = getSupportedCharsets();
+            // Try to read content given certified encodings
+            final Collection<Charset> availableCharsets = ListUtils.union(getCertifiedCharsets(), getSupportedCharsets());
             for (Charset charset : availableCharsets) {
                 try (InputStream content = store.getAsRaw(metadata)) {
                     FormatGuesser.Result mediaType = guesser.guess(content, charset.name());
@@ -113,8 +114,9 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
     /**
      * @return The list of supported encodings in data prep (could be {@link Charset#availableCharsets()}, but requires
      * extensive tests, so a sub set is returned to ease testing).
+     * @see #getSupportedCharsets()
      */
-    private Collection<Charset> getSupportedCharsets() {
+    private List<Charset> getCertifiedCharsets() {
         return Arrays.asList( //
                 Charset.forName("UTF-8"), //
                 Charset.forName("UTF-16"), //
@@ -123,6 +125,15 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
                 Charset.forName("ISO-8859-1"), //
                 Charset.forName("x-MacRoman") //
         );
+    }
+
+    /**
+     * @return The list of encodings in data prep may use but are without scope of extensive tests (supported, but not
+     * certified).
+     * @see #getCertifiedCharsets()
+     */
+    private List<Charset> getSupportedCharsets() {
+        return new ArrayList<>(Charset.availableCharsets().values());
     }
 
     /**

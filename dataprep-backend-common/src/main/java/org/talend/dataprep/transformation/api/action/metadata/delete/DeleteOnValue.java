@@ -63,6 +63,6 @@ public class DeleteOnValue extends AbstractDelete {
      */
     @Override
     public boolean toDelete(ColumnMetadata colMetadata, Map<String, String> parsedParameters, String value) {
-        return value != null && value.trim().equals(parsedParameters.get(VALUE_PARAMETER));
+        return value != null && value.trim().matches(parsedParameters.get(VALUE_PARAMETER));
     }
 }

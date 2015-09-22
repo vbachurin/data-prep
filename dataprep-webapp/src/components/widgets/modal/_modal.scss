@@ -19,7 +19,7 @@
   $navigation-border-height: 1px;
   $navigation-color: white;
   $navigation-height: 51px;
-  $navigation-item-space: 15px;
+  $navigation-item-space: 10px;
 
   p {
     color: $base-font-color;
@@ -269,7 +269,9 @@
             display: table-cell;
             line-height: $navigation-height - $navigation-border-height;
             padding-left: $navigation-item-space;
+            padding-right: $navigation-item-space;
             vertical-align: middle;
+            border-right: 1px solid grey;
 
             .title {
               font-weight: bold;

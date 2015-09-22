@@ -73,9 +73,15 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
 
     private void apply(DataSetRow row, Map<String, String> parameters, String columnId) {
         final String value = row.get(columnId);
+
+        // defensive programming against null pointer exception
+        if (value == null) {
+            return;
+        }
+
         final String toMatch = parameters.get(CELL_VALUE_PARAMETER);
 
-        if (toMatch.equals(value)) {
+        if (value.matches(toMatch)) {
             final String toReplace = parameters.get(REPLACE_VALUE_PARAMETER);
             row.set(columnId, toReplace);
         }

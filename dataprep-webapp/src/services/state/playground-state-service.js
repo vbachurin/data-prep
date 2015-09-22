@@ -20,17 +20,25 @@
             hideRecipe: RecipeStateService.hide,
 
             //datagrid
-            setGridSelection: setGridSelection
+            setGridSelection: setGridSelection,
+            setLookupVisibility: setLookupVisibility
         };
 
         //--------------------------------------------------------------------------------------------------------------
-        //--------------------------------------------------PLAYGROUND--------------------------------------------------
+        //-----------------------------------------------------GRID-----------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
         function setGridSelection(column, line) {
             playgroundState.column = column;
             playgroundState.line = line;
         }
 
+        function setLookupVisibility(visibility) {
+            playgroundState.lookupVisibility = visibility;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        //--------------------------------------------------PLAYGROUND--------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         function setDataset(dataset) {
             playgroundState.dataset = dataset;
         }
@@ -57,6 +65,7 @@
             playgroundState.dataset = null;
             playgroundState.preparation = null;
             playgroundState.nameEditionMode = false;
+            playgroundState.lookupVisibility = false;
         }
     }
 

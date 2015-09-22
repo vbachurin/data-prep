@@ -2,6 +2,7 @@ describe('Home controller', function () {
     'use strict';
 
     var ctrl, createController, scope, $httpBackend;
+    var DATA_INVENTORY_PANEL_KEY = 'org.talend.dataprep.data_inventory_panel_display';
 
     beforeEach(module('data-prep.home'));
 
@@ -24,6 +25,10 @@ describe('Home controller', function () {
         };
     }));
 
+    afterEach(inject(function($window) {
+        $window.localStorage.removeItem(DATA_INVENTORY_PANEL_KEY);
+    }));
+
     it('should init upload list to empty array', function () {
         //when
         ctrl = createController();
@@ -31,6 +36,17 @@ describe('Home controller', function () {
         //then
         expect(ctrl.uploadingDatasets).toEqual([]);
     });
+
+    it('should init right panel state with value from local storage', inject(function ($window) {
+        //given
+       $window.localStorage.setItem(DATA_INVENTORY_PANEL_KEY, 'true');
+
+        //when
+        ctrl = createController();
+
+        //then
+        expect(ctrl.showRightPanel).toBe(true);
+    }));
 
     describe('with created controller', function () {
         var uploadDefer;
@@ -57,14 +73,8 @@ describe('Home controller', function () {
 
         }));
 
-        it('should toggle right panel flag', function () {
+        it('should toggle right panel flag', inject(function () {
             //given
-            expect(ctrl.showRightPanel).toBe(true);
-
-            //when
-            ctrl.toggleRightPanel();
-
-            //then
             expect(ctrl.showRightPanel).toBe(false);
 
             //when
@@ -72,7 +82,46 @@ describe('Home controller', function () {
 
             //then
             expect(ctrl.showRightPanel).toBe(true);
-        });
+
+            //when
+            ctrl.toggleRightPanel();
+
+            //then
+            expect(ctrl.showRightPanel).toBe(false);
+        }));
+
+        it('should save toggled state in local storage', inject(function ($window) {
+            //given
+            expect(JSON.parse($window.localStorage.getItem(DATA_INVENTORY_PANEL_KEY))).toBeFalsy();
+
+            //when
+            ctrl.toggleRightPanel();
+
+            //then
+            expect(JSON.parse($window.localStorage.getItem(DATA_INVENTORY_PANEL_KEY))).toBeTruthy();
+            //when
+            ctrl.toggleRightPanel();
+
+            //then
+            expect(JSON.parse($window.localStorage.getItem(DATA_INVENTORY_PANEL_KEY))).toBeFalsy();
+        }));
+
+        it('should update right panel icon', inject(function () {
+            //given
+            expect(ctrl.showRightPanelIcon).toBe('u');
+
+            //when
+            ctrl.toggleRightPanel();
+
+            //then
+            expect(ctrl.showRightPanelIcon).toBe('t');
+
+            //when
+            ctrl.toggleRightPanel();
+
+            //then
+            expect(ctrl.showRightPanelIcon).toBe('u');
+        }));
 
         it('should remove file extension for name init and display name modal on step 1', function () {
             //given
