@@ -243,7 +243,7 @@ describe('Quality bar controller', function () {
             ctrl.filterInvalidRecords(col);
 
             //then
-            expect(FilterService.addFilter).toHaveBeenCalledWith('invalid_records', col.id, col.name, {values: col.quality.invalidValues});
+            expect(FilterService.addFilter).toHaveBeenCalledWith('invalid_records', col.id, col.name);
         }));
 
         it('should set filter on valid records', inject(function(FilterService) {
@@ -266,7 +266,7 @@ describe('Quality bar controller', function () {
             ctrl.filterValidRecords(col);
 
             //then
-            expect(FilterService.addFilter).toHaveBeenCalledWith('valid_records', col.id, col.name, {values: col.quality.invalidValues});
+            expect(FilterService.addFilter).toHaveBeenCalledWith('valid_records', col.id, col.name);
         }));
 
         it('should set filter on empty records', inject(function(FilterService) {
@@ -288,7 +288,7 @@ describe('Quality bar controller', function () {
             ctrl.filterEmptyRecords(col);
 
             //then
-            expect(FilterService.addFilter).toHaveBeenCalledWith('empty_records', col.id, col.name, {});
+            expect(FilterService.addFilter).toHaveBeenCalledWith('empty_records', col.id, col.name);
         }));
     });
 

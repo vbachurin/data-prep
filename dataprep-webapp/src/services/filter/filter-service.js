@@ -114,14 +114,17 @@
         function createContainFilterFn(colId, phrase) {
             var lowerCasePhrase = phrase.toLowerCase();
             var regexp = new RegExp(escapeRegExpExceptStar(lowerCasePhrase));
-            return function (item) {
-                // col could be removed by a step
-                if (item[colId]) {
-                    return item[colId].toLowerCase().match(regexp);
-                }
-                else {
-                    return false;
-                }
+
+            return function() {
+                return function (item) {
+                    // col could be removed by a step
+                    if (item[colId]) {
+                        return item[colId].toLowerCase().match(regexp);
+                    }
+                    else {
+                        return false;
+                    }
+                };
             };
         }
 
@@ -135,29 +138,34 @@
          * @returns {function} The predicate function
          */
         function createExactFilterFn(colId, phrase) {
-            return function (item) {
-                // col could be removed by a step
-                if (item[colId]) {
-                    return item[colId] === phrase;
-                }
-                else {
-                    return false;
-                }
+            return function() {
+                return function (item) {
+                    // col could be removed by a step
+                    if (item[colId]) {
+                        return item[colId] === phrase;
+                    }
+                    else {
+                        return false;
+                    }
+                };
             };
         }
 
         /**
          * @ngdoc method
-         * @name createEqualFilterFn
+         * @name createInvalidFilterFn
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {string} colId The column id
-         * @param {string[]} values The invalid values
-         * @description Create an 'equals' filter function
+         * @description Create a filter function that test if the value is one of the invalid values
          * @returns {function} The predicate function
          */
-        function createEqualFilterFn(colId, values) {
-            return function (item) {
-                return values.indexOf(item[colId]) > -1;
+        function createInvalidFilterFn(colId) {
+            return function(data) {
+                var column = _.find(data.columns, {id: colId});
+                var invalidValues = column.quality.invalidValues;
+                return function (item) {
+                    return invalidValues.indexOf(item[colId]) > -1;
+                };
             };
         }
 
@@ -166,13 +174,16 @@
          * @name createValidFilterFn
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {string} colId The column id
-         * @param {string[]} values The invalid values
          * @description Create a 'valid' filter function
          * @returns {function} The predicate function
          */
-        function createValidFilterFn(colId, values) {
-            return function (item) {
-                return item[colId] && values.indexOf(item[colId]) === -1;
+        function createValidFilterFn(colId) {
+            return function(data) {
+                var column = _.find(data.columns, {id: colId});
+                var invalidValues = column.quality.invalidValues;
+                return function (item) {
+                    return item[colId] && invalidValues.indexOf(item[colId]) === -1;
+                };
             };
         }
 
@@ -185,8 +196,10 @@
          * @returns {function} The predicate function
          */
         function createEmptyFilterFn(colId) {
-            return function (item) {
-                return !item[colId];
+            return function() {
+                return function (item) {
+                    return !item[colId];
+                };
             };
         }
 
@@ -200,8 +213,10 @@
          * @returns {function} The predicate function
          */
         function createRangeFilterFn(colId, values) {
-            return function (item) {
-                return NumbersValidityService.toNumber(item[colId]) >= values[0] && NumbersValidityService.toNumber(item[colId]) <= values[1];
+            return function() {
+                return function (item) {
+                    return NumbersValidityService.toNumber(item[colId]) >= values[0] && NumbersValidityService.toNumber(item[colId]) <= values[1];
+                };
             };
         }
 
@@ -232,7 +247,7 @@
                     filterInfo = new Filter(type, colId, colName, true, args, filterFn, removeFilterFn);
                     break;
                 case 'invalid_records':
-                    filterFn = createEqualFilterFn(colId, args.values);
+                    filterFn = createInvalidFilterFn(colId);
                     filterInfo = new Filter(type, colId, colName, false, args, filterFn, removeFilterFn);
                     break;
                 case 'empty_records':
@@ -240,7 +255,7 @@
                     filterInfo = new Filter(type, colId, colName, false, args, filterFn, removeFilterFn);
                     break;
                 case 'valid_records':
-                    filterFn = createValidFilterFn(colId, args.values);
+                    filterFn = createValidFilterFn(colId);
                     filterInfo = new Filter(type, colId, colName, false, args, filterFn, removeFilterFn);
                     break;
                 case 'inside_range':
