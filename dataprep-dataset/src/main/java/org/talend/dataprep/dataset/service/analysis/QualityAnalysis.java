@@ -85,9 +85,20 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer, Asynchronous
                 LOGGER.info("Analyzing quality of dataset #{}...", metadata.getId());
                 // New data set, or reached the max limit of records for synchronous analysis, trigger a full scan (but async).
                 final int dataSetSize = metadata.getContent().getNbRecords();
-                if (dataSetSize == 0 || dataSetSize == MAX_RECORD) {
+                final boolean isNewDataSet = dataSetSize == 0;
+                if (isNewDataSet || dataSetSize == MAX_RECORD) {
                     // If data set size is MAX_RECORD, performs a full scan, otherwise only take first MAX_RECORD records.
                     computeQuality(metadata, stream, dataSetSize == MAX_RECORD ? -1 : MAX_RECORD);
+                }
+                // Turn on / off "in progress" flag
+                if (isNewDataSet) {
+                    if (metadata.getContent().getNbRecords() < MAX_RECORD) {
+                        metadata.getLifecycle().inProgress(false);
+                    } else if (metadata.getContent().getNbRecords() >= MAX_RECORD) {
+                        metadata.getLifecycle().inProgress(true);
+                    }
+                } else {
+                    metadata.getLifecycle().inProgress(false);
                 }
                 // ... all quality is now analyzed, mark it so.
                 metadata.getLifecycle().qualityAnalyzed(true);
