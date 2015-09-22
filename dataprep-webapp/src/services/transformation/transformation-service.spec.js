@@ -130,27 +130,24 @@ describe('Transformation Service', function () {
     var menusRestMock = function () {
         return [
             {
-                'name': 'uppercase',
-                'category': 'case',
-                items: [],
+                name: 'uppercase',
+                category: 'case',
                 parameters: [
                     {name: 'column_name', type: 'string', implicit: true},
                     {name: 'column_id', type: 'string', implicit: true}
                 ]
             },
             {
-                'name': 'lowercase',
-                'category': 'case',
-                items: [],
+                name: 'lowercase',
+                category: 'case',
                 parameters: [
                     {name: 'column_name', type: 'string', implicit: true},
                     {name: 'column_id', type: 'string', implicit: true}
                 ]
             },
             {
-                'name': 'cut',
-                'category': 'split',
-                items: [],
+                name: 'cut',
+                category: 'split',
                 parameters: [
                     {name: 'column_name', type: 'string', implicit: true},
                     {name: 'column_id', type: 'string', implicit: true},
@@ -158,8 +155,8 @@ describe('Transformation Service', function () {
                 ]
             },
             {
-                'name': 'split',
-                'category': 'split',
+                name: 'split',
+                category: 'split',
                 parameters: [
                     {name: 'column_name', type: 'string', implicit: true},
                     {name: 'column_id', type: 'string', implicit: true}
@@ -230,7 +227,6 @@ describe('Transformation Service', function () {
             category: 'quickfix',
             dynamic: true,
             parameters: [],
-            items: [],
             cluster: {}
         };
         var infos = {
@@ -244,7 +240,6 @@ describe('Transformation Service', function () {
 
         //then
         expect(transformation.parameters).toBe(null);
-        expect(transformation.items).toBe(null);
         expect(transformation.cluster).toBe(null);
     }));
 
@@ -255,7 +250,6 @@ describe('Transformation Service', function () {
             category: 'quickfix',
             dynamic: true,
             parameters: [],
-            items: [],
             cluster: {}
         };
         var infos = {
@@ -501,13 +495,24 @@ describe('Transformation Service', function () {
     it('should init params values on simple params', inject(function (TransformationService) {
         //given
         var transformation = {
-            items: [{
-                name: 'mode',
-                values: [
-                    {name: 'regex', parameters: [{name: 'pattern', type: 'text', default: 'toto'}]},
-                    {name: 'index', default: true}
-                ]
-            }]
+            parameters: [
+                {
+                    name: 'mode',
+                    'type': 'select',
+                    'configuration': {
+                        'values': [
+                            {
+                                "name": "regex",
+                                "value": "regex",
+                                parameters: [
+                                    {name: 'pattern', type: 'text', default: 'toto'}
+                                ]
+                            },
+                            {"name": "index", "value": "index"}
+                        ]
+                    },
+                    default: 'index'
+                }]
         };
 
         var paramValues = {
@@ -520,11 +525,11 @@ describe('Transformation Service', function () {
         TransformationService.initParamsValues(transformation, paramValues);
 
         //then
-        expect(transformation.items[0].initialValue).toBe(transformation.items[0].values[0]);
-        expect(transformation.items[0].selectedValue).toBe(transformation.items[0].values[0]);
-        expect(transformation.items[0].values[0].parameters[0].initialValue).toBe('azerty');
-        expect(transformation.items[0].values[0].parameters[0].value).toBe('azerty');
-        expect(transformation.items[0].values[0].parameters[0].inputType).toBe('text');
+        expect(transformation.parameters[0].initialValue).toBe(transformation.parameters[0].configuration.values[0].value);
+        expect(transformation.parameters[0].value).toBe(transformation.parameters[0].configuration.values[0].value);
+        expect(transformation.parameters[0].configuration.values[0].parameters[0].initialValue).toBe('azerty');
+        expect(transformation.parameters[0].configuration.values[0].parameters[0].value).toBe('azerty');
+        expect(transformation.parameters[0].configuration.values[0].parameters[0].inputType).toBe('text');
     }));
 
     it('should init params values on simple params', inject(function (TransformationService) {

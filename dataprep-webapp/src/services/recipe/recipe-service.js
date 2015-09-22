@@ -268,9 +268,6 @@
             //simple parameters
             TransformationService.resetParamValue(recipeItem.transformation.parameters, null);
 
-            //choices
-            TransformationService.resetParamValue(recipeItem.transformation.items, choiceType);
-
             //clusters
             TransformationService.resetParamValue(recipeItem.transformation.cluster, clusterType);
         }
@@ -295,7 +292,6 @@
                 var oldStep = getOldStepById(step);
                 if(oldStep) {
                     step.transformation.parameters = oldStep.transformation.parameters;
-                    step.transformation.items = oldStep.transformation.items;
                     step.transformation.cluster = oldStep.transformation.cluster;
                 }
                 else {
@@ -348,7 +344,6 @@
                     label: metadata.label,
                     description: metadata.description,
                     parameters: metadata.parameters,
-                    items: metadata.items,
                     dynamic: metadata.dynamic
                 },
                 actionParameters: actionValues,
@@ -460,7 +455,6 @@
                     label: transformation.label,
                     description: transformation.description,
                     parameters: _.cloneDeep(transformation.parameters),
-                    items: _.cloneDeep(transformation.items),
                     dynamic: transformation.dynamic
                 },
                 actionParameters: {

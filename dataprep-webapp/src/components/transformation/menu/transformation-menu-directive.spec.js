@@ -170,17 +170,24 @@ describe('Transformation menu directive', function () {
             {
                 name: 'menuWithChoice',
                 label: 'menu with choice',
-                items: [{
-                    name: 'my choice',
-                    values: [
-                        {
-                            name: 'noParamChoice1'
-                        },
-                        {
-                            name: 'noParamChoice2'
+                parameters: [
+                    {
+                        name: 'my choice',
+                        type: 'select',
+                        configuration: {
+                            values: [
+                                {
+                                    name: 'noParamChoice1',
+                                    value: 'noParamChoice1'
+                                },
+                                {
+                                    name: 'noParamChoice2',
+                                    value: 'noParamChoice2'
+                                }
+                            ]
                         }
-                    ]
-                }]
+                    }
+                ],
             },
             {
                 name: 'menuWithParam',

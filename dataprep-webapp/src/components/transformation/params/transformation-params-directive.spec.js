@@ -5,14 +5,14 @@ describe('Transformation params directive', function () {
     beforeEach(module('data-prep.transformation-params'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($rootScope, $compile) {
         extractedParams = null;
         scope = $rootScope.$new();
-        scope.onSubmit = function(args) {
+        scope.onSubmit = function (args) {
             extractedParams = args.params;
         };
 
-        createElement = function() {
+        createElement = function () {
             var element = angular.element('<transform-params transformation="transformation" on-submit="onSubmit"></transform-params>');
             $compile(element)(scope);
             scope.$digest();
@@ -20,7 +20,7 @@ describe('Transformation params directive', function () {
         };
     }));
 
-    it('should render an action with parameters', function() {
+    it('should render an action with parameters', function () {
         //given
         scope.transformation = {
             name: 'menuWithParam',
@@ -55,23 +55,25 @@ describe('Transformation params directive', function () {
         expect(element.find('.param-input').eq(1).find('input[type="number"]').length).toBe(1);
     });
 
-    it('should render an action with simple choice', function() {
+    it('should render an action with simple choice', function () {
         //given
         scope.transformation = {
             name: 'menuXithParam',
             label: 'menu with param',
-            items: [{
-                name: 'myChoice',
-                label: 'my choice',
-                values: [
-                    {
-                        name: 'noParamChoice1'
+            parameters: [
+                {
+                    'name': 'myChoice',
+                    'label': 'my choice',
+                    'type': 'select',
+                    'configuration': {
+                        'values': [
+                            {"name": "noParamChoice1", "value": "noParamChoice1"},
+                            {"name": "noParamChoice2", "value": "noParamChoice2"}
+                        ]
                     },
-                    {
-                        name: 'noParamChoice2'
-                    }
-                ]
-            }]
+                    'default': ''
+                }
+            ]
         };
 
         //when
@@ -88,50 +90,54 @@ describe('Transformation params directive', function () {
         expect(paramChoice.find('.param-input').eq(0).find('option').eq(1).text()).toBe('noParamChoice2');
     });
 
-    it('should render an action with choice containing parameters', function() {
+    it('should render an action with choice containing parameters', function () {
         //given
         scope.transformation = {
             name: 'menu with param',
-            items: [{
-                name: 'my choice',
-                values: [
-                    {
-                        name: 'noParamChoice'
-                    },
-                    {
-                        name: 'twoParams',
-                        parameters: [
+            parameters: [
+                {
+                    'name': 'my choice',
+                    'label': 'my choice',
+                    'type': 'select',
+                    'configuration': {
+                        'values': [
+                            {"name": "noParamChoice", "value": "noParamChoice"},
                             {
-                                name: 'param1',
-                                label: 'Param 1',
-                                type: 'string',
-                                'inputType': 'text',
-                                default: '.'
-                            },
-                            {
-                                name: 'param2',
-                                label: 'Param 2',
-                                type: 'float',
-                                'inputType': 'number',
-                                default: '5'
+                                "name": "twoParams",
+                                "value": "twoParams",
+                                parameters: [
+                                    {
+                                        label: 'Param 1',
+                                        name: 'param1',
+                                        type: 'string',
+                                        default: '.'
+                                    },
+                                    {
+                                        label: 'Param 2',
+                                        name: 'param2',
+                                        type: 'float',
+                                        default: '5'
+                                    }
+                                ]
                             }
                         ]
-                    }
-                ]
-            }]
+                    },
+                    'default': ''
+                }
+            ]
         };
         var element = createElement();
         var paramChoice = element.find('.param').eq(0);
 
         //when
-        scope.transformation.items[0].selectedValue = scope.transformation.items[0].values[0];
+        scope.transformation.parameters[0].value = scope.transformation.parameters[0].configuration.values[0];
         scope.$digest();
 
         //then
         expect(paramChoice.find('.param-name').length).toBe(1); // choice name only
 
         //when
-        scope.transformation.items[0].selectedValue = scope.transformation.items[0].values[1];
+        scope.transformation.parameters[0].value = scope.transformation.parameters[0].configuration.values[1].value;
         scope.$digest();
 
         //then
@@ -144,7 +150,7 @@ describe('Transformation params directive', function () {
         expect(paramChoice.find('.param-input').eq(2).find('input[type="number"]').length).toBe(1);
     });
 
-    it('should render an action with cluster parameters', function() {
+    it('should render an action with cluster parameters', function () {
         //given
         scope.transformation = {
             name: 'menu with param',

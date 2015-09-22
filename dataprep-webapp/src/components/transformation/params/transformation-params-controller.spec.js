@@ -67,16 +67,21 @@ describe('Transform params controller', function () {
         transformation = {
             name: 'split',
             category: 'split',
-            items: [{
-                name: 'mode',
-                values: [
-                    {name: 'regex'},
-                    {name: 'index'}
-                ]
-            }]
+            parameters: [
+                {
+                    name: 'mode',
+                    type: 'select',
+                    configuration: {
+                        values: [
+                            {name: 'regex', value: 'regex'},
+                            {name: 'index', value: 'index'}
+                        ]
+                    }
+                }
+            ]
         };
         var ctrl = createController();
-        ctrl.transformation.items[0].selectedValue = ctrl.transformation.items[0].values[1];
+        ctrl.transformation.parameters[0].value = ctrl.transformation.parameters[0].configuration.values[1].value;
 
         //when
         ctrl.transformWithParam();
@@ -90,22 +95,28 @@ describe('Transform params controller', function () {
         transformation = {
             name: 'split',
             category: 'split',
-            items: [{
-                name: 'mode',
-                values: [
-                    {
-                        name: 'regex',
-                        parameters : [
-                            {name: 'regex', type: 'text', default: '', value: 'param1Value'},
-                            {name: 'comment', type: 'text', default: '', value: 'my comment'}
+            parameters: [
+                {
+                    name: 'mode',
+                    type: 'select',
+                    configuration: {
+                        values: [
+                            {
+                                name: 'regex',
+                                value: 'regex',
+                                parameters : [
+                                    {name: 'regex', type: 'text', default: '', value: 'param1Value'},
+                                    {name: 'comment', type: 'text', default: '', value: 'my comment'}
+                                ]
+                            },
+                            {name: 'index', value: 'index'}
                         ]
-                    },
-                    {name: 'index'}
-                ]
-            }]
+                    }
+                }
+            ]
         };
         var ctrl = createController();
-        ctrl.transformation.items[0].selectedValue = ctrl.transformation.items[0].values[0];
+        ctrl.transformation.parameters[0].value = ctrl.transformation.parameters[0].configuration.values[0].value;
 
         //when
         ctrl.transformWithParam();
@@ -115,30 +126,35 @@ describe('Transform params controller', function () {
     });
 
     it('should extract parameters and parameterized choice transformation select', function() {
+
         //given
         transformation = {
             name: 'split',
             category: 'split',
             parameters: [
                 {name: 'param1', type: 'text', default: ''},
-                {name: 'param2', type: 'integer', default: '5'}
-            ],
-            items: [{
-                name: 'mode',
-                values: [
-                    {
-                        name: 'regex',
-                        parameters : [
-                            {name: 'regex', type: 'text', default: '', value: 'param1Value'},
-                            {name: 'comment', type: 'text', default: '', value: 'my comment'}
+                {name: 'param2', type: 'integer', default: '5'},
+                {
+                    name: 'mode',
+                    type: 'select',
+                    configuration: {
+                        values: [
+                            {
+                                name: 'regex',
+                                value: 'regex',
+                                parameters : [
+                                    {name: 'regex', type: 'text', default: '', value: 'param1Value'},
+                                    {name: 'comment', type: 'text', default: '', value: 'my comment'}
+                                ]
+                            },
+                            {name: 'index', value: 'index'}
                         ]
-                    },
-                    {name: 'index'}
-                ]
-            }]
+                    }
+                }
+            ]
         };
         var ctrl = createController();
-        ctrl.transformation.items[0].selectedValue = ctrl.transformation.items[0].values[0];
+        ctrl.transformation.parameters[2].value = ctrl.transformation.parameters[2].configuration.values[0].value;
         ctrl.transformation.parameters[0].value = 'param1Value';
         ctrl.transformation.parameters[1].value = 4;
 

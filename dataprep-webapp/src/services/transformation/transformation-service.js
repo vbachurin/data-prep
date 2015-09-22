@@ -168,6 +168,14 @@
                 .forEach(function(param) {
                     param.initialValue = param.value = paramValues[param.name];
                     param.inputType = ConverterService.toInputType(param.type);
+
+                    // also take care of select parameters
+                    if (param.type === 'select' && param.configuration && param.configuration.values) {
+                        _.forEach(param.configuration.values, function(selectItem) {
+                            initParameters(selectItem.parameters, paramValues);
+                        });
+                    }
+
                 })
                 .value();
         }
