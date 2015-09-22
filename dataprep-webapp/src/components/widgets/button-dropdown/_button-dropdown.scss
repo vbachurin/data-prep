@@ -13,6 +13,7 @@
     color: $button-color;
     cursor: pointer;
     height: 36px;
+    line-height: 36px;
 
     font-size: 0.7em;
     @include media($large-screen) {

@@ -43,15 +43,10 @@
 
 .right-header {
   float: right;
-  margin-right: 80px;
+  margin-right: 51px;
 
   .onboarding-prep-icon {
     color: $medium-gray;
-    font-size: 1.8em;
-    width: 40px;
-    height: 35px;
-    position: relative;
-    top: 6px;
     padding-left: 10px;
     padding-right: 10px;
     @include filter(drop-shadow(0px 1px 1px #1f2024));
@@ -115,17 +110,9 @@
       padding: 3px;
       a {
         font-family: $iconsfont;
-        font-size: .9em;
-        margin: 1px;
-        padding: 6px;
+        font-size: .5em;
+        padding: 8px 5px;
         border-radius: 50px;
-        vertical-align: middle;
-        background-color: transparent;
-        color: $medium-gray;
-        font-weight: 400;
-        font-style: normal;
-        width: 24px;
-        height: 24px;
 
         &.edit-btn {
           color: $medium-gray;
