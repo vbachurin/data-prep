@@ -9,7 +9,6 @@
      * @requires data-prep.services.transformation.service:TransformationService
      */
     function RecipeService(state, PreparationService, TransformationService) {
-        var choiceType = 'CHOICE';
         var clusterType = 'CLUSTER';
 
         /**

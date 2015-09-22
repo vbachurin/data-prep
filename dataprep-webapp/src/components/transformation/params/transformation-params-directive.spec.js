@@ -67,8 +67,8 @@ describe('Transformation params directive', function () {
                     'type': 'select',
                     'configuration': {
                         'values': [
-                            {"name": "noParamChoice1", "value": "noParamChoice1"},
-                            {"name": "noParamChoice2", "value": "noParamChoice2"}
+                            {name: 'noParamChoice1', value: 'noParamChoice1'},
+                            {name: 'noParamChoice2', value: 'noParamChoice2'}
                         ]
                     },
                     'default': ''
@@ -101,10 +101,10 @@ describe('Transformation params directive', function () {
                     'type': 'select',
                     'configuration': {
                         'values': [
-                            {"name": "noParamChoice", "value": "noParamChoice"},
+                            {name: 'noParamChoice', value: 'noParamChoice'},
                             {
-                                "name": "twoParams",
-                                "value": "twoParams",
+                                name: 'twoParams',
+                                value: 'twoParams',
                                 parameters: [
                                     {
                                         label: 'Param 1',

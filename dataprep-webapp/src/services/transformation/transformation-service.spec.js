@@ -502,17 +502,17 @@ describe('Transformation Service', function () {
             parameters: [
                 {
                     name: 'mode',
-                    'type': 'select',
-                    'configuration': {
-                        'values': [
+                    type: 'select',
+                    configuration: {
+                        values: [
                             {
-                                "name": "regex",
-                                "value": "regex",
+                                name: 'regex',
+                                value: 'regex',
                                 parameters: [
                                     {name: 'pattern', type: 'text', default: 'toto'}
                                 ]
                             },
-                            {"name": "index", "value": "index"}
+                            {name: 'index', value: 'index'}
                         ]
                     },
                     default: 'index'
