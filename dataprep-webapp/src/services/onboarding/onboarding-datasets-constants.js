@@ -4,8 +4,8 @@
     var datasetTour = [
         {
             element: '.no-js',
-            title: 'Welcome to Talend Data Preparation!',
-            content: 'To know more about Talend Data Preparation, take this quick tour!',
+            title: 'Welcome to Talend Data Preparation',
+            content: 'To learn more about Talend Data Preparation, take this quick tour',
             position: 'right'
         },
         {
