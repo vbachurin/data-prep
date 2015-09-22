@@ -40,6 +40,15 @@
 
         /**
          * @ngdoc property
+         * @name showRightPanelIcon
+         * @propertyOf data-prep.home.controller:HomeCtrl
+         * @description data icon of the state of the right panel
+         * @type {string}
+         */
+        vm.showRightPanelIcon = vm.showRightPanel ? 't' : 'u';
+
+        /**
+         * @ngdoc property
          * @name uploadingDatasets
          * @propertyOf data-prep.home.controller:HomeCtrl
          * @description The current uploading datasets
@@ -55,7 +64,9 @@
          */
         vm.toggleRightPanel = function () {
             vm.showRightPanel = !vm.showRightPanel;
+
             setParameters(vm.showRightPanel);
+            vm.showRightPanelIcon = vm.showRightPanel ? 't' : 'u';
         };
 
         /**

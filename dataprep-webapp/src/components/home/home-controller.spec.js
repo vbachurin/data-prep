@@ -81,6 +81,23 @@ describe('Home controller', function () {
             expect(JSON.parse($window.localStorage.getItem(DATA_INVENTORY_PANEL_KEY))).toBeFalsy();
         }));
 
+        it('should update right panel icon', inject(function () {
+            //given
+            expect(ctrl.showRightPanelIcon).toBe('u');
+
+            //when
+            ctrl.toggleRightPanel();
+
+            //then
+            expect(ctrl.showRightPanelIcon).toBe('t');
+
+            //when
+            ctrl.toggleRightPanel();
+
+            //then
+            expect(ctrl.showRightPanelIcon).toBe('u');
+        }));
+
         it('should remove file extension for name init and display name modal on step 1', function () {
             //given
             expect(ctrl.datasetNameModal).toBeFalsy();
