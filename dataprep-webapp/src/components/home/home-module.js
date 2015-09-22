@@ -8,7 +8,6 @@
      * @requires talend.widget
      * @requires data-prep.dataset-upload-list
      * @requires data-prep.dataset-list
-     * @requires data-prep.playground
      * @requires data-prep.preparation-list
      * @requires data-prep.services.dataset
      * @requires data-prep.services.utils
@@ -19,7 +18,6 @@
         'talend.widget',
         'data-prep.dataset-upload-list',
         'data-prep.dataset-list',
-        'data-prep.playground',
         'data-prep.preparation-list',
         'data-prep.services.dataset',
         'data-prep.services.utils',
