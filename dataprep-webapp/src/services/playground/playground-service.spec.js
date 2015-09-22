@@ -190,7 +190,7 @@ describe('Playground Service', function () {
             //when
             PlaygroundService.initPlayground(dataset);
             $rootScope.$digest();
-            jasmine.clock().tick(200);
+            jasmine.clock().tick(300);
 
             //then
             expect(OnboardingService.shouldStartTour).toHaveBeenCalledWith('playground');
@@ -207,7 +207,7 @@ describe('Playground Service', function () {
             //when
             PlaygroundService.initPlayground(dataset);
             $rootScope.$digest();
-            jasmine.clock().tick(200);
+            jasmine.clock().tick(300);
 
             //then
             expect(OnboardingService.shouldStartTour).toHaveBeenCalledWith('playground');
@@ -1170,11 +1170,11 @@ describe('Playground Service', function () {
             PlaygroundService.appendStep(action, column, parameters);
             stateMock.playground.preparation = createdPreparation;
             $rootScope.$digest();
-            jasmine.clock().tick(200);
+            jasmine.clock().tick(300);
 
             //given : second action call
             PlaygroundService.appendStep(action, column, parameters);
-            jasmine.clock().tick(200);
+            jasmine.clock().tick(300);
             $rootScope.$digest();
 
             expect(StateService.showRecipe.calls.count()).toBe(1); //called on 1st action
@@ -1183,7 +1183,7 @@ describe('Playground Service', function () {
             //when
             PlaygroundService.appendStep(action, column, parameters);
             $rootScope.$digest();
-            jasmine.clock().tick(200);
+            jasmine.clock().tick(300);
 
             //then
             expect(StateService.showRecipe.calls.count()).toBe(2);
@@ -1204,11 +1204,11 @@ describe('Playground Service', function () {
             PlaygroundService.appendStep(action, column, parameters);
             stateMock.playground.preparation = createdPreparation;
             $rootScope.$digest();
-            jasmine.clock().tick(200);
+            jasmine.clock().tick(300);
 
             //given : second action call
             PlaygroundService.appendStep(action, column, parameters);
-            jasmine.clock().tick(200);
+            jasmine.clock().tick(300);
             $rootScope.$digest();
 
             expect(StateService.showRecipe.calls.count()).toBe(1); //called on 1st action
@@ -1217,7 +1217,7 @@ describe('Playground Service', function () {
             //when
             PlaygroundService.appendStep(action, column, parameters);
             $rootScope.$digest();
-            jasmine.clock().tick(200);
+            jasmine.clock().tick(300);
 
             //then
             expect(StateService.showRecipe.calls.count()).toBe(1);

@@ -116,7 +116,7 @@
                     })
                     .then(function() {
                         if(OnboardingService.shouldStartTour('playground')) {
-                            setTimeout(OnboardingService.startTour.bind(null, 'playground'), 200);
+                            setTimeout(OnboardingService.startTour.bind(null, 'playground'), 300);
                         }
                     });
             }
@@ -498,7 +498,7 @@
                     }
                     else if(OnboardingService.shouldStartTour('recipe') && RecipeService.getRecipe().length === 3) { //third step append : show onboarding
                         StateService.showRecipe();
-                        setTimeout(OnboardingService.startTour.bind(null, 'recipe'), 200);
+                        setTimeout(OnboardingService.startTour.bind(null, 'recipe'), 300);
                     }
                 });
         }
