@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -12,6 +13,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Parameter that should be displayed as a select box in the UI.
  */
 public class SelectParameter extends Parameter implements Serializable {
+
+    /** The select items. */
+    @JsonIgnore // will be part of the Parameter#configuration
+    private List<Item> items;
+
+    /** True if multiple items can be selected. */
+    @JsonIgnore // will be part of the Parameter#configuration
+    private boolean multiple;
 
     /**
      * Private constructor to ensure the use of builder.
@@ -26,8 +35,38 @@ public class SelectParameter extends Parameter implements Serializable {
     private SelectParameter(String name, String defaultValue, boolean implicit, boolean canBeBlank, List<Item> items,
             boolean multiple) {
         super(name, ParameterType.SELECT.asString(), defaultValue, implicit, canBeBlank);
+        setItems(items);
+        setMultiple(multiple);
+    }
+
+    /**
+     * @return the Items
+     */
+    public List<Item> getItems() {
+        return items;
+    }
+
+    /**
+     * @param items the items to set.
+     */
+    public void setItems(List<Item> items) {
         addConfiguration("values", items);
+        this.items = items;
+    }
+
+    /**
+     * @return the Multiple
+     */
+    public boolean isMultiple() {
+        return multiple;
+    }
+
+    /**
+     * @param multiple the multiple to set.
+     */
+    public void setMultiple(boolean multiple) {
         addConfiguration("multiple", multiple);
+        this.multiple = multiple;
     }
 
     /**
