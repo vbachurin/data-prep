@@ -18,6 +18,20 @@
         var vm = this;
         vm.value = '';
 
+        switch (vm.type){
+            case 'contains':
+                vm.sign = '≅';
+                break;
+            case 'exact_filter':
+                vm.sign = '=';
+                break;
+            case 'inside_range':
+                vm.sign = 'in';
+                break;
+            default:
+                vm.sign = ':';
+        }
+
         /**
          * @ngdoc method
          * @name manageChange

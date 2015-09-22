@@ -2,6 +2,7 @@
   @include flex-row();
 
   .playground-center {
+    position: relative;
     @extend .flex-center;
 
     .filter-list {
@@ -74,6 +75,18 @@
         vertical-align: middle;
       }
     }
+  }
+
+  #playground-lookup-icon {
+    padding: 8px;
+
+    > img {
+      vertical-align: middle;
+    }
+  }
+
+  .pressed {
+    @include background(linear-gradient(#4D4D50, #6E6D71) left repeat);
   }
 }
 

@@ -1,6 +1,11 @@
 .stats-part {
   font-size: 1em;
 
+  .stat-detail-tab-items{
+    height: 100%;
+    overflow-y: auto;
+  }
+
   .two-columns-values{
     @include display(flex);
     @include flex-wrap(wrap);
@@ -33,9 +38,9 @@
   }
   }
 
-
   .values-text{
     color:cadetblue;
     font-size: 15px;
   }
+
 }

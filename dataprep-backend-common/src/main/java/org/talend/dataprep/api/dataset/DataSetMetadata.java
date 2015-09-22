@@ -6,6 +6,7 @@ import java.util.*;
 import org.springframework.data.annotation.Id;
 import org.talend.dataprep.api.dataset.location.LocalStoreLocation;
 import org.talend.dataprep.schema.SchemaParserResult;
+import org.talend.dataprep.schema.io.CSVSerializer;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -81,6 +82,14 @@ public class DataSetMetadata implements Serializable {
      */
     @JsonProperty("favorite")
     private transient boolean favorite;
+
+    /**
+     * indicates what encoding should be used to read raw content. Defaults to UTF-8 but may be changed depending on
+     * content.
+     * @see CSVSerializer#serialize(java.io.InputStream, org.talend.dataprep.api.dataset.DataSetMetadata)
+     */
+    @JsonProperty("encoding")
+    private String encoding = "UTF-8";
 
     /**
      * Default empty constructor.
@@ -244,6 +253,21 @@ public class DataSetMetadata implements Serializable {
     }
 
     /**
+     * @return The data set content's encoding
+     */
+    public String getEncoding() {
+        return encoding;
+    }
+
+    /**
+     * Changes the encoding of the data set content.
+     * @param encoding The new encoding. Must be supported by current JVM.
+     */
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    /**
      * Sets the favorite.
      *
      * @param favorite the favorite to set
@@ -378,6 +402,9 @@ public class DataSetMetadata implements Serializable {
         /** Dataset builder. */
         private ColumnMetadata.Builder[] columnBuilders;
 
+        /** Encoding of data set content */
+        private String encoding = "UTF8";
+
         public static DataSetMetadata.Builder metadata() {
             return new Builder();
         }
@@ -462,6 +489,11 @@ public class DataSetMetadata implements Serializable {
             return this;
         }
 
+        public Builder encoding(String encoding) {
+            this.encoding = encoding;
+            return this;
+        }
+
         public DataSetMetadata.Builder isFavorite(boolean isFavorite) {
             this.isFavorite = isFavorite;
             return this;
@@ -501,6 +533,7 @@ public class DataSetMetadata implements Serializable {
             this.schemaAnalyzed = original.getLifecycle().schemaAnalyzed();
             this.importing = original.getLifecycle().importing();
             this.parameters = original.getContent().getParameters();
+            this.encoding = original.getEncoding();
             List<ColumnMetadata.Builder> builders = new ArrayList<>();
             if (original.getRow() != null) {
                 for (ColumnMetadata col : original.getRow().getColumns()) {
@@ -538,6 +571,7 @@ public class DataSetMetadata implements Serializable {
             metadata.setSchemaParserResult(this.schemaParserResult);
 
             // Content information
+            metadata.setEncoding(encoding);
             DataSetContent currentContent = metadata.getContent();
             currentContent.setNbRecords(size);
             currentContent.setNbLinesInHeader(headerSize);
