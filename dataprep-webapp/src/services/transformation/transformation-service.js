@@ -43,7 +43,6 @@
          */
         function cleanParams(menus) {
             return _.forEach(menus, function(menu) {
-                //params
                 var filteredParameters = _.filter(menu.parameters, isExplicitParameter);
                 menu.parameters = filteredParameters.length ? filteredParameters : null;
             });
@@ -60,10 +59,15 @@
             if(menu.parameters) {
                 _.forEach(menu.parameters, function(param) {
                     param.inputType = ConverterService.toInputType(param.type);
-                    // also take care of select parameters
-                    if (param.configuration && param.configuration.values) {
+
+                    // also take care of select parameters...
+                    if (param.type === 'select' && param.configuration && param.configuration.values) {
                         _.forEach(param.configuration.values, function(selectItem) {
                             selectItem.inputType = ConverterService.toInputType(selectItem.type);
+                            // ...and its parameters
+                            if (selectItem.parameters) {
+                                insertType(selectItem);
+                            }
                         });
                     }
                 });
@@ -80,12 +84,6 @@
         function adaptInputTypes(menus) {
             _.forEach(menus, function(menu) {
                 insertType(menu);
-
-                _.forEach(menu.items, function(item) {
-                    _.forEach(item.values, function(choiceValue) {
-                        insertType(choiceValue);
-                    });
-                });
             });
 
             return menus;

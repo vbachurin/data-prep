@@ -159,56 +159,60 @@ describe('Transformation Service', function () {
                 category: 'split',
                 parameters: [
                     {name: 'column_name', type: 'string', implicit: true},
-                    {name: 'column_id', type: 'string', implicit: true}
-                ],
-                'items': [{
-                    name: 'mode',
-                    values: [
-                        {
-                            name: 'noparam'
-                        },
-                        {
-                            name: 'regex',
-                            'parameters': [
+                    {name: 'column_id', type: 'string', implicit: true},
+                    {
+                        name: 'mode',
+                        type: 'select',
+                        configuration: {
+                            values: [
+                                {name: 'noparam', value: 'noparam'},
                                 {
-                                    'name': 'regexp',
-                                    'type': 'string',
-                                    'default': '.'
-                                }
-                            ]
-                        },
-                        {
-                            name: 'index',
-                            'parameters': [
-                                {
-                                    'name': 'index',
-                                    'type': 'integer',
-                                    'default': '5'
-                                }
-                            ]
-                        },
-                        {
-                            name: 'threeParams',
-                            'parameters': [
-                                {
-                                    'name': 'index',
-                                    'type': 'numeric',
-                                    'default': '5'
+                                    name: 'regex',
+                                    value: 'regex',
+                                    parameters: [
+                                        {
+                                            name: 'regexp',
+                                            type: 'string',
+                                            default: '.'
+                                        }
+                                    ]
                                 },
                                 {
-                                    'name': 'index2',
-                                    'type': 'float',
-                                    'default': '5'
+                                    name: 'index',
+                                    value: 'index',
+                                    'parameters': [
+                                        {
+                                            'name': 'index',
+                                            'type': 'integer',
+                                            default: '5'
+                                        }
+                                    ]
                                 },
                                 {
-                                    'name': 'index3',
-                                    'type': 'double',
-                                    'default': '5'
+                                    name: 'threeParams',
+                                    value: 'threeParams',
+                                    'parameters': [
+                                        {
+                                            'name': 'index',
+                                            'type': 'numeric',
+                                            'default': '5'
+                                        },
+                                        {
+                                            'name': 'index2',
+                                            'type': 'float',
+                                            'default': '5'
+                                        },
+                                        {
+                                            'name': 'index3',
+                                            'type': 'double',
+                                            'default': '5'
+                                        }
+                                    ]
                                 }
                             ]
                         }
-                    ]
-                }]
+                    }
+                ]
             }
         ];
     };
@@ -599,11 +603,8 @@ describe('Transformation Service', function () {
         expect(transformations[1].parameters).toBe(null); // delete column_name & column_id parameter
         expect(transformations[2].parameters.length).toBe(1); // delete column_name & column_id parameter
         expect(transformations[2].parameters[0].inputType).toBe('text'); //adapt input type
-        expect(transformations[3].parameters).toBe(null); // delete column_name & column_id parameter
-        expect(transformations[3].items[0].values[1].parameters[0].inputType).toBe('text'); //adapt input type
-        expect(transformations[3].items[0].values[2].parameters[0].inputType).toBe('number'); //adapt input type
-        expect(transformations[3].items[0].values[3].parameters[0].inputType).toBe('number'); //adapt input type
-        expect(transformations[3].items[0].values[3].parameters[1].inputType).toBe('number'); //adapt input type
-        expect(transformations[3].items[0].values[3].parameters[2].inputType).toBe('number'); //adapt input type
+        expect(transformations[3].parameters[0].configuration.values[1].inputType).toBe('text'); //adapt input type
+        expect(transformations[3].parameters[0].configuration.values[2].parameters[0].inputType).toBe('number'); //adapt input type
+        expect(transformations[3].parameters[0].configuration.values[3].parameters[0].inputType).toBe('number'); //adapt input type
     }));
 });
