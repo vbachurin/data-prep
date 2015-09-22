@@ -3,19 +3,26 @@
 
     var playgroundTour = [
         {
-            element: '.no-js',
-            title: 'Welcome to Talend Data Preparation!',
-            content: 'To know more about Talend Data Preparation, take this quick tour!',
+            element: '#datagrid .slick-header-columns-right > .slick-header-column',
+            title: 'Columns',
+            content: 'Select a column to discover which actions you can apply on its cells, use the bar bellow to identify invalid or empty values.',
             position: 'right'
         },
         {
-            element: '#playground-sampling-select',
-            title: 'Dataset sampling',
-            content: 'Click here to select a sample size.',
-            position: 'right'
+            element: '#help-suggestions > .actions-suggestions',
+            title: 'Available actions',
+            content: 'Simply click on one of those to perform it. Easy, you will be able to undo or  change it after.',
+            position: 'left'
+        },
+        {
+            element: '#help-stats > .actions-suggestions',
+            title: 'Stats',
+            content: 'Here are some stats to help you to discover your data.',
+            position: 'left'
         }
     ];
 
     angular.module('data-prep.services.onboarding')
         .constant('playgroundTour', playgroundTour);
 })();
+

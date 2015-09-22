@@ -7,7 +7,16 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 
 /**
@@ -15,16 +24,22 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
  * 
  * @see CSVSerializer
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = CSVSerializerTest.class)
+@Configuration
+@ComponentScan(basePackages = "org.talend.dataprep")
+@EnableAutoConfiguration
 public class CSVSerializerTest {
+
+    @Autowired
+    private ApplicationContext context;
 
     /** The Serializer to test. */
     private CSVSerializer serializer;
 
-    /**
-     * Init the serializer to test.
-     */
-    public CSVSerializerTest() {
-        serializer = new CSVSerializer();
+    @Before
+    public void setUp() throws Exception {
+        serializer = context.getBean(CSVSerializer.class);
     }
 
     @Test

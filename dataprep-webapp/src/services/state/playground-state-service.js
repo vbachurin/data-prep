@@ -65,6 +65,7 @@
             playgroundState.dataset = null;
             playgroundState.preparation = null;
             playgroundState.nameEditionMode = false;
+            playgroundState.lookupVisibility = false;
         }
     }
 

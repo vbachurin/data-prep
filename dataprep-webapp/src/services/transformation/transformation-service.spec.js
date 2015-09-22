@@ -480,13 +480,15 @@ describe('Transformation Service', function () {
         var transformation = {
             parameters: [
                 {name: 'column_id', type: 'text', value: 'col', implicit: true},
-                {name: 'pattern', type: 'text', default: 'toto'}
+                {name: 'pattern', type: 'text', default: 'toto'},
+                {name: 'patternBool', type: 'boolean', default: 'false'}
             ]
         };
 
         var paramValues = {
             column_name: 'col',
-            pattern: 'tata'
+            pattern: 'tata',
+            patternBool: 'true'
         };
 
         //when
@@ -496,6 +498,8 @@ describe('Transformation Service', function () {
         expect(transformation.parameters[0].value).toBe('tata');
         expect(transformation.parameters[0].initialValue).toBe('tata');
         expect(transformation.parameters[0].inputType).toBe('text');
+        expect(transformation.parameters[1].value).toBe(true);
+        expect(transformation.parameters[1].initialValue).toBe(true);
     }));
 
     it('should init params values on simple params', inject(function (TransformationService) {

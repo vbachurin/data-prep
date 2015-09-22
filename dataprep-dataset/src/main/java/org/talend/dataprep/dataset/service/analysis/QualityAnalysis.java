@@ -1,26 +1,30 @@
 package org.talend.dataprep.dataset.service.analysis;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.Quality;
+import org.talend.dataprep.api.dataset.statistics.StatisticsUtils;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
+import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataquality.statistics.numeric.summary.SummaryAnalyzer;
-import org.talend.dataquality.statistics.numeric.summary.SummaryStatistics;
 import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
 import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.datascience.common.inference.Analyzer;
@@ -28,7 +32,10 @@ import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.type.DataType;
 
 @Component
-public class QualityAnalysis implements SynchronousDataSetAnalyzer {
+public class QualityAnalysis implements SynchronousDataSetAnalyzer, AsynchronousDataSetAnalyzer {
+
+    @Value("max_records")
+    public static final int MAX_RECORD = 5000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QualityAnalysis.class);
 
@@ -37,6 +44,20 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
 
     @Autowired
     ContentStoreRouter store;
+
+    @JmsListener(destination = Destinations.QUALITY_ANALYSIS)
+    public void analyzeQuality(Message message) {
+        try {
+            String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1$
+            try {
+                analyze(dataSetId);
+            } finally {
+                message.acknowledge();
+            }
+        } catch (JMSException e) {
+            throw new TDPException(DataSetErrorCodes.UNEXPECTED_JMS_EXCEPTION, e);
+        }
+    }
 
     /**
      * Analyse the dataset metadata quality.
@@ -56,14 +77,29 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
                 LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
                 return;
             }
+            if (!metadata.getLifecycle().inProgress()) {
+                LOGGER.debug("No need to recompute quality of data set #{} (statistics are completed).", dataSetId);
+                return;
+            }
             try (Stream<DataSetRow> stream = store.stream(metadata)) {
                 if (!metadata.getLifecycle().schemaAnalyzed()) {
                     LOGGER.debug("Schema information must be computed before quality analysis can be performed, ignoring message");
                     return; // no acknowledge to allow re-poll.
                 }
                 LOGGER.info("Analyzing quality of dataset #{}...", metadata.getId());
-                computeQuality(metadata, stream);
-
+                // New data set, or reached the max limit of records for synchronous analysis, trigger a full scan (but async).
+                final int dataSetSize = metadata.getContent().getNbRecords();
+                final boolean isNewDataSet = dataSetSize == 0;
+                if (isNewDataSet || dataSetSize == MAX_RECORD) {
+                    // If data set size is MAX_RECORD, performs a full scan, otherwise only take first MAX_RECORD records.
+                    computeQuality(metadata, stream, dataSetSize == MAX_RECORD ? -1 : MAX_RECORD);
+                }
+                // Turn on / off "in progress" flag
+                if (isNewDataSet && metadata.getContent().getNbRecords() >= MAX_RECORD) {
+                    metadata.getLifecycle().inProgress(true);
+                } else {
+                    metadata.getLifecycle().inProgress(false);
+                }
                 // ... all quality is now analyzed, mark it so.
                 metadata.getLifecycle().qualityAnalyzed(true);
                 repository.add(metadata);
@@ -87,11 +123,11 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
 
     /**
      * Compute the quality (count, valid, invalid and empty) of the given dataset.
-     *
-     * @param dataset the dataset metadata.
+     *  @param dataset the dataset metadata.
      * @param records the dataset records
+     * @param limit indicates how many records will be read from stream. Use a number < 0 to perform a full scan of
      */
-    public void computeQuality(DataSetMetadata dataset, Stream<DataSetRow> records) {
+    public void computeQuality(DataSetMetadata dataset, Stream<DataSetRow> records, long limit) {
         // Compute valid / invalid / empty count, need data types for analyzer first
         final List<ColumnMetadata> columns = dataset.getRow().getColumns();
         if (columns.isEmpty()) {
@@ -103,34 +139,25 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
         final ValueQualityAnalyzer valueQualityAnalyzer = new ValueQualityAnalyzer(types);
         valueQualityAnalyzer.setStoreInvalidValues(true);
         final Analyzer<Analyzers.Result> analyzer = Analyzers.with(valueQualityAnalyzer, new SummaryAnalyzer(types));
+        if (limit > 0) { // Only limit number of rows if limit > 0 (use limit to speed up sync analysis.
+            LOGGER.debug("Limit analysis to the first {}.", limit);
+            records = records.limit(limit);
+        } else {
+            LOGGER.debug("Performing full analysis.");
+        }
         records.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
         // Determine content size
         final List<Analyzers.Result> result = analyzer.getResult();
-        final Iterator<ColumnMetadata> iterator = columns.iterator();
-        for (Analyzers.Result analyzerResult : result) {
-            final ValueQualityStatistics valueQuality = analyzerResult.get(ValueQualityStatistics.class);
-            final SummaryStatistics summaryStatistics = analyzerResult.get(SummaryStatistics.class);
-            if (!iterator.hasNext()) {
-                LOGGER.warn("More quality information than number of columns in data set #{}.", dataset.getId());
-                break;
-            }
-            final ColumnMetadata currentColumn = iterator.next();
-            // Set column's quality (empty / invalid / ...)
-            final Quality quality = currentColumn.getQuality();
-            quality.setEmpty((int) valueQuality.getEmptyCount());
-            quality.setValid((int) valueQuality.getValidCount());
-            quality.setInvalid((int) valueQuality.getInvalidCount());
-            quality.setInvalidValues(valueQuality.getInvalidValues());
-            // Remember the number of records
-            dataset.getContent().setNbRecords((int) valueQuality.getCount());
-            // Later processes (statistics -> histogram) need min & max
-            currentColumn.getStatistics().setMax(summaryStatistics.getMax());
-            currentColumn.getStatistics().setMin(summaryStatistics.getMin());
-            currentColumn.getStatistics().setMean(summaryStatistics.getMean());
+        StatisticsUtils.setStatistics(columns, result);
+        // Remember the number of records
+        if (!result.isEmpty()) {
+            final long recordCount = result.get(0).get(ValueQualityStatistics.class).getCount();
+            dataset.getContent().setNbRecords((int) recordCount);
         }
-        // If there are columns remaining, warn for missing information
-        while (iterator.hasNext()) {
-            LOGGER.warn("No quality information returned for {} in data set #{}.", iterator.next().getId(), dataset.getId());
-        }
+    }
+
+    @Override
+    public String destination() {
+        return Destinations.QUALITY_ANALYSIS;
     }
 }

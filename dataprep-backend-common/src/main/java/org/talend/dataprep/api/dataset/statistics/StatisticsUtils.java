@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.Quality;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataquality.statistics.cardinality.CardinalityStatistics;
 import org.talend.dataquality.statistics.frequency.DataFrequencyStatistics;
@@ -34,7 +35,14 @@ public class StatisticsUtils {
             final Statistics statistics = currentColumn.getStatistics();
             // Value quality (empty / invalid / ...)
             if (result.exist(ValueQualityStatistics.class)) {
+                final Quality quality = currentColumn.getQuality();
                 final ValueQualityStatistics valueQualityStatistics = result.get(ValueQualityStatistics.class);
+                // Set in column quality...
+                quality.setEmpty((int) valueQualityStatistics.getEmptyCount());
+                quality.setValid((int) valueQualityStatistics.getValidCount());
+                quality.setInvalid((int) valueQualityStatistics.getInvalidCount());
+                quality.setInvalidValues(valueQualityStatistics.getInvalidValues());
+                // ... and statistics
                 statistics.setCount(valueQualityStatistics.getCount());
                 statistics.setEmpty(valueQualityStatistics.getEmptyCount());
                 statistics.setInvalid(valueQualityStatistics.getInvalidCount());
@@ -47,8 +55,8 @@ public class StatisticsUtils {
                 statistics.setDuplicateCount(cardinalityStatistics.getDuplicateCount());
             }
             // Frequencies (data)
-            final DataFrequencyStatistics dataFrequencyStatistics = result.get(DataFrequencyStatistics.class);
             if (result.exist(DataFrequencyStatistics.class)) {
+                final DataFrequencyStatistics dataFrequencyStatistics = result.get(DataFrequencyStatistics.class);
                 final Map<String, Long> topTerms = dataFrequencyStatistics.getTopK(15);
                 if (topTerms != null) {
                     statistics.getDataFrequencies().clear();
@@ -99,8 +107,14 @@ public class StatisticsUtils {
                         range.getRange().setMax(r.getUpper());
                         range.getRange().setMin(r.getLower());
                     } else {
-                        range.getRange().setMax(new Double(format.format(r.getUpper())));
-                        range.getRange().setMin(new Double(format.format(r.getLower())));
+                        try {
+                            range.getRange().setMax(new Double(format.format(r.getUpper())));
+                            range.getRange().setMin(new Double(format.format(r.getLower())));
+                        } catch (NumberFormatException e) {
+                            // Fallback to unformatted numbers (unable to parse numbers).
+                            range.getRange().setMax(r.getUpper());
+                            range.getRange().setMin(r.getLower());
+                        }
                     }
                     range.setOccurrences(v);
                     statistics.getHistogram().add(range);

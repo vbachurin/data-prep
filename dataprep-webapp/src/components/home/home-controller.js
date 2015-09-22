@@ -9,10 +9,9 @@
      * @requires data-prep.services.dataset.service:DatasetService
      * @requires talend.widget.service:TalendConfirmService
      * @requires data-prep.services.uploadWorkflowService.service:UploadWorkflowService
-     * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.state.service:StateService
      */
-    function HomeCtrl($window, UploadWorkflowService, MessageService, DatasetService, TalendConfirmService, PlaygroundService, StateService) {
+    function HomeCtrl($window, UploadWorkflowService, MessageService, DatasetService, TalendConfirmService, StateService) {
         var vm = this;
         var DATA_INVENTORY_PANEL_KEY = 'org.talend.dataprep.data_inventory_panel_display';
 
@@ -36,7 +35,7 @@
          * @description Flag that control the right panel display
          * @type {boolean}
          */
-        vm.showRightPanel = getParameters();
+        vm.showRightPanel = getRightPanelState();
 
         /**
          * @ngdoc property
@@ -45,7 +44,8 @@
          * @description data icon of the state of the right panel
          * @type {string}
          */
-        vm.showRightPanelIcon = vm.showRightPanel ? 't' : 'u';
+        vm.showRightPanelIcon = 'u';
+        updateRightPanelIcon();
 
         /**
          * @ngdoc property
@@ -56,6 +56,9 @@
          */
         vm.uploadingDatasets = [];
 
+        //--------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------Right panel------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name toggleRightPanel
@@ -65,31 +68,44 @@
         vm.toggleRightPanel = function () {
             vm.showRightPanel = !vm.showRightPanel;
 
-            setParameters(vm.showRightPanel);
-            vm.showRightPanelIcon = vm.showRightPanel ? 't' : 'u';
+            saveRightPanelState();
+            updateRightPanelIcon();
         };
 
         /**
          * @ngdoc method
-         * @name getParameters
+         * @name updateRightPanelIcon
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @description Update the displayed icon to toggle right panel
+         */
+        function updateRightPanelIcon() {
+            vm.showRightPanelIcon = vm.showRightPanel ? 't' : 'u';
+        }
+
+        /**
+         * @ngdoc method
+         * @name getRightPanelState
          * @methodOf data-prep.home.controller:HomeCtrl
          * @description Get the data inventory panel parameters from localStorage
          */
-        function getParameters() {
+        function getRightPanelState() {
             var params = $window.localStorage.getItem(DATA_INVENTORY_PANEL_KEY);
             return params ? JSON.parse(params) : false;
         }
 
         /**
          * @ngdoc method
-         * @name setParameters
+         * @name saveRightPanelState
          * @methodOf data-prep.home.controller:HomeCtrl
          * @description Save the data inventory panel parameters in localStorage
          */
-        function setParameters(params) {
-            $window.localStorage.setItem(DATA_INVENTORY_PANEL_KEY, JSON.stringify(params));
+        function saveRightPanelState() {
+            $window.localStorage.setItem(DATA_INVENTORY_PANEL_KEY, JSON.stringify(vm.showRightPanel));
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        //-----------------------------------------------------Import---------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name startDefaultImport

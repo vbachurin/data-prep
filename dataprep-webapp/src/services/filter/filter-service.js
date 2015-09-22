@@ -35,7 +35,7 @@
             switch (self.type) {
                 case 'contains':
                     return self.args.phrase;
-                case 'exact_filter':
+                case 'exact':
                     return self.args.phrase;
                 case 'invalid_records':
                     return 'invalid records';
@@ -102,6 +102,21 @@
         //--------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------FILTER FNs-------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
+        // To add a new filter function, you must follow this steps.
+        // A filter function has 2 levels of functions : (data) => (item) => {predicate}
+        // * the first level is the initialization level. It takes the data {columns: [], records: []} as parameter. The goal is to initialize the values for the closure it returns.
+        // * the second level is the predicate that is applied on every record item. It returns 'true' if it matches the predicate, 'false' otherwise.
+        //
+        // Example :
+        //    return function(data) {                                                       // first level: it init the list of invalid values, based on the current data. It returns the predicate that use this list.
+        //        var column = _.find(data.columns, {id: '0001'});
+        //        var invalidValues = column.quality.invalidValues;
+        //        return function (item) {                                                  // second level : returns true if the item is not in the invalid values list
+        //            return item['0001'] && invalidValues.indexOf(item['0001']) === -1;
+        //        };
+        //    };
+        //--------------------------------------------------------------------------------------------------------------
+
         /**
          * @ngdoc method
          * @name createContainFilterFn
@@ -114,14 +129,17 @@
         function createContainFilterFn(colId, phrase) {
             var lowerCasePhrase = phrase.toLowerCase();
             var regexp = new RegExp(escapeRegExpExceptStar(lowerCasePhrase));
-            return function (item) {
-                // col could be removed by a step
-                if (item[colId]) {
-                    return item[colId].toLowerCase().match(regexp);
-                }
-                else {
-                    return false;
-                }
+
+            return function() {
+                return function (item) {
+                    // col could be removed by a step
+                    if (item[colId]) {
+                        return item[colId].toLowerCase().match(regexp);
+                    }
+                    else {
+                        return false;
+                    }
+                };
             };
         }
 
@@ -131,33 +149,38 @@
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {string} colId The column id
          * @param {string} phrase The phrase that the item must be exactly equal to
-         * @description [PRIVATE] Create a 'exact_filter' filter function
+         * @description [PRIVATE] Create a filter function that test exact equality
          * @returns {function} The predicate function
          */
         function createExactFilterFn(colId, phrase) {
-            return function (item) {
-                // col could be removed by a step
-                if (item[colId]) {
-                    return item[colId] === phrase;
-                }
-                else {
-                    return false;
-                }
+            return function() {
+                return function (item) {
+                    // col could be removed by a step
+                    if (item[colId]) {
+                        return item[colId] === phrase;
+                    }
+                    else {
+                        return false;
+                    }
+                };
             };
         }
 
         /**
          * @ngdoc method
-         * @name createEqualFilterFn
+         * @name createInvalidFilterFn
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {string} colId The column id
-         * @param {string[]} values The invalid values
-         * @description Create an 'equals' filter function
+         * @description Create a filter function that test if the value is one of the invalid values
          * @returns {function} The predicate function
          */
-        function createEqualFilterFn(colId, values) {
-            return function (item) {
-                return values.indexOf(item[colId]) > -1;
+        function createInvalidFilterFn(colId) {
+            return function(data) {
+                var column = _.find(data.columns, {id: colId});
+                var invalidValues = column.quality.invalidValues;
+                return function (item) {
+                    return invalidValues.indexOf(item[colId]) > -1;
+                };
             };
         }
 
@@ -166,13 +189,16 @@
          * @name createValidFilterFn
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {string} colId The column id
-         * @param {string[]} values The invalid values
          * @description Create a 'valid' filter function
          * @returns {function} The predicate function
          */
-        function createValidFilterFn(colId, values) {
-            return function (item) {
-                return item[colId] && values.indexOf(item[colId]) === -1;
+        function createValidFilterFn(colId) {
+            return function(data) {
+                var column = _.find(data.columns, {id: colId});
+                var invalidValues = column.quality.invalidValues;
+                return function (item) {
+                    return item[colId] && invalidValues.indexOf(item[colId]) === -1;
+                };
             };
         }
 
@@ -185,8 +211,10 @@
          * @returns {function} The predicate function
          */
         function createEmptyFilterFn(colId) {
-            return function (item) {
-                return !item[colId];
+            return function() {
+                return function (item) {
+                    return !item[colId];
+                };
             };
         }
 
@@ -200,8 +228,10 @@
          * @returns {function} The predicate function
          */
         function createRangeFilterFn(colId, values) {
-            return function (item) {
-                return NumbersValidityService.toNumber(item[colId]) >= values[0] && NumbersValidityService.toNumber(item[colId]) <= values[1];
+            return function() {
+                return function (item) {
+                    return NumbersValidityService.toNumber(item[colId]) >= values[0] && NumbersValidityService.toNumber(item[colId]) <= values[1];
+                };
             };
         }
 
@@ -227,12 +257,12 @@
                     filterFn = createContainFilterFn(colId, args.phrase);
                     filterInfo = new Filter(type, colId, colName, true, args, filterFn, removeFilterFn);
                     break;
-                case 'exact_filter':
+                case 'exact':
                     filterFn = createExactFilterFn(colId, args.phrase);
                     filterInfo = new Filter(type, colId, colName, true, args, filterFn, removeFilterFn);
                     break;
                 case 'invalid_records':
-                    filterFn = createEqualFilterFn(colId, args.values);
+                    filterFn = createInvalidFilterFn(colId);
                     filterInfo = new Filter(type, colId, colName, false, args, filterFn, removeFilterFn);
                     break;
                 case 'empty_records':
@@ -240,7 +270,7 @@
                     filterInfo = new Filter(type, colId, colName, false, args, filterFn, removeFilterFn);
                     break;
                 case 'valid_records':
-                    filterFn = createValidFilterFn(colId, args.values);
+                    filterFn = createValidFilterFn(colId);
                     filterInfo = new Filter(type, colId, colName, false, args, filterFn, removeFilterFn);
                     break;
                 case 'inside_range':
@@ -284,7 +314,7 @@
                     newFilterFn = createContainFilterFn(oldFilter.colId, newValue);
                     editableFilter = true;
                     break;
-                case 'exact_filter':
+                case 'exact':
                     newArgs.phrase = newValue;
                     newFilterFn = createExactFilterFn(oldFilter.colId, newValue);
                     editableFilter = true;

@@ -64,7 +64,7 @@ describe('Badge controller', function () {
 
     it('should set the sign caracter to : "=" ', function () {
         //given
-        filterType = 'exact_filter';
+        filterType = 'exact';
 
         //when
         var ctrl = createController();
@@ -95,17 +95,6 @@ describe('Badge controller', function () {
 
         //then
         expect(fns.change).not.toHaveBeenCalled();
-    });
-
-    it('should call onClose callback', function () {
-        //given
-        var ctrl = createController();
-
-        //when
-        ctrl.close();
-
-        //then
-        expect(fns.close).toHaveBeenCalled();
     });
 
     it('should call onClose callback', function () {
