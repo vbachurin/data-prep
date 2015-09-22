@@ -138,7 +138,7 @@
          * @param {object} column - the column to filter
          */
         vm.filterValidRecords = function (column) {
-            FilterService.addFilter('valid_records', column.id, column.name, {values: column.quality.invalidValues});
+            FilterService.addFilter('valid_records', column.id, column.name);
         };
 
         /**
@@ -149,7 +149,7 @@
          * @param {object} column - the column to filter
          */
         vm.filterInvalidRecords = function (column) {
-            FilterService.addFilter('invalid_records', column.id, column.name, {values: column.quality.invalidValues});
+            FilterService.addFilter('invalid_records', column.id, column.name);
         };
 
         /**
@@ -160,7 +160,7 @@
          * @param {object} column - the column to filter
          */
         vm.filterEmptyRecords = function (column) {
-            FilterService.addFilter('empty_records', column.id, column.name, {});
+            FilterService.addFilter('empty_records', column.id, column.name);
         };
 
         /**

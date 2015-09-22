@@ -39,11 +39,3 @@ execute 'git branch release/'$1
 echo "GIT admin: update pom.xml's version to "$2"-SNAPSHOT on master" > /tmp/commit_msg
 execute 'git commit --all --file=/tmp/commit_msg'
 
-execute 'git checkout release/'$1
-./changeVersion.sh $1'-SNAPSHOT' $1
-echo "GIT admin: update pom.xml's version to "$1" on release/"$1 > /tmp/commit_msg
-execute 'git commit --all --file=/tmp/commit_msg'
-
-execute 'git checkout master'
-execute 'git merge -s ours release/'$1
-

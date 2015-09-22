@@ -218,11 +218,15 @@ describe('Datagrid service', function () {
             //given
             var dataViewMock = new DataViewMock();
             DatagridService.dataView = dataViewMock;
-            var filterFnCol1 = function (item) {
-                return item.col1.indexOf('toto') > -1;
+            var filterFnCol1 = function() {
+                return function (item) {
+                    return item.col1.indexOf('toto') > -1;
+                };
             };
-            var filterFnCol2 = function (item) {
-                return item.col2.indexOf('toto') > -1;
+            var filterFnCol2 = function() {
+                return function (item) {
+                    return item.col2.indexOf('toto') > -1;
+                };
             };
 
             //when
@@ -243,13 +247,16 @@ describe('Datagrid service', function () {
 
         it('should return filter that executes all filters', inject(function (DatagridService) {
             //given
-            var dataViewMock = new DataViewMock();
-            DatagridService.dataView = dataViewMock;
-            var filterFnCol1 = function (item) {
-                return item.col1.indexOf('toto') > -1;
+            DatagridService.dataView = new DataViewMock();
+            var filterFnCol1 = function() {
+                return function (item) {
+                    return item.col1.indexOf('toto') > -1;
+                };
             };
-            var filterFnCol2 = function (item) {
-                return item.col2.indexOf('toto') > -1;
+            var filterFnCol2 = function() {
+                return function (item) {
+                    return item.col2.indexOf('toto') > -1;
+                };
             };
 
             DatagridService.addFilter(filterFnCol1);
@@ -272,11 +279,15 @@ describe('Datagrid service', function () {
 
         it('should do nothing on remove if filter is unknown', inject(function (DatagridService) {
             //given
-            var filterFnCol1 = function (item) {
-                return item.col1.indexOf('toto') > -1;
+            var filterFnCol1 = function() {
+                return function (item) {
+                    return item.col1.indexOf('toto') > -1;
+                };
             };
-            var filterFnCol2 = function (item) {
-                return item.col2.indexOf('toto') > -1;
+            var filterFnCol2 = function() {
+                return function (item) {
+                    return item.col2.indexOf('toto') > -1;
+                };
             };
             DatagridService.addFilter(filterFnCol1);
 

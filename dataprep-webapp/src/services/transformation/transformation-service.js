@@ -163,7 +163,7 @@
             return _.chain(parameters)
                 .filter(isExplicitParameter)
                 .forEach(function(param) {
-                    param.initialValue = param.value = paramValues[param.name];
+                    param.initialValue = param.value = ConverterService.adaptValue(param.type, paramValues[param.name]);
                     param.inputType = ConverterService.toInputType(param.type);
                 })
                 .value();

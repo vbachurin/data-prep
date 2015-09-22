@@ -3,6 +3,12 @@
   $menu-color: tint($black, 20%);
   $menu-background: $super-light-gray;
 
+  .action-suggestion-tab-items{
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
   .menu {
     color: $menu-color;
 

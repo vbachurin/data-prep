@@ -69,7 +69,7 @@ public class Cut extends AbstractActionMetadata implements ColumnAction {
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final String toCut = row.get(columnId);
         if (toCut != null) {
-            row.set(columnId, toCut.replace(parameters.get(PATTERN_PARAMETER), "")); //$NON-NLS-1$
+            row.set(columnId, toCut.replaceAll(parameters.get(PATTERN_PARAMETER), "")); //$NON-NLS-1$
         }
     }
 }

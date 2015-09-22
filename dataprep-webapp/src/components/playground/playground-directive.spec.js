@@ -72,14 +72,12 @@ describe('Playground directive', function () {
         expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(1).find('span').text().trim()).toBe('Below is a sample size of:');
 
         //check left slidable is hidden recipe with left slide action
-        expect(playground.eq(0).find('.slidable').eq(0).hasClass('recipe')).toBe(true);
-        expect(playground.eq(0).find('.slidable').eq(0).hasClass('slide-hide')).toBe(true);
-        expect(playground.eq(0).find('.slidable').eq(0).find('.action').eq(0).hasClass('right')).toBe(false);
+        expect(playground.eq(0).find('.recipe').eq(0).hasClass('slide-hide')).toBe(true);
+        expect(playground.eq(0).find('.recipe').eq(0).find('.action').eq(0).hasClass('right')).toBe(false);
 
         //check right slidable is displayed transformations with right slide action
-        expect(playground.eq(0).find('.slidable').eq(1).hasClass('suggestions')).toBe(true);
-        expect(playground.eq(0).find('.slidable').eq(1).hasClass('slide-hide')).toBe(false);
-        expect(playground.eq(0).find('.slidable').eq(1).find('.action').eq(0).hasClass('right')).toBe(true);
+        expect(playground.eq(0).find('.suggestions').eq(0).hasClass('slide-hide')).toBe(false);
+        expect(playground.eq(0).find('.suggestions').eq(0).find('.action').eq(0).hasClass('right')).toBe(true);
 
         //check datagrid and filters are present
         expect(playground.eq(0).find('.filter-list').length).toBe(1);

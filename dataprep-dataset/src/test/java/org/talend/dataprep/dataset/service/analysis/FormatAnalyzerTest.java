@@ -63,6 +63,20 @@ public class FormatAnalyzerTest {
     }
 
     @Test
+    public void testEncodingDetection() throws Exception {
+        final DataSetMetadata metadata = metadata().id("1234").build();
+        repository.add(metadata);
+        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../wave_lab_utf16_LE.txt"));
+        formatAnalysis.analyze("1234");
+        final DataSetMetadata actual = repository.get("1234");
+        assertThat(actual, notNullValue());
+        assertThat(actual.getContent().getFormatGuessId(), is(CSVFormatGuess.BEAN_ID));
+        assertThat(actual.getContent().getMediaType(), is("text/csv"));
+        assertThat(actual.getContent().getParameters().get("SEPARATOR"), is("\t"));
+        assertThat(actual.getEncoding(), is("UTF-16"));
+    }
+
+    @Test
     public void testXLSAnalysis() throws Exception {
         final DataSetMetadata metadata = metadata().id("1234").build();
         repository.add(metadata);

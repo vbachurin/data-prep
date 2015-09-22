@@ -74,7 +74,7 @@ describe('Onboarding service', function() {
         expect(options.steps[0]).toEqual({
             element: '.no-js',
             position: 'right',
-            intro: '<div class="introjs-tooltiptitle">Welcome to Talend Data Preparation!</div><div class="introjs-tooltipcontent">To know more about Talend Data Preparation, take this quick tour!</div>'
+            intro: '<div class="introjs-tooltiptitle">Welcome to Talend Data Preparation</div><div class="introjs-tooltipcontent">To learn more about Talend Data Preparation, take this quick tour</div>'
         });
     }));
 

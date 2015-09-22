@@ -22,6 +22,7 @@
 
             //filters
             addFilter: addFilter,
+            addExactFilter: addExactFilter,
             addRangeFilter: addRangeFilter,
 
             //statistics entry points
@@ -500,6 +501,20 @@
             var filterFn = value ?
                 FilterService.addFilter.bind(null, 'contains', column.id, column.name, {phrase: value}) :
                 FilterService.addFilter.bind(null, 'empty_records', column.id, column.name, {});
+
+            $timeout(filterFn);
+        }
+
+        /**
+         * @ngdoc method
+         * @name addExactFilter
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {string} value The phrase to filter (clicked Hbarchart data)
+         * @description Add an exact filter in the angular context
+         */
+        function addExactFilter(value) {
+            var column = service.selectedColumn;
+            var filterFn = FilterService.addFilter.bind(null, 'exact', column.id, column.name, {phrase: value});
 
             $timeout(filterFn);
         }

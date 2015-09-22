@@ -7,7 +7,7 @@
         vm.chartConfig = {};
 
         vm.barchartClickFn = function barchartClickFn (item){
-            return StatisticsService.addFilter(item.data);
+            return StatisticsService.addExactFilter(item.data);
         };
 
         vm.vBarchartClickFn = function vBarchartClickFn (item){
@@ -129,7 +129,7 @@
          */
         var buildGeoDistribution = function(column) {
             var geoChartAction = function() {
-                StatisticsService.addFilter(this['hc-key'].substring(3));
+                StatisticsService.addExactFilter(this['hc-key'].substring(3));
                 console.log('State: '  + this['hc-key'] + ', value: ' + this.value);
             };
 
@@ -155,7 +155,11 @@
                             }
                         }
                     }
-                ]
+                ],
+                size: {
+                    width: 300,
+                    height: 400
+                }
             };
         };
 

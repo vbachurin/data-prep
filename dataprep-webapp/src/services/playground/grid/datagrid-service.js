@@ -341,8 +341,13 @@
          * @returns {boolean} - true if the item pass all the filters
          */
         function filterFn(item, args) {
-            for (var i = 0; i < args.filters.length; i++) {
-                var filter = args.filters[i];
+            //init filters with actual data
+            var initializedFilters = _.map(args.filters, function(filter) {
+                return filter(self.data);
+            });
+            //execute each filter on the value
+            for (var i = 0; i < initializedFilters.length; i++) {
+                var filter = initializedFilters[i];
                 if(!filter(item)) {
                     return false;
                 }
