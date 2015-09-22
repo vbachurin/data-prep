@@ -22,7 +22,7 @@
             case 'contains':
                 vm.sign = '≅';
                 break;
-            case 'exact_filter':
+            case 'exact':
                 vm.sign = '=';
                 break;
             case 'inside_range':

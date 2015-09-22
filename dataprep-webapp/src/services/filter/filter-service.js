@@ -35,7 +35,7 @@
             switch (self.type) {
                 case 'contains':
                     return self.args.phrase;
-                case 'exact_filter':
+                case 'exact':
                     return self.args.phrase;
                 case 'invalid_records':
                     return 'invalid records';
@@ -131,7 +131,7 @@
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {string} colId The column id
          * @param {string} phrase The phrase that the item must be exactly equal to
-         * @description [PRIVATE] Create a 'exact_filter' filter function
+         * @description [PRIVATE] Create a filter function that test exact equality
          * @returns {function} The predicate function
          */
         function createExactFilterFn(colId, phrase) {
@@ -227,7 +227,7 @@
                     filterFn = createContainFilterFn(colId, args.phrase);
                     filterInfo = new Filter(type, colId, colName, true, args, filterFn, removeFilterFn);
                     break;
-                case 'exact_filter':
+                case 'exact':
                     filterFn = createExactFilterFn(colId, args.phrase);
                     filterInfo = new Filter(type, colId, colName, true, args, filterFn, removeFilterFn);
                     break;
@@ -284,7 +284,7 @@
                     newFilterFn = createContainFilterFn(oldFilter.colId, newValue);
                     editableFilter = true;
                     break;
-                case 'exact_filter':
+                case 'exact':
                     newArgs.phrase = newValue;
                     newFilterFn = createExactFilterFn(oldFilter.colId, newValue);
                     editableFilter = true;

@@ -74,7 +74,7 @@ $invalid_records-color: rgb(247, 168, 0);
     }
   }
 
-  &.exact_filter {
+  &.exact {
     @include badge($contains-color);
 
     .badge-close {
