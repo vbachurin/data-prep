@@ -118,4 +118,17 @@ describe('Rest message interceptor factory', function () {
         expect(MessageService.error).toHaveBeenCalledWith('SERVER_ERROR_TITLE', 'GENERIC_ERROR');
     }));
 
+     it('expected error message when dataset content is not supported', inject(function ($rootScope, $http, MessageService) {
+        //given
+        $httpBackend.expectGET('testService').respond(400, {code:'TDP_DSS_UNSUPPORTED_CONTENT'});
+
+        //when
+        $http.get('testService');
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(MessageService.error).toHaveBeenCalledWith('UNSUPPORTED_CONTENT_TITLE', 'UNSUPPORTED_CONTENT');
+    }));
+
 });

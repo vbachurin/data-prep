@@ -1,24 +1,15 @@
 package org.talend.dataprep.schema;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.schema.io.NoOpDraftValidator;
-import org.talend.dataprep.schema.io.NoOpParser;
-import org.talend.dataprep.schema.io.NoOpSerializer;
 
-@Component(NoOpFormatGuess.BEAN_ID)
-public class NoOpFormatGuess implements FormatGuess {
+/**
+ * A special implementation of {@link FormatGuess} to serve as fallback and indicates the provided content is not
+ * supported in data prep.
+ */
+@Component(UnsupportedFormatGuess.BEAN_ID)
+public class UnsupportedFormatGuess implements FormatGuess {
 
     protected static final String BEAN_ID = "formatGuess#any";
-
-    @Autowired
-    private NoOpSerializer serializer;
-
-    @Autowired
-    private NoOpParser parser;
-
-    @Autowired
-    private NoOpDraftValidator noDraftValidator;
 
     @Override
     public String getMediaType() {
@@ -32,17 +23,17 @@ public class NoOpFormatGuess implements FormatGuess {
 
     @Override
     public Serializer getSerializer() {
-        return serializer;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public SchemaParser getSchemaParser() {
-        return parser;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public DraftValidator getDraftValidator() {
-        return noDraftValidator;
+        throw new UnsupportedOperationException();
     }
 
     @Override

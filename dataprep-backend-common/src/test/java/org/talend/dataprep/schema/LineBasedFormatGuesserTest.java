@@ -39,7 +39,7 @@ public class LineBasedFormatGuesserTest {
         FormatGuesser.Result actual = guesser.guess(new ByteArrayInputStream(new byte[0]), "UTF-8");
 
         Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getFormatGuess() instanceof NoOpFormatGuess);
+        Assert.assertTrue(actual.getFormatGuess() instanceof UnsupportedFormatGuess);
 
     }
 

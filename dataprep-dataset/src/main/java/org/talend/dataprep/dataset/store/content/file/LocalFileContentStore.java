@@ -94,7 +94,19 @@ public class LocalFileContentStore extends DataSetContentStoreAdapter {
             if (!path.toFile().exists()) {
                 return;
             }
+
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                    // .nfs files are handled by the OS and can be deleted after the visitor started.
+                    // Exceptions on such files can be safely ignored
+                    if (file.getFileName().toFile().getName().startsWith(".nfs")) { //$NON-NLS-1$
+                        LOGGER.warn("unable to delete {}", file.getFileName(), exc);
+                        return FileVisitResult.CONTINUE;
+                    }
+                    throw exc;
+                }
 
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) throws IOException {
@@ -115,8 +127,6 @@ public class LocalFileContentStore extends DataSetContentStoreAdapter {
                     }
                 }
             });
-        } catch (NoSuchFileException nsfe) {
-            LOGGER.warn("could not delete missing {}, perhaps a .nfs one ?", nsfe.getFile(), nsfe);
         } catch (IOException e) {
             LOGGER.error("Unable to clear local data set content.", e);
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_CLEAR_DATASETS, e);

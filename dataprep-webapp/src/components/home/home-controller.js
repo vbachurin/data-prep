@@ -202,18 +202,25 @@
          * @ngdoc method
          * @name uploadDatasetFile
          * @methodOf data-prep.home.controller:HomeCtrl
-         * @description Upload dataset : Step 1 - file selected. It takes the file name, and display the dataset name
-         * change modal
+         * @description Upload dataset : Step 1 - file selected. It takes the file name, and crop the extension.
+         * If this new name already exists, we display the dataset name change modal.
+         * Otherwise, we create the dataset with this name.
          */
-        vm.uploadDatasetFile = function () {
+        vm.uploadDatasetFile = function uploadDatasetFile() {
             var file = vm.datasetFile[0];
 
             // remove file extension and ask final name
             var name = file.name.replace(/\.[^/.]+$/, '');
             vm.datasetName = name;
 
-            // show dataset name popup
-            vm.datasetNameModal = true;
+            // show dataset name popup when name already exists
+            if(DatasetService.getDatasetByName(name)) {
+                vm.datasetNameModal = true;
+            }
+            // create dataset with calculated name if it is unique
+            else {
+                vm.uploadDatasetName();
+            }
         };
 
         /**
@@ -223,7 +230,7 @@
          * @description Upload dataset : Step 2 - name entered. It ask for override if a dataset with the same name
          * exists, and trigger the upload
          */
-        vm.uploadDatasetName = function () {
+        vm.uploadDatasetName = function uploadDatasetName() {
             var file = vm.datasetFile[0];
             var name = vm.datasetName;
 

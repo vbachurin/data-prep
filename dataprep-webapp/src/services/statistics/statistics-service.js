@@ -289,7 +289,8 @@
 
             var specificStats = {};
             switch (colType) {
-                case 'number':
+                case 'integer':
+                case 'decimal':
                     specificStats.MIN = clean(stats.min);
                     specificStats.MAX = clean(stats.max);
                     specificStats.MEAN = clean(stats.mean);
@@ -405,8 +406,10 @@
          * @description Reset the map chart and calculate the needed data for visualization
          */
         function processNonMapData(column) {
-            switch (ConverterService.simplifyType(column.type)) {
-                case 'number':
+            var simplifiedType = ConverterService.simplifyType(column.type);
+            switch (simplifiedType) {
+                case 'integer':
+                case 'decimal':
                     initRangeHistogram(column.statistics.histogram);
                     updateBoxplotData();
                     initRangeLimits();
@@ -416,7 +419,7 @@
                     initClassicHistogram('occurrences', 'Occurrences', column.statistics.frequencyTable);
                     break;
                 default :
-                    console.log('nor a number neither a boolean neither a string');
+                    console.log('nor a number neither a boolean neither a string but a ' + simplifiedType);
             }
         }
 
