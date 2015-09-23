@@ -98,7 +98,7 @@ public class StatisticsUtilsTest {
 
     @Test
     public void testDataType() throws Exception {
-        assertEquals(Type.INTEGER.name(), stringColumn.getType());
+        assertEquals(Type.INTEGER.getName(), stringColumn.getType());
     }
 
     @Test
