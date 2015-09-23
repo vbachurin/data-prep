@@ -109,7 +109,7 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
                 try (InputStream content = store.getAsRaw(metadata)) {
                     FormatGuesser.Result mediaType = guesser.guess(content, charset.name());
                     mediaTypes.add(mediaType);
-                    if (!(mediaType.getFormatGuess() instanceof NoOpFormatGuess)) {
+                    if (!(mediaType.getFormatGuess() instanceof UnsupportedFormatGuess)) {
                         break;
                     }
                 } catch (IOException e) {
