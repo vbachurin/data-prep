@@ -43,7 +43,14 @@
                         drag = false;
                     });
 
-                    //Initialisation
+                    //Resize panel when window is resized
+                    $(window).resize(function() {
+                        iElement.find('.action-suggestion-tab-items').css('height', panel1.height()- actionHeaderPanelsSizeMargin + 'px');
+                        iElement.find('.stat-detail-tab-items').css('height', panel2.height()- statHeaderPanelsSizeMargin + 'px');
+                    });
+
+                    //Initialization of the right panel
+                    // 325px : to have at least 5 actions in the top panel
                     panel1.css('height', '325px');
                     handler.css('top', '325px');
                     panel2.css('top', '325px');
