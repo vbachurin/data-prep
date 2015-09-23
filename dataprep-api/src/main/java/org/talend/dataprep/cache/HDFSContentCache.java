@@ -151,7 +151,7 @@ public class HDFSContentCache implements ContentCache {
         try {
             files = fileSystem.listStatus(entry.getParent(), p -> p.getName().startsWith(key.getSample()));
         } catch (IOException e) {
-            throw new IllegalArgumentException("No cache for preparation #" + key, e);
+            return null;
         }
 
         for (FileStatus file : files) {
@@ -164,7 +164,8 @@ public class HDFSContentCache implements ContentCache {
                 }
             }
         }
-        throw new IllegalArgumentException("No cache for preparation #" + key);
+        LOGGER.debug("No cache for preparation #{}", key);
+        return null;
     }
 
 
