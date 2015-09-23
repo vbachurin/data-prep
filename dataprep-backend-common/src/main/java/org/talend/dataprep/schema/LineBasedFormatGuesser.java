@@ -29,7 +29,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
 
     /** The fallback guess if the input is not CSV compliant. */
     @Autowired
-    private NoOpFormatGuess fallbackGuess;
+    private UnsupportedFormatGuess fallbackGuess;
 
     /**
      * @see FormatGuesser#guess(InputStream, String)

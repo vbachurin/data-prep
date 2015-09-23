@@ -70,27 +70,33 @@ public class XlsUtils {
     }
 
 
+    /**
+     * Return the {@link Workbook workbook} to be found in the stream (assuming stream contains an Excel file). If stream
+     * is <b>not</b> an Excel content, returns <code>null</code>.
+     * @param stream A non-null stream that eventually contains an Excel file.
+     * @return The {@link Workbook workbook} in stream or <code>null</code> if stream is not an Excel file.
+     * @throws IOException
+     */
     public static Workbook getWorkbook(InputStream stream) throws IOException {
-
-
         // Depending on the excel file used the poi object to use is different
         // so we try one (catch exception then try the other one)
-
         // TODO that's a pain as we have to keep this :-(
         // TODO use ByteBuffer or mark/reset the input if supported ?
         // but for some reasons new HSSFWorkbook consume part of the stream
-
         if (stream == null) {
             throw new IOException("cannot read null stream");
         }
-
         byte[] bytes = IOUtils.toByteArray(stream);
-
         try {
             return new XSSFWorkbook(new ByteArrayInputStream(bytes));
         } catch (Exception e) {
             LOGGER.debug("{} so try XSSFWorkbook", e);
-            return new HSSFWorkbook(new ByteArrayInputStream(bytes));
+            try {
+                return new HSSFWorkbook(new ByteArrayInputStream(bytes));
+            } catch (Exception e1) {
+                LOGGER.debug("{} not a HSSFWorkbook too", e);
+                return null;
+            }
         }
 
     }

@@ -78,10 +78,20 @@ public enum DataSetErrorCodes implements ErrorCode {
      * String)
      */
     ILLEGAL_SORT_FOR_LIST(400, "sort"),
-    /** Error returned when the dataset metadata could not be saved. */
+    /**
+     * Error returned when the dataset metadata could not be saved.
+     */
     UNABLE_TO_STORE_DATASET_METADATA(500, "id"),
-    /** Error returned when the dataset metadata could not be read. */
-    UNABLE_TO_READ_DATASET_METADATA(500, "id");
+    /**
+     * Error returned when the dataset metadata could not be read.
+     */
+    UNABLE_TO_READ_DATASET_METADATA(500, "id"),
+    /**
+     * Error return when the uploaded content is not supported by any {@link org.talend.dataprep.schema.FormatGuesser
+     * guesser}.
+     * @see org.talend.dataprep.schema.UnsupportedFormatGuess
+     */
+    UNSUPPORTED_CONTENT(400);
 
     /** The http status to use. */
     private int httpStatus;
