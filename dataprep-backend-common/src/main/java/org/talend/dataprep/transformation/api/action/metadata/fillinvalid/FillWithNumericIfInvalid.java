@@ -24,7 +24,7 @@ public class FillWithNumericIfInvalid extends AbstractFillIfInvalid {
     @Nonnull
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        parameters.add(new Parameter(DEFAULT_VALUE_PARAMETER, Type.INTEGER.getName(), "0")); //$NON-NLS-1$
+        parameters.add(new Parameter(DEFAULT_VALUE_PARAMETER, Type.INTEGER.getName(), "0", false, false)); //$NON-NLS-1$
         return parameters;
     }
 

@@ -25,7 +25,7 @@ public class FillWithStringIfInvalid extends AbstractFillIfInvalid {
     @Nonnull
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        parameters.add(new Parameter(DEFAULT_VALUE_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY));
+        parameters.add(new Parameter(DEFAULT_VALUE_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY, false, false));
         return parameters;
     }
 
