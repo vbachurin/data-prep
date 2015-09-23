@@ -125,7 +125,7 @@
 
                             var availablelTopSpace = contentContainer.offset().top - $('.action-suggestion-tab-items').offset().top;
 
-                            if(availablelTopSpace >= contentContainer.context.clientHeight*0.75) {
+                            if(availablelTopSpace >= contentContainer.context.clientHeight) {
                                 if (contentContainer.offset().top > ($('.split-handler').offset().top -  contentContainer.context.clientHeight)){
                                     var scroll_to = $('.action-suggestion-tab-items')[0].scrollTop + contentContainer.context.clientHeight;
 
@@ -133,6 +133,11 @@
                                         scrollTop: scroll_to
                                     }, 500);
                                 }
+                            } else {
+                                var scroll_to = $('.action-suggestion-tab-items')[0].scrollTop + availablelTopSpace - $('.accordion').height();
+                                $('.action-suggestion-tab-items').animate({
+                                    scrollTop: scroll_to
+                                }, 500);
                             }
                         },200);
                     }

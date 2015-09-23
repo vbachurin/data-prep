@@ -23,12 +23,15 @@
 
                     var drag = false;
 
+                    var actionHeaderPanelsSizeMargin = 130;
+                    var statHeaderPanelsSizeMargin = 100;
+
                     iElement.bind('mousemove', function () {
                         if (!drag) {
                             return;
                         }
-                        iElement.find('.action-suggestion-tab-items').css('height', panel1.height()-100 + 'px');
-                        iElement.find('.stat-detail-tab-items').css('height', panel2.height()-100 + 'px');
+                        iElement.find('.action-suggestion-tab-items').css('height', panel1.height()- actionHeaderPanelsSizeMargin + 'px');
+                        iElement.find('.stat-detail-tab-items').css('height', panel2.height()- statHeaderPanelsSizeMargin + 'px');
                     });
 
                     handler.bind('mousedown', function (ev) {
@@ -39,6 +42,15 @@
                     angular.element(document).bind('mouseup', function () {
                         drag = false;
                     });
+
+                    //Initialisation
+                    panel1.css('height', '325px');
+                    handler.css('top', '325px');
+                    panel2.css('top', '325px');
+
+                    iElement.find('.action-suggestion-tab-items').css('height', panel1.height()- actionHeaderPanelsSizeMargin + 'px');
+                    iElement.find('.stat-detail-tab-items').css('height', panel2.height()- statHeaderPanelsSizeMargin + 'px');
+
                 });
             }
         };
