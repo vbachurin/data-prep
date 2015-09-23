@@ -180,4 +180,40 @@ describe('Type transform menu controller', function () {
         expect(ctrl.currentDomain).toBe('CITY');
         expect(ctrl.currentSimplifiedDomain).toBe('CITY');
     });
+
+
+    it('should check double type for double ui', function () {
+        //given
+        var ctrl = createController();
+
+        ctrl.currentDomain = 'double';
+        var type = {'id': 'DOUBLE', 'name': 'double', 'labelKey': 'DOUBLE'};
+
+        //then
+        expect(ctrl.checkedSimplifiedType(type)).toBe(true);
+    });
+
+    it('should not check double type for a domain', function () {
+        //given
+        var ctrl = createController();
+
+        // maybe dq library could detect beers names?
+        ctrl.currentDomain = 'beer_name';
+        var type = {'id': 'STRING', 'name': 'string', 'labelKey': 'STRING'};
+
+        //then
+        expect(ctrl.checkedSimplifiedType(type)).toBe(false);
+    });
+
+    it('should check integer type for integer ui', function () {
+        //given
+        var ctrl = createController();
+
+        ctrl.currentDomain = 'integer';
+        var type = {'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER'};
+
+        //then
+        expect(ctrl.checkedSimplifiedType(type)).toBe(true);
+    });
+
 });
