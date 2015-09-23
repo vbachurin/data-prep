@@ -122,12 +122,17 @@
 
                     if(ctrl.scrollToBottom) {
                         $timeout(function(){
-                            if (contentContainer.offset().top > ($('.split-handler').offset().top -  contentContainer.context.clientHeight)){
-                                var scroll_to = $('.action-suggestion-tab-items')[0].scrollTop + contentContainer.context.clientHeight;
 
-                                $('.action-suggestion-tab-items').animate({
-                                    scrollTop: scroll_to
-                                }, 500);
+                            var availablelTopSpace = contentContainer.offset().top - $('.action-suggestion-tab-items').offset().top;
+
+                            if(availablelTopSpace >= contentContainer.context.clientHeight*0.75) {
+                                if (contentContainer.offset().top > ($('.split-handler').offset().top -  contentContainer.context.clientHeight)){
+                                    var scroll_to = $('.action-suggestion-tab-items')[0].scrollTop + contentContainer.context.clientHeight;
+
+                                    $('.action-suggestion-tab-items').animate({
+                                        scrollTop: scroll_to
+                                    }, 500);
+                                }
                             }
                         },200);
                     }
