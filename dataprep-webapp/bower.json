@@ -30,7 +30,7 @@
     "intro.js": "~1.1.1",
     "moment": "2.10.3",
     "datetimepicker": "2.4.5",
-    "x-slickgrid": "~3.0.0",
+    "x-slickgrid": "3.0.0",
     "bg-splitter" : "*"
   },
   "devDependencies": {
