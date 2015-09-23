@@ -18,8 +18,15 @@ import org.talend.dataprep.api.service.api.PreviewAddInput;
 @Scope("request")
 public class PreviewAdd extends PreviewAbstract {
 
+    /** The parameters to perform the preview on the Add Action request. */
     private final PreviewAddInput input;
 
+    /**
+     * Default constructor.
+     *
+     * @param client the http client to use.
+     * @param input the parameters to perform the request.
+     */
     public PreviewAdd(final HttpClient client, final PreviewAddInput input) {
         super(client);
         this.input = input;
@@ -53,7 +60,7 @@ public class PreviewAdd extends PreviewAbstract {
         final String newEncodedActions = serializeActions(modifiedActions.values());
 
         // get dataset content
-        final InputStream content = getDatasetContent(dataSetId);
+        final InputStream content = getDatasetContent(dataSetId, input.getSample());
         // get usable tdpIds
         final String encodedTdpIds = serializeIds(input.getTdpIds());
 

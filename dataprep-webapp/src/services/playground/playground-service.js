@@ -39,13 +39,6 @@
              * @description the current preparation
              */
             preparationName: '',
-            /**
-             * @ngdoc property
-             * @name selectedSampleSize
-             * @methodOf data-prep.services.playground.service:PlaygroundService
-             * @description the selected sample size.
-             */
-            selectedSampleSize:{},
 
             //init/load
             initPlayground: initPlayground,     // load dataset
@@ -98,7 +91,7 @@
         function initPlayground(dataset) {
             if(!state.playground.dataset || state.playground.preparation || dataset.id !== state.playground.dataset.id) {
 
-                return DatasetService.getContent(dataset.id, false, service.selectedSampleSize.value)
+                return DatasetService.getContent(dataset.id, false, state.playground.sampleSize)
                     .then(function(data) {
                         //TODO : temporary fix because asked to.
                         //TODO : when error status during import and get dataset content is managed by backend,
@@ -157,7 +150,7 @@
 
             $rootScope.$emit('talend.loading.start');
 
-            return PreparationService.getContent(state.playground.preparation.id, step.transformation.stepId, service.selectedSampleSize.value)
+            return PreparationService.getContent(state.playground.preparation.id, step.transformation.stepId, state.playground.sampleSize)
                 .then(function(response) {
                     DatagridService.updateData(response.data);
                 })
@@ -176,7 +169,7 @@
          */
         function changeDataSetSampleSize() {
             $rootScope.$emit('talend.loading.start');
-            return DatasetService.getContent(state.playground.dataset.id, true, service.selectedSampleSize.value)
+            return DatasetService.getContent(state.playground.dataset.id, true, state.playground.sampleSize)
                 .then(function (data) {
                     //TODO : temporary fix because asked to.
                     //TODO : when error status during import and get dataset content is managed by backend,
@@ -210,7 +203,7 @@
             if(!state.playground.preparation || state.playground.preparation.id !== preparation.id) {
 
                 $rootScope.$emit('talend.loading.start');
-                return PreparationService.getContent(preparation.id, 'head', service.selectedSampleSize.value)
+                return PreparationService.getContent(preparation.id, 'head', state.playground.sampleSize)
                     .then(function(response) {
                         setName(preparation.name);
                         reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response.data, preparation);
@@ -243,7 +236,7 @@
             }
 
             $rootScope.$emit('talend.loading.start');
-            return PreparationService.getContent(state.playground.preparation.id, step.transformation.stepId, service.selectedSampleSize.value)
+            return PreparationService.getContent(state.playground.preparation.id, step.transformation.stepId, state.playground.sampleSize)
                 .then(function(response) {
                     DatagridService.updateData(response.data);
                     RecipeService.disableStepsAfter(step);
@@ -477,7 +470,7 @@
          * @description Perform an datagrid refresh with the preparation head
          */
         function updatePreparationDatagrid() {
-            return PreparationService.getContent(state.playground.preparation.id, 'head', service.selectedSampleSize.value)
+            return PreparationService.getContent(state.playground.preparation.id, 'head', state.playground.sampleSize)
                 .then(function(response) {
                     DatagridService.updateData(response.data);
                     PreviewService.reset(false);
