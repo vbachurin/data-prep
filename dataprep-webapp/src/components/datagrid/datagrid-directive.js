@@ -107,7 +107,12 @@
 
                             columns = DatagridColumnService.createColumns(data.columns, data.preview);
                             var selectedGridColumn = hasSelectedColumn ? _.find(columns, {id: selectedColumn.id}) : null;
-                            DatagridStyleService.updateColumnClass(columns, selectedGridColumn);
+                            if(selectedGridColumn){
+                                DatagridStyleService.updateColumnClass(columns, selectedGridColumn);
+                            }
+                            else{
+                                DatagridStyleService.updateColumnClass(columns, columns[1]);
+                            }
                             DatagridSizeService.autosizeColumns(columns); // IMPORTANT : this set columns in the grid
 
                             DatagridColumnService.renewAllColumns(false);
@@ -118,7 +123,11 @@
                         if(hasSelectedColumn) {
                             externalTimeout = setTimeout(function() {
                                 var selectedGridColumn = _.find(columns, {id: selectedColumn.id});
-                                DatagridExternalService.updateSuggestionPanel(selectedGridColumn);
+                                if(selectedGridColumn){
+                                    DatagridExternalService.updateSuggestionPanel(selectedGridColumn);
+                                }
+                                else{
+                                    DatagridExternalService.updateSuggestionPanel(columns[1]);                                }
                             }, 0);
                         }
 

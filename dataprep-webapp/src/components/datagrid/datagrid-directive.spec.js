@@ -99,7 +99,7 @@ describe('Datagrid directive', function() {
 
         it('should update created columns style with selected column', inject(function(DatagridStyleService) {
             //then
-            expect(DatagridStyleService.updateColumnClass).toHaveBeenCalledWith(createdColumns, null);
+            expect(DatagridStyleService.updateColumnClass).toHaveBeenCalledWith(createdColumns, createdColumns[1]);
         }));
 
         it('should auto size created columns (and set them in grid, done by autosize() function)', inject(function(DatagridSizeService) {
@@ -147,6 +147,19 @@ describe('Datagrid directive', function() {
 
             //then
             expect(DatagridExternalService.updateSuggestionPanel).toHaveBeenCalledWith(data.columns[1]);
+        }));
+
+        it('should update suggestion panel with 1st column as the selected column is deleted', inject(function(DatagridService, DatagridStyleService, DatagridExternalService) {
+            //given
+            stateMock.playground.column = {id: '0003'};
+
+            //when
+            DatagridService.data = {};
+            scope.$digest();
+            jasmine.clock().tick(1);
+
+            //then
+            expect(DatagridExternalService.updateSuggestionPanel).toHaveBeenCalledWith(createdColumns[1]);
         }));
 
         it('should NOT update suggestion panel when data is preview data', inject(function(DatagridService, DatagridStyleService, DatagridExternalService) {
