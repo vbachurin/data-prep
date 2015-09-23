@@ -39,6 +39,9 @@
                     else if(rejection.data.code === 'TDP_PS_PREPARATION_STEP_CANNOT_BE_DELETED_IN_SINGLE_MODE') {
                         MessageService.error('PREPARATION_STEP_DELETE_MODE_NOT_AUTHORIZED_TITLE', 'PREPARATION_STEP_DELETE_MODE_NOT_AUTHORIZED');
                     }
+                    else if(rejection.data.code === 'TDP_DSS_UNSUPPORTED_CONTENT') {
+                        MessageService.error('UNSUPPORTED_CONTENT_TITLE', 'UNSUPPORTED_CONTENT');
+                    }
                     else {
                         MessageService.error('SERVER_ERROR_TITLE', 'GENERIC_ERROR');
                     }
