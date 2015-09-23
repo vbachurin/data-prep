@@ -40,7 +40,7 @@ public class StatisticsUtils {
             // Data type
             if (result.exist(DataType.class) && !currentColumn.isTypeForced() && !readOnlyColumns.contains(currentColumn.getId())) {
                 final DataType dataType = result.get(DataType.class);
-                currentColumn.setType(Type.get(dataType.getSuggestedType().name()).name());
+                currentColumn.setType(Type.get(dataType.getSuggestedType().name()).getName());
             }
             // Semantic types
             if (result.exist(SemanticType.class) && !currentColumn.isDomainForced() && !readOnlyColumns.contains(currentColumn.getId())) {
