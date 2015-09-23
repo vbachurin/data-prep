@@ -25,6 +25,7 @@
      * @param {div} content The content element that is shown/hidden
      * @param {function} on-open The function to execute on accordion item open
      * @param {boolean} default The default accordion to open
+     * @param {boolean} scrollToBottom Scroll to the bottom of the accordion when it is opened
      */
     function talendAccordionsItem($timeout) {
         return {
@@ -35,7 +36,8 @@
             require: '^^talendAccordions',
             scope: {
                 'default': '=',
-                onOpen: '&'
+                onOpen: '&',
+                'scrollToBottom': '='
             },
             bindToController: true,
             controller: function() {},
@@ -114,16 +116,21 @@
                     iElement.addClass('open');
                     ctrl.onOpen();
 
-                    //scroll to the bottom of accordion
-                    $timeout(function(){
-                        if (contentContainer.offset().top > ($('.split-handler').offset().top -  contentContainer.height())){
-                            var scroll_to = $('.action-suggestion-tab-items')[0].scrollTop + contentContainer.height();
+                    //Scroll to the bottom of accordion
+                    //contentContainer.context.clientHeight is used instead of contentContainer.height()
+                    // because contentContainer.height() does not work on Chrome
 
-                            $('.action-suggestion-tab-items').animate({
-                                scrollTop: scroll_to
-                            }, 500);
-                        }
-                    },200);
+                    if(ctrl.scrollToBottom) {
+                        $timeout(function(){
+                            if (contentContainer.offset().top > ($('.split-handler').offset().top -  contentContainer.context.clientHeight)){
+                                var scroll_to = $('.action-suggestion-tab-items')[0].scrollTop + contentContainer.context.clientHeight;
+
+                                $('.action-suggestion-tab-items').animate({
+                                    scrollTop: scroll_to
+                                }, 500);
+                            }
+                        },200);
+                    }
                 };
 
                 /**
