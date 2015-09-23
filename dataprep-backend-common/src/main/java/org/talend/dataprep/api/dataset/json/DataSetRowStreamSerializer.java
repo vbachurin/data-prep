@@ -16,13 +16,18 @@ public class DataSetRowStreamSerializer extends JsonSerializer<Stream<DataSetRow
     @Override
     public void serialize(Stream<DataSetRow> value, JsonGenerator generator, SerializerProvider provider) throws IOException {
         generator.writeStartArray();
-        value.forEach(row -> {
-            try {
-                generator.writeObject(row.valuesWithId());
-            } catch (IOException e) {
-                throw new TDPException(CommonErrorCodes.UNABLE_TO_WRITE_JSON, e);
-            }
-        });
+        try {
+            value.forEach(row -> {
+                try {
+                    generator.writeObject(row.valuesWithId());
+                } catch (IOException e) {
+                    throw new TDPException(CommonErrorCodes.UNABLE_TO_WRITE_JSON, e);
+                }
+            });
+        } finally {
+            // Not actually needed (stream should be already closing resources at end of rows, but keep it for safety).
+            value.close();
+        }
         generator.writeEndArray();
     }
 }

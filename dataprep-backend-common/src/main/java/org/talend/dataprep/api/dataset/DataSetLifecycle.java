@@ -10,6 +10,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class DataSetLifecycle implements Serializable {
 
+    @JsonProperty("inProgress")
+    private boolean inProgress;
+
     @JsonProperty("importing")
     private boolean importing;
 
@@ -75,12 +78,38 @@ public class DataSetLifecycle implements Serializable {
         return qualityAnalyzed;
     }
 
+    /**
+     * Changes the isImporting status of the data set.
+     * @param isImporting <code>true</code> to indicate all synchronous analysis are done, <code>false</code> otherwise.
+     * @see #importing()
+     */
     public void importing(boolean isImporting) {
         importing = isImporting;
     }
 
+    /**
+     * @return <code>true</code> if all mandatory and synchronous analysis were done, <code>false</code> otherwise.
+     */
     public boolean importing() {
         return importing;
+    }
+
+    /**
+     * @return <code>true</code> if all mandatory analysis were done <b>but</b> results are not yet complete.
+     */
+    public boolean inProgress() {
+        return inProgress;
+    }
+
+    /**
+     * Changes the inProgress status of the data set.
+     *
+     * @param inProgress <code>true</code> to indicate not all analysis are done, <code>false</code> to indicate all
+     *                   analysis is done.
+     * @see #inProgress()
+     */
+    public void inProgress(boolean inProgress) {
+        this.inProgress = inProgress;
     }
 
     @Override
@@ -95,17 +124,18 @@ public class DataSetLifecycle implements Serializable {
         return Objects.equals(importing, that.importing) && //
                 Objects.equals(contentAnalyzed, that.contentAnalyzed) && //
                 Objects.equals(schemaAnalyzed, that.schemaAnalyzed) && //
+                Objects.equals(inProgress, that.inProgress) && //
                 Objects.equals(qualityAnalyzed, that.qualityAnalyzed);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(importing, contentAnalyzed, schemaAnalyzed, qualityAnalyzed);
+        return Objects.hash(importing, contentAnalyzed, schemaAnalyzed, inProgress, qualityAnalyzed);
     }
 
     @Override
     public String toString() {
-        return "DataSetLifecycle{" + "importing=" + importing + ", contentAnalyzed=" + contentAnalyzed + ", schemaAnalyzed="
-                + schemaAnalyzed + ", qualityAnalyzed=" + qualityAnalyzed + '}';
+        return "DataSetLifecycle{" + "inProgress=" + inProgress + ", importing=" + importing + ", contentAnalyzed="
+                + contentAnalyzed + ", schemaAnalyzed=" + schemaAnalyzed + ", qualityAnalyzed=" + qualityAnalyzed + '}';
     }
 }

@@ -568,7 +568,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
      * @see org.talend.dataprep.schema.LineBasedFormatGuesser
      */
     @Test
-    public void testLowSeparatorOccurencesInCSV() throws Exception {
+    public void testLowSeparatorOccurrencesInCSV() throws Exception {
 
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../avengers.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();

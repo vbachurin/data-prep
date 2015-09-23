@@ -379,6 +379,7 @@ public class DataSetMetadata implements Serializable {
 
         /** @see org.talend.dataprep.api.dataset.DataSetLifecycle#contentAnalyzed */
         private boolean contentAnalyzed;
+
         /** @see org.talend.dataprep.api.dataset.DataSetLifecycle#schemaAnalyzed */
         private boolean schemaAnalyzed;
 
@@ -386,6 +387,12 @@ public class DataSetMetadata implements Serializable {
          * @see org.talend.dataprep.api.dataset.DataSetLifecycle#importing
          */
         private boolean importing;
+
+        /**
+         * @see org.talend.dataprep.api.dataset.DataSetLifecycle#inProgress
+         */
+        private boolean inProgress = true;
+
         /** @see org.talend.dataprep.api.dataset.DataSetLifecycle#qualityAnalyzed */
         private boolean qualityAnalyzed;
 
@@ -469,6 +476,11 @@ public class DataSetMetadata implements Serializable {
             return this;
         }
 
+        public Builder inProgress(boolean inProgress) {
+            this.inProgress = inProgress;
+            return this;
+        }
+
         public Builder sheetName(String sheetName) {
             this.sheetName = sheetName;
             return this;
@@ -531,6 +543,7 @@ public class DataSetMetadata implements Serializable {
             this.contentAnalyzed = original.getLifecycle().contentIndexed();
             this.qualityAnalyzed = original.getLifecycle().qualityAnalyzed();
             this.schemaAnalyzed = original.getLifecycle().schemaAnalyzed();
+            this.inProgress = original.getLifecycle().inProgress();
             this.importing = original.getLifecycle().importing();
             this.parameters = original.getContent().getParameters();
             this.encoding = original.getEncoding();
@@ -589,6 +602,7 @@ public class DataSetMetadata implements Serializable {
             metadataLifecycle.schemaAnalyzed(schemaAnalyzed);
             metadataLifecycle.qualityAnalyzed(qualityAnalyzed);
             metadataLifecycle.importing(importing);
+            metadataLifecycle.inProgress(inProgress);
             return metadata;
         }
     }
