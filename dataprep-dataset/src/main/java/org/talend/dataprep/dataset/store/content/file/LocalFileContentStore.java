@@ -13,11 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.content.DataSetContentStoreAdapter;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.ExceptionContext;
 
 /**
  * Local dataset content that stores content in files.
@@ -115,6 +115,8 @@ public class LocalFileContentStore extends DataSetContentStoreAdapter {
                     }
                 }
             });
+        } catch (NoSuchFileException nsfe) {
+            LOGGER.warn("could not delete missing {}, perhaps a .nfs one ?", nsfe.getFile(), nsfe);
         } catch (IOException e) {
             LOGGER.error("Unable to clear local data set content.", e);
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_CLEAR_DATASETS, e);
