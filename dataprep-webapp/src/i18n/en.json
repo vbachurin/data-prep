@@ -23,7 +23,7 @@
   "DESC_ORDER": "Descending",
   "SORT_IN": "in",
   "SORT_ORDER": "order",
-  "UPLOAD_ERROR": "Upload error",
+  "UPLOAD_ERROR": "An error occurred during file upload",
 
   "_comment": "Preparations",
   "LAST_MODIFICATION": "last change",
@@ -111,8 +111,6 @@
   "SERVICE_UNAVAILABLE": "Service unavailable",
   "UNSUPPORTED_CONTENT_TITLE": "Unsupported content",
   "UNSUPPORTED_CONTENT": "Unable to create data set, content is not supported.",
-  "UPLOAD_ERROR_TITLE": "Upload error",
-  "UPLOAD_ERROR": "An error occurred during file upload",
 
   "_comment": "Transformation",
   "NO_CLUSTERS_ACTION_MSG":"No Clusters Were Found !!!",
