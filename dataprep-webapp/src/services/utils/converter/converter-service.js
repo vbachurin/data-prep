@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     /**
@@ -16,7 +16,7 @@
          * @description Convert backend type to HTML input type
          * @returns {string} - the converted type
          */
-        this.toInputType = function(type) {
+        this.toInputType = function (type) {
             switch (type) {
                 case 'numeric':
                 case 'integer':
@@ -38,27 +38,26 @@
          * @description Convert backend type to a simplified, more user friendly, one
          * @returns {string} - the simplified type
          */
-        this.simplifyType = function(type) {
-               switch (type.toLowerCase()) {
-                   case 'numeric':
-                   case 'integer':
-                       return 'integer';
-                   case 'double':
-                   case 'float':
-                   case 'decimal':
-                       return 'decimal';
-                   case 'boolean':
-                       return 'boolean';
-                   case 'string':
-                   case 'char':
-                        return 'text';
-                   case 'date':
-                        return 'date';
-                   default:
-                       return 'unknown';
-               }
+        this.simplifyType = function (type) {
+            switch (type.toLowerCase()) {
+                case 'numeric':
+                case 'integer':
+                    return 'integer';
+                case 'double':
+                case 'float':
+                case 'decimal':
+                    return 'decimal';
+                case 'boolean':
+                    return 'boolean';
+                case 'string':
+                case 'char':
+                    return 'text';
+                case 'date':
+                    return 'date';
+                default:
+                    return 'unknown';
+            }
         };
-
 
         /**
          * @ngdoc method
@@ -81,7 +80,6 @@
                     return value;
             }
         };
-
     }
 
     angular.module('data-prep.services.utils')

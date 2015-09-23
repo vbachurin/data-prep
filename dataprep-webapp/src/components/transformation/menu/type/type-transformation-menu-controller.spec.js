@@ -17,15 +17,6 @@ describe('Type transform menu controller', function () {
         {'id': 'DATE', 'name': 'date', 'labelKey': 'DATE'}
     ];
 
-
-    var expectedTypes = [
-        {'id': 'STRING', 'name': 'string', 'labelKey': 'STRING'},
-        {'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER'},
-        {'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT'},
-        {'id': 'BOOLEAN', 'name': 'boolean', 'labelKey': 'BOOLEAN'},
-        {'id': 'DATE', 'name': 'date', 'labelKey': 'DATE'}
-    ];
-
     beforeEach(module('data-prep.type-transformation-menu'));
 
     beforeEach(inject(function ($rootScope, $controller, $q, state, ColumnTypesService) {
@@ -56,6 +47,15 @@ describe('Type transform menu controller', function () {
     }));
 
     it('should get column primitive types', inject(function (ColumnTypesService) {
+        //given
+        var expectedTypes = [
+            {'id': 'STRING', 'name': 'string', 'labelKey': 'STRING'},
+            {'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER'},
+            {'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT'},
+            {'id': 'BOOLEAN', 'name': 'boolean', 'labelKey': 'BOOLEAN'},
+            {'id': 'DATE', 'name': 'date', 'labelKey': 'DATE'}
+        ];
+
         //when
         var ctrl = createController();
         scope.$digest();
@@ -181,39 +181,55 @@ describe('Type transform menu controller', function () {
         expect(ctrl.currentSimplifiedDomain).toBe('CITY');
     });
 
-
-    it('should check double type for double ui', function () {
+    it('should check decimal (float) type when current type is double', function () {
         //given
         var ctrl = createController();
-
         ctrl.currentDomain = 'double';
-        var type = {'id': 'DOUBLE', 'name': 'double', 'labelKey': 'DOUBLE'};
+        var type = {'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT'};
+
+        //when
+        var result = ctrl.shouldBeChecked(type);
 
         //then
-        expect(ctrl.checkedSimplifiedType(type)).toBe(true);
+        expect(result).toBe(true);
     });
 
-    it('should not check double type for a domain', function () {
+    it('should check decimal (float) type when current type is float', function () {
         //given
         var ctrl = createController();
+        ctrl.currentDomain = 'float';
+        var type = {'id': 'FLOAT', 'name': 'float', 'labelKey': 'FLOAT'};
 
-        // maybe dq library could detect beers names?
-        ctrl.currentDomain = 'beer_name';
+        //when
+        var result = ctrl.shouldBeChecked(type);
+
+        //then
+        expect(result).toBe(true);
+    });
+
+    it('should not check type when it does NOT match current domain', function () {
+        //given
+        var ctrl = createController();
+        ctrl.currentDomain = 'beer_name'; // maybe dq library could detect beers names?
         var type = {'id': 'STRING', 'name': 'string', 'labelKey': 'STRING'};
 
+        //when
+        var result = ctrl.shouldBeChecked(type);
+
         //then
-        expect(ctrl.checkedSimplifiedType(type)).toBe(false);
+        expect(result).toBe(false);
     });
 
-    it('should check integer type for integer ui', function () {
+    it('should check integer type', function () {
         //given
         var ctrl = createController();
-
         ctrl.currentDomain = 'integer';
         var type = {'id': 'INTEGER', 'name': 'integer', 'labelKey': 'INTEGER'};
 
-        //then
-        expect(ctrl.checkedSimplifiedType(type)).toBe(true);
-    });
+        //when
+        var result = ctrl.shouldBeChecked(type);
 
+        //then
+        expect(result).toBe(true);
+    });
 });

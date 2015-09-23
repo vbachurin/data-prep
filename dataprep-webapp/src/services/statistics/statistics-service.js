@@ -419,7 +419,7 @@
                     initClassicHistogram('occurrences', 'Occurrences', column.statistics.frequencyTable);
                     break;
                 default :
-                    console.log('nor an integer neither a decimal neither a boolean neither a string but ' + simplifiedType);
+                    console.log('nor a number neither a boolean neither a string but a ' + simplifiedType);
             }
         }
 

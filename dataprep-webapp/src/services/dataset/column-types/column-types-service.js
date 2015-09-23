@@ -22,7 +22,6 @@
             }
             return $http.get(RestURLs.serverUrl + '/api/types').then(function (response) {
                 types = response.data;
-
                 return types;
             });
         };
