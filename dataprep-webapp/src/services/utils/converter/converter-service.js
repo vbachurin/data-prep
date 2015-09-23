@@ -59,6 +59,7 @@
                }
         };
 
+
         /**
          * @ngdoc method
          * @name adaptValue

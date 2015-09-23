@@ -50,6 +50,17 @@
 
         /**
          * @ngdoc method
+         * @name checkedSimplifiedType
+         * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
+         * @description return if the type must be checked as ui display different types from backend types.
+         * @param {object} type the current type to be displayed in the ui menu list
+         */
+        vm.checkedSimplifiedType = function(type){
+            return ConverterService.simplifyType(type.id) === ConverterService.simplifyType(vm.currentDomain);
+        };
+
+        /**
+         * @ngdoc method
          * @name changeDomain
          * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
          * @description Change the column domain. It change it on the ui, call the backend and revert the ui if the backend fails
