@@ -113,7 +113,12 @@
          */
         function shouldShowTooltip(text, cell) {
             //do NOT show if content is empty
-            if (text === '') {
+
+            //convert to string
+            var textConverted = text ;
+            textConverted +='';
+
+            if (textConverted === '') {
                 return false;
             }
 
