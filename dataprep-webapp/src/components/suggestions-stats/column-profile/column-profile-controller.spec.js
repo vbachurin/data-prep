@@ -30,7 +30,7 @@ describe('ColumnProfile controller', function () {
         ctrl.barchartClickFn(obj);
 
         //then
-        expect(StatisticsService.addExactFilter).toHaveBeenCalledWith(obj.data);
+        expect(StatisticsService.addExactFilter).toHaveBeenCalledWith(obj.data, true);
     }));
 
     describe('external bindings', function() {
