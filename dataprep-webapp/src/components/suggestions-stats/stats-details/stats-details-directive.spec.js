@@ -57,7 +57,7 @@ describe('stats details directive', function () {
 
         //when
         var event = angular.element.Event('click');
-        element.find('li').eq(2).trigger(event);
+        element.find('li').eq(1).trigger(event);
 
         //then
         expect(element.find('.stat-table').length).toBe(2);
