@@ -53,18 +53,35 @@ describe('Filter service', function() {
             expect(filterInfo.filterFn()({col1: ' tata est ici'})).toBeFalsy();
         }));
 
-        it('should add "exact" filter', inject(function(FilterService) {
+        it('should add "exact" filter with caseSensitive', inject(function(FilterService) {
             //given
             expect(FilterService.filters.length).toBe(0);
 
             //when
-            FilterService.addFilter('exact', 'col1', 'column name', {phrase: 'toici'});
+            FilterService.addFilter('exact', 'col1', 'column name', {phrase: 'toici', caseSensitive: true});
 
             //then
             expect(FilterService.filters.length).toBe(1);
 
             var filterInfo = FilterService.filters[0];
             expect(filterInfo.filterFn()({col1: 'toici'})).toBeTruthy();
+            expect(filterInfo.filterFn()({col1: 'Toici'})).toBeFalsy();
+            expect(filterInfo.filterFn()({col1: ' toici'})).toBeFalsy();
+            expect(filterInfo.filterFn()({col1: 'toici '})).toBeFalsy();
+        }));
+
+        it('should add "exact" filter without caseSensitive', inject(function(FilterService) {
+            //given
+            expect(FilterService.filters.length).toBe(0);
+
+            //when
+            FilterService.addFilter('exact', 'col1', 'column name', {phrase: 'toici', caseSensitive: false});
+
+            //then
+            expect(FilterService.filters.length).toBe(1);
+
+            var filterInfo = FilterService.filters[0];
+            expect(filterInfo.filterFn()({col1: 'Toici'})).toBeTruthy();
             expect(filterInfo.filterFn()({col1: ' toici'})).toBeFalsy();
             expect(filterInfo.filterFn()({col1: 'toici '})).toBeFalsy();
         }));

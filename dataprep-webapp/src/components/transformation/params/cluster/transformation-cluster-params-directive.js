@@ -69,7 +69,7 @@
                 }
 
                 $timeout(function() {
-                    var clustersRows = iElement.find('>.cluster-body >.cluster-line');
+                    var clustersRows = iElement.find('.cluster-body >.cluster-line');
 
                     //attach change listener on each row enable/disable checkbox
                     clustersRows.each(function(index) {

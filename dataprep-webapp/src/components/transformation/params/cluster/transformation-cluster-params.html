@@ -1,27 +1,39 @@
-<div class="cluster param">
-    <div class="param-row cluster-line cluster-header">
-        <div>
-            <input type="checkbox" ng-model="clusterParamsCtrl.allCheckboxState"
-                   ng-click="clusterParamsCtrl.refreshClusterState()"/>
-        </div>
-        <div ng-repeat="title in ::clusterParamsCtrl.details.titles track by $index">{{::title}}</div>
-    </div>
+<div class="cluster">
     <div class="cluster-body">
-        <div class="cluster-line" ng-repeat="cluster in ::clusterParamsCtrl.details.clusters track by $index">
-           <div>
-               <input class="cluster-activation" ng-model="cluster.active" type="checkbox" ng-click="clusterParamsCtrl.refreshToggleCheckbox()"/>
-           </div>
-            <div>
-                <transform-simple-params class="param-no-space"
-                                         label="false"
-                                         parameters="cluster.parameters"></transform-simple-params>
-            </div>
-            <div>
-                <transform-simple-params class="param-no-space"
-                                         label="false"
-                                         editable-select="cluster.replace.list"
-                                         parameters="[cluster.replace]"></transform-simple-params>
-            </div>
-        </div>
+        <table>
+            <thead>
+                <tr class="cluster-line">
+                    <th>
+                        <label>
+                            <input type="checkbox"
+                                   ng-model="clusterParamsCtrl.allCheckboxState"
+                                   ng-click="clusterParamsCtrl.refreshClusterState()"/>
+                        </label>
+                    </th>
+                    <th ng-repeat="title in ::clusterParamsCtrl.details.titles track by $index">{{::title}}</th>
+                </tr>
+            </thead>
+            <tbody class="cluster-body">
+                <tr class="cluster-line" ng-repeat="cluster in ::clusterParamsCtrl.details.clusters track by $index">
+                    <td>
+                        <label>
+                            <input class="cluster-activation" ng-model="cluster.active" type="checkbox"
+                                   ng-click="clusterParamsCtrl.refreshToggleCheckbox()"/>
+                        </label>
+                    </td>
+                    <td>
+                        <transform-simple-params class="param-no-space"
+                                                 label="false"
+                                                 parameters="cluster.parameters"></transform-simple-params>
+                    </td>
+                    <td>
+                        <transform-simple-params class="param-no-space"
+                                                 label="false"
+                                                 editable-select="cluster.replace.list"
+                                                 parameters="[cluster.replace]"></transform-simple-params>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
