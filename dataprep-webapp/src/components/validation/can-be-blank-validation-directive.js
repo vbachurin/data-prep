@@ -19,7 +19,8 @@
                 ctrl.$validators.canBeBlankValidation = function(modelValue) {
                     var mandatory = attrs.canBeBlank === 'false';
 
-                    return !mandatory || !!modelValue.trim();
+                    // not mandatory OR (value not null AND not blank)
+                    return !mandatory || (modelValue !== null && !!(''+modelValue).trim());
                 };
             }
         };

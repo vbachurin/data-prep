@@ -8,6 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataquality.semantic.classifier.custom.UserDefinedCategory;
+import org.talend.dataquality.semantic.recognizer.CategoryFrequency;
+import org.talend.dataquality.semantic.statistics.SemanticType;
 import org.talend.dataquality.statistics.cardinality.CardinalityStatistics;
 import org.talend.dataquality.statistics.frequency.DataFrequencyStatistics;
 import org.talend.dataquality.statistics.frequency.PatternFrequencyStatistics;
@@ -17,6 +20,7 @@ import org.talend.dataquality.statistics.numeric.summary.SummaryStatistics;
 import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.dataquality.statistics.text.TextLengthStatistics;
 import org.talend.datascience.common.inference.Analyzers;
+import org.talend.datascience.common.inference.type.DataType;
 
 public class StatisticsUtilsTest {
 
@@ -27,6 +31,14 @@ public class StatisticsUtilsTest {
     @Before
     public void setUp() throws Exception {
         Analyzers.Result result = new Analyzers.Result();
+        // Data type
+        DataType dataType = new DataType();
+        dataType.increment(DataType.Type.INTEGER);
+        result.add(dataType);
+        // Semantic type
+        SemanticType semanticType = new SemanticType();
+        semanticType.increment(new CategoryFrequency(new UserDefinedCategory("myId", "myName")), 10);
+        result.add(semanticType);
         // Value quality
         ValueQualityStatistics valueQualityStatistics = new ValueQualityStatistics();
         valueQualityStatistics.setEmptyCount(10);
@@ -82,6 +94,17 @@ public class StatisticsUtilsTest {
         StatisticsUtils.setStatistics(Collections.singletonList(integerColumn), Collections.singletonList(result));
         StatisticsUtils.setStatistics(Collections.singletonList(stringColumn), Collections.singletonList(result));
 
+    }
+
+    @Test
+    public void testDataType() throws Exception {
+        assertEquals(Type.INTEGER.getName(), stringColumn.getType());
+    }
+
+    @Test
+    public void testSemanticType() throws Exception {
+        assertEquals("myId", stringColumn.getDomain());
+        assertEquals("", stringColumn.getDomainLabel());
     }
 
     @Test

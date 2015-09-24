@@ -47,6 +47,15 @@
       }
     }
 
+    &.coming-soon {
+      a{
+        color: $medium-gray;
+        cursor: default;
+      }
+      cursor: default;
+    }
+
+
     >.submenu {
       @include menu-shape;
 

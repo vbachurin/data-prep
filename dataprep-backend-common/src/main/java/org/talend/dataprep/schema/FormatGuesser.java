@@ -18,7 +18,7 @@ public interface FormatGuesser {
      * {@link FormatGuess#getConfidence()}.
      */
     default Result guess(InputStream stream, String encoding) {
-        return new Result(new NoOpFormatGuess(), "UTF-8", Collections.emptyMap());
+        return new Result(new UnsupportedFormatGuess(), "UTF-8", Collections.emptyMap());
     }
 
     class Result {

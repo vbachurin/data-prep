@@ -24,38 +24,21 @@
 
         ColumnTypesService.getTypes()
             .then(function (types) {
-                vm.types = [];
-                // TDP-399 we limit numeric types to integer and float (displayed as decimal)
-                _.forEach( types,function(type){
-                  if (type.id){
-                      switch ( type.id.toLowerCase() ) {
-                          case 'integer':
-                          case 'float':
-                          case 'boolean':
-                          case 'string':
-                          case 'char':
-                          case 'date':
-                              vm.types.push( type );
-                              break;
-                          //case 'double':
-                          //case 'numeric':
-                          //case 'any':
-                          default:
-                              // ignoring others
-                      }
-                  }
-                } );
+                var ignoredTypes = ['double', 'numeric', 'any'];
+                vm.types = _.filter(types, function (type) {
+                    return ignoredTypes.indexOf(type.id.toLowerCase()) === -1;
+                });
 
             });
 
         /**
          * @ngdoc method
-         * @name checkedSimplifiedType
+         * @name shouldBeChecked
          * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
-         * @description return if the type must be checked as ui display different types from backend types.
+         * @description return if the type must be checked. We compare the simplified types because (for now), 'double' and 'float' match the single 'decimal' type.
          * @param {object} type the current type to be displayed in the ui menu list
          */
-        vm.checkedSimplifiedType = function(type){
+        vm.shouldBeChecked = function shouldBeChecked(type) {
             return ConverterService.simplifyType(type.id) === ConverterService.simplifyType(vm.currentDomain);
         };
 

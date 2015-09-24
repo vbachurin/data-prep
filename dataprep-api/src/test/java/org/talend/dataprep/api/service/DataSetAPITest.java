@@ -308,4 +308,14 @@ public class DataSetAPITest extends ApiServiceTestBase {
         assertThat(dataSetMetadata.getRow().getColumns(), not(empty()));
     }
 
+    @Test
+    public void testDataSetCreateUnsupportedFormat() throws Exception {
+        // given
+        final String datasetContent = IOUtils.toString(DataSetAPITest.class.getResourceAsStream("dataset/dataset.ods"));
+        final int metadataCount = dataSetMetadataRepository.size();
+        // then
+        assertThat(given().body(datasetContent).when().post("/api/datasets").getStatusCode(), is(400));
+        assertThat(dataSetMetadataRepository.size(), is(metadataCount)); // No data set metadata should be created
+    }
+
 }
