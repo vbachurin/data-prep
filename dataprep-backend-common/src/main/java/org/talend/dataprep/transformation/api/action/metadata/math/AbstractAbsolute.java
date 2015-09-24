@@ -1,15 +1,14 @@
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static java.math.BigDecimal.ZERO;
-
 import java.math.BigDecimal;
 
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 
-public abstract class AbstractAbsolute  extends AbstractActionMetadata {
+public abstract class AbstractAbsolute extends AbstractActionMetadata {
 
     /**
      * Try to parse and return the absolute value of a long value as string
+     * 
      * @param value The value to execute action
      * @return the absolute value or null
      */
@@ -23,20 +22,23 @@ public abstract class AbstractAbsolute  extends AbstractActionMetadata {
     }
 
     /**
-     * * Try to parse and return the absolute value of a long value as string
+     * Try to parse and return the absolute value of a long value as string
+     * 
      * @param value The value to execute action
      * @return the absolute value or null
      */
     protected String executeOnFloat(final String value) {
         try {
-            double doubleValue = Double.parseDouble(value);
-            double absValue = Math.abs(doubleValue);
+            BigDecimal bd = BigDecimal.valueOf(Double.parseDouble(value));
+            BigDecimal abs = bd.abs();
 
-            final BigDecimal decimalValue = BigDecimal.valueOf(absValue % 1);
-            if (decimalValue.compareTo(ZERO) == 0) {// this will prevent having .0 for longs.
-                return String.format("%d", (long) absValue); //$NON-NLS-1$
+            BigDecimal decimalValue = BigDecimal.valueOf(abs.doubleValue() % 1);
+            if (decimalValue.compareTo(BigDecimal.ZERO) == 0) {
+                String res = String.format("%d", (long) abs.longValue());
+                return res;
             } else {
-                return String.format("%s", absValue); //$NON-NLS-1$
+                String res = abs.toPlainString();
+                return res;
             }
         } catch (NumberFormatException nfe2) {
             return null;
