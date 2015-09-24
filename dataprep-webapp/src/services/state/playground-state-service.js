@@ -14,6 +14,7 @@
             setPreparation: setPreparation,
             setNameEditionMode: setNameEditionMode,
             reset: reset,
+            setSampleSize: setSampleSize,
 
             //recipe
             showRecipe: RecipeStateService.show,
@@ -59,6 +60,10 @@
             playgroundState.visible = false;
         }
 
+        function setSampleSize(sampleSize) {
+            playgroundState.sampleSize = sampleSize;
+        }
+
         function reset() {
             playgroundState.column = null;
             playgroundState.line = null;
@@ -67,6 +72,8 @@
             playgroundState.nameEditionMode = false;
             playgroundState.lookupVisibility = false;
         }
+
+
     }
 
     angular.module('data-prep.services.state')

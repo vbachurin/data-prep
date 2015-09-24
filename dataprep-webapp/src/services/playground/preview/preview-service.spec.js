@@ -4,6 +4,7 @@ describe('Preview Service', function () {
 
     var gridRangeIndex = {top: 1, bottom: 5};
     var displayedTdpIds = [1,3,6,7,8];
+    var sampleSize = 587;
     var originalData = {
         records: [
             {tdpId : 0, firstname: 'Tata'},
@@ -96,7 +97,7 @@ describe('Preview Service', function () {
             };
 
             //when
-            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null);
+            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null, sampleSize);
             $rootScope.$digest();
 
             //then
@@ -107,6 +108,7 @@ describe('Preview Service', function () {
             expect(previewArgs[1]).toBe(currentStep);
             expect(previewArgs[2]).toBe(previewStep);
             expect(previewArgs[3]).toEqual(displayedTdpIds);
+            expect(previewArgs[4]).toBe(sampleSize);
 
             expect(DatagridService.execute).toHaveBeenCalledWith(undefined); //reverter but no preview to revert
             expect(DatagridService.execute).toHaveBeenCalledWith(previewExecutor); //preview diff
@@ -145,9 +147,9 @@ describe('Preview Service', function () {
                 transformation: { stepId: '2'}
             };
 
-            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null);
+            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null, sampleSize);
             var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
-            var previewCanceler = previewArgs[4];
+            var previewCanceler = previewArgs[5];
 
             expect(previewCanceler.promise.$$state.status).toBe(0);
 
@@ -205,7 +207,7 @@ describe('Preview Service', function () {
             var newParams = {value: '--'};
 
             //when
-            PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams);
+            PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams, sampleSize);
             $rootScope.$digest();
 
             //then
@@ -225,9 +227,9 @@ describe('Preview Service', function () {
             };
             var newParams = {value: '--'};
 
-            PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams);
+            PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams, sampleSize);
             var previewArgs = PreparationService.getPreviewUpdate.calls.mostRecent().args;
-            var previewCanceler = previewArgs[5];
+            var previewCanceler = previewArgs[6];
 
             expect(previewCanceler.promise.$$state.status).toBe(0);
 
@@ -300,9 +302,9 @@ describe('Preview Service', function () {
                 value: '--'
             };
 
-            PreviewService.getPreviewAddRecords(preparationId, datasetId, action, params);
+            PreviewService.getPreviewAddRecords(preparationId, datasetId, action, params, sampleSize);
             var previewArgs = PreparationService.getPreviewAdd.calls.mostRecent().args;
-            var previewCanceler = previewArgs[5];
+            var previewCanceler = previewArgs[6];
 
             expect(previewCanceler.promise.$$state.status).toBe(0);
 
@@ -333,7 +335,7 @@ describe('Preview Service', function () {
         it('should stop pending preview', inject(function(PreviewService, PreparationService) {
             //given
             var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
-            var previewCanceler = previewArgs[4];
+            var previewCanceler = previewArgs[5];
 
             expect(previewCanceler.promise.$$state.status).toBe(0);
 
@@ -373,7 +375,7 @@ describe('Preview Service', function () {
         it('should stop pending preview on cancel call', inject(function(PreviewService, PreparationService) {
             //given
             var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
-            var previewCanceler = previewArgs[4];
+            var previewCanceler = previewArgs[5];
 
             expect(previewCanceler.promise.$$state.status).toBe(0);
 

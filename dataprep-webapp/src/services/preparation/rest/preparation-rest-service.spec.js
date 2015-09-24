@@ -390,6 +390,7 @@ describe('Preparation REST Service', function () {
             var currentStep = {transformation: {stepId: '18046df82f0946af05ee766d0ac06f92f63e7047'}};
             var previewStep = {transformation: {stepId: '856980bacf0890c89bc318856980bacf0890c89b'}};
             var recordsTdpId = [1,2,3,4,5];
+            var sampleSize = 650;
             var canceler = $q.defer();
 
             var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
@@ -398,7 +399,8 @@ describe('Preparation REST Service', function () {
                 tdpIds: [1,2,3,4,5],
                 currentStepId: '18046df82f0946af05ee766d0ac06f92f63e7047',
                 previewStepId: '856980bacf0890c89bc318856980bacf0890c89b',
-                preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126'
+                preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
+                sample: sampleSize
             };
 
             $httpBackend
@@ -407,7 +409,7 @@ describe('Preparation REST Service', function () {
 
 
             //when
-            PreparationRestService.getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, canceler)
+            PreparationRestService.getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, sampleSize, canceler)
                 .then(function() {
                     done = true;
                 })
@@ -429,6 +431,7 @@ describe('Preparation REST Service', function () {
             var currentStep = {transformation: {stepId: '18046df82f0946af05ee766d0ac06f92f63e7047'}};
             var previewStep = {transformation: {stepId: '856980bacf0890c89bc318856980bacf0890c89b'}};
             var recordsTdpId = [1,2,3,4,5];
+            var sampleSize = 550;
             var canceler = $q.defer();
 
             var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
@@ -437,7 +440,8 @@ describe('Preparation REST Service', function () {
                 tdpIds: [1,2,3,4,5],
                 currentStepId: '18046df82f0946af05ee766d0ac06f92f63e7047',
                 previewStepId: '856980bacf0890c89bc318856980bacf0890c89b',
-                preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126'
+                preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
+                sample: sampleSize
             };
 
             $httpBackend
@@ -445,7 +449,7 @@ describe('Preparation REST Service', function () {
                 .respond(200);
 
             //when
-            PreparationRestService.getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, canceler)
+            PreparationRestService.getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, sampleSize, canceler)
                 .then(function() {
                     done = true;
                 })
@@ -468,6 +472,7 @@ describe('Preparation REST Service', function () {
             var updateStep = {transformation: {stepId: '856980bacf0890c89bc318856980bacf0890c89b'}, actionParameters: {action: 'cut'}};
             var newParams = {value: 'toto'};
             var recordsTdpId = [1,2,3,4,5];
+            var sampleSize = 450;
             var canceler = $q.defer();
 
             var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
@@ -480,7 +485,8 @@ describe('Preparation REST Service', function () {
                 tdpIds: [1,2,3,4,5],
                 currentStepId: '18046df82f0946af05ee766d0ac06f92f63e7047',
                 updateStepId: '856980bacf0890c89bc318856980bacf0890c89b',
-                preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126'
+                preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
+                sample: sampleSize
             };
 
             $httpBackend
@@ -489,7 +495,7 @@ describe('Preparation REST Service', function () {
 
 
             //when
-            PreparationRestService.getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, canceler)
+            PreparationRestService.getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, sampleSize, canceler)
                 .then(function() {
                     done = true;
                 })
@@ -512,6 +518,7 @@ describe('Preparation REST Service', function () {
             var updateStep = {transformation: {stepId: '856980bacf0890c89bc318856980bacf0890c89b'}, actionParameters: {action: 'cut'}};
             var newParams = {value: 'toto'};
             var recordsTdpId = [1,2,3,4,5];
+            var sampleSize = 350;
             var canceler = $q.defer();
 
             var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
@@ -524,7 +531,8 @@ describe('Preparation REST Service', function () {
                 tdpIds: [1,2,3,4,5],
                 currentStepId: '18046df82f0946af05ee766d0ac06f92f63e7047',
                 updateStepId: '856980bacf0890c89bc318856980bacf0890c89b',
-                preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126'
+                preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
+                sample: sampleSize
             };
 
             $httpBackend
@@ -533,7 +541,7 @@ describe('Preparation REST Service', function () {
 
 
             //when
-            PreparationRestService.getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, canceler)
+            PreparationRestService.getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, sampleSize, canceler)
                 .then(function() {
                     done = true;
                 })
@@ -555,6 +563,7 @@ describe('Preparation REST Service', function () {
             var action = 'cut';
             var params = {value: 'toto'};
             var recordsTdpId = [1,2,3,4,5];
+            var sampleSize = 200;
             var canceler = $q.defer();
 
             var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
@@ -567,7 +576,8 @@ describe('Preparation REST Service', function () {
                 },
                 tdpIds: [1,2,3,4,5],
                 preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
-                datasetId: '856980bacf0890c89bc318856980bacf0890c89b'
+                datasetId: '856980bacf0890c89bc318856980bacf0890c89b',
+                sample: sampleSize
             };
 
             $httpBackend
@@ -575,7 +585,7 @@ describe('Preparation REST Service', function () {
                 .respond(200);
 
             //when
-            PreparationRestService.getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, canceler)
+            PreparationRestService.getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, sampleSize, canceler)
                 .then(function() {
                     done = true;
                 })
@@ -597,6 +607,7 @@ describe('Preparation REST Service', function () {
             var action = 'cut';
             var params = {value: 'toto'};
             var recordsTdpId = [1,2,3,4,5];
+            var sampleSize = 150;
             var canceler = $q.defer();
 
             var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
@@ -609,7 +620,8 @@ describe('Preparation REST Service', function () {
                 },
                 tdpIds: [1,2,3,4,5],
                 preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
-                datasetId: '856980bacf0890c89bc318856980bacf0890c89b'
+                datasetId: '856980bacf0890c89bc318856980bacf0890c89b',
+                sample: sampleSize
             };
 
             $httpBackend
@@ -617,7 +629,7 @@ describe('Preparation REST Service', function () {
                 .respond(200);
 
             //when
-            PreparationRestService.getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, canceler)
+            PreparationRestService.getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, sampleSize, canceler)
                 .then(function() {
                     done = true;
                 })

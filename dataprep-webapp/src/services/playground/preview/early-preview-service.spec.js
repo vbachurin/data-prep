@@ -7,6 +7,7 @@ describe('Early Preview Service', function () {
     var dataset = {id: '123456'};
     var preparation = {id: '456789'};
     var column = {id: '0001', name: 'firstname'};
+    var playground = {sampleSize: 300};
     var transfoScope;
     var transformation;
     var params;
@@ -14,7 +15,8 @@ describe('Early Preview Service', function () {
     beforeEach(module('data-prep.services.playground', function ($provide) {
         stateMock = {playground: {
             dataset: dataset,
-            preparation: preparation
+            preparation: preparation,
+            playground: playground
         }};
         $provide.constant('state', stateMock);
     }));
@@ -67,7 +69,8 @@ describe('Early Preview Service', function () {
                 scope: transfoScope,
                 column_id: column.id,
                 column_name: column.name
-            }
+            },
+            stateMock.playground.sampleSize
         );
     }));
 
@@ -99,7 +102,8 @@ describe('Early Preview Service', function () {
                 scope: transfoScope,
                 column_id: column.id,
                 column_name: column.name
-            }
+            },
+            stateMock.playground.sampleSize
         );
     }));
 
@@ -190,7 +194,8 @@ describe('Early Preview Service', function () {
                 scope: transfoScope,
                 column_id: column.id,
                 column_name: column.name
-            }
+            },
+            stateMock.playground.sampleSize
         );
     }));
 });
