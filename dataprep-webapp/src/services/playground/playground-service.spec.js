@@ -422,11 +422,11 @@ describe('Playground Service', function () {
             spyOn(RecipeService, 'getStep').and.returnValue(lastActiveStep);
 
             //when
-            stateMock.playground.sampleSize = 7568;
+            stateMock.playground.sampleSize = null;
             PlaygroundService.changeSampleSize();
 
             //then
-            expect(PreparationService.getContent).toHaveBeenCalledWith('79a8746bc546874', '53df45d3s8425', 7568);
+            expect(PreparationService.getContent).toHaveBeenCalledWith('79a8746bc546874', '53df45d3s8425', null);
         }));
     });
 
