@@ -504,7 +504,7 @@
          */
         function addFilter(value) {
             var column = service.selectedColumn;
-            var filterFn = value ?
+            var filterFn = value.length ?
                 FilterService.addFilter.bind(null, 'contains', column.id, column.name, {phrase: value}) :
                 FilterService.addFilter.bind(null, 'empty_records', column.id, column.name, {});
 
@@ -520,7 +520,9 @@
          */
         function addExactFilter(value, caseSensitive) {
             var column = service.selectedColumn;
-            var filterFn = FilterService.addFilter.bind(null, 'exact', column.id, column.name, {phrase: value, caseSensitive: caseSensitive});
+            var filterFn = value.length?
+                            FilterService.addFilter.bind(null, 'exact', column.id, column.name, {phrase: value, caseSensitive: caseSensitive}):
+                            FilterService.addFilter.bind(null, 'empty_records', column.id, column.name, {});
 
             $timeout(filterFn);
         }
