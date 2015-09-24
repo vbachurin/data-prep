@@ -21,6 +21,7 @@ describe('Playground controller', function() {
         spyOn(PlaygroundService, 'createOrUpdatePreparation').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'changeSampleSize').and.returnValue($q.when(true));
         spyOn(StateService, 'setNameEditionMode').and.returnValue();
+        spyOn(StateService, 'setSampleSize').and.returnValue();
         spyOn($state, 'go').and.returnValue();
 
     }));
@@ -62,33 +63,14 @@ describe('Playground controller', function() {
             expect(ctrl.previewInProgress).toBe(true);
         }));
 
-        it('should bind selectedSampleSize getter to PlaygroundService', inject(function(PlaygroundService) {
+        it('should init sampleSize to StateService', inject(function(StateService) {
             //given
-            var ctrl = createController();
-            expect(ctrl.selectedSampleSize).toEqual({ display: '100', value: 100 });
+            createController();
 
-            var newSize = { display: '500', value: 500 };
-
-            //when
-            PlaygroundService.selectedSampleSize = newSize;
-
-            //then
-            expect(ctrl.selectedSampleSize).toBe(newSize);
+            // then
+            expect(StateService.setSampleSize).toHaveBeenCalledWith(100);
         }));
 
-        it('should bind selectedSampleSize setter to PlaygroundService', inject(function(PlaygroundService) {
-            //given
-            var ctrl = createController();
-            expect(PlaygroundService.selectedSampleSize).toEqual({ display: '100', value: 100 });
-
-            var newSize = { display: '500', value: 500 };
-
-            //when
-            ctrl.selectedSampleSize = newSize;
-
-            //then
-            expect(PlaygroundService.selectedSampleSize).toBe(newSize);
-        }));
     });
 
     describe('recipe header', function() {

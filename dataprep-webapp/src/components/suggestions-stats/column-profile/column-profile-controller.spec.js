@@ -111,7 +111,7 @@ describe('ColumnProfile controller', function () {
 
             stateMock.playground.dataset = {id: datasetId};
             stateMock.playground.preparation = {id: preparationId};
-            PlaygroundService.selectedSampleSize = {value: sampleSize};
+            stateMock.playground.sampleSize = sampleSize;
             spyOn(RecipeService, 'getLastActiveStep').and.returnValue({id: stepId});
 
             //when
@@ -133,7 +133,7 @@ describe('ColumnProfile controller', function () {
 
             stateMock.playground.dataset = {id: datasetId};
             stateMock.playground.preparation = null;
-            PlaygroundService.selectedSampleSize = {value: sampleSize};
+            stateMock.playground.sampleSize = sampleSize;
             spyOn(RecipeService, 'getLastActiveStep').and.callFake(function() {
                 throw new Error('should NOT call RecipeService because there is no preparation');
             });

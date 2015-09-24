@@ -226,6 +226,7 @@
         //---------------------------------------------------------------------------------
         //----------------------------------------PREVIEW----------------------------------
         //---------------------------------------------------------------------------------
+
         /**
          * @ngdoc method
          * @name getPreviewDiff
@@ -234,14 +235,14 @@
          * @param {string} currentStep The current loaded step
          * @param {string} previewStep The target preview step
          * @param {string} recordsTdpId The records TDP ids to preview
+         * @param {number} sampleSize The sample size
          * @param {string} canceler The canceler promise
          * @description POST Preview diff between 2 unchanged steps of a recipe
          * @returns {promise} The POST promise
          */
-        function getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, canceler) {
-            return PreparationRestService.getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, canceler);
+        function getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, sampleSize, canceler) {
+            return PreparationRestService.getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, sampleSize, canceler);
         }
-
         /**
          * @ngdoc method
          * @name getPreviewUpdate
@@ -251,12 +252,13 @@
          * @param {string} updateStep The target step to update
          * @param {string} newParams The new parameters
          * @param {string} recordsTdpId The records TDP ids to preview
+         * @param {number} sampleSize The sample size
          * @param {string} canceler The canceler promise
          * @description POST preview diff between 2 same actions but with 1 updated step
          * @returns {promise} The POST promise
          */
-        function getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, canceler) {
-            return PreparationRestService.getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, canceler);
+        function getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, sampleSize, canceler) {
+            return PreparationRestService.getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, sampleSize, canceler);
         }
 
         /**
@@ -269,11 +271,12 @@
          * @param {string} params The action parameters
          * @param {string} recordsTdpId The records TDP ids to preview
          * @param {string} canceler The canceler promise
+         * @param {number} sampleSize The sample size
          * @description POST preview diff between the preparation head and a new added transformation
          * @returns {promise} The POST promise
          */
-        function getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, canceler) {
-            return PreparationRestService.getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, canceler);
+        function getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, sampleSize, canceler) {
+            return PreparationRestService.getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, sampleSize, canceler);
         }
     }
 

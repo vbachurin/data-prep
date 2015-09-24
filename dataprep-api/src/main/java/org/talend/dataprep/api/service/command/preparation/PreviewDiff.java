@@ -47,7 +47,7 @@ public class PreviewDiff extends PreviewAbstract {
         final String newEncodedActions = serializeActions(new ArrayList<>(previewActions.values()));
 
         // get dataset content
-        final InputStream content = getDatasetContent(dataSetId);
+        final InputStream content = getDatasetContent(dataSetId, input.getSample());
         // get usable tdpIds
         final String encodedTdpIds = serializeIds(input.getTdpIds());
 
