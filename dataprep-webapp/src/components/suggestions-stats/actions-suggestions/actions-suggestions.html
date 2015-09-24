@@ -15,9 +15,9 @@
         </talend-tabs-item>
         <talend-tabs-item tab-title="Column" default="true">
             <talend-accordions class="menu action-suggestion-tab-items">
-                <talend-accordions-item scroll-to-bottom="true"
-                                        ng-switch="!!(transfo.parameters || transfo.items)"
-                                        ng-repeat="transfo in actionsSuggestionsCtrl.columnSuggestions track by transfo.name">
+                <talend-accordions-item ng-repeat="transfo in actionsSuggestionsCtrl.columnSuggestions track by transfo.name"
+                                        action="actionsSuggestionsCtrl.scrollToBottom"
+                                        ng-switch="!!(transfo.parameters || transfo.items)">
                     <!--with dynamic parameters-->
                     <a class="trigger"
                        ng-switch-when="false"

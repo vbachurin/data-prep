@@ -51,9 +51,9 @@
 
                     //Initialization of the right panel
                     // 325px : to have at least 5 actions in the top panel
-                    panel1.css('height', '325px');
-                    handler.css('top', '325px');
-                    panel2.css('top', '325px');
+                    panel1.css('height', '350px');
+                    handler.css('top', '350px');
+                    panel2.css('top', '350px');
 
                     iElement.find('.action-suggestion-tab-items').css('height', panel1.height()- actionHeaderPanelsSizeMargin + 'px');
                     iElement.find('.stat-detail-tab-items').css('height', panel2.height()- statHeaderPanelsSizeMargin + 'px');

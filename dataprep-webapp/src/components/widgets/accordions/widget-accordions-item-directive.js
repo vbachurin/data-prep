@@ -36,8 +36,9 @@
             require: '^^talendAccordions',
             scope: {
                 'default': '=',
-                onOpen: '&',
-                'scrollToBottom': '='
+                'onOpen': '&',
+                'action': '='
+
             },
             bindToController: true,
             controller: function() {},
@@ -115,30 +116,7 @@
                     getContentElement().slideDown('fast');
                     iElement.addClass('open');
                     ctrl.onOpen();
-
-                    //Scroll to the bottom of accordion
-                    //contentContainer.context.clientHeight is used instead of contentContainer.height()
-                    // because contentContainer.height() does not work on Chrome
-
-                    if(ctrl.scrollToBottom) {
-                        $timeout(function(){
-                            var availablelTopSpace = contentContainer.offset().top - $('.action-suggestion-tab-items').offset().top;
-                            var scrollTo = 0;
-                            if(availablelTopSpace >= contentContainer.context.clientHeight) {
-                                if (contentContainer.offset().top > ($('.split-handler').offset().top -  contentContainer.context.clientHeight)){
-                                    scrollTo = $('.action-suggestion-tab-items')[0].scrollTop + contentContainer.context.clientHeight;
-                                    $('.action-suggestion-tab-items').animate({
-                                        scrollTop: scrollTo
-                                    }, 500);
-                                }
-                            } else {
-                                scrollTo = $('.action-suggestion-tab-items')[0].scrollTop + availablelTopSpace - $('.accordion').height();
-                                $('.action-suggestion-tab-items').animate({
-                                    scrollTop: scrollTo
-                                }, 500);
-                            }
-                        },200);
-                    }
+                    ctrl.action(iElement);
                 };
 
                 /**
