@@ -152,12 +152,12 @@
          * @description [PRIVATE] Create a filter function that test exact equality
          * @returns {function} The predicate function
          */
-        function createExactFilterFn(colId, phrase) {
+        function createExactFilterFn(colId, phrase, caseSensitive) {
             return function() {
                 return function (item) {
                     // col could be removed by a step
                     if (item[colId]) {
-                        return item[colId] === phrase;
+                        return caseSensitive? item[colId] === phrase : (item[colId]).toLowerCase() === phrase;
                     }
                     else {
                         return false;
@@ -258,7 +258,7 @@
                     filterInfo = new Filter(type, colId, colName, true, args, filterFn, removeFilterFn);
                     break;
                 case 'exact':
-                    filterFn = createExactFilterFn(colId, args.phrase);
+                    filterFn = createExactFilterFn(colId, args.phrase, args.caseSensitive);
                     filterInfo = new Filter(type, colId, colName, true, args, filterFn, removeFilterFn);
                     break;
                 case 'invalid_records':

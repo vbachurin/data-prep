@@ -7,7 +7,7 @@
         vm.chartConfig = {};
 
         vm.barchartClickFn = function barchartClickFn (item){
-            return StatisticsService.addExactFilter(item.data);
+            return StatisticsService.addExactFilter(item.data, true);
         };
 
         vm.vBarchartClickFn = function vBarchartClickFn (item){
@@ -129,7 +129,7 @@
          */
         var buildGeoDistribution = function(column) {
             var geoChartAction = function() {
-                StatisticsService.addExactFilter(this['hc-key'].substring(3));
+                StatisticsService.addExactFilter(this['hc-key'].substring(3), false);
                 console.log('State: '  + this['hc-key'] + ', value: ' + this.value);
             };
 
