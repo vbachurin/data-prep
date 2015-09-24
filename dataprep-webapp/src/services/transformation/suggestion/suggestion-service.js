@@ -9,11 +9,11 @@
      */
     function SuggestionService(ColumnSuggestionService) {
         var tabIndex = {
-            'TEXT': 1,
-            'CELL': 2,
-            'LINE': 3,
-            'COLUMN': 4,
-            'TABLE': 5
+            'TEXT': 0,
+            'CELL': 1,
+            'LINE': 2,
+            'COLUMN': 3,
+            'TABLE': 4
         };
 
         var service = {

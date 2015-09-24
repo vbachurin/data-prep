@@ -53,7 +53,7 @@ describe('Suggestion Service', function() {
         SuggestionService.selectTab('TEXT');
 
         //then
-        expect(SuggestionService.tab).toBe(1);
+        expect(SuggestionService.tab).toBe(0);
     }));
 
     it('should select TEXT tab', inject(function(SuggestionService) {
@@ -64,7 +64,7 @@ describe('Suggestion Service', function() {
         SuggestionService.selectTab('CELL');
 
         //then
-        expect(SuggestionService.tab).toBe(2);
+        expect(SuggestionService.tab).toBe(1);
     }));
 
     it('should select TEXT tab', inject(function(SuggestionService) {
@@ -75,7 +75,7 @@ describe('Suggestion Service', function() {
         SuggestionService.selectTab('LINE');
 
         //then
-        expect(SuggestionService.tab).toBe(3);
+        expect(SuggestionService.tab).toBe(2);
     }));
 
     it('should select TEXT tab', inject(function(SuggestionService) {
@@ -86,7 +86,7 @@ describe('Suggestion Service', function() {
         SuggestionService.selectTab('COLUMN');
 
         //then
-        expect(SuggestionService.tab).toBe(4);
+        expect(SuggestionService.tab).toBe(3);
     }));
 
     it('should select TABLE tab', inject(function(SuggestionService) {
@@ -97,7 +97,7 @@ describe('Suggestion Service', function() {
         SuggestionService.selectTab('TABLE');
 
         //then
-        expect(SuggestionService.tab).toBe(5);
+        expect(SuggestionService.tab).toBe(4);
     }));
 
     it('should reset column suggestions', inject(function(SuggestionService, ColumnSuggestionService) {
