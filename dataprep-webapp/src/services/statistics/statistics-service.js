@@ -513,7 +513,7 @@
          * @name addExactFilter
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @param {string, boolean} value The phrase to filter (clicked Hbarchart data) and the caseSensitiveness of the filter
-         * @description Add an exact filter in the angular context
+         * @description Add an exact filter in the angular context with/without caseSensitiveness
          */
         function addExactFilter(value, caseSensitive) {
             var column = service.selectedColumn;
