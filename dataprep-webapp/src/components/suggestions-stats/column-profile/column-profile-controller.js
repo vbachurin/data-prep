@@ -129,7 +129,7 @@
          */
         var buildGeoDistribution = function(column) {
             var geoChartAction = function() {
-                StatisticsService.addExactFilter(this['hc-key'].substring(3), false);
+                StatisticsService.addExactFilter(this['hc-key'].substring(3), true);
                 console.log('State: '  + this['hc-key'] + ', value: ' + this.value);
             };
 
