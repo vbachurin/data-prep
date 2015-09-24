@@ -110,11 +110,11 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                 }
                 return chooseSeparator(separators, lineCount);
             }
-        } catch (IllegalArgumentException e) {
-            LOGGER.debug("Unable to read content from content using encoding '{}'.", encoding, e);
-            return null;
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_CONTENT, e);
+        } catch (Exception e) {
+            LOGGER.debug("Unable to read content from content using encoding '{}'.", encoding, e);
+            return null;
         }
     }
 

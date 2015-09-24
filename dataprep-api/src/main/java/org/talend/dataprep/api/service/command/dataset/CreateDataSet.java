@@ -1,7 +1,6 @@
 package org.talend.dataprep.api.service.command.dataset;
 
-import static org.talend.dataprep.api.service.command.common.Defaults.asString;
-import static org.talend.dataprep.api.service.command.common.Defaults.emptyString;
+import static org.talend.dataprep.api.service.command.common.Defaults.*;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -38,7 +37,17 @@ public class CreateDataSet extends GenericCommand<String> {
     private CreateDataSet(HttpClient client, String name, String contentType, InputStream dataSetContent) {
         super(PreparationAPI.DATASET_GROUP, client);
         execute(() -> onExecute(name, contentType, dataSetContent));
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_CREATE_DATASET, e));
+        onError((e) -> {
+            if (e instanceof TDPException) {
+                // Go for a pass-through for "UNSUPPORTED CONTENT"
+                final TDPException tdpException = (TDPException) e;
+                final String code = tdpException.getCode().getCode();
+                if (code.contains("UNSUPPORTED_CONTENT")) { // TODO Would be better to rely on enum for this
+                    return passthrough().apply(e);
+                }
+            }
+            return new TDPException(APIErrorCodes.UNABLE_TO_CREATE_DATASET, e);
+        });
         on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyString());
         on(HttpStatus.OK).then(asString());
     }
