@@ -260,6 +260,9 @@
          * @returns {number} The value in the clean format
          */
         function clean(value) {
+            if (isNaN(value)) {
+                return parseInt(value, 10);
+            }
             return value === parseInt(value, 10) ? value : +value.toFixed(2);
         }
 
