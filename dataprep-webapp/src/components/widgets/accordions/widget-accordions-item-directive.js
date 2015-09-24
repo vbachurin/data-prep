@@ -116,7 +116,10 @@
                     getContentElement().slideDown('fast');
                     iElement.addClass('open');
                     ctrl.onOpen();
-                    ctrl.action(iElement);
+                    if(ctrl.action) {
+                        ctrl.action(iElement);
+                    }
+
                 };
 
                 /**
