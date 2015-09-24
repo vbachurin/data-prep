@@ -512,12 +512,12 @@
          * @ngdoc method
          * @name addExactFilter
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {string} value The phrase to filter (clicked Hbarchart data)
-         * @description Add an exact filter in the angular context
+         * @param {string, boolean} value The phrase to filter (clicked Hbarchart data) and the caseSensitiveness of the filter
+         * @description Add an exact filter in the angular context with/without caseSensitiveness
          */
-        function addExactFilter(value) {
+        function addExactFilter(value, caseSensitive) {
             var column = service.selectedColumn;
-            var filterFn = FilterService.addFilter.bind(null, 'exact', column.id, column.name, {phrase: value});
+            var filterFn = FilterService.addFilter.bind(null, 'exact', column.id, column.name, {phrase: value, caseSensitive: caseSensitive});
 
             $timeout(filterFn);
         }
