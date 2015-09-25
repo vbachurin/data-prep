@@ -12,13 +12,32 @@
 // ============================================================================
 package org.talend.dataprep.lock;
 
+import com.hazelcast.core.ILock;
+
 /**
  * Basic distributed Lock implementation for locking. This implementation relies on Hazelcast but it was created to
  * avoid Hazelcast dependencies in all the Talend classes. Use LockFactory.getLock(String) to get a new instance.
  *
  * @see LockFactory#getLock(String)
  */
-public interface DistributedLock {
+public class HazelcastDistributedLock implements DistributedLock {
+
+    /** The key where the lock is. */
+    private String lockKey;
+
+    /** the Hazelcast lock. */
+    private ILock lock;
+
+    /**
+     * create a distributed lock based on the key param.
+     *
+     * @param key, unique name of the lock.
+     * @param lock the hazelcast lock
+     */
+    HazelcastDistributedLock(String key, ILock lock) {
+        this.lockKey = key;
+        this.lock = lock;
+    }
 
     /**
      * Acquires the lock.
@@ -34,18 +53,24 @@ public interface DistributedLock {
      * 
      * Specified by: lock() in Lock
      */
-    void lock();
+    public void lock() {
+        lock.lock();
+    }
 
     /**
      * Releases the lock.
      */
-    void unlock();
+    public void unlock() {
+        lock.unlock();
+    }
 
     /**
      * Getter for key used for the lock.
      * 
      * @return the key used for the lock
      */
-    String getKey();
+    public String getKey() {
+        return lockKey;
+    }
 
 }
