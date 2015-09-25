@@ -73,15 +73,15 @@ public class CeilTest {
         action.applyOnColumn(row, new TransformationContext(), parameters, "aNumber");
 
         // then
-        assertEquals(expected, row.get("aNumber"));
+        assertEquals( expected, row.get( "aNumber" ) );
     }
 
     @Test
     public void testPositive() {
-        testCommon("5.0", "5");
+        testCommon( "5.0", "5" );
         testCommon("5.1", "6");
-        testCommon("5.5", "6");
-        testCommon("5.8", "6");
+        testCommon( "5.5", "6" );
+        testCommon( "5.8", "6" );
     }
 
     @Test
@@ -97,6 +97,15 @@ public class CeilTest {
         testCommon("891234567897.9", "891234567898");
         testCommon("891234567899.9", "891234567900");
         testCommon("999999999999.9", "1000000000000");
+    }
+
+
+    @Test
+    public void test_huge_number_negative() {
+        testCommon("-1234567890.1", "-1234567890");
+        testCommon("-891234567897.9", "-891234567897");
+        testCommon("-891234567899.9", "-891234567899");
+        testCommon("-999999999999.9", "-999999999999");
     }
 
     @Test
