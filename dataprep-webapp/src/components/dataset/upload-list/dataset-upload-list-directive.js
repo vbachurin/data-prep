@@ -27,9 +27,9 @@
                 scope.$watch(function() {
                     return ctrl.datasets;
                 }, function() {
-                    //Resize datasets list
+                    //Resize datasets list : 100% viewport minus heights (headers + footer + sort header + uploading list + margin)
                     $timeout(function(){
-                        var heightpanelNew = 'calc(100vh - 2 * 56px - 50px - 50px - ' + $('#flex-fixed-upload-list').height() + 'px)';
+                        var heightpanelNew = 'calc(100vh - 2 * 56px - 55px - 50px - ' + $('#flex-fixed-upload-list').height() + 'px)';
                         $('#datasets-list').css('flex-basis', heightpanelNew);
                     },200);
                 }, true);
