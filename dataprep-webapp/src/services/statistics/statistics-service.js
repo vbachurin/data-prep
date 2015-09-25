@@ -125,7 +125,7 @@
         function initClassicHistogram(key, label, dataTable) {
             service.histogram = {
                 data: _.map(dataTable, function (rec) {
-                    rec.formattedValue = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(rec.data);
+                    rec.formattedValue = TextFormatService.adaptValueToHtmlConstraints(rec.data);
                     return rec;
                 }),
                 key: key,
