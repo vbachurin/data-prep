@@ -1,4 +1,4 @@
-package org.talend.dataprep.api;
+package org.talend.dataprep.exception.error;
 
 import java.util.Arrays;
 import java.util.Collection;

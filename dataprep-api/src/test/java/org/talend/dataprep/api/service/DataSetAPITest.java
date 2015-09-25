@@ -15,8 +15,10 @@ import java.util.Iterator;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
+import org.talend.daikon.exception.json.JsonErrorCode;
 import org.talend.dataprep.api.dataset.DataSetGovernance;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.exception.error.DataSetErrorCodes;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -314,7 +316,10 @@ public class DataSetAPITest extends ApiServiceTestBase {
         final String datasetContent = IOUtils.toString(DataSetAPITest.class.getResourceAsStream("dataset/dataset.ods"));
         final int metadataCount = dataSetMetadataRepository.size();
         // then
-        assertThat(given().body(datasetContent).when().post("/api/datasets").getStatusCode(), is(400));
+        final Response response = given().body(datasetContent).when().post("/api/datasets");
+        assertThat(response.getStatusCode(), is(400));
+        JsonErrorCode code = builder.build().reader(JsonErrorCode.class).readValue(response.getBody().print());
+        assertThat(code.getCode(), is(DataSetErrorCodes.UNSUPPORTED_CONTENT.getCode()));
         assertThat(dataSetMetadataRepository.size(), is(metadataCount)); // No data set metadata should be created
     }
 
