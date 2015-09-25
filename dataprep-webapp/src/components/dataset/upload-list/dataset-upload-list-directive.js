@@ -13,7 +13,7 @@
      </dataset-upload-list>
      * @param {object[]} datasets The upload error datasets
      */
-    function DatasetUploadList() {
+    function DatasetUploadList($timeout) {
         return {
             templateUrl: 'components/dataset/upload-list/dataset-upload-list.html',
             restrict: 'E',
@@ -23,15 +23,15 @@
             bindToController: true,
             controllerAs: 'uploadListCtrl',
             controller: function() {},
-            link: function() {
-                var heightpanelNew = 'calc(100vh - 2 * 56px - 50px - 50px - ' + $('#flex-fixed-upload-list').height() + 'px)';
-                $('#datasets-list').css('flex-basis', heightpanelNew);
-
+            link: function(scope, iElement, iAttrs, ctrl) {
                 scope.$watch(function() {
                     return ctrl.datasets;
                 }, function() {
-                   var heightpanelNew = 'calc(100vh - 2 * 56px - 50px - 50px - ' + $('#flex-fixed-upload-list').height() + 'px)';
-                    $('#datasets-list').css('flex-basis', heightpanelNew);
+                    //Resize datasets list
+                    $timeout(function(){
+                        var heightpanelNew = 'calc(100vh - 2 * 56px - 50px - 50px - ' + $('#flex-fixed-upload-list').height() + 'px)';
+                        $('#datasets-list').css('flex-basis', heightpanelNew);
+                    },200);
                 }, true);
             }
         };
