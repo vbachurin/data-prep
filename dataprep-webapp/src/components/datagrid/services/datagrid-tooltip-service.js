@@ -68,7 +68,7 @@
                                 x: event.clientX,
                                 y: event.clientY
                             },
-                            htmlStr: TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(value)
+                            htmlStr: TextFormatService.adaptValueToHtmlConstraints(value)
                         };
                         service.showTooltip = true;
                     });

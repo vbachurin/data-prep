@@ -1,26 +1,14 @@
 package org.talend.dataprep.preparation.service;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-import org.talend.dataprep.api.preparation.*;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.ExceptionContext;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
-import org.talend.dataprep.metrics.Timed;
-import org.talend.dataprep.preparation.exception.PreparationErrorCodes;
-import org.talend.dataprep.preparation.store.PreparationRepository;
-import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
+import static java.lang.Integer.MAX_VALUE;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+import static org.talend.dataprep.exception.error.PreparationErrorCodes.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -32,14 +20,28 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.lang.Integer.MAX_VALUE;
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
-import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.*;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+import org.talend.daikon.exception.ExceptionContext;
+import org.talend.dataprep.api.preparation.*;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.exception.error.PreparationErrorCodes;
+import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
+import org.talend.dataprep.metrics.Timed;
+import org.talend.dataprep.preparation.store.PreparationRepository;
+import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
+
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 @RestController
 @Api(value = "preparations", basePath = "/preparations", description = "Operations on preparations")

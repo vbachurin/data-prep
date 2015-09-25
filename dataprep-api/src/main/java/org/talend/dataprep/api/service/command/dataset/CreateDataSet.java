@@ -13,11 +13,13 @@ import org.apache.http.entity.InputStreamEntity;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIErrorCodes;
+import org.talend.daikon.exception.error.ErrorCode;
 import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.api.service.command.common.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.exception.error.DataSetErrorCodes;
 
 /**
  * Command used to create a dataset. Basically pass through all data to the DataSet low level API.
@@ -41,8 +43,8 @@ public class CreateDataSet extends GenericCommand<String> {
             if (e instanceof TDPException) {
                 // Go for a pass-through for "UNSUPPORTED CONTENT"
                 final TDPException tdpException = (TDPException) e;
-                final String code = tdpException.getCode().getCode();
-                if (code.contains("UNSUPPORTED_CONTENT")) { // TODO Would be better to rely on enum for this
+                final ErrorCode errorCode = tdpException.getCode();
+                if (errorCode.getCode().equals(DataSetErrorCodes.UNSUPPORTED_CONTENT.getCode())) {
                     return passthrough().apply(e);
                 }
             }

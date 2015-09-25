@@ -84,13 +84,13 @@
          * @returns {object} Geo distribution {map: string, data: [{}]}
          */
         function getGeoDistribution(column) {
-            var keyPrefix = 'us-';
+            var keyPrefix = 'US-';
             var map = 'countries/us/us-all';
 
             return {
                 map: map,
                 data: getDistribution(column.id, 'hc-key', 'value', function (key) {
-                    return keyPrefix + key.toLowerCase();
+                    return keyPrefix + key;
                 })
             };
         }
@@ -125,7 +125,7 @@
         function initClassicHistogram(key, label, dataTable) {
             service.histogram = {
                 data: _.map(dataTable, function (rec) {
-                    rec.formattedValue = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(rec.data);
+                    rec.formattedValue = TextFormatService.adaptValueToHtmlConstraints(rec.data);
                     return rec;
                 }),
                 key: key,

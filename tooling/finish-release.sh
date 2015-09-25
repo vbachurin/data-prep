@@ -52,7 +52,8 @@ execute 'git tag -a '$1' --file=/tmp/commit_msg'
 execute 'git push --tags'
 
 #delete release branch?
-git chechout master
+git checkout master
+execute 'git push'
 execute 'git branch -D release/'$1
 execute 'git push origin :release/'$1
 
