@@ -9,8 +9,8 @@
             <li>
                 <span class="sample_label">{{ 'SAMPLE_SIZE' | translate }}: </span>
                 <select id="playground-sampling-select"
-                        ng-model="playgroundCtrl.selectedSampleSize"
-                        ng-options="size.display for size in playgroundCtrl.sampleSizes"
+                        ng-model="playgroundCtrl.state.playground.sampleSize"
+                        ng-options="size.value as size.display for size in playgroundCtrl.sampleSizes"
                         ng-change="playgroundCtrl.playgroundService.changeSampleSize()"
                         class="sample">
                 </select>
@@ -34,7 +34,8 @@
             <li>
                 <export></export>
             </li>
-            <li class="nav-link"><a class="icon onboarding-prep-icon" data-icon="v" ng-click="playgroundCtrl.onboardingService.startTour('playground')" ></a></li>
+            <li class="nav-link"><a class="icon onboarding-prep-icon" data-icon="y" style="color:white;"
+                                    ng-click="playgroundCtrl.onboardingService.startTour('playground')"></a></li>
             <li id="help-history">
                 <history-control></history-control>
             </li>

@@ -13,11 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.schema.*;
 
@@ -55,7 +55,17 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
             if (metadata != null) {
                 // Guess media type based on InputStream
                 Set<FormatGuesser.Result> mediaTypes = guessMediaTypes(dataSetId, metadata);
-
+                // Check if only found format is Unsupported Format.
+                if (mediaTypes.size() == 1) {
+                    final FormatGuesser.Result result = mediaTypes.iterator().next();
+                    if (UnsupportedFormatGuess.class.isAssignableFrom(result.getFormatGuess().getClass())) {
+                        // Clean up content & metadata (don't keep invalid information)
+                        store.delete(metadata);
+                        repository.remove(dataSetId);
+                        // Throw exception to indicate unsupported content
+                        throw new TDPException(DataSetErrorCodes.UNSUPPORTED_CONTENT);
+                    }
+                }
                 // Select best format guess
                 List<FormatGuesser.Result> orderedGuess = new LinkedList<>(mediaTypes);
                 Collections.sort(orderedGuess, (g1, g2) -> //
@@ -99,7 +109,7 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
                 try (InputStream content = store.getAsRaw(metadata)) {
                     FormatGuesser.Result mediaType = guesser.guess(content, charset.name());
                     mediaTypes.add(mediaType);
-                    if (!(mediaType.getFormatGuess() instanceof NoOpFormatGuess)) {
+                    if (!(mediaType.getFormatGuess() instanceof UnsupportedFormatGuess)) {
                         break;
                     }
                 } catch (IOException e) {

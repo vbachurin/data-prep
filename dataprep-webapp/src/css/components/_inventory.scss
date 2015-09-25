@@ -15,12 +15,14 @@ $inventory-sort-height: 50px;
 
     border-bottom: 1px solid $border-color;
     font-weight: 300;
-    padding: 15px 5px 0 0;
+    padding: 0 5px 0 0;
   }
 
   .inventory-list {
     @include calc(flex-basis, "100vh - 2 * " + $header-height + " - " + $footer-height + " - " + $inventory-sort-height);
     @include flex-column();
+
+    overflow-y: auto;
   }
 
   .inventory-entry {

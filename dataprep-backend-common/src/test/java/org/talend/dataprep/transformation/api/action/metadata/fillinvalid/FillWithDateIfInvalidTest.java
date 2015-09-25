@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -21,8 +22,6 @@ import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Unit test for FillWithDateIfInvalid action.
@@ -50,15 +49,16 @@ public class FillWithDateIfInvalidTest {
         values.put("0002", "N");
         values.put("0003", "Something");
 
-        final Statistics statistics = getStatistics(this.getClass().getResourceAsStream("fillInvalidDateTimeAction_statistics.json"));
+        final Statistics statistics = getStatistics(this.getClass().getResourceAsStream(
+                "fillInvalidDateTimeAction_statistics.json"));
 
         final RowMetadata rowMetadata = new RowMetadata();
         rowMetadata.setColumns(asList(ColumnMetadata.Builder.column() //
-                        .type(Type.DATE) //
-                        .computedId("0002") //
-                        .invalidValues(newHashSet("N")) //
-                        .statistics(statistics) //
-                        .build()));
+                .type(Type.DATE) //
+                .computedId("0002") //
+                .invalidValues(newHashSet("N")) //
+                .statistics(statistics) //
+                .build()));
 
         final DataSetRow row = new DataSetRow(values);
         row.setRowMetadata(rowMetadata);
@@ -88,13 +88,12 @@ public class FillWithDateIfInvalidTest {
         final Statistics statistics = getStatistics(this.getClass().getResourceAsStream("fillInvalidDateAction_statistics.json"));
 
         final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(
-                asList(ColumnMetadata.Builder.column() //
-                        .type(Type.DATE) //
-                        .computedId("0002") //
-                        .invalidValues(new HashSet<>()) // no invalid values
-                        .statistics(statistics) //
-                        .build()));
+        rowMetadata.setColumns(asList(ColumnMetadata.Builder.column() //
+                .type(Type.DATE) //
+                .computedId("0002") //
+                .invalidValues(new HashSet<>()) // no invalid values
+                .statistics(statistics) //
+                .build()));
 
         final DataSetRow row = new DataSetRow(values);
         row.setRowMetadata(rowMetadata);

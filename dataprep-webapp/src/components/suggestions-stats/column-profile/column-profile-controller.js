@@ -7,7 +7,7 @@
         vm.chartConfig = {};
 
         vm.barchartClickFn = function barchartClickFn (item){
-            return StatisticsService.addExactFilter(item.data);
+            return StatisticsService.addExactFilter(item.data, true);
         };
 
         vm.vBarchartClickFn = function vBarchartClickFn (item){
@@ -55,7 +55,7 @@
             }
 
             var datasetId = state.playground.dataset.id;
-            var sampleSize = PlaygroundService.selectedSampleSize.value;
+            var sampleSize = state.playground.sampleSize;
             var preparationId = state.playground.preparation ? state.playground.preparation.id : null;
             var stepId = preparationId ? RecipeService.getLastActiveStep().id : null;
 
@@ -129,7 +129,7 @@
          */
         var buildGeoDistribution = function(column) {
             var geoChartAction = function() {
-                StatisticsService.addFilter(this['hc-key'].substring(3));
+                StatisticsService.addExactFilter(this['hc-key'].substring(3), false);
                 console.log('State: '  + this['hc-key'] + ', value: ' + this.value);
             };
 

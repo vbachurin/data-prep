@@ -79,7 +79,7 @@
                     params.column_name = column.name;
 
                     RecipeService.earlyPreview(column, action, params);
-                    PreviewService.getPreviewAddRecords(preparationId, state.playground.dataset.id, action.name, params);
+                    PreviewService.getPreviewAddRecords(preparationId, state.playground.dataset.id, action.name, params, state.playground.sampleSize);
                 }, 300);
             };
         }

@@ -9,7 +9,8 @@
         <li class="divider"></li>
         <li ng-repeat="type in typeMenuCtrl.types track by type.id"
             ng-click="typeMenuCtrl.changeType(type)">
-            <input type="radio" value="{{ ::type.id}}" ng-model="typeMenuCtrl.currentDomain"/>
+            <input type="radio" value="{{ ::type.id}}" ng-model="typeMenuCtrl.currentDomain"
+                   ng-checked="typeMenuCtrl.shouldBeChecked(type)"/>
             {{ ::'COLUMN_TYPE_SET' | translate }}&nbsp;{{::type.labelKey | translate }}
         </li>
     </ul>

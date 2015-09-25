@@ -12,12 +12,16 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.*;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.dataset.statistics.StatisticsUtils;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
@@ -26,10 +30,8 @@ import org.talend.dataprep.transformation.api.action.metadata.SchemaChangeAction
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
-import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 import org.talend.dataquality.semantic.recognizer.CategoryRecognizerBuilder;
 import org.talend.dataquality.semantic.statistics.SemanticAnalyzer;
-import org.talend.dataquality.semantic.statistics.SemanticType;
 import org.talend.dataquality.statistics.cardinality.CardinalityAnalyzer;
 import org.talend.dataquality.statistics.frequency.DataFrequencyAnalyzer;
 import org.talend.dataquality.statistics.frequency.PatternFrequencyAnalyzer;
@@ -39,11 +41,11 @@ import org.talend.dataquality.statistics.numeric.histogram.HistogramParameter;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileAnalyzer;
 import org.talend.dataquality.statistics.numeric.summary.SummaryAnalyzer;
 import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
-import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.dataquality.statistics.text.TextLengthAnalyzer;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.type.DataType;
+import org.talend.datascience.common.inference.type.DataTypeAnalyzer;
 
 /**
  * Base implementation of the Transformer interface.
@@ -87,6 +89,8 @@ class SimpleTransformer implements Transformer {
                 }
                 final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types, histogramParameter);
                 analyzer = Analyzers.with(new ValueQualityAnalyzer(types),
+                        // Type analysis (especially useful for new columns).
+                        new DataTypeAnalyzer(),
                         // Cardinality (distinct + duplicate)
                         new CardinalityAnalyzer(),
                         // Frequency analysis (Pattern + data)
@@ -167,31 +171,10 @@ class SimpleTransformer implements Transformer {
                 }
                 writer.fieldName("columns");
                 final RowMetadata row = context.getTransformedRowMetadata();
+                // End analysis and set the statistics
                 final Analyzer<Analyzers.Result> analyzer = (Analyzer<Analyzers.Result>) context.get(CONTEXT_ANALYZER);
-                // Set metadata information (not in statistics).
-                final List<ColumnMetadata> dataSetColumns = row.getColumns();
-                final List<Analyzers.Result> results = analyzer.getResult();
-                for (int i = 0; i < results.size(); i++) {
-                    final Analyzers.Result result = results.get(i);
-                    final ColumnMetadata metadata = dataSetColumns.get(i);
-                    // Value quality
-                    final ValueQualityStatistics column = result.get(ValueQualityStatistics.class);
-                    final Quality quality = metadata.getQuality();
-                    quality.setEmpty((int) column.getEmptyCount());
-                    quality.setInvalid((int) column.getInvalidCount());
-                    quality.setValid((int) column.getValidCount());
-                    quality.setInvalidValues(column.getInvalidValues());
-                    // we do not change again the domain as it has been maybe override by the user
-                    if (!(metadata.isDomainForced() || metadata.isTypeForced()) && !forcedColumns.contains(metadata.getId())) {
-                        // Semantic types
-                        final SemanticType semanticType = result.get(SemanticType.class);
-                        metadata.setDomain(semanticType.getSuggestedCategory());
-                        metadata.setDomainLabel(TypeUtils.getDomainLabel(semanticType));
-                    }
-                }
-                // Set the statistics
-                analyzer.end(); // TODO SemanticAnalyzer is erased on end(), call end after metadata is set (wait for TDQ-10970).
-                StatisticsUtils.setStatistics(row.getColumns(), analyzer.getResult());
+                analyzer.end();
+                StatisticsUtils.setStatistics(row.getColumns(), analyzer.getResult(), forcedColumns);
                 writer.write(context.getTransformedRowMetadata());
             }
             writer.endObject();

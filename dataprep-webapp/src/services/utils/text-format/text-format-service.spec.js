@@ -8,7 +8,7 @@ describe('text to html adaptation service', function() {
 		var value = '';
 
 		//when
-		var result = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(value);
+		var result = TextFormatService.adaptValueToHtmlConstraints(value);
 
 		//then
 		expect(result).toBe(value);
@@ -19,10 +19,21 @@ describe('text to html adaptation service', function() {
 		var value = '  my value';
 
 		//when
-		var result = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(value);
+		var result = TextFormatService.adaptValueToHtmlConstraints(value);
 
 		//then
 		expect(result).toBe('<span class="hiddenChars">  </span>my value');
+	}));
+
+	it('should add a span on leading spaces and convert < and > into their html codes', inject(function (TextFormatService) {
+		//given
+		var value = '  <b>my value</b>';
+
+		//when
+		var result = TextFormatService.adaptValueToHtmlConstraints(value);
+
+		//then
+		expect(result).toBe('<span class="hiddenChars">  </span>&lt;b&gt;my value&lt;/b&gt;');
 	}));
 
 	it('should add a span on trailing spaces', inject(function (TextFormatService) {
@@ -30,7 +41,7 @@ describe('text to html adaptation service', function() {
 		var value = 'my value  ';
 
 		//when
-		var result = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(value);
+		var result = TextFormatService.adaptValueToHtmlConstraints(value);
 
 		//then
 		expect(result).toBe('my value<span class="hiddenChars">  </span>');
@@ -41,7 +52,7 @@ describe('text to html adaptation service', function() {
 		var value = '     my value  ';
 
 		//when
-		var result = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(value);
+		var result = TextFormatService.adaptValueToHtmlConstraints(value);
 
 		//then
 		expect(result).toBe('<span class="hiddenChars">     </span>my value<span class="hiddenChars">  </span>');
@@ -52,7 +63,7 @@ describe('text to html adaptation service', function() {
 		var value = 'my \nnew\nvalue';
 
 		//when
-		var result = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(value);
+		var result = TextFormatService.adaptValueToHtmlConstraints(value);
 
 		//then
 		expect(result).toBe('my ↵\nnew↵\nvalue');
@@ -63,7 +74,7 @@ describe('text to html adaptation service', function() {
 		var value = '     my \nnew\nvalue  ';
 
 		//when
-		var result = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(value);
+		var result = TextFormatService.adaptValueToHtmlConstraints(value);
 
 		//then
 		expect(result).toBe('<span class="hiddenChars">     </span>my ↵\nnew↵\nvalue<span class="hiddenChars">  </span>');

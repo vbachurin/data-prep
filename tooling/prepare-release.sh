@@ -38,4 +38,8 @@ execute 'git branch release/'$1
 ./changeVersion.sh $1'-SNAPSHOT' $2'-SNAPSHOT'
 echo "GIT admin: update pom.xml's version to "$2"-SNAPSHOT on master" > /tmp/commit_msg
 execute 'git commit --all --file=/tmp/commit_msg'
+execute 'git push'
+
+execute 'git checkout release/'$1
+execute 'git push --set-upstream origin release/'$1
 

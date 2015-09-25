@@ -34,7 +34,7 @@
         </ul>
         <div class="subheader-right">
             <a data-icon="{{homeCtrl.showRightPanelIcon}}" class="expand-panel" ng-click="homeCtrl.toggleRightPanel()"></a>
-            <a data-icon="o" class="view-mode"></a>
+            <span data-icon="o" class="view-mode" title="Coming Soon ..."></span>
         </div>
     </div>
 
@@ -111,16 +111,16 @@
         <ul>
             <li id="nav_home_datasets"><a ui-sref="nav.home.datasets" ui-sref-active="selected">{{ ::'ALL_FOLDERS' | translate }}</a></li>
             <li id="nav_home_preparations"><a ui-sref="nav.home.preparations" ui-sref-active="selected">{{ ::'ALL_PREPARATIONS' | translate }}</a></li>
-            <li><a href="javascript:void(0)">{{ ::'MOST_RECENT_FILES' | translate }}</a></li>
-            <li><a href="javascript:void(0)">{{ ::'FAVORITE_FILES' | translate }}</a></li>
+            <li><a ui-sref="nav.home.recentfiles" >{{ ::'MOST_RECENT_FILES' | translate }}</a></li>
+            <li><a ui-sref="nav.home.favorites" >{{ ::'FAVORITE_FILES' | translate }}</a></li>
         </ul>
     </div>
 
     <div class="flex-center flex-column">
-        <div class="flex-fixed">
+        <div class="flex-fixed" id="flex-fixed-upload-list">
             <dataset-upload-list datasets="homeCtrl.uploadingDatasets"></dataset-upload-list>
         </div>
-        <div class="flex-flexible">
+        <div class="flex-flexible" id="flex-flexible-dataset-list">
             <ui-view name="home-content"></ui-view>
         </div>
     </div>

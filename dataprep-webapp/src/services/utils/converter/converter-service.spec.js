@@ -41,8 +41,12 @@ describe('Converter service', function() {
     };
 
 
-    it('should return number when column type is numeric, integer, double or float', inject(function(ConverterService) {
-        checkSimplifiedTypes(ConverterService, ['numeric', 'integer', 'double', 'float'], 'number');
+    it('should return integer when column type is numeric, integer', inject(function(ConverterService) {
+        checkSimplifiedTypes(ConverterService, ['numeric', 'integer'], 'integer');
+    }));
+
+    it('should return decimal when column type is double or float', inject(function(ConverterService) {
+        checkSimplifiedTypes(ConverterService, ['double', 'float'], 'decimal');
     }));
 
     it('should return text when column type is string or char', inject(function(ConverterService) {

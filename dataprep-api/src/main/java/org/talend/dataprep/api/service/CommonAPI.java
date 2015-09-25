@@ -16,11 +16,11 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.talend.dataprep.api.APIErrorCodes;
+import org.talend.daikon.exception.error.ErrorCode;
 import org.talend.dataprep.api.service.command.error.ErrorList;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.daikon.exception.error.ErrorCode;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 

@@ -343,13 +343,14 @@ describe('Preparation Service', function () {
             var currentStep = {id: '86574251524'};
             var previewStep = {id: '65487874887'};
             var recordsTdpId = [1,2,3];
+            var sampleSize = 758;
             var canceler = $q.defer();
 
             //when
-            PreparationService.getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, canceler);
+            PreparationService.getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, sampleSize, canceler);
 
             //then
-            expect(PreparationRestService.getPreviewDiff).toHaveBeenCalledWith(preparationId, currentStep, previewStep, recordsTdpId, canceler);
+            expect(PreparationRestService.getPreviewDiff).toHaveBeenCalledWith(preparationId, currentStep, previewStep, recordsTdpId, sampleSize, canceler);
         }));
 
         it('should get diff preview', inject(function ($q, PreparationService, PreparationRestService) {
@@ -359,13 +360,14 @@ describe('Preparation Service', function () {
             var updateStep = {id: '65487874887'};
             var newParams = {value: 'toto'};
             var recordsTdpId = [1,2,3];
+            var sampleSize = null;
             var canceler = $q.defer();
 
             //when
-            PreparationService.getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, canceler);
+            PreparationService.getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, sampleSize, canceler);
 
             //then
-            expect(PreparationRestService.getPreviewUpdate).toHaveBeenCalledWith(preparationId, currentStep, updateStep, newParams, recordsTdpId, canceler);
+            expect(PreparationRestService.getPreviewUpdate).toHaveBeenCalledWith(preparationId, currentStep, updateStep, newParams, recordsTdpId, sampleSize, canceler);
         }));
 
         it('should get add preview', inject(function ($q, PreparationService, PreparationRestService) {
@@ -375,13 +377,14 @@ describe('Preparation Service', function () {
             var action = 'cut';
             var params = {value: 'toto'};
             var recordsTdpId = [1,2,3];
+            var sampleSize = 523;
             var canceler = $q.defer();
 
             //when
-            PreparationService.getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, canceler);
+            PreparationService.getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, sampleSize, canceler);
 
             //then
-            expect(PreparationRestService.getPreviewAdd).toHaveBeenCalledWith(preparationId, datasetId, action, params, recordsTdpId, canceler);
+            expect(PreparationRestService.getPreviewAdd).toHaveBeenCalledWith(preparationId, datasetId, action, params, recordsTdpId, sampleSize, canceler);
         }));
     });
 

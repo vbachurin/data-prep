@@ -135,7 +135,8 @@
 
             var currentStep = RecipeService.getLastActiveStep();
             var preparationId = state.playground.preparation.id;
-            PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, params);
+            var sampleSize = state.playground.sampleSize;
+            PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, params, sampleSize);
         };
 
         /**
