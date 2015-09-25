@@ -43,7 +43,7 @@ public class NoOpContentCache implements ContentCache {
      */
     @Override
     public InputStream get(ContentCacheKey key) {
-        return new ByteArrayInputStream(new byte[0]);
+        return null;
     }
 
     /**
