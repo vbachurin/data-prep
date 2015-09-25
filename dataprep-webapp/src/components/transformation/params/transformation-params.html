@@ -2,7 +2,7 @@
     <form ng-submit="paramsCtrl.paramForm.$valid && paramsCtrl.transformWithParam()"
           name="paramsCtrl.paramForm">
 
-        <div ng-repeat="parameter in paramsCtrl.transformation.parameters"
+        <div ng-repeat="parameter in paramsCtrl.transformation.parameters track by $index"
              ng-switch="paramsCtrl.getParameterType(parameter)">
 
             <transform-simple-param
@@ -11,7 +11,7 @@
             </transform-simple-param>
 
             <transform-choice-param
-                    ng-switch-when="choice"
+                    ng-switch-when="select"
                     parameter="parameter">
             </transform-choice-param>
 

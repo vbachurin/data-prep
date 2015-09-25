@@ -12,7 +12,7 @@
             parameter="parameter">
         </transform-choice-params>
      </transform-params>
-     * @param {object} choices The transformation choices parameter
+     * @param {object} parameter The transformation choices parameter
      */
     function TransformChoiceParam() {
         return {

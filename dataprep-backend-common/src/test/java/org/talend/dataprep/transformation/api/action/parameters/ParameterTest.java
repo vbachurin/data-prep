@@ -15,7 +15,7 @@ import org.junit.Test;
 public class ParameterTest extends ParameterBaseTest {
 
     @Test
-    public void shouldSerializeToJson() throws IOException {
+    public void shouldSerializeToJsonWithoutEmptyConfiguration() throws IOException {
         // given
         Parameter expected = new Parameter("column_id", ParameterType.STRING.asString(), "0001", true, false);
 
@@ -24,7 +24,7 @@ public class ParameterTest extends ParameterBaseTest {
         builder.build().writer().writeValue(out, expected);
 
         // then
-        assertThat(out.toString(), sameJSONAs(IOUtils.toString(this.getClass().getResourceAsStream("parameter.json"))));
+        assertThat(out.toString(), sameJSONAs(IOUtils.toString(this.getClass().getResourceAsStream("textParameter.json"))));
     }
 
 }

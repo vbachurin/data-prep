@@ -11,10 +11,10 @@
         transformation="transformation"
         on-submit="callback()">
 
-        <div ng-repeat="parameter in paramsCtrl.transformation.parameters" ng-switch="parameter.type">
+        <div ng-repeat="parameter in paramsCtrl.transformation.parameters track by $index" ng-switch="parameter.type">
 
             <transform-date-param
-                ng-switch-when="simple"
+                ng-switch-when="date"
                 parameter="parameter">
             </transform-date-param>
         </div>
@@ -22,7 +22,6 @@
      </transform-params>
      * @param {object} parameters The transformation date parameter
      * @param {object} label Do NOT display label if 'false'. Display it otherwise (by default).
-     * @param {object} tooltip Do NOT display tooltip if 'false'. Display it otherwise (by default).
      */
     function TransformDateParam() {
         return {
@@ -30,10 +29,8 @@
             replace: true,
             templateUrl: 'components/transformation/params/date/transformation-date-param.html',
             scope: {
-                editableSelect: '=',
                 parameter: '=',
-                label: '@',
-                tooltip: '@'
+                label: '@'
             },
             bindToController: true,
             controllerAs: 'dateParamCtrl',

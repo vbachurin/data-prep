@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.*;
 
+import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -29,50 +30,6 @@ public class ActionMetadataUtils {
      */
     private ActionMetadataUtils() {
         // private constructor for utility class
-    }
-
-    /**
-     * Parse the given json parameter into a map<key, value>.
-     *
-     * @param parameters the json parameters.
-     * @param actionMetadata the action metadata.
-     * @return the action parameters as a map<key, value>.
-     */
-    public static Map<String, String> parseParameters(Iterator<Map.Entry<String, JsonNode>> parameters,
-            ActionMetadata actionMetadata) {
-
-        // get parameters ids
-        final List<String> paramIds = actionMetadata.getParameters()
-                .stream() //
-                .map(Parameter::getName) //
-                .collect(toList()); //
-
-        // add ids from select parameters
-        actionMetadata.getParameters().stream() //
-                .filter(p -> p instanceof SelectParameter).forEach(p -> {
-                    List<SelectParameter.Item> values = (List<SelectParameter.Item>) p.getConfiguration().get("values");
-                    for (SelectParameter.Item item : values) {
-                        paramIds.add(item.getValue());
-                        // don't forget the inline parameters
-                        for (Parameter inlineParam : item.getInlineParameters()) {
-                            paramIds.add(inlineParam.getName());
-                        }
-                    }
-                });
-
-        final Map<String, String> parsedParameters = new HashMap<>();
-        while (parameters.hasNext()) {
-            Map.Entry<String, JsonNode> currentParameter = parameters.next();
-
-            if (paramIds.contains(currentParameter.getKey())) {
-                parsedParameters.put(currentParameter.getKey(), currentParameter.getValue().asText());
-            } else {
-                LOGGER.warn("Parameter '{} is not recognized for {}", //
-                        currentParameter.getKey(), //
-                        actionMetadata.getClass());
-            }
-        }
-        return parsedParameters;
     }
 
     /**

@@ -74,7 +74,7 @@ public class Substring extends AbstractActionMetadata implements ColumnAction {
         // to parameter
         parameters.add(SelectParameter.Builder.builder() //
                 .name(TO_MODE_PARAMETER) //
-                .item("To end") //
+                .item(TO_END) //
                 .item("To index", new Parameter(TO_INDEX_PARAMETER, Type.INTEGER.getName(), "5")) //
                 .defaultValue("To index") //
                 .build());

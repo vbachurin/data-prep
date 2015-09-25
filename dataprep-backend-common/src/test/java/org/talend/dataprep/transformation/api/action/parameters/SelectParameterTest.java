@@ -17,7 +17,7 @@ import org.junit.Test;
 public class SelectParameterTest extends ParameterBaseTest {
 
     @Test
-    public void shouldSerializeToJson() throws IOException {
+    public void shouldSerializeToJsonWithItemsInConfiguration() throws IOException {
         // given
         SelectParameter expected = SelectParameter.Builder.builder() //
                 .name("column_id") //

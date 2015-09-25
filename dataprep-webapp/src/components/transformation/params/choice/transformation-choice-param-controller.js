@@ -17,17 +17,16 @@
          */
         var initParamValues = function () {
 
-            // init with the default value
-            if (vm.parameter.default) {
-                var defaultValue = _.find(vm.parameter.configuration.values, {value: vm.parameter.default});
-                if (defaultValue) {
+            if (!vm.parameter.value) {
+                // init with the default value
+                if (vm.parameter.default) {
+                    var defaultValue = _.find(vm.parameter.configuration.values, {value: vm.parameter.default});
                     vm.parameter.value = defaultValue.value;
                 }
-            }
-
-            // or with the first value in the list
-            if (!vm.parameter.value) {
-                vm.parameter.value = vm.parameter.configuration.values[0].value;
+                // or with the first value in the list
+                else {
+                    vm.parameter.value = vm.parameter.configuration.values[0].value;
+                }
             }
 
         };

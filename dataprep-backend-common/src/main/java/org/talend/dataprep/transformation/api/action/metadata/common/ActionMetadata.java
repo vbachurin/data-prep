@@ -82,16 +82,6 @@ public interface ActionMetadata {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Parse the given json parameter into a map<key, value>.
-     *
-     * @param parameters the json parameters.
-     * @return the action parameters as a map<key, value>.
-     */
-    default Map<String, String> parseParameters(Iterator<Map.Entry<String, JsonNode>> parameters) {
-        return ActionMetadataUtils.parseParameters(parameters, this);
-    }
-
-    /**
      * @return The list of parameters required for this Action to be executed.
      **/
     List<Parameter> getParameters();

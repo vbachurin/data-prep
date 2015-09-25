@@ -73,7 +73,6 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
         return ScopeCategory.from(parameters.get(SCOPE.getKey()));
     }
 
-
     /**
      * @see ActionMetadata#acceptScope(ScopeCategory)
      */
@@ -92,7 +91,6 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
             return false;
         }
     }
-
 
     /**
      * @see ActionMetadata#create(Map)

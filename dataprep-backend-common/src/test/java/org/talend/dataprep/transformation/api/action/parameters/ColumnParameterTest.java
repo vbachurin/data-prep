@@ -18,7 +18,7 @@ import org.junit.Test;
 public class ColumnParameterTest extends ParameterBaseTest {
 
     @Test
-    public void shouldSerializeToJson() throws IOException {
+    public void shouldSerializeToJsonWithFilterAttributeInConfiguration() throws IOException {
         // given
         ColumnParameter expected = new ColumnParameter("column_id", "0001", false, false, Arrays.asList("numeric", "string"));
 

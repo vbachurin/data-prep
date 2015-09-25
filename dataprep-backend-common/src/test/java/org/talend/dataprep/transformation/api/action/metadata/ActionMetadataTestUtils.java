@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -15,6 +17,10 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Utility class for action metadata unit tests.
@@ -42,7 +48,7 @@ public class ActionMetadataTestUtils {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false );
         JsonNode node = mapper.readTree(input);
-        return action.parseParameters(node.get("actions").get(0).get("parameters").fields());
+        return parseParameters(node.get("actions").get(0).get("parameters").fields(), action);
     }
 
     /**
@@ -74,5 +80,38 @@ public class ActionMetadataTestUtils {
             i++;
         }
         return new DataSetRow(rowValues);
+    }
+
+    /**
+     * Parse the given json parameter into a map<key, value>.
+     *
+     * @param parameters the json parameters.
+     * @param actionMetadata the action metadata.
+     * @return the action parameters as a map<key, value>.
+     */
+    private static Map<String, String> parseParameters(Iterator<Map.Entry<String, JsonNode>> parameters,
+                                                      ActionMetadata actionMetadata) {
+        // get parameters ids
+        final List<String> paramIds = actionMetadata.getParameters()
+                .stream() //
+                .map(Parameter::getName) //
+                .collect(toList()); //
+
+        // add ids from select parameters
+        actionMetadata.getParameters().stream() //
+                .filter(p -> p instanceof SelectParameter) //
+                .flatMap(p -> ((List<SelectParameter.Item>) p.getConfiguration().get("values")).stream()) //extract select values
+                .flatMap(items -> items.getInlineParameters().stream()) //extract select values inner parameters
+                .forEach(inlineParam -> paramIds.add(inlineParam.getName()));
+
+        final Map<String, String> parsedParameters = new HashMap<>();
+        while (parameters.hasNext()) {
+            Map.Entry<String, JsonNode> currentParameter = parameters.next();
+
+            if (paramIds.contains(currentParameter.getKey())) {
+                parsedParameters.put(currentParameter.getKey(), currentParameter.getValue().asText());
+            }
+        }
+        return parsedParameters;
     }
 }

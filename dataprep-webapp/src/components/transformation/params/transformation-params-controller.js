@@ -11,31 +11,37 @@
 
         /**
          * @ngdoc method
+         * @name getParamIteration
+         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
+         * @description [PRIVATE] Inner function for recursively gather params
+         * @param {object} paramsAccu The parameters values accumulator
+         * @param {array} parameters The parameters array
+         * @returns {object} The parameters
+         */
+        function getParamIteration(paramsAccu, parameters) {
+            if (parameters) {
+                _.forEach(parameters, function (paramItem) {
+                    paramsAccu[paramItem.name] = typeof (paramItem.value) !== 'undefined'? paramItem.value : paramItem.default;
+
+                    // deal with select inline parameters
+                    if (paramItem.type === 'select') {
+                        var selectedValue = _.find(paramItem.configuration.values, {value: paramItem.value});
+                        getParamIteration(paramsAccu, selectedValue.parameters)
+                    }
+                });
+            }
+            return paramsAccu;
+        }
+
+        /**
+         * @ngdoc method
          * @name getParams
          * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
          * @description [PRIVATE] Get item parameters into one object for REST call
          * @returns {object} - the parameters
          */
         var getParams = function () {
-            var params = {};
-            if (vm.transformation.parameters) {
-                _.forEach(vm.transformation.parameters, function (paramItem) {
-                    params[paramItem.name] = typeof (paramItem.value) !== 'undefined'? paramItem.value : paramItem.default;
-
-                    // deal with select inline parameters
-                    if (paramItem.type === 'select') {
-                        var selectedValue = _.find(paramItem.configuration.values, {value: paramItem.value});
-                        if (selectedValue.parameters) {
-                            _.forEach(selectedValue.parameters, function (choiceParamItem) {
-                                params[choiceParamItem.name] = choiceParamItem.value;
-                            });
-                        }
-                    }
-
-                });
-            }
-
-            return params;
+            return getParamIteration({}, vm.transformation.parameters);
         };
 
         /**
@@ -81,7 +87,6 @@
          * @ngdoc method
          * @name transformWithParam
          * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
-         * @param {boolean} invalid validity of the form
          * @description Gather params and perform a transformation on the column if the form is valid
          */
         vm.transformWithParam = function () {
@@ -119,24 +124,15 @@
          * @param {object} parameter The parameter
          */
         vm.getParameterType = function(parameter) {
-
-            switch (parameter.type.toLowerCase()) {
-                case 'numeric':
-                case 'integer':
-                case 'double':
-                case 'float':
-                case 'string':
-                    return 'simple';
+            var type = parameter.type.toLowerCase();
+            switch (type) {
                 case 'select':
-                    return 'choice';
                 case 'cluster':
-                    return 'cluster';
                 case 'date':
-                    return 'date';
+                    return type;
                 default:
                     return 'simple';
             }
-
         };
 
     }

@@ -9,6 +9,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+
 /**
  * Parameter that should be displayed as a select box in the UI.
  */
@@ -99,7 +102,7 @@ public class SelectParameter extends Parameter implements Serializable {
          * @param value the item value.
          */
         public Item(String value) {
-            this(value, Collections.<Parameter> emptyList());
+            this(value, emptyList());
         }
 
         /**
@@ -158,7 +161,6 @@ public class SelectParameter extends Parameter implements Serializable {
             return this;
         }
 
-
         /**
          * Set the defaultValue of the select parameter.
          *
@@ -212,7 +214,7 @@ public class SelectParameter extends Parameter implements Serializable {
          * @return the builder to carry on building the column.
          */
         public SelectParameter.Builder item(String value, Parameter parameter) {
-            this.items.add(new Item(value, Collections.singletonList(parameter)));
+            this.items.add(new Item(value, singletonList(parameter)));
             return this;
         }
 
@@ -223,7 +225,7 @@ public class SelectParameter extends Parameter implements Serializable {
          * @return the builder to carry on building the column.
          */
         public SelectParameter.Builder item(String value) {
-            this.items.add(new Item(value, Collections.emptyList()));
+            this.items.add(new Item(value, emptyList()));
             return this;
         }
 
@@ -234,7 +236,7 @@ public class SelectParameter extends Parameter implements Serializable {
          * @return the builder to carry on building the column.
          */
         public SelectParameter.Builder items(List<Item> items) {
-            this.items = items;
+            this.items.addAll(items);
             return this;
         }
 
@@ -246,7 +248,6 @@ public class SelectParameter extends Parameter implements Serializable {
         public SelectParameter build() {
             return new SelectParameter(name, defaultValue, implicit, canBeBlank, items, multiple);
         }
-
 
     }
 

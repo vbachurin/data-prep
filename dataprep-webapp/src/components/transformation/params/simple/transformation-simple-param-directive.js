@@ -11,8 +11,7 @@
              transformation="transformation"
              on-submit="callback()">
 
-        <div ng-repeat="parameter in paramsCtrl.transformation.parameters" ng-switch="parameter.type">
-
+        <div ng-repeat="parameter in paramsCtrl.transformation.parameters track by $index" ng-switch="parameter.type">
             <transform-simple-param
                 ng-switch-when="simple"
                 parameter="parameter">
@@ -20,8 +19,9 @@
         </div>
 
      </transform-params>
-     * @param {object} parameters The simple parameter
+     * @param {object} parameter The simple parameter
      * @param {object} label Do NOT display label if 'false'. Display it otherwise (by default).
+     * @param {boolean} editableSelect If this parameter is an editable-select
      */
     function TransformSimpleParam() {
         return {
