@@ -26,7 +26,7 @@
                     // deal with select inline parameters
                     if (paramItem.type === 'select') {
                         var selectedValue = _.find(paramItem.configuration.values, {value: paramItem.value});
-                        getParamIteration(paramsAccu, selectedValue.parameters)
+                        getParamIteration(paramsAccu, selectedValue.parameters);
                     }
                 });
             }
