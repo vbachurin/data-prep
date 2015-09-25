@@ -22,7 +22,8 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
  * @see Math#floor(double)
  */
 @Component(Floor.ACTION_BEAN_PREFIX + Floor.FLOOR_ACTION_NAME)
-public class Floor extends AbstractRound {
+public class Floor extends AbstractMath
+{
 
     /**
      * The action name.

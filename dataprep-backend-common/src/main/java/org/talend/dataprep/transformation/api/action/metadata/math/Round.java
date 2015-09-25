@@ -16,10 +16,13 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
 /**
- * This will compute the absolute value for numerical columns.
+ * Returns the closest long to the argument, with ties rounding to positive infinity.
+ *
+ * @see Math#round(double)
  */
 @Component(Round.ACTION_BEAN_PREFIX + Round.ROUND_ACTION_NAME)
-public class Round extends AbstractRound {
+public class Round extends AbstractMath
+{
 
     /**
      * The action name.
