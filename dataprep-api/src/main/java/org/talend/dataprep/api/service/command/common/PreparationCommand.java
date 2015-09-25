@@ -242,7 +242,7 @@ public abstract class PreparationCommand<T> extends GenericCommand<T> {
         // Direct try on cache at given version
         ContentCacheKey key = new ContentCacheKey(preparation, version, sample);
         ctx.content = contentCache.get(key);
-        if (ctx.content!=null) {
+        if (ctx.content != null) {
             ctx.actions = Collections.emptyList();
             ctx.fromCache = true;
             return ctx;
@@ -258,7 +258,7 @@ public abstract class PreparationCommand<T> extends GenericCommand<T> {
                 transformationStartStep = step;
                 key = new ContentCacheKey(preparation, step, sample);
                 ctx.content = contentCache.get(key);
-                if (ctx.content!=null) {
+                if (ctx.content != null) {
                     break;
                 }
             }

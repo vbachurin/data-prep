@@ -164,7 +164,7 @@ public class HDFSContentCache implements ContentCache {
                 }
             }
         }
-        LOGGER.debug("No cache for preparation #{}", key);
+        LOGGER.debug("No cache for entry #{}", key);
         return null;
     }
 
