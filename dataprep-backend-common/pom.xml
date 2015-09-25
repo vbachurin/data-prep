@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.talend.dataprep</groupId>
         <artifactId>dataprep-backend</artifactId>
-        <version>1.0.m8-SNAPSHOT</version>
+        <version>1.0.m8</version>
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
     <packaging>jar</packaging>
@@ -145,6 +145,6 @@
         	<version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
-    <version>1.0.m8-SNAPSHOT</version>
+    <version>1.0.m8</version>
     <name>dataprep-backend-common</name>
 </project>
