@@ -1,10 +1,10 @@
 [
   {
     "data": "John",
-    "COUNT": 1.0
+    "MAX": 40.0
   },
   {
     "data": "David",
-    "COUNT": 1.0
+    "MAX": 67.0
   }
 ]
