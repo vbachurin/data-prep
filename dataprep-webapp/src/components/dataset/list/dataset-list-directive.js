@@ -18,7 +18,7 @@
             controller: 'DatasetListCtrl',
             link: function() {
                 //Resize datasets list : 100% viewport minus heights (headers + footer + sort header + uploading list + margin)
-                var heightpanelNew = 'calc(100vh - 2 * 56px - 55px - 50px - ' + $('#flex-fixed-upload-list').height() + 'px)';
+                var heightpanelNew = 'calc(100vh - 2 * 56px - 70px - 50px - ' + $('#flex-fixed-upload-list').height() + 'px)';
                 $('#datasets-list').css('flex-basis', heightpanelNew);
             }
         };
