@@ -20,8 +20,14 @@ public class TalendDataPrepApplication {
         // start all in one application
         final SpringApplication application = new SpringApplication(TalendDataPrepApplication.class);
         final ConfigurableApplicationContext context = application.run(args);
-        final ConfigurableEnvironment environment = context.getEnvironment();
         // log information about current configuration
+        final ConfigurableEnvironment environment = context.getEnvironment();
+        LOGGER.info("Connection information:");
+        LOGGER.info("Dataset location: {}.", environment.getProperty("dataset.service.url"));
+        LOGGER.info("Transformation location: {}.", environment.getProperty("transformation.service.url"));
+        LOGGER.info("Preparation location: {}.", environment.getProperty("preparation.service.url"));
+
+        LOGGER.info("Store locations:");
         LOGGER.info("Metadata location: {}.", environment.getProperty("dataset.metadata.store.file.location"));
         LOGGER.info("Content location: {}.", environment.getProperty("dataset.content.store.file.location"));
         LOGGER.info("Store location: {}.", environment.getProperty("preparation.store.file.location"));
