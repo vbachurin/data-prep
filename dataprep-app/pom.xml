@@ -16,6 +16,15 @@
     <artifactId>dataprep-app</artifactId>
     <version>1.0.m9-SNAPSHOT</version>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <!-- Backend services -->
         <dependency>
@@ -39,9 +48,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>9.2.9.v20150224</version>
+            <groupId>org.talend.dataprep</groupId>
+            <artifactId>dataprep-webapp</artifactId>
+            <version>${project.version}</version>
+            <classifier>dist</classifier>
+            <type>zip</type>
         </dependency>
     </dependencies>
 
