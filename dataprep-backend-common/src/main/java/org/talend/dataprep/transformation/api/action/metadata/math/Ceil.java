@@ -37,7 +37,8 @@ public class Ceil extends AbstractMath
     }
 
     @Override
-    protected int compute(double from) {
-        return (int) Math.ceil(from);
+    protected long compute(double from) {
+        double ceilValue = Math.ceil( from );
+        return (long) ceilValue;
     }
 }

@@ -26,11 +26,9 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.column.CopyColumnMetadata;
 
 /**
  * Test class for Ceil action. Creates one consumer, and test it.
@@ -66,15 +64,15 @@ public class CeilTest {
     }
 
     public void testCommon(String input, String expected) {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put("aNumber", input);
         final DataSetRow row = new DataSetRow(values);
 
-        //when
+        // when
         action.applyOnColumn(row, new TransformationContext(), parameters, "aNumber");
 
-        //then
+        // then
         assertEquals(expected, row.get("aNumber"));
     }
 
@@ -91,6 +89,14 @@ public class CeilTest {
         testCommon("-5.0", "-5");
         testCommon("-5.4", "-5");
         testCommon("-5.6", "-5");
+    }
+
+    @Test
+    public void test_huge_number() {
+        testCommon("1234567890.1", "1234567891");
+        testCommon("891234567897.9", "891234567898");
+        testCommon("891234567899.9", "891234567900");
+        testCommon("999999999999.9", "1000000000000");
     }
 
     @Test

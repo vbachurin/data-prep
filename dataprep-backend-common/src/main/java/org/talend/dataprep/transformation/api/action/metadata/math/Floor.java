@@ -39,8 +39,8 @@ public class Floor extends AbstractMath
     }
 
     @Override
-    protected int compute(double from) {
-        return (int) Math.floor(from);
+    protected long compute(double from) {
+        return (long) Math.floor(from);
     }
 
 }
