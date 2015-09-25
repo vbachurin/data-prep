@@ -29,19 +29,11 @@ public abstract class AbstractAbsolute extends AbstractActionMetadata {
      */
     protected String executeOnFloat(final String value) {
         try {
-            BigDecimal bd = BigDecimal.valueOf(Double.parseDouble(value));
-            BigDecimal abs = bd.abs();
-
-            BigDecimal decimalValue = BigDecimal.valueOf(abs.doubleValue() % 1);
-            if (decimalValue.compareTo(BigDecimal.ZERO) == 0) {
-                String res = String.format("%d", (long) abs.longValue());
-                return res;
-            } else {
-                String res = abs.toPlainString();
-                return res;
-            }
+            BigDecimal bd = new BigDecimal(value);
+            return bd.abs().toPlainString();
         } catch (NumberFormatException nfe2) {
             return null;
         }
     }
+
 }
