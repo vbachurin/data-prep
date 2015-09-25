@@ -163,7 +163,6 @@
                 })
                 .catch(function () {
                     dataset.error = true;
-                    MessageService.error('IMPORT_ERROR_TITLE', 'IMPORT_ERROR');
                 }).finally(function () {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                 });
@@ -191,7 +190,6 @@
                 })
                 .catch(function () {
                     dataset.error = true;
-                    MessageService.error('IMPORT_ERROR_TITLE', 'IMPORT_ERROR');
                 })
                 .finally(function () {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
@@ -302,7 +300,6 @@
                 })
                 .catch(function () {
                     dataset.error = true;
-                    MessageService.error('UPLOAD_ERROR_TITLE', 'UPLOAD_ERROR');
                 })
                 .finally(function () {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
@@ -335,7 +332,6 @@
                 })
                 .catch(function () {
                     dataset.error = true;
-                    MessageService.error('UPLOAD_ERROR_TITLE', 'UPLOAD_ERROR');
                 })
                 .finally(function () {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));

@@ -101,6 +101,8 @@
   "GENERIC_ERROR": "An error occurred",
   "IMPORT_ERROR_TITLE": "Import error",
   "IMPORT_ERROR": "An error occurred during import",
+  "UPDATE_ERROR_TITLE": "Update error",
+  "UPDATE_ERROR": "An error occurred during update",
   "INVALID_DATASET_TITLE": "Invalid dataset",
   "INVALID_DATASET": "This dataset is not valid. Please import a correct CSV file to update the data",
   "PLAYGROUND_FILE_NOT_FOUND_TITLE": "{{type}} load error",
