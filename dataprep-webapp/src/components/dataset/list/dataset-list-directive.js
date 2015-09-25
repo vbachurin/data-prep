@@ -15,7 +15,11 @@
             replace:true,
             bindToController: true,
             controllerAs: 'datasetListCtrl',
-            controller: 'DatasetListCtrl'
+            controller: 'DatasetListCtrl',
+            link: function() {
+                var heightpanelNew = 'calc(100vh - 2 * 56px - 50px - 50px - ' + $('#flex-fixed-upload-list').height() + 'px)';
+                $('#datasets-list').css('flex-basis', heightpanelNew);
+            }
         };
     }
 

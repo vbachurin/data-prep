@@ -22,7 +22,18 @@
             },
             bindToController: true,
             controllerAs: 'uploadListCtrl',
-            controller: function() {}
+            controller: function() {},
+            link: function() {
+                var heightpanelNew = 'calc(100vh - 2 * 56px - 50px - 50px - ' + $('#flex-fixed-upload-list').height() + 'px)';
+                $('#datasets-list').css('flex-basis', heightpanelNew);
+
+                scope.$watch(function() {
+                    return ctrl.datasets;
+                }, function() {
+                   var heightpanelNew = 'calc(100vh - 2 * 56px - 50px - 50px - ' + $('#flex-fixed-upload-list').height() + 'px)';
+                    $('#datasets-list').css('flex-basis', heightpanelNew);
+                }, true);
+            }
         };
     }
 
