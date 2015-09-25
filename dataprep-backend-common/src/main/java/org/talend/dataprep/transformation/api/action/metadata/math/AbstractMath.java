@@ -45,14 +45,15 @@ public abstract class AbstractMath extends AbstractActionMetadata implements Col
         }
 
         try {
-            int result = compute(Double.valueOf(value));
+            double doubleValue = Double.valueOf(value);
+            long result = compute(doubleValue);
             row.set(columnId, String.valueOf(result));
         } catch (NumberFormatException nfe2) {
             // Nan: nothing to do, but fail silently (no change in value)
         }
     }
 
-    protected abstract int compute(double from);
+    protected abstract long compute(double from);
 
     /**
      * @see ActionMetadata#acceptColumn(ColumnMetadata)

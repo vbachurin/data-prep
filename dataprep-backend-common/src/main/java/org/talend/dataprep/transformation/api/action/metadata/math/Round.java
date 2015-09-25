@@ -21,8 +21,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
  * @see Math#round(double)
  */
 @Component(Round.ACTION_BEAN_PREFIX + Round.ROUND_ACTION_NAME)
-public class Round extends AbstractMath
-{
+public class Round extends AbstractMath {
 
     /**
      * The action name.
@@ -38,7 +37,7 @@ public class Round extends AbstractMath
     }
 
     @Override
-    protected int compute(double from) {
-        return (int) Math.round(from);
+    protected long compute(double from) {
+        return Math.round(from);
     }
 }
