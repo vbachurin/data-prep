@@ -97,7 +97,7 @@ public class CSVSerializer implements Serializer {
                 // deal with additional content (line.length > columns.size)
                 if (i == columnsSize - 1 && line.length > columnsSize) {
                     String additionalContent = getRemainingColumns(line, i, separator);
-                    generator.writeString(additionalContent);
+                    generator.writeString(cleanCharacters(additionalContent));
                 }
                 // deal with fewer content (line.length < columns.size)
                 else if (i < line.length && line[i] != null) {
