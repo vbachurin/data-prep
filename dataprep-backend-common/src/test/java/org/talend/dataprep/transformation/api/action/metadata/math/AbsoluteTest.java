@@ -98,10 +98,38 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
+        absFloatAction.applyOnColumn( row, new TransformationContext(), absFloatParameters, "float_column" );
+
+        //then
+        assertEquals( "5.42", row.get( FLOAT_COLUMN ) ); //$NON-NLS-1$
+    }
+
+    @Test
+    public void test_AbsoluteFloatWithHugeValue() {
+        //given
+        final Map<String, String> values = new HashMap<>();
+        values.put(FLOAT_COLUMN, "12345678.1"); //$NON-NLS-1$
+        final DataSetRow row = new DataSetRow(values);
+
+        //when
         absFloatAction.applyOnColumn(row, new TransformationContext(), absFloatParameters, "float_column");
 
         //then
-        assertEquals("5.42", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
+        assertEquals("12345678.1", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
+    }
+
+    @Test
+    public void test_AbsoluteFloatWithHugeNegativeValue() {
+        //given
+        final Map<String, String> values = new HashMap<>();
+        values.put(FLOAT_COLUMN, "-12345678.1"); //$NON-NLS-1$
+        final DataSetRow row = new DataSetRow(values);
+
+        //when
+        absFloatAction.applyOnColumn(row, new TransformationContext(), absFloatParameters, "float_column");
+
+        //then
+        assertEquals("12345678.1", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
     }
 
     @Test
