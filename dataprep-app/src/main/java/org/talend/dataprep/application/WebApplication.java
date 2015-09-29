@@ -14,15 +14,21 @@ public class WebApplication extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // UI
         if (!registry.hasMappingForPattern("/ui/**")) {
             registry.addResourceHandler("/ui")
                     .addResourceLocations("classpath:/META-INF/resources/dist/index.html");
             registry.addResourceHandler("/ui/**")
                     .addResourceLocations("classpath:/META-INF/resources/dist/");
+        }
+        // Assets
+        if (!registry.hasMappingForPattern("/assets/**")) {
+            registry.addResourceHandler("/assets/config/config.json")
+                    .setCachePeriod(0)
+                    .addResourceLocations("classpath:/META-INF/resources/dist/assets/config/config.json");
             registry.addResourceHandler("/assets/**")
                     .addResourceLocations("classpath:/META-INF/resources/dist/assets/");
         }
-
     }
 
 }
