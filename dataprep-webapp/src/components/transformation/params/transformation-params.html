@@ -1,28 +1,32 @@
 <div class="transformation-params">
-    <form ng-submit="paramsCtrl.paramForm.$valid && paramsCtrl.transformWithParam()" name="paramsCtrl.paramForm">
-        <!-- Menu item param -->
-        <transform-simple-params
-                ng-if="paramsCtrl.transformation.parameters.length && !paramsCtrl.transformation.date"
-                parameters="paramsCtrl.transformation.parameters">
-        </transform-simple-params>
+    <form ng-submit="paramsCtrl.paramForm.$valid && paramsCtrl.transformWithParam()"
+          name="paramsCtrl.paramForm">
 
-        <!-- Choice -->
-        <transform-choice-params
-                ng-if="paramsCtrl.transformation.items.length"
-                choices="paramsCtrl.transformation.items">
-        </transform-choice-params>
+        <div ng-repeat="parameter in paramsCtrl.transformation.parameters track by $index"
+             ng-switch="paramsCtrl.getParameterType(parameter)">
 
-        <!-- Cluster -->
+            <transform-simple-param
+                    ng-switch-when="simple"
+                    parameter="parameter">
+            </transform-simple-param>
+
+            <transform-choice-param
+                    ng-switch-when="select"
+                    parameter="parameter">
+            </transform-choice-param>
+
+            <transform-date-param
+                    ng-switch-when="date"
+                    parameter="parameter">
+            </transform-date-param>
+
+        </div>
+
         <transform-cluster-params
                 ng-if="paramsCtrl.transformation.cluster"
                 details="paramsCtrl.transformation.cluster">
         </transform-cluster-params>
 
-        <!-- Date -->
-        <transform-date-params
-            ng-if="paramsCtrl.transformation.date"
-            parameters="paramsCtrl.transformation.parameters">
-        </transform-date-params>
     </form>
 
     <div class="param-buttons">

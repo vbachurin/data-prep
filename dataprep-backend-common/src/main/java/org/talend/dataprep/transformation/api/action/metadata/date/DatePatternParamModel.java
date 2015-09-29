@@ -7,8 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 /**
  * This interface is designed to be implemented by actions that have a date pattern as parameter.
@@ -31,23 +31,30 @@ public interface DatePatternParamModel {
     Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, STRING.getName(), EMPTY);
 
     /**
-     * @return the Items to display for the date related action.
+     * @return the Parameters to display for the date related action.
      */
-    default Item[] getItemsForDatePattern() {
+    default List<Parameter> getParametersForDatePattern() {
 
-        ResourceBundle patterns = ResourceBundle.getBundle(
-                "org.talend.dataprep.transformation.api.action.metadata.date.date_patterns", Locale.ENGLISH);
+        ResourceBundle patterns = ResourceBundle
+                .getBundle("org.talend.dataprep.transformation.api.action.metadata.date.date_patterns", Locale.ENGLISH);
         Enumeration<String> keys = patterns.getKeys();
-        List<Item.Value> values = new ArrayList<>();
+
+        List<SelectParameter.Item> items = new ArrayList<>();
         while (keys.hasMoreElements()) {
-            Item.Value currentValue = new Item.Value(patterns.getString(keys.nextElement()));
-            values.add(currentValue);
+            String key = keys.nextElement();
+            String value = patterns.getString(key);
+            items.add(new SelectParameter.Item(value));
         }
 
-        values.add(new Item.Value("custom", CUSTOM_PATTERN_PARAMETER));
-        values.get(0).setDefault(true);
+        List<Parameter> parameters = new ArrayList<>();
+        parameters.add(SelectParameter.Builder.builder() //
+                .name(NEW_PATTERN) //
+                .items(items) //
+                .item("custom", CUSTOM_PATTERN_PARAMETER) //
+                .defaultValue(items.get(0).getValue()) //
+                .build());
 
-        return new Item[]{new Item(NEW_PATTERN, "patterns", values.toArray(new Item.Value[values.size()]))};
+        return parameters;
     }
 
     /**

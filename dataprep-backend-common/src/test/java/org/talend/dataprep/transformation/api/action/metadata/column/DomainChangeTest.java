@@ -1,5 +1,13 @@
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.talend.dataprep.transformation.api.action.metadata.column.DomainChange.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -8,17 +16,12 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.talend.dataprep.transformation.api.action.metadata.column.DomainChange.*;
-
 public class DomainChangeTest {
+
     private DomainChange domainChange;
+
     private ColumnMetadata columnMetadata;
+
     private TransformationContext transformationContext;
 
     @Before
@@ -92,7 +95,7 @@ public class DomainChangeTest {
 
     @Test
     public void should_not_accept_any_type_to_avoid_transformation_to_be_in_transfo_list() {
-        //given
+        // given
         final DomainChange domainChange = new DomainChange();
         for (final Type type : Type.values()) {
 
@@ -104,10 +107,10 @@ public class DomainChangeTest {
                     .domainLabel("French Beer") //
                     .build();
 
-            //when
+            // when
             final boolean accepted = domainChange.acceptColumn(columnMetadata);
 
-            //then
+            // then
             assertThat(accepted).isFalse();
         }
     }

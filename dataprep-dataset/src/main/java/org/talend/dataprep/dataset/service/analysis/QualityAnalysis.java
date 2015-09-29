@@ -87,11 +87,13 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer, Asynchronous
                     return; // no acknowledge to allow re-poll.
                 }
                 LOGGER.info("Analyzing quality of dataset #{}...", metadata.getId());
-                // New data set, or reached the max limit of records for synchronous analysis, trigger a full scan (but async).
+                // New data set, or reached the max limit of records for synchronous analysis, trigger a full scan (but
+                // async).
                 final int dataSetSize = metadata.getContent().getNbRecords();
                 final boolean isNewDataSet = dataSetSize == 0;
                 if (isNewDataSet || dataSetSize == MAX_RECORD) {
-                    // If data set size is MAX_RECORD, performs a full scan, otherwise only take first MAX_RECORD records.
+                    // If data set size is MAX_RECORD, performs a full scan, otherwise only take first MAX_RECORD
+                    // records.
                     computeQuality(metadata, stream, dataSetSize == MAX_RECORD ? -1 : MAX_RECORD);
                 }
                 // Turn on / off "in progress" flag
@@ -123,7 +125,8 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer, Asynchronous
 
     /**
      * Compute the quality (count, valid, invalid and empty) of the given dataset.
-     *  @param dataset the dataset metadata.
+     * 
+     * @param dataset the dataset metadata.
      * @param records the dataset records
      * @param limit indicates how many records will be read from stream. Use a number < 0 to perform a full scan of
      */

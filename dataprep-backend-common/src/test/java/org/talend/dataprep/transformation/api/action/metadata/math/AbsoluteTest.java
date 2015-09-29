@@ -21,22 +21,14 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.talend.dataprep.transformation.api.action.metadata.column.CopyColumnMetadata;
 
 /**
  * Unit test for the absolute actions.
@@ -98,20 +90,20 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absFloatAction.applyOnColumn( row, new TransformationContext(), absFloatParameters, "float_column" );
+        absFloatAction.applyOnColumn(row, new TransformationContext(), absFloatParameters, "float_column");
 
-        //then
-        assertEquals( "5.42", row.get( FLOAT_COLUMN ) ); //$NON-NLS-1$
+        // then
+        assertEquals("5.42", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
     }
 
     @Test
     public void test_AbsoluteFloatWithHugeValue() {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put(FLOAT_COLUMN, "12345678.1"); //$NON-NLS-1$
         final DataSetRow row = new DataSetRow(values);
 
-        //when
+        // when
         absFloatAction.applyOnColumn(row, new TransformationContext(), absFloatParameters, "float_column");
 
         //then
@@ -120,15 +112,15 @@ public class AbsoluteTest {
 
     @Test
     public void test_AbsoluteFloatWithHugeNegativeValue() {
-        //given
+        // given
         final Map<String, String> values = new HashMap<>();
         values.put(FLOAT_COLUMN, "-12345678.1"); //$NON-NLS-1$
         final DataSetRow row = new DataSetRow(values);
 
-        //when
+        // when
         absFloatAction.applyOnColumn(row, new TransformationContext(), absFloatParameters, "float_column");
 
-        //then
+        // then
         assertEquals("12345678.1", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
     }
 

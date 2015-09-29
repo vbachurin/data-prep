@@ -76,7 +76,6 @@ describe('Recipe service', function () {
                         'STRING'
                     ],
                     'category': 'case',
-                    'items': [],
                     'name': 'uppercase',
                     'parameters': [
                         {
@@ -95,7 +94,6 @@ describe('Recipe service', function () {
                     'compatibleColumnTypes': [
                         'STRING'
                     ],
-                    'items': [],
                     'name': 'fillemptywithdefault',
                     'parameters': [
                         {
@@ -123,7 +121,6 @@ describe('Recipe service', function () {
                         'BOOLEAN'
                     ],
                     'category': 'boolean',
-                    'items': [],
                     'name': 'negate',
                     'parameters': [
                         {
@@ -143,7 +140,6 @@ describe('Recipe service', function () {
                         'STRING'
                     ],
                     'category': 'repair',
-                    'items': [],
                     'name': 'cut',
                     'parameters': [
                         {
@@ -171,7 +167,6 @@ describe('Recipe service', function () {
                     ],
                     'category': 'quickfix',
                     'name': 'textclustering',
-                    'items': [],
                     'dynamic': true,
                     'parameters': [
                         {
@@ -190,26 +185,6 @@ describe('Recipe service', function () {
                     'compatibleColumnTypes': [
                         'BOOLEAN'
                     ],
-                    'items': [
-                        {
-                            'name': 'default_value',
-                            'category': 'categ',
-                            'values': [
-                                {
-                                    'name': 'True',
-                                    'parameters': [],
-                                    'default': true
-                                },
-                                {
-                                    'name': 'False',
-                                    'parameters': [],
-                                    'default': false
-                                }
-                            ],
-                            'description': 'parameter.default_value.desc',
-                            'label': 'parameter.default_value.label'
-                        }
-                    ],
                     'name': 'fillemptywithdefaultboolean',
                     'parameters': [
                         {
@@ -219,6 +194,25 @@ describe('Recipe service', function () {
                             'label': 'parameter.column_name.label',
                             'default': '',
                             implicit: true
+                        },
+                        {
+                            'name': 'default_value',
+                            'type': 'select',
+                            'description': 'parameter.default_value.desc',
+                            'label': 'parameter.default_value.label',
+                            'configuration': {
+                                'values': [
+                                    {
+                                        'name': 'True',
+                                        'value': 'True',
+                                    },
+                                    {
+                                        'name': 'False',
+                                        'value': 'False',
+                                    }
+                                ]
+                            },
+                            'default': 'True'
                         }
                     ],
                     'category': 'repair',
@@ -476,13 +470,11 @@ describe('Recipe service', function () {
             expect(recipe[0].transformation.stepId).toBe('329ccf0cce42db4dc0ffa9f389c05ff7d75c1748');
             expect(recipe[0].transformation.name).toBe('uppercase');
             expect(recipe[0].transformation.parameters).toEqual([]);
-            expect(recipe[0].transformation.items).toEqual([]);
 
             expect(recipe[2].column.name).toBe('campain');
             expect(recipe[2].transformation.stepId).toBe('0c58ee3034114eb620b8e598e02c74172a43e96a');
             expect(recipe[2].transformation.name).toBe('negate');
             expect(recipe[2].transformation.parameters).toEqual([]);
-            expect(recipe[2].transformation.items).toEqual([]);
         }));
 
         it('should get recipe from preparation and init recipe simple params', inject(function($rootScope, RecipeService) {
@@ -500,7 +492,6 @@ describe('Recipe service', function () {
             expect(recipe[1].column.name).toBe('gender');
             expect(recipe[1].transformation.stepId).toBe('ec87e2acda2b181fc7eb7c22d91e128c6d0434fc');
             expect(recipe[1].transformation.name).toBe('fillemptywithdefault');
-            expect(recipe[1].transformation.items).toEqual([]);
             expect(recipe[1].transformation.parameters).toEqual([
                 {
                     name: 'default_value',
@@ -516,7 +507,6 @@ describe('Recipe service', function () {
             expect(recipe[3].column.name).toBe('first_item');
             expect(recipe[3].transformation.stepId).toBe('1e1f41dd6d4554705abebd8d1896022acdbad217');
             expect(recipe[3].transformation.name).toBe('cut');
-            expect(recipe[3].transformation.items).toEqual([]);
             expect(recipe[3].transformation.parameters).toEqual([
                 {
                     name: 'pattern',
@@ -545,20 +535,31 @@ describe('Recipe service', function () {
             expect(recipe[5].column.name).toBe('campain');
             expect(recipe[5].transformation.stepId).toBe('2aba0e60054728f046d35315830bce9abc3c5249');
             expect(recipe[5].transformation.name).toBe('fillemptywithdefaultboolean');
-            expect(recipe[5].transformation.parameters).toEqual([]);
-            expect(recipe[5].transformation.items).toEqual([
-                {
-                    name: 'default_value',
-                    category: 'categ',
-                    values: [
-                        { name: 'True', parameters: [], default: true },
-                        { name: 'False', parameters: [], default: false }
-                    ],
-                    description: 'parameter.default_value.desc',
-                    label: 'parameter.default_value.label',
-                    initialValue: { name: 'True', parameters: [], default: true },
-                    selectedValue: { name: 'True', parameters: [], default: true }
-                }]);
+            expect(recipe[5].transformation.parameters).toEqual([
+                    {
+                        name: 'default_value',
+                        type: 'select',
+                        description: 'parameter.default_value.desc',
+                        label: 'parameter.default_value.label',
+                        configuration: {
+                            values: [
+                                {
+                                    name: 'True',
+                                    value: 'True'
+                                },
+                                {
+                                    name: 'False',
+                                    value: 'False'
+                                }
+                            ]
+                        },
+                        default: 'True',
+                        value: 'True',
+                        initialValue: 'True',
+                        inputType: 'text'
+                    }
+                ]
+            );
         }));
 
         it('should get recipe from preparation and init dynamic params', inject(function($rootScope, RecipeService, TransformationService) {
@@ -577,7 +578,6 @@ describe('Recipe service', function () {
             expect(recipe[4].transformation.stepId).toBe('add60ff0f6de4c703fa75725ada38fb37af065e6');
             expect(recipe[4].transformation.name).toBe('textclustering');
             expect(recipe[4].transformation.parameters).toEqual([]);
-            expect(recipe[4].transformation.items).toEqual([]);
             expect(recipe[4].transformation.cluster).toEqual(expectedInitializedCluster);
 
             expect(TransformationService.initDynamicParameters).toHaveBeenCalledWith(recipe[4].transformation, { columnId: '1', preparationId: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4', stepId: '1e1f41dd6d4554705abebd8d1896022acdbad217' });
@@ -662,7 +662,6 @@ describe('Recipe service', function () {
 
             //then
             expect(TransformationService.resetParamValue).toHaveBeenCalledWith(recipeItem.transformation.parameters, null);
-            expect(TransformationService.resetParamValue).toHaveBeenCalledWith(recipeItem.transformation.items, 'CHOICE');
             expect(TransformationService.resetParamValue).toHaveBeenCalledWith(recipeItem.transformation.cluster, 'CLUSTER');
         }));
 
@@ -988,10 +987,8 @@ describe('Recipe service', function () {
                 description: 'Replace cells that match the value',
                 parameters: [
                     {name: 'value', type: 'string'},
-                    {name: 'replace', type: 'string'}
-                ],
-                items: [
-                    {name: 'dummy param'}
+                    {name: 'replace', type: 'string'},
+                    {name: 'dummy param', type: 'select'}
                 ],
                 dynamic: false
             };
@@ -1027,9 +1024,9 @@ describe('Recipe service', function () {
                     description: transformation.description,
                     parameters: [
                         { name: 'value', type: 'string', value: 'James', initialValue: 'James', inputType: 'text' },
-                        { name: 'replace', type: 'string', value: 'Jimmy', initialValue: 'Jimmy', inputType: 'text' }
+                        { name: 'replace', type: 'string', value: 'Jimmy', initialValue: 'Jimmy', inputType: 'text' },
+                        { name: 'dummy param', type: 'select', value: undefined, initialValue: undefined, inputType: 'text' }
                     ],
-                    items: [{ name: 'dummy param', initialValue: undefined, selectedValue: undefined }],
                     dynamic: transformation.dynamic
                 },
                 actionParameters: {
@@ -1040,7 +1037,6 @@ describe('Recipe service', function () {
                 inactive: false
             });
             expect(recipe[3].transformation.parameters).not.toBe(transformation.parameters);
-            expect(recipe[3].transformation.items).not.toBe(transformation.items);
         }));
 
         it('should enable all steps', inject(function(RecipeService) {

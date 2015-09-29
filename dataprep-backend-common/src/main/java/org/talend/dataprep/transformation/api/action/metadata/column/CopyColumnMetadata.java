@@ -2,8 +2,6 @@ package org.talend.dataprep.transformation.api.action.metadata.column;
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -14,7 +12,6 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 /**
  * duplicate a column
@@ -46,15 +43,6 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements Column
     @Override
     public String getCategory() {
         return ActionCategory.COLUMNS.getDisplayName();
-    }
-
-    /**
-     * @see ActionMetadata#getItems()@return
-     */
-    @Override
-    @Nonnull
-    public Item[] getItems() {
-        return new Item[]{};
     }
 
     /**

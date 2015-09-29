@@ -1,27 +1,5 @@
 [
   {
-    "items": [
-      {
-        "name": "empty_default_value",
-        "category": "categ",
-        "values": [
-          {
-            "name": "True",
-            "parameters": [
-            ],
-            "default": true
-          },
-          {
-            "name": "False",
-            "parameters": [
-            ],
-            "default": false
-          }
-        ],
-        "description": "The value to set in empty cells",
-        "label": "Value"
-      }
-    ],
     "name": "fillemptywithdefaultboolean",
     "parameters": [
       {
@@ -47,6 +25,26 @@
         "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
         "label": "Scope",
         "default": ""
+      },
+      {
+        "name": "empty_default_value",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": "True"
+            },
+            {
+              "value": "False"
+            }
+          ],
+          "multiple": false
+        },
+        "description": "The value to set in empty cells",
+        "label": "Value",
+        "default": "True"
       }
     ],
     "dynamic": false,
@@ -54,28 +52,6 @@
     "label": "Fill empty cells with value..."
   },
   {
-    "items": [
-      {
-        "name": "invalid_default_value",
-        "category": "categ",
-        "values": [
-          {
-            "name": "True",
-            "parameters": [
-            ],
-            "default": true
-          },
-          {
-            "name": "False",
-            "parameters": [
-            ],
-            "default": false
-          }
-        ],
-        "description": "The value to set in invalid cells",
-        "label": "Value"
-      }
-    ],
     "name": "fillinvalidwithdefaultboolean",
     "parameters": [
       {
@@ -101,6 +77,26 @@
         "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
         "label": "Scope",
         "default": ""
+      },
+      {
+        "name": "invalid_default_value",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": "True"
+            },
+            {
+              "value": "False"
+            }
+          ],
+          "multiple": false
+        },
+        "description": "The value to set in invalid cells",
+        "label": "Value",
+        "default": "True"
       }
     ],
     "dynamic": false,
@@ -110,8 +106,6 @@
   {
     "name": "delete_empty",
     "category": "data cleansing",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -145,8 +139,6 @@
   {
     "name": "delete_invalid",
     "category": "data cleansing",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -215,16 +207,12 @@
     ],
     "category": "columns",
     "name": "rename_column",
-    "items": [
-    ],
     "dynamic": false,
     "description": "Rename this column",
     "label": "Rename"
   },
   {
     "category": "columns",
-    "items": [
-    ],
     "name": "copy",
     "parameters": [
       {
@@ -259,8 +247,6 @@
   {
     "category": "boolean",
     "name": "negate",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",

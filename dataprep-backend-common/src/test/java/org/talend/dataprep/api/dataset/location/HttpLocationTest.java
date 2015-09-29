@@ -8,6 +8,7 @@ import org.junit.Test;
 
 /**
  * Unit test for the HttpLocation
+ * 
  * @see HttpLocation
  */
 public class HttpLocationTest {

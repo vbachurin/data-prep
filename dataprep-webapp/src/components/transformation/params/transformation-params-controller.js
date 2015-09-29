@@ -11,43 +11,37 @@
 
         /**
          * @ngdoc method
+         * @name getParamIteration
+         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
+         * @description [PRIVATE] Inner function for recursively gather params
+         * @param {object} paramsAccu The parameters values accumulator
+         * @param {array} parameters The parameters array
+         * @returns {object} The parameters
+         */
+        function getParamIteration(paramsAccu, parameters) {
+            if (parameters) {
+                _.forEach(parameters, function (paramItem) {
+                    paramsAccu[paramItem.name] = typeof (paramItem.value) !== 'undefined'? paramItem.value : paramItem.default;
+
+                    // deal with select inline parameters
+                    if (paramItem.type === 'select') {
+                        var selectedValue = _.find(paramItem.configuration.values, {value: paramItem.value});
+                        getParamIteration(paramsAccu, selectedValue.parameters);
+                    }
+                });
+            }
+            return paramsAccu;
+        }
+
+        /**
+         * @ngdoc method
          * @name getParams
          * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
          * @description [PRIVATE] Get item parameters into one object for REST call
          * @returns {object} - the parameters
          */
         var getParams = function () {
-            var params = {};
-            if (vm.transformation.parameters) {
-                _.forEach(vm.transformation.parameters, function (paramItem) {
-                    params[paramItem.name] = typeof (paramItem.value) !== 'undefined'? paramItem.value : paramItem.default;
-                });
-            }
-
-            return params;
-        };
-
-        /**
-         * @ngdoc method
-         * @name getChoiceParams
-         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
-         * @description [PRIVATE] Get item choice and choice parameters into one object for REST call
-         * @returns {object} - the parameters
-         */
-        var getChoiceParams = function () {
-            var params = {};
-            _.forEach(vm.transformation.items, function (item) {
-                var selectedChoice = item.selectedValue;
-                params[item.name] = selectedChoice.name;
-
-                if (selectedChoice.parameters) {
-                    _.forEach(selectedChoice.parameters, function (choiceParamItem) {
-                        params[choiceParamItem.name] = choiceParamItem.value;
-                    });
-                }
-            });
-
-            return params;
+            return getParamIteration({}, vm.transformation.parameters);
         };
 
         /**
@@ -85,18 +79,14 @@
          */
         var gatherParams = function() {
             var params = getParams();
-            var choiceParams = getChoiceParams();
             var clusterParams = getClusterParams();
-            return _.merge(_.merge(params, choiceParams), clusterParams);
-            //var dateParams = getDateParams();
-            //return _.merge(_.merge(_.merge(params, choiceParams), clusterParams),dateParams);
+            return _.merge(params, clusterParams);
         };
 
         /**
          * @ngdoc method
          * @name transformWithParam
          * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
-         * @param {boolean} invalid validity of the form
          * @description Gather params and perform a transformation on the column if the form is valid
          */
         vm.transformWithParam = function () {
@@ -125,6 +115,26 @@
             var params = gatherParams();
             vm.onSubmitHoverOff({params: params});
         };
+
+        /**
+         * @ngdoc method
+         * @name getParameterType
+         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
+         * @description Return the parameter type to display
+         * @param {object} parameter The parameter
+         */
+        vm.getParameterType = function(parameter) {
+            var type = parameter.type.toLowerCase();
+            switch (type) {
+                case 'select':
+                case 'cluster':
+                case 'date':
+                    return type;
+                default:
+                    return 'simple';
+            }
+        };
+
     }
 
     angular.module('data-prep.transformation-params')
