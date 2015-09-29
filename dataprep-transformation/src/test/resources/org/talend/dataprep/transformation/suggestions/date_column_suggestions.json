@@ -436,6 +436,7 @@
         "name": "column_id",
         "type": "string",
         "implicit": true,
+        "canBeBlank": true,
         "description": "The column on which apply this action to",
         "label": "Column",
         "default": ""
@@ -444,6 +445,7 @@
         "name": "row_id",
         "type": "string",
         "implicit": true,
+        "canBeBlank": true,
         "description": "The row on which apply this action to",
         "label": "Row",
         "default": ""
@@ -452,6 +454,7 @@
         "name": "scope",
         "type": "string",
         "implicit": true,
+        "canBeBlank": true,
         "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
         "label": "Scope",
         "default": ""
@@ -460,13 +463,13 @@
         "name": "empty_default_value",
         "type": "date",
         "implicit": false,
+        "canBeBlank": false,
         "description": "The value to set in empty cells",
         "label": "Value",
         "default": "01/01/1970 10:00:00"
       }
     ],
     "category": "data cleansing",
-    "items": [],
     "dynamic": false,
     "description": "Fill empty cells of this column with given value",
     "label": "Fill empty cells with value..."
