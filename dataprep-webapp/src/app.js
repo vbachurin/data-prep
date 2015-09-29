@@ -8,6 +8,7 @@
             'data-prep.navbar',
             'data-prep.home',
             'data-prep.services.rest', //rest interceptors
+            'data-prep.services.utils',
             'bgDirectives'
         ])
 
@@ -94,5 +95,10 @@
         .run(function ($window, $translate) {
             var language = ($window.navigator.language === 'fr') ? 'fr' : 'en';
             $translate.use(language);
-        });
+        })
+
+        //Configure server api urls
+        .run(function(ConfigService) {
+            ConfigService.init();
+        })
 })();
