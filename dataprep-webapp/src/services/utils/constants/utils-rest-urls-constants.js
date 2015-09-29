@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     /**
@@ -6,16 +6,30 @@
      * @name data-prep.services.utils.service:RestURLs
      * @description The REST api services url
      */
+    function RestURLs() {
+        var service = {
+            setServerUrl: setServerUrl
+        };
+        
+        return service;
+
+        /**
+         * @ngdoc method
+         * @name setServerUrl
+         * @propertyOf data-prep.services.utils.service:RestURLs
+         * @description Init the api urls with a provided server url
+         * @param {string} serverUrl The server url
+         */
+        function setServerUrl(serverUrl) {
+            service.datasetUrl = serverUrl + '/api/datasets';
+            service.transformUrl = serverUrl + '/api/transform';
+            service.preparationUrl = serverUrl + '/api/preparations';
+            service.previewUrl = serverUrl + '/api/preparations/preview';
+            service.exportUrl = serverUrl + '/api/export';
+            service.aggregationUrl = serverUrl + '/api/aggregate';
+        }
+    }
+
     angular.module('data-prep.services.utils')
-        .service('RestURLs', ['apiUrl', function(apiUrl) {
-            return {
-                serverUrl:				apiUrl,
-                datasetUrl:             apiUrl + '/api/datasets',
-                transformUrl:           apiUrl + '/api/transform',
-                preparationUrl:         apiUrl + '/api/preparations',
-                previewUrl:             apiUrl + '/api/preparations/preview',
-                exportUrl:              apiUrl + '/api/export',
-                aggregationUrl:         apiUrl + '/api/aggregate'
-            };
-        }]);
+        .service('RestURLs', RestURLs);
 })();
