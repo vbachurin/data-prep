@@ -118,4 +118,43 @@ describe('Rest message interceptor factory', function () {
         expect(MessageService.error).toHaveBeenCalledWith('SERVER_ERROR_TITLE', 'GENERIC_ERROR');
     }));
 
+     it('expected error message when dataset content is not supported', inject(function ($rootScope, $http, MessageService) {
+        //given
+        $httpBackend.expectGET('testService').respond(400, {code:'TDP_DSS_UNSUPPORTED_CONTENT'});
+
+        //when
+        $http.get('testService');
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(MessageService.error).toHaveBeenCalledWith('UNSUPPORTED_CONTENT_TITLE', 'UNSUPPORTED_CONTENT');
+    }));
+
+    it('expected error message when creating a dataset', inject(function ($rootScope, $http, MessageService) {
+        //given
+        $httpBackend.expectGET('testService').respond(400, {code:'TDP_API_UNABLE_TO_CREATE_DATASET'});
+
+        //when
+        $http.get('testService');
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(MessageService.error).toHaveBeenCalledWith('IMPORT_ERROR_TITLE', 'IMPORT_ERROR');
+    }));
+
+    it('expected error message when updating a dataset', inject(function ($rootScope, $http, MessageService) {
+        //given
+        $httpBackend.expectGET('testService').respond(400, {code:'TDP_API_UNABLE_TO_CREATE_OR_UPDATE_DATASET'});
+
+        //when
+        $http.get('testService');
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(MessageService.error).toHaveBeenCalledWith('UPDATE_ERROR_TITLE', 'UPDATE_ERROR');
+    }));
+
 });

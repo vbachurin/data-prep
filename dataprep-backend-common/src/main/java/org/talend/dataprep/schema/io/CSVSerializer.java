@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -21,22 +25,42 @@ import com.fasterxml.jackson.core.JsonGenerator;
 @Service("serializer#csv")
 public class CSVSerializer implements Serializer {
 
+    public static final Logger LOGGER = LoggerFactory.getLogger(CSVSerializer.class);
+
+    @Autowired
+    TaskExecutor executor;
+
     @Override
     public InputStream serialize(InputStream rawContent, DataSetMetadata metadata) {
         try {
-            final Map<String, String> parameters = metadata.getContent().getParameters();
-            final String separator = parameters.get(CSVFormatGuess.SEPARATOR_PARAMETER);
-            CSVReader reader = new CSVReader(new InputStreamReader(rawContent), separator.charAt(0));
-            StringWriter writer = new StringWriter();
-            JsonGenerator generator = new JsonFactory().createGenerator(writer);
-            reader.readNext(); // Skip column names
-
-            generator.writeStartArray();
-            writeLineContent(reader, metadata, generator, separator);
-            generator.writeEndArray();
-
-            generator.flush();
-            return new ByteArrayInputStream(writer.toString().getBytes(metadata.getEncoding()));
+            PipedInputStream pipe = new PipedInputStream();
+            PipedOutputStream jsonOutput = new PipedOutputStream(pipe);
+            // Serialize asynchronously for better performance (especially if caller doesn't consume all, see sampling).
+            Runnable r = () -> {
+                final Map<String, String> parameters = metadata.getContent().getParameters();
+                final String separator = parameters.get(CSVFormatGuess.SEPARATOR_PARAMETER);
+                try (CSVReader reader = new CSVReader(new InputStreamReader(rawContent), separator.charAt(0))) {
+                    JsonGenerator generator = new JsonFactory().createGenerator(jsonOutput);
+                    reader.readNext(); // Skip column names
+                    generator.writeStartArray();
+                    writeLineContent(reader, metadata, generator, separator);
+                    generator.writeEndArray();
+                    generator.flush();
+                } catch (Exception e) {
+                    // Consumer may very well interrupt consumption of stream (in case of limit(n) use for sampling).
+                    // This is not an issue as consumer is allowed to partially consumes results, it's up to the
+                    // consumer to ensure data it consumed is consistent.
+                    LOGGER.debug("Unable to continue serialization. Skipping remaining content.", e);
+                } finally {
+                    try {
+                        jsonOutput.close();
+                    } catch (IOException e) {
+                        LOGGER.error("Unable to close output", e);
+                    }
+                }
+            };
+            executor.execute(r);
+            return pipe;
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }
@@ -73,11 +97,11 @@ public class CSVSerializer implements Serializer {
                 // deal with additional content (line.length > columns.size)
                 if (i == columnsSize - 1 && line.length > columnsSize) {
                     String additionalContent = getRemainingColumns(line, i, separator);
-                    generator.writeString(additionalContent);
+                    generator.writeString(cleanCharacters(additionalContent));
                 }
                 // deal with fewer content (line.length < columns.size)
                 else if (i < line.length && line[i] != null) {
-                    generator.writeString(line[i]);
+                    generator.writeString(cleanCharacters(line[i]));
                 }
                 // deal with null
                 else {
@@ -86,6 +110,10 @@ public class CSVSerializer implements Serializer {
             }
             generator.writeEndObject();
         }
+    }
+
+    private String cleanCharacters(final String value) {
+        return StringUtils.remove(value, '\u0000');
     }
 
     /**

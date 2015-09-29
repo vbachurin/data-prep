@@ -79,7 +79,7 @@ describe('Datagrid column service', function () {
 
             expect(createdColumns[2].id).toEqual('0001');
             expect(createdColumns[2].field).toEqual('0001');
-            expect(createdColumns[2].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col1</div>       <div class="grid-header-type ng-binding">number</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
+            expect(createdColumns[2].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col1</div>       <div class="grid-header-type ng-binding">integer</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
             expect(createdColumns[2].formatter).toEqual(formatter);
             expect(createdColumns[2].minWidth).toEqual(80);
             expect(createdColumns[2].tdpColMetadata).toEqual({ id: '0001', name: 'col1', type: 'integer' } );

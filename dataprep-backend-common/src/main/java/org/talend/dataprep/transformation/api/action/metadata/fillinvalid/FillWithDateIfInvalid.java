@@ -48,7 +48,7 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
 
     private static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
-    private static final String DEFAULT_DATE_VALUE = DEFAULT_FORMATTER.format( LocalDateTime.of( 1970, Month.JANUARY, 1, 10, 0 ) );
+    private static final String DEFAULT_DATE_VALUE = DEFAULT_FORMATTER.format(LocalDateTime.of(1970, Month.JANUARY, 1, 10, 0));
 
     @Autowired
     private DateParser dateParser;
@@ -127,7 +127,7 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
         final Optional<PatternFrequency> mostUsed = stream.sorted((pf1, pf2) -> {
             if (pf1.getOccurrences() - pf2.getOccurrences() == 0) {
                 return 0;
-            } else if(pf1.getOccurrences() - pf2.getOccurrences() > 0) {
+            } else if (pf1.getOccurrences() - pf2.getOccurrences() > 0) {
                 return -1;
             } else {
                 return 1;
@@ -146,4 +146,3 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
     }
 
 }
-

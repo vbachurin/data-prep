@@ -99,7 +99,7 @@ describe('Datagrid directive', function() {
 
         it('should update created columns style with selected column', inject(function(DatagridStyleService) {
             //then
-            expect(DatagridStyleService.updateColumnClass).toHaveBeenCalledWith(createdColumns, null);
+            expect(DatagridStyleService.updateColumnClass).toHaveBeenCalledWith(createdColumns, createdColumns[1]);
         }));
 
         it('should auto size created columns (and set them in grid, done by autosize() function)', inject(function(DatagridSizeService) {
@@ -149,9 +149,23 @@ describe('Datagrid directive', function() {
             expect(DatagridExternalService.updateSuggestionPanel).toHaveBeenCalledWith(data.columns[1]);
         }));
 
+        it('should update suggestion panel with 1st column when the selected column does not exist', inject(function(DatagridService, DatagridStyleService, DatagridExternalService) {
+            //given
+            stateMock.playground.column = {id: '9999'};
+
+            //when
+            DatagridService.data = {};
+            scope.$digest();
+            jasmine.clock().tick(1);
+
+            //then
+            expect(DatagridExternalService.updateSuggestionPanel).toHaveBeenCalledWith(createdColumns[1]);
+        }));
+
         it('should NOT update suggestion panel when data is preview data', inject(function(DatagridService, DatagridStyleService, DatagridExternalService) {
             //given
             stateMock.playground.column = {id: '0001'};
+            expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
 
             //when
             DatagridService.data = {preview: true};
@@ -159,7 +173,7 @@ describe('Datagrid directive', function() {
             jasmine.clock().tick(1);
 
             //then
-            expect(DatagridExternalService.updateSuggestionPanel).not.toHaveBeenCalled();
+            expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
         }));
 
         it('should NOT reset cell style when data is preview data', inject(function(DatagridService, DatagridStyleService) {
@@ -192,7 +206,7 @@ describe('Datagrid directive', function() {
         it('should execute the grid update only once when the second call is triggered before the first timeout', inject(function(DatagridService, DatagridGridService, DatagridColumnService, DatagridExternalService) {
             //given
             expect(DatagridColumnService.createColumns.calls.count()).toBe(1);
-            expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(0);
+            expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
             expect(DatagridGridService.navigateToFocusedColumn.calls.count()).toBe(0);
 
             stateMock.playground.column = {id: '0001'};
@@ -202,7 +216,7 @@ describe('Datagrid directive', function() {
             scope.$digest();
 
             expect(DatagridColumnService.createColumns.calls.count()).toBe(1);
-            expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(0);
+            expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
             expect(DatagridGridService.navigateToFocusedColumn.calls.count()).toBe(0);
 
             DatagridService.data = {};
@@ -211,7 +225,7 @@ describe('Datagrid directive', function() {
 
             //then
             expect(DatagridColumnService.createColumns.calls.count()).toBe(2);
-            expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
+            expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(2);
             expect(DatagridGridService.navigateToFocusedColumn.calls.count()).toBe(1);
         }));
     });

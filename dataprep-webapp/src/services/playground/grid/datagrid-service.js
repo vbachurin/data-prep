@@ -91,7 +91,7 @@
          * @param {object} columns The new columns
          * @description Get the last new created column
          */
-        function getLastNewColumnId(columns){
+        function getLastNewColumnId(columns) {
             var ancientColumnsIds = _.map(self.data.columns, 'id');
             var newColumnsIds = _.map(columns, 'id');
             var diffIds = _.difference(newColumnsIds, ancientColumnsIds);
@@ -107,7 +107,7 @@
          * @description Update the data in the datagrid
          */
         self.updateData = function (data) {
-            if(self.data.columns.length < data.columns.length){
+            if (self.data.columns.length < data.columns.length) {
                 self.focusedColumn = getLastNewColumnId(data.columns);
             }
             self.data = data;
@@ -127,15 +127,15 @@
          * setItems which compute everything on the whole dataset.
          */
         self.execute = function execute(executor) {
-            if(!executor) {
+            if (!executor) {
                 return;
             }
 
             var revertInstructions = [];
 
             self.dataView.beginUpdate();
-            _.forEach(executor.instructions, function(step) {
-                switch(step.type) {
+            _.forEach(executor.instructions, function (step) {
+                switch (step.type) {
                     case INSERT:
                         self.dataView.insertItem(step.index, step.row);
                         revertInstructions.push({
@@ -170,7 +170,7 @@
                 columns: self.data.columns
             };
 
-            if(self.data.columns.length < executor.columns.length){
+            if (self.data.columns.length < executor.columns.length) {
                 self.focusedColumn = getLastNewColumnId(executor.columns);
             }
             self.data = {
@@ -197,9 +197,9 @@
             };
 
             var nextInsertionIndex = self.dataView.getIdxById(data.records[0].tdpId);
-            _.forEach(data.records, function(row) {
-                if(row.__tdpRowDiff || row.__tdpDiff) {
-                    if(row.__tdpRowDiff === 'new') {
+            _.forEach(data.records, function (row) {
+                if (row.__tdpRowDiff || row.__tdpDiff) {
+                    if (row.__tdpRowDiff === 'new') {
                         executor.instructions.push({
                             type: INSERT,
                             row: row,
@@ -231,16 +231,17 @@
          * @description Filter the column ids
          * @returns {Object[]} - the column list that match the desired filters (id & name)
          */
-        self.getColumns = function(excludeNumeric, excludeBoolean) {
+        self.getColumns = function (excludeNumeric, excludeBoolean) {
             var cols = self.data.columns;
 
-            if(excludeNumeric) {
+            if (excludeNumeric) {
                 cols = _.filter(cols, function (col) {
-                    return ConverterService.simplifyType(col.type) !== 'number';
+                    var simplifiedType = ConverterService.simplifyType(col.type);
+                    return simplifiedType !== 'integer' && simplifiedType !== 'decimal';
                 });
             }
-            if(excludeBoolean) {
-                cols = _.filter(cols, function(col) {
+            if (excludeBoolean) {
+                cols = _.filter(cols, function (col) {
                     return col.type !== 'boolean';
                 });
             }
@@ -260,7 +261,7 @@
          * @description Return the column id list that has a value that match the regexp
          * @returns {Object[]} - the column list that contains a value that match the regexp (col.id & col.name)
          */
-        self.getColumnsContaining = function(regexp, canBeNumeric, canBeBoolean) {
+        self.getColumnsContaining = function (regexp, canBeNumeric, canBeBoolean) {
             var results = [];
 
             var data = self.data.records;
@@ -296,11 +297,11 @@
          * @description Return displayed rows index where data[rowId][colId] contains the searched term
          * @returns {Object} The SlickGrid css config for each column with the provided content
          */
-        self.getSameContentConfig = function(colId, term, cssClass) {
+        self.getSameContentConfig = function (colId, term, cssClass) {
             var config = {};
-            for(var i = 0; i < self.dataView.getLength(); ++i) {
+            for (var i = 0; i < self.dataView.getLength(); ++i) {
                 var item = self.dataView.getItem(i);
-                if(term === item[colId]) {
+                if (term === item[colId]) {
                     config[i] = {};
                     config[i][colId] = cssClass;
                 }
@@ -319,11 +320,12 @@
          */
         self.getNumericColumns = function getNumericColumns(columnToSkip) {
             return _.chain(self.data.columns)
-                .filter(function(column) {
+                .filter(function (column) {
                     return !columnToSkip || column.id !== columnToSkip.id;
                 })
-                .filter(function(column) {
-                    return ConverterService.simplifyType(column.type) === 'number';
+                .filter(function (column) {
+                    var simpleType = ConverterService.simplifyType(column.type);
+                    return simpleType === 'integer' || simpleType === 'decimal';
                 })
                 .value();
         };
@@ -341,9 +343,14 @@
          * @returns {boolean} - true if the item pass all the filters
          */
         function filterFn(item, args) {
-            for (var i = 0; i < args.filters.length; i++) {
-                var filter = args.filters[i];
-                if(!filter(item)) {
+            //init filters with actual data
+            var initializedFilters = _.map(args.filters, function (filter) {
+                return filter(self.data);
+            });
+            //execute each filter on the value
+            for (var i = 0; i < initializedFilters.length; i++) {
+                var filter = initializedFilters[i];
+                if (!filter(item)) {
                     return false;
                 }
             }
@@ -357,8 +364,8 @@
          * @description [PRIVATE] Create a closure that contains the active filters to execute
          * @returns {function} The filters closure
          */
-        self.getAllFiltersFn = function() {
-            return function(item) {
+        self.getAllFiltersFn = function () {
+            return function (item) {
                 return filterFn(item, self);
             };
         };
@@ -369,7 +376,7 @@
          * @methodOf data-prep.services.playground.service:DatagridService
          * @description [PRIVATE] Update filters in dataview
          */
-        var updateDataViewFilters = function() {
+        var updateDataViewFilters = function () {
             self.dataView.beginUpdate();
             self.dataView.setFilterArgs({
                 filters: self.filters
@@ -385,7 +392,7 @@
          * @description Add a filter in dataview
          * @param {object} filter - the filter function to add
          */
-        self.addFilter = function(filter) {
+        self.addFilter = function (filter) {
             self.filters.push(filter);
             updateDataViewFilters();
         };
@@ -398,7 +405,7 @@
          * @param {object} oldFilter - the filter function to replace
          * @param {object} newFilter - the new filter function
          */
-        self.updateFilter = function(oldFilter, newFilter) {
+        self.updateFilter = function (oldFilter, newFilter) {
             var index = self.filters.indexOf(oldFilter);
             self.filters.splice(index, 1, newFilter);
             updateDataViewFilters();
@@ -411,9 +418,9 @@
          * @description Remove a filter in dataview
          * @param {object} filter - the filter function to remove
          */
-        self.removeFilter = function(filter) {
+        self.removeFilter = function (filter) {
             var filterIndex = self.filters.indexOf(filter);
-            if(filterIndex > -1) {
+            if (filterIndex > -1) {
                 self.filters.splice(filterIndex, 1);
                 updateDataViewFilters();
             }
@@ -425,7 +432,7 @@
          * @methodOf data-prep.services.playground.service:DatagridService
          * @description Remove all filters from dataview
          */
-        self.resetFilters = function() {
+        self.resetFilters = function () {
             self.filters = [];
             updateDataViewFilters();
         };

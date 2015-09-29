@@ -19,9 +19,9 @@ public class XlsFormatGuesser implements FormatGuesser {
     @Autowired
     private XlsFormatGuess xlsFormatGuess;
 
-    /** The fallback guess if the input is not CSV compliant. */
+    /** The fallback guess if the input is not Excel compliant. */
     @Autowired
-    private NoOpFormatGuess fallbackGuess;
+    private UnsupportedFormatGuess fallbackGuess;
 
     @Override
     public FormatGuesser.Result guess(InputStream stream, String encoding) {
@@ -29,7 +29,7 @@ public class XlsFormatGuesser implements FormatGuesser {
             Workbook workbook = XlsUtils.getWorkbook(stream);
             // if poi can read it we assume it's correct excel file
             // && at least one sheet
-            if (workbook.getNumberOfSheets() > 0) {
+            if (workbook != null && workbook.getNumberOfSheets() > 0) {
                 return new FormatGuesser.Result(xlsFormatGuess, encoding, Collections.emptyMap());
             }
         } catch (IOException e) {

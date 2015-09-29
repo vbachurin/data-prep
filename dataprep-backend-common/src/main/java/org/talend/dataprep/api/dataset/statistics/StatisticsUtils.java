@@ -3,13 +3,13 @@ package org.talend.dataprep.api.dataset.statistics;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.Quality;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.api.type.TypeUtils;
+import org.talend.dataquality.semantic.statistics.SemanticType;
 import org.talend.dataquality.statistics.cardinality.CardinalityStatistics;
 import org.talend.dataquality.statistics.frequency.DataFrequencyStatistics;
 import org.talend.dataquality.statistics.frequency.PatternFrequencyStatistics;
@@ -19,6 +19,7 @@ import org.talend.dataquality.statistics.numeric.summary.SummaryStatistics;
 import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.dataquality.statistics.text.TextLengthStatistics;
 import org.talend.datascience.common.inference.Analyzers;
+import org.talend.datascience.common.inference.type.DataType;
 
 public class StatisticsUtils {
 
@@ -26,15 +27,37 @@ public class StatisticsUtils {
     }
 
     public static void setStatistics(List<ColumnMetadata> columns, List<Analyzers.Result> results) {
+        setStatistics(columns, results, Collections.<String>emptySet());
+    }
+
+    public static void setStatistics(List<ColumnMetadata> columns, List<Analyzers.Result> results, Set<String> readOnlyColumns) {
         final Iterator<ColumnMetadata> columnIterator = columns.iterator();
         for (Analyzers.Result result : results) {
             final ColumnMetadata currentColumn = columnIterator.next();
             final boolean isNumeric = Type.NUMERIC.isAssignableFrom(Type.get(currentColumn.getType()));
             final boolean isString = Type.STRING.isAssignableFrom(Type.get(currentColumn.getType()));
             final Statistics statistics = currentColumn.getStatistics();
+            // Data type
+            if (result.exist(DataType.class) && !currentColumn.isTypeForced() && !readOnlyColumns.contains(currentColumn.getId())) {
+                final DataType dataType = result.get(DataType.class);
+                currentColumn.setType(Type.get(dataType.getSuggestedType().name()).getName());
+            }
+            // Semantic types
+            if (result.exist(SemanticType.class) && !currentColumn.isDomainForced() && !readOnlyColumns.contains(currentColumn.getId())) {
+                final SemanticType semanticType = result.get(SemanticType.class);
+                currentColumn.setDomain(semanticType.getSuggestedCategory());
+                currentColumn.setDomainLabel(TypeUtils.getDomainLabel(semanticType));
+            }
             // Value quality (empty / invalid / ...)
             if (result.exist(ValueQualityStatistics.class)) {
+                final Quality quality = currentColumn.getQuality();
                 final ValueQualityStatistics valueQualityStatistics = result.get(ValueQualityStatistics.class);
+                // Set in column quality...
+                quality.setEmpty((int) valueQualityStatistics.getEmptyCount());
+                quality.setValid((int) valueQualityStatistics.getValidCount());
+                quality.setInvalid((int) valueQualityStatistics.getInvalidCount());
+                quality.setInvalidValues(valueQualityStatistics.getInvalidValues());
+                // ... and statistics
                 statistics.setCount(valueQualityStatistics.getCount());
                 statistics.setEmpty(valueQualityStatistics.getEmptyCount());
                 statistics.setInvalid(valueQualityStatistics.getInvalidCount());
@@ -47,8 +70,8 @@ public class StatisticsUtils {
                 statistics.setDuplicateCount(cardinalityStatistics.getDuplicateCount());
             }
             // Frequencies (data)
-            final DataFrequencyStatistics dataFrequencyStatistics = result.get(DataFrequencyStatistics.class);
             if (result.exist(DataFrequencyStatistics.class)) {
+                final DataFrequencyStatistics dataFrequencyStatistics = result.get(DataFrequencyStatistics.class);
                 final Map<String, Long> topTerms = dataFrequencyStatistics.getTopK(15);
                 if (topTerms != null) {
                     statistics.getDataFrequencies().clear();
@@ -99,8 +122,14 @@ public class StatisticsUtils {
                         range.getRange().setMax(r.getUpper());
                         range.getRange().setMin(r.getLower());
                     } else {
-                        range.getRange().setMax(new Double(format.format(r.getUpper())));
-                        range.getRange().setMin(new Double(format.format(r.getLower())));
+                        try {
+                            range.getRange().setMax(new Double(format.format(r.getUpper())));
+                            range.getRange().setMin(new Double(format.format(r.getLower())));
+                        } catch (NumberFormatException e) {
+                            // Fallback to unformatted numbers (unable to parse numbers).
+                            range.getRange().setMax(r.getUpper());
+                            range.getRange().setMin(r.getLower());
+                        }
                     }
                     range.setOccurrences(v);
                     statistics.getHistogram().add(range);

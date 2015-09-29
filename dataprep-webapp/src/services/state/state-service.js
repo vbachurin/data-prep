@@ -9,11 +9,12 @@
         return {
             //playground
             hidePlayground: PlaygroundStateService.hide,
+            resetPlayground: PlaygroundStateService.reset,
             showPlayground: PlaygroundStateService.show,
             setCurrentDataset: PlaygroundStateService.setDataset,
             setCurrentPreparation: PlaygroundStateService.setPreparation,
             setNameEditionMode: PlaygroundStateService.setNameEditionMode,
-            resetPlayground: PlaygroundStateService.reset,
+            setSampleSize: PlaygroundStateService.setSampleSize,
 
             //playground - recipe
             showRecipe: PlaygroundStateService.showRecipe,

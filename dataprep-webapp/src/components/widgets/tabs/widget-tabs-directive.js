@@ -42,8 +42,11 @@
                     angular.element('.tabs-item').on('click', function(){
                         var panel1 = angular.element('.split-pane1');
                         var panel2 = angular.element('.split-pane2');
-                        angular.element('.action-suggestion-tab-items').css('height', panel1.height()-100 + 'px');
-                        angular.element('.stat-detail-tab-items').css('height', panel2.height()-100 + 'px');
+                        var actionHeaderPanelsSizeMargin = 130;
+                        var statHeaderPanelsSizeMargin = 100;
+
+                        angular.element('.action-suggestion-tab-items').css('height', panel1.height()- actionHeaderPanelsSizeMargin + 'px');
+                        angular.element('.stat-detail-tab-items').css('height', panel2.height()- statHeaderPanelsSizeMargin + 'px');
                     });
                 });
 

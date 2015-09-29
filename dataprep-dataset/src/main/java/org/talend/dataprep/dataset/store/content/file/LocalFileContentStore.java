@@ -13,11 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.content.DataSetContentStoreAdapter;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.ExceptionContext;
+import org.talend.dataprep.exception.error.DataSetErrorCodes;
 
 /**
  * Local dataset content that stores content in files.
@@ -94,7 +94,19 @@ public class LocalFileContentStore extends DataSetContentStoreAdapter {
             if (!path.toFile().exists()) {
                 return;
             }
+
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                    // .nfs files are handled by the OS and can be deleted after the visitor started.
+                    // Exceptions on such files can be safely ignored
+                    if (file.getFileName().toFile().getName().startsWith(".nfs")) { //$NON-NLS-1$
+                        LOGGER.warn("unable to delete {}", file.getFileName(), exc);
+                        return FileVisitResult.CONTINUE;
+                    }
+                    throw exc;
+                }
 
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) throws IOException {

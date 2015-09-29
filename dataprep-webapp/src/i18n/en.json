@@ -23,7 +23,7 @@
   "DESC_ORDER": "Descending",
   "SORT_IN": "in",
   "SORT_ORDER": "order",
-  "UPLOAD_ERROR": "Upload error",
+  "UPLOAD_ERROR": "An error occurred during file upload",
 
   "_comment": "Preparations",
   "LAST_MODIFICATION": "last change",
@@ -101,6 +101,8 @@
   "GENERIC_ERROR": "An error occurred",
   "IMPORT_ERROR_TITLE": "Import error",
   "IMPORT_ERROR": "An error occurred during import",
+  "UPDATE_ERROR_TITLE": "Update error",
+  "UPDATE_ERROR": "An error occurred during update",
   "INVALID_DATASET_TITLE": "Invalid dataset",
   "INVALID_DATASET": "This dataset is not valid. Please import a correct CSV file to update the data",
   "PLAYGROUND_FILE_NOT_FOUND_TITLE": "{{type}} load error",
@@ -109,8 +111,8 @@
   "PREPARATION_STEP_DELETE_MODE_NOT_AUTHORIZED": "This actions cannot be deleted alone because other following actions depends on it",
   "SERVER_ERROR_TITLE": "Server error",
   "SERVICE_UNAVAILABLE": "Service unavailable",
-  "UPLOAD_ERROR_TITLE": "Upload error",
-  "UPLOAD_ERROR": "An error occurred during file upload",
+  "UNSUPPORTED_CONTENT_TITLE": "Unsupported content",
+  "UNSUPPORTED_CONTENT": "Unable to create data set, content is not supported.",
 
   "_comment": "Transformation",
   "NO_CLUSTERS_ACTION_MSG":"No Clusters Were Found !!!",
@@ -141,6 +143,9 @@
   "AVERAGE": "Average",
   "GROUP_BY": "group by ",
 
-  "APPLY_TO_ALL_CELLS": "Apply to all cells with this value"
+  "APPLY_TO_ALL_CELLS": "Apply to all cells with this value",
+
+  "STRING": "TEXT",
+  "FLOAT": "DECIMAL"
 
 }

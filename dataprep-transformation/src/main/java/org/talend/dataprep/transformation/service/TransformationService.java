@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -18,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -28,14 +26,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.*;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.StepDiff;
 import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
@@ -48,10 +47,10 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.api.transformer.configuration.PreviewConfiguration;
-import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -139,7 +138,7 @@ public class TransformationService {
         } catch(JsonMappingException e) {
             // Ignore (end of input)
         } catch (IOException e) {
-            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         } catch (UnsupportedOperationException e) {
             if (format != null) {
                 throw new TDPException(TransformationErrorCodes.OUTPUT_TYPE_NOT_SUPPORTED, e);
@@ -205,7 +204,7 @@ public class TransformationService {
 
             executePreview(decodedNewActions, decodedOldActions, decodedIndexes, dataSet, response.getOutputStream());
         } catch (IOException e) {
-            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
     }
 
@@ -243,7 +242,7 @@ public class TransformationService {
             diff.setCreatedColumns(createdColumns);
             return diff;
         } catch (IOException e) {
-            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
     }
 
@@ -319,7 +318,7 @@ public class TransformationService {
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
             return actionType.getGenerator(context).getParameters(columnId, dataSet);
         } catch (IOException e) {
-            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
     }
 
@@ -378,7 +377,7 @@ public class TransformationService {
             mapper.writer().writeValue(response.getWriter(), result);
 
         } catch (IOException e) {
-            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
 
     }

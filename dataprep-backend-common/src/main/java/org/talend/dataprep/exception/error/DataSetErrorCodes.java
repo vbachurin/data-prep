@@ -1,16 +1,12 @@
-package org.talend.dataprep.dataset.exception;
+package org.talend.dataprep.exception.error;
 
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.talend.daikon.exception.error.ErrorCode;
 import org.talend.dataprep.api.dataset.DataSetLifecycle;
-import org.talend.dataprep.api.dataset.DataSetMetadata;
 
 /**
  * Dataset error codes.
@@ -43,45 +39,40 @@ public enum DataSetErrorCodes implements ErrorCode {
     /**
      * Error returned in case user tries to access to a data set that
      * does not exist (or no longer exists).
-     *
-     * @see org.talend.dataprep.dataset.service.DataSetService#updateDataSet(String,
-     * DataSetMetadata)
      */
     DATASET_DOES_NOT_EXIST(400, "id"),
     /**
      * Error returned when the json that contains the dataset location
      * cannot be parsed.
-     *
-     * @see org.talend.dataprep.dataset.service.DataSetService#create(String,
-     * String, InputStream, HttpServletResponse)
      */
     UNABLE_TO_READ_DATASET_LOCATION(400),
     /**
      * Error returned in case user tries to access to a column that does
-     * not exist (or no longer exists) for a data set .
-     *
-     * @see org.talend.dataprep.dataset.service.DataSetService#updateDataSet(String,
-     * DataSetMetadata)
+     * not exist (or no longer exists) for a data set.
      */
     COLUMN_DOES_NOT_EXIST(400, "id"),
     /**
      * Error returned when the order is not supported.
-     *
-     * @see org.talend.dataprep.dataset.service.DataSetService#list(String,
-     * String)
      */
     ILLEGAL_ORDER_FOR_LIST(400, "order"),
     /**
      * Error returned when the sort is not supported.
-     *
-     * @see org.talend.dataprep.dataset.service.DataSetService#list(String,
-     * String)
      */
     ILLEGAL_SORT_FOR_LIST(400, "sort"),
-    /** Error returned when the dataset metadata could not be saved. */
+    /**
+     * Error returned when the dataset metadata could not be saved.
+     */
     UNABLE_TO_STORE_DATASET_METADATA(500, "id"),
-    /** Error returned when the dataset metadata could not be read. */
-    UNABLE_TO_READ_DATASET_METADATA(500, "id");
+    /**
+     * Error returned when the dataset metadata could not be read.
+     */
+    UNABLE_TO_READ_DATASET_METADATA(500, "id"),
+    /**
+     * Error return when the uploaded content is not supported by any {@link org.talend.dataprep.schema.FormatGuesser
+     * guesser}.
+     * @see org.talend.dataprep.schema.UnsupportedFormatGuess
+     */
+    UNSUPPORTED_CONTENT(400);
 
     /** The http status to use. */
     private int httpStatus;

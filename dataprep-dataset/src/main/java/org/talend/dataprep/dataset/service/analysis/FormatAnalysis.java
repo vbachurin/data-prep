@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.*;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,11 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.schema.*;
 
@@ -54,7 +55,17 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
             if (metadata != null) {
                 // Guess media type based on InputStream
                 Set<FormatGuesser.Result> mediaTypes = guessMediaTypes(dataSetId, metadata);
-
+                // Check if only found format is Unsupported Format.
+                if (mediaTypes.size() == 1) {
+                    final FormatGuesser.Result result = mediaTypes.iterator().next();
+                    if (UnsupportedFormatGuess.class.isAssignableFrom(result.getFormatGuess().getClass())) {
+                        // Clean up content & metadata (don't keep invalid information)
+                        store.delete(metadata);
+                        repository.remove(dataSetId);
+                        // Throw exception to indicate unsupported content
+                        throw new TDPException(DataSetErrorCodes.UNSUPPORTED_CONTENT);
+                    }
+                }
                 // Select best format guess
                 List<FormatGuesser.Result> orderedGuess = new LinkedList<>(mediaTypes);
                 Collections.sort(orderedGuess, (g1, g2) -> //
@@ -68,10 +79,12 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
                 dataSetContent.setMediaType(bestGuess.getMediaType());
                 metadata.setEncoding(bestGuessResult.getEncoding());
 
+                LOG.debug("Parsing column information...");
                 parseColumnNameInformation(dataSetId, metadata, bestGuess);
+                LOG.debug("Parsed column information.");
 
                 repository.add(metadata);
-                LOG.info("format analysed for dataset: '{}'", dataSetId);
+                LOG.debug("format analysed for dataset: '{}'", dataSetId);
             } else {
                 LOG.info("Data set #{} no longer exists.", dataSetId);
             }
@@ -90,19 +103,20 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
     private Set<FormatGuesser.Result> guessMediaTypes(String dataSetId, DataSetMetadata metadata) {
         Set<FormatGuesser.Result> mediaTypes = new HashSet<>();
         for (FormatGuesser guesser : guessers) {
-            // Try to read content given supported encodings
-            final Collection<Charset> availableCharsets = getSupportedCharsets();
+            // Try to read content given certified encodings
+            final Collection<Charset> availableCharsets = ListUtils.union(getCertifiedCharsets(), getSupportedCharsets());
             for (Charset charset : availableCharsets) {
                 try (InputStream content = store.getAsRaw(metadata)) {
                     FormatGuesser.Result mediaType = guesser.guess(content, charset.name());
                     mediaTypes.add(mediaType);
-                    if (!(mediaType.getFormatGuess() instanceof NoOpFormatGuess)) {
+                    if (!(mediaType.getFormatGuess() instanceof UnsupportedFormatGuess)) {
                         break;
                     }
                 } catch (IOException e) {
                     LOG.debug("Unable to use guesser '" + guesser + "' on data set #" + dataSetId, e);
                 }
             }
+            LOG.debug("Done using guesser {}", guesser.getClass());
         }
         return mediaTypes;
     }
@@ -110,8 +124,9 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
     /**
      * @return The list of supported encodings in data prep (could be {@link Charset#availableCharsets()}, but requires
      * extensive tests, so a sub set is returned to ease testing).
+     * @see #getSupportedCharsets()
      */
-    private Collection<Charset> getSupportedCharsets() {
+    private List<Charset> getCertifiedCharsets() {
         return Arrays.asList( //
                 Charset.forName("UTF-8"), //
                 Charset.forName("UTF-16"), //
@@ -120,6 +135,15 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
                 Charset.forName("ISO-8859-1"), //
                 Charset.forName("x-MacRoman") //
         );
+    }
+
+    /**
+     * @return The list of encodings in data prep may use but are without scope of extensive tests (supported, but not
+     * certified).
+     * @see #getCertifiedCharsets()
+     */
+    private List<Charset> getSupportedCharsets() {
+        return new ArrayList<>(Charset.availableCharsets().values());
     }
 
     /**

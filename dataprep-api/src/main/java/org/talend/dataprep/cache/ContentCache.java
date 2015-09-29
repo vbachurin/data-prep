@@ -23,7 +23,7 @@ public interface ContentCache {
      * Returns the cached content for given <code>preparationId</code> at step <code>stepId</code>
      *
      * @param key content cache key.
-     * @return The cached content for given parameters, never <code>null</code>.
+     * @return The cached content for given parameters, or <code>null</code> if not in the cache.
      * @throws IllegalArgumentException If no cache can be found for given parameters.
      * @see #has(ContentCacheKey)
      */

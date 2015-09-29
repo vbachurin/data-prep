@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class DataSetContent implements Serializable {
 
     @JsonProperty("records")
-    private int nbRecords;
+    private int nbRecords = 0;
 
     @JsonProperty("nbLinesHeader")
     private int nbLinesInHeader;

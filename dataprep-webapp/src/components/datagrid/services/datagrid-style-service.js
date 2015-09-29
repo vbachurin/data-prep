@@ -70,7 +70,7 @@
          */
         function updateNumbersClass(column) {
             var simplifiedType = ConverterService.simplifyType(column.tdpColMetadata.type);
-            if (simplifiedType === 'number') {
+            if (simplifiedType === 'integer' || simplifiedType === 'decimal') {
                 addClass(column, 'numbers');
             }
         }
@@ -112,7 +112,7 @@
 
             return function formatter(row, cell, value, columnDef, dataContext) {
                 //hidden characters need to be shown
-                var returnStr = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(value);
+                var returnStr = TextFormatService.adaptValueToHtmlConstraints(value);
 
                 //entire row modification preview
                 switch (dataContext.__tdpRowDiff) {

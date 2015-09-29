@@ -29,7 +29,17 @@ public class LineBasedFormatGuesser implements FormatGuesser {
 
     /** The fallback guess if the input is not CSV compliant. */
     @Autowired
-    private NoOpFormatGuess fallbackGuess;
+    private UnsupportedFormatGuess fallbackGuess;
+
+    /** A list of supported separators for a CSV content */
+    private Set<Character> validSeparators = new HashSet<Character>() {
+        {
+            add(' ');
+            add('\t');
+            add(',');
+            add(';');
+        }
+    };
 
     /**
      * @see FormatGuesser#guess(InputStream, String)
@@ -37,10 +47,13 @@ public class LineBasedFormatGuesser implements FormatGuesser {
     @Override
     public FormatGuesser.Result guess(InputStream stream, String encoding) {
         Separator sep = guessSeparator(stream, encoding);
-        if (sep != null && sep.getSeparator() != '\u0000' && sep.getSeparator() < 255) {
-            Map<String, String> parameters = new HashMap<>();
-            parameters.put(CSVFormatGuess.SEPARATOR_PARAMETER, String.valueOf(sep.getSeparator()));
-            return new FormatGuesser.Result(csvFormatGuess, encoding, parameters);
+        if (sep != null) {
+            final char separator = sep.getSeparator();
+            if (validSeparators.contains(separator)) {
+                Map<String, String> parameters = new HashMap<>();
+                parameters.put(CSVFormatGuess.SEPARATOR_PARAMETER, String.valueOf(separator));
+                return new FormatGuesser.Result(csvFormatGuess, encoding, parameters);
+            }
         }
         return new FormatGuesser.Result(fallbackGuess, "UTF-8", Collections.emptyMap()); // Fallback
     }
@@ -95,14 +108,14 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                         }
                     }
                 }
-
                 return chooseSeparator(separators, lineCount);
-
             }
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_CONTENT, e);
+        } catch (Exception e) {
+            LOGGER.debug("Unable to read content from content using encoding '{}'.", encoding, e);
+            return null;
         }
-
     }
 
     /**

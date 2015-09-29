@@ -24,8 +24,23 @@
 
         ColumnTypesService.getTypes()
             .then(function (types) {
-                vm.types = types;
+                var ignoredTypes = ['double', 'numeric', 'any'];
+                vm.types = _.filter(types, function (type) {
+                    return ignoredTypes.indexOf(type.id.toLowerCase()) === -1;
+                });
+
             });
+
+        /**
+         * @ngdoc method
+         * @name shouldBeChecked
+         * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
+         * @description return if the type must be checked. We compare the simplified types because (for now), 'double' and 'float' match the single 'decimal' type.
+         * @param {object} type the current type to be displayed in the ui menu list
+         */
+        vm.shouldBeChecked = function shouldBeChecked(type) {
+            return ConverterService.simplifyType(type.id) === ConverterService.simplifyType(vm.currentDomain);
+        };
 
         /**
          * @ngdoc method

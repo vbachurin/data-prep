@@ -45,8 +45,16 @@ public interface DataSetContentStore {
      * @return A valid <b>{@link DataSetRow}</b> stream.
      */
     default Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata) {
-        final Iterable<DataSetRow> rowIterable = () -> new DataSetRowIterator(get(dataSetMetadata), true);
-        return StreamSupport.stream(rowIterable.spliterator(), false);
+        final InputStream inputStream = get(dataSetMetadata);
+        final DataSetRowIterator iterator = new DataSetRowIterator(inputStream, true);
+        final Iterable<DataSetRow> rowIterable = () -> iterator;
+        return StreamSupport.stream(rowIterable.spliterator(), false).onClose(() -> {
+            try {
+                inputStream.close();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     /**

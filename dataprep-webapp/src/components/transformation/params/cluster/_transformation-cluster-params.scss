@@ -1,85 +1,34 @@
 .cluster {
-  $background-color: $light-gray;
+  //--------------------------------------------------------------------------------------------------------------------
+  $background-odd-color: $light-gray;
   $border-color: $medium-gray;
+  $cell-horizontal-space: 15px;
+  $cell-vertical-space: 5px;
   $left-space: 15px;
   $text-color: $dark-gray;
 
-  $column-one-width: 2 * $left-space + 15px;
-  $column-two-width: 300px;
-  $column-three-width: 300px;
+  $column-first-width: 2 * $cell-horizontal-space + 15px;
+  $column-second-width: 200px;
+  $large-column-second-width: 400px;
 
-  $table-width: 800px;
-  $table-height: 430px;
   $table-header-height: 30px;
-  $table-body-height: $table-height - $table-header-height;
+  $cluster-max-height: 50vh;
 
   $disabled-background-color: $medium-gray;
   $disabled-border-color: $black;
   $disabled-text-color: $white;
 
-  min-width: $table-width;
+  $medium-screen: em(640) !default;
+  $large-screen: em(860) !default;
 
-  &.param {
-    @include display(flex);
-    @include flex-direction(column);
-    @include justify-content(flex-start);
-    @include align-items(stretch);
-    height: 50vh;
+  //--------------------------------------------------------------------------------------------------------------------
+  position: relative;
+  padding-top: 35px;
 
-    padding: 10px;
-
-    div:hover {
-      position: relative;
-    }
-
-    &.param-no-space {
-      padding: 0;
-    }
-
-    .param-row {
-      @include display(flex);
-      @include flex-direction(row);
-      @include flex-wrap(wrap);
-      @include align-items(center);
-
-      padding: 0px;
-
-      .param-name {
-        @include flex-basis(45px);
-        @include flex-grow(1);
-
-        padding-right: 5px;
-      }
-
-      .param-input {
-        @include flex-basis(120px);
-        @include flex-grow(2);
-      }
-
-      .param-error {
-        @include flex-basis(100%);
-      }
-    }
-  }
-
-  @mixin column-sizes() {
-    &:nth-child(1) {
-      @include flex-basis($column-one-width);
-      @include flex-grow(0);
-      text-align: center;
-
-      input[type="checkbox"] {
-        margin: 0;
-      }
-    }
-    &:nth-child(2) {
-      @include flex-basis($column-two-width);
-      @include flex-grow(0);
-    }
-    &:nth-child(3) {
-      @include flex-basis($column-three-width);
-      @include flex-grow(1);
-    }
+  .cluster-body {
+    max-height: $cluster-max-height;
+    overflow: auto;
+    padding-bottom: 10px;
   }
 
   @mixin column-border($color, $full: false) {
@@ -94,68 +43,106 @@
     }
   }
 
-  .cluster-line {
-    @include display(flex);
-    @include flex-direction(row);
-    @include align-items(stretch);
-
-    >div {
-      @include column-sizes();
-      @include column-border($border-color);
-      padding: 10px $left-space;
-
-      @include display(flex);
-      @include align-items(center);
+  @mixin column-sizes() {
+    &:nth-child(1) {
+      width: $column-first-width;
+      text-align: center;
     }
-  }
 
-  .cluster-header {
-    @include flex-basis($table-header-height);
-    @include flex-grow(0);
+    &:nth-child(2) {
+      width: $column-second-width;
+    }
 
-    >div {
-      @include display(flex);
-      @include align-items(center);
-      @include column-border($border-color, true);
-
-      background-color: $dark-gray;
-      color: $white;
-      height: $table-header-height;
-
+    .editable-select {
       input {
-        margin: 0;
+        width: 160px;
+      }
+      select {
+        width: 180px;
+      }
+    }
+
+    @include media($large-screen) {
+      &:nth-child(2) {
+        width: $large-column-second-width;
+      }
+
+      .editable-select {
+        input {
+          width: 235px;
+        }
+        select {
+          width: 255px;
+        }
       }
     }
   }
 
-  .cluster-body {
-    @include flex-basis(auto);
-    @include flex-grow(0);
+  .cluster-body > table {
+    margin: 0;
 
-    overflow-y: auto;
-    overflow-x: hidden;
-
-    >.cluster-line {
-      @include transition(background-color 0.3s ease-in-out);
-      color: $text-color;
-
-      &:nth-child(odd){
-        background-color: $background-color;
+    .cluster-line {
+      td,
+      th {
+        @include column-border($border-color);
+        padding: $cell-vertical-space $cell-horizontal-space;
       }
+    }
 
-      &.disabled {
-        background-color: $disabled-background-color;
-        color: $disabled-text-color;
-        font-style: italic;
+    thead {
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: table;
+      width: 100%;
+      th {
+        @include column-sizes();
 
-        >div {
-          @include column-border($disabled-border-color);
+        @include column-border($border-color, true);
+        background-color: $dark-gray;
+        color: $white;
+        height: $table-header-height;
+
+        input {
+          margin: 0;
         }
       }
     }
 
-    input {
-      color: $text-color;
+    tbody {
+      display: table;
+      width: 100%;
+      >.cluster-line {
+        @include transition(background-color 0.3s ease-in-out);
+        color: $text-color;
+
+        &:nth-child(odd){
+          background-color: $background-odd-color;
+        }
+
+        &.disabled {
+          background-color: $disabled-background-color;
+          color: $disabled-text-color;
+          font-style: italic;
+
+          >td {
+            @include column-border($disabled-border-color);
+          }
+        }
+
+        td {
+          @include column-sizes();
+
+          .param-row {
+            padding: 0;
+            word-break: break-all;
+          }
+
+          input {
+            color: $text-color;
+          }
+        }
+      }
     }
   }
 }

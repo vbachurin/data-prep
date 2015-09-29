@@ -214,11 +214,37 @@ describe('Statistics service', function () {
             StatisticsService.selectedColumn.id = 'toto';
 
             //when
-            StatisticsService.addExactFilter('volvo');
+            StatisticsService.addExactFilter('volvo', true);
             $timeout.flush();
 
             //then
-            expect(FilterService.addFilter).toHaveBeenCalledWith('exact', 'toto', undefined, {phrase: 'volvo'});
+            expect(FilterService.addFilter).toHaveBeenCalledWith('exact', 'toto', undefined, {phrase: 'volvo', caseSensitive: true});
+        }));
+
+        it('should add a new "exact" filter', inject(function (StatisticsService, FilterService, $timeout) {
+            //given
+            StatisticsService.selectedColumn = {};
+            StatisticsService.selectedColumn.id = 'toto';
+
+            //when
+            StatisticsService.addExactFilter('volvo', true);
+            $timeout.flush();
+
+            //then
+            expect(FilterService.addFilter).toHaveBeenCalledWith('exact', 'toto', undefined, {phrase: 'volvo', caseSensitive: true});
+        }));
+
+        it('should add a new "empty_records" filter from exact_filter', inject(function (StatisticsService, FilterService, $timeout) {
+            //given
+            StatisticsService.selectedColumn = {};
+            StatisticsService.selectedColumn.id = 'toto';
+
+            //when
+            StatisticsService.addExactFilter('', true);
+            $timeout.flush();
+
+            //then
+            expect(FilterService.addFilter).toHaveBeenCalledWith('empty_records', 'toto', undefined, {});
         }));
 
         it('should add a new "empty" filter', inject(function (StatisticsService, FilterService, $timeout) {
