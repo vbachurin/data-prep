@@ -66,7 +66,7 @@ public class ActionTests extends TransformationServiceBaseTests {
                 .post("/transform/JSON")//
                 .then()//
                 .statusCode(400)//
-                .content("code", is("TDP_TS_UNABLE_TO_PARSE_JSON"));
+                .content("code", is("TDP_ALL_UNABLE_TO_PARSE_JSON"));
     }
 
     // ------------------------------------------------------------------------------------------------------------------

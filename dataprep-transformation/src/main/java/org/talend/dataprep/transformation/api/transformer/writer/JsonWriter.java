@@ -1,16 +1,17 @@
 package org.talend.dataprep.transformation.api.transformer.writer;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
+import java.io.IOException;
+import java.io.OutputStream;
+
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
-import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 public class JsonWriter implements TransformerWriter {
 
@@ -27,7 +28,7 @@ public class JsonWriter implements TransformerWriter {
             generator.setCodec(builder.build());
             return new JsonWriter(generator);
         } catch (IOException e) {
-            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
     }
 
@@ -38,7 +39,7 @@ public class JsonWriter implements TransformerWriter {
             try {
                 generator.writeObject(col);
             } catch (IOException e) {
-                throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
+                throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
             }
         });
         endArray();

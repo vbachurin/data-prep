@@ -97,11 +97,11 @@ public class CSVSerializer implements Serializer {
                 // deal with additional content (line.length > columns.size)
                 if (i == columnsSize - 1 && line.length > columnsSize) {
                     String additionalContent = getRemainingColumns(line, i, separator);
-                    generator.writeString(additionalContent);
+                    generator.writeString(cleanCharacters(additionalContent));
                 }
                 // deal with fewer content (line.length < columns.size)
                 else if (i < line.length && line[i] != null) {
-                    generator.writeString(line[i]);
+                    generator.writeString(cleanCharacters(line[i]));
                 }
                 // deal with null
                 else {
@@ -110,6 +110,10 @@ public class CSVSerializer implements Serializer {
             }
             generator.writeEndObject();
         }
+    }
+
+    private String cleanCharacters(final String value) {
+        return StringUtils.remove(value, '\u0000');
     }
 
     /**

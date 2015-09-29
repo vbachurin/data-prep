@@ -42,6 +42,12 @@
                     else if(rejection.data.code === 'TDP_DSS_UNSUPPORTED_CONTENT') {
                         MessageService.error('UNSUPPORTED_CONTENT_TITLE', 'UNSUPPORTED_CONTENT');
                     }
+                    else if(rejection.data.code === 'TDP_API_UNABLE_TO_CREATE_DATASET') {
+                        MessageService.error('IMPORT_ERROR_TITLE', 'IMPORT_ERROR');
+                    }
+                    else if(rejection.data.code === 'TDP_API_UNABLE_TO_CREATE_OR_UPDATE_DATASET') {
+                        MessageService.error('UPDATE_ERROR_TITLE', 'UPDATE_ERROR');
+                    }
                     else {
                         MessageService.error('SERVER_ERROR_TITLE', 'GENERIC_ERROR');
                     }

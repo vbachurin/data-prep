@@ -84,13 +84,13 @@
          * @returns {object} Geo distribution {map: string, data: [{}]}
          */
         function getGeoDistribution(column) {
-            var keyPrefix = 'us-';
+            var keyPrefix = 'US-';
             var map = 'countries/us/us-all';
 
             return {
                 map: map,
                 data: getDistribution(column.id, 'hc-key', 'value', function (key) {
-                    return keyPrefix + key.toLowerCase();
+                    return keyPrefix + key;
                 })
             };
         }
@@ -125,7 +125,7 @@
         function initClassicHistogram(key, label, dataTable) {
             service.histogram = {
                 data: _.map(dataTable, function (rec) {
-                    rec.formattedValue = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(rec.data);
+                    rec.formattedValue = TextFormatService.adaptValueToHtmlConstraints(rec.data);
                     return rec;
                 }),
                 key: key,
@@ -260,6 +260,9 @@
          * @returns {number} The value in the clean format
          */
         function clean(value) {
+            if (isNaN(value)) {
+                return parseInt(value, 10);
+            }
             return value === parseInt(value, 10) ? value : +value.toFixed(2);
         }
 
@@ -501,7 +504,7 @@
          */
         function addFilter(value) {
             var column = service.selectedColumn;
-            var filterFn = value ?
+            var filterFn = value.length ?
                 FilterService.addFilter.bind(null, 'contains', column.id, column.name, {phrase: value}) :
                 FilterService.addFilter.bind(null, 'empty_records', column.id, column.name, {});
 
@@ -512,12 +515,14 @@
          * @ngdoc method
          * @name addExactFilter
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {string} value The phrase to filter (clicked Hbarchart data)
-         * @description Add an exact filter in the angular context
+         * @param {string, boolean} value The phrase to filter (clicked Hbarchart data) and the caseSensitiveness of the filter
+         * @description Add an exact filter in the angular context with/without caseSensitiveness
          */
-        function addExactFilter(value) {
+        function addExactFilter(value, caseSensitive) {
             var column = service.selectedColumn;
-            var filterFn = FilterService.addFilter.bind(null, 'exact', column.id, column.name, {phrase: value});
+            var filterFn = value.length?
+                            FilterService.addFilter.bind(null, 'exact', column.id, column.name, {phrase: value, caseSensitive: caseSensitive}):
+                            FilterService.addFilter.bind(null, 'empty_records', column.id, column.name, {});
 
             $timeout(filterFn);
         }
