@@ -4,7 +4,6 @@ import static com.jayway.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 import static org.talend.dataprep.api.type.ExportType.CSV;
 
-import java.util.Base64;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
