@@ -48,6 +48,7 @@
   "_comment": "Buttons",
   "CANCEL": "Cancel",
   "EXPORT": "Export",
+  "EXPORT_FILENAME": "Name of the generated export file",
   "EXPORT_CSV": "Export to CSV",
   "EXPORT_TABLEAU": "Export to TABLEAU",
   "OK": "Ok",
