@@ -131,7 +131,7 @@ Then application is available at http://localhost:3000
 ### Run on your local machine
 By default, the webapp is setup to access the api hosted on `10.42.10.99`. This setting can be changed in the following file :
 
-* _src/services/utils/constants/utils-constants.js_.
+* _src/assets/config/config.json_.
 
 As long as we don't come up with a better solution, this file must not be commited...
 
