@@ -42,6 +42,15 @@
             "labelKey": "SEPARATOR_COMMA"
           }
         ]
+      },
+      {
+        "name": "fileName",
+        "labelKey": "EXPORT_FILENAME",
+        "type": "text",
+        "defaultValue": {
+          "value": "",
+          "labelKey": "EXPORT_FILENAME_DEFAULT"
+        }
       }
     ]
   }

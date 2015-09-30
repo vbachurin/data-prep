@@ -4,15 +4,16 @@ import static com.jayway.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 import static org.talend.dataprep.api.type.ExportType.CSV;
 
+import java.util.Base64;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
-
 
 /**
  * Unit test for Export API.
@@ -26,21 +27,25 @@ public class ExportAPITest extends ApiServiceTestBase {
         JSONAssert.assertEquals(expectedContent, actual, false);
     }
 
-
     @Test
     public void testExportCsvFromDataset() throws Exception {
         // given
         final String datasetId = createDataset("export/export_dataset.csv", "testExport", "text/csv");
 
-        final String expectedExport = IOUtils.toString(PreparationAPITest.class
-                .getResourceAsStream("export/expected_export_default_separator.csv"));
+        final String expectedExport = IOUtils
+                .toString(
+                    PreparationAPITest.class.getResourceAsStream( "export/expected_export_default_separator.csv" ) );
 
         // when
-        final String export = given().formParam("exportType", CSV).formParam("datasetId", datasetId).when().get("/api/export")
+        final String export = given() //
+                .formParam("exportType", CSV) //
+                .formParam("datasetId", datasetId) //
+                .when() //
+                .get("/api/export") //
                 .asString();
 
         // then
-        assertEquals(expectedExport, export);
+        assertEquals( expectedExport, export );
     }
 
     @Test
@@ -51,16 +56,21 @@ public class ExportAPITest extends ApiServiceTestBase {
         applyActionFromFile(preparationId, "export/upper_case_lastname.json");
         applyActionFromFile(preparationId, "export/delete_city.json");
 
-        final String expectedExport = IOUtils.toString(PreparationAPITest.class
-                .getResourceAsStream("export/expected_export_preparation_uppercase_firstname.csv"));
+        final String expectedExport = IOUtils.toString(
+                PreparationAPITest.class.getResourceAsStream("export/expected_export_preparation_uppercase_firstname.csv"));
 
         final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
-                .getList("steps");
-        final String firstActionStep = steps.get(1);
+                .getList( "steps" );
+        final String firstActionStep = steps.get( 1 );
 
         // when
-        final String export = given().formParam("exportType", CSV).formParam("preparationId", preparationId)
-                .formParam("stepId", firstActionStep).when().get("/api/export").asString();
+        final String export = given() //
+                .formParam( "exportType", CSV ) //
+                .formParam("preparationId", preparationId) //
+                .formParam("stepId", firstActionStep) //
+                .when() //
+                .get("/api/export") //
+                .asString();
 
         // then
         assertEquals(expectedExport, export);
@@ -69,14 +79,20 @@ public class ExportAPITest extends ApiServiceTestBase {
     @Test
     public void testExportCsvWithDefaultSeparator() throws Exception {
         // given
-        final String preparationId = createPreparationFromFile("export/export_dataset.csv", "testExport", "text/csv");
+        final String preparationId = createPreparationFromFile( "export/export_dataset.csv", "testExport", "text/csv" );
 
-        final String expectedExport = IOUtils.toString(PreparationAPITest.class
-                .getResourceAsStream("export/expected_export_default_separator.csv"));
+        final String expectedExport = IOUtils
+                .toString(
+                    PreparationAPITest.class.getResourceAsStream( "export/expected_export_default_separator.csv" ) );
 
         // when
-        final String export = given().formParam("exportType", CSV).formParam("preparationId", preparationId)
-                .formParam("stepId", "head").when().get("/api/export").asString();
+        final String export = given() //
+                .formParam("exportType", CSV) //
+                .formParam("preparationId", preparationId) //
+                .formParam("stepId", "head") //
+                .when() //
+                .get("/api/export") //
+                .asString();
 
         // then
         assertEquals(expectedExport, export);
@@ -87,12 +103,18 @@ public class ExportAPITest extends ApiServiceTestBase {
         // given
         final String preparationId = createPreparationFromFile("export/export_dataset.csv", "testExport", "text/csv");
 
-        final String expectedExport = IOUtils.toString(PreparationAPITest.class
-                .getResourceAsStream("export/expected_export_semicolon_separator.csv"));
+        final String expectedExport = IOUtils
+                .toString(PreparationAPITest.class.getResourceAsStream("export/expected_export_semicolon_separator.csv"));
 
         // when
-        final String export = given().formParam("exportType", CSV).formParam("exportParameters.csvSeparator", ";")
-                .formParam("preparationId", preparationId).formParam("stepId", "head").when().get("/api/export").asString();
+        final String export = given() //
+                .formParam( "exportType", CSV ) //
+                .formParam("exportParameters.csvSeparator", ";") //
+                .formParam("preparationId", preparationId) //
+                .formParam("stepId", "head") //
+                .when() //
+                .get("/api/export") //
+                .asString();
 
         // then
         assertEquals(expectedExport, export);
@@ -101,21 +123,74 @@ public class ExportAPITest extends ApiServiceTestBase {
     @Test
     public void testExportCsvWithBadBodyInput_noExportType() throws Exception {
         // when
-        final Response response = given().formParam("csvSeparator", ";").formParam("preparationId", "4552157454657")
-                .formParam("stepId", "head").when().get("/api/export");
+        final Response response = given() //
+                .formParam("csvSeparator", ";") //
+                .formParam("preparationId", "4552157454657") //
+                .formParam( "stepId", "head" ) //
+                .when() //
+                .get( "/api/export" );
+
+        // then
+        response.then().statusCode( 400 );
+    }
+
+    @Test
+    public void testExportCsvWithBadBodyInput_noPrepId_noDatasetId() throws Exception {
+        // when
+        final Response response = given() //
+                .formParam("exportType", CSV) //
+                .formParam("csvSeparator", ";") //
+                .formParam("stepId", "head") //
+                .when() //
+                .get("/api/export");
 
         // then
         response.then().statusCode(400);
     }
 
     @Test
-    public void testExportCsvWithBadBodyInput_noPrepId_noDatasetId() throws Exception {
+    public void testExport_with_filename() throws Exception {
+        // given
+        final String preparationId = createPreparationFromFile("export/export_dataset.csv", "testExport", "text/csv");
+
+        String fileName = "beerisgoodforyou";
+
         // when
-        final Response response = given().formParam("exportType", CSV).formParam("csvSeparator", ";").formParam("stepId", "head")
-                .when().get("/api/export");
+        final Response export = given() //
+                .formParam("exportType", CSV) //
+                .formParam( "exportParameters.csvSeparator", ";" ) //
+                .formParam("preparationId", preparationId) //
+                .formParam("stepId", "head") //
+                .formParam("exportParameters.fileName", fileName) //
+                .when() //
+                .get("/api/export");
 
         // then
-        response.then().statusCode(400);
+        String contentDispositionHeaderValue = export.getHeader("Content-Disposition");
+        Assertions.assertThat( contentDispositionHeaderValue ).contains( "filename=\"" + fileName );
+
+    }
+
+    @Test
+    public void testExport_default_filename() throws Exception {
+        // given
+        final String preparationId = createPreparationFromFile("export/export_dataset.csv", "testExport", "text/csv");
+
+        String fileName = "testExport.csv";
+
+        // when
+        final Response export = given() //
+            .formParam("exportType", CSV) //
+            .formParam( "exportParameters.csvSeparator", ";" ) //
+            .formParam("preparationId", preparationId) //
+            .formParam("stepId", "head") //
+            .when() //
+            .get( "/api/export" );
+
+        // then
+        String contentDispositionHeaderValue = export.getHeader("Content-Disposition");
+        Assertions.assertThat(contentDispositionHeaderValue).contains("filename=\"" + fileName);
+
     }
 
 }

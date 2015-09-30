@@ -9,7 +9,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -25,7 +32,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
@@ -120,17 +134,16 @@ public class TransformationService {
                 }
 
                 final String paramValue = request.getParameter(paramName);
-                final String decodeParamValue = new String(Base64.getDecoder().decode(paramValue));
+                arguments.put(paramName, paramValue);
 
-                arguments.put(paramName, decodeParamValue);
             }
             String decodedActions = actions == null ? StringUtils.EMPTY : IOUtils.toString(actions.getInputStream());
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
             response.setContentType(format.getMimeType());
 
             Configuration configuration = Configuration.builder() //
-                    .format(format)
-                    .args(arguments)
+                    .format(format) //
+                    .args(arguments) //
                     .output(response.getOutputStream()) //
                     .actions(decodedActions) //
                     .build();

@@ -15,11 +15,16 @@
             <input ng-model="exportCtrl.currentExportParameters['exportParameters.' + parameter.name]"
                    type="radio"
                    value="{{parameter.defaultValue.value}}"/>{{ parameter.defaultValue.labelKey | translate }}( {{parameter.defaultValue.value}} )
-        <span ng-repeat="parameterValue in parameter.values track by $index">
+          <span ng-repeat="parameterValue in parameter.values track by $index">
             <input ng-model="exportCtrl.currentExportParameters['exportParameters.' + parameter.name]"
                    type="radio"
                    value="{{parameterValue.value}}" >{{ parameterValue.labelKey | translate }}( {{parameterValue.value}} )
-        </span>
+          </span>
+        </div>
+        <div ng-if="parameter.type == 'text'">
+          <input ng-model="exportCtrl.currentExportParameters['exportParameters.' + parameter.name]"
+                 type="text"
+                 value="{{parameter.defaultValue.value}}"/>
         </div>
     </div>
 
