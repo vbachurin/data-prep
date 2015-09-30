@@ -7,7 +7,7 @@ starts a web browser to the web UI when ready.
 ## Prerequisites
 
 You need Java *8* (or higher) and Maven 3.x (tested with 3.2.2 on Fedora 21 with OpenJDK 1.8.0_25-b18).
-You need all data prep modules either built on your machine (both backend and web ui).
+You need all data prep modules either built on your machine or in your local Maven repository (both backend and web ui).
 
 ## Build
 
