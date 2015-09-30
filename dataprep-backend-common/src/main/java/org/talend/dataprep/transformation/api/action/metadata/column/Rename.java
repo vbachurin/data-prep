@@ -36,10 +36,18 @@ public class Rename extends AbstractActionMetadata implements ColumnAction {
     /** Parameters (column name, new column name...) */
     private final List<Parameter> parameters;
 
+    /**
+     * Default empty constructor that with no new column name.
+     */
     public Rename() {
         this(EMPTY);
     }
 
+    /**
+     * Constructor with a new column name.
+     * 
+     * @param defaultName the default new column name.
+     */
     public Rename(final String defaultName) {
         this.parameters = super.getParameters();
         this.parameters.add(new Parameter(NEW_COLUMN_NAME_PARAMETER_NAME, Type.STRING.getName(), defaultName, false, false));

@@ -1,0 +1,15 @@
+{
+  "name": "column_id",
+  "type": "column",
+  "implicit": false,
+  "canBeBlank": false,
+  "label": "Column",
+  "description": "The column on which apply this action to",
+  "default": "0001",
+  "configuration": {
+    "filters": [
+      "numeric",
+      "string"
+    ]
+  }
+}

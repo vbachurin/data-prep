@@ -2,7 +2,6 @@ package org.talend.dataprep.transformation.api.action.metadata.common;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.talend.dataprep.exception.error.CommonErrorCodes.MISSING_ACTION_SCOPE;
@@ -28,7 +27,6 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -126,15 +124,6 @@ public class AbstractActionMetadataTest {
 
         //then
         assertThat(defaultParams, containsInAnyOrder(ImplicitParameters.getParameters().toArray(new Parameter[3])));
-    }
-
-    @Test
-    public void default_items_should_be_empty() throws Exception {
-        //when
-        final Item[] defaultItems = columnTransformation.getItems();
-
-        //then
-        assertThat(defaultItems, emptyArray());
     }
 
     @Test

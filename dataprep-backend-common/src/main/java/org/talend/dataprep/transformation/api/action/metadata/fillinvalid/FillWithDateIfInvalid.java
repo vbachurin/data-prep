@@ -40,8 +40,9 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
 
     /**
      * If changing pattern you must change the pattern in the ui as well
-     * dataprep-webapp/src/components/transformation/params/date/transformation-date-params.html Yup as usual those
-     * bloody Javascript hipsters reinvented the wheel and didn't want to use same pattern as the old school Java guys!!
+     * dataprep-webapp/src/components/transformation/params/date/transformation-date-params.html
+     * Yup as usual those bloody Javascript hipsters reinvented the wheel and didn't want to use
+     * same pattern as the old school Java guys!!
      */
     private static final String DATE_PATTERN = "dd/MM/yyyy HH:mm:ss";
 
@@ -77,6 +78,7 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
 
         try {
             if (StringUtils.isEmpty(value) || ActionMetadataUtils.checkInvalidValue(column, value)) {
+
                 // we assume all controls have been made in the ui, parse the new date to set
                 String newDateStr = parameters.get(DEFAULT_VALUE_PARAMETER);
                 TemporalAccessor newValueToSet = DEFAULT_FORMATTER.parse(newDateStr);
@@ -141,14 +143,6 @@ public class FillWithDateIfInvalid extends AbstractFillIfInvalid {
     public boolean acceptColumn(ColumnMetadata column) {
         Type type = Type.get(column.getType());
         return Type.DATE.equals(type);
-    }
-
-    /**
-     *
-     * @return <code>true</code> if this action is date related so the datetimepicker can be display
-     */
-    public boolean isDate() {
-        return true;
     }
 
 }

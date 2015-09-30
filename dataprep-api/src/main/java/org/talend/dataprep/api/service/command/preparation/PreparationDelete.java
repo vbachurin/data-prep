@@ -18,7 +18,7 @@ public class PreparationDelete extends GenericCommand<String> {
 
     private PreparationDelete(HttpClient client, String id) {
         super(APIService.PREPARATION_GROUP, client);
-        execute(() ->  new HttpDelete(preparationServiceUrl + "/preparations/" + id)); //$NON-NLS-1$
+        execute(() -> new HttpDelete(preparationServiceUrl + "/preparations/" + id)); //$NON-NLS-1$
         onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_DELETE_PREPARATION, e));
         on(HttpStatus.OK).then(asNull());
     }

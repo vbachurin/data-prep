@@ -56,8 +56,8 @@ import org.talend.dataprep.transformation.aggregation.AggregationService;
 import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
 import org.talend.dataprep.transformation.aggregation.api.AggregationResult;
 import org.talend.dataprep.transformation.api.action.dynamic.DynamicType;
+import org.talend.dataprep.transformation.api.action.dynamic.GenericParameter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.parameters.GenericParameter;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.api.transformer.configuration.PreviewConfiguration;
@@ -312,12 +312,13 @@ public class TransformationService {
     }
 
     /**
-     * Get the transformation dynamic params
+     * Get the action dynamic params.
      */
     @RequestMapping(value = "/transform/suggest/{action}/params", method = POST)
     @ApiOperation(value = "Get the transformation dynamic parameters", notes = "Returns the transformation parameters.")
     @Timed
-    public GenericParameter dynamicParams(@ApiParam(value = "Transformation name.") @PathVariable("action") final String action, //
+    public GenericParameter dynamicParams(@ApiParam(value = "Action name.")
+                                          @PathVariable("action") final String action, //
                                           @ApiParam(value = "The column id.") @RequestParam(value = "columnId", required = true) final String columnId, //
                                           @ApiParam(value = "Data set content as JSON") final InputStream content) {
         final DynamicType actionType = DynamicType.fromAction(action);

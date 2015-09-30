@@ -87,7 +87,8 @@ public class PreparationGetContent extends PreparationCommand<InputStream> {
                                                   preparationContext.getVersion(),
                                                   sample);
         //@formatter:on
-        DataSetGetMetadata getMetadata = context.getBean(DataSetGetMetadata.class, client, preparationContext.getPreparation().getDataSetId());
+        DataSetGetMetadata getMetadata = context.getBean(DataSetGetMetadata.class, client,
+                preparationContext.getPreparation().getDataSetId());
         final boolean inProgress = getMetadata.execute().getLifecycle().inProgress();
         if (!inProgress) {
             // Statistics are done, can safely save to cache

@@ -2,16 +2,15 @@ describe('Dataprep app', function() {
     'use strict';
 
     beforeEach(module('pascalprecht.translate'));
+    beforeEach(module('data-prep.services.utils'));
 
     describe('run', function() {
-        beforeEach(inject(function($translate) {
-            spyOn($translate, 'use').and.returnValue();
-        }));
-
         it('should set language from navigator', inject(function($rootScope, $injector, $window, $translate) {
             //given
             var myModule = angular.module('data-prep');
             var runBlock = myModule._runBlocks[0];
+
+            spyOn($translate, 'use').and.returnValue();
 
             //when
             $injector.invoke(runBlock);
@@ -19,6 +18,21 @@ describe('Dataprep app', function() {
 
             //then
             expect($translate.use).toHaveBeenCalledWith($window.navigator.language === 'fr' ? 'fr' : 'en');
+        }));
+
+        it('should set language from navigator', inject(function($rootScope, $injector, ConfigService) {
+            //given
+            var myModule = angular.module('data-prep');
+            var runBlock = myModule._runBlocks[1];
+
+            spyOn(ConfigService, 'init').and.returnValue();
+
+            //when
+            $injector.invoke(runBlock);
+            $rootScope.$digest();
+
+            //then
+            expect(ConfigService.init).toHaveBeenCalled();
         }));
     });
 

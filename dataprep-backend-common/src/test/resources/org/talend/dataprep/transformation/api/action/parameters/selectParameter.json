@@ -1,0 +1,34 @@
+{
+  "name": "column_id",
+  "type": "select",
+  "implicit": false,
+  "canBeBlank": false,
+  "label": "Column",
+  "description": "The column on which apply this action to",
+  "default": "",
+  "configuration": {
+    "values": [
+      {
+        "value": "first choice"
+      },
+      {
+        "value": "2"
+      },
+      {
+        "value": "your choice",
+        "parameters": [
+          {
+            "name": "limit",
+            "type": "integer",
+            "implicit": false,
+            "canBeBlank": false,
+            "label": "Limit",
+            "description": "Number of token to split the value in",
+            "default": ""
+          }
+        ]
+      }
+    ],
+    "multiple": false
+  }
+}

@@ -23,21 +23,35 @@ public enum Type implements Serializable {
     BOOLEAN("boolean", ANY, "BOOLEAN"), //$NON-NLS-1$
     DATE("date", ANY, "DATE"); //$NON-NLS-1$
 
+    /** The type name. */
     private final String name;
 
-    /**
-     * can be used as a label key in the ui
-     */
+    /** Can be used as a label key in the ui. */
     private final String labelKey;
 
+    /** Super type. (e.g. ANY > NUMERIC > INTEGER). */
     private final Type superType;
 
+    /** Subtypes. (e.g. INTEGER < NUMERIC < ANY) */
     private final List<Type> subTypes = new LinkedList<>();
 
+    /**
+     * Create a root type without any super type.
+     * 
+     * @param name the type name.
+     * @param labelKey the label.
+     */
     Type(String name, String labelKey) {
         this(name, null, labelKey);
     }
 
+    /**
+     * Create a type.
+     *
+     * @param name the type name.
+     * @param superType the super type.
+     * @param labelKey the label for the UI.
+     */
     Type(String name, Type superType, String labelKey) {
         this.name = name;
         this.superType = superType;
@@ -47,6 +61,11 @@ public enum Type implements Serializable {
         }
     }
 
+    /**
+     * Add the given type as a subtype.
+     * 
+     * @param type the sub type to add.
+     */
     void declareSubType(Type type) {
         subTypes.add(type);
     }
@@ -67,6 +86,9 @@ public enum Type implements Serializable {
         return superType;
     }
 
+    /**
+     * @return the type label for the UI.
+     */
     public String getLabelKey()
     {
         return labelKey;
@@ -86,6 +108,9 @@ public enum Type implements Serializable {
         return list;
     }
 
+    /**
+     * @return the type name.
+     */
     @Override
     public String toString() {
         return name;

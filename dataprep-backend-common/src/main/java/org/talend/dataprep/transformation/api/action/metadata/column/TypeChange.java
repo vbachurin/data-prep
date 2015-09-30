@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +14,6 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-
-import java.util.Map;
 
 /**
  * Change the type of a column <b>This action is not displayed in the UI it's here to ease recording it as a Step It's
