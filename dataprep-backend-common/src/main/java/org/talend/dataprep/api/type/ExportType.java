@@ -16,7 +16,7 @@ public enum ExportType {
 
     //@formatter:off
     // take care when declaring new export type as only one can be default :-)
-    CSV("text/csv", ".csv", true, false,
+    CSV("text/csv", ".csv", true, false, //
         Lists.newArrayList( //
                             new Parameter( "csvSeparator", //
                                            "CHOOSE_SEPARATOR", //
@@ -36,7 +36,15 @@ public enum ExportType {
                             ) //
         ) //
     ), //
-    XLS("application/vnd.ms-excel", ".xls", false, true, Collections.<Parameter> emptyList()), //
+    XLS("application/vnd.ms-excel", ".xls", true, true, //
+        Collections.singletonList( new Parameter( Parameter.FILENAME_PARAMETER, //
+                                           "EXPORT_FILENAME",  //
+                                           "text", //
+                                           new ParameterValue( StringUtils.EMPTY, "EXPORT_FILENAME_DEFAULT" ), //
+                                           Collections.emptyList() //
+                            ) //
+        ) //
+    ), //
     TABLEAU("application/tde", ".tde", false, false, Collections.<Parameter> emptyList()), //
     JSON("application/json", ".json", false, false, Collections.<Parameter> emptyList()); //
     //@formatter:on
