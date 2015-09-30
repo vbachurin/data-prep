@@ -14,7 +14,18 @@
 | [dataprep-preparation](dataprep-preparation)       | *rest service to manage preparations (create, list steps, get data)* |
 | [dataprep-transformation](dataprep-transformation) | *rest service to apply transformations (actions are here)*           |
 | [dataprep-webapp](dataprep-webapp)                 | *web app (AngularJS)*                                                |
+| [dataprep-app](dataprep-app)                       | *Standalone application that runs both backend services and UI*      |
 | [tooling](tooling)                                 | *IDE specific config files + some other stuff*                       |
+
+### UI
+
+The following projects provides UI for Data Prep.
+
+| _Project_                  | _Description_ |
+|:-------------------------|-------------|
+| [dataprep-webapp](dataprep-webapp)         | *Builds all the AngularJS UI of Data Prep* |
+| [dataprep-app](dataprep-app)         | *A standalone application to run all Data Prep on your machine* |
+
 
 ### Back-end
 
@@ -50,7 +61,7 @@ The following projects provide scripts to automate platform deployment as well a
 - All project are maven based.
 - A parent in pom build the web-app and its dependencies.
 - Specific Maven settings are required. See instructions in [tooling](/tooling/).
-- See [dataprep-dataset](/dataprep-dataset/) for specific build instructions
+- See each module (e.g. [dataprep-dataset](/dataprep-dataset/)) for specific build instructions.
 
 ## IDE setup
 See the [tooling](/tooling/) folder.
