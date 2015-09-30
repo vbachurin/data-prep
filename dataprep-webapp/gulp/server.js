@@ -40,6 +40,7 @@ gulp.task('serve', ['clean'], function () {
   ], [
     '.tmp/**/*.css',
     'src/**/*.js',
+    'src/assets/config/**/*',
     'src/assets/images/**/*',
     '.tmp/*.html',
     '.tmp/**/*.html',
@@ -56,6 +57,7 @@ gulp.task('serve:default', ['clean'], function () {
   ], [
     '.tmp/**/*.css',
     'src/**/*.js',
+    'src/assets/config/**/*',
     'src/assets/images/**/*',
     '.tmp/*.html',
     '.tmp/**/*.html',
