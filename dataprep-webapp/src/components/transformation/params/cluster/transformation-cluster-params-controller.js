@@ -67,7 +67,7 @@
                 });
             });
 
-
+            //Check if cluster is already initialized
             var clustersInitialized = false;
             for(var i=0; i<vm.details.clusters.length; i++) {
                 if (typeof vm.details.clusters[i].initialActive !== 'undefined') {

@@ -105,7 +105,7 @@ describe('Transform simple params controller', function () {
         expect(ctrl.parameters[0].value).toBe(0);
     });
 
-    it('should not set default value if no default value is provided', function () {
+    it('should not set default value if value is null', function () {
         //given
         parameters = [{name: 'param1', type: 'text', default: null}];
 
@@ -114,6 +114,19 @@ describe('Transform simple params controller', function () {
 
         //then
         expect(ctrl.parameters[0].value).toBeUndefined();
+    });
+
+    it('should not set value if value is not provided', function () {
+        //given
+        parameters = [{name: 'param1', type: 'text'}];
+
+        //when
+        var ctrl = createController();
+
+        //then
+        expect(ctrl.parameters[0].value).toBeUndefined();
+        expect(ctrl.parameters[0].default).toBeUndefined();
+        expect(ctrl.parameters[0].initialValue).toBeUndefined();
     });
 
     it('should init params default values', function() {
