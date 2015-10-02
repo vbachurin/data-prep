@@ -255,7 +255,6 @@
                             //It will propagate the new filter limits to the rest of the app, it's triggered when the user finishes a brush
                             .on('brushend', function brushend() {
                                 var s = scope.brush.extent();
-                                filterToApply = [+scope.brush.extent()[0].toFixed(scope.nbDecimals), +scope.brush.extent()[1].toFixed(scope.nbDecimals)];
                                 //the user is moving the whole brush
                                 if(scope.oldRangeLimits[0] !== s[0] && scope.oldRangeLimits[1] !== s[1]){
                                     //trigger filter process in the datagrid
