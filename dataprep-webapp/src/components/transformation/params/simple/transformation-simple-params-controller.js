@@ -21,14 +21,14 @@
         var initParamsValues = function () {
             _.forEach(vm.parameters, function (param) {
 
-                if(param.initialValue) {
+                if(typeof param.initialValue !== 'undefined') {
                     param.initialValue = ConverterService.adaptValue(param.type, param.initialValue);
                 }
 
-                if (param.value) {
+                if (typeof param.value !== 'undefined') {
                     param.value = ConverterService.adaptValue(param.type, param.value);
                 }
-                else if (param.default) {
+                else if (typeof param.default !== 'undefined') {
                     param.default = ConverterService.adaptValue(param.type, param.default);
                     param.value = param.default;
                 }

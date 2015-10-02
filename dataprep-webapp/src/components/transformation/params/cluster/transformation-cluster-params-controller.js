@@ -31,6 +31,18 @@
 
         /**
          * @ngdoc method
+         * @name initClusterState
+         * @methodOf data-prep.transformation-params.controller:TransformClusterParamsCtrl
+         * @description Initialize all cluster "active" flag
+         */
+        vm.initClusterState = function() {
+            _.forEach(vm.details.clusters, function(cluster) {
+                cluster.active = cluster.initialActive;
+            });
+        };
+
+        /**
+         * @ngdoc method
          * @name getParams
          * @methodOf data-prep.transformation-params.controller:TransformClusterParamsCtrl
          * @description Refresh the global activation checkbox
@@ -46,7 +58,7 @@
          * @ngdoc method
          * @name initParamsValues
          * @methodOf data-prep.transformation-params.controller:TransformClusterParamsCtrl
-         * @description Initialize parameters values
+         * @description Initialize parameters values and checkbox state if needed
          */
         var initParamsValues = function() {
             _.forEach(vm.details.clusters, function(cluster) {
@@ -54,6 +66,20 @@
                     param.default = true;
                 });
             });
+
+
+            var clustersInitialized = false;
+            for(var i=0; i<vm.details.clusters.length; i++) {
+                if (typeof vm.details.clusters[i].initialActive !== 'undefined') {
+                    clustersInitialized = true;
+                    break;
+                }
+            }
+            if(!clustersInitialized) {
+                vm.refreshClusterState();
+            } else {
+                vm.initClusterState();
+            }
         };
 
         /**
@@ -70,7 +96,6 @@
 
         initParamsValues();
         initReplaceList();
-        vm.refreshClusterState();
     }
 
     angular.module('data-prep.transformation-params')
