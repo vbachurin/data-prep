@@ -7,7 +7,7 @@
         "scope": "column",
         "selected_column": "0001",
         "prefix": "<",
-        "separator": "-",
+        "concat_separator": "-",
         "suffix": ">"
       }
     }

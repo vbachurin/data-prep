@@ -44,7 +44,7 @@ public class Concat extends AbstractActionMetadata implements ColumnAction {
     /**
      * The optional new column separator.
      */
-    public static final String SEPARATOR_PARAMETER = "separator"; //$NON-NLS-1$
+    public static final String SEPARATOR_PARAMETER = "concat_separator"; //$NON-NLS-1$
 
     /**
      * Default separator value.
@@ -91,6 +91,7 @@ public class Concat extends AbstractActionMetadata implements ColumnAction {
      */
     @Override
     public boolean acceptColumn(ColumnMetadata column) {
+        // accept all types of columns
         return true;
     }
 
