@@ -63,11 +63,6 @@
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
         </dependency>
-        <!-- SWAGGER DEPENDENCIES -->
-        <dependency>
-            <groupId>com.mangofactory</groupId>
-            <artifactId>swagger-springmvc</artifactId>
-        </dependency>
         <!-- SPRING DEPENDENCIES-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
