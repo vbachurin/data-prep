@@ -355,7 +355,7 @@
             <dependency>
                 <groupId>com.netflix.hystrix</groupId>
                 <artifactId>hystrix-core</artifactId>
-                <version>1.4.0-RC6</version>
+                <version>1.4.16</version>
             </dependency>
             <dependency>
                 <groupId>org.talend.dataprep</groupId>
