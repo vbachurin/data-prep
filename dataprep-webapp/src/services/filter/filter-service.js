@@ -55,7 +55,7 @@
      * @description Filter service. This service holds the filters list and provide the entry point to datagrid filters
      * @requires data-prep.services.playground.service:DatagridService
      */
-    function FilterService(DatagridService, NumbersValidityService) {
+    function FilterService($timeout, DatagridService, NumbersValidityService) {
         var service = {
             /**
              * @ngdoc property
@@ -70,6 +70,7 @@
 
             //life
             addFilter: addFilter,
+            addFilterAndDigest: addFilterAndDigest,
             updateFilter: updateFilter,
             removeAllFilters: removeAllFilters,
             removeFilter: removeFilter
@@ -130,7 +131,7 @@
             var lowerCasePhrase = phrase.toLowerCase();
             var regexp = new RegExp(escapeRegExpExceptStar(lowerCasePhrase));
 
-            return function() {
+            return function () {
                 return function (item) {
                     // col could be removed by a step
                     if (item[colId]) {
@@ -149,15 +150,18 @@
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {string} colId The column id
          * @param {string} phrase The phrase that the item must be exactly equal to
+         * @param {boolean} caseSensitive Determine if the filter is case sensitive
          * @description [PRIVATE] Create a filter function that test exact equality
          * @returns {function} The predicate function
          */
         function createExactFilterFn(colId, phrase, caseSensitive) {
-            return function() {
+            return function () {
                 return function (item) {
                     // col could be removed by a step
                     if (item[colId]) {
-                        return caseSensitive? item[colId] === phrase : (item[colId]).toLowerCase() === phrase;
+                        return caseSensitive ?
+                        item[colId] === phrase :
+                        (item[colId]).toUpperCase() === phrase.toUpperCase();
                     }
                     else {
                         return false;
@@ -175,7 +179,7 @@
          * @returns {function} The predicate function
          */
         function createInvalidFilterFn(colId) {
-            return function(data) {
+            return function (data) {
                 var column = _.find(data.columns, {id: colId});
                 var invalidValues = column.quality.invalidValues;
                 return function (item) {
@@ -193,7 +197,7 @@
          * @returns {function} The predicate function
          */
         function createValidFilterFn(colId) {
-            return function(data) {
+            return function (data) {
                 var column = _.find(data.columns, {id: colId});
                 var invalidValues = column.quality.invalidValues;
                 return function (item) {
@@ -211,7 +215,7 @@
          * @returns {function} The predicate function
          */
         function createEmptyFilterFn(colId) {
-            return function() {
+            return function () {
                 return function (item) {
                     return !item[colId];
                 };
@@ -228,7 +232,7 @@
          * @returns {function} The predicate function
          */
         function createRangeFilterFn(colId, values) {
-            return function() {
+            return function () {
                 return function (item) {
                     return NumbersValidityService.toNumber(item[colId]) >= values[0] && NumbersValidityService.toNumber(item[colId]) <= values[1];
                 };
@@ -294,6 +298,21 @@
 
         /**
          * @ngdoc method
+         * @name addFilterAndDigest
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {string} type The filter type (ex : contains)
+         * @param {string} colId The column id
+         * @param {string} colName The column name
+         * @param {string} args The filter arguments (ex for 'contains' type : {phrase: 'toto'})
+         * @param {function} removeFilterFn An optional remove callback
+         * @description Wrapper on addFilter method that trigger a digest at the end (use of $timeout)
+         */
+        function addFilterAndDigest(type, colId, colName, args, removeFilterFn) {
+            $timeout(addFilter.bind(service, type, colId, colName, args, removeFilterFn));
+        }
+
+        /**
+         * @ngdoc method
          * @name updateFilter
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {object} oldFilter The filter to update
@@ -355,7 +374,7 @@
                 DatagridService.removeFilter(filter.filterFn);
                 service.filters.splice(filterIndex, 1);
             }
-            if(filter.removeFilterFn) {
+            if (filter.removeFilterFn) {
                 filter.removeFilterFn(filter);
             }
         }
