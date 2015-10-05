@@ -1,96 +1,1777 @@
 {
+  "metadata": null,
   "columns": [
     {
-      "id": "0",
-      "name": "id",
-      "type": "string"
+      "name": "Company Name",
+      "headerSize": 0,
+      "type": "string",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 65,
+        "invalidValues": []
+      },
+      "id": "0000",
+      "statistics": {
+        "count": 65,
+        "valid": 65,
+        "invalid": 0,
+        "empty": 0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
+        "duplicateCount": 5,
+        "distinctCount": 60,
+        "frequencyTable": [
+          {
+            "data": "Amazon.com, Inc.",
+            "occurrences": 3
+          },
+          {
+            "data": "Infineon Technologies AG",
+            "occurrences": 2
+          },
+          {
+            "data": "Systems In Motion",
+            "occurrences": 1
+          },
+          {
+            "data": "Publifin (formally Tecteo-VOO)",
+            "occurrences": 1
+          },
+          {
+            "data": "Globecast (Orange group)",
+            "occurrences": 1
+          },
+          {
+            "data": "Gulliver Consulting",
+            "occurrences": 1
+          },
+          {
+            "data": "GFI",
+            "occurrences": 1
+          },
+          {
+            "data": "SC Johnson & Son, Inc.",
+            "occurrences": 1
+          },
+          {
+            "data": "HEWLETT PACKARD",
+            "occurrences": 1
+          },
+          {
+            "data": "University Of Rochester",
+            "occurrences": 1
+          },
+          {
+            "data": "Vonage America, Inc.",
+            "occurrences": 1
+          },
+          {
+            "data": "LaVita GmbH",
+            "occurrences": 1
+          },
+          {
+            "data": "La Presse",
+            "occurrences": 1
+          },
+          {
+            "data": "Air Canada Vacations",
+            "occurrences": 1
+          },
+          {
+            "data": "AETNA",
+            "occurrences": 1
+          }
+        ],
+        "patternFrequencyTable": [
+          {
+            "pattern": "Aaaaaa.aaa, Aaa.",
+            "occurrences": 3
+          },
+          {
+            "pattern": "AAAAA",
+            "occurrences": 3
+          },
+          {
+            "pattern": "Aaaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "Aaaaaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "Aaaaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "Aaaaaaaa Aaaaaaaaaaaa AA",
+            "occurrences": 2
+          },
+          {
+            "pattern": "AAAAAAA",
+            "occurrences": 2
+          },
+          {
+            "pattern": "AAA",
+            "occurrences": 2
+          },
+          {
+            "pattern": "Aaaaaa Aaaaaaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "AAA (AA)",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaaaaaa Aaaaaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaaaaaa Aaaaaaaaa aa Aaaaaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaaa99",
+            "occurrences": 1
+          },
+          {
+            "pattern": "AAAAAAA AAAAAAA",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaaaaa-Aaaaaaaa Aaaaaaa",
+            "occurrences": 1
+          }
+        ],
+        "quantiles": {
+          "median": "NaN",
+          "lowerQuantile": "NaN",
+          "upperQuantile": "NaN"
+        },
+        "histogram": [],
+        "textLengthSummary": {
+          "minimalLength": 3,
+          "minimalLengthWithBlank": 0,
+          "maximalLength": 51,
+          "averageLength": 16.076923076923077,
+          "averageLengthWithBlank": 16.076923076923077
+        }
+      },
+      "domain": ""
     },
     {
-      "id": "1",
-      "name": "firstname",
-      "type": "string"
+      "name": "Job Title",
+      "headerSize": 0,
+      "type": "string",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 65,
+        "invalidValues": []
+      },
+      "id": "0001",
+      "statistics": {
+        "count": 65,
+        "valid": 65,
+        "invalid": 0,
+        "empty": 0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
+        "duplicateCount": 6,
+        "distinctCount": 59,
+        "frequencyTable": [
+          {
+            "data": "Software Engineer",
+            "occurrences": 3
+          },
+          {
+            "data": "Consultant",
+            "occurrences": 3
+          },
+          {
+            "data": "DBA",
+            "occurrences": 2
+          },
+          {
+            "data": "Senior Software Engineer",
+            "occurrences": 2
+          },
+          {
+            "data": "Core Network/OSS Engineer",
+            "occurrences": 1
+          },
+          {
+            "data": "Head of Development",
+            "occurrences": 1
+          },
+          {
+            "data": "Development manager",
+            "occurrences": 1
+          },
+          {
+            "data": "Software Engineer IV",
+            "occurrences": 1
+          },
+          {
+            "data": "Programmer/Analyst",
+            "occurrences": 1
+          },
+          {
+            "data": "Director Data Engineering",
+            "occurrences": 1
+          },
+          {
+            "data": "Principal Software Design Engineer",
+            "occurrences": 1
+          },
+          {
+            "data": "Engineer",
+            "occurrences": 1
+          },
+          {
+            "data": "API connector consultant",
+            "occurrences": 1
+          },
+          {
+            "data": "Senior Software Developer",
+            "occurrences": 1
+          },
+          {
+            "data": "Big Data Engineer",
+            "occurrences": 1
+          }
+        ],
+        "patternFrequencyTable": [
+          {
+            "pattern": "Aaaaaaaaaa",
+            "occurrences": 4
+          },
+          {
+            "pattern": "Aaaaaaaa Aaaaaaaa",
+            "occurrences": 3
+          },
+          {
+            "pattern": "Aaaaaa Aaaaaaaa Aaaaaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "Aaaa Aaaaaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "AAA",
+            "occurrences": 2
+          },
+          {
+            "pattern": "Aaaaaaaaaaaaaa Aaaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaaaa AA aaaaaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaéaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaaaaaa Aaaa Aaaaaaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "AA Aaaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaaaa Aaaaaaaa Aaaaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaa aa Aaaaaaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "aaaaaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "AA Aaaaaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaéaaaaa Aaaaaaaaaa Aaaaaaaaa",
+            "occurrences": 1
+          }
+        ],
+        "quantiles": {
+          "median": "NaN",
+          "lowerQuantile": "NaN",
+          "upperQuantile": "NaN"
+        },
+        "histogram": [],
+        "textLengthSummary": {
+          "minimalLength": 3,
+          "minimalLengthWithBlank": 0,
+          "maximalLength": 51,
+          "averageLength": 19.723076923076924,
+          "averageLengthWithBlank": 19.723076923076924
+        }
+      },
+      "domain": ""
     },
     {
-      "id": "2",
-      "name": "lastname",
-      "type": "string"
+      "name": "Email Address",
+      "headerSize": 0,
+      "type": "string",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 65,
+        "invalidValues": []
+      },
+      "id": "0002",
+      "statistics": {
+        "count": 65,
+        "valid": 65,
+        "invalid": 0,
+        "empty": 0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
+        "duplicateCount": 0,
+        "distinctCount": 65,
+        "frequencyTable": [
+          {
+            "data": "tri.bui@verizonwireless.com",
+            "occurrences": 1
+          },
+          {
+            "data": "adacquin@dynamaxinfo.fr",
+            "occurrences": 1
+          },
+          {
+            "data": "klaus.rehm@infineon.com",
+            "occurrences": 1
+          },
+          {
+            "data": "mike.measel@fieldaware.com",
+            "occurrences": 1
+          },
+          {
+            "data": "brian@edx.org",
+            "occurrences": 1
+          },
+          {
+            "data": "ken.cluff@keas.com",
+            "occurrences": 1
+          },
+          {
+            "data": "cvioletti@lhric.org",
+            "occurrences": 1
+          },
+          {
+            "data": "proffitt.jeremy@gmail.com",
+            "occurrences": 1
+          },
+          {
+            "data": "paul_ananth@ssga.com",
+            "occurrences": 1
+          },
+          {
+            "data": "bdavid@bestride.com",
+            "occurrences": 1
+          },
+          {
+            "data": "sweber@bidsync.com",
+            "occurrences": 1
+          },
+          {
+            "data": "swann@redkeet.com",
+            "occurrences": 1
+          },
+          {
+            "data": "mem@insightgroupnordic.com",
+            "occurrences": 1
+          },
+          {
+            "data": "gerlachs@afd.fr",
+            "occurrences": 1
+          },
+          {
+            "data": "houacinehicham@yahoo.fr",
+            "occurrences": 1
+          }
+        ],
+        "patternFrequencyTable": [
+          {
+            "pattern": "aaaaaaaa@aaa.aaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "aaaaaa@aaaaaa.aaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "aaaaaaaaaa@aaaaa.aaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "aaaaaaaa@aaaaa.aaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "aaaaaa@aaaaaaaa.aaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "aaaa@aaaaaa.aaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "aaaa.aaaaa@aaaaaa-aaaaa.aaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "aaaaaaaa@aaaaaaaaaaa.aa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "aaaaa@aaaaaaaaaaa.aaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "aaaaaaa@aaaaa.aaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "aaa@aaaaaaaaaaaaaaaaaa.aaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "aaaaaaaaa.aaaaaaaa@aaaaaaaa.aaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "aaaaaa.aaaaa@aaaaaa.aa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "aaaaa.aaaa@aa.aaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "aaaaaa.aaaaaaaaaa@aaaaaaaaa.aaa",
+            "occurrences": 1
+          }
+        ],
+        "quantiles": {
+          "median": "NaN",
+          "lowerQuantile": "NaN",
+          "upperQuantile": "NaN"
+        },
+        "histogram": [],
+        "textLengthSummary": {
+          "minimalLength": 13,
+          "minimalLengthWithBlank": 0,
+          "maximalLength": 36,
+          "averageLength": 22.307692307692307,
+          "averageLengthWithBlank": 22.307692307692307
+        }
+      },
+      "domain": "EMAIL"
     },
     {
-      "id": "3",
-      "name": "age",
-      "type": "integer"
+      "name": "Country",
+      "headerSize": 0,
+      "type": "string",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 65,
+        "invalidValues": []
+      },
+      "id": "0003",
+      "statistics": {
+        "count": 65,
+        "valid": 65,
+        "invalid": 0,
+        "empty": 0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
+        "duplicateCount": 51,
+        "distinctCount": 14,
+        "frequencyTable": [
+          {
+            "data": "United States",
+            "occurrences": 25
+          },
+          {
+            "data": "France",
+            "occurrences": 9
+          },
+          {
+            "data": "UNITED STATES",
+            "occurrences": 8
+          },
+          {
+            "data": "FRANCE",
+            "occurrences": 6
+          },
+          {
+            "data": "Germany",
+            "occurrences": 4
+          },
+          {
+            "data": "Canada",
+            "occurrences": 3
+          },
+          {
+            "data": "us",
+            "occurrences": 2
+          },
+          {
+            "data": "United Kingdom",
+            "occurrences": 2
+          },
+          {
+            "data": "Denmark",
+            "occurrences": 1
+          },
+          {
+            "data": "Belgium",
+            "occurrences": 1
+          },
+          {
+            "data": "South Africa",
+            "occurrences": 1
+          },
+          {
+            "data": "UNITED KINGDOM",
+            "occurrences": 1
+          },
+          {
+            "data": "Switzerland",
+            "occurrences": 1
+          },
+          {
+            "data": "GERMANY",
+            "occurrences": 1
+          }
+        ],
+        "patternFrequencyTable": [
+          {
+            "pattern": "Aaaaaa Aaaaaa",
+            "occurrences": 25
+          },
+          {
+            "pattern": "Aaaaaa",
+            "occurrences": 12
+          },
+          {
+            "pattern": "AAAAAA AAAAAA",
+            "occurrences": 8
+          },
+          {
+            "pattern": "AAAAAA",
+            "occurrences": 6
+          },
+          {
+            "pattern": "Aaaaaaa",
+            "occurrences": 6
+          },
+          {
+            "pattern": "Aaaaaa Aaaaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "aa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "Aaaaaaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaaa Aaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "AAAAAAA",
+            "occurrences": 1
+          },
+          {
+            "pattern": "AAAAAA AAAAAAA",
+            "occurrences": 1
+          }
+        ],
+        "quantiles": {
+          "median": "NaN",
+          "lowerQuantile": "NaN",
+          "upperQuantile": "NaN"
+        },
+        "histogram": [],
+        "textLengthSummary": {
+          "minimalLength": 2,
+          "minimalLengthWithBlank": 0,
+          "maximalLength": 14,
+          "averageLength": 10.076923076923077,
+          "averageLengthWithBlank": 10.076923076923077
+        }
+      },
+      "domain": ""
     },
     {
-      "id": "4",
-      "name": "date-of-birth",
-      "type": "date"
+      "name": "Lead Source Detail",
+      "headerSize": 0,
+      "type": "string",
+      "quality": {
+        "empty": 31,
+        "invalid": 0,
+        "valid": 34,
+        "invalidValues": []
+      },
+      "id": "0004",
+      "statistics": {
+        "count": 65,
+        "valid": 65,
+        "invalid": -31,
+        "empty": 31,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
+        "duplicateCount": 46,
+        "distinctCount": 19,
+        "frequencyTable": [
+          {
+            "data": "",
+            "occurrences": 31
+          },
+          {
+            "data": "DI_EN_Y14Q03_UserDoc_TOS_DataIntegration_UG",
+            "occurrences": 6
+          },
+          {
+            "data": "TLD_EN_Y14Q03_WebsiteForm_ContactUs",
+            "occurrences": 4
+          },
+          {
+            "data": "AI_EN_Y14Q03_UserDoc_TOS_ESB_UG",
+            "occurrences": 3
+          },
+          {
+            "data": "BD_EN_Y14Q04_WhitePaper_ModernDataArchitecture_Telco",
+            "occurrences": 3
+          },
+          {
+            "data": "BD_EN_Y14Q03_UserDoc_TOS_BigData_UG",
+            "occurrences": 2
+          },
+          {
+            "data": "DI_EN_Y14Q03_UserDoc_DataIntegration_ReleaseNotes",
+            "occurrences": 2
+          },
+          {
+            "data": "DI_EN_Y14Q02_WhitePaper_IAIT_ProductReview",
+            "occurrences": 2
+          },
+          {
+            "data": "BD_EN_Y14Q03_UserDoc_BigData_Components_RG",
+            "occurrences": 2
+          },
+          {
+            "data": "TLD_EN_Y14Q04_Subscription_Newsletter_Website",
+            "occurrences": 1
+          },
+          {
+            "data": "BD_NORAM_Y15Q01_Virtual Roadshow_PlatformBD",
+            "occurrences": 1
+          },
+          {
+            "data": "DI_EN_Y14Q03_UserDoc_DataIntegration_Components_RG",
+            "occurrences": 1
+          },
+          {
+            "data": "AI_EN_Y14Q04_WOD_HighAvailability_FlowPerformance",
+            "occurrences": 1
+          },
+          {
+            "data": "TLD_EN_Y14Q04_WebsiteForm_Training",
+            "occurrences": 1
+          },
+          {
+            "data": "BD_EN_Y14Q04_WOD_RealTime_Spark",
+            "occurrences": 1
+          }
+        ],
+        "patternFrequencyTable": [
+          {
+            "pattern": "",
+            "occurrences": 31
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaAaa_AAA_AaaaAaaaaaaaaaa_AA",
+            "occurrences": 6
+          },
+          {
+            "pattern": "AAA_AA_A99A99_AaaaaaaAaaa_AaaaaaaAa",
+            "occurrences": 4
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaaAaaaa_AaaaaaAaaaAaaaaaaaaaaa_Aaaaa",
+            "occurrences": 3
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaAaa_AAA_AAA_AA",
+            "occurrences": 3
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaaAaaaa_AAAA_AaaaaaaAaaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaAaa_AaaaAaaaaaaaaaa_AaaaaaaAaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaAaa_AAA_AaaAaaa_AA",
+            "occurrences": 2
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaAaa_AaaAaaa_Aaaaaaaaaa_AA",
+            "occurrences": 2
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaaAaaaa_Aaaaaaaa_Aaaaa_AaaAaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "AA_AAAAA_A99A99_Aaaaaaa Aaaaaaaa_AaaaaaaaAA",
+            "occurrences": 1
+          },
+          {
+            "pattern": "AA_AA_A99A99_AAA_AaaaAaaa_Aaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaAaa_AaaaAaaaaaaaaaa_Aaaaaaaaaa_AA",
+            "occurrences": 1
+          },
+          {
+            "pattern": "AAA_AA_AaaaaAaaa_AaaaaaaAaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "AA_AA_A99A99_AAA_AaaaAaaaaaaaaaaa_AaaaAaaaaaaaaaa",
+            "occurrences": 1
+          }
+        ],
+        "quantiles": {
+          "median": "NaN",
+          "lowerQuantile": "NaN",
+          "upperQuantile": "NaN"
+        },
+        "histogram": [],
+        "textLengthSummary": {
+          "minimalLength": 29,
+          "minimalLengthWithBlank": 0,
+          "maximalLength": 52,
+          "averageLength": 40.411764705882355,
+          "averageLengthWithBlank": 21.138461538461538
+        }
+      },
+      "domain": ""
     },
     {
-      "id": "5",
-      "name": "alive",
-      "type": "boolean"
+      "name": "Campaign Source",
+      "headerSize": 0,
+      "type": "string",
+      "quality": {
+        "empty": 61,
+        "invalid": 0,
+        "valid": 4,
+        "invalidValues": []
+      },
+      "id": "0005",
+      "statistics": {
+        "count": 65,
+        "valid": 65,
+        "invalid": -61,
+        "empty": 61,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
+        "duplicateCount": 63,
+        "distinctCount": 2,
+        "frequencyTable": [
+          {
+            "data": "",
+            "occurrences": 61
+          },
+          {
+            "data": "google",
+            "occurrences": 4
+          }
+        ],
+        "patternFrequencyTable": [
+          {
+            "pattern": "",
+            "occurrences": 61
+          },
+          {
+            "pattern": "aaaaaa",
+            "occurrences": 4
+          }
+        ],
+        "quantiles": {
+          "median": "NaN",
+          "lowerQuantile": "NaN",
+          "upperQuantile": "NaN"
+        },
+        "histogram": [],
+        "textLengthSummary": {
+          "minimalLength": 6,
+          "minimalLengthWithBlank": 0,
+          "maximalLength": 6,
+          "averageLength": 6,
+          "averageLengthWithBlank": 0.36923076923076925
+        }
+      },
+      "domain": ""
     },
     {
-      "id": "6",
-      "name": "city",
-      "type": "string"
+      "name": "Acquisition Program Name",
+      "headerSize": 0,
+      "type": "string",
+      "quality": {
+        "empty": 18,
+        "invalid": 0,
+        "valid": 47,
+        "invalidValues": []
+      },
+      "id": "0006",
+      "statistics": {
+        "count": 65,
+        "valid": 65,
+        "invalid": -18,
+        "empty": 18,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
+        "duplicateCount": 39,
+        "distinctCount": 26,
+        "frequencyTable": [
+          {
+            "data": "",
+            "occurrences": 18
+          },
+          {
+            "data": "DI_WW_Y13Q04_ProductEvaluation_CM",
+            "occurrences": 7
+          },
+          {
+            "data": "DI_EN_Y14Q03_UserDoc_TOS_DataIntegration_UG",
+            "occurrences": 6
+          },
+          {
+            "data": "TLD_EN_Y14Q03_WebsiteForm_ContactUs",
+            "occurrences": 4
+          },
+          {
+            "data": "BD_WW_Y14Q02_ProductEvaluation_JumpstartSandbox_CM",
+            "occurrences": 3
+          },
+          {
+            "data": "AI_EN_Y14Q03_UserDoc_TOS_ESB_UG",
+            "occurrences": 3
+          },
+          {
+            "data": "BD_EN_Y14Q03_UserDoc_TOS_BigData_UG",
+            "occurrences": 2
+          },
+          {
+            "data": "DI_EN_Y14Q03_UserDoc_DataIntegration_ReleaseNotes",
+            "occurrences": 2
+          },
+          {
+            "data": "DI_EN_Y14Q02_WhitePaper_IAIT_ProductReview",
+            "occurrences": 2
+          },
+          {
+            "data": "TLD_FR_Y14_DataCleansing_CC - deleted (2157)",
+            "occurrences": 1
+          },
+          {
+            "data": "TLD_NORAM_Y13Q2_Tradeshow_TDWI-Chicago_JY",
+            "occurrences": 1
+          },
+          {
+            "data": "BD_NORAM_Y15Q01_Virtual Roadshow_PlatformBD",
+            "occurrences": 1
+          },
+          {
+            "data": "DI_EN_Y14Q03_UserDoc_DataIntegration_Components_RG",
+            "occurrences": 1
+          },
+          {
+            "data": "TLD_ATDE_Y14Q04_Webinar_DataManagement",
+            "occurrences": 1
+          },
+          {
+            "data": "AI_EN_Y14Q04_WOD_HighAvailability_FlowPerformance",
+            "occurrences": 1
+          }
+        ],
+        "patternFrequencyTable": [
+          {
+            "pattern": "",
+            "occurrences": 18
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaaaaAaaaaaaaaa_AA",
+            "occurrences": 8
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaAaa_AAA_AaaaAaaaaaaaaaa_AA",
+            "occurrences": 6
+          },
+          {
+            "pattern": "AAA_AA_A99A99_AaaaaaaAaaa_AaaaaaaAa",
+            "occurrences": 4
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaaaaAaaaaaaaaa_AaaaaaaaaAaaaaaa_AA",
+            "occurrences": 3
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaAaa_AAA_AAA_AA",
+            "occurrences": 3
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaaAaaaa_AAAA_AaaaaaaAaaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaAaa_AaaaAaaaaaaaaaa_AaaaaaaAaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaAaa_AAA_AaaAaaa_AA",
+            "occurrences": 2
+          },
+          {
+            "pattern": "AA_AA_A99A99_AaaaaAaaaa_Aaaaaaaa_Aaaaa_AaaAaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "AAA_AA_A99A99_Aaaaaaa_AAA9AA_Aaaaaaa_AA",
+            "occurrences": 1
+          },
+          {
+            "pattern": "AAA_AAAA_A99A99_Aaaaaaa_AaaaAaaaaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "AAA_AA_A99_AaaaAaaaaaaaa_AA - aaaaaaa (9999)",
+            "occurrences": 1
+          },
+          {
+            "pattern": "AA_AAAAA_A99A99_Aaaaaaa Aaaaaaaa_AaaaaaaaAA",
+            "occurrences": 1
+          },
+          {
+            "pattern": "AAA_AA_A99A99_AAA_9Aaaa_AAAAaaaaa",
+            "occurrences": 1
+          }
+        ],
+        "quantiles": {
+          "median": "NaN",
+          "lowerQuantile": "NaN",
+          "upperQuantile": "NaN"
+        },
+        "histogram": [],
+        "textLengthSummary": {
+          "minimalLength": 22,
+          "minimalLengthWithBlank": 0,
+          "maximalLength": 50,
+          "averageLength": 38.42553191489362,
+          "averageLengthWithBlank": 27.784615384615385
+        }
+      },
+      "domain": ""
+    },
+    {
+      "name": "Acquisition Date",
+      "headerSize": 0,
+      "type": "date",
+      "quality": {
+        "empty": 18,
+        "invalid": 0,
+        "valid": 47,
+        "invalidValues": []
+      },
+      "id": "0007",
+      "statistics": {
+        "count": 65,
+        "valid": 65,
+        "invalid": 0,
+        "empty": 0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
+        "duplicateCount": 17,
+        "distinctCount": 48,
+        "frequencyTable": [
+          {
+            "data": "",
+            "occurrences": 18
+          },
+          {
+            "data": "2014-11-03 13:32:13",
+            "occurrences": 1
+          },
+          {
+            "data": "2014-10-24 01:00:51",
+            "occurrences": 1
+          },
+          {
+            "data": "2015-01-08 12:41:19",
+            "occurrences": 1
+          },
+          {
+            "data": "2015-01-23 06:23:49",
+            "occurrences": 1
+          },
+          {
+            "data": "2015-03-20 09:55:35",
+            "occurrences": 1
+          },
+          {
+            "data": "2013-05-09 16:06:39",
+            "occurrences": 1
+          },
+          {
+            "data": "2014-09-29 09:16:29",
+            "occurrences": 1
+          },
+          {
+            "data": "2014-12-02 08:39:39",
+            "occurrences": 1
+          },
+          {
+            "data": "2015-01-05 04:47:44",
+            "occurrences": 1
+          },
+          {
+            "data": "2014-12-15 04:43:40",
+            "occurrences": 1
+          },
+          {
+            "data": "2014-08-22 14:08:41",
+            "occurrences": 1
+          },
+          {
+            "data": "2014-12-31 11:28:28",
+            "occurrences": 1
+          },
+          {
+            "data": "2015-03-06 04:02:53",
+            "occurrences": 1
+          },
+          {
+            "data": "2014-03-18 10:26:16",
+            "occurrences": 1
+          }
+        ],
+        "patternFrequencyTable": [
+          {
+            "pattern": "yyyy-MM-dd",
+            "occurrences": 47
+          },
+          {
+            "pattern": "",
+            "occurrences": 18
+          }
+        ],
+        "quantiles": {
+          "median": "NaN",
+          "lowerQuantile": "NaN",
+          "upperQuantile": "NaN"
+        },
+        "histogram": [],
+        "textLengthSummary": {
+          "minimalLength": 0,
+          "minimalLengthWithBlank": 0,
+          "maximalLength": 0,
+          "averageLength": 0,
+          "averageLengthWithBlank": 0
+        }
+      },
+      "domain": "DATE"
     }
   ],
   "records": [
     {
-      "0": "1",
-      "1": "Clark",
-      "2": "Kent",
-      "3": "42",
-      "4": "10/09/1940",
-      "5": "false",
-      "6": "Smallville"
+      "0000": "LHRIC",
+      "0001": "Systems Analyst/Programmer",
+      "0002": "cvioletti@lhric.org",
+      "0003": "United States",
+      "0004": "",
+      "0005": "",
+      "0006": "",
+      "0007": ""
     },
     {
-      "0": "2",
-      "1": "Bruce",
-      "2": "Wayne",
-      "3": "50",
-      "4": "01/01/1947",
-      "5": "true",
-      "6": "Gotham city"
+      "0000": "Fédération Française de Football",
+      "0001": "Consultant decisionnel",
+      "0002": "houacinehicham@yahoo.fr",
+      "0003": "FRANCE",
+      "0004": "",
+      "0005": "",
+      "0006": "",
+      "0007": ""
     },
     {
-      "0": "3",
-      "1": "Barry",
-      "2": "Allen",
-      "3": "67",
-      "4": "01/02/1948",
-      "5": "true",
-      "6": "Central city"
+      "0000": "Illinois Institute of Technology",
+      "0001": "Systems Engineer",
+      "0002": "matthews@iit.edu",
+      "0003": "UNITED STATES",
+      "0004": "DI_EN_Y14Q03_UserDoc_DataIntegration_ReleaseNotes",
+      "0005": "google",
+      "0006": "DI_EN_Y14Q03_UserDoc_DataIntegration_ReleaseNotes",
+      "0007": "2014-09-29 00:48:32"
     },
     {
-      "0": "4",
-      "1": "Alan",
-      "2": "Scott",
-      "3": "72",
-      "4": "01/03/1949",
-      "5": "true",
-      "6": "Coast city"
+      "0000": "clickbank",
+      "0001": "Developer",
+      "0002": "jpatadia@yahoo.com",
+      "0003": "United States",
+      "0004": "",
+      "0005": "",
+      "0006": "",
+      "0007": ""
     },
     {
-      "0": "5",
-      "1": "Oliver",
-      "2": "Queen",
-      "3": "81",
-      "4": "01/04/1950",
-      "5": "true",
-      "6": "Star city"
+      "0000": "Projetech, Inc.",
+      "0001": "Solutions Developer",
+      "0002": "sforan@projetech.com",
+      "0003": "United States",
+      "0004": "",
+      "0005": "",
+      "0006": "",
+      "0007": ""
     },
     {
-      "0": "6",
-      "1": "Ray",
-      "2": "Palmer",
-      "3": "93",
-      "4": "01/05/1951",
-      "5": "true",
-      "6": "Star city"
+      "0000": "ADAMI",
+      "0001": "IT engineer",
+      "0002": "jdeschodt@adami.fr",
+      "0003": "France",
+      "0004": "",
+      "0005": "",
+      "0006": "",
+      "0007": ""
+    },
+    {
+      "0000": "Solypse",
+      "0001": "consultant",
+      "0002": "fabien.bouquignaud@solypse.com",
+      "0003": "FRANCE",
+      "0004": "",
+      "0005": "",
+      "0006": "",
+      "0007": ""
+    },
+    {
+      "0000": "State Street Global Advisors",
+      "0001": "VP - Application Development",
+      "0002": "paul_ananth@ssga.com",
+      "0003": "UNITED STATES",
+      "0004": "BD_EN_Y14Q04_WhitePaper_ModernDataArchitecture_Telco",
+      "0005": "",
+      "0006": "MDM_EN_Y14Q03_WOD_4Keys_MDMMaster",
+      "0007": "2015-01-30 10:02:20"
+    },
+    {
+      "0000": "Bidsync",
+      "0001": "DBA",
+      "0002": "sweber@bidsync.com",
+      "0003": "UNITED STATES",
+      "0004": "",
+      "0005": "google",
+      "0006": "",
+      "0007": ""
+    },
+    {
+      "0000": "Omnicom media group",
+      "0001": "Head of Development",
+      "0002": "mem@insightgroupnordic.com",
+      "0003": "Denmark",
+      "0004": "DI_EN_Y14Q03_UserDoc_DataIntegration_Components_RG",
+      "0005": "",
+      "0006": "DI_EN_Y14Q03_UserDoc_DataIntegration_Components_RG",
+      "0007": "2014-09-29 01:20:55"
+    },
+    {
+      "0000": "Acuity",
+      "0001": "Application Engineering Manager (IT Manager)",
+      "0002": "tbraun@acuity.com",
+      "0003": "UNITED STATES",
+      "0004": "",
+      "0005": "",
+      "0006": "TLD_WW_Y13Q01_VirtualEvent_SOAatAnyScale_LCD",
+      "0007": "2013-02-22 16:33:46"
+    },
+    {
+      "0000": "Gulliver Consulting",
+      "0001": "ETL Consultant",
+      "0002": "stephen@elves.name",
+      "0003": "United Kingdom",
+      "0004": "DI_EN_Y14Q03_UserDoc_TOS_DataIntegration_UG",
+      "0005": "google",
+      "0006": "DI_EN_Y14Q03_UserDoc_TOS_DataIntegration_UG",
+      "0007": "2015-03-14 15:41:31"
+    },
+    {
+      "0000": "GFI",
+      "0001": "Consultant Senior DQM/MDM",
+      "0002": "jerome.malard@gfi.fr",
+      "0003": "France",
+      "0004": "MDM_EN_Y14Q03_UserDoc_TOS_MDM_UG",
+      "0005": "",
+      "0006": "MDM_EN_Y14Q03_UserDoc_TOS_MDM_UG",
+      "0007": "2015-01-20 06:50:35"
+    },
+    {
+      "0000": "AETNA",
+      "0001": "Director Data Engineering",
+      "0002": "munjuluris@aetna.com",
+      "0003": "UNITED STATES",
+      "0004": "",
+      "0005": "",
+      "0006": "TLD_NORAM_Y13Q2_Tradeshow_TDWI-Chicago_JY",
+      "0007": "2013-05-09 16:06:39"
+    },
+    {
+      "0000": "verizon",
+      "0001": "Big Data Engineer",
+      "0002": "tri.bui@verizonwireless.com",
+      "0003": "United States",
+      "0004": "BD_EN_Y14Q03_UserDoc_BigData_Components_RG",
+      "0005": "",
+      "0006": "BD_EN_Y14Q03_UserDoc_BigData_Components_RG",
+      "0007": "2014-09-26 07:45:41"
+    },
+    {
+      "0000": "DYNAMAX INFORMATIQUE",
+      "0001": "Consultant",
+      "0002": "adacquin@dynamaxinfo.fr",
+      "0003": "France",
+      "0004": "DI_EN_Y14Q03_UserDoc_DataIntegration_ReleaseNotes",
+      "0005": "",
+      "0006": "DI_EN_Y14Q03_UserDoc_DataIntegration_ReleaseNotes",
+      "0007": "2014-09-29 00:55:45"
+    },
+    {
+      "0000": "Target Corporation",
+      "0001": "Engineer",
+      "0002": "mariaelisa.laborte@target.com",
+      "0003": "United States",
+      "0004": "AI_EN_Y14Q04_WOD_HighAvailability_FlowPerformance",
+      "0005": "",
+      "0006": "AI_EN_Y14Q04_WOD_HighAvailability_FlowPerformance",
+      "0007": "2014-12-31 11:28:28"
+    },
+    {
+      "0000": "FieldAware US, Inc.",
+      "0001": "API connector consultant",
+      "0002": "mike.measel@fieldaware.com",
+      "0003": "United States",
+      "0004": "",
+      "0005": "",
+      "0006": "BD_WW_Y14Q01_ProductEvaluation_CM",
+      "0007": "2014-08-11 10:16:16"
+    },
+    {
+      "0000": "Dunn Solutions",
+      "0001": "BI Consultant",
+      "0002": "imartinez@dunnsolutions.com",
+      "0003": "us",
+      "0004": "DI_EN_Y14Q03_UserDoc_TOS_DataIntegration_UG",
+      "0005": "",
+      "0006": "DI_EN_Y14Q03_UserDoc_TOS_DataIntegration_UG",
+      "0007": "2014-12-10 09:55:31"
+    },
+    {
+      "0000": "REDKEET",
+      "0001": "Developper",
+      "0002": "swann@redkeet.com",
+      "0003": "FRANCE",
+      "0004": "",
+      "0005": "",
+      "0006": "DI_WW_Y13Q04_ProductEvaluation_CM",
+      "0007": "2015-01-30 10:01:54"
+    },
+    {
+      "0000": "HEWLETT PACKARD",
+      "0001": "BI consultant",
+      "0002": "ammar.ijel@hp.com",
+      "0003": "France",
+      "0004": "DI_EN_Y14Q03_UserDoc_TOS_DataIntegration_UG",
+      "0005": "",
+      "0006": "DI_EN_Y14Q03_UserDoc_TOS_DataIntegration_UG",
+      "0007": "2014-09-29 09:16:29"
+    },
+    {
+      "0000": "Baillie Lumber",
+      "0001": "SR Oracel/SQL DBA",
+      "0002": "churley@baillie.com",
+      "0003": "UNITED STATES",
+      "0004": "BD_EN_Y14Q04_WhitePaper_ModernDataArchitecture_Telco",
+      "0005": "",
+      "0006": "DI_WW_Y13Q04_ProductEvaluation_CM",
+      "0007": "2014-11-07 14:17:08"
+    },
+    {
+      "0000": "Vonage America, Inc.",
+      "0001": "Software Engineer IV",
+      "0002": "matthew.sullivan@vonage.com",
+      "0003": "United States",
+      "0004": "BD_EN_Y14Q03_UserDoc_BigData_Components_RG",
+      "0005": "google",
+      "0006": "DI_WW_Y13Q04_ProductEvaluation_CM",
+      "0007": "2014-04-22 13:49:46"
+    },
+    {
+      "0000": "Infineon Technologies AG",
+      "0001": "Software Engineer",
+      "0002": "christian.schosser@infineon.com",
+      "0003": "Germany",
+      "0004": "BD_EN_Y14Q04_WOD_RealTime_Spark",
+      "0005": "",
+      "0006": "BD_EN_Y14Q04_WOD_RealTime_Spark",
+      "0007": "2015-02-25 06:31:52"
+    },
+    {
+      "0000": "Cisco Systems, Inc.",
+      "0001": "Software Development Manager",
+      "0002": "shishjai@cisco.com",
+      "0003": "United States",
+      "0004": "",
+      "0005": "",
+      "0006": "BD_WW_Y14Q02_ProductEvaluation_JumpstartSandbox_CM",
+      "0007": "2014-08-22 14:08:41"
+    },
+    {
+      "0000": "NHBC",
+      "0001": "Application Development Manager",
+      "0002": "jprajapati@nhbc.co.uk",
+      "0003": "UNITED KINGDOM",
+      "0004": "",
+      "0005": "",
+      "0006": "",
+      "0007": ""
+    },
+    {
+      "0000": "Sherwin-Williams Company",
+      "0001": "Senior Programmer/Analyst",
+      "0002": "ryan.d.coy@sherwin.com",
+      "0003": "United States",
+      "0004": "TLD_EN_SalesTeam_InboundLeads",
+      "0005": "",
+      "0006": "TLD_EN_SalesTeam_InboundLeads",
+      "0007": "2014-03-18 10:26:16"
+    },
+    {
+      "0000": "AFD",
+      "0001": "Ingénieur Architecte Urbaniste",
+      "0002": "gerlachs@afd.fr",
+      "0003": "FRANCE",
+      "0004": "",
+      "0005": "",
+      "0006": "TLD_FR_Y14_DataCleansing_CC - deleted (2157)",
+      "0007": "2014-03-11 09:37:37"
+    },
+    {
+      "0000": "SALT Solutions GmbH - Enduser",
+      "0001": "Consultant",
+      "0002": "hhw@salt-solutions.de",
+      "0003": "Germany",
+      "0004": "",
+      "0005": "",
+      "0006": "",
+      "0007": ""
+    },
+    {
+      "0000": "Jungheinrich PROFISHOP AG & Co. KG",
+      "0001": "IT Business Consultant",
+      "0002": "murat.karabiyik@jungheinrich.de",
+      "0003": "Germany",
+      "0004": "",
+      "0005": "",
+      "0006": "DI_WW_Y13Q04_ProductEvaluation_CM",
+      "0007": "2014-08-19 00:54:04"
+    },
+    {
+      "0000": "CGI (EU)",
+      "0001": "Consultant Solution Junior",
+      "0002": "mickael.coulange@cgi.com",
+      "0003": "France",
+      "0004": "",
+      "0005": "",
+      "0006": "TLD_FR_Y13Q02_Webinar_TOS4BD_Dummies_CT",
+      "0007": "2013-06-04 04:14:54"
+    },
+    {
+      "0000": "Systems In Motion",
+      "0001": "Implementation Engineer",
+      "0002": "thaywood@systemsinmotion.com",
+      "0003": "UNITED STATES",
+      "0004": "DI_EN_Y14Q03_UserDoc_TOS_DataIntegration_UG",
+      "0005": "",
+      "0006": "DI_EN_Y14Q03_UserDoc_TOS_DataIntegration_UG",
+      "0007": "2014-10-14 10:31:42"
+    },
+    {
+      "0000": "La Presse",
+      "0001": "Senior IT consultant",
+      "0002": "pascal.guy@mileendtech.com",
+      "0003": "Canada",
+      "0004": "AI_EN_Y14Q03_UserDoc_TOS_ESB_UG",
+      "0005": "",
+      "0006": "AI_EN_Y14Q03_UserDoc_TOS_ESB_UG",
+      "0007": "2014-10-21 11:24:18"
+    },
+    {
+      "0000": "LaVita GmbH",
+      "0001": "Software-Developer",
+      "0002": "robert.blabl@lavita.de",
+      "0003": "GERMANY",
+      "0004": "",
+      "0005": "",
+      "0006": "TLD_ATDE_Y14Q04_Webinar_DataManagement",
+      "0007": "2014-10-24 01:00:51"
+    },
+    {
+      "0000": "SC Johnson & Son, Inc.",
+      "0001": "Director, BPT Application Development & Integration",
+      "0002": "srshible@scj.com",
+      "0003": "UNITED STATES",
+      "0004": "TLD_EN_Y14Q03_WebsiteForm_ContactUs",
+      "0005": "",
+      "0006": "TLD_EN_Y14Q03_WebsiteForm_ContactUs",
+      "0007": "2014-11-03 13:32:13"
+    },
+    {
+      "0000": "Orange OBS Equant",
+      "0001": "Ingénieur infrastructure et réseau",
+      "0002": "yves.vigneaux@orange.com",
+      "0003": "France",
+      "0004": "",
+      "0005": "",
+      "0006": "BD_WW_Y14Q02_ProductEvaluation_JumpstartSandbox_CM",
+      "0007": "2014-12-15 04:43:40"
+    },
+    {
+      "0000": "Amazon.com, Inc.",
+      "0001": "Technical Solutions Engineer",
+      "0002": "mohanc@amazon.com",
+      "0003": "United States",
+      "0004": "",
+      "0005": "",
+      "0006": "DI_WW_Y13Q04_ProductEvaluation_CM",
+      "0007": "2014-11-25 17:53:52"
+    },
+    {
+      "0000": "Blue Infinity",
+      "0001": "Lead Consultant",
+      "0002": "jeremy.fonteray@b-i.com",
+      "0003": "Switzerland",
+      "0004": "",
+      "0005": "",
+      "0006": "DI_WW_Y13Q04_ProductEvaluation_CM",
+      "0007": "2014-12-02 08:39:39"
+    },
+    {
+      "0000": "Inovalon",
+      "0001": "Senior Engineer",
+      "0002": "ddowdy@inovalon.com",
+      "0003": "United States",
+      "0004": "TLD_EN_Y14Q03_WebsiteForm_ContactUs",
+      "0005": "",
+      "0006": "TLD_EN_Y14Q03_WebsiteForm_ContactUs",
+      "0007": "2015-01-23 06:23:49"
+    },
+    {
+      "0000": "Financial Engines",
+      "0001": "Software Engineer",
+      "0002": "srout@financialengines.com",
+      "0003": "United States",
+      "0004": "",
+      "0005": "",
+      "0006": "",
+      "0007": ""
+    },
+    {
+      "0000": "Globecast (Orange group)",
+      "0001": "Platform engineering",
+      "0002": "lionel.tailhardat@globecast.com",
+      "0003": "FRANCE",
+      "0004": "BD_EN_Y14Q03_UserDoc_BigData_GSG",
+      "0005": "",
+      "0006": "BD_EN_Y14Q03_UserDoc_BigData_GSG",
+      "0007": "2014-12-20 15:31:59"
+    },
+    {
+      "0000": "Building Engines, Inc.",
+      "0001": "Director of Development",
+      "0002": "tkelly@buildingengines.com",
+      "0003": "United States",
+      "0004": "",
+      "0005": "",
+      "0006": "",
+      "0007": ""
+    },
+    {
+      "0000": "Investec Asset Management",
+      "0001": "Head of Development Services",
+      "0002": "murali.ramachandran@investecmail.com",
+      "0003": "South Africa",
+      "0004": "TLD_EN_Y14Q03_WebsiteForm_ContactUs",
+      "0005": "",
+      "0006": "TLD_EN_Y14Q03_WebsiteForm_ContactUs",
+      "0007": "2015-01-05 04:47:44"
+    },
+    {
+      "0000": "Teachers College, Columbia University",
+      "0001": "Senior Programmer/Analyst, Information Services",
+      "0002": "lheyenrath@gmail.com",
+      "0003": "United States",
+      "0004": "",
+      "0005": "",
+      "0006": "DI_WW_Y13Q04_ProductEvaluation_CM",
+      "0007": "2015-01-05 14:49:48"
+    },
+    {
+      "0000": "Bestride",
+      "0001": "Lead Engineer",
+      "0002": "bdavid@bestride.com",
+      "0003": "United States",
+      "0004": "TLD_EN_Y14Q03_WebsiteForm_ContactUs",
+      "0005": "",
+      "0006": "TLD_EN_Y14Q03_WebsiteForm_ContactUs",
+      "0007": "2015-01-08 12:41:19"
+    },
+    {
+      "0000": "MEDecision",
+      "0001": "ETL developer",
+      "0002": "irina.remishevsky@medecision.com",
+      "0003": "United States",
+      "0004": "BD_EN_Y14Q03_UserDoc_TOS_BigData_UG",
+      "0005": "",
+      "0006": "BD_EN_Y14Q03_UserDoc_TOS_BigData_UG",
+      "0007": "2015-01-11 08:38:39"
+    },
+    {
+      "0000": "AQI Technology Services",
+      "0001": "Consultant",
+      "0002": "errol@aqitechserv.com",
+      "0003": "United States",
+      "0004": "BD_EN_Y14Q04_WhitePaper_ModernDataArchitecture_Telco",
+      "0005": "",
+      "0006": "",
+      "0007": ""
+    },
+    {
+      "0000": "Intuit",
+      "0001": "SW Engineer",
+      "0002": "anna_bodrov@intuit.com",
+      "0003": "United States",
+      "0004": "BD_NORAM_Y15Q01_Virtual Roadshow_PlatformBD",
+      "0005": "",
+      "0006": "BD_NORAM_Y15Q01_Virtual Roadshow_PlatformBD",
+      "0007": "2015-01-13 17:05:47"
+    },
+    {
+      "0000": "EdX",
+      "0001": "Software Engineer",
+      "0002": "brian@edx.org",
+      "0003": "United States",
+      "0004": "DI_EN_Y14Q02_WhitePaper_IAIT_ProductReview",
+      "0005": "",
+      "0006": "DI_EN_Y14Q02_WhitePaper_IAIT_ProductReview",
+      "0007": "2015-01-14 10:19:33"
+    },
+    {
+      "0000": "purposesoftware",
+      "0001": "Development manager",
+      "0002": "shane.zeller@purposesoftware.co.uk",
+      "0003": "United Kingdom",
+      "0004": "BD_EN_Y14Q03_WhitePaper_Business_Ready_BigData",
+      "0005": "",
+      "0006": "BD_EN_Y14Q03_WhitePaper_Business_Ready_BigData",
+      "0007": "2015-01-19 06:46:29"
+    },
+    {
+      "0000": "Publifin (formally Tecteo-VOO)",
+      "0001": "Core Network/OSS Engineer",
+      "0002": "ocassano@staff.voo.be",
+      "0003": "Belgium",
+      "0004": "TLD_EN_Y14Q04_Subscription_Newsletter_Website",
+      "0005": "",
+      "0006": "TLD_FR_Y14Q04_Roadshow",
+      "0007": "2015-01-20 01:59:10"
+    },
+    {
+      "0000": "Point72",
+      "0001": "Development Manager",
+      "0002": "jeff.ricker@point72.com",
+      "0003": "United States",
+      "0004": "",
+      "0005": "",
+      "0006": "",
+      "0007": ""
+    },
+    {
+      "0000": "Université de Reims",
+      "0001": "dev",
+      "0002": "david.guenard@univ-reims.fr",
+      "0003": "FRANCE",
+      "0004": "AI_EN_Y14Q03_UserDoc_TOS_ESB_UG",
+      "0005": "",
+      "0006": "AI_EN_Y14Q03_UserDoc_TOS_ESB_UG",
+      "0007": "2015-01-28 02:03:58"
+    },
+    {
+      "0000": "Leidos, Inc.",
+      "0001": "Principal Software Design Engineer",
+      "0002": "kinh.t.burr@leidos.com",
+      "0003": "United States",
+      "0004": "AI_EN_Y14Q03_UserDoc_TOS_ESB_UG",
+      "0005": "",
+      "0006": "AI_EN_Y14Q03_UserDoc_TOS_ESB_UG",
+      "0007": "2015-01-28 12:29:27"
+    },
+    {
+      "0000": "Dental Wings",
+      "0001": "Software Developer",
+      "0002": "remi.morel@dental-wings.com",
+      "0003": "Canada",
+      "0004": "DI_EN_Y14Q03_UserDoc_TOS_DataIntegration_UG",
+      "0005": "",
+      "0006": "DI_EN_Y14Q03_UserDoc_TOS_DataIntegration_UG",
+      "0007": "2015-02-03 13:02:05"
+    },
+    {
+      "0000": "Pearson's Appraisal",
+      "0001": "Senior Software Developer",
+      "0002": "proffitt.jeremy@gmail.com",
+      "0003": "United States",
+      "0004": "",
+      "0005": "",
+      "0006": "BD_WW_Y14Q02_ProductEvaluation_JumpstartSandbox_CM",
+      "0007": "2015-02-04 07:38:12"
+    },
+    {
+      "0000": "University Of Rochester",
+      "0001": "Programmer/Analyst",
+      "0002": "jose.delacruz@rochester.edu",
+      "0003": "us",
+      "0004": "",
+      "0005": "",
+      "0006": "",
+      "0007": ""
+    },
+    {
+      "0000": "INTERPOL International Criminal Police Organization",
+      "0001": "DBA",
+      "0002": "f.rey@interpol.int",
+      "0003": "France",
+      "0004": "",
+      "0005": "",
+      "0006": "",
+      "0007": ""
+    },
+    {
+      "0000": "Amazon.com, Inc.",
+      "0001": "Data Engineer",
+      "0002": "aktg@amazon.com",
+      "0003": "United States",
+      "0004": "DI_EN_Y14Q03_UserDoc_TOS_DataIntegration_UG",
+      "0005": "",
+      "0006": "DI_EN_Y14Q03_UserDoc_TOS_DataIntegration_UG",
+      "0007": "2015-03-11 23:13:53"
+    },
+    {
+      "0000": "IER SAS",
+      "0001": "Ingénieur",
+      "0002": "msalhi@ier.fr",
+      "0003": "France",
+      "0004": "TLD_EN_Y14Q04_WebsiteForm_Training",
+      "0005": "",
+      "0006": "TLD_EN_Y14Q04_WebsiteForm_Training",
+      "0007": "2015-02-17 03:10:06"
+    },
+    {
+      "0000": "EDENRED",
+      "0001": "Ingénieur Mobile",
+      "0002": "benoit.guinet@edenred.com",
+      "0003": "France",
+      "0004": "",
+      "0005": "",
+      "0006": "",
+      "0007": ""
+    },
+    {
+      "0000": "Amazon.com, Inc.",
+      "0001": "Data Engineer 2",
+      "0002": "pnjb@amazon.com",
+      "0003": "United States",
+      "0004": "",
+      "0005": "",
+      "0006": "",
+      "0007": ""
+    },
+    {
+      "0000": "Keas Inc",
+      "0001": "Senior Software Engineer",
+      "0002": "ken.cluff@keas.com",
+      "0003": "United States",
+      "0004": "",
+      "0005": "",
+      "0006": "",
+      "0007": ""
+    },
+    {
+      "0000": "Infineon Technologies AG",
+      "0001": "Senior Software Engineer",
+      "0002": "klaus.rehm@infineon.com",
+      "0003": "Germany",
+      "0004": "BD_EN_Y14Q03_UserDoc_TOS_BigData_UG",
+      "0005": "",
+      "0006": "BD_EN_Y14Q03_UserDoc_TOS_BigData_UG",
+      "0007": "2015-03-06 04:02:53"
+    },
+    {
+      "0000": "Air Canada Vacations",
+      "0001": "IS Development Manager",
+      "0002": "mlarouche@vacv.com",
+      "0003": "Canada",
+      "0004": "DI_EN_Y14Q02_WhitePaper_IAIT_ProductReview",
+      "0005": "",
+      "0006": "DI_EN_Y14Q02_WhitePaper_IAIT_ProductReview",
+      "0007": "2015-03-20 09:55:35"
     }
   ]
 }
-

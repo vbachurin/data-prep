@@ -22,31 +22,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
 @DirtiesContext
-public class SuggestionTest {
+public class SuggestionEngineImplTest {
 
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
     @Autowired
-    private Suggestion suggestion;
+    private SuggestionEngineImpl suggestion;
 
     @Test
-    public void test1() throws Exception {
+    public void test() throws Exception {
         final ObjectMapper mapper = builder.build();
-        final InputStream inputStream = SuggestionTest.class.getResourceAsStream("suggest1.json");
-        try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
-            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
-            final List<ActionMetadata> suggest = suggestion.suggest(dataSet);
-            for (ActionMetadata actionMetadata : suggest) {
-                System.out.println("actionMetadata = " + actionMetadata);
-            }
-        }
-    }
-
-    @Test
-    public void test2() throws Exception {
-        final ObjectMapper mapper = builder.build();
-        final InputStream inputStream = SuggestionTest.class.getResourceAsStream("suggest2.json");
+        final InputStream inputStream = SuggestionEngineImplTest.class.getResourceAsStream("suggest1.json");
         try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
             final List<ActionMetadata> suggest = suggestion.suggest(dataSet);
