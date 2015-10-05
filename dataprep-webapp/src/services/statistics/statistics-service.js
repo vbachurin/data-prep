@@ -143,11 +143,12 @@
          */
         function initVerticalHistogram(key, label, dataTable) {
             service.histogram = {
-                numData: dataTable,
+                data: dataTable,
                 key: key,
                 label: label,
                 column: service.selectedColumn,
-                existingFilter: null
+                activeLimits: null,
+                vertical: true
             };
         }
 
@@ -243,7 +244,7 @@
                         maxBrush : currentRangeFilter.args.interval[1]
                     };
                 }
-                service.histogram.existingFilter = [service.rangeLimits.minBrush, service.rangeLimits.maxBrush];
+                service.histogram.activeLimits = [service.rangeLimits.minBrush, service.rangeLimits.maxBrush];
             }
             else {
                 service.rangeLimits = {
@@ -398,7 +399,7 @@
                 if (service.selectedColumn && filter.colId === service.selectedColumn.id) {
                     initRangeLimits();
                     //to reset the bars colors
-                    service.histogram.existingFilter = [service.selectedColumn.statistics.min, service.selectedColumn.statistics.max];
+                    service.histogram.activeLimits = [service.selectedColumn.statistics.min, service.selectedColumn.statistics.max];
                 }
             };
 
