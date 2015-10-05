@@ -46,6 +46,9 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.api.transformer.configuration.PreviewConfiguration;
+import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngine;
+import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineImpl;
+import org.talend.dataprep.transformation.api.transformer.suggestion.model.Suggestion;
 import org.talend.dataprep.transformation.format.ExportFormat;
 import org.talend.dataprep.transformation.format.FormatRegistrationService;
 import org.talend.dataprep.transformation.format.JsonFormat;
@@ -264,36 +267,40 @@ public class TransformationService {
         }
     }
 
+    @Autowired
+    private SuggestionEngine suggestionEngine;
+
     /**
      * Suggest what {@link ActionMetadata actions} can be applied to <code>column</code>.
      * @param column A {@link ColumnMetadata column} definition.
      * @return A list of {@link ActionMetadata} that can be applied to this column.
-     * @see #suggest(DataSetMetadata)
+     * @see #suggest(DataSet)
      */
     @RequestMapping(value = "/suggest/column", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Suggest actions for a given column metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
     @ResponseBody
-    public List<ActionMetadata> suggest(@RequestBody(required = false) ColumnMetadata column) {
+    public List<Suggestion> suggest(@RequestBody(required = false) ColumnMetadata column) {
         if (column == null) {
             return Collections.emptyList();
         }
         // look for all actions applicable to the column type
-        return Stream.of(allActions) //
-                .filter(am -> am.acceptColumn(column)) //
-                .map(am -> am.adapt(column)) //
+        final List<ActionMetadata> actions = Stream.of(allActions) //
+                .filter(am -> am.acceptColumn(column)) // Filter on acceptable columns (for type)
+                .map(am -> am.adapt(column)) // Adapt default values (e.g. column name)
                 .collect(toList());
+        return suggestionEngine.score(actions, column);
     }
 
     /**
      * Suggest what {@link ActionMetadata actions} can be applied to <code>dataSetMetadata</code>.
-     * @param dataSetMetadata A {@link DataSetMetadata dataset} definition.
+     * @param dataSet A {@link DataSetMetadata dataset} definition.
      * @return A list of {@link ActionMetadata} that can be applied to this data set.
      * @see #suggest(ColumnMetadata)
      */
     @RequestMapping(value = "/suggest/dataset", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Suggest actions for a given data set metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
     @ResponseBody
-    public List<ActionMetadata> suggest(DataSetMetadata dataSetMetadata) {
+    public List<ActionMetadata> suggest(DataSet dataSet) {
         return Collections.emptyList();
     }
 
