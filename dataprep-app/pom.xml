@@ -63,6 +63,11 @@
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.8</version>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>
@@ -86,8 +91,8 @@
                                 <configuration>
                                     <headerType>console</headerType>
                                     <outfile>${project.build.directory}/${project.build.finalName}.exe</outfile>
-                                    <jar>${project.build.directory}/${project.build.finalName}.jar</jar>
-                                    <dontWrapJar>false</dontWrapJar>
+                                    <jar>${project.build.finalName}.jar</jar>
+                                    <dontWrapJar>true</dontWrapJar>
                                     <errTitle>encc</errTitle>
                                     <jre>
                                         <bundledJre64Bit>false</bundledJre64Bit>
@@ -101,12 +106,49 @@
                                         <mutexName>TalendDataprep</mutexName>
                                         <windowTitle>Talend Data Preparation ${version}</windowTitle>
                                     </singleInstance>
-
                                     <icon>src/main/resources/images/icon.ico</icon>
-
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.8</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <taskdef name="bundleapp"
+                                                 classname="com.oracle.appbundler.AppBundlerTask"
+                                                 classpathref="maven.plugin.classpath" />
+                                        <bundleapp outputdirectory="${project.build.directory}"
+                                                   name="dataprep"
+                                                   displayname="${project.name}"
+                                                   icon="src/main/resources/images/logo.icns"
+                                                   identifier="${project.groupId}"
+                                                   shortversion="${project.version}"
+                                                   copyright="${project.organization.name}"
+                                                   mainclassname="org.springframework.boot.loader.JarLauncher">
+                                            <classpath file="${project.build.directory}/${project.build.finalName}.jar" />
+                                        </bundleapp>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.oracle.appbundler</groupId>
+                                <artifactId>appbundler</artifactId>
+                                <version>1.0</version>
+                                <scope>system</scope>
+                                <systemPath>${project.basedir}/build/appbundler-1.0.jar</systemPath>
+                            </dependency>
+                        </dependencies>
                     </plugin>
                 </plugins>
             </build>
