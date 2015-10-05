@@ -7,8 +7,9 @@
      * @description Preview service. This service holds the preview datagrid (SlickGrid) view
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.preparation.service:PreparationService
+     * @requires data-prep.state.service:StateService
      */
-    function PreviewService($q, DatagridService, PreparationService) {
+    function PreviewService($q, DatagridService, PreparationService, state) {
         /**
          * @ngdoc property
          * @name reverter
@@ -127,8 +128,8 @@
         function initPreviewIdNeeded() {
             if(!originalData) {
                 originalData = {
-                    columns: DatagridService.data.columns.slice(0),
-                    records: DatagridService.data.records.slice(0)
+                    columns: state.playground.data.columns.slice(0),
+                    records: state.playground.data.records.slice(0)
                 };
                 displayedTdpIds = getDisplayedTdpIds();
                 startIndex = DatagridService.dataView.getIdxById(displayedTdpIds[0]);

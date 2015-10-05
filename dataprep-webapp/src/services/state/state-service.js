@@ -12,6 +12,7 @@
             resetPlayground: PlaygroundStateService.reset,
             showPlayground: PlaygroundStateService.show,
             setCurrentDataset: PlaygroundStateService.setDataset,
+            setCurrentData: PlaygroundStateService.setData,
             setCurrentPreparation: PlaygroundStateService.setPreparation,
             setNameEditionMode: PlaygroundStateService.setNameEditionMode,
             setSampleSize: PlaygroundStateService.setSampleSize,
