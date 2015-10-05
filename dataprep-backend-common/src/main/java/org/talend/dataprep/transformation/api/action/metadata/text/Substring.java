@@ -16,6 +16,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 @Component(Substring.ACTION_BEAN_PREFIX + Substring.SUBSTRING_ACTION_NAME)
@@ -67,7 +68,7 @@ public class Substring extends AbstractActionMetadata implements ColumnAction {
         parameters.add(SelectParameter.Builder.builder() //
                 .name(FROM_MODE_PARAMETER) //
                 .item(FROM_BEGINNING) //
-                .item("From index", new Parameter(FROM_INDEX_PARAMETER, Type.INTEGER.getName(), "0")) //
+                .item("From index", new Parameter(FROM_INDEX_PARAMETER, ParameterType.INTEGER, "0")) //
                 .defaultValue(FROM_BEGINNING) //
                 .build());
 
@@ -75,7 +76,7 @@ public class Substring extends AbstractActionMetadata implements ColumnAction {
         parameters.add(SelectParameter.Builder.builder() //
                 .name(TO_MODE_PARAMETER) //
                 .item(TO_END) //
-                .item("To index", new Parameter(TO_INDEX_PARAMETER, Type.INTEGER.getName(), "5")) //
+                .item("To index", new Parameter(TO_INDEX_PARAMETER, ParameterType.INTEGER, "5")) //
                 .defaultValue("To index") //
                 .build());
 

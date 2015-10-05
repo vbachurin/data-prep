@@ -23,7 +23,7 @@ public class ColumnParameter extends Parameter {
      * @param filters List of filtered column types.
      */
     public ColumnParameter(String name, String defaultValue, boolean implicit, boolean canBeBlank, List<String> filters) {
-        super(name, ParameterType.COLUMN.asString(), defaultValue, implicit, canBeBlank);
+        super(name, ParameterType.COLUMN, defaultValue, implicit, canBeBlank);
         setFilters(filters);
     }
 

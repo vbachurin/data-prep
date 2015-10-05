@@ -1,7 +1,5 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import static org.talend.dataprep.api.type.Type.BOOLEAN;
-
 import java.time.DateTimeException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
@@ -23,6 +21,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 
 /**
  * Change the date pattern on a 'date' column.
@@ -96,17 +95,17 @@ public class ExtractDateTokens extends AbstractDate implements ColumnAction {
     @Nonnull
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        parameters.add(new Parameter(YEAR, BOOLEAN.getName(), TRUE));
-        parameters.add(new Parameter(MONTH, BOOLEAN.getName(), TRUE));
-        parameters.add(new Parameter(DAY, BOOLEAN.getName(), TRUE));
-        parameters.add(new Parameter(HOUR_12, BOOLEAN.getName(), FALSE));
-        parameters.add(new Parameter(AM_PM, BOOLEAN.getName(), FALSE));
-        parameters.add(new Parameter(HOUR_24, BOOLEAN.getName(), TRUE));
-        parameters.add(new Parameter(MINUTE, BOOLEAN.getName(), TRUE));
-        parameters.add(new Parameter(SECOND, BOOLEAN.getName(), FALSE));
-        parameters.add(new Parameter(DAY_OF_WEEK, BOOLEAN.getName(), FALSE));
-        parameters.add(new Parameter(DAY_OF_YEAR, BOOLEAN.getName(), FALSE));
-        parameters.add(new Parameter(WEEK_OF_YEAR, BOOLEAN.getName(), FALSE));
+        parameters.add(new Parameter(YEAR, ParameterType.BOOLEAN, TRUE));
+        parameters.add(new Parameter(MONTH, ParameterType.BOOLEAN, TRUE));
+        parameters.add(new Parameter(DAY, ParameterType.BOOLEAN, TRUE));
+        parameters.add(new Parameter(HOUR_12, ParameterType.BOOLEAN, FALSE));
+        parameters.add(new Parameter(AM_PM, ParameterType.BOOLEAN, FALSE));
+        parameters.add(new Parameter(HOUR_24, ParameterType.BOOLEAN, TRUE));
+        parameters.add(new Parameter(MINUTE, ParameterType.BOOLEAN, TRUE));
+        parameters.add(new Parameter(SECOND, ParameterType.BOOLEAN, FALSE));
+        parameters.add(new Parameter(DAY_OF_WEEK, ParameterType.BOOLEAN, FALSE));
+        parameters.add(new Parameter(DAY_OF_YEAR, ParameterType.BOOLEAN, FALSE));
+        parameters.add(new Parameter(WEEK_OF_YEAR, ParameterType.BOOLEAN, FALSE));
         return parameters;
     }
 

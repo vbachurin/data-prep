@@ -76,7 +76,7 @@ public class Split extends AbstractActionMetadata implements ColumnAction {
     @Nonnull
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        parameters.add(new Parameter(LIMIT, ParameterType.INTEGER.asString(), "2"));
+        parameters.add(new Parameter(LIMIT, ParameterType.INTEGER, "2"));
         //@formatter:off
         parameters.add(SelectParameter.Builder.builder()
                         .name(SEPARATOR_PARAMETER)
@@ -85,7 +85,7 @@ public class Split extends AbstractActionMetadata implements ColumnAction {
                         .item(" ")
                         .item(",")
                         .item("-")
-                        .item("other", new Parameter(MANUAL_SEPARATOR_PARAMETER, STRING.asString(), EMPTY))
+                        .item("other", new Parameter(MANUAL_SEPARATOR_PARAMETER, STRING, EMPTY))
                         .defaultValue(":")
                         .build()
         );

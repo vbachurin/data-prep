@@ -18,6 +18,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.AbstractAct
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 
 /**
  * Concat action concatenates 2 columns into a new one. The new column name will be "column_source + selected_column."
@@ -73,11 +74,10 @@ public class Concat extends AbstractActionMetadata implements ColumnAction {
     @Override
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        // TODO Vincent define a constant for column but not in Type (which should be used only for columns)
-        parameters.add(new Parameter(SELECTED_COLUMN_PARAMETER, "column", StringUtils.EMPTY, false, false));
-        parameters.add(new Parameter(PREFIX_PARAMETER, Type.STRING.toString(), StringUtils.EMPTY));
-        parameters.add(new Parameter(SEPARATOR_PARAMETER, Type.STRING.toString(), StringUtils.EMPTY));
-        parameters.add(new Parameter(SUFFIX_PARAMETER, Type.STRING.toString(), StringUtils.EMPTY));
+        parameters.add(new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, StringUtils.EMPTY, false, false));
+        parameters.add(new Parameter(PREFIX_PARAMETER, ParameterType.STRING, StringUtils.EMPTY));
+        parameters.add(new Parameter(SEPARATOR_PARAMETER, ParameterType.STRING, StringUtils.EMPTY));
+        parameters.add(new Parameter(SUFFIX_PARAMETER, ParameterType.STRING, StringUtils.EMPTY));
         return parameters;
     }
 

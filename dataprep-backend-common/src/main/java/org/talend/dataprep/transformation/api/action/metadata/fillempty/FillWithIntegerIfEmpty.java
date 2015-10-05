@@ -9,6 +9,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 
 @Component(value = FillWithIntegerIfEmpty.ACTION_BEAN_PREFIX + FillWithIntegerIfEmpty.FILL_EMPTY_ACTION_NAME)
 public class FillWithIntegerIfEmpty extends AbstractFillIfEmpty {
@@ -24,7 +25,7 @@ public class FillWithIntegerIfEmpty extends AbstractFillIfEmpty {
     @Nonnull
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        parameters.add(new Parameter(DEFAULT_VALUE_PARAMETER, Type.INTEGER.getName(), "0")); //$NON-NLS-1$
+        parameters.add(new Parameter(DEFAULT_VALUE_PARAMETER, ParameterType.INTEGER, "0")); //$NON-NLS-1$
         return parameters;
     }
 
