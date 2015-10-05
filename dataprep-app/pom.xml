@@ -66,9 +66,9 @@
     </dependencies>
     <profiles>
         <profile>
-            <id>app-all-in-one</id>
+            <id>windows-build</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <activeByDefault>true</activeByDefault>
             </activation>
             <build>
                 <plugins>
@@ -86,24 +86,21 @@
                                 <configuration>
                                     <headerType>console</headerType>
                                     <outfile>${project.build.directory}/${project.build.finalName}.exe</outfile>
-                                    <jar>${project.build.directory}/${project.build.finalName}.jar</jar>
-                                    <dontWrapJar>false</dontWrapJar>
+                                    <jar>${project.build.finalName}.jar</jar>
+                                    <dontWrapJar>true</dontWrapJar>
                                     <errTitle>encc</errTitle>
                                     <jre>
                                         <bundledJre64Bit>false</bundledJre64Bit>
                                         <bundledJreAsFallback>false</bundledJreAsFallback>
                                         <minVersion>1.8.0</minVersion>
-                                        <maxVersion></maxVersion>
                                         <jdkPreference>preferJre</jdkPreference>
                                         <runtimeBits>64/32</runtimeBits>
                                     </jre>
                                     <singleInstance>
                                         <mutexName>TalendDataprep</mutexName>
-                                        <windowTitle>Talend Data Preparation ${version}</windowTitle>
+                                        <windowTitle>Talend Data Preparation ${project.version}</windowTitle>
                                     </singleInstance>
-
                                     <icon>src/main/resources/images/icon.ico</icon>
-
                                 </configuration>
                             </execution>
                         </executions>
