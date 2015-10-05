@@ -305,7 +305,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         DataSet dataSet = objectMapper.reader( DataSet.class ).readValue(content.getBytes() );
 
         Assertions.assertThat( dataSet.getMetadata().getName() ).isNotEmpty().contains( "Copy" );
-        
+
     }
 
     @Test
