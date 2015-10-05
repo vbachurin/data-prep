@@ -3,7 +3,7 @@ package org.talend.dataprep.metrics;
 import java.io.IOException;
 import java.io.InputStream;
 
-class MeteredInputStream extends InputStream {
+class MeteredInputStream extends InputStream implements Metered {
 
     private final InputStream delegate;
 
@@ -72,6 +72,7 @@ class MeteredInputStream extends InputStream {
         return delegate.markSupported();
     }
 
+    @Override
     public long getVolume() {
         return volume;
     }

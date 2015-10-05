@@ -2,6 +2,8 @@ package org.talend.dataprep.metrics;
 
 import java.io.InputStream;
 
+import javax.servlet.http.Part;
+
 import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -64,7 +66,7 @@ public class Aspects {
             if (principal instanceof User) {
                 userName = ((User) principal).getUsername();
                 LOGGER.debug("Authentication: {}", authentication);
-                
+
             } else {
                 userName = principal.toString();
             }
@@ -99,28 +101,27 @@ public class Aspects {
     @Around("execution(* *(..)) && @annotation(volumeMetered)")
     public Object volumeMetered(ProceedingJoinPoint pjp, VolumeMetered volumeMetered) throws Throwable {
         // Find first InputStream available in arguments
-        int argumentIndex = -1;
-        int inputStreamIndex = -1;
-        for (Object o : pjp.getArgs()) {
-            argumentIndex++;
+        Object[] wrappedArgs = new Object[pjp.getArgs().length];
+        final Object[] args = pjp.getArgs();
+        for (int i = 0; i < pjp.getArgs().length; i++) {
+            Object o = args[i];
             if (o instanceof InputStream) {
-                inputStreamIndex = argumentIndex;
+                wrappedArgs[i] = new MeteredInputStream((InputStream) o);
+            } else if (o instanceof Part) {
+                final Part delegate = (Part) o;
+                wrappedArgs[i] = new PartWrapper(delegate);
+            } else {
+                wrappedArgs[i] = o;
             }
         }
-        if (inputStreamIndex < 0) {
-            LOGGER.warn("Unable to find a valid InputStream to wrap for meter in method '{}'.", //
-                    pjp.getSignature().toLongString());
-        }
-        // Wraps InputStream (if any)
-        Object[] args = pjp.getArgs();
-        if (inputStreamIndex >= 0) {
-            MeteredInputStream meteredInputStream = new MeteredInputStream((InputStream) args[inputStreamIndex]);
-            args[inputStreamIndex] = meteredInputStream;
-            Object o = pjp.proceed(args);
-            repository.set(buildVolumeMetric(pjp, meteredInputStream.getVolume()));
-            return o;
-        } else {
-            return pjp.proceed(args);
+        try {
+            return pjp.proceed(wrappedArgs);
+        } finally {
+            for (Object wrappedArg : wrappedArgs) {
+                if (wrappedArg instanceof Metered) {
+                    repository.set(buildVolumeMetric(pjp, ((Metered) wrappedArg).getVolume()));
+                }
+            }
         }
     }
 
