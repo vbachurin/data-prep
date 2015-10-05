@@ -60,14 +60,21 @@
          * @methodOf data-prep.transformation-params.controller:TransformClusterParamsCtrl
          * @description Initialize parameters values and checkbox state if needed
          */
-        var initParamsValues = function () {
+        var initParamsValues = function initParamsValues() {
             _.forEach(vm.details.clusters, function (cluster) {
                 _.forEach(cluster.parameters, function (param) {
                     param.default = true;
                 });
             });
+        };
 
-            //Check if cluster is already initialized
+        /**
+         * @ngdoc method
+         * @name initActivationFlags
+         * @methodOf data-prep.transformation-params.controller:TransformClusterParamsCtrl
+         * @description Initialize clusters activation flag
+         */
+        var initActivationFlags = function initActivationFlags() {
             var hasInitialActive = _.find(vm.details.clusters, function (cluster) {
                 return typeof cluster.initialActive !== 'undefined';
             });
@@ -94,6 +101,7 @@
 
         initParamsValues();
         initReplaceList();
+        initActivationFlags();
     }
 
     angular.module('data-prep.transformation-params')

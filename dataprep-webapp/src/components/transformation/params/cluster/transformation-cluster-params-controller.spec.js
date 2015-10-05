@@ -1,12 +1,10 @@
 describe('Transform cluster params controller', function () {
     'use strict';
 
-    var createController, scope, details, detailsRecipe, scopeRecipe, createRecipeController;
+    var createController, scope, details, detailsWithInitialActivationFlags;
 
-    beforeEach(module('data-prep.transformation-params'));
-
-    beforeEach(inject(function ($rootScope, $controller) {
-        details = {
+    function getCluster() {
+        return {
             titles: [
                 'We found these values',
                 'And we\'ll keep this value'
@@ -92,26 +90,17 @@ describe('Transform cluster params controller', function () {
                 }
             ]
         };
+    }
 
-
-        scope = $rootScope.$new();
-
-        createController = function () {
-            var ctrlFn = $controller('TransformClusterParamsCtrl', {
-                $scope: scope
-            }, true);
-            ctrlFn.instance.details = details;
-            return ctrlFn();
-        };
-
-
-        detailsRecipe = {
+    function getClusterWithInitialActivationFlags() {
+        return {
             titles: [
                 'We found these values',
                 'And we\'ll keep this value'
             ],
             clusters: [
-                {   initialActive: true,
+                {
+                    initialActive: true,
                     parameters: [
                         {
                             name: 'Texa',
@@ -192,17 +181,23 @@ describe('Transform cluster params controller', function () {
                 }
             ]
         };
+    }
 
-        scopeRecipe = $rootScope.$new();
+    beforeEach(module('data-prep.transformation-params'));
 
-        createRecipeController = function () {
+    beforeEach(inject(function ($rootScope, $controller) {
+        scope = $rootScope.$new();
+
+        details = getCluster();
+        detailsWithInitialActivationFlags = getClusterWithInitialActivationFlags();
+
+        createController = function (clusterDetails) {
             var ctrlFn = $controller('TransformClusterParamsCtrl', {
                 $scope: scope
             }, true);
-            ctrlFn.instance.details = detailsRecipe;
+            ctrlFn.instance.details = clusterDetails || details;
             return ctrlFn();
         };
-
     }));
 
     it('should init allCheckboxState flag to true', function () {
@@ -227,9 +222,9 @@ describe('Transform cluster params controller', function () {
         var ctrl = createController();
 
         //then
-        for(var i = 0; i < ctrl.details.clusters.length; i++) {
+        for (var i = 0; i < ctrl.details.clusters.length; i++) {
             var parameters = ctrl.details.clusters[i].parameters;
-            for(var j = 0; j < parameters.length; j++) {
+            for (var j = 0; j < parameters.length; j++) {
                 expect(parameters[j].default).toBe(true);
             }
         }
@@ -301,7 +296,7 @@ describe('Transform cluster params controller', function () {
     it('should call initClusterState if cluster is already initialized', function () {
 
         //when
-        var ctrl = createRecipeController();
+        var ctrl = createController(detailsWithInitialActivationFlags);
 
         //then
         expect(ctrl.details.clusters[0].active).toBeTruthy();
