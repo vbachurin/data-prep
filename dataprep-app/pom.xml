@@ -128,7 +128,6 @@
                                         <bundleapp outputdirectory="${project.build.directory}"
                                                    name="dataprep"
                                                    displayname="${project.name}"
-                                                   icon="src/main/resources/images/logo.icns"
                                                    identifier="${project.groupId}"
                                                    shortversion="${project.version}"
                                                    copyright="${project.organization.name}"
