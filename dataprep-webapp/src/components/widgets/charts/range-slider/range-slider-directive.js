@@ -33,6 +33,7 @@
             link: function (scope, element, attrs, ctrl) {
                 var renderTimeout;
                 var container = attrs.id;
+                var filterToApply;
 
                 //the left and right margins MUST be the same as the verticalBarchart ones
                 var margin = {top: 5, right: 20, bottom: 10, left: 15};
@@ -53,7 +54,6 @@
                     var nbDecimals = d3.max([ctrl.decimalPlaces(minBrush), ctrl.decimalPlaces(maxBrush)]);
 
                     var centerValue = (minBrush + maxBrush) / 2;
-                    var filterToApply;
 
                     //--------------------------------------------------------------------------------------------------
                     //----------------------------------------------BASE------------------------------------------------
@@ -254,21 +254,24 @@
                             //It will propagate the new filter limits to the rest of the app, it's triggered when the user finishes a brush
                             .on('brushend', function brushend() {
                                 var s = scope.brush.extent();
-                                filterToApply = [+scope.brush.extent()[0].toFixed(scope.nbDecimals), +scope.brush.extent()[1].toFixed(scope.nbDecimals)];
+
                                 //the user is moving the whole brush
                                 if (scope.oldRangeLimits[0] !== s[0] && scope.oldRangeLimits[1] !== s[1]) {
                                     //trigger filter process in the datagrid
                                     scope.onBrushEnd()(scope.brush.extent().map(function (n) {
                                         return +n.toFixed(nbDecimals);
                                     }));
+                                    filterToApply = scope.brush.extent();
                                 }
                                 //the user is moving the left brush handler
                                 else if (scope.oldRangeLimits[0] !== s[0]) {
                                     scope.onBrushEnd()([+s[0].toFixed(nbDecimals), filterToApply[1]]);
+                                    filterToApply = [+s[0].toFixed(nbDecimals), filterToApply[1]];
                                 }
                                 //the user is moving the right brush handler
                                 else if (scope.oldRangeLimits[1] !== s[1]) {
                                     scope.onBrushEnd()([filterToApply[0], +s[1].toFixed(nbDecimals)]);
+                                    filterToApply = [filterToApply[0], +s[1].toFixed(nbDecimals)];
                                 }
                             });
                     }
