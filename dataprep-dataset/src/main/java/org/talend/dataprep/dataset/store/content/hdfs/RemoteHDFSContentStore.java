@@ -12,10 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.location.HdfsLocation;
-import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.dataset.store.content.DataSetContentStoreAdapter;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.DataSetErrorCodes;
 
 /**
  * Remote dataset content store on HDFS.
@@ -34,7 +34,7 @@ public class RemoteHDFSContentStore extends DataSetContentStoreAdapter {
             throw new IllegalArgumentException(this.getClass().getName() + " does not manage " + dataSetMetadata.getLocation());
         }
 
-            // opens the location
+        // opens the location
         HdfsLocation location = (HdfsLocation) dataSetMetadata.getLocation();
         URI uri = URI.create(location.getUrl());
         Configuration conf = new Configuration();

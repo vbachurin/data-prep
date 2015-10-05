@@ -7,13 +7,7 @@ import static com.jayway.restassured.path.json.JsonPath.from;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
@@ -67,6 +61,8 @@ public class DataSetServiceTests extends DataSetBaseTest {
     private static final String EMPTY_LINES2_CSV = "../empty_lines2.csv";
 
     private static final String METADATA_JSON = "../metadata.json";
+
+    private static final String DATASET_WITH_NUL_CHAR_CSV = "../dataset_with_NUL_char.csv";
 
     @Test
     public void CORSHeaders() throws Exception {
@@ -255,7 +251,6 @@ public class DataSetServiceTests extends DataSetBaseTest {
         }
     }
 
-
     @Test
     public void listIllegalSort() throws Exception {
         when().get("/datasets?sort=aaaa").then().statusCode(HttpStatus.BAD_REQUEST.value());
@@ -333,7 +328,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         // given
         String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
         // when
-        String sample = requestDataSetSample(dataSetId, "17");
+        String sample = requestDataSetSample(dataSetId, true, "17");
         // then
         assertEquals(17, getNumberOfRecords(sample));
     }
@@ -343,7 +338,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         // given
         String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
         // when
-        String sample = requestDataSetSample(dataSetId, "16");
+        String sample = requestDataSetSample(dataSetId, true, "16");
         // then
         InputStream expected = this.getClass().getResourceAsStream("../t-shirt_100.csv_sample_16.expected.json");
         assertThat(sample, sameJSONAsFile(expected));
@@ -354,7 +349,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         // given
         String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
         // when
-        String sample = requestDataSetSample(dataSetId, "-1");
+        String sample = requestDataSetSample(dataSetId, true, "-1");
         // then
         assertEquals(100, getNumberOfRecords(sample));
     }
@@ -364,7 +359,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         // given
         String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
         // when
-        String sample = requestDataSetSample(dataSetId, "0");
+        String sample = requestDataSetSample(dataSetId, true, "0");
         // then
         assertEquals(100, getNumberOfRecords(sample));
     }
@@ -374,7 +369,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         // given
         String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
         // when
-        String sample = requestDataSetSample(dataSetId, "10.5");
+        String sample = requestDataSetSample(dataSetId, true, "10.5");
         // then expect error (400 bad request)
     }
 
@@ -383,7 +378,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         // given
         String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
         // when
-        String sample = requestDataSetSample(dataSetId, "ghqmkdhjsgf");
+        String sample = requestDataSetSample(dataSetId, true, "ghqmkdhjsgf");
         // then expect error (400 bad request)
     }
 
@@ -1027,6 +1022,20 @@ public class DataSetServiceTests extends DataSetBaseTest {
         assertThat(column.getStatistics(), CoreMatchers.equalTo(statistics));
     }
 
+    @Test
+    public void should_remove_any_NUL_character() throws Exception {
+        // given
+        final String originalContent = IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(DATASET_WITH_NUL_CHAR_CSV));
+        assertThat(originalContent.chars().anyMatch((c) -> c == '\u0000'), is(true));
+        final String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(DATASET_WITH_NUL_CHAR_CSV));
+
+        // when
+        final String content = requestDataSetSample(dataSetId, false, "10");
+
+        // then
+        assertThat(content, not(containsString("\\u0000")));
+    }
+
     private String insertEmptyDataSet() {
         String datasetId = UUID.randomUUID().toString();
         DataSetMetadata dataSetMetadata = metadata().id(datasetId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
@@ -1043,13 +1052,13 @@ public class DataSetServiceTests extends DataSetBaseTest {
         return dataSetId;
     }
 
-    private String requestDataSetSample(String dataSetId, String sampleSize) {
+    private String requestDataSetSample(String dataSetId, boolean withColumns, String sampleSize) {
         return given() //
                 .expect() //
                 .statusCode(200) //
-                        // .log().ifValidationFails() //
                 .when() //
-                .get("/datasets/{id}/content?metadata=false&columns=true&sample={sampleSize}", dataSetId, sampleSize) //
+                .get("/datasets/{id}/content?metadata=false&columns={withColumns}&sample={sampleSize}", dataSetId, withColumns,
+                        sampleSize) //
                 .asString();
 
     }

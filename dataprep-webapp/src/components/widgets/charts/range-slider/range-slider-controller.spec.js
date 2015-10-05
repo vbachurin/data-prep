@@ -113,11 +113,11 @@ describe('RangeSlider controller', function () {
             expect(result).toEqual([20, 50]);
         }));
 
-        it('should set both enteredMin and enteredMax to the minimum if they are above', inject(function () {
+        it('should set both enteredMin and enteredMax to the minimum if they are under', inject(function () {
             //given
             var ctrl = createController();
             var enteredMin = -20;
-            var enteredMax = -200; // greater than maximum
+            var enteredMax = -200;
             var minimum = 2;
             var maximum = 100;
             var nbDecimals = 2;

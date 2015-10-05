@@ -26,23 +26,25 @@
     </div>
 
     <horizontal-barchart id="hBarChart"
-                        width="300"
-                        height="400"
-                        on-click="columnProfileCtrl.barchartClickFn"
-                        visu-data="columnProfileCtrl.histogram.data"
-                        value-field="formattedValue"
-                        key-field="{{columnProfileCtrl.histogram.key}}"
-                        key-label="{{columnProfileCtrl.histogram.label}}"></horizontal-barchart>
+                         ng-if="!columnProfileCtrl.histogram.vertical"
+                         width="300"
+                         height="400"
+                         on-click="columnProfileCtrl.addBarchartFilter"
+                         visu-data="columnProfileCtrl.histogram.data"
+                         value-field="formattedValue"
+                         key-field="{{columnProfileCtrl.histogram.key}}"
+                         key-label="{{columnProfileCtrl.histogram.label}}"></horizontal-barchart>
 
     <vertical-barchart id="vBarChart"
-                         width="300"
-                         height="200"
-                         on-click="columnProfileCtrl.vBarchartClickFn"
-                         visu-data="columnProfileCtrl.histogram.numData"
-                         value-field="{{columnProfileCtrl.histogram.key}}"
-                         key-field="data"
-                         existing-filter="columnProfileCtrl.histogram.existingFilter"
-                         key-label="{{columnProfileCtrl.histogram.label}}"></vertical-barchart>
+                       ng-if="columnProfileCtrl.histogram.vertical"
+                       width="300"
+                       height="200"
+                       on-click="columnProfileCtrl.addRangeFilter"
+                       visu-data="columnProfileCtrl.histogram.data"
+                       value-field="{{columnProfileCtrl.histogram.key}}"
+                       key-field="data"
+                       active-limits="columnProfileCtrl.histogram.activeLimits"
+                       key-label="{{columnProfileCtrl.histogram.label}}"></vertical-barchart>
 
     <highchart id="geochart"
                ng-if="columnProfileCtrl.stateDistribution"

@@ -248,6 +248,34 @@ describe('Filter service', function() {
         }));
     });
 
+    describe('add filter and digest', function() {
+        it('should add a filter wrapped in $timeout to trigger a digest', inject(function($timeout, FilterService, DatagridService) {
+            //given
+            var removeFnCallback = function() {};
+            expect(FilterService.filters.length).toBe(0);
+
+            //when
+            FilterService.addFilterAndDigest('contains', 'col1', 'column name', {phrase: 'toto'}, removeFnCallback);
+            expect(FilterService.filters.length).toBe(0);
+            $timeout.flush();
+
+            //then
+            expect(FilterService.filters.length).toBe(1);
+
+            var filterInfo = FilterService.filters[0];
+            expect(filterInfo.type).toBe('contains');
+            expect(filterInfo.colId).toBe('col1');
+            expect(filterInfo.colName).toBe('column name');
+            expect(filterInfo.editable).toBe(true);
+            expect(filterInfo.args).toEqual({phrase: 'toto'});
+            expect(filterInfo.filterFn()({col1: ' toto est ici'})).toBeTruthy();
+            expect(filterInfo.filterFn()({col1: ' tata est ici'})).toBeFalsy();
+            expect(filterInfo.removeFilterFn).toBe(removeFnCallback);
+
+            expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
+        }));
+    });
+
     describe('remove filter', function() {
         it('should remove all filters', inject(function(FilterService) {
             //given

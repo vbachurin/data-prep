@@ -1,16 +1,49 @@
 (function() {
     'use strict';
 
-    function ColumnProfileCtrl($scope, state, StatisticsService, PlaygroundService, RecipeService) {
+    /**
+     * @ngdoc controller
+     * @name data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+     * @description Column profile controller.
+     * @requires data-prep.services.state.constant:state
+     * @requires data-prep.statistics.service:StatisticsService
+     * @requires data-prep.recipe.service:RecipeService
+     * @requires data-prep.services.filter.service:FilterService
+     */
+    function ColumnProfileCtrl($scope, state, StatisticsService, RecipeService, FilterService) {
         var vm = this;
         vm.statisticsService = StatisticsService;
         vm.chartConfig = {};
 
-        vm.barchartClickFn = function barchartClickFn (item){
-            return StatisticsService.addExactFilter(item.data, true);
+        //------------------------------------------------------------------------------------------------------
+        //------------------------------------------------FILTER------------------------------------------------
+        //------------------------------------------------------------------------------------------------------
+        function addExactFilter(value) {
+            var column = state.playground.column;
+            return value.length?
+                FilterService.addFilterAndDigest('exact', column.id, column.name, {phrase: value, caseSensitive: true}):
+                FilterService.addFilterAndDigest('empty_records', column.id, column.name);
+        }
+
+        /**
+         * @ngdoc property
+         * @name addBarchartFilter
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @description Add an "exact" case sensitive filter if the value is not empty, an "empty_records" filter otherwise
+         * @type {array}
+         */
+        vm.addBarchartFilter = function addBarchartFilter (item){
+            return addExactFilter(item.data);
         };
 
-        vm.vBarchartClickFn = function vBarchartClickFn (item){
+        /**
+         * @ngdoc property
+         * @name addRangeFilter
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @description Add an "range" value filter
+         * @type {array}
+         */
+        vm.addRangeFilter = function addRangeFilter (item){
             return StatisticsService.addRangeFilter(item.data);
         };
 
@@ -129,8 +162,8 @@
          */
         var buildGeoDistribution = function(column) {
             var geoChartAction = function() {
-                StatisticsService.addExactFilter(this['hc-key'].substring(3), false);
                 console.log('State: '  + this['hc-key'] + ', value: ' + this.value);
+                return addExactFilter(this['hc-key'].substring(3));
             };
 
             vm.stateDistribution = StatisticsService.getGeoDistribution(column);

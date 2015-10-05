@@ -1,6 +1,5 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import static java.time.temporal.ChronoUnit.HOURS;
 import static org.talend.dataprep.api.type.Type.INTEGER;
 
 import java.time.DateTimeException;
@@ -8,9 +7,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalUnit;
+import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nonnull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +19,8 @@ import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 @Component(ComputeTimeSince.ACTION_BEAN_PREFIX + ComputeTimeSince.TIME_SINCE_ACTION_NAME)
 public class ComputeTimeSince extends AbstractDate implements ColumnAction {
@@ -60,17 +59,21 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
     }
 
     /**
-     * @see ActionMetadata#getItems()@return
+     * @see ActionMetadata#getParameters()
      */
     @Override
-    @Nonnull
-    public Item[] getItems() {
-        Item.Value[] values = new Item.Value[] { //
-                new Item.Value(ChronoUnit.YEARS.name(), true), //
-                new Item.Value(ChronoUnit.MONTHS.name()), //
-                new Item.Value(ChronoUnit.DAYS.name()), //
-                new Item.Value(HOURS.name()) };
-        return new Item[] { new Item(TIME_UNIT_PARAMETER, "categ", values) };
+    public List<Parameter> getParameters() {
+        List<Parameter> parameters = super.getParameters();
+        parameters.add(SelectParameter.Builder.builder() //
+                .name(TIME_UNIT_PARAMETER) //
+                .item(ChronoUnit.YEARS.name()) //
+                .item(ChronoUnit.MONTHS.name()) //
+                .item(ChronoUnit.DAYS.name()) //
+                .item(ChronoUnit.HOURS.name()) //
+                .defaultValue(ChronoUnit.HOURS.name()) //
+                .build());
+
+        return parameters;
     }
 
     /**

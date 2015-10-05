@@ -73,7 +73,8 @@ public class GenericCommandTest {
     @Test
     public void testSuccess() throws Exception {
         // Given
-        final GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/success", GenericCommandTest::error);
+        final GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/success",
+                GenericCommandTest::error);
         // When
         final String result = command.run();
         // Then
@@ -84,7 +85,8 @@ public class GenericCommandTest {
     @Test
     public void testSuccessWithMissingBehavior() throws Exception {
         // Given
-        final GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/success_with_unknown", GenericCommandTest::error);
+        final GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/success_with_unknown",
+                GenericCommandTest::error);
         // When
         final String result = command.run();
         // Then
@@ -92,11 +94,11 @@ public class GenericCommandTest {
         assertThat(lastException, nullValue());
     }
 
-
     @Test
     public void testFail_With_400() throws Exception {
         // Given
-        GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/fail_with_400", GenericCommandTest::error);
+        GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/fail_with_400",
+                GenericCommandTest::error);
         try {
             // When
             command.run();
@@ -116,7 +118,8 @@ public class GenericCommandTest {
     @Test
     public void testFail_With_404() throws Exception {
         // Given
-        GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/not_found", GenericCommandTest::error);
+        GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/not_found",
+                GenericCommandTest::error);
         try {
             // When
             command.run();
@@ -136,7 +139,8 @@ public class GenericCommandTest {
     @Test
     public void testFail_With_500() throws Exception {
         // Given
-        GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/fail_with_500", GenericCommandTest::error);
+        GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/fail_with_500",
+                GenericCommandTest::error);
         try {
             // When
             command.run();
@@ -156,7 +160,8 @@ public class GenericCommandTest {
     @Test
     public void testFail_With_Unknown() throws Exception {
         // Given
-        GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/fail_with_unknown", GenericCommandTest::error);
+        GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/fail_with_unknown",
+                GenericCommandTest::error);
         try {
             // When
             command.run();
@@ -174,11 +179,11 @@ public class GenericCommandTest {
         }
     }
 
-
     @Test
     public void testPassThrough() throws Exception {
         // Given
-        GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/fail_with_500", Defaults.passthrough());
+        GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/fail_with_500",
+                Defaults.passthrough());
         try {
             // When
             command.run();

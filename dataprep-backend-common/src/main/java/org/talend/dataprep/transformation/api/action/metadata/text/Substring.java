@@ -2,9 +2,8 @@ package org.talend.dataprep.transformation.api.action.metadata.text;
 
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.STRINGS;
 
+import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nonnull;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -15,9 +14,9 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
-import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 @Component(Substring.ACTION_BEAN_PREFIX + Substring.SUBSTRING_ACTION_NAME)
 public class Substring extends AbstractActionMetadata implements ColumnAction {
@@ -58,20 +57,29 @@ public class Substring extends AbstractActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ActionMetadata#getItems()@return
+     * @see ActionMetadata#getParameters()
      */
     @Override
-    @Nonnull
-    public Item[] getItems() {
-        final Value[] valuesFrom = new Value[]{ //
-                new Value(FROM_BEGINNING, true), //
-                new Value("From index", new Parameter(FROM_INDEX_PARAMETER, Type.INTEGER.getName(), "0"))};
+    public List<Parameter> getParameters() {
+        List<Parameter> parameters = ImplicitParameters.getParameters();
 
-        final Value[] valuesTo = new Value[]{ //
-                new Value("To end"), //
-                new Value("To index", true, new Parameter(TO_INDEX_PARAMETER, Type.INTEGER.getName(), "5"))};
+        // from parameter
+        parameters.add(SelectParameter.Builder.builder() //
+                .name(FROM_MODE_PARAMETER) //
+                .item(FROM_BEGINNING) //
+                .item("From index", new Parameter(FROM_INDEX_PARAMETER, Type.INTEGER.getName(), "0")) //
+                .defaultValue(FROM_BEGINNING) //
+                .build());
 
-        return new Item[]{new Item(FROM_MODE_PARAMETER, "categ", valuesFrom), new Item(TO_MODE_PARAMETER, "categ", valuesTo)};
+        // to parameter
+        parameters.add(SelectParameter.Builder.builder() //
+                .name(TO_MODE_PARAMETER) //
+                .item(TO_END) //
+                .item("To index", new Parameter(TO_INDEX_PARAMETER, Type.INTEGER.getName(), "5")) //
+                .defaultValue("To index") //
+                .build());
+
+        return parameters;
     }
 
     /**

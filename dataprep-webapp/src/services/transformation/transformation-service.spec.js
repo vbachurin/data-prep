@@ -130,27 +130,24 @@ describe('Transformation Service', function () {
     var menusRestMock = function () {
         return [
             {
-                'name': 'uppercase',
-                'category': 'case',
-                items: [],
+                name: 'uppercase',
+                category: 'case',
                 parameters: [
                     {name: 'column_name', type: 'string', implicit: true},
                     {name: 'column_id', type: 'string', implicit: true}
                 ]
             },
             {
-                'name': 'lowercase',
-                'category': 'case',
-                items: [],
+                name: 'lowercase',
+                category: 'case',
                 parameters: [
                     {name: 'column_name', type: 'string', implicit: true},
                     {name: 'column_id', type: 'string', implicit: true}
                 ]
             },
             {
-                'name': 'cut',
-                'category': 'split',
-                items: [],
+                name: 'cut',
+                category: 'split',
                 parameters: [
                     {name: 'column_name', type: 'string', implicit: true},
                     {name: 'column_id', type: 'string', implicit: true},
@@ -158,60 +155,64 @@ describe('Transformation Service', function () {
                 ]
             },
             {
-                'name': 'split',
-                'category': 'split',
+                name: 'split',
+                category: 'split',
                 parameters: [
                     {name: 'column_name', type: 'string', implicit: true},
-                    {name: 'column_id', type: 'string', implicit: true}
-                ],
-                'items': [{
-                    name: 'mode',
-                    values: [
-                        {
-                            name: 'noparam'
-                        },
-                        {
-                            name: 'regex',
-                            'parameters': [
+                    {name: 'column_id', type: 'string', implicit: true},
+                    {
+                        name: 'mode',
+                        type: 'select',
+                        configuration: {
+                            values: [
+                                {name: 'noparam', value: 'noparam'},
                                 {
-                                    'name': 'regexp',
-                                    'type': 'string',
-                                    'default': '.'
-                                }
-                            ]
-                        },
-                        {
-                            name: 'index',
-                            'parameters': [
-                                {
-                                    'name': 'index',
-                                    'type': 'integer',
-                                    'default': '5'
-                                }
-                            ]
-                        },
-                        {
-                            name: 'threeParams',
-                            'parameters': [
-                                {
-                                    'name': 'index',
-                                    'type': 'numeric',
-                                    'default': '5'
+                                    name: 'regex',
+                                    value: 'regex',
+                                    parameters: [
+                                        {
+                                            name: 'regexp',
+                                            type: 'string',
+                                            default: '.'
+                                        }
+                                    ]
                                 },
                                 {
-                                    'name': 'index2',
-                                    'type': 'float',
-                                    'default': '5'
+                                    name: 'index',
+                                    value: 'index',
+                                    'parameters': [
+                                        {
+                                            'name': 'index',
+                                            'type': 'integer',
+                                            default: '5'
+                                        }
+                                    ]
                                 },
                                 {
-                                    'name': 'index3',
-                                    'type': 'double',
-                                    'default': '5'
+                                    name: 'threeParams',
+                                    value: 'threeParams',
+                                    'parameters': [
+                                        {
+                                            'name': 'index',
+                                            'type': 'numeric',
+                                            'default': '5'
+                                        },
+                                        {
+                                            'name': 'index2',
+                                            'type': 'float',
+                                            'default': '5'
+                                        },
+                                        {
+                                            'name': 'index3',
+                                            'type': 'double',
+                                            'default': '5'
+                                        }
+                                    ]
                                 }
                             ]
                         }
-                    ]
-                }]
+                    }
+                ]
             }
         ];
     };
@@ -230,7 +231,6 @@ describe('Transformation Service', function () {
             category: 'quickfix',
             dynamic: true,
             parameters: [],
-            items: [],
             cluster: {}
         };
         var infos = {
@@ -244,7 +244,6 @@ describe('Transformation Service', function () {
 
         //then
         expect(transformation.parameters).toBe(null);
-        expect(transformation.items).toBe(null);
         expect(transformation.cluster).toBe(null);
     }));
 
@@ -255,7 +254,6 @@ describe('Transformation Service', function () {
             category: 'quickfix',
             dynamic: true,
             parameters: [],
-            items: [],
             cluster: {}
         };
         var infos = {
@@ -505,13 +503,24 @@ describe('Transformation Service', function () {
     it('should init params values on simple params', inject(function (TransformationService) {
         //given
         var transformation = {
-            items: [{
-                name: 'mode',
-                values: [
-                    {name: 'regex', parameters: [{name: 'pattern', type: 'text', default: 'toto'}]},
-                    {name: 'index', default: true}
-                ]
-            }]
+            parameters: [
+                {
+                    name: 'mode',
+                    type: 'select',
+                    configuration: {
+                        values: [
+                            {
+                                name: 'regex',
+                                value: 'regex',
+                                parameters: [
+                                    {name: 'pattern', type: 'text', default: 'toto'}
+                                ]
+                            },
+                            {name: 'index', value: 'index'}
+                        ]
+                    },
+                    default: 'index'
+                }]
         };
 
         var paramValues = {
@@ -524,11 +533,11 @@ describe('Transformation Service', function () {
         TransformationService.initParamsValues(transformation, paramValues);
 
         //then
-        expect(transformation.items[0].initialValue).toBe(transformation.items[0].values[0]);
-        expect(transformation.items[0].selectedValue).toBe(transformation.items[0].values[0]);
-        expect(transformation.items[0].values[0].parameters[0].initialValue).toBe('azerty');
-        expect(transformation.items[0].values[0].parameters[0].value).toBe('azerty');
-        expect(transformation.items[0].values[0].parameters[0].inputType).toBe('text');
+        expect(transformation.parameters[0].initialValue).toBe(transformation.parameters[0].configuration.values[0].value);
+        expect(transformation.parameters[0].value).toBe(transformation.parameters[0].configuration.values[0].value);
+        expect(transformation.parameters[0].configuration.values[0].parameters[0].initialValue).toBe('azerty');
+        expect(transformation.parameters[0].configuration.values[0].parameters[0].value).toBe('azerty');
+        expect(transformation.parameters[0].configuration.values[0].parameters[0].inputType).toBe('text');
     }));
 
     it('should init params values on simple params', inject(function (TransformationService) {
@@ -598,11 +607,8 @@ describe('Transformation Service', function () {
         expect(transformations[1].parameters).toBe(null); // delete column_name & column_id parameter
         expect(transformations[2].parameters.length).toBe(1); // delete column_name & column_id parameter
         expect(transformations[2].parameters[0].inputType).toBe('text'); //adapt input type
-        expect(transformations[3].parameters).toBe(null); // delete column_name & column_id parameter
-        expect(transformations[3].items[0].values[1].parameters[0].inputType).toBe('text'); //adapt input type
-        expect(transformations[3].items[0].values[2].parameters[0].inputType).toBe('number'); //adapt input type
-        expect(transformations[3].items[0].values[3].parameters[0].inputType).toBe('number'); //adapt input type
-        expect(transformations[3].items[0].values[3].parameters[1].inputType).toBe('number'); //adapt input type
-        expect(transformations[3].items[0].values[3].parameters[2].inputType).toBe('number'); //adapt input type
+        expect(transformations[3].parameters[0].configuration.values[1].inputType).toBe('text'); //adapt input type
+        expect(transformations[3].parameters[0].configuration.values[2].parameters[0].inputType).toBe('number'); //adapt input type
+        expect(transformations[3].parameters[0].configuration.values[3].parameters[0].inputType).toBe('number'); //adapt input type
     }));
 });

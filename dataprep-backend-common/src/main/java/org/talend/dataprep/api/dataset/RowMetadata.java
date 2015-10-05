@@ -126,14 +126,14 @@ public class RowMetadata implements Serializable {
 
     /**
      * Change detection between column and its reference (before the transformation)
-     * @param column    The column metadata
+     * 
+     * @param column The column metadata
      * @param reference The column reference
      * @return True if the name, domain or type has changed
      */
     private boolean columnHasChanged(final ColumnMetadata column, final ColumnMetadata reference) {
-        return !column.getName().equals(reference.getName()) ||
-                ! column.getDomain().equals(reference.getDomain()) ||
-                ! column.getType().equals(reference.getType());
+        return !column.getName().equals(reference.getName()) || !column.getDomain().equals(reference.getDomain())
+                || !column.getType().equals(reference.getType());
     }
 
     /**

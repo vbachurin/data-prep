@@ -1,19 +1,21 @@
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import static java.util.stream.Collectors.toList;
+
+import java.util.*;
+
+import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.TypeUtils;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
 import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.datascience.common.inference.type.DataType;
 
-import java.util.*;
-
-import static java.util.stream.Collectors.toList;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Utility class for the ActionsMetadata
@@ -28,43 +30,6 @@ public class ActionMetadataUtils {
      */
     private ActionMetadataUtils() {
         // private constructor for utility class
-    }
-
-    /**
-     * Parse the given json parameter into a map<key, value>.
-     *
-     * @param parameters the json parameters.
-     * @param actionMetadata the action metadata.
-     * @return the action parameters as a map<key, value>.
-     */
-    public static Map<String, String> parseParameters(Iterator<Map.Entry<String, JsonNode>> parameters,
-            ActionMetadata actionMetadata) {
-        final List<String> paramIds = actionMetadata.getParameters()
-                .stream() //
-                .map(Parameter::getName) //
-                .collect(toList()); //
-        for (Item current : actionMetadata.getItems()) {
-            paramIds.add(current.getName());
-            for (Item.Value value : current.getValues()) {
-                for (Parameter parameter : value.getParameters()) {
-                    paramIds.add(parameter.getName());
-                }
-            }
-        }
-
-        final Map<String, String> parsedParameters = new HashMap<>();
-        while (parameters.hasNext()) {
-            Map.Entry<String, JsonNode> currentParameter = parameters.next();
-
-            if (paramIds.contains(currentParameter.getKey())) {
-                parsedParameters.put(currentParameter.getKey(), currentParameter.getValue().asText());
-            } else {
-                LOGGER.warn("Parameter '{} is not recognized for {}", //
-                        currentParameter.getKey(), //
-                        actionMetadata.getClass());
-            }
-        }
-        return parsedParameters;
     }
 
     /**

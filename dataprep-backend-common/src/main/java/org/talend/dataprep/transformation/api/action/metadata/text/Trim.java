@@ -2,8 +2,6 @@ package org.talend.dataprep.transformation.api.action.metadata.text;
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -13,7 +11,6 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 /**
  * Trim leading and trailing spaces.
@@ -40,15 +37,6 @@ public class Trim extends AbstractActionMetadata implements ColumnAction {
     @Override
     public String getCategory() {
         return ActionCategory.STRINGS.getDisplayName();
-    }
-
-    /**
-     * @see ActionMetadata#getItems()
-     */
-    @Override
-    @Nonnull
-    public Item[] getItems() {
-        return new Item[0];
     }
 
     /**

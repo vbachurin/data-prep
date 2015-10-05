@@ -2,8 +2,8 @@ package org.talend.dataprep.api.service.command.preparation;
 
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.talend.dataprep.api.APIErrorCodes.UNABLE_TO_UPDATE_PREPARATION;
 import static org.talend.dataprep.api.service.command.common.Defaults.asString;
+import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_UPDATE_PREPARATION;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;

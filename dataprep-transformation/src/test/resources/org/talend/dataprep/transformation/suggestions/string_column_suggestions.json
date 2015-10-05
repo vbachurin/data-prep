@@ -35,8 +35,6 @@
         "default": ""
       }
     ],
-    "items": [
-    ],
     "dynamic": false,
     "description": "Fill empty cells of this column with given value",
     "label": "Fill empty cells with text..."
@@ -77,7 +75,6 @@
         "default": ""
       }
     ],
-    "items": [],
     "dynamic": false,
     "description": "Fill invalid cells of this column with given value",
     "label": "Fill invalid cells with value..."
@@ -118,16 +115,12 @@
         "default": ""
       }
     ],
-    "items": [
-    ],
     "dynamic": false,
     "description": "Delete rows that have a specific value in cell in this column",
     "label": "Delete lines that match..."
   },
   {
     "name": "delete_invalid",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -160,8 +153,6 @@
   },
   {
     "name": "delete_empty",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -229,16 +220,12 @@
       }
     ],
     "name": "rename_column",
-    "items": [
-    ],
     "dynamic": false,
     "description": "Rename this column",
     "label": "Rename"
   },
   {
     "category": "columns",
-    "items": [
-    ],
     "name": "copy",
     "parameters": [
       {
@@ -271,60 +258,6 @@
     "label": "Duplicate"
   },
   {
-    "items": [
-      {
-        "name": "separator",
-        "category": "categ",
-        "values": [
-          {
-            "name": ":",
-            "parameters": [
-            ],
-            "default": true
-          },
-          {
-            "name": "@",
-            "parameters": [
-            ],
-            "default": false
-          },
-          {
-            "name": " ",
-            "parameters": [
-            ],
-            "default": false
-          },
-          {
-            "name": "-",
-            "parameters": [
-            ],
-            "default": false
-          },
-          {
-            "name": ",",
-            "parameters": [
-            ],
-            "default": false
-          },
-          {
-            "name": "other",
-            "parameters": [
-              {
-                "name": "manual_separator",
-                "type": "string",
-                "implicit": false,
-                "description": "Choose your own separator",
-                "label": "Manual separator",
-                "default": ""
-              }
-            ],
-            "default": false
-          }
-        ],
-        "description": "Character to use as separator",
-        "label": "Separator"
-      }
-    ],
     "name": "split",
     "parameters": [
       {
@@ -358,6 +291,49 @@
         "description": "Number of token to split the value in",
         "label": "Limit",
         "default": "2"
+      },
+      {
+        "name": "separator",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": ":"
+            },
+            {
+              "value": "@"
+            },
+            {
+              "value": " "
+            },
+            {
+              "value": ","
+            },
+            {
+              "value": "-"
+            },
+            {
+              "value": "other",
+              "parameters": [
+                {
+                  "name": "manual_separator",
+                  "type": "string",
+                  "implicit": false,
+                  "canBeBlank": true,
+                  "description": "Choose your own separator",
+                  "label": "Manual separator",
+                  "default": ""
+                }
+              ]
+            }
+          ],
+          "multiple": false
+        },
+        "description": "Character to use as separator",
+        "label": "Separator",
+        "default": ":"
       }
     ],
     "dynamic": false,
@@ -366,8 +342,6 @@
   },
   {
     "name": "lowercase",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -401,8 +375,6 @@
   {
     "name": "textclustering",
     "dynamic": true,
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -433,8 +405,6 @@
     "label": "Find and group similar text..."
   },
   {
-    "items": [
-    ],
     "name": "trim",
     "parameters": [
       {
@@ -468,8 +438,6 @@
   },
   {
     "name": "extractemaildomain",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -501,64 +469,6 @@
     "label": "Extract email tokens"
   },
   {
-    "items": [
-      {
-        "name": "from_mode",
-        "category": "categ",
-        "values": [
-          {
-            "name": "From beginning",
-            "parameters": [
-            ],
-            "default": true
-          },
-          {
-            "name": "From index",
-            "parameters": [
-              {
-                "name": "from_index",
-                "type": "integer",
-                "implicit": false,
-                "description": "Index of the original value that starts the new one",
-                "label": "Begining index",
-                "default": "0"
-              }
-            ],
-            "default": false
-          }
-        ],
-        "description": "Select begining mode of the substring",
-        "label": "From"
-      },
-      {
-        "name": "to_mode",
-        "category": "categ",
-        "values": [
-          {
-            "name": "To end",
-            "parameters": [
-            ],
-            "default": false
-          },
-          {
-            "name": "To index",
-            "parameters": [
-              {
-                "name": "to_index",
-                "type": "integer",
-                "implicit": false,
-                "description": "Index of the original value that ends the new one",
-                "label": "End index",
-                "default": "5"
-              }
-            ],
-            "default": true
-          }
-        ],
-        "description": "Select end mode of the substring",
-        "label": "To"
-      }
-    ],
     "name": "substring",
     "parameters": [
       {
@@ -584,6 +494,68 @@
         "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
         "label": "Scope",
         "default": ""
+      },
+      {
+        "name": "from_mode",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": "From beginning"
+            },
+            {
+              "value": "From index",
+              "parameters": [
+                {
+                  "name": "from_index",
+                  "type": "integer",
+                  "implicit": false,
+                  "canBeBlank": true,
+                  "description": "Index of the original value that starts the new one",
+                  "label": "Beginning index",
+                  "default": "0"
+                }
+              ]
+            }
+          ],
+          "multiple": false
+        },
+        "description": "Select beginning mode of the substring",
+        "label": "From",
+        "default": "From beginning"
+      },
+      {
+        "name": "to_mode",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": "To end"
+            },
+            {
+              "value": "To index",
+              "parameters": [
+                {
+                  "name": "to_index",
+                  "type": "integer",
+                  "implicit": false,
+                  "canBeBlank": true,
+                  "description": "Index of the original value that ends the new one",
+                  "label": "End index",
+                  "default": "5"
+                }
+              ]
+            }
+          ],
+          "multiple": false
+        },
+        "description": "Select end mode of the substring",
+        "label": "To",
+        "default": "To index"
       }
     ],
     "dynamic": false,
@@ -592,8 +564,6 @@
   },
   {
     "name": "compute_length",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -668,16 +638,12 @@
         "default": ""
       }
     ],
-    "items": [
-    ],
     "dynamic": false,
     "description": "Replace cells that have a specific value",
     "label": "Replace cells that match..."
   },
   {
     "name": "propercase",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -710,8 +676,6 @@
   },
   {
     "name": "uppercase",
-    "items": [
-    ],
     "parameters": [
       {
         "name": "column_id",
@@ -778,19 +742,17 @@
         "default": ""
       }
     ],
-    "items": [
-    ],
     "dynamic": false,
     "description": "Remove specified text from cells in this column",
     "label": "Remove part of the text..."
   },
   {
-    "name":"remove_non_num_chars"
+    "name": "remove_non_num_chars"
   },
   {
-    "name":"remove_non_alpha_num_chars"
+    "name": "remove_non_alpha_num_chars"
   },
   {
-    "name":"normalize"
+    "name": "normalize"
   }
 ]

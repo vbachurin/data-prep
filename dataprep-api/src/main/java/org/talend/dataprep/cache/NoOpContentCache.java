@@ -1,6 +1,5 @@
 package org.talend.dataprep.cache;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -43,7 +42,7 @@ public class NoOpContentCache implements ContentCache {
      */
     @Override
     public InputStream get(ContentCacheKey key) {
-        return new ByteArrayInputStream(new byte[0]);
+        return null;
     }
 
     /**

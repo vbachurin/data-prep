@@ -23,8 +23,8 @@
          * @methodOf data-prep.transformation-params.controller:TransformClusterParamsCtrl
          * @description Refresh all cluster "active" flag to the state of the global activation checkbox
          */
-        vm.refreshClusterState = function() {
-            _.forEach(vm.details.clusters, function(cluster) {
+        vm.refreshClusterState = function () {
+            _.forEach(vm.details.clusters, function (cluster) {
                 cluster.active = vm.allCheckboxState;
             });
         };
@@ -35,8 +35,8 @@
          * @methodOf data-prep.transformation-params.controller:TransformClusterParamsCtrl
          * @description Initialize all cluster "active" flag
          */
-        vm.initClusterState = function() {
-            _.forEach(vm.details.clusters, function(cluster) {
+        vm.initClusterState = function () {
+            _.forEach(vm.details.clusters, function (cluster) {
                 cluster.active = cluster.initialActive;
             });
         };
@@ -47,8 +47,8 @@
          * @methodOf data-prep.transformation-params.controller:TransformClusterParamsCtrl
          * @description Refresh the global activation checkbox
          */
-        vm.refreshToggleCheckbox = function() {
-            var inactiveCluster = _.find(vm.details.clusters, function(cluster) {
+        vm.refreshToggleCheckbox = function () {
+            var inactiveCluster = _.find(vm.details.clusters, function (cluster) {
                 return !cluster.active;
             });
             vm.allCheckboxState = !inactiveCluster;
@@ -60,24 +60,22 @@
          * @methodOf data-prep.transformation-params.controller:TransformClusterParamsCtrl
          * @description Initialize parameters values and checkbox state if needed
          */
-        var initParamsValues = function() {
-            _.forEach(vm.details.clusters, function(cluster) {
-                _.forEach(cluster.parameters, function(param) {
+        var initParamsValues = function () {
+            _.forEach(vm.details.clusters, function (cluster) {
+                _.forEach(cluster.parameters, function (param) {
                     param.default = true;
                 });
             });
 
             //Check if cluster is already initialized
-            var clustersInitialized = false;
-            for(var i=0; i<vm.details.clusters.length; i++) {
-                if (typeof vm.details.clusters[i].initialActive !== 'undefined') {
-                    clustersInitialized = true;
-                    break;
-                }
-            }
-            if(!clustersInitialized) {
+            var hasInitialActive = _.find(vm.details.clusters, function (cluster) {
+                return typeof cluster.initialActive !== 'undefined';
+            });
+
+            if (!hasInitialActive) {
                 vm.refreshClusterState();
-            } else {
+            }
+            else {
                 vm.initClusterState();
             }
         };
@@ -88,8 +86,8 @@
          * @methodOf data-prep.transformation-params.controller:TransformSimpleParamsCtrl
          * @description [PRIVATE] Init params input type, depending on param type
          */
-        var initReplaceList = function() {
-            _.forEach(vm.details.clusters, function(cluster) {
+        var initReplaceList = function () {
+            _.forEach(vm.details.clusters, function (cluster) {
                 cluster.replace.list = _.map(cluster.parameters, 'name');
             });
         };

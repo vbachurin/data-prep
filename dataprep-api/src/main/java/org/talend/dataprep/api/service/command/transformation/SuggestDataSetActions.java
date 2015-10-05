@@ -14,11 +14,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.api.service.command.common.ChainedCommand;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,7 +43,7 @@ public class SuggestDataSetActions extends ChainedCommand<InputStream, DataSetMe
             post.setHeader(new BasicHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE));
             DataSetMetadata metadata = getInput();
             ObjectMapper objectMapper = builder.build();
-            byte[] dataSetMetadataJSON  = objectMapper.writer().writeValueAsBytes(metadata);
+            byte[] dataSetMetadataJSON = objectMapper.writer().writeValueAsBytes(metadata);
             post.setEntity(new ByteArrayEntity(dataSetMetadataJSON));
             return post;
         } catch (JsonProcessingException e) {

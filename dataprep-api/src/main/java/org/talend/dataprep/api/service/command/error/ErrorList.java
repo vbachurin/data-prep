@@ -11,9 +11,9 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.command.common.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.APIErrorCodes;
 
 import com.netflix.hystrix.HystrixCommandGroupKey;
 
@@ -42,25 +42,25 @@ public class ErrorList extends GenericCommand<InputStream> {
     private HttpRequestBase onExecute(ServiceType type) {
         final String serviceUrl;
         switch (type) {
-            case DATASET:
-                serviceUrl = datasetServiceUrl + "/datasets/errors";
-                break;
-            case TRANSFORMATION:
-                serviceUrl = transformationServiceUrl + "/transform/errors";
-                break;
-            case PREPARATION:
-                serviceUrl =preparationServiceUrl + "/preparations/errors";
-                break;
-            default:
-                throw new IllegalArgumentException("Type '" + type + "' is not supported.");
+        case DATASET:
+            serviceUrl = datasetServiceUrl + "/datasets/errors";
+            break;
+        case TRANSFORMATION:
+            serviceUrl = transformationServiceUrl + "/transform/errors";
+            break;
+        case PREPARATION:
+            serviceUrl = preparationServiceUrl + "/preparations/errors";
+            break;
+        default:
+            throw new IllegalArgumentException("Type '" + type + "' is not supported.");
         }
         return new HttpGet(serviceUrl);
     }
 
     public enum ServiceType {
-        DATASET,
-        TRANSFORMATION,
-        PREPARATION
+                             DATASET,
+                             TRANSFORMATION,
+                             PREPARATION
     }
 
 }
