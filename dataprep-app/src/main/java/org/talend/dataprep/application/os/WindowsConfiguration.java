@@ -13,10 +13,10 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@Conditional(MacOSCondition.class)
-public class MacOSConfiguration implements ApplicationListener {
+@Conditional(WindowsCondition.class)
+public class WindowsConfiguration implements ApplicationListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MacOSConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WindowsConfiguration.class);
 
     @Value("${server.port}")
     private int serverPort;
@@ -25,13 +25,10 @@ public class MacOSConfiguration implements ApplicationListener {
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof EmbeddedServletContainerInitializedEvent) {
             try {
-                // tell macosx to keep the menu associated with the screen and what the app title is
-                System.setProperty("apple.laf.useScreenMenuBar", "true");
-                System.setProperty("com.apple.eawt.CocoaComponent.CompatibilityMode", "false");
-                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Talend Data Preparation");
-
+                System.setProperty("java.awt.headless", "false");
                 final String url = "http://127.0.0.1:" + serverPort + "/ui/index.html";
                 Desktop.getDesktop().browse(new URI(url));
+
             } catch (Exception e) {
                 LOGGER.error("Unable to launch web browser.", e);
             }
