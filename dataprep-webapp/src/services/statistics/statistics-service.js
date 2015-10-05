@@ -22,8 +22,6 @@
             statistics: null,
 
             //filters
-            addFilter: addFilter,
-            addExactFilter: addExactFilter,
             addRangeFilter: addRangeFilter,
 
             //statistics entry points
@@ -126,7 +124,7 @@
         function initClassicHistogram(key, label, dataTable) {
             service.histogram = {
                 data: _.map(dataTable, function (rec) {
-                    rec.formattedValue = TextFormatService.adaptValueToHtmlConstraints(rec.data);
+                    rec.formattedValue = TextFormatService.adaptToGridConstraints(rec.data);
                     return rec;
                 }),
                 key: key,
@@ -496,38 +494,6 @@
         //--------------------------------------------------------------------------------------------------------------
         //-------------------------------------------------UTILS--------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
-        /**
-         * @ngdoc method
-         * @name addFilter
-         * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {string} value The phrase to filter
-         * @description Add a filter in the angular context
-         */
-        function addFilter(value) {
-            var column = service.selectedColumn;
-            var filterFn = value.length ?
-                FilterService.addFilter.bind(null, 'contains', column.id, column.name, {phrase: value}) :
-                FilterService.addFilter.bind(null, 'empty_records', column.id, column.name, {});
-
-            $timeout(filterFn);
-        }
-
-        /**
-         * @ngdoc method
-         * @name addExactFilter
-         * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {string, boolean} value The phrase to filter (clicked Hbarchart data) and the caseSensitiveness of the filter
-         * @description Add an exact filter in the angular context with/without caseSensitiveness
-         */
-        function addExactFilter(value, caseSensitive) {
-            var column = service.selectedColumn;
-            var filterFn = value.length?
-                            FilterService.addFilter.bind(null, 'exact', column.id, column.name, {phrase: value, caseSensitive: caseSensitive}):
-                            FilterService.addFilter.bind(null, 'empty_records', column.id, column.name, {});
-
-            $timeout(filterFn);
-        }
-
         /**
          * @ngdoc method
          * @name resetCharts

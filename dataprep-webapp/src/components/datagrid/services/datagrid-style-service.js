@@ -112,7 +112,7 @@
 
             return function formatter(row, cell, value, columnDef, dataContext) {
                 //hidden characters need to be shown
-                var returnStr = TextFormatService.adaptValueToHtmlConstraints(value);
+                var returnStr = TextFormatService.adaptToGridConstraints(value);
 
                 //entire row modification preview
                 switch (dataContext.__tdpRowDiff) {
