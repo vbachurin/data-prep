@@ -793,7 +793,7 @@
         "name": "concat_separator",
         "type": "string",
         "implicit": false,
-        "default": " "
+        "default": ""
       },
       {
         "name": "suffix",
