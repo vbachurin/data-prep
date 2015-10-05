@@ -47,11 +47,6 @@ public class Concat extends AbstractActionMetadata implements ColumnAction {
     public static final String SEPARATOR_PARAMETER = "concat_separator"; //$NON-NLS-1$
 
     /**
-     * Default separator value.
-     */
-    public static final String SPACE = " "; //$NON-NLS-1$
-
-    /**
      * The optional new column suffix content.
      */
     public static final String SUFFIX_PARAMETER = "suffix"; //$NON-NLS-1$
@@ -81,7 +76,7 @@ public class Concat extends AbstractActionMetadata implements ColumnAction {
         // TODO Vincent define a constant for column but not in Type (which should be used only for columns)
         parameters.add(new Parameter(SELECTED_COLUMN_PARAMETER, "column", StringUtils.EMPTY, false, false));
         parameters.add(new Parameter(PREFIX_PARAMETER, Type.STRING.toString(), StringUtils.EMPTY));
-        parameters.add(new Parameter(SEPARATOR_PARAMETER, Type.STRING.toString(), SPACE));
+        parameters.add(new Parameter(SEPARATOR_PARAMETER, Type.STRING.toString(), StringUtils.EMPTY));
         parameters.add(new Parameter(SUFFIX_PARAMETER, Type.STRING.toString(), StringUtils.EMPTY));
         return parameters;
     }
@@ -156,8 +151,8 @@ public class Concat extends AbstractActionMetadata implements ColumnAction {
     /**
      * Create the new "string length" column
      *
-     * @param sourceColumn
-     * @param selectedColumn the current column metadata
+     * @param sourceColumn The source column to concatenate.
+     * @param selectedColumn The selected column to concatenate.
      * @return the new column metadata
      */
     private ColumnMetadata createNewColumn(ColumnMetadata sourceColumn, ColumnMetadata selectedColumn) {
