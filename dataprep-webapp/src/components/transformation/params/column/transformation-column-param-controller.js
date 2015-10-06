@@ -22,6 +22,7 @@
         var initColumns = function () {
             var currentColumn = state.playground.column;
             vm.columns = _.filter(state.playground.data.columns, function(column) {
+
                 return currentColumn !== column;
             });
         };
