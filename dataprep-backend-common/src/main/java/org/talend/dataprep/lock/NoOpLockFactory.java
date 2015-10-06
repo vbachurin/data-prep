@@ -2,11 +2,10 @@ package org.talend.dataprep.lock;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
-
-import com.hazelcast.core.HazelcastInstance;
+import org.talend.dataprep.configuration.HazelcastSetup;
 
 @Component
-@ConditionalOnMissingBean(HazelcastInstance.class)
+@ConditionalOnMissingBean(HazelcastSetup.class)
 public class NoOpLockFactory implements LockFactory {
 
     @Override
