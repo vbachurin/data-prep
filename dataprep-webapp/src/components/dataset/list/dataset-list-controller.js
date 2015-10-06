@@ -26,6 +26,8 @@
 
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
+        vm.showChangeName = false;
+        vm.currentDataset = null;
 
         /**
          * @ngdoc property
@@ -138,9 +140,41 @@
                 });
         };
 
+        /**
+         * @ngdoc method
+         * @name clone
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Delete a dataset
+         * @param {object} dataset - the dataset to clone
+         */
         vm.clone = function(dataset){
-            console.log('ctrl clone:'+dataset.id);
+            // TODO ask a new name?
             return DatasetService.clone(dataset);
+        };
+
+        /**
+         * @ngdoc method
+         * @name rename
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Open a modal asking a new name for the dataset
+         * @param {object} dataset - the dataset to rename
+         */
+        vm.rename = function(dataset){
+            vm.showChangeName = true;
+            vm.currentDataset = dataset;
+        };
+
+        /**
+         * @ngdoc method
+         * @name doRename
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Trigger the dataset rename in the backend
+         */
+        vm.doRename = function(){
+            return DatasetService.update(vm.currentDataset)
+                .then(function(){
+                  vm.showChangeName = false;
+                });
         };
 
         /**
