@@ -164,10 +164,40 @@
             var currentRangeFilter = _.find(FilterService.filters, function(filter){
                 return filter.colId === column.id && filter.type === 'inside_range';
             });
+            var maxBrush, minBrush;
 
             if(currentRangeFilter){
-                if(currentRangeFilter.args.interval[0] < column.statistics.min){
-                    var maxBrush;
+                if(currentRangeFilter.args.interval[0] < column.statistics.min && currentRangeFilter.args.interval[1] > column.statistics.max){
+                    if(currentRangeFilter.args.interval[1] <= column.statistics.min){
+                        maxBrush = column.statistics.min;
+                    }
+                    else if(currentRangeFilter.args.interval[1] >= column.statistics.max){
+                        maxBrush = column.statistics.max;
+                    }
+                    else if(currentRangeFilter.args.interval[1] < column.statistics.max && currentRangeFilter.args.interval[1] > column.statistics.min){
+                        maxBrush = currentRangeFilter.args.interval[1];
+                    }
+
+                    if(currentRangeFilter.args.interval[0] >= column.statistics.max){
+                        minBrush = column.statistics.max;
+                    }
+                    else if(currentRangeFilter.args.interval[0] <= column.statistics.min){
+                        minBrush = column.statistics.min;
+                    }
+                    else if(currentRangeFilter.args.interval[0] <= column.statistics.max && currentRangeFilter.args.interval[0] >= column.statistics.min){
+                        minBrush = currentRangeFilter.args.interval[0];
+                    }
+                    service.rangeLimits = {
+                        min : column.statistics.min,
+                        max : column.statistics.max,
+                        minBrush : minBrush,
+                        maxBrush : maxBrush,
+                        minFilterVal : currentRangeFilter.args.interval[0],
+                        maxFilterVal : currentRangeFilter.args.interval[1]
+                    };
+                }
+
+                else if(currentRangeFilter.args.interval[0] < column.statistics.min){
                     if(currentRangeFilter.args.interval[1] <= column.statistics.min){
                         maxBrush = column.statistics.min;
                     }
@@ -187,10 +217,11 @@
                     };
                 }
                 else if(currentRangeFilter.args.interval[1] > column.statistics.max){
-
-                    var minBrush;
                     if(currentRangeFilter.args.interval[0] >= column.statistics.max){
                         minBrush = column.statistics.max;
+                    }
+                    else if(currentRangeFilter.args.interval[0] <= column.statistics.min){
+                        minBrush = column.statistics.min;
                     }
                     else if(currentRangeFilter.args.interval[0] <= column.statistics.max && currentRangeFilter.args.interval[0] >= column.statistics.min){
                         minBrush = currentRangeFilter.args.interval[0];
@@ -371,12 +402,6 @@
                     service.histogram.activeLimits = [service.selectedColumn.statistics.min, service.selectedColumn.statistics.max];
                 }
             };
-
-            service.rangeLimits.minBrush = interval[0];
-            service.rangeLimits.maxBrush = interval[1];
-            //empty the minFilterVal and the maxFilterVal because otherwise it will show them once we get back to the VIZ tab
-            service.rangeLimits.minFilterVal = undefined;
-            service.rangeLimits.maxFilterVal = undefined;
 
             var column = service.selectedColumn;
             var filterFn = FilterService.addFilter.bind(null, 'inside_range', column.id, column.name, {interval: interval}, removeFilterFn);

@@ -35,6 +35,7 @@
                 var container = attrs.id;
                 var filterToApply;
 
+                var lastBrushValues;
                 //the left and right margins MUST be the same as the verticalBarchart ones
                 var margin = {top: 5, right: 20, bottom: 10, left: 15};
                 var width = attrs.width - margin.left - margin.right;
@@ -48,10 +49,13 @@
                  **/
                 function renderRangerSlider() {
                     var rangeLimits = scope.rangeLimits;
-
                     var minBrush = typeof rangeLimits.minBrush !== 'undefined' ? rangeLimits.minBrush : rangeLimits.min;
                     var maxBrush = typeof rangeLimits.maxBrush !== 'undefined' ? rangeLimits.maxBrush : rangeLimits.max;
                     var nbDecimals = d3.max([ctrl.decimalPlaces(minBrush), ctrl.decimalPlaces(maxBrush)]);
+                    lastBrushValues = {
+                        min: minBrush,
+                        max: maxBrush
+                    };
 
                     var centerValue = (minBrush + maxBrush) / 2;
 
@@ -266,6 +270,8 @@
                                 }
 
                                 scope.onBrushEnd()(filterToApply);
+                                lastBrushValues.min = +brushValues[0].toFixed(nbDecimals);
+                                lastBrushValues.max = +brushValues[1].toFixed(nbDecimals);
                             });
                     }
 
@@ -357,8 +363,8 @@
                     return !scope.brush ||
                         oldRangeLimits.min !== newRangeLimits.min ||
                         oldRangeLimits.max !== newRangeLimits.max ||
-                        oldRangeLimits.minBrush !== newRangeLimits.minBrush ||
-                        oldRangeLimits.maxBrush !== newRangeLimits.maxBrush;
+                        lastBrushValues.min !== newRangeLimits.minBrush ||
+                        lastBrushValues.max !== newRangeLimits.maxBrush;
                 }
 
                 scope.$watch('rangeLimits',
