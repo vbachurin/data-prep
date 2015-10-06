@@ -138,6 +138,11 @@
                 });
         };
 
+        vm.clone = function(dataset){
+            console.log('ctrl clone:'+dataset.id);
+            return DatasetService.clone(dataset);
+        };
+
         /**
          * @ngdoc method
          * @name loadUrlSelectedDataset

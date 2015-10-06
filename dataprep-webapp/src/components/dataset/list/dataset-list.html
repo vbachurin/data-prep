@@ -60,6 +60,8 @@
                    ng-click="datasetListCtrl.datasetService.processCertification(dataset)"></a>
                 <a data-icon="f" class="btn-icon btn-transparent favorite" ng-class="{'favorite-true':dataset.favorite}"
                    ng-click="datasetListCtrl.datasetService.toggleFavorite(dataset)"></a>
+                <a data-icon="y" class="btn-icon btn-transparent" title="clone"
+                   ng-click="datasetListCtrl.clone(dataset)"></a>
             </div>
         </div>
     </div>
