@@ -99,7 +99,8 @@ describe('Preparation REST Service', function () {
 
     beforeEach(module('data-prep.services.preparation'));
 
-    beforeEach(inject(function ($injector) {
+    beforeEach(inject(function ($injector, RestURLs) {
+        RestURLs.setServerUrl('');
         $httpBackend = $injector.get('$httpBackend');
     }));
 

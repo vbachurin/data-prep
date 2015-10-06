@@ -5,7 +5,8 @@ describe('Statistics REST service', function () {
 
     beforeEach(module('data-prep.services.statistics'));
 
-    beforeEach(inject(function ($injector) {
+    beforeEach(inject(function ($injector, RestURLs) {
+        RestURLs.setServerUrl('');
         $httpBackend = $injector.get('$httpBackend');
     }));
 

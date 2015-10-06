@@ -2,6 +2,9 @@ describe('REST urls service', function() {
     'use strict';
 
     beforeEach(module('data-prep.services.utils'));
+    beforeEach(inject(function (RestURLs) {
+        RestURLs.setServerUrl('');
+    }));
     
     it('should init api urls with empty server url (same url by default)', inject(function(RestURLs) {
         //then

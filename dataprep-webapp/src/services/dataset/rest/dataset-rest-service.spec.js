@@ -5,7 +5,8 @@ describe('Dataset Rest Service', function () {
 
     beforeEach(module('data-prep.services.dataset'));
 
-    beforeEach(inject(function ($rootScope, $injector) {
+    beforeEach(inject(function ($rootScope, $injector, RestURLs) {
+        RestURLs.setServerUrl('');
         $httpBackend = $injector.get('$httpBackend');
 
         spyOn($rootScope, '$emit').and.returnValue();
