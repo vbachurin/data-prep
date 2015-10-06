@@ -20,18 +20,58 @@ describe('ColumnProfile controller', function () {
         };
     }));
 
-    it('should call addExactFilter Function of the StatisticsService', inject(function (StatisticsService) {
-        //given
-        spyOn(StatisticsService, 'addExactFilter').and.returnValue();
-        var ctrl = createController();
-        var obj = {'data': 'Ulysse', 'occurrences': 5};
+    describe('filter', function() {
+        beforeEach(inject(function(FilterService, StatisticsService) {
+            spyOn(FilterService, 'addFilterAndDigest').and.returnValue();
+            spyOn(StatisticsService, 'addRangeFilter').and.returnValue();
+        }));
 
-        //when
-        ctrl.barchartClickFn(obj);
+        it('should add a new "exact" filter', inject(function (FilterService) {
+            //given
+            var ctrl = createController();
+            var obj = {'data': 'Ulysse', 'occurrences': 5};
 
-        //then
-        expect(StatisticsService.addExactFilter).toHaveBeenCalledWith(obj.data, true);
-    }));
+            stateMock.playground.column = {
+                id: '0001',
+                name: 'firstname'
+            };
+
+            //when
+            ctrl.addBarchartFilter(obj);
+
+            //then
+            expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('exact', '0001', 'firstname', {phrase: 'Ulysse', caseSensitive: true});
+        }));
+
+        it('should add a new "range" filter from StatisticsService', inject(function (StatisticsService) {
+            //given
+            var ctrl = createController();
+            var obj = {data : {min: '5', max: '15'}};
+
+            //when
+            ctrl.addRangeFilter(obj);
+
+            //then
+            expect(StatisticsService.addRangeFilter).toHaveBeenCalledWith(obj.data);
+        }));
+
+        it('should add a new "empty_records" filter from exact_filter on barchart click callback', inject(function (StatisticsService, FilterService) {
+            //given
+            var ctrl = createController();
+            var obj = {'data': '', 'occurrences': 5};
+
+            stateMock.playground.column = {
+                id: '0001',
+                name: 'firstname'
+            };
+
+            //when
+            ctrl.addBarchartFilter(obj);
+
+            //then
+            expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('empty_records', '0001', 'firstname');
+        }));
+    });
 
     describe('external bindings', function() {
         it('should bind histogram getter to StatisticsService.histogram', inject(function (StatisticsService) {

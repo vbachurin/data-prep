@@ -27,7 +27,7 @@ public class StatisticsUtils {
     }
 
     public static void setStatistics(List<ColumnMetadata> columns, List<Analyzers.Result> results) {
-        setStatistics(columns, results, Collections.<String>emptySet());
+        setStatistics(columns, results, Collections.<String> emptySet());
     }
 
     public static void setStatistics(List<ColumnMetadata> columns, List<Analyzers.Result> results, Set<String> readOnlyColumns) {
@@ -38,12 +38,14 @@ public class StatisticsUtils {
             final boolean isString = Type.STRING.isAssignableFrom(Type.get(currentColumn.getType()));
             final Statistics statistics = currentColumn.getStatistics();
             // Data type
-            if (result.exist(DataType.class) && !currentColumn.isTypeForced() && !readOnlyColumns.contains(currentColumn.getId())) {
+            if (result.exist(DataType.class) && !currentColumn.isTypeForced()
+                    && !readOnlyColumns.contains(currentColumn.getId())) {
                 final DataType dataType = result.get(DataType.class);
                 currentColumn.setType(Type.get(dataType.getSuggestedType().name()).getName());
             }
             // Semantic types
-            if (result.exist(SemanticType.class) && !currentColumn.isDomainForced() && !readOnlyColumns.contains(currentColumn.getId())) {
+            if (result.exist(SemanticType.class) && !currentColumn.isDomainForced()
+                    && !readOnlyColumns.contains(currentColumn.getId())) {
                 final SemanticType semanticType = result.get(SemanticType.class);
                 currentColumn.setDomain(semanticType.getSuggestedCategory());
                 currentColumn.setDomainLabel(TypeUtils.getDomainLabel(semanticType));

@@ -267,7 +267,7 @@ describe('Home controller', function () {
                     expect(ctrl.uploadingDatasets[0].progress).toBe(70);
                 }));
 
-                it('should set error flag and show error toast', inject(function (DatasetService, MessageService) {
+                it('should set error flag and show error toast', inject(function (DatasetService) {
                     //given
                     ctrl.uploadDatasetName();
                     expect(ctrl.uploadingDatasets[0].error).toBeFalsy();

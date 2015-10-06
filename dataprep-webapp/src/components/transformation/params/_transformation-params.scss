@@ -1,7 +1,7 @@
 @import "cluster/transformation-cluster-params";
-@import "date/transformation-date-params";
-@import "simple/transformation-simple-params";
-@import "choice/transformation-choice-params";
+@import "date/transformation-date-param";
+@import "simple/transformation-simple-param";
+@import "choice/transformation-choice-param";
 
 .transformation-params {
   select,

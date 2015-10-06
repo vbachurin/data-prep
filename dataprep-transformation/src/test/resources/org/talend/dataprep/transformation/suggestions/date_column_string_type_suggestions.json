@@ -1,7 +1,6 @@
 [
   {
     "name": "delete_empty",
-    "items": [],
     "parameters": [
       {
         "name": "column_id",
@@ -68,7 +67,6 @@
         "default": ""
       }
     ],
-    "items": [],
     "dynamic": false,
     "description": "Delete rows that have a specific value in cell in this column",
     "label": "Delete lines that match..."
@@ -101,58 +99,11 @@
         "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)"
       }
     ],
-    "items": [
-
-    ],
     "label": "Delete lines with invalid cell",
     "description": "Delete rows that have this invalid cell",
     "dynamic": false
   },
   {
-    "items": [
-      {
-        "name": "new_pattern",
-        "category": "patterns",
-        "values": [
-          {
-            "name": "MM.dd.yyyy",
-            "parameters": [],
-            "default": true
-          },
-          {
-            "name": "MMM.dd.yyyy",
-            "parameters": [],
-            "default": false
-          },
-          {
-            "name": "MMMM dd yyyy",
-            "parameters": [],
-            "default": false
-          },
-          {
-            "name": "MM.dd.yyyy HH:mm:ss",
-            "parameters": [],
-            "default": false
-          },
-          {
-            "name": "custom",
-            "parameters": [
-              {
-                "name": "custom_date_pattern",
-                "type": "string",
-                "implicit": false,
-                "description": "e.g. dd/MM/yyyy for day/month/year",
-                "label": "Enter your own date pattern",
-                "default": ""
-              }
-            ],
-            "default": false
-          }
-        ],
-        "description": "Choose the date pattern to use in the list or make your own",
-        "label": "New date pattern to use"
-      }
-    ],
     "name": "change_date_pattern",
     "category": "dates",
     "parameters": [
@@ -179,6 +130,45 @@
         "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
         "label": "Scope",
         "default": ""
+      },
+      {
+        "name": "new_pattern",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": "MM.dd.yyyy"
+            },
+            {
+              "value": "MMM.dd.yyyy"
+            },
+            {
+              "value": "MMMM dd yyyy"
+            },
+            {
+              "value": "MM.dd.yyyy HH:mm:ss"
+            },
+            {
+              "value": "custom",
+              "parameters": [
+                {
+                  "name": "custom_date_pattern",
+                  "type": "string",
+                  "implicit": false,
+                  "description": "e.g. dd/MM/yyyy for day/month/year",
+                  "label": "Enter your own date pattern",
+                  "default": ""
+                }
+              ]
+            }
+          ],
+          "multiple": false
+        },
+        "description": "Choose the date pattern to use in the list or make your own",
+        "label": "New date pattern to use",
+        "default": "MM.dd.yyyy"
       }
     ],
     "dynamic": false,
@@ -186,36 +176,6 @@
     "label": "Change date pattern"
   },
   {
-    "items": [
-      {
-        "name": "time_unit",
-        "category": "categ",
-        "values": [
-          {
-            "name": "YEARS",
-            "parameters": [],
-            "default": true
-          },
-          {
-            "name": "MONTHS",
-            "parameters": [],
-            "default": false
-          },
-          {
-            "name": "DAYS",
-            "parameters": [],
-            "default": false
-          },
-          {
-            "name": "HOURS",
-            "parameters": [],
-            "default": false
-          }
-        ],
-        "description": "The unit in which you want the result",
-        "label": "Time unit"
-      }
-    ],
     "name": "compute_time_since",
     "parameters": [
       {
@@ -241,6 +201,32 @@
         "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
         "label": "Scope",
         "default": ""
+      },
+      {
+        "name": "time_unit",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": "YEARS"
+            },
+            {
+              "value": "MONTHS"
+            },
+            {
+              "value": "DAYS"
+            },
+            {
+              "value": "HOURS"
+            }
+          ],
+          "multiple": false
+        },
+        "description": "The unit in which you want the result",
+        "label": "Time unit",
+        "default": "HOURS"
       }
     ],
     "dynamic": false,
@@ -364,14 +350,12 @@
       }
     ],
     "category": "dates",
-    "items": [],
     "dynamic": false,
     "description": "Creates columns with year, month, day, etc...",
     "label": "Extract date tokens"
   },
   {
     "name": "compute_length",
-    "items": [],
     "parameters": [
       {
         "name": "column_id",
@@ -438,14 +422,12 @@
         "default": ""
       }
     ],
-    "items": [],
     "dynamic": false,
     "description": "Remove specified text from cells in this column",
     "label": "Remove part of the text..."
   },
   {
     "name": "uppercase",
-    "items": [],
     "parameters": [
       {
         "name": "column_id",
@@ -479,7 +461,6 @@
   {
     "name": "textclustering",
     "dynamic": true,
-    "items": [],
     "parameters": [
       {
         "name": "column_id",
@@ -510,62 +491,6 @@
     "label": "Find and group similar text..."
   },
   {
-    "items": [
-      {
-        "name": "from_mode",
-        "category": "categ",
-        "values": [
-          {
-            "name": "From beginning",
-            "parameters": [],
-            "default": true
-          },
-          {
-            "name": "From index",
-            "parameters": [
-              {
-                "name": "from_index",
-                "type": "integer",
-                "implicit": false,
-                "description": "Index of the original value that starts the new one",
-                "label": "Begining index",
-                "default": "0"
-              }
-            ],
-            "default": false
-          }
-        ],
-        "description": "Select begining mode of the substring",
-        "label": "From"
-      },
-      {
-        "name": "to_mode",
-        "category": "categ",
-        "values": [
-          {
-            "name": "To end",
-            "parameters": [],
-            "default": false
-          },
-          {
-            "name": "To index",
-            "parameters": [
-              {
-                "name": "to_index",
-                "type": "integer",
-                "implicit": false,
-                "description": "Index of the original value that ends the new one",
-                "label": "End index",
-                "default": "5"
-              }
-            ],
-            "default": true
-          }
-        ],
-        "description": "Select end mode of the substring",
-        "label": "To"
-      }
-    ],
     "name": "substring",
     "parameters": [
       {
@@ -591,6 +516,68 @@
         "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
         "label": "Scope",
         "default": ""
+      },
+      {
+        "name": "from_mode",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": "From beginning"
+            },
+            {
+              "value": "From index",
+              "parameters": [
+                {
+                  "name": "from_index",
+                  "type": "integer",
+                  "implicit": false,
+                  "canBeBlank": true,
+                  "description": "Index of the original value that starts the new one",
+                  "label": "Beginning index",
+                  "default": "0"
+                }
+              ]
+            }
+          ],
+          "multiple": false
+        },
+        "description": "Select beginning mode of the substring",
+        "label": "From",
+        "default": "From beginning"
+      },
+      {
+        "name": "to_mode",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": "To end"
+            },
+            {
+              "value": "To index",
+              "parameters": [
+                {
+                  "name": "to_index",
+                  "type": "integer",
+                  "implicit": false,
+                  "canBeBlank": true,
+                  "description": "Index of the original value that ends the new one",
+                  "label": "End index",
+                  "default": "5"
+                }
+              ]
+            }
+          ],
+          "multiple": false
+        },
+        "description": "Select end mode of the substring",
+        "label": "To",
+        "default": "To index"
       }
     ],
     "dynamic": false,
@@ -599,7 +586,6 @@
   },
   {
     "name": "lowercase",
-    "items": [],
     "parameters": [
       {
         "name": "column_id",
@@ -631,57 +617,6 @@
     "label": "Change case to lower"
   },
   {
-    "items": [
-      {
-        "name": "separator",
-        "category": "categ",
-        "values": [
-          {
-            "name": ":",
-            "parameters": [],
-            "default": true
-          },
-          {
-            "name": "@",
-            "parameters": [],
-            "default": false
-          },
-          {
-            "name": " ",
-            "parameters": [],
-            "default": false
-          },
-          {
-            "name": "-",
-            "parameters": [
-            ],
-            "default": false
-          },
-          {
-            "name": ",",
-            "parameters": [
-            ],
-            "default": false
-          },
-          {
-            "name": "other",
-            "parameters": [
-              {
-                "name": "manual_separator",
-                "type": "string",
-                "implicit": false,
-                "description": "Choose your own separator",
-                "label": "Manual separator",
-                "default": ""
-              }
-            ],
-            "default": false
-          }
-        ],
-        "description": "Character to use as separator",
-        "label": "Separator"
-      }
-    ],
     "name": "split",
     "parameters": [
       {
@@ -715,6 +650,49 @@
         "description": "Number of token to split the value in",
         "label": "Limit",
         "default": "2"
+      },
+      {
+        "name": "separator",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": ":"
+            },
+            {
+              "value": "@"
+            },
+            {
+              "value": " "
+            },
+            {
+              "value": ","
+            },
+            {
+              "value": "-"
+            },
+            {
+              "value": "other",
+              "parameters": [
+                {
+                  "name": "manual_separator",
+                  "type": "string",
+                  "implicit": false,
+                  "canBeBlank": true,
+                  "description": "Choose your own separator",
+                  "label": "Manual separator",
+                  "default": ""
+                }
+              ]
+            }
+          ],
+          "multiple": false
+        },
+        "description": "Character to use as separator",
+        "label": "Separator",
+        "default": ":"
       }
     ],
     "dynamic": false,
@@ -765,14 +743,12 @@
         "default": ""
       }
     ],
-    "items": [],
     "dynamic": false,
     "description": "Replace cells that have a specific value",
     "label": "Replace cells that match..."
   },
   {
     "name": "propercase",
-    "items": [],
     "parameters": [
       {
         "name": "column_id",
@@ -804,7 +780,6 @@
     "label": "Change case to Title"
   },
   {
-    "items": [],
     "name": "trim",
     "parameters": [
       {
@@ -872,7 +847,6 @@
         "default": ""
       }
     ],
-    "items": [],
     "dynamic": false,
     "description": "Fill empty cells of this column with given value",
     "label": "Fill empty cells with text..."
@@ -913,13 +887,11 @@
         "default": ""
       }
     ],
-    "items": [],
     "dynamic": false,
     "description": "Fill invalid cells of this column with given value",
     "label": "Fill invalid cells with value..."
   },
   {
-    "items": [],
     "name": "copy",
     "parameters": [
       {
@@ -989,18 +961,17 @@
     ],
     "category": "columns",
     "name": "rename_column",
-    "items": [],
     "dynamic": false,
     "description": "Rename this column",
     "label": "Rename"
   },
   {
-    "name":"remove_non_num_chars"
+    "name": "remove_non_num_chars"
   },
   {
-    "name":"remove_non_alpha_num_chars"
+    "name": "remove_non_alpha_num_chars"
   },
   {
-    "name":"normalize"
+    "name": "normalize"
   }
 ]

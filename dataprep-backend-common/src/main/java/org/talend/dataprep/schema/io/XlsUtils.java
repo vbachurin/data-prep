@@ -71,8 +71,9 @@ public class XlsUtils {
 
 
     /**
-     * Return the {@link Workbook workbook} to be found in the stream (assuming stream contains an Excel file). If stream
-     * is <b>not</b> an Excel content, returns <code>null</code>.
+     * Return the {@link Workbook workbook} to be found in the stream (assuming stream contains an Excel file). If
+     * stream is <b>not</b> an Excel content, returns <code>null</code>.
+     * 
      * @param stream A non-null stream that eventually contains an Excel file.
      * @return The {@link Workbook workbook} in stream or <code>null</code> if stream is not an Excel file.
      * @throws IOException

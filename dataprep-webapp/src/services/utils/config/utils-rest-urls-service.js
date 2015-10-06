@@ -10,6 +10,7 @@
         var service = {
             setServerUrl: setServerUrl
         };
+        setServerUrl('');
         
         return service;
 

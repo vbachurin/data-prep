@@ -80,6 +80,7 @@ public class DataSetLifecycle implements Serializable {
 
     /**
      * Changes the isImporting status of the data set.
+     * 
      * @param isImporting <code>true</code> to indicate all synchronous analysis are done, <code>false</code> otherwise.
      * @see #importing()
      */
@@ -105,7 +106,7 @@ public class DataSetLifecycle implements Serializable {
      * Changes the inProgress status of the data set.
      *
      * @param inProgress <code>true</code> to indicate not all analysis are done, <code>false</code> to indicate all
-     *                   analysis is done.
+     * analysis is done.
      * @see #inProgress()
      */
     public void inProgress(boolean inProgress) {

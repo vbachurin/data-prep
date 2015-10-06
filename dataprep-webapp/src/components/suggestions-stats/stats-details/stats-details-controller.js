@@ -22,7 +22,6 @@
          */
         vm.addPatternFilter = function addPatternFilter(item) {
             alert('The selected pattern is: ' + item.pattern + '. Filtering is coming soon.');
-            //return StatisticsService.addFilter(item.data);
         };
     }
 

@@ -1,8 +1,26 @@
 package org.talend.dataprep.dataset.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.restassured.response.Response;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static com.jayway.restassured.http.ContentType.JSON;
+import static com.jayway.restassured.path.json.JsonPath.from;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.CoreMatchers;
@@ -22,25 +40,9 @@ import org.talend.dataprep.dataset.DataSetBaseTest;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.schema.CSVFormatGuess;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static com.jayway.restassured.http.ContentType.JSON;
-import static com.jayway.restassured.path.json.JsonPath.from;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
-import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.restassured.response.Response;
 
 public class DataSetServiceTests extends DataSetBaseTest {
 
@@ -1022,15 +1024,15 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
     @Test
     public void should_remove_any_NUL_character() throws Exception {
-        //given
+        // given
         final String originalContent = IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(DATASET_WITH_NUL_CHAR_CSV));
         assertThat(originalContent.chars().anyMatch((c) -> c == '\u0000'), is(true));
         final String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(DATASET_WITH_NUL_CHAR_CSV));
 
-        //when
+        // when
         final String content = requestDataSetSample(dataSetId, false, "10");
 
-        //then
+        // then
         assertThat(content, not(containsString("\\u0000")));
     }
 
@@ -1055,7 +1057,8 @@ public class DataSetServiceTests extends DataSetBaseTest {
                 .expect() //
                 .statusCode(200) //
                 .when() //
-                .get("/datasets/{id}/content?metadata=false&columns={withColumns}&sample={sampleSize}", dataSetId, withColumns, sampleSize) //
+                .get("/datasets/{id}/content?metadata=false&columns={withColumns}&sample={sampleSize}", dataSetId, withColumns,
+                        sampleSize) //
                 .asString();
 
     }

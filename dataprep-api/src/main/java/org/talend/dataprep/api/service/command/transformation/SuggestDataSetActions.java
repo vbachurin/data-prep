@@ -43,7 +43,7 @@ public class SuggestDataSetActions extends ChainedCommand<InputStream, DataSetMe
             post.setHeader(new BasicHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE));
             DataSetMetadata metadata = getInput();
             ObjectMapper objectMapper = builder.build();
-            byte[] dataSetMetadataJSON  = objectMapper.writer().writeValueAsBytes(metadata);
+            byte[] dataSetMetadataJSON = objectMapper.writer().writeValueAsBytes(metadata);
             post.setEntity(new ByteArrayEntity(dataSetMetadataJSON));
             return post;
         } catch (JsonProcessingException e) {

@@ -33,6 +33,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
 
     /** A list of supported separators for a CSV content */
     private Set<Character> validSeparators = new HashSet<Character>() {
+
         {
             add(' ');
             add('\t');

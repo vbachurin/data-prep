@@ -100,5 +100,5 @@
         //Configure server api urls
         .run(function(ConfigService) {
             ConfigService.init();
-        })
+        });
 })();

@@ -9,7 +9,7 @@ describe('Transformation choice params directive', function () {
         scope = $rootScope.$new();
 
         createElement = function() {
-            var element = angular.element('<transform-choice-params choices="choices"></transform-choice-params>');
+            var element = angular.element('<transform-choice-param parameter="parameter"></transform-choice-param>');
             $compile(element)(scope);
             scope.$digest();
             return element;
@@ -18,25 +18,22 @@ describe('Transformation choice params directive', function () {
 
     it('should render an action with simple choice', function() {
         //given
-        scope.choices = [{
+        scope.parameter = {
             name: 'myChoice',
             label: 'my choice',
-            values: [
-                {
-                    name: 'noParamChoice1'
-                },
-                {
-                    name: 'noParamChoice2'
-                }
-            ]
-        }];
+            configuration: {
+                values: [
+                    {value: 'noParamChoice1'},
+                    {value: 'noParamChoice2'}
+                ]
+            }
+        };
 
         //when
         var element = createElement();
 
         //then
-        expect(element.find('.param-name').length).toBe(1);
-        expect(element.find('.param-name').eq(0).text().trim()).toBe('my choice:');
+        expect(element.find('.param-name').text().trim()).toBe('my choice:');
         expect(element.find('.param-input').length).toBe(1);
         expect(element.find('.param-input').eq(0).find('select').length).toBe(1);
         expect(element.find('.param-input').eq(0).find('option').length).toBe(2);
@@ -46,44 +43,43 @@ describe('Transformation choice params directive', function () {
 
     it('should render an action with choice containing parameters', function() {
         //given
-        scope.choices = [{
+        scope.parameter = {
             name: 'my choice',
-            values: [
-                {
-                    name: 'noParamChoice'
-                },
-                {
-                    name: 'twoParams',
-                    parameters: [
-                        {
-                            name: 'param1',
-                            label: 'Param 1',
-                            type: 'string',
-                            'inputType': 'text',
-                            default: '.'
-                        },
-                        {
-                            name: 'param2',
-                            label: 'Param 2',
-                            type: 'float',
-                            'inputType': 'number',
-                            default: '5'
-                        }
-                    ]
-                }
-            ]
-        }];
+            configuration: {
+                values: [
+                    {value: 'noParamChoice'},
+                    {value: 'twoParams',
+                        parameters: [
+                            {
+                                name: 'param1',
+                                label: 'Param 1',
+                                type: 'string',
+                                'inputType': 'text',
+                                default: '.'
+                            },
+                            {
+                                name: 'param2',
+                                label: 'Param 2',
+                                type: 'float',
+                                'inputType': 'number',
+                                default: '5'
+                            }
+                        ]
+                    }
+                ]
+            }
+        };
         var element = createElement();
 
         //when
-        scope.choices[0].selectedValue = scope.choices[0].values[0];
+        scope.parameter.value = scope.parameter.configuration.values[0].value;
         scope.$digest();
 
         //then
         expect(element.find('.param-name').length).toBe(1); // choice name only
 
         //when
-        scope.choices[0].selectedValue = scope.choices[0].values[1];
+        scope.parameter.value = scope.parameter.configuration.values[1].value;
         scope.$digest();
 
         //then

@@ -26,14 +26,14 @@ public abstract class AbstractUrlLocation implements Serializable {
 
     /**
      * Encode and set the given url.
+     * 
      * @param url the url to set.
      * @throws URIException if the given url is not valid.
      */
     public void setUrl(String url) throws URIException {
         if (StringUtils.isNotBlank(url)) {
             this.url = URIUtil.encodeQuery(url);
-        }
-        else {
+        } else {
             this.url = url;
         }
     }

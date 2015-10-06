@@ -47,7 +47,8 @@ public class PreparationUpdateAction extends PreparationCommand<Void> {
         try {
             final StepDiff diff = getDiffMetadata();
             updatedStep.setDiff(diff);
-            final HttpPut actionAppend = new HttpPut(preparationServiceUrl + "/preparations/" + preparationId + "/actions/" + stepId); //$NON-NLS-1$ //$NON-NLS-2$
+            final HttpPut actionAppend = new HttpPut(
+                    preparationServiceUrl + "/preparations/" + preparationId + "/actions/" + stepId); //$NON-NLS-1$ //$NON-NLS-2$
             final String stepAsString = builder.build().writeValueAsString(updatedStep);
             final InputStream stepInputStream = new ByteArrayInputStream(stepAsString.getBytes());
 
