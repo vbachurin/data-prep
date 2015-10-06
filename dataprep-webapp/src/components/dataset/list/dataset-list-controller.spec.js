@@ -247,4 +247,32 @@ describe('Dataset list controller', function () {
             expect(ctrl.datasets).toBe(refreshedDatasets);
         }));
     });
+
+    describe('cloning dataset',function(){
+
+        var ctrl;
+
+        beforeEach(inject(function ($rootScope, $q, DatasetService, MessageService) {
+            ctrl = createController();
+            scope.$digest();
+
+            spyOn(DatasetService, 'clone').and.returnValue($q.when(true));
+            spyOn(MessageService, 'success').and.returnValue();
+        }));
+
+        it('clone must call clone service', inject(function ($q, DatasetService, MessageService) {
+            //given
+            var dataset = datasets[0];
+
+
+            //when
+            ctrl.clone(dataset);
+            scope.$digest();
+
+            //then
+            expect(DatasetService.clone).toHaveBeenCalledWith(dataset);
+            expect(MessageService.success).toHaveBeenCalledWith('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
+        }));
+
+    });
 });
