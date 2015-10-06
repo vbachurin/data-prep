@@ -149,7 +149,10 @@
          */
         vm.clone = function(dataset){
             // TODO ask a new name?
-            return DatasetService.clone(dataset);
+            DatasetService.clone(dataset)
+                .then(function() {
+                          MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
+                      });
         };
 
         /**
