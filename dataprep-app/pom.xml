@@ -89,7 +89,7 @@
                                     <goal>launch4j</goal>
                                 </goals>
                                 <configuration>
-                                    <headerType>console</headerType>
+                                    <headerType>gui</headerType>
                                     <outfile>${project.build.directory}/${project.build.finalName}.exe</outfile>
                                     <jar>${project.build.finalName}.jar</jar>
                                     <dontWrapJar>true</dontWrapJar>

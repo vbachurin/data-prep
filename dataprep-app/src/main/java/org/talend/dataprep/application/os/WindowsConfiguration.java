@@ -1,7 +1,9 @@
 package org.talend.dataprep.application.os;
 
 import java.awt.*;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +30,9 @@ public class WindowsConfiguration implements ApplicationListener {
                 System.setProperty("java.awt.headless", "false");
                 final String url = "http://127.0.0.1:" + serverPort + "/ui/index.html";
                 Desktop.getDesktop().browse(new URI(url));
-
-            } catch (Exception e) {
+            } catch (URISyntaxException e) {
+                LOGGER.error("Unable to launch web browser.", e);
+            } catch (IOException e) {
                 LOGGER.error("Unable to launch web browser.", e);
             }
         }
