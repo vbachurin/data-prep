@@ -7,9 +7,9 @@ describe('Column suggestion service', function () {
     beforeEach(inject(function ($q, TransformationCacheService) {
         spyOn(TransformationCacheService, 'getTransformations').and.returnValue($q.when(
             [
-                {name: 'rename', category: 'columns', label: 'z'},
+                {name: 'rename', category: 'column_metadata', label: 'z'},
                 {name: 'cluster', category: 'quickfix', label: 'f'},
-                {name: 'split', category: 'columns', label: 'c'},
+                {name: 'split', category: 'column_metadata', label: 'c'},
                 {name: 'tolowercase', category: 'case', label: 'v'},
                 {name: 'touppercase', category: 'case', label: 'u'},
                 {name: 'removeempty', category: 'clear', label: 'a'},
@@ -45,7 +45,7 @@ describe('Column suggestion service', function () {
         //then : column category filtered
         var suggestedTransformations = ColumnSuggestionService.transformations;
         expect(suggestedTransformations).toBeDefined();
-        var columnCategoryTransformation = _.find(suggestedTransformations, {category: 'columns'});
+        var columnCategoryTransformation = _.find(suggestedTransformations, {category: 'column_metadata'});
         expect(columnCategoryTransformation).toBeFalsy();
 
         //then : result alphabetically sorted

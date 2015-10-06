@@ -312,14 +312,14 @@
         "canBeBlank": false
       }
     ],
-    "category": "columns",
+    "category": "column_metadata",
     "name": "rename_column",
     "dynamic": false,
     "description": "Rename this column",
     "label": "Rename"
   },
   {
-    "category": "columns",
+    "category": "column_metadata",
     "name": "copy",
     "parameters": [
       {

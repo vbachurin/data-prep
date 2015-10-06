@@ -225,7 +225,7 @@
     "label": "Rename"
   },
   {
-    "category": "columns",
+    "category": "column_metadata",
     "name": "copy",
     "parameters": [
       {

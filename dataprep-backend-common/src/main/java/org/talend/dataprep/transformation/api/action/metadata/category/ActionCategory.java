@@ -4,6 +4,8 @@ package org.talend.dataprep.transformation.api.action.metadata.category;
  * List all actions category.
  */
 public enum ActionCategory {
+                            COLUMN_METADATA("column_metadata"), // actions in this category will be displayed on column
+                                                                // header
     COLUMNS("columns"), //
     MATH("math"), //
     STRINGS("strings"), //

@@ -42,7 +42,7 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements Column
      */
     @Override
     public String getCategory() {
-        return ActionCategory.COLUMNS.getDisplayName();
+        return ActionCategory.COLUMN_METADATA.getDisplayName();
     }
 
     /**
