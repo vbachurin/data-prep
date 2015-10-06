@@ -100,53 +100,6 @@ describe('rangeSlider directive', function () {
         expect(d3.select('.extent').attr('width')).toBe('' + (x(scope.rangeLimits.max) - x(scope.rangeLimits.min)));
     });
 
-    /*
-
-    Waiting for an answer on https://groups.google.com/forum/#!topic/d3-js/f_lJ0P-kbMM
-
-        //it('should make a brush action programmatically', function () {
-        //    //given
-        //    createElement();
-        //    jasmine.clock().tick(100);
-        //    flushAllD3Transitions();
-
-        //    //when : set the brush extent to [0, 20]
-        //    var x = d3.scale.linear()
-        //        .domain([scope.rangeLimits.min, scope.rangeLimits.max])
-        //        .range([0, (250 - (margins.left + margins.right))]);
-
-        //    d3.select('.brush')//.call(isolateScope.brush.event)
-        //        .call(isolateScope.brush.extent([0, 20]))
-        //        .call(isolateScope.brush.event)
-        //    ;
-
-        //    //then
-        //    expect(d3.select('.extent').attr('width')).toBe('' + (x(scope.rangeLimits.max) - x(scope.rangeLimits.min)));
-        //    expect(document.getElementsByName('minRange')[0].value).toBe('0');
-        //    expect(document.getElementsByName('maxRange')[0].value).toBe('20');
-        //});
-
-        //it('should make a brush action programmatically with the same value', function () {
-        //    //given
-        //    scope.rangeLimits = {
-        //        min: 0.000001,
-        //        max: 20,
-        //        minBrush: 5.123456,
-        //        maxBrush: 5.123456
-        //    };
-        //    createElement();
-        //    jasmine.clock().tick(100);
-        //    flushAllD3Transitions();
-
-        //    //then
-        //    expect(isolateScope.brush.extent()).toEqual([5.123456,5.1234561]);
-        //    expect(document.getElementsByName('minRange')[0].value).toBe('5.123456');
-        //    expect(document.getElementsByName('maxRange')[0].value).toBe('5.123456');
-        //});
-
-
-    */
-
     it('should make a brush action programmatically with the same value in case of extent outside the range limits', function () {
         //given
         scope.rangeLimits = {

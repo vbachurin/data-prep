@@ -39,43 +39,6 @@ describe('Statistics service', function () {
         }
     };
 
-    /*var localizationCol = {
-        'domain': 'LOCALIZATION',
-        'type': 'double',
-        'statistics': {
-            'frequencyTable': [],
-            'histogram': [
-                {
-                    'occurrences': 5,
-                    'range': {
-                        'min': 0,
-                        'max': 10
-                    }
-                },
-                {
-                    'occurrences': 15,
-                    'range': {
-                        'min': 10,
-                        'max': 20
-                    }
-                }
-            ],
-            count: 4,
-            distinctCount: 5,
-            duplicateCount: 6,
-            empty: 7,
-            invalid: 8,
-            valid: 9,
-            min: 10,
-            max: 11,
-            mean: 12,
-            variance: 13,
-            quantiles: {
-                lowerQuantile: 'NaN'
-            }
-        }
-    };*/
-
     var barChartStrCol = {
         'domain': 'barchartAndString',
         'type': 'string',
@@ -228,7 +191,7 @@ describe('Statistics service', function () {
             //then
             expect(StatisticsService.rangeLimits.minBrush).toBe(10);
             expect(StatisticsService.rangeLimits.maxBrush).toBe(22);
-            expect(StatisticsService.histogram.existingFilter).toEqual([10, 22]);
+            expect(StatisticsService.histogram.activeLimits).toEqual([10, 22]);
         }));
 
         it('should reinit range limits on "inside_range" filter remove when the selected column is the same', inject(function (StatisticsService, FilterService, $timeout) {
@@ -265,7 +228,7 @@ describe('Statistics service', function () {
                 minBrush: undefined,
                 maxBrush: undefined
             });
-            expect(StatisticsService.histogram.existingFilter).toEqual([StatisticsService.selectedColumn.statistics.min, StatisticsService.selectedColumn.statistics.max]);
+            expect(StatisticsService.histogram.activeLimits).toEqual([StatisticsService.selectedColumn.statistics.min, StatisticsService.selectedColumn.statistics.max]);
         }));
 
         it('should do nothing on "inside_range" filter remove when the selected column is NOT the same', inject(function (StatisticsService, FilterService, $timeout) {
@@ -402,20 +365,20 @@ describe('Statistics service', function () {
                 StatisticsService.processData(barChartNumCol);
 
                 //then
-                expect(StatisticsService.histogram.numData[1].data).toEqual([barChartNumCol.statistics.histogram[1].range.min, barChartNumCol.statistics.histogram[1].range.max]);
+                expect(StatisticsService.histogram.data[1].data).toEqual([barChartNumCol.statistics.histogram[1].range.min, barChartNumCol.statistics.histogram[1].range.max]);
+            }));
+
+            it('should set histogram vertical mode to true when column type is "number"', inject(function (StatisticsService) {
+                //given
+                expect(StatisticsService.histogram).toBeFalsy();
+
+                //when
+                StatisticsService.processData(barChartNumCol);
+
+                //then
+                expect(StatisticsService.histogram.vertical).toBe(true);
             }));
         });
-
-        //TODO coming soon with the globe map
-        // it('should set both the data and the stateDistribution to null because column domain is LOCALIZATION', inject(function (StatisticsService) {
-        //    //when
-        //    StatisticsService.processData(localizationCol);
-        //
-        //    //then
-        //    expect(StatisticsService.data).toBe(null);
-        //    expect(StatisticsService.boxplotData).toBe(null);
-        //    expect(StatisticsService.stateDistribution).toBe(null);
-        //}));
 
         it('should reset charts data when column type is not supported', inject(function (StatisticsService) {
             //given
@@ -864,7 +827,7 @@ describe('Statistics service', function () {
                 minBrush : undefined,
                 maxBrush : undefined
             });
-            expect(StatisticsService.histogram.existingFilter).toBe(null);
+            expect(StatisticsService.histogram.activeLimits).toBe(null);
         }));
 
         it('should update the brush limits to the existent ones', inject(function (StatisticsService, FilterService) {
@@ -901,7 +864,7 @@ describe('Statistics service', function () {
                 minBrush :5,
                 maxBrush :10
             });
-            expect(StatisticsService.histogram.existingFilter).toEqual([5,10]);
+            expect(StatisticsService.histogram.activeLimits).toEqual([5,10]);
         }));
 
         it('should update the brush limits to the minimum', inject(function (StatisticsService, FilterService) {

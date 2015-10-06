@@ -18,14 +18,14 @@
          * @description [PRIVATE] Init simple param values to default
          */
         var initParamValues = function () {
-            if(vm.parameter.initialValue) {
+            if(typeof vm.parameter.initialValue !== 'undefined' && vm.parameter.initialValue !== null) {
                 vm.parameter.initialValue = ConverterService.adaptValue(vm.parameter.type, vm.parameter.initialValue);
             }
 
-            if (vm.parameter.value) {
+            if (typeof vm.parameter.value !== 'undefined' && vm.parameter.value !== null) {
                 vm.parameter.value = ConverterService.adaptValue(vm.parameter.type, vm.parameter.value);
             }
-            else if (vm.parameter.default) {
+            else if (typeof vm.parameter.default !== 'undefined' && vm.parameter.default !== null) {
                 vm.parameter.default = ConverterService.adaptValue(vm.parameter.type, vm.parameter.default);
                 vm.parameter.value = vm.parameter.default;
             }
