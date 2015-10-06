@@ -152,7 +152,7 @@
             DatasetService.clone(dataset)
                 .then(function() {
                           MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
-                      });
+                });
         };
 
         /**
@@ -177,6 +177,9 @@
             return DatasetService.update(vm.currentDataset)
                 .then(function(){
                   vm.showChangeName = false;
+                })
+                .then(function() {
+                          MessageService.success('RENAME_SUCCESS_TITLE', 'RENAME_SUCCESS');
                 });
         };
 

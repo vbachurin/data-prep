@@ -275,4 +275,41 @@ describe('Dataset list controller', function () {
         }));
 
     });
+
+    describe('renaming dataset',function(){
+
+        var ctrl;
+
+        beforeEach(inject(function ($rootScope, $q, DatasetService, MessageService) {
+            ctrl = createController();
+            scope.$digest();
+
+            spyOn(DatasetService, 'update').and.returnValue($q.when(true));
+            spyOn(MessageService, 'success').and.returnValue();
+        }));
+
+        it('clone must call clone service', inject(function ($q, DatasetService, MessageService) {
+            //given
+            var dataset = datasets[0];
+
+
+            //when
+            ctrl.rename(dataset);
+            scope.$digest();
+
+            //then
+            expect(ctrl.showChangeName).toBe(true);
+            expect(ctrl.currentDataset).toBe(dataset);
+
+            //when
+            ctrl.doRename(dataset);
+            scope.$digest();
+
+            //then
+            expect(ctrl.showChangeName).toBe(false);
+            expect(DatasetService.update).toHaveBeenCalledWith(dataset);
+            expect(MessageService.success).toHaveBeenCalledWith('RENAME_SUCCESS_TITLE', 'RENAME_SUCCESS');
+        }));
+
+    });
 });
