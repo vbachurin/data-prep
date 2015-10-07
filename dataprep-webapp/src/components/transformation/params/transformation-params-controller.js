@@ -129,6 +129,7 @@
                 case 'select':
                 case 'cluster':
                 case 'date':
+                case 'column':
                     return type;
                 default:
                     return 'simple';

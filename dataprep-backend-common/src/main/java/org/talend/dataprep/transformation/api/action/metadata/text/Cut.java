@@ -14,6 +14,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.AbstractAct
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 
 @Component(Cut.ACTION_BEAN_PREFIX + Cut.CUT_ACTION_NAME)
 public class Cut extends AbstractActionMetadata implements ColumnAction {
@@ -50,7 +51,7 @@ public class Cut extends AbstractActionMetadata implements ColumnAction {
     @Override
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        parameters.add(new Parameter(PATTERN_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY));
+        parameters.add(new Parameter(PATTERN_PARAMETER, ParameterType.STRING, StringUtils.EMPTY));
         return parameters;
     }
 

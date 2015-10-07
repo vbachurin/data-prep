@@ -10,7 +10,7 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      */
     function DatagridHeaderCtrl(TransformationCacheService, ConverterService, PlaygroundService) {
-        var COLUMN_CATEGORY = 'columns';
+        var COLUMN_CATEGORY = 'column_metadata';
         var RENAME_ACTION = 'rename_column';
         var originalName;
 

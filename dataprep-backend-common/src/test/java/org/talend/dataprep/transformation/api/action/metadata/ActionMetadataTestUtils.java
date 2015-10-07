@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
@@ -13,14 +15,12 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Utility class for action metadata unit tests.
@@ -74,7 +74,7 @@ public class ActionMetadataTestUtils {
     public static DataSetRow getRow(String... values) {
         DecimalFormat format = new DecimalFormat("0000");
         Map<String, String> rowValues = new HashMap<>();
-        int i=1;
+        int i = 0;
         for (String value : values) {
             rowValues.put(format.format(i), value);
             i++;

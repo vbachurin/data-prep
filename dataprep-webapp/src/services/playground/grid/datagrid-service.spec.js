@@ -1,6 +1,8 @@
 describe('Datagrid service', function () {
     'use strict';
 
+    var stateMock;
+
     var originalData = {
         records: [
             {tdpId: 0, firstname: 'Tata'},
@@ -68,10 +70,17 @@ describe('Datagrid service', function () {
         };
     }
 
-    beforeEach(module('data-prep.services.playground'));
+    beforeEach(module('data-prep.services.playground', function ($provide) {
+        stateMock = {playground: {}};
+        $provide.constant('state', stateMock);
+    }));
+
+    beforeEach(inject(function (StateService) {
+        spyOn(StateService, 'setCurrentData').and.returnValue();
+    }));
 
     describe('grid data', function () {
-        it('should set metadata and data', inject(function (DatagridService) {
+        it('should set metadata and data', inject(function (DatagridService, StateService) {
             //given
             var metadata = {name: 'my dataset'};
             var data = {columns: [], records: []};
@@ -81,13 +90,13 @@ describe('Datagrid service', function () {
 
             //then
             expect(DatagridService.metadata).toBe(metadata);
-            expect(DatagridService.data).toBe(data);
+            expect(StateService.setCurrentData).toHaveBeenCalledWith(data);
         }));
 
-        it('should update data records', inject(function (DatagridService) {
+        it('should update data records', inject(function (DatagridService, StateService) {
             //given
             DatagridService.metadata = {name: 'my dataset'};
-            DatagridService.data = {columns: [], records: []};
+            stateMock.playground.data = {columns: [], records: []};
 
             var data = {columns: [], 'records': [{tdpId: 1, col: 'value'}]};
 
@@ -95,7 +104,7 @@ describe('Datagrid service', function () {
             DatagridService.updateData(data);
 
             //then
-            expect(DatagridService.data.records).toBe(data.records);
+            expect(StateService.setCurrentData).toHaveBeenCalledWith(data);
         }));
     });
 
@@ -115,7 +124,7 @@ describe('Datagrid service', function () {
 
         it('should navigate to the column having the highest Id', inject(function (DatagridService) {
             //given
-            DatagridService.data = {
+            stateMock.playground.data = {
                 columns: [
                     {id: '0000', name: 'column 1', type: 'string'},
                     {id: '0001', name: 'column 2', type: 'numeric'},
@@ -346,7 +355,7 @@ describe('Datagrid service', function () {
 
         it('should return every column id', inject(function (DatagridService) {
             //given
-            DatagridService.data = {
+            stateMock.playground.data = {
                 columns: [
                     {id: 'col1', name: 'column 1', type: 'string'},
                     {id: 'col2', name: 'column 2', type: 'numeric'},
@@ -373,7 +382,7 @@ describe('Datagrid service', function () {
 
         it('should return non numeric col ids', inject(function (DatagridService) {
             //given
-            DatagridService.data = {
+            stateMock.playground.data = {
                 columns: [
                     {id: 'col1', name: 'column 1', type: 'string'},
                     {id: 'col2', name: 'column 2', type: 'numeric'},
@@ -396,7 +405,7 @@ describe('Datagrid service', function () {
 
         it('should return non boolean col ids', inject(function (DatagridService) {
             //given
-            DatagridService.data = {
+            stateMock.playground.data = {
                 columns: [
                     {id: 'col1', name: 'column 1', type: 'string'},
                     {id: 'col2', name: 'column 2', type: 'numeric'},
@@ -422,7 +431,7 @@ describe('Datagrid service', function () {
 
         it('should return non boolean and non numeric col ids', inject(function (DatagridService) {
             //given
-            DatagridService.data = {
+            stateMock.playground.data = {
                 columns: [
                     {id: 'col1', name: 'column 1', type: 'string'},
                     {id: 'col2', name: 'column 2', type: 'numeric'},
@@ -444,7 +453,7 @@ describe('Datagrid service', function () {
 
         it('should return all numeric columns', inject(function (DatagridService) {
             //given
-            DatagridService.data = {
+            stateMock.playground.data = {
                 columns: [
                     {id: 'col1', name: 'column 1', type: 'string'},
                     {id: 'col2', name: 'column 2', type: 'numeric'},
@@ -469,7 +478,7 @@ describe('Datagrid service', function () {
 
         it('should return numeric columns excluding a specific column', inject(function (DatagridService) {
             //given
-            DatagridService.data = {
+            stateMock.playground.data = {
                 columns: [
                     {id: 'col1', name: 'column 1', type: 'string'},
                     {id: 'col2', name: 'column 2', type: 'numeric'},
@@ -480,7 +489,7 @@ describe('Datagrid service', function () {
                     {id: 'col7', name: 'column 7', type: 'string'}
                 ], records: []
             };
-            var columnToExclude = DatagridService.data.columns[1];
+            var columnToExclude = stateMock.playground.data.columns[1];
 
             //when
             var allCols = DatagridService.getNumericColumns(columnToExclude);
@@ -497,7 +506,7 @@ describe('Datagrid service', function () {
         beforeEach(inject(function (DatagridService) {
             var dataView = new DataViewMock();
             DatagridService.dataView = dataView;
-            DatagridService.data = originalData;
+            stateMock.playground.data = originalData;
 
             spyOn(dataView, 'beginUpdate').and.returnValue();
             spyOn(dataView, 'endUpdate').and.returnValue();
@@ -532,7 +541,7 @@ describe('Datagrid service', function () {
             expect(DatagridService.dataView.deleteItem).not.toHaveBeenCalled();
             expect(DatagridService.dataView.updateItem).not.toHaveBeenCalled();
 
-            expect(DatagridService.data).toBe(originalData);
+            expect(stateMock.playground.data).toBe(originalData);
         }));
 
         it('should apply executor', inject(function (DatagridService) {
@@ -592,7 +601,7 @@ describe('Datagrid service', function () {
             ]);
         }));
 
-        it('should replace service data', inject(function (DatagridService) {
+        it('should replace service data', inject(function (DatagridService, StateService) {
             //given
             var executor = {
                 columns: diff.columns,
@@ -608,11 +617,15 @@ describe('Datagrid service', function () {
             DatagridService.execute(executor);
 
             //then
-            expect(DatagridService.data).not.toBe(originalData);
+
+            var modifiedData = {
+                columns: executor.columns,
+                records: originalData.records,
+                preview: executor.preview
+            };
+
+            expect(StateService.setCurrentData).toHaveBeenCalledWith(modifiedData);
             expect(DatagridService.focusedColumn).toBe('0002');
-            expect(DatagridService.data.preview).toBe(true);
-            expect(DatagridService.data.columns).toBe(diff.columns);
-            expect(DatagridService.data.records).toBe(originalData.records); // same array but modified by executor
         }));
     });
 });
