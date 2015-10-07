@@ -7,7 +7,9 @@ public enum ParameterType {
                            STRING,
                            INTEGER,
                            SELECT,
-                           COLUMN;
+                           COLUMN,
+                           DATE,
+                           BOOLEAN;
 
     public String asString() {
         return this.name().toLowerCase();

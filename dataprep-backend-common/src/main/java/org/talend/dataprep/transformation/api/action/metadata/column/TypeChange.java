@@ -52,7 +52,7 @@ public class TypeChange extends AbstractActionMetadata implements ColumnAction, 
      */
     @Override
     public String getCategory() {
-        return ActionCategory.COLUMNS.getDisplayName();
+        return ActionCategory.COLUMN_METADATA.getDisplayName();
     }
 
     /**

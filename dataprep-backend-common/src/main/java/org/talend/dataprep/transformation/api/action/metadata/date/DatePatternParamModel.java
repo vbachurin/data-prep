@@ -1,13 +1,13 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.api.type.Type.STRING;
 
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 /**
@@ -28,7 +28,7 @@ public interface DatePatternParamModel {
     /**
      * The parameter object for the custom new pattern.
      */
-    Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, STRING.getName(), EMPTY);
+    Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, ParameterType.STRING, EMPTY);
 
     /**
      * @return the Parameters to display for the date related action.

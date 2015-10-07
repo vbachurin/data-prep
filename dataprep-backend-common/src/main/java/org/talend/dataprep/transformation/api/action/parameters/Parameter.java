@@ -34,7 +34,7 @@ public class Parameter implements Serializable {
      * @param name The parameter name.
      * @param type The parameter type.
      */
-    public Parameter(String name, String type) {
+    public Parameter(String name, ParameterType type) {
         this(name, type, null, false);
     }
 
@@ -45,7 +45,7 @@ public class Parameter implements Serializable {
      * @param type The parameter type.
      * @param defaultValue the parameter default value.
      */
-    public Parameter(String name, String type, String defaultValue) {
+    public Parameter(String name, ParameterType type, String defaultValue) {
         this(name, type, defaultValue, false);
     }
 
@@ -57,7 +57,7 @@ public class Parameter implements Serializable {
      * @param defaultValue the parameter default value.
      * @param implicit true if the parameter is implicit.
      */
-    public Parameter(final String name, final String type, final String defaultValue, final boolean implicit) {
+    public Parameter(final String name, final ParameterType type, final String defaultValue, final boolean implicit) {
         this(name, type, defaultValue, implicit, true);
     }
 
@@ -70,10 +70,10 @@ public class Parameter implements Serializable {
      * @param implicit true if the parameter is implicit.
      * @param canBeBlank True if the parameter can be blank.
      */
-    public Parameter(final String name, final String type, final String defaultValue, final boolean implicit,
+    public Parameter(final String name, final ParameterType type, final String defaultValue, final boolean implicit,
             final boolean canBeBlank) {
         this.name = name;
-        this.type = type;
+        this.type = type.asString();
         this.defaultValue = defaultValue;
         this.implicit = implicit;
         this.canBeBlank = canBeBlank;

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 /**
@@ -26,7 +27,7 @@ public class SelectParameterTest extends ParameterBaseTest {
                 .canBeBlank(false) //
                 .item("first choice") //
                 .item("2") //
-                .item("your choice", new Parameter("limit", ParameterType.INTEGER.asString(), "", false, false)) //
+                .item("your choice", new Parameter("limit", ParameterType.INTEGER, StringUtils.EMPTY, false, false)) //
                 .build();
 
         // when

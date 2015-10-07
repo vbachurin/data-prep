@@ -1,8 +1,5 @@
 package org.talend.dataprep.transformation.api.action.dynamic.cluster;
 
-import static org.talend.dataprep.api.type.Type.BOOLEAN;
-import static org.talend.dataprep.api.type.Type.STRING;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
@@ -12,6 +9,7 @@ import org.talend.dataprep.transformation.api.action.dynamic.GenericParameter;
 import org.talend.dataprep.transformation.api.action.parameters.ClusterItem;
 import org.talend.dataprep.transformation.api.action.parameters.Clusters;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 import org.talend.dataquality.record.linkage.constant.AttributeMatcherType;
 import org.talend.datascience.common.recordlinkage.PostMerge;
 import org.talend.datascience.common.recordlinkage.StringClusters;
@@ -45,9 +43,9 @@ public class ClusterParameters implements DynamicParameters {
             if (!StringUtils.isEmpty(cluster.survivedValue)) {
                 final ClusterItem.Builder currentCluster = ClusterItem.builder();
                 for (String value : cluster.originalValues) {
-                    currentCluster.parameter(new Parameter(value, BOOLEAN.getName()));
+                    currentCluster.parameter(new Parameter(value, ParameterType.BOOLEAN));
                 }
-                currentCluster.replace(new Parameter("replaceValue", STRING.getName(), cluster.survivedValue));
+                currentCluster.replace(new Parameter("replaceValue", ParameterType.STRING, cluster.survivedValue));
                 builder.cluster(currentCluster);
             }
         }
