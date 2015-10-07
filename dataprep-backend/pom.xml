@@ -27,12 +27,12 @@
     </properties>
     <distributionManagement>
         <snapshotRepository>
-          <id>talend_nexus_deployment</id>
-          <url>http://newbuild.talend.com:8081/nexus/content/repositories/snapshots/</url>
+            <id>talend_nexus_deployment</id>
+            <url>http://newbuild.talend.com:8081/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
         <repository>
-          <id>talend_nexus_deployment</id>
-          <url>http://newbuild.talend.com:8081/nexus/content/repositories/releases/</url>
+            <id>talend_nexus_deployment</id>
+            <url>http://newbuild.talend.com:8081/nexus/content/repositories/releases/</url>
         </repository>
     </distributionManagement>
     <repositories>
@@ -58,6 +58,7 @@
             <id>releases</id>
             <url>http://newbuild.talend.com:8081/nexus/content/repositories/releases</url>
             <releases>
+                <updatePolicy>never</updatePolicy>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
@@ -71,6 +72,7 @@
                 <enabled>false</enabled>
             </releases>
             <snapshots>
+                <updatePolicy>never</updatePolicy>
                 <enabled>true</enabled>
             </snapshots>
         </repository>
@@ -78,6 +80,7 @@
             <id>opensource-releases</id>
             <url>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceRelease</url>
             <releases>
+                <updatePolicy>never</updatePolicy>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
@@ -355,7 +358,12 @@
             <dependency>
                 <groupId>com.netflix.hystrix</groupId>
                 <artifactId>hystrix-core</artifactId>
-                <version>1.4.0-RC6</version>
+                <version>1.4.16</version>
+            </dependency>
+            <dependency>
+                <groupId>io.reactivex</groupId>
+                <artifactId>rxjava</artifactId>
+                <version>1.0.7</version>
             </dependency>
             <dependency>
                 <groupId>org.talend.dataprep</groupId>

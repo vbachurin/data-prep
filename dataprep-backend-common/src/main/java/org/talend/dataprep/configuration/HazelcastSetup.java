@@ -15,6 +15,7 @@ package org.talend.dataprep.configuration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.GroupConfig;
@@ -22,9 +23,13 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
 /**
- * Setup Hazelcast client instance
+ * Setup Hazelcast client instance.
+ *
+ * Configuration is only activated when profile "standalone" is active. Standalone indicates each data prep service
+ * runs in its own JVM, serving multiple concurrent requests thus the need for a distributed lock system.
  */
 @Configuration
+@Profile("standalone")
 public class HazelcastSetup {
 
     /**

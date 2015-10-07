@@ -6,7 +6,6 @@
         <artifactId>dataprep-parent</artifactId>
         <version>1.0.m9-SNAPSHOT</version>
     </parent>
-    <groupId>org.talend.dataprep</groupId>
     <artifactId>dataprep-webapp</artifactId>
     <version>1.0.m9-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -19,8 +18,7 @@
     <properties>
         <docker.registry.name>talend-registry:5000</docker.registry.name>
         <docker.tools.image.name>${docker.registry.name}/talend/data-prep-webapp-tools:1.0</docker.tools.image.name>
-        <!--            <docker.registry.name>tal-qa158.talend.lan:5000</docker.registry.name>-->
-	<docker.user>1000</docker.user>
+        <docker.user>1000</docker.user>
     </properties>
     <profiles>
         <profile>
@@ -119,6 +117,25 @@
                                         <argument>test</argument>
                                     </arguments>
                                 </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.5.3</version>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>assembly/dist.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>
@@ -280,6 +297,25 @@
                                 <phase>test</phase>
                                 <goals>
                                     <goal>test</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.5.3</version>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>assembly/dist.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
                                 </goals>
                             </execution>
                         </executions>
