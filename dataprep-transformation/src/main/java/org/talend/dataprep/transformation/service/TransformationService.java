@@ -46,6 +46,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.api.transformer.configuration.PreviewConfiguration;
+import org.talend.dataprep.transformation.api.transformer.suggestion.Suggestion;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngine;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineImpl;
 import org.talend.dataprep.transformation.api.transformer.suggestion.model.Suggestion;
