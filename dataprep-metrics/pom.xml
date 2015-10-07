@@ -10,7 +10,6 @@
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
     <artifactId>dataprep-metrics</artifactId>
-    <version>1.0.m9-SNAPSHOT</version>
     <name>dataprep-metrics</name>
     <dependencies>
         <dependency>
