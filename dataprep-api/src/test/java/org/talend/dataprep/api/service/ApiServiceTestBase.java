@@ -14,6 +14,8 @@ import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +34,7 @@ import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.response.Response;
 
 /**
  * Base test for all API service unit.
@@ -41,6 +44,7 @@ import com.jayway.restassured.http.ContentType;
 @WebIntegrationTest
 public abstract class ApiServiceTestBase {
 
+    public static final Logger LOGGER = LoggerFactory.getLogger(ApiServiceTestBase.class);
     @Value("${local.server.port}")
     protected int port;
 
@@ -91,8 +95,14 @@ public abstract class ApiServiceTestBase {
 
     protected String createDataset(final String file, final String name, final String type) throws IOException {
         final String datasetContent = IOUtils.toString(PreparationAPITest.class.getResourceAsStream(file));
-        final String dataSetId = given().contentType(ContentType.JSON).body(datasetContent).queryParam("Content-Type", type)
-                .when().post("/api/datasets?name={name}", name).asString();
+        final Response post = given().contentType(ContentType.JSON).body(datasetContent).queryParam("Content-Type", type)
+                .when().post("/api/datasets?name={name}", name);
+        final int statusCode = post.getStatusCode();
+        if(statusCode != 200) {
+            LOGGER.error("Unable to create dataset (HTTP " + statusCode + "). Error: {}", post.asString());
+        }
+        assertThat(statusCode, is(200));
+        final String dataSetId = post.asString();
         assertNotNull(dataSetId);
         assertThat(dataSetId, not(""));
 
