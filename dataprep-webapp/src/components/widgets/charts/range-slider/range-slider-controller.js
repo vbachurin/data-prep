@@ -65,7 +65,7 @@
          * @param maximum The maximum value in the range
          * @param nbDecimals The number precision
          */
-        vm.adaptRangeValues = function adaptRangeValues(enteredMin, enteredMax, minimum, maximum, nbDecimals) {
+        vm.adaptRangeValues = function adaptRangeValues(enteredMin, enteredMax, minimum, maximum) {
             //switch entered values if necessary
             if (enteredMin > enteredMax) {
                 var _aux = enteredMin;
@@ -92,15 +92,11 @@
                 enteredMin = minimum;
             }
 
-            if (enteredMin === enteredMax) {
-                var exp = '1e-' + (nbDecimals + 1);
-                //in order to avoid range over stepping
-                return enteredMin === minimum ?[enteredMin, enteredMin + Number(exp)] : [enteredMin - Number(exp), enteredMin];
-            }
-            else {
-                return [enteredMin, enteredMax];
-            }
-
+            //final extent without delta
+            return {
+                min: enteredMin,
+                max: enteredMax
+            };
         };
     }
 

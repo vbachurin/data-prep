@@ -186,23 +186,28 @@
 
                     //Update the brush with input values and call the brush end callback if values have changed
                     function updateBrush() {
-                        var initialBrushValues = scope.brush.extent().map(function (val) {
-                            return +val.toFixed(nbDecimals);
-                        });
+                        //Memorize the current brush
+                        var initialBrushValue = lastBrushValues;
+
+                        //Collect entered values
                         var enteredMin = ctrl.toNumber(document.getElementsByName('minRange')[0].value);
                         var enteredMax = ctrl.toNumber(document.getElementsByName('maxRange')[0].value);
-
                         if (enteredMax === null || enteredMin === null) {
                             return;
                         }
 
-                        //update brush
-                        nbDecimals = d3.max([ctrl.decimalPlaces(enteredMin), ctrl.decimalPlaces(enteredMax)]);
-                        var finalExtent = ctrl.adaptRangeValues(enteredMin, enteredMax, rangeLimits.min, rangeLimits.max, nbDecimals);
-                        brushg.transition().call(scope.brush.extent(finalExtent));
+                        //Decide of the final brush values
+                        lastBrushValues = ctrl.adaptRangeValues(enteredMin, enteredMax, rangeLimits.min, rangeLimits.max);
 
-                        //brush change callback
-                        if (initialBrushValues[0] !== finalExtent[0] || initialBrushValues[1] !== finalExtent[1]) {
+                        //fire filter to the system
+                        if(initialBrushValue.min !== lastBrushValues.min || initialBrushValue.max !== lastBrushValues.max) {
+                            //maj brush + sauver (lastBrushValue)
+                            brushg.transition().call(scope.brush.extent([lastBrushValues.min, lastBrushValues.max]));
+
+                            //resize the brush with the delta
+                            handleUniqueBrushValue();
+
+                            //trigger filter to the system
                             filterToApply = enteredMin > enteredMax ? [+enteredMax.toFixed(nbDecimals), +enteredMin.toFixed(nbDecimals)] : [+enteredMin.toFixed(nbDecimals), +enteredMax.toFixed(nbDecimals)];
                             scope.onBrushEnd()(filterToApply);
                         }
@@ -214,7 +219,7 @@
                         if (scope.brush.empty()) {
                             var min = scope.brush.extent()[0];
                             var max = scope.brush.extent()[1];
-                            var exp = '1e-' + (nbDecimals + 1);
+                            var exp = '1e-' + (nbDecimals + 2);
                             svg.select('.brush').call(scope.brush.clear().extent([min, max + Number(exp)]));
                         }
                     }
