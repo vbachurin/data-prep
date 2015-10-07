@@ -15,15 +15,17 @@ describe('Column types Service', function () {
 
     beforeEach(module('data-prep.services.dataset'));
 
-    beforeEach(inject(function ($rootScope, $injector) {
+    beforeEach(inject(function ($rootScope, $injector, RestURLs) {
+        RestURLs.setServerUrl('');
         $httpBackend = $injector.get('$httpBackend');
     }));
 
     it('should get types from backend call', inject(function ($rootScope, ColumnTypesService, RestURLs) {
         //given
+        console.log(RestURLs.typesUrl);
         var result = null;
         $httpBackend
-            .expectGET(RestURLs.serverUrl + '/api/types')
+            .expectGET(RestURLs.typesUrl)
             .respond(200, {data: types});
 
         //when
@@ -37,11 +39,11 @@ describe('Column types Service', function () {
         expect(result).toEqual(types);
     }));
 
-    it('should get types saved types (no second backend call)', inject(function ($rootScope, ColumnTypesService, RestURLs) {
+    it('should get saved types (no second backend call)', inject(function ($rootScope, ColumnTypesService, RestURLs) {
         //given
         var result = null;
         $httpBackend
-            .expectGET(RestURLs.serverUrl + '/api/types')
+            .expectGET(RestURLs.typesUrl)
             .respond(200, {data: types});
 
         ColumnTypesService.getTypes();

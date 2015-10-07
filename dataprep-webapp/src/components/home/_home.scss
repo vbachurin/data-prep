@@ -19,4 +19,13 @@ $footer-height: 50px;
     color: $light-blue;
     -webkit-filter: none;
   }
+
+  #upload-list-container {
+    @include flex-fixed();
+  }
+
+  #inventory-list-container {
+    @include flex-flexible();
+    position: relative;
+  }
 }

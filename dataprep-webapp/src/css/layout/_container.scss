@@ -53,17 +53,17 @@
 /****************************************** Fixed elements + flexible elements ***************************************/
 /*********************************************************************************************************************/
 
-.flex-fixed {
+@mixin flex-fixed($size: 300px) {
   @include flex-grow(0);
-  @include flex-shrink(0);
-  max-height: 300px;
+  @include flex-shrink(1);
+  max-height: $size;
   overflow: auto;
 }
 
-.flex-flexible {
+@mixin flex-flexible($size: 300px) {
   @include flex-grow(1);
   @include flex-shrink(1);
-
+  @include flex-basis($size);
   overflow: auto;
 }
 

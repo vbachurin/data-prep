@@ -12,11 +12,13 @@
 // ============================================================================
 package org.talend.dataprep.configuration;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import com.hazelcast.config.Config;
+import com.hazelcast.config.GroupConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
@@ -30,9 +32,17 @@ import com.hazelcast.core.HazelcastInstance;
 @Profile("standalone")
 public class HazelcastSetup {
 
+    /**
+     * Optional hazelcast group name (useful to prevent collisions with other data-prep running instances on the same
+     * computer). Default value is to "data-prep".
+     */
+    @Value("${hazelcast.groupName:data-prep}")
+    private String groupName;
+
     @Bean
     public HazelcastInstance hazelcastInstance() {
         Config cfg = new Config();
+        cfg.setGroupConfig(new GroupConfig(groupName));
         cfg.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
         cfg.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(true);
         cfg.getNetworkConfig().getJoin().getTcpIpConfig().getMembers().add("127.0.0.1"); //$NON-NLS-1$

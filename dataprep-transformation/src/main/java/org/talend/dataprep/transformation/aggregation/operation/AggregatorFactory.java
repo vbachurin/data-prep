@@ -27,8 +27,6 @@ public class AggregatorFactory {
         String groupBy = parameters.getGroupBy().get(0);
 
         switch (operation.getOperator()) {
-        case COUNT:
-            return new Count(groupBy, operation.getColumnId());
         case AVERAGE:
             return new Average(groupBy, operation.getColumnId());
         case MIN:

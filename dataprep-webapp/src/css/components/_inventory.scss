@@ -1,25 +1,24 @@
 $hover-color: #c9d7e4;
 $border-color: #CECECE;
 
-$inventory-sort-height: 50px;
-
 .inventory {
 
-  @include flex-column();
+  @include flex-row();
+  @include flex-wrap(wrap);
   font-size: 0.9em;
 
   .inventory-sort {
-    @include flex-basis($inventory-sort-height);
+    @include flex-basis(100%);
     @include flex-grow(0);
     @include flex-shrink(0);
-
     border-bottom: 1px solid $border-color;
-    font-weight: 300;
-    padding: 0 5px 0 0;
   }
 
   .inventory-list {
-    @include calc(flex-basis, "100vh - 2 * " + $header-height + " - " + $footer-height + " - " + $inventory-sort-height);
+    @include flex-basis(300px);
+    @include flex-grow(1);
+    @include flex-shrink(1);
+
     @include flex-column();
 
     overflow-y: auto;
@@ -58,7 +57,7 @@ $inventory-sort-height: 50px;
       position: relative;
       cursor: pointer;
 
-      &:hover{
+      &:hover {
         padding: 0 2px;
       }
 
@@ -67,7 +66,7 @@ $inventory-sort-height: 50px;
         cursor: inherit;
       }
 
-      >img {
+      > img {
         z-index: 0;
         width: 100%;
 
@@ -136,7 +135,7 @@ $inventory-sort-height: 50px;
   }
 }
 
-.btn-transparent{
+.btn-transparent {
   opacity: 0;
   outline: none;
 
@@ -155,25 +154,25 @@ $inventory-sort-height: 50px;
   background: $white;
 }
 
-.btn-icon{
+.btn-icon {
   padding: 0 10px 0 10px;
   margin: 0 5px 0 5px;
   color: white;
   font-family: $iconsfont;
   font-size: 1.2em;
   line-height: 40px;
-  &:hover{
+  &:hover {
     border-radius: 5px;
     color: white;
     background-color: $background-blue;
-    &.favorite-true{
+    &.favorite-true {
       opacity: 1;
       color: orange;
     }
   }
 }
 
-.favorite-true{
+.favorite-true {
   opacity: 1;
   color: orange;
 }
