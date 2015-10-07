@@ -82,7 +82,7 @@ public class ConcatTest {
         action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
 
         // then
-        final ColumnMetadata expected = ColumnMetadata.Builder.column().id(3).name("sourceselected").type(Type.STRING).build();
+        final ColumnMetadata expected = ColumnMetadata.Builder.column().id(3).name("source_selected").type(Type.STRING).build();
         ColumnMetadata actual = row.getRowMetadata().getById("0003");
         assertEquals(expected, actual);
     }

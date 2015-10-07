@@ -53,6 +53,11 @@ public class Concat extends AbstractActionMetadata implements ColumnAction {
     public static final String SUFFIX_PARAMETER = "suffix"; //$NON-NLS-1$
 
     /**
+     * The separator use in the new column name.
+     */
+    public static final String COLUMN_NAMES_SEPARATOR = "_"; //$NON-NLS-1$
+
+    /**
      * @see ActionMetadata#getName()
      */
     @Override
@@ -158,7 +163,7 @@ public class Concat extends AbstractActionMetadata implements ColumnAction {
     private ColumnMetadata createNewColumn(ColumnMetadata sourceColumn, ColumnMetadata selectedColumn) {
         return ColumnMetadata.Builder //
                 .column() //
-                .name(sourceColumn.getName() + selectedColumn.getName()) //
+                .name(sourceColumn.getName() + COLUMN_NAMES_SEPARATOR + selectedColumn.getName()) //
                 .type(Type.STRING) //
                 .build();
     }
