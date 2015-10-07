@@ -187,7 +187,7 @@
                     //Update the brush with input values and call the brush end callback if values have changed
                     function updateBrush() {
                         var initialBrushValues = scope.brush.extent().map(function (val) {
-                            return val.toFixed(nbDecimals);
+                            return +val.toFixed(nbDecimals);
                         });
                         var enteredMin = ctrl.toNumber(document.getElementsByName('minRange')[0].value);
                         var enteredMax = ctrl.toNumber(document.getElementsByName('maxRange')[0].value);
