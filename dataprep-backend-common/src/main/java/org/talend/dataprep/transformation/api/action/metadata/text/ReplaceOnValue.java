@@ -5,6 +5,8 @@ import static org.talend.dataprep.api.type.Type.STRING;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -82,9 +84,15 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
 
         final String toMatch = parameters.get(CELL_VALUE_PARAMETER);
 
-        if (value.matches(toMatch)) {
-            final String toReplace = parameters.get(REPLACE_VALUE_PARAMETER);
-            row.set(columnId, toReplace);
+        try {
+            Pattern p = Pattern.compile(toMatch);
+
+            if (value != null && p.matcher(value.trim()).matches()) {
+                final String toReplace = parameters.get(REPLACE_VALUE_PARAMETER);
+                row.set(columnId, toReplace);
+            }
+        } catch (PatternSyntaxException e) {
+            // In case the pattern is not valid, consider that the value does not match: nothing to do.
         }
     }
 
@@ -100,7 +108,8 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
      * @see CellAction#applyOnCell(DataSetRow, TransformationContext, Map, Long, String)
      */
     @Override
-    public void applyOnCell(DataSetRow row, TransformationContext context, Map<String, String> parameters, Long rowId, String columnId) {
+    public void applyOnCell(DataSetRow row, TransformationContext context, Map<String, String> parameters, Long rowId,
+            String columnId) {
         apply(row, parameters, columnId);
     }
 }
