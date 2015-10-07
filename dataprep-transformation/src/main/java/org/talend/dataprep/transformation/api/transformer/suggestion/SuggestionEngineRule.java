@@ -5,5 +5,5 @@ import java.util.function.BiFunction;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
-interface SuggestionEngineRule extends BiFunction<ActionMetadata, ColumnMetadata, Integer> {
+public interface SuggestionEngineRule extends BiFunction<ActionMetadata, ColumnMetadata, Integer> {
 }

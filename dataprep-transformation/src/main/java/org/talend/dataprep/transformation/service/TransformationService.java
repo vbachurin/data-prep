@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -278,7 +279,7 @@ public class TransformationService {
     @RequestMapping(value = "/suggest/column", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Suggest actions for a given column metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
     @ResponseBody
-    public List<Suggestion> suggest(@RequestBody(required = false) ColumnMetadata column) {
+    public List<ActionMetadata> suggest(@RequestBody(required = false) ColumnMetadata column) {
         if (column == null) {
             return Collections.emptyList();
         }
@@ -287,7 +288,9 @@ public class TransformationService {
                 .filter(am -> am.acceptColumn(column)) // Filter on acceptable columns (for type)
                 .map(am -> am.adapt(column)) // Adapt default values (e.g. column name)
                 .collect(toList());
-        return suggestionEngine.score(actions, column);
+        return suggestionEngine.score(actions, column).stream() //
+                .map(Suggestion::getAction) //
+                .collect(Collectors.toList());
     }
 
     /**
