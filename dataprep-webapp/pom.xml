@@ -7,7 +7,6 @@
         <version>1.0.m9-SNAPSHOT</version>
     </parent>
     <artifactId>dataprep-webapp</artifactId>
-    <version>1.0.m9-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>dataprep-webapp</name>
