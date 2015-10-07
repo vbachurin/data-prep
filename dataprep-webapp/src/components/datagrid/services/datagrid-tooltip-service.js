@@ -68,7 +68,7 @@
                                 x: event.clientX,
                                 y: event.clientY
                             },
-                            htmlStr: TextFormatService.adaptValueToHtmlConstraints(value)
+                            htmlStr: TextFormatService.adaptToGridConstraints(value)
                         };
                         service.showTooltip = true;
                     });

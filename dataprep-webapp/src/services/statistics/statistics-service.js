@@ -103,7 +103,7 @@
         function initRangeHistogram(histoData) {
             var rangeData = _.map(histoData, function (histDatum) {
                 return {
-                    'data': [histDatum.range.min ,histDatum.range.max ],
+                    'data': [histDatum.range.min, histDatum.range.max],
                     'occurrences': histDatum.occurrences
                 };
             });
@@ -123,7 +123,7 @@
         function initClassicHistogram(key, label, dataTable) {
             service.histogram = {
                 data: _.map(dataTable, function (rec) {
-                    rec.formattedValue = TextFormatService.adaptValueToHtmlConstraints(rec.data);
+                    rec.formattedValue = TextFormatService.adaptToGridConstraints(rec.data);
                     return rec;
                 }),
                 key: key,
@@ -143,12 +143,30 @@
          */
         function initVerticalHistogram(key, label, dataTable) {
             service.histogram = {
-                numData: dataTable,
+                data: dataTable,
                 key: key,
                 label: label,
                 column: service.selectedColumn,
-                existingFilter: null
+                activeLimits: null,
+                vertical: true
             };
+        }
+
+        /**
+         * @ngdoc method
+         * @name getValueWithinRange
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Get the corresponding value within [min, max] interval.
+         * If the value is not in the interval, we return min or max if it is under min or above max respectively
+         */
+        function getValueWithinRange(value, min, max) {
+            if (value < min) {
+                return min;
+            }
+            if (value > max) {
+                return max;
+            }
+            return value;
         }
 
         /**
@@ -160,68 +178,30 @@
          */
         function initRangeLimits() {
             var column = service.selectedColumn;
-            var currentRangeFilter = _.find(FilterService.filters, function(filter){
+            var statistics = column.statistics;
+            var currentRangeFilter = _.find(FilterService.filters, function (filter) {
                 return filter.colId === column.id && filter.type === 'inside_range';
             });
 
-            if(currentRangeFilter){
-                if(currentRangeFilter.args.interval[0] < column.statistics.min){
-                    var maxBrush;
-                    if(currentRangeFilter.args.interval[1] <= column.statistics.min){
-                        maxBrush = column.statistics.min;
-                    }
-                    else if(currentRangeFilter.args.interval[1] >= column.statistics.max){
-                        maxBrush = column.statistics.max;
-                    }
-                    else if(currentRangeFilter.args.interval[1] < column.statistics.max && currentRangeFilter.args.interval[1] > column.statistics.min){
-                        maxBrush = currentRangeFilter.args.interval[1];
-                    }
-                    service.rangeLimits = {
-                        min : column.statistics.min,
-                        max : column.statistics.max,
-                        minBrush : column.statistics.min,
-                        maxBrush : maxBrush,
-                        minFilterVal : currentRangeFilter.args.interval[0],
-                        maxFilterVal : currentRangeFilter.args.interval[1]
-                    };
-                }
-                else if(currentRangeFilter.args.interval[1] > column.statistics.max){
+            var rangeLimits = {
+                min: statistics.min,
+                max: statistics.max
+            };
 
-                    var minBrush;
-                    if(currentRangeFilter.args.interval[0] >= column.statistics.max){
-                        minBrush = column.statistics.max;
-                    }
-                    else if(currentRangeFilter.args.interval[0] <= column.statistics.max && currentRangeFilter.args.interval[0] >= column.statistics.min){
-                        minBrush = currentRangeFilter.args.interval[0];
-                    }
+            if (currentRangeFilter) {
+                var filterMin = currentRangeFilter.args.interval[0];
+                var filterMax = currentRangeFilter.args.interval[1];
 
-                    service.rangeLimits = {
-                        min : column.statistics.min,
-                        max : column.statistics.max,
-                        minBrush : minBrush,
-                        maxBrush : column.statistics.max,
-                        minFilterVal : currentRangeFilter.args.interval[0],
-                        maxFilterVal : currentRangeFilter.args.interval[1]
-                    };
-                }
-                else {
-                    service.rangeLimits = {
-                        min : column.statistics.min,
-                        max : column.statistics.max,
-                        minBrush : currentRangeFilter.args.interval[0],
-                        maxBrush : currentRangeFilter.args.interval[1]
-                    };
-                }
-                service.histogram.existingFilter = [service.rangeLimits.minBrush, service.rangeLimits.maxBrush];
+                rangeLimits.minFilterVal = filterMin;
+                rangeLimits.maxFilterVal = filterMax;
+
+                rangeLimits.minBrush = getValueWithinRange(filterMin, statistics.min, statistics.max);
+                rangeLimits.maxBrush = getValueWithinRange(filterMax, statistics.min, statistics.max);
+
+                service.histogram.activeLimits = [rangeLimits.minBrush, rangeLimits.maxBrush];
             }
-            else {
-                service.rangeLimits = {
-                    min : column.statistics.min,
-                    max : column.statistics.max,
-                    minBrush : undefined,
-                    maxBrush : undefined
-                };
-            }
+
+            service.rangeLimits = rangeLimits;
         }
 
         /**
@@ -235,12 +215,12 @@
             var cacheKey = JSON.stringify(aggregationParameters);
             var aggregationData = aggregationCache.get(cacheKey);
 
-            if(aggregationData) {
+            if (aggregationData) {
                 return $q.when(aggregationData);
             }
 
             return StatisticsRestService.getAggregations(aggregationParameters)
-                .then(function(response) {
+                .then(function (response) {
                     aggregationCache.put(cacheKey, response);
                     return response;
                 });
@@ -258,10 +238,7 @@
          * @returns {number} The value in the clean format
          */
         function clean(value) {
-            if (isNaN(value)) {
-                return parseInt(value, 10);
-            }
-            return value === parseInt(value, 10) ? value : +value.toFixed(2);
+            return isNaN(value) || value === parseInt(value, 10) ? value : +value.toFixed(2);
         }
 
         /**
@@ -367,19 +344,13 @@
                 if (service.selectedColumn && filter.colId === service.selectedColumn.id) {
                     initRangeLimits();
                     //to reset the bars colors
-                    service.histogram.existingFilter = [service.selectedColumn.statistics.min, service.selectedColumn.statistics.max];
+                    service.histogram.activeLimits = [service.selectedColumn.statistics.min, service.selectedColumn.statistics.max];
                 }
             };
 
-            service.rangeLimits.minBrush = interval[0];
-            service.rangeLimits.maxBrush = interval[1];
-            //empty the minFilterVal and the maxFilterVal because otherwise it will show them once we get back to the VIZ tab
-            service.rangeLimits.minFilterVal = undefined;
-            service.rangeLimits.maxFilterVal = undefined;
-
             var column = service.selectedColumn;
             var filterFn = FilterService.addFilter.bind(null, 'inside_range', column.id, column.name, {interval: interval}, removeFilterFn);
-            $timeout(function(){
+            $timeout(function () {
                 filterFn();
                 initRangeLimits();
             });
@@ -462,7 +433,7 @@
          * @description Processes the statistics aggregation for visualization
          */
         function processAggregation(datasetId, preparationId, stepId, sampleSize, column, aggregation) {
-            if(!aggregation) {
+            if (!aggregation) {
                 return processData(service.selectedColumn);
             }
 
@@ -483,7 +454,7 @@
             };
 
             getAggregationData(aggregationParameters)
-                .then(function(response) {
+                .then(function (response) {
                     initClassicHistogram(aggregation, $filter('translate')(aggregation), response);
                     service.histogram.aggregationColumn = column;
                     service.histogram.aggregation = aggregation;

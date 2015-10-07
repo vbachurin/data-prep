@@ -33,16 +33,6 @@ public class AggregationTests extends TransformationServiceBaseTests {
     }
 
     @Test
-    public void shouldAggregateCount() throws IOException {
-
-        // when
-        final String actual = aggregate("../aggregation/count.json", "../aggregation/aggregation_dataset_input.json");
-
-        // then
-        assertThat(actual, sameJSONAsFile(this.getClass().getResourceAsStream("../aggregation/count_expected.json")));
-    }
-
-    @Test
     public void shouldAggregateAverage() throws IOException {
 
         // when

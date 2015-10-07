@@ -1,29 +1,16 @@
 package org.talend.dataprep.lock;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
-
 /**
  * Factory used to generate locks. This class is used to generate prototype DistributedLock and hide the hazelcast
  * implementation.
  */
-@Component
-public class LockFactory {
-
-    /** The Hazel cast instance. */
-    @Autowired
-    private HazelcastInstance hci;
+public interface LockFactory {
 
     /**
-     * @param id the if where to put the lock.
-     * @return a distributed lock.
+     * @param id An id for the distributed lock. It is up to the caller to decide any naming rules or for uniqueness of
+     * id.
+     * @return A {@link DistributedLock lock} to perform platform wide lock operations.
      */
-    public DistributedLock getLock(String id) {
-        final ILock lock = hci.getLock(id);
-        return new DistributedLock(id, lock);
-    }
+    DistributedLock getLock(String id);
 
 }

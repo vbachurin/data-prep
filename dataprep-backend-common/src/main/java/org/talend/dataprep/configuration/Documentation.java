@@ -1,7 +1,9 @@
-package org.talend.dataprep.dataset.configuration;
+package org.talend.dataprep.configuration;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,9 +12,19 @@ import com.mangofactory.swagger.models.dto.ApiInfo;
 import com.mangofactory.swagger.plugin.EnableSwagger;
 import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
 
-@Configuration("org.talend.dataprep.dataset.configuration")
+@Configuration
+@ConditionalOnProperty(name = "service.documentation", havingValue = "true", matchIfMissing = true)
 @EnableSwagger
 public class Documentation {
+
+    @Value("${service.documentation.name}")
+    private String serviceDisplayName;
+
+    @Value("${service.documentation.description}")
+    private String serviceDescription;
+
+    @Value("#{'${service.documentation.path}'.split(',')}")
+    private String[] servicePaths;
 
     private SpringSwaggerConfig springSwaggerConfig;
 
@@ -23,9 +35,8 @@ public class Documentation {
 
     @Bean
     public SwaggerSpringMvcPlugin customImplementation() {
-        ApiInfo apiInfo = new ApiInfo("Talend Data Preparation - Data Set Service (DSS)",
-                "This service exposes operations on data sets (creation, remove...).", StringUtils.EMPTY, StringUtils.EMPTY,
+        ApiInfo apiInfo = new ApiInfo(serviceDisplayName, serviceDescription, StringUtils.EMPTY, StringUtils.EMPTY,
                 StringUtils.EMPTY, StringUtils.EMPTY);
-        return new SwaggerSpringMvcPlugin(springSwaggerConfig).apiInfo(apiInfo).includePatterns(".*datasets.*"); //$NON-NLS-1
+        return new SwaggerSpringMvcPlugin(springSwaggerConfig).apiInfo(apiInfo).includePatterns(servicePaths);
     }
 }
