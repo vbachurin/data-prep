@@ -14,7 +14,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 @Component
 public class SimpleSuggestionEngine implements SuggestionEngine {
 
-    @Autowired
+    @Autowired(required = false)
     private List<SuggestionEngineRule> rules;
 
     @Override
