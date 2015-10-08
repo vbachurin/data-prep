@@ -5,6 +5,8 @@ import static org.talend.dataprep.api.type.Type.STRING;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.annotation.Nonnull;
 
@@ -64,6 +66,13 @@ public class DeleteOnValue extends AbstractDelete {
      */
     @Override
     public boolean toDelete(ColumnMetadata colMetadata, Map<String, String> parsedParameters, String value) {
-        return value != null && value.trim().matches(parsedParameters.get(VALUE_PARAMETER));
+        try {
+            Pattern p = Pattern.compile(parsedParameters.get(VALUE_PARAMETER));
+
+            return value != null && p.matcher(value.trim()).matches();
+        } catch (PatternSyntaxException e) {
+            // In case the pattern is not valid, consider that the value does not match.
+            return false;
+        }
     }
 }

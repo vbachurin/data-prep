@@ -202,4 +202,25 @@ public class ReplaceOnValueTest {
         assertThat(row.get(columnId), is("replaced"));
     }
 
+
+    @Test
+    public void test_TDP_663() {
+        // given
+        final String columnId = "firstname";
+
+        final Map<String, String> values = new HashMap<>();
+        values.put(columnId, "password swordfish with Halle Berry");
+        final DataSetRow row = new DataSetRow(values);
+
+        final Map<String, String> parameters = new HashMap<>();
+        parameters.put(CELL_VALUE_PARAMETER, "*");
+        parameters.put(REPLACE_VALUE_PARAMETER, "replaced");
+
+        // when
+        action.applyOnCell(row, null, parameters, 85L, columnId);
+
+        // then
+        assertThat(row.get(columnId), is("password swordfish with Halle Berry"));
+    }
+
 }

@@ -2,6 +2,8 @@ package org.talend.dataprep.transformation.api.action.metadata.text;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -70,7 +72,14 @@ public class Cut extends AbstractActionMetadata implements ColumnAction {
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final String toCut = row.get(columnId);
         if (toCut != null) {
-            row.set(columnId, toCut.replaceAll(parameters.get(PATTERN_PARAMETER), "")); //$NON-NLS-1$
+            try {
+                // Check if the pattern is valid:
+                Pattern p = Pattern.compile(parameters.get(PATTERN_PARAMETER));
+
+                row.set(columnId, p.matcher(toCut).replaceAll("")); //$NON-NLS-1$
+            } catch (PatternSyntaxException e) {
+                // In case the pattern is not valid, consider that the value does not match: do nothing.
+            }
         }
     }
 }
