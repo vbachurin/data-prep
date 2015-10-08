@@ -140,6 +140,10 @@ gulp.task('clean', function (done) {
     $.del(['dist/', '.tmp/', 'dev/'], done);
 });
 
+gulp.task('clean:dev', function (done) {
+    $.del(['.tmp/', 'dev/'], done);
+});
+
 gulp.task('build', ['clean'], function () {
     gulp.start(['html', 'images', 'fonts', 'customFonts', 'misc']);
 });
