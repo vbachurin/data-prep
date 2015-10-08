@@ -18,7 +18,6 @@ public abstract class AbstractFillIfEmpty extends AbstractActionMetadata impleme
         return DATA_CLEANSING.getDisplayName();
     }
 
-
     /**
      * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
      */
@@ -26,7 +25,17 @@ public abstract class AbstractFillIfEmpty extends AbstractActionMetadata impleme
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final String value = row.get(columnId);
         if (value == null || value.trim().length() == 0) {
-            row.set(columnId, parameters.get(DEFAULT_VALUE_PARAMETER));
+            String newValue = getDefaultValue(row, parameters, columnId);
+            row.set(columnId, newValue);
         }
     }
+
+    /**
+     * Default implementation gets the default value from parameters.
+     * Can be override, like in FillWithDateIfEmpty.
+     */
+    protected String getDefaultValue(DataSetRow row, Map<String, String> parameters, String columnId) {
+        return parameters.get(DEFAULT_VALUE_PARAMETER);
+    }
+
 }
