@@ -30,7 +30,7 @@ public class AbsoluteRuleTest {
 
     @Before
     public void setUp() throws Exception {
-        absoluteRule = BasicRules.absoluteRule();
+        absoluteRule = IntegerRules.absoluteRule();
         negativeIntColumn.getStatistics().setMin(-1);
         negativeFloatColumn.getStatistics().setMin(-1);
     }
