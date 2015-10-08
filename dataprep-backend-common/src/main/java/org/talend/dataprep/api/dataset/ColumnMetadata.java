@@ -316,6 +316,10 @@ public class ColumnMetadata implements Serializable {
 
         private List<SemanticDomain> semanticDomains;
 
+        private boolean domainForced;
+
+        private boolean typeForced;
+
         /**
          * @return A ColumnMetadata builder.
          */
@@ -477,6 +481,26 @@ public class ColumnMetadata implements Serializable {
         }
 
         /**
+         *
+         * @param semanticDomainForced if semantic domain has been forced on this column.
+         * @return the builder to carry on building the column.
+         */
+        public ColumnMetadata.Builder semanticDomainForce(boolean semanticDomainForced) {
+            this.domainForced = semanticDomainForced;
+            return this;
+        }
+
+        /**
+         *
+         * @param typeForced if type has been forced on this column.
+         * @return the builder to carry on building the column.
+         */
+        public ColumnMetadata.Builder typeForce(boolean typeForced) {
+            this.typeForced = typeForced;
+            return this;
+        }
+
+        /**
          * Copy the column from the given one.
          * 
          * @param original the column to copy.
@@ -498,6 +522,8 @@ public class ColumnMetadata implements Serializable {
             this.domainLabel = original.getDomainLabel();
             this.domainFrequency = original.getDomainFrequency();
             this.semanticDomains = original.getSemanticDomains();
+            this.domainForced = original.isDomainForced();
+            this.typeForced = original.isTypeForced();
             return this;
         }
 
@@ -521,6 +547,8 @@ public class ColumnMetadata implements Serializable {
             columnMetadata.setDomainLabel(this.domainLabel == null ? StringUtils.EMPTY : this.domainLabel);
             columnMetadata.setDomainFrequency(this.domainFrequency);
             columnMetadata.setSemanticDomains(this.semanticDomains == null ? Collections.emptyList() : this.semanticDomains);
+            columnMetadata.setDomainForced(this.domainForced);
+            columnMetadata.setTypeForced(this.typeForced);
             return columnMetadata;
         }
     }
