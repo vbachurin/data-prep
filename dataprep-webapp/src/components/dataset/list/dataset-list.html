@@ -33,12 +33,26 @@
                      ng-if="dataset.certificationStep!='NONE'"/>
             </div>
 
-            <div class="inventory-text">
-                <div class="inventory-title"
-                     ng-click="datasetListCtrl.uploadWorkflowService.openDataset(dataset)">{{dataset.name}}</div>
-                <div class="inventory-description"
-                     ng-click="datasetListCtrl.uploadWorkflowService.openDataset(dataset)">{{ 'INVENTORY_DETAILS' | translate:dataset }}</div>
+            <div ng-switch on="dataset.showChangeName">
+
+              <div ng-switch-when="true">
+
+                <a data-icon="a" class="btn-icon" ng-click="dataset.showChangeName=false"></a>
+              </div>
+              <div ng-switch-default>
+                <div class="inventory-text">
+                  <div class="inventory-title"
+                       ng-click="datasetListCtrl.uploadWorkflowService.openDataset(dataset)">{{dataset.name}}
+                  </div>
+                  <a data-icon="a" class="btn-icon" ng-click="dataset.showChangeName=true"></a>
+
+                  <div class="inventory-description"
+                       ng-click="datasetListCtrl.uploadWorkflowService.openDataset(dataset)">{{ 'INVENTORY_DETAILS' | translate:dataset }}</div>
+                </div>
+              </div>
+
             </div>
+
 
             <!-- Draft actions icons -->
             <div ng-switch-when="true"
@@ -68,24 +82,5 @@
             </div>
         </div>
     </div>
-
-  <talend-modal
-      fullscreen="false"
-      state="datasetListCtrl.showChangeName"
-      disable-enter="true"
-      close-button="true">
-    <div class="modal-title">Dataset {{ 'RENAME' | translate:dataset }}</div>
-    <br/>
-    <input type="text" ng-model="datasetListCtrl.currentDataset.name"/>
-
-    <div class="modal-buttons">
-      <a class="modal-secondary-button"
-         ng-click="datasetListCtrl.showChangeName=false">{{ 'NO_THANKS' | translate:dataset }}</a>
-      <a class="modal-primary-button btn-primary"
-         ng-click="datasetListCtrl.doRename()">{{ 'RENAME' | translate:dataset }}</a>
-      </button>
-    </div>
-
-  </talend-modal>
 
 </div>
