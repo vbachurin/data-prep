@@ -27,7 +27,7 @@ public class IntegerRuleTest {
 
     @Before
     public void setUp() throws Exception {
-        integerRule = BasicRules.integerRule();
+        integerRule = IntegerRules.integerRule();
         mostIntColumn.getStatistics().getPatternFrequencies().add(new PatternFrequency("9.9", 10));
     }
 
