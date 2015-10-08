@@ -271,7 +271,8 @@ public class TransformationService {
                 .map(am -> am.adapt(column)) // Adapt default values (e.g. column name)
                 .collect(toList());
         return suggestionEngine.score(actions, column).stream() //
-                .map(Suggestion::getAction) //
+                .filter(s -> s.getScore() > 0) // Keep only strictly positive score (negative and 0 indicates not applicable)
+                .map(Suggestion::getAction) // Get the action for positive suggestions
                 .collect(Collectors.toList());
     }
 
