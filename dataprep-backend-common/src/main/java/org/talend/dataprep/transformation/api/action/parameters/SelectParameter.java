@@ -1,16 +1,15 @@
 package org.talend.dataprep.transformation.api.action.parameters;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 
 /**
  * Parameter that should be displayed as a select box in the UI.
@@ -37,7 +36,7 @@ public class SelectParameter extends Parameter implements Serializable {
      */
     private SelectParameter(String name, String defaultValue, boolean implicit, boolean canBeBlank, List<Item> items,
             boolean multiple) {
-        super(name, ParameterType.SELECT.asString(), defaultValue, implicit, canBeBlank);
+        super(name, ParameterType.SELECT, defaultValue, implicit, canBeBlank);
         setItems(items);
         setMultiple(multiple);
     }

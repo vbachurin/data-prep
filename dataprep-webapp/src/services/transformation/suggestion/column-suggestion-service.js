@@ -9,7 +9,7 @@
      * @requires data-prep.services.utils.service:ConverterService
      */
     function ColumnSuggestionService(TransformationCacheService) {
-        var COLUMN_CATEGORY = 'columns';
+        var COLUMN_CATEGORY = 'column_metadata';
         var self = this;
 
         /**

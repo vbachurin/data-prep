@@ -72,7 +72,7 @@ public class RenameTest {
 
     @Test
     public void testCategory() throws Exception {
-        assertThat(action.getCategory(), is(ActionCategory.COLUMNS.getDisplayName()));
+        assertThat(action.getCategory(), is(ActionCategory.COLUMN_METADATA.getDisplayName()));
     }
 
     /**

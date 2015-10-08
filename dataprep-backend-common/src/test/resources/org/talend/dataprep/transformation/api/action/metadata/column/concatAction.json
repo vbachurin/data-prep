@@ -1,0 +1,15 @@
+{
+  "actions": [
+    {
+      "action": "concat",
+      "parameters": {
+        "column_id": "0000",
+        "scope": "column",
+        "selected_column": "0001",
+        "prefix": "<",
+        "concat_separator": "-",
+        "suffix": ">"
+      }
+    }
+  ]
+}

@@ -21,10 +21,11 @@
      * @requires data-prep.datagrid.service:DatagridExternalService
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.filter.service:FilterService
+     * @requires data-prep.state.service:state
      * @restrict E
      */
     function Datagrid(DatagridGridService, DatagridColumnService, DatagridStyleService, DatagridSizeService,
-                      DatagridTooltipService, DatagridExternalService, DatagridService, FilterService) {
+                      DatagridTooltipService, DatagridExternalService, DatagridService, FilterService, state) {
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/datagrid.html',
@@ -55,7 +56,7 @@
                  * @description [PRIVATE] Get the loaded data
                  */
                 var getData = function getData() {
-                    return DatagridService.data;
+                    return state.playground.data;
                 };
 
                 /**

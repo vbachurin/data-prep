@@ -17,7 +17,7 @@ public class ParameterTest extends ParameterBaseTest {
     @Test
     public void shouldSerializeToJsonWithoutEmptyConfiguration() throws IOException {
         // given
-        Parameter expected = new Parameter("column_id", ParameterType.STRING.asString(), "0001", true, false);
+        Parameter expected = new Parameter("column_id", ParameterType.STRING, "0001", true, false);
 
         // when
         StringWriter out = new StringWriter();

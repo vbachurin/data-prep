@@ -9,8 +9,9 @@
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.utils.service:TextFormatService
      * @requires data-prep.services.statistics.service:StatisticsRestService
+     * @requires data-prep.state.service:StateService
      */
-    function StatisticsService($q, $timeout, $filter, $cacheFactory, DatagridService, FilterService, ConverterService, TextFormatService, StatisticsRestService) {
+    function StatisticsService($q, $timeout, $filter, $cacheFactory, DatagridService, FilterService, ConverterService, TextFormatService, StatisticsRestService, state) {
 
         var aggregationCache = $cacheFactory('aggregationStatistics', {capacity: 5});
 
@@ -59,7 +60,7 @@
             keyName = keyName || 'colValue';
             valueName = valueName || 'frequency';
 
-            var records = DatagridService.data.records;
+            var records = state.playground.data.records;
 
             return _.chain(records)
                 .groupBy(function (item) {

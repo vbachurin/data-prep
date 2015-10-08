@@ -12,6 +12,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 
 @Component(FillWithDateIfEmpty.ACTION_BEAN_PREFIX + FillWithDateIfEmpty.FILL_EMPTY_ACTION_NAME)
 public class FillWithDateIfEmpty extends AbstractFillIfEmpty {
@@ -33,7 +34,7 @@ public class FillWithDateIfEmpty extends AbstractFillIfEmpty {
     @Nonnull
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        parameters.add(new Parameter(DEFAULT_VALUE_PARAMETER, Type.DATE.getName(), DEFAULT_DATE_VALUE, false, false));
+        parameters.add(new Parameter(DEFAULT_VALUE_PARAMETER, ParameterType.DATE, DEFAULT_DATE_VALUE, false, false));
         return parameters;
     }
 

@@ -219,14 +219,14 @@
         "canBeBlank": false
       }
     ],
-    "category": "columns",
+    "category": "column_metadata",
     "name": "rename_column",
     "dynamic": false,
     "description": "Rename this column",
     "label": "Rename"
   },
   {
-    "category": "columns",
+    "category": "column_metadata",
     "name": "copy",
     "parameters": [
       {
@@ -724,5 +724,54 @@
   },
   {
     "name": "normalize"
+  },
+  {
+    "name": "concat",
+    "category": "columns",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "default": ""
+      },
+      {
+        "name": "selected_column",
+        "type": "column",
+        "implicit": false,
+        "default": ""
+      },
+      {
+        "name": "prefix",
+        "type": "string",
+        "implicit": false,
+        "default": ""
+      },
+      {
+        "name": "concat_separator",
+        "type": "string",
+        "implicit": false,
+        "default": ""
+      },
+      {
+        "name": "suffix",
+        "type": "string",
+        "implicit": false,
+        "default": ""
+      }
+    ],
+    "dynamic": false
   }
 ]

@@ -1,24 +1,23 @@
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.api.type.Type.STRING;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 
 public enum ImplicitParameters {
-    COLUMN_ID("column_id", STRING, EMPTY),
-    ROW_ID("row_id", STRING, EMPTY),
-    SCOPE("scope", STRING, EMPTY);
+                                COLUMN_ID("column_id", ParameterType.STRING, EMPTY),
+                                ROW_ID("row_id", ParameterType.STRING, EMPTY),
+                                SCOPE("scope", ParameterType.STRING, EMPTY);
 
     private final Parameter parameter;
 
-    ImplicitParameters(final String key, final Type type, final String defaultValue) {
-        this.parameter = new Parameter(key, type.getName(), defaultValue, true);
+    ImplicitParameters(final String key, final ParameterType type, final String defaultValue) {
+        this.parameter = new Parameter(key, type, defaultValue, true);
     }
 
     public String getKey() {

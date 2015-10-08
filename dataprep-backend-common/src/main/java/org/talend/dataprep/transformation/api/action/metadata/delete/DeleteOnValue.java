@@ -14,6 +14,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 
 /**
  * Delete row on a given value.
@@ -46,7 +47,7 @@ public class DeleteOnValue extends AbstractDelete {
     @Nonnull
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        parameters.add(new Parameter(VALUE_PARAMETER, STRING.getName(), StringUtils.EMPTY));
+        parameters.add(new Parameter(VALUE_PARAMETER, ParameterType.STRING, StringUtils.EMPTY));
         return parameters;
     }
 
