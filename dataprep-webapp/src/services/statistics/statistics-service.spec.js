@@ -648,8 +648,14 @@ describe('Statistics service', function () {
             {'data': 'Pierre', 'max': 104}
         ];
 
-        beforeEach(inject(function(StatisticsService) {
+        beforeEach(inject(function($window, StatisticsService, DatagridService) {
             StatisticsService.selectedColumn = currentColumn;
+
+            DatagridService.metadata = {};
+            DatagridService.metadata.id = '0000';
+
+            $window.localStorage.clear();
+
         }));
 
         it('should update histogram data with classical occurence histogram when no aggregation is provided', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
@@ -750,6 +756,45 @@ describe('Statistics service', function () {
             //then
             expect(StatisticsService.histogram).toBeFalsy();
         }));
+
+
+        it('should NOT call processAggregation when selecting a new column without a default aggregation', inject(function ($q, $rootScope, StatisticsService, RecipeService) {
+            //given
+            spyOn(StatisticsService, 'processAggregation').and.returnValue();
+            spyOn(RecipeService, 'getLastActiveStep').and.returnValue({id: '0000'});
+
+            //when
+            StatisticsService.updateAggregation();
+
+            //then
+            expect(StatisticsService.processAggregation).not.toHaveBeenCalled();
+        }));
+
+        it('should call processAggregation when selecting a new column with a default aggregation', inject(function ($window, $q, $rootScope, StatisticsService, RecipeService) {
+            //given
+            spyOn(StatisticsService, 'processAggregation').and.returnValue();
+            spyOn(RecipeService, 'getLastActiveStep').and.returnValue({id: '0000'});
+
+            StatisticsService.selectedColumn = {id: '0000', statistics: {min: 5, max: 55}};
+
+            var localStorageKey = 'org.talend.dataprep.col_aggregation_0000_0000';
+
+            var localStorageValue = {};
+            localStorageValue.aggregation = 'MAX';
+            localStorageValue.aggregationColumnId = '0001';
+
+            $window.localStorage.setItem(localStorageKey, JSON.stringify(localStorageValue));
+
+            //when
+            StatisticsService.updateAggregation();
+
+            //then
+            expect(StatisticsService.processAggregation).toHaveBeenCalled();
+
+            $window.localStorage.removeItem(localStorageKey);
+        }));
+
+
     });
 
     describe('The range slider', function() {

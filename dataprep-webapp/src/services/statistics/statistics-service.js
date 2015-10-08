@@ -10,8 +10,9 @@
      * @requires data-prep.services.utils.service:TextFormatService
      * @requires data-prep.services.statistics.service:StatisticsRestService
      * @requires data-prep.state.service:StateService
+     * @requires data-prep.recipe.service:RecipeService
      */
-    function StatisticsService($timeout, $filter, DatagridService, FilterService, ConverterService, TextFormatService, StatisticsRestService, state) {
+    function StatisticsService($window, $timeout, $filter, DatagridService, FilterService, ConverterService, TextFormatService, StatisticsRestService, state, RecipeService) {
 
         var service = {
             boxPlot: null,
@@ -27,6 +28,7 @@
             processAggregation: processAggregation,
             getAggregationColumns: getAggregationColumns,
             resetCharts: resetCharts,
+            updateAggregation: updateAggregation,
 
             //TODO temporary method to be replaced with new geo chart
             getGeoDistribution: getGeoDistribution
@@ -409,6 +411,7 @@
          */
         function processAggregation(datasetId, preparationId, stepId, column, aggregation) {
             if (!aggregation) {
+                deleteColumnaggregationLocalStorage();
                 return processData(service.selectedColumn);
             }
 
@@ -432,6 +435,8 @@
                     initClassicHistogram(aggregation, $filter('translate')(aggregation), response);
                     service.histogram.aggregationColumn = column;
                     service.histogram.aggregation = aggregation;
+
+                    setColumnaggregationLocalStorage();
                 });
         }
 
@@ -476,6 +481,70 @@
             var column = service.selectedColumn;
             //TODO JSO : put a cache again that is invalidated when one of the columns change
             return DatagridService.getNumericColumns(column);
+        }
+
+
+        /**
+         * @ngdoc method
+         * @name updateAggregation
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description update aggregation for a selected column
+         */
+        function updateAggregation() {
+
+            var columnaggregationLocalStorageObj = getColumnaggregationLocalStorage();
+
+            if(columnaggregationLocalStorageObj && columnaggregationLocalStorageObj.aggregation !== 'LINE_COUNT') {
+                //get aggregation column by Id
+                var colAggregation = _.findWhere(getAggregationColumns(), {id: columnaggregationLocalStorageObj.aggregationColumnId});
+
+                var datasetId = state.playground.dataset.id;
+                var sampleSize = state.playground.sampleSize;
+                var preparationId = state.playground.preparation ? state.playground.preparation.id : null;
+                var stepId = preparationId ? RecipeService.getLastActiveStep().id : null;
+
+                service.processAggregation(datasetId, preparationId, stepId, sampleSize, colAggregation, columnaggregationLocalStorageObj.aggregation);
+            }
+
+        }
+
+
+        /**
+         * @ngdoc method
+         * @name deleteColumnaggregationLocalStorage
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Delete the actual dataset column aggregation key in localStorage
+         */
+        function deleteColumnaggregationLocalStorage() {
+            var localStorageKey = 'org.talend.dataprep.col_aggregation_' + DatagridService.metadata.id + '_' + service.selectedColumn.id;
+            $window.localStorage.removeItem(localStorageKey);
+        }
+
+        /**
+         * @ngdoc method
+         * @name getColumnaggregationLocalStorage
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Get the actual dataset column aggregation key. This key is used in localStorage
+         */
+        function getColumnaggregationLocalStorage() {
+            var localStorageKey = 'org.talend.dataprep.col_aggregation_' + DatagridService.metadata.id + '_' + service.selectedColumn.id;
+            return JSON.parse($window.localStorage.getItem(localStorageKey));
+        }
+
+        /**
+         * @ngdoc method
+         * @name setColumnaggregationLocalStorageKey
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Update the actual dataset column aggregation in localStorage
+         */
+        function setColumnaggregationLocalStorage() {
+            var localStorageKey = 'org.talend.dataprep.col_aggregation_' + DatagridService.metadata.id + '_' + service.selectedColumn.id;
+
+            var localStorageValue = {};
+            localStorageValue.aggregation = service.histogram.aggregation;
+            localStorageValue.aggregationColumnId = service.histogram.aggregationColumn.id;
+
+            $window.localStorage.setItem(localStorageKey, JSON.stringify(localStorageValue));
         }
     }
 

@@ -25,6 +25,7 @@ describe('Datagrid external service', function () {
         spyOn(gridMock.onScroll, 'subscribe').and.returnValue();
 
         spyOn(StatisticsService, 'processData').and.returnValue();
+        spyOn(StatisticsService, 'updateAggregation').and.returnValue();
         spyOn(SuggestionService, 'setColumn').and.returnValue();
         spyOn(SuggestionService, 'selectTab').and.returnValue();
     }));
@@ -83,6 +84,7 @@ describe('Datagrid external service', function () {
             onActiveCellChanged(null, args);
 
             expect(StatisticsService.processData).not.toHaveBeenCalled();
+            expect(StatisticsService.updateAggregation).not.toHaveBeenCalled();
             expect(SuggestionService.setColumn).not.toHaveBeenCalled();
             expect(SuggestionService.selectTab).not.toHaveBeenCalled();
 
@@ -90,6 +92,7 @@ describe('Datagrid external service', function () {
 
             //then
             expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
+            expect(StatisticsService.updateAggregation).toHaveBeenCalled();
             expect(SuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
             expect(SuggestionService.selectTab).toHaveBeenCalledWith('COLUMN');
 
@@ -105,6 +108,7 @@ describe('Datagrid external service', function () {
             $timeout.flush(200);
 
             expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(StatisticsService.updateAggregation.calls.count()).toBe(1);
             expect(SuggestionService.setColumn.calls.count()).toBe(1);
             expect(SuggestionService.selectTab.calls.count()).toBe(1);
 
@@ -114,6 +118,7 @@ describe('Datagrid external service', function () {
 
             //then
             expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(StatisticsService.updateAggregation.calls.count()).toBe(1);
             expect(SuggestionService.setColumn.calls.count()).toBe(1);
             expect(SuggestionService.selectTab.calls.count()).toBe(1);
         }));
@@ -127,6 +132,7 @@ describe('Datagrid external service', function () {
             $timeout.flush();
 
             expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(StatisticsService.updateAggregation.calls.count()).toBe(1);
             expect(SuggestionService.setColumn.calls.count()).toBe(1);
             expect(SuggestionService.selectTab.calls.count()).toBe(1);
 
@@ -136,6 +142,7 @@ describe('Datagrid external service', function () {
 
             //then : only stats and suggestions are updated, NOT selected tab
             expect(StatisticsService.processData.calls.count()).toBe(2);
+            expect(StatisticsService.updateAggregation.calls.count()).toBe(2);
             expect(SuggestionService.setColumn.calls.count()).toBe(2);
             expect(SuggestionService.selectTab.calls.count()).toBe(1);
         }));
@@ -153,6 +160,7 @@ describe('Datagrid external service', function () {
             $timeout.flush(199);
 
             expect(StatisticsService.processData).not.toHaveBeenCalled();
+            expect(StatisticsService.updateAggregation).not.toHaveBeenCalled();
             expect(SuggestionService.setColumn).not.toHaveBeenCalled();
             expect(SuggestionService.selectTab).not.toHaveBeenCalled();
 
@@ -161,6 +169,7 @@ describe('Datagrid external service', function () {
 
             $timeout.flush(1);
             expect(StatisticsService.processData).not.toHaveBeenCalled();
+            expect(StatisticsService.updateAggregation).not.toHaveBeenCalled();
             expect(SuggestionService.setColumn).not.toHaveBeenCalled();
             expect(SuggestionService.selectTab).not.toHaveBeenCalled();
 
@@ -168,6 +177,7 @@ describe('Datagrid external service', function () {
 
             //then
             expect(StatisticsService.processData).toHaveBeenCalledWith(secondCallColumnMetadata);
+            expect(StatisticsService.updateAggregation).toHaveBeenCalled();
             expect(SuggestionService.setColumn).toHaveBeenCalledWith(secondCallColumnMetadata);
             expect(SuggestionService.selectTab).toHaveBeenCalledWith('COLUMN');
         }));
@@ -186,6 +196,7 @@ describe('Datagrid external service', function () {
             //then
             catch(error) {
                 expect(StatisticsService.processData).not.toHaveBeenCalled();
+                expect(StatisticsService.updateAggregation).not.toHaveBeenCalled();
                 expect(SuggestionService.setColumn).not.toHaveBeenCalled();
                 expect(SuggestionService.selectTab).not.toHaveBeenCalled();
                 return;
@@ -208,12 +219,14 @@ describe('Datagrid external service', function () {
             onHeaderClick(null, args);
 
             expect(StatisticsService.processData).not.toHaveBeenCalled();
+            expect(StatisticsService.updateAggregation).not.toHaveBeenCalled();
             expect(SuggestionService.setColumn).not.toHaveBeenCalled();
 
             $timeout.flush(200);
 
             //then
             expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
+            expect(StatisticsService.updateAggregation).toHaveBeenCalled();
             expect(SuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
             expect(SuggestionService.selectTab).toHaveBeenCalledWith('COLUMN');
         }));
@@ -231,6 +244,7 @@ describe('Datagrid external service', function () {
             onHeaderContextMenu(null, args);
 
             expect(StatisticsService.processData).not.toHaveBeenCalled();
+            expect(StatisticsService.updateAggregation).not.toHaveBeenCalled();
             expect(SuggestionService.setColumn).not.toHaveBeenCalled();
             expect(SuggestionService.selectTab).not.toHaveBeenCalled();
 
@@ -238,6 +252,7 @@ describe('Datagrid external service', function () {
 
             //then
             expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
+            expect(StatisticsService.updateAggregation).toHaveBeenCalled();
             expect(SuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
             expect(SuggestionService.selectTab).toHaveBeenCalledWith('COLUMN');
         }));
@@ -254,6 +269,7 @@ describe('Datagrid external service', function () {
             $timeout.flush(200);
 
             expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(StatisticsService.updateAggregation.calls.count()).toBe(1);
             expect(SuggestionService.setColumn.calls.count()).toBe(1);
             expect(SuggestionService.selectTab.calls.count()).toBe(1);
 
@@ -263,6 +279,7 @@ describe('Datagrid external service', function () {
 
             //then
             expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(StatisticsService.updateAggregation.calls.count()).toBe(1);
             expect(SuggestionService.setColumn.calls.count()).toBe(1);
             expect(SuggestionService.selectTab.calls.count()).toBe(1);
         }));
@@ -279,6 +296,7 @@ describe('Datagrid external service', function () {
             $timeout.flush(200);
 
             expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(StatisticsService.updateAggregation.calls.count()).toBe(1);
             expect(SuggestionService.setColumn.calls.count()).toBe(1);
             expect(SuggestionService.selectTab.calls.count()).toBe(1);
 
@@ -288,6 +306,7 @@ describe('Datagrid external service', function () {
 
             //then
             expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(StatisticsService.updateAggregation.calls.count()).toBe(1);
             expect(SuggestionService.setColumn.calls.count()).toBe(1);
             expect(SuggestionService.selectTab.calls.count()).toBe(1);
         }));
@@ -302,6 +321,7 @@ describe('Datagrid external service', function () {
             $timeout.flush(200);
 
             expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(StatisticsService.updateAggregation.calls.count()).toBe(1);
             expect(SuggestionService.setColumn.calls.count()).toBe(1);
             expect(SuggestionService.selectTab.calls.count()).toBe(1);
 
@@ -317,6 +337,7 @@ describe('Datagrid external service', function () {
 
             //then : only tab is updated, NOT stats or suggestions
             expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(StatisticsService.updateAggregation.calls.count()).toBe(1);
             expect(SuggestionService.setColumn.calls.count()).toBe(1);
             expect(SuggestionService.selectTab.calls.count()).toBe(1);
         }));

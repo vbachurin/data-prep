@@ -59,6 +59,7 @@
                     }
                     if (columnHasChanged) {
                         StatisticsService.processData(lastSelectedColumn);
+                        StatisticsService.updateAggregation();
                         SuggestionService.setColumn(lastSelectedColumn);
                     }
                 }, 200);
