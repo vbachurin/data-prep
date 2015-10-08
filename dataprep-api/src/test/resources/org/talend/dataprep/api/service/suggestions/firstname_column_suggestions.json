@@ -923,6 +923,87 @@
     "description": "Combine this column with another one",
     "label": "Concatenate with..."
   },
+    {
+    "name": "matches_pattern",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      },
+      {
+        "name": "proposed_pattern",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "configuration": {
+          "values": [
+            {
+              "value": "[a-z]*"
+            },
+            {
+              "value": "[A-Z]*"
+            },
+            {
+              "value": "[0-9]*"
+            },
+            {
+              "value": "[a-zA-Z]*"
+            },
+            {
+              "value": "[a-zA-Z0-9]*"
+            },
+            {
+              "value": " *"
+            },
+            {
+              "value": ".*"
+            },
+            {
+              "value": "other",
+              "parameters": [
+                {
+                  "name": "manual_pattern",
+                  "type": "string",
+                  "implicit": false,
+                  "canBeBlank": true,
+                  "description": "Set your own pattern",
+                  "label": "Manual pattern",
+                  "default": ""
+                }
+              ]
+            }
+          ],
+          "multiple": false
+        },
+        "description": "Pattern to use",
+        "label": "Pattern",
+        "default": "[a-zA-Z]*"
+      }
+    ],
+    "dynamic": false,
+    "description": "Performs pattern matching",
+    "label": "Matches Pattern"
+  },
   {
     "parameters": [
       {
