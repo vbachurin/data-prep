@@ -21,6 +21,7 @@ public enum CommonErrorCodes implements ErrorCode {
     UNSUPPORTED_ACTION_SCOPE(400),
     MISSING_ACTION_SCOPE(400),
     MISSING_ACTION_SCOPE_PARAMETER(400),
+                                                   BAD_ACTION_PARAMETER(400, "paramName"),
     BAD_AGGREGATION_PARAMETERS(400),
     UNABLE_TO_AGGREGATE(500),
     UNABLE_TO_SAVE_USER_DATA(500),

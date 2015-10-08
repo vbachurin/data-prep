@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 
 /**
  * Rename a column.
@@ -50,7 +50,7 @@ public class Rename extends AbstractActionMetadata implements ColumnAction {
      */
     public Rename(final String defaultName) {
         this.parameters = super.getParameters();
-        this.parameters.add(new Parameter(NEW_COLUMN_NAME_PARAMETER_NAME, Type.STRING.getName(), defaultName, false, false));
+        this.parameters.add(new Parameter(NEW_COLUMN_NAME_PARAMETER_NAME, ParameterType.STRING, defaultName, false, false));
     }
 
     /**
@@ -66,7 +66,7 @@ public class Rename extends AbstractActionMetadata implements ColumnAction {
      */
     @Override
     public String getCategory() {
-        return ActionCategory.COLUMNS.getDisplayName();
+        return ActionCategory.COLUMN_METADATA.getDisplayName();
     }
 
     /**

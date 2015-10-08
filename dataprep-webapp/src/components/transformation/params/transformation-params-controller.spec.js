@@ -344,6 +344,7 @@ describe('Transform params controller', function () {
         expect(ctrl.getParameterType({type: 'select'})).toEqual('select');
         expect(ctrl.getParameterType({type: 'cluster'})).toEqual('cluster');
         expect(ctrl.getParameterType({type: 'date'})).toEqual('date');
+        expect(ctrl.getParameterType({type: 'column'})).toEqual('column');
         expect(ctrl.getParameterType({type: 'toto'})).toEqual('simple');
     });
 });

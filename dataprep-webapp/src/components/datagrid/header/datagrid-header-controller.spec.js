@@ -18,7 +18,7 @@ describe('Datagrid header controller', function () {
             },
             {
                 'name': 'rename',
-                'category': 'columns',
+                'category': 'column_metadata',
                 'items': null,
                 'parameters': null
             },
@@ -43,7 +43,7 @@ describe('Datagrid header controller', function () {
             },
             {
                 'name': 'split',
-                'category': 'columns',
+                'category': 'column_metadata',
                 'parameters': null,
                 'items': [
                     {
@@ -124,7 +124,7 @@ describe('Datagrid header controller', function () {
             spyOn(TransformationCacheService, 'getTransformations').and.returnValue($q.when(menusMock()));
         }));
 
-        it('should filter and init only "columns" category', inject(function ($rootScope, TransformationCacheService) {
+        it('should filter and init only "column_metadata" category', inject(function ($rootScope, TransformationCacheService) {
             //given
             var ctrl = createController();
 

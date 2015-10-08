@@ -10,6 +10,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 
 @Component(FillWithStringIfInvalid.ACTION_BEAN_PREFIX + FillWithStringIfInvalid.FILL_INVALID_ACTION_NAME)
 public class FillWithStringIfInvalid extends AbstractFillIfInvalid {
@@ -25,7 +26,7 @@ public class FillWithStringIfInvalid extends AbstractFillIfInvalid {
     @Nonnull
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        parameters.add(new Parameter(DEFAULT_VALUE_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY, false, false));
+        parameters.add(new Parameter(DEFAULT_VALUE_PARAMETER, ParameterType.STRING, StringUtils.EMPTY, false, false));
         return parameters;
     }
 

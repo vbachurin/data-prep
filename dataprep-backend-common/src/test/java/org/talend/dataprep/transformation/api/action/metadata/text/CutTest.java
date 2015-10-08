@@ -58,7 +58,7 @@ public class CutTest {
         DataSetRow expected = getRow("Wait for it...", "value that gets cut !", "Done !");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         // then
         assertEquals(expected, row);
@@ -75,7 +75,7 @@ public class CutTest {
         regexpParameters.put("pattern", ".*gets");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), regexpParameters, "0002");
+        action.applyOnColumn(row, new TransformationContext(), regexpParameters, "0001");
 
         // then
         assertEquals(expected, row);

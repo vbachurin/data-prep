@@ -8,8 +8,9 @@
      * <b style="color: red;">WARNING : do NOT use this service directly for FILTERS.
      * {@link data-prep.services.filter.service:FilterService FilterService} must be the only entry point for datagrid filters</b>
      * @requires data-prep.services.utils.service:ConverterService
+     * @requires data-prep.state.service:StateService
      */
-    function DatagridService(ConverterService) {
+    function DatagridService(ConverterService, StateService, state) {
         var DELETE = 'DELETE';
         var REPLACE = 'REPLACE';
         var INSERT = 'INSERT';
@@ -24,15 +25,6 @@
          * @type {Object}
          */
         self.metadata = null;
-
-        /**
-         * @ngdoc property
-         * @name data
-         * @propertyOf data-prep.services.playground.service:DatagridService
-         * @description the loaded data
-         * @type {Object}
-         */
-        self.data = null;
 
         /**
          * @ngdoc property
@@ -79,7 +71,7 @@
          */
         self.setDataset = function (metadata, data) {
             self.metadata = metadata;
-            self.data = data;
+            StateService.setCurrentData(data);
             self.focusedColumn = null;
             updateDataviewRecords(data.records);
         };
@@ -92,7 +84,7 @@
          * @description Get the last new created column
          */
         function getLastNewColumnId(columns) {
-            var ancientColumnsIds = _.map(self.data.columns, 'id');
+            var ancientColumnsIds = _.map(state.playground.data.columns, 'id');
             var newColumnsIds = _.map(columns, 'id');
             var diffIds = _.difference(newColumnsIds, ancientColumnsIds);
 
@@ -107,10 +99,10 @@
          * @description Update the data in the datagrid
          */
         self.updateData = function (data) {
-            if (self.data.columns.length < data.columns.length) {
+            if (state.playground.data.columns.length < data.columns.length) {
                 self.focusedColumn = getLastNewColumnId(data.columns);
             }
-            self.data = data;
+            StateService.setCurrentData(data);
             updateDataviewRecords(data.records);
         };
 
@@ -166,18 +158,19 @@
 
             var reverter = {
                 instructions: revertInstructions,
-                preview: self.data.preview,
-                columns: self.data.columns
+                preview: state.playground.data.preview,
+                columns: state.playground.data.columns
             };
 
-            if (self.data.columns.length < executor.columns.length) {
+            if (state.playground.data.columns.length < executor.columns.length) {
                 self.focusedColumn = getLastNewColumnId(executor.columns);
             }
-            self.data = {
-                columns: executor.columns,
-                records: self.data.records,
-                preview: executor.preview
-            };
+
+            StateService.setCurrentData({
+                    columns: executor.columns,
+                    records: state.playground.data.records,
+                    preview: executor.preview
+                });
 
             return reverter;
         };
@@ -232,7 +225,7 @@
          * @returns {Object[]} - the column list that match the desired filters (id & name)
          */
         self.getColumns = function (excludeNumeric, excludeBoolean) {
-            var cols = self.data.columns;
+            var cols = state.playground.data.columns;
 
             if (excludeNumeric) {
                 cols = _.filter(cols, function (col) {
@@ -264,7 +257,7 @@
         self.getColumnsContaining = function (regexp, canBeNumeric, canBeBoolean) {
             var results = [];
 
-            var data = self.data.records;
+            var data = state.playground.data.records;
             var potentialColumns = self.getColumns(!canBeNumeric, !canBeBoolean);
 
             //we loop over data while there is data and potential columns that can contains the searched term
@@ -319,7 +312,7 @@
          * @returns {array} The numeric columns
          */
         self.getNumericColumns = function getNumericColumns(columnToSkip) {
-            return _.chain(self.data.columns)
+            return _.chain(state.playground.data.columns)
                 .filter(function (column) {
                     return !columnToSkip || column.id !== columnToSkip.id;
                 })
@@ -345,7 +338,7 @@
         function filterFn(item, args) {
             //init filters with actual data
             var initializedFilters = _.map(args.filters, function (filter) {
-                return filter(self.data);
+                return filter(state.playground.data);
             });
             //execute each filter on the value
             for (var i = 0; i < initializedFilters.length; i++) {

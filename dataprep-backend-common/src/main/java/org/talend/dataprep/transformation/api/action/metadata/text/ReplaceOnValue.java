@@ -17,6 +17,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import org.talend.dataprep.transformation.api.action.metadata.common.CellAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 
 @Component(ReplaceOnValue.ACTION_BEAN_PREFIX + ReplaceOnValue.REPLACE_ON_VALUE_ACTION_NAME)
 public class ReplaceOnValue extends AbstractActionMetadata implements ColumnAction, CellAction {
@@ -58,8 +59,8 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
     @Override
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        parameters.add(new Parameter(CELL_VALUE_PARAMETER, STRING.getName(), EMPTY));
-        parameters.add(new Parameter(REPLACE_VALUE_PARAMETER, STRING.getName(), EMPTY));
+        parameters.add(new Parameter(CELL_VALUE_PARAMETER, ParameterType.STRING, EMPTY));
+        parameters.add(new Parameter(REPLACE_VALUE_PARAMETER, ParameterType.STRING, EMPTY));
         return parameters;
     }
 

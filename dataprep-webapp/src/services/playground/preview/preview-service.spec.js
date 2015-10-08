@@ -2,6 +2,7 @@
 describe('Preview Service', function () {
     'use strict';
 
+    var stateMock;
     var gridRangeIndex = {top: 1, bottom: 5};
     var displayedTdpIds = [1,3,6,7,8];
     var sampleSize = 587;
@@ -41,10 +42,14 @@ describe('Preview Service', function () {
     var previewExecutor = {};
     var reverterExecutor = {};
 
-    beforeEach(module('data-prep.services.playground'));
+    beforeEach(module('data-prep.services.playground', function ($provide) {
+        stateMock = {playground: {}};
+        $provide.constant('state', stateMock);
+    }));
+
 
     beforeEach(inject(function ($q, PreviewService, DatagridService, PreparationService) {
-        DatagridService.data = originalData;
+        stateMock.playground.data = originalData;
         PreviewService.gridRangeIndex = gridRangeIndex;
 
         //simulate datagrid get item to have displayedTdpIds = [1,3,6,7,8]

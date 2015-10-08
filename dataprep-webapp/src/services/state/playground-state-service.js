@@ -15,6 +15,7 @@
             setNameEditionMode: setNameEditionMode,
             reset: reset,
             setSampleSize: setSampleSize,
+            setData: setData,
 
             //recipe
             showRecipe: RecipeStateService.show,
@@ -42,6 +43,10 @@
         //--------------------------------------------------------------------------------------------------------------
         function setDataset(dataset) {
             playgroundState.dataset = dataset;
+        }
+
+        function setData(data) {
+            playgroundState.data = data;
         }
 
         function setPreparation(preparation) {

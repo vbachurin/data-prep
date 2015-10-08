@@ -54,13 +54,13 @@ describe('Datagrid directive', function() {
     describe('on data change', function() {
         var data;
 
-        beforeEach(inject(function(DatagridService) {
+        beforeEach(inject(function() {
             //given
             createElement();
             data = {columns: [{id: '0000'}, {id: '0001'}], preview: false};
 
             //when
-            DatagridService.data = data;
+            stateMock.playground.data = data;
             scope.$digest();
             jasmine.clock().tick(1);
         }));
@@ -75,7 +75,7 @@ describe('Datagrid directive', function() {
             expect(DatagridGridService.initGrid.calls.count()).toBe(1);
 
             //when
-            DatagridService.data = {};
+            stateMock.playground.data = {};
             scope.$digest();
 
             //then
@@ -128,7 +128,7 @@ describe('Datagrid directive', function() {
             stateMock.playground.column = {id: '0001'};
 
             //when
-            DatagridService.data = {};
+            stateMock.playground.data = {};
             scope.$digest();
             jasmine.clock().tick(1);
 
@@ -141,7 +141,7 @@ describe('Datagrid directive', function() {
             stateMock.playground.column = {id: '0001'};
 
             //when
-            DatagridService.data = {};
+            stateMock.playground.data = {};
             scope.$digest();
             jasmine.clock().tick(1);
 
@@ -154,7 +154,7 @@ describe('Datagrid directive', function() {
             stateMock.playground.column = {id: '9999'};
 
             //when
-            DatagridService.data = {};
+            stateMock.playground.data = {};
             scope.$digest();
             jasmine.clock().tick(1);
 
@@ -168,7 +168,7 @@ describe('Datagrid directive', function() {
             expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
 
             //when
-            DatagridService.data = {preview: true};
+            stateMock.playground.data = {preview: true};
             scope.$digest();
             jasmine.clock().tick(1);
 
@@ -181,7 +181,7 @@ describe('Datagrid directive', function() {
             expect(DatagridStyleService.resetCellStyles.calls.count()).toBe(1);
 
             //when
-            DatagridService.data = {preview: true};
+            stateMock.playground.data = {preview: true};
             scope.$digest();
             jasmine.clock().tick(1);
 
@@ -195,7 +195,7 @@ describe('Datagrid directive', function() {
             stateMock.playground.column = {id: '0001'};
 
             //when
-            DatagridService.data = {preview: false};
+            stateMock.playground.data = {preview: false};
             scope.$digest();
             jasmine.clock().tick(1);
 
@@ -212,14 +212,14 @@ describe('Datagrid directive', function() {
             stateMock.playground.column = {id: '0001'};
 
             //when
-            DatagridService.data = {};
+            stateMock.playground.data = {};
             scope.$digest();
 
             expect(DatagridColumnService.createColumns.calls.count()).toBe(1);
             expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
             expect(DatagridGridService.navigateToFocusedColumn.calls.count()).toBe(0);
 
-            DatagridService.data = {};
+            stateMock.playground.data = {};
             scope.$digest();
             jasmine.clock().tick(300);
 
@@ -234,7 +234,7 @@ describe('Datagrid directive', function() {
         beforeEach(inject(function(DatagridService) {
             //given
             createElement();
-            DatagridService.data = {columns: [{id: '0000'}, {id: '0001'}], preview: false};
+            stateMock.playground.data = {columns: [{id: '0000'}, {id: '0001'}], preview: false};
             scope.$digest();
 
             //when
@@ -262,7 +262,7 @@ describe('Datagrid directive', function() {
         beforeEach(inject(function(DatagridService, FilterService) {
             //given
             createElement();
-            DatagridService.data = {columns: [{id: '0000'}, {id: '0001'}], preview: false};
+            stateMock.playground.data = {columns: [{id: '0000'}, {id: '0001'}], preview: false};
             scope.$digest();
 
             //when
