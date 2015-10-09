@@ -15,12 +15,12 @@
         </talend-tabs-item>
         <talend-tabs-item tab-title="Column" default="true">
             <input type="search"
-                   class="no-focus"
+                   class="action-search"
                    placeholder="{{::'FIND_FUNCTION' | translate}}"
                    ng-model="actionsSuggestionsCtrl.searchActionString">
             <talend-accordions class="menu action-suggestion-tab-items">
                 <talend-accordions-item
-                        ng-repeat="transfo in actionsSuggestionsCtrl.columnSuggestions | actionsSuggestionsSearchFilter:actionsSuggestionsCtrl.searchActionString track by transfo.name "
+                        ng-repeat="transfo in actionsSuggestionsCtrl.columnSuggestions | actionsSuggestionsSearchFilter:actionsSuggestionsCtrl.searchActionString track by transfo.name"
                         action="actionsSuggestionsCtrl.scrollToBottom"
                         ng-switch="!!(transfo.parameters || transfo.items)">
                     <!--with dynamic parameters-->
