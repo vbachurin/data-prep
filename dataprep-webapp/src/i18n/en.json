@@ -124,6 +124,9 @@
   "COLUMN_TYPE_IS": "This column is a",
   "COLUMN_TYPE_SET": "Set as",
 
+  "_comment": "Action panel",
+  "FIND_FUNCTION": "Find a Function...",
+
   "_comment": "Statistics",
   "COUNT": "Count",
   "DISTINCT_COUNT": "Distinct",
