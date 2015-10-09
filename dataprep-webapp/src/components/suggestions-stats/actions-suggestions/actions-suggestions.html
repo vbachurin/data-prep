@@ -1,5 +1,6 @@
 <div class="actions-suggestions">
-    <div class="title">Actions{{ actionsSuggestionsCtrl.column.name ? ': ' + actionsSuggestionsCtrl.column.name : '' }}</div>
+    <div class="title" ng-if="actionsSuggestionsCtrl.column.name">Actions{{:: 'COLON' | translate}}{{actionsSuggestionsCtrl.column.name}}</div>
+    <div class="title" ng-if="!actionsSuggestionsCtrl.column.name">Actions</div>
     <div class="Description" ng-if="! actionsSuggestionsCtrl.columnSuggestions">Select a column to display its actions</div>
     
     <talend-tabs tab="actionsSuggestionsCtrl.tab" ng-if="actionsSuggestionsCtrl.columnSuggestions">
