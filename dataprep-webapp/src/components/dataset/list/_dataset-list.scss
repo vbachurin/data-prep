@@ -28,6 +28,37 @@
     }
   }
 
+  .datasets-name-input{
+
+    a {
+      font-family: $iconsfont;
+      font-size: .5em;
+      padding: 8px 5px;
+      border-radius: 50px;
+      &.edit-btn {
+        color: $medium-gray;
+        background-color: transparent;
+        &:hover
+        { color: $dark-gray; }
+      }
+      &.cancel-btn {
+        margin-left: 0px;
+        color: $dark-gray;
+        background-color: $light-gray;
+        &:hover
+        { background-color: darken($light-gray, 10%); }
+      }
+      &.check-btn {
+        margin-left: 5px;
+        color: $white;
+        background-color: $dark-green;
+        &:hover
+        { background-color: darken($dark-green, 10%); }
+      }
+    }
+
+  }
+
   #datasets-list {
     position: absolute;
     @include calc(height, "100% - " + $inventory-sort-height);

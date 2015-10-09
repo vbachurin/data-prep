@@ -33,7 +33,7 @@
                      ng-if="dataset.certificationStep!='NONE'"/>
             </div>
 
-            <div ng-switch on="dataset.showChangeName">
+            <div class="datasets-name-input" ng-switch on="dataset.showChangeName">
 
               <div ng-switch-when="true">
                 <input type="text" data-ng-model="dataset.name">
