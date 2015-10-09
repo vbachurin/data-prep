@@ -20,7 +20,7 @@
      * @requires data-prep.services.state.service:StateService
      * @requires data-prep.services.onboarding:OnboardingService
      */
-    function DatasetListCtrl($stateParams, DatasetService, DatasetListSortService, PlaygroundService,
+    function DatasetListCtrl($rootScope, $stateParams, DatasetService, DatasetListSortService, PlaygroundService,
                              TalendConfirmService, MessageService, UploadWorkflowService, StateService) {
         var vm = this;
 
@@ -172,12 +172,17 @@
          * @description Trigger the dataset rename in the backend
          */
         vm.rename = function(dataset){
+            $rootScope.$emit('talend.loading.start');
             return DatasetService.update(dataset)
                 .then(function(){
                   vm.showChangeName = false;
                 })
                 .then(function() {
                           MessageService.success('RENAME_SUCCESS_TITLE', 'RENAME_SUCCESS');
+                })
+                //hide loading screen
+                .finally(function () {
+                    $rootScope.$emit('talend.loading.stop');
                 });
         };
 
