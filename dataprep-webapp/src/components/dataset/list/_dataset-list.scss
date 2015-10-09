@@ -30,6 +30,12 @@
 
   .datasets-name-input{
 
+    input{
+      font-family: $base-font-family;
+      float: left;
+      padding: 5px 0 4px 3px;
+    }
+
     a {
       font-family: $iconsfont;
       font-size: .5em;
