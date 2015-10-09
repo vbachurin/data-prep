@@ -22,7 +22,9 @@
 
             //datagrid
             setGridSelection: setGridSelection,
-            setLookupVisibility: setLookupVisibility
+            setLookupVisibility: setLookupVisibility,
+            updateShownLinesLength: updateShownLinesLength,
+            setDataView: setDataView
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -46,6 +48,18 @@
 
         function setData(data) {
             playgroundState.data = data;
+            playgroundState.dataView.beginUpdate();
+            playgroundState.dataView.setItems(data.records, 'tdpId');
+            playgroundState.dataView.endUpdate();
+            playgroundState.allLinesLength = playgroundState.dataView.getItems().length;
+        }
+
+        function setDataView(dataView) {
+            playgroundState.dataView = dataView;
+        }
+
+        function updateShownLinesLength() {
+            playgroundState.shownLinesLength = playgroundState.dataView.getLength();
         }
 
         function setPreparation(preparation) {
@@ -67,6 +81,7 @@
         function reset() {
             playgroundState.column = null;
             playgroundState.line = null;
+            playgroundState.data = null;
             playgroundState.dataset = null;
             playgroundState.preparation = null;
             playgroundState.nameEditionMode = false;

@@ -1,10 +1,10 @@
 <div class="filter-list">
-    <ul>
-        <li>{{::'FILTER' | translate}}{{:: 'COLON' | translate}}</li>
-        <li>
+    <div class="filters-compartment">
+        <div class="filter-component">{{::'FILTER' | translate}}{{:: 'COLON' | translate}}</div>
+        <div class="filter-component">
             <filter-search></filter-search>
-        </li>
-        <li ng-repeat="filter in filterCtrl.filterService.filters">
+        </div>
+        <div ng-repeat="filter in filterCtrl.filterService.filters" class="filter-component">
             <talend-badge text="{{filter.colName}}"
                           obj="filter"
                           on-change="filterCtrl.filterService.updateFilter(obj, newValue)"
@@ -12,6 +12,10 @@
                           editable="filter.editable"
                           type="filter.type">
             </talend-badge>
-        </li>
-    </ul>
+        </div>
+    </div>
+    <div class="on-off-filters">
+        <button ng-show="filterCtrl.filterService.filters.length" ng-click="filterCtrl.filterService.removeAllFilters()" class="off-all-filters">Off</button>
+        <div>{{filterCtrl.state.playground.shownLinesLength}}/{{filterCtrl.state.playground.allLinesLength}}</div>
+    </div>
 </div>

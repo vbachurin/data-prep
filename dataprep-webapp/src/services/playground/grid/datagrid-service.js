@@ -27,13 +27,13 @@
         self.metadata = null;
 
         /**
-         * @ngdoc property
-         * @name dataView
-         * @propertyOf data-prep.services.playground.service:DatagridService
-         * @description the SlickGrid dataView
+         * @ngdoc prope??????????????????
+         * @name dataVi??????????????????
+         * @propertyOf ??????????????????
+         * @description??????????????????
          * @type {Object}
          */
-        self.dataView = new Slick.Data.DataView({inlineFilters: false});
+        StateService.setDataView(new Slick.Data.DataView({inlineFilters: false}));
 
         /**
          * @ngdoc property
@@ -55,11 +55,11 @@
          * @param {Object[]} records - the records to insert
          * @description [PRIVATE] Set dataview records
          */
-        var updateDataviewRecords = function (records) {
-            self.dataView.beginUpdate();
-            self.dataView.setItems(records, 'tdpId');
-            self.dataView.endUpdate();
-        };
+        //var updateDataviewRecords = function (records) {
+        //    self.dataView.beginUpdate();
+        //    self.dataView.setItems(records, 'tdpId');
+        //    self.dataView.endUpdate();
+        //};
 
         /**
          * @ngdoc method
@@ -73,7 +73,7 @@
             self.metadata = metadata;
             StateService.setCurrentData(data);
             self.focusedColumn = null;
-            updateDataviewRecords(data.records);
+            //updateDataviewRecords(data.records);
         };
 
         /**
@@ -103,7 +103,7 @@
                 self.focusedColumn = getLastNewColumnId(data.columns);
             }
             StateService.setCurrentData(data);
-            updateDataviewRecords(data.records);
+            //updateDataviewRecords(data.records);
         };
 
         //------------------------------------------------------------------------------------------------------
@@ -125,19 +125,19 @@
 
             var revertInstructions = [];
 
-            self.dataView.beginUpdate();
+            state.playground.dataView.beginUpdate();
             _.forEach(executor.instructions, function (step) {
                 switch (step.type) {
                     case INSERT:
-                        self.dataView.insertItem(step.index, step.row);
+                        state.playground.dataView.insertItem(step.index, step.row);
                         revertInstructions.push({
                             type: DELETE,
                             row: step.row
                         });
                         break;
                     case DELETE:
-                        var index = self.dataView.getIdxById(step.row.tdpId);
-                        self.dataView.deleteItem(step.row.tdpId);
+                        var index = state.playground.dataView.getIdxById(step.row.tdpId);
+                        state.playground.dataView.deleteItem(step.row.tdpId);
                         revertInstructions.push({
                             type: INSERT,
                             row: step.row,
@@ -145,8 +145,8 @@
                         });
                         break;
                     case REPLACE:
-                        var originalRow = self.dataView.getItemById(step.row.tdpId);
-                        self.dataView.updateItem(step.row.tdpId, step.row);
+                        var originalRow = state.playground.dataView.getItemById(step.row.tdpId);
+                        state.playground.dataView.updateItem(step.row.tdpId, step.row);
                         revertInstructions.push({
                             type: REPLACE,
                             row: originalRow
@@ -154,7 +154,7 @@
                         break;
                 }
             });
-            self.dataView.endUpdate();
+            state.playground.dataView.endUpdate();
 
             var reverter = {
                 instructions: revertInstructions,
@@ -189,7 +189,7 @@
                 preview: true
             };
 
-            var nextInsertionIndex = self.dataView.getIdxById(data.records[0].tdpId);
+            var nextInsertionIndex = state.playground.dataView.getIdxById(data.records[0].tdpId);
             _.forEach(data.records, function (row) {
                 if (row.__tdpRowDiff || row.__tdpDiff) {
                     if (row.__tdpRowDiff === 'new') {
@@ -292,8 +292,8 @@
          */
         self.getSameContentConfig = function (colId, term, cssClass) {
             var config = {};
-            for (var i = 0; i < self.dataView.getLength(); ++i) {
-                var item = self.dataView.getItem(i);
+            for (var i = 0; i < state.playground.dataView.getLength(); ++i) {
+                var item = state.playground.dataView.getItem(i);
                 if (term === item[colId]) {
                     config[i] = {};
                     config[i][colId] = cssClass;
@@ -370,12 +370,13 @@
          * @description [PRIVATE] Update filters in dataview
          */
         var updateDataViewFilters = function () {
-            self.dataView.beginUpdate();
-            self.dataView.setFilterArgs({
+            state.playground.dataView.beginUpdate();
+            state.playground.dataView.setFilterArgs({
                 filters: self.filters
             });
-            self.dataView.setFilter(filterFn);
-            self.dataView.endUpdate();
+            state.playground.dataView.setFilter(filterFn);
+            state.playground.dataView.endUpdate();
+            StateService.updateShownLinesLength();
         };
 
         /**

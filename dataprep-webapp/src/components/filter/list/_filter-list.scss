@@ -3,27 +3,41 @@
   background-color: $shadow-gray;
   color: $dark-gray;
   overflow-x: auto;
+  display: flex;
+  flex-direction: row;
 
-  >ul {
-    > li {
-      float: left;
+  .filters-compartment{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    flex-basis: 95%;
+
+    input[type="search"] {
+      background-color: $white;
+      color: $dark-gray;
+      font-family: $base-font-family;
+      font-size: 0.85em;
+      position: relative;
+      margin: 7px 0 0;
+      width: 150px;
+      border: 1px solid darken($light-gray, 10%);
+    }
+
+    .filter-component{
       line-height: 45px;
       padding-left: 15px;
+    }
+  }
 
-      input[type="search"] {
-        background-color: $white;
-        color: $dark-gray;
-        font-family: $base-font-family;
-        font-size: 0.85em;
-        position: relative;
-        margin: 7px 0 0;
-        width: 150px;
-        border: 1px solid darken($light-gray, 10%);
-      }
-      .ac-container {
-        color: $dark-gray;
-        position: fixed !important;
-      }
+  .on-off-filters{
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items:center;
+    align-content:center;
+    padding-right: 15px;
+    .off-all-filters{
+      padding: 0;
     }
   }
 }

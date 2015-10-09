@@ -8,7 +8,7 @@
      * @restrict E
      * @requires data-prep.services.filter.service:FilterService
      */
-    function FilterList(FilterService) {
+    function FilterList(FilterService, state) {
         return {
             restrict: 'E',
             replace: true,
@@ -16,6 +16,7 @@
             controllerAs: 'filterCtrl',
             controller: function() {
                 this.filterService = FilterService;
+                this.state = state;
             }
         };
     }

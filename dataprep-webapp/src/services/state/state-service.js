@@ -24,6 +24,8 @@
             //playground - grid
             setGridSelection: PlaygroundStateService.setGridSelection,
             setLookupVisibility: PlaygroundStateService.setLookupVisibility,
+            updateShownLinesLength: PlaygroundStateService.updateShownLinesLength,
+            setDataView: PlaygroundStateService.setDataView,
 
             //dataset
             startUploadingDataset: DatasetStateService.startUploadingDataset,
