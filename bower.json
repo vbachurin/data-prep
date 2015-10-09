@@ -1,0 +1,92 @@
+{
+  "name": "data-prep",
+  "version": "1.0.0",
+  "main": [
+    "dataprep-webapp/dist/scripts/app-*.js",
+    "dataprep-webapp/dist/styles/app-*.css"
+  ],
+  "authors": [
+    "Talend"
+  ],
+  "description": "Data-prep",
+  "private": true,
+  "dependencies": {
+    "angular": "~1.4.x",
+    "angular-sanitize": "~1.4.x",
+    "angular-resource": "~1.4.x",
+    "angular-animate": "~1.4.x",
+    "angular-ui-router": "0.2.15",
+    "jquery": "2.1.4",
+    "lodash": "3.9.3",
+    "modernizr": "2.8.3",
+    "ng-file-upload": "2.2.2",
+    "angularjs-toaster": "0.4.10",
+    "angular-translate": "2.7.2",
+    "angular-translate-loader-static-files": "2.7.2",
+    "jquery-ui": "~1.11.4",
+    "threedubmedia.jquery.event": "*",
+    "angular-mass-autocomplete": "~0.2.2",
+    "highcharts-ng": "~0.0.8",
+    "highcharts": "~4.1.4",
+    "highmaps-release": "~1.1.4",
+    "d3": "~3.5.5",
+    "d3-tip": "~0.6.7",
+    "intro.js": "~1.1.1",
+    "moment": "~2.10.3",
+    "datetimepicker": "2.4.5",
+    "x-slickgrid": "3.0.0",
+    "bg-splitter" : "*"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.4.x"
+  },
+  "resolutions": {
+    "angular": "~1.4.7",
+    "angular-translate": "2.7.2"
+  },
+  "overrides": {
+    "threedubmedia.jquery.event": {
+      "main": [
+        "event.drag/jquery.event.drag.js"
+      ]
+    },
+    "x-slickgrid": {
+      "main": [
+        "slick.core.js",
+        "slick.dataview.js",
+        "slick.editors.js",
+        "slick.grid.js",
+        "slick.grid.css",
+        "controls/slick.pager.css"
+      ]
+    },
+    "jquery-ui": {
+      "main": [
+        "jquery-ui.js",
+        "themes/base/resizable.css"
+      ]
+    },
+    "angular-mass-autocomplete": {
+      "main": [
+        "massautocomplete.min.js",
+        "massautocomplete.theme.css"
+      ]
+    },
+    "highmaps-release": {
+      "main": [
+        "modules/map.js"
+      ]
+    },
+    "intro.js": {
+      "main": [
+        "intro.js"
+      ]
+    },
+    "bg-splitter": {
+      "main": [
+        "js/splitter.js",
+        "css/style.css"
+      ]
+    }
+  }
+}

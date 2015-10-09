@@ -19,9 +19,7 @@ describe('Playground controller', function() {
         };
 
         spyOn(PlaygroundService, 'createOrUpdatePreparation').and.returnValue($q.when(true));
-        spyOn(PlaygroundService, 'changeSampleSize').and.returnValue($q.when(true));
         spyOn(StateService, 'setNameEditionMode').and.returnValue();
-        spyOn(StateService, 'setSampleSize').and.returnValue();
         spyOn($state, 'go').and.returnValue();
 
     }));
@@ -62,15 +60,6 @@ describe('Playground controller', function() {
             //then
             expect(ctrl.previewInProgress).toBe(true);
         }));
-
-        it('should init sampleSize to StateService', inject(function(StateService) {
-            //given
-            createController();
-
-            // then
-            expect(StateService.setSampleSize).toHaveBeenCalledWith(100);
-        }));
-
     });
 
     describe('recipe header', function() {

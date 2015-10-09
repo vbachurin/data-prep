@@ -55,44 +55,77 @@ describe('Playground directive', function () {
         $stateParams.datasetid = null;
     }));
 
-    it('should render playground elements', function () {
-        //given
-        stateMock.playground.dataset = metadata;
+    describe('header', function() {
+        it('should render default playground header', function () {
+            //given
+            stateMock.playground.dataset = metadata;
 
-        //when
-        createElement();
+            //when
+            createElement();
 
-        //then
-        var playground = angular.element('body').find('.playground').eq(0);
-        var playgroundModal = playground.parent();
+            //then
+            var playground = angular.element('body').find('.playground').eq(0);
+            var playgroundModal = playground.parent();
 
-        //check header is present and contains description and search filter
-        expect(playgroundModal.find('.modal-header').length).toBe(1);
-        expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).text().trim()).toBe('File: US States (3 lines)');
-        expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(1).find('span').text().trim()).toBe('Below is a sample size of:');
+            //check header is present and contains description
+            expect(playgroundModal.find('.modal-header').length).toBe(1);
+            expect(playgroundModal.find('.modal-header').eq(0).find('.left-header > li').length).toBe(1);
+            expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).text().trim()).toBe('File: US States (3 lines)');
+        });
 
-        //check left slidable is hidden recipe with left slide action
-        expect(playground.eq(0).find('.recipe').eq(0).hasClass('slide-hide')).toBe(true);
-        expect(playground.eq(0).find('.recipe').eq(0).find('.action').eq(0).hasClass('right')).toBe(false);
+        it('should render enterprise playground header', function () {
+            //given
+            stateMock.playground.dataset = metadata;
+            stateMock.enterprise = true;
 
-        //check right slidable is displayed transformations with right slide action
-        expect(playground.eq(0).find('.suggestions').eq(0).hasClass('slide-hide')).toBe(false);
-        expect(playground.eq(0).find('.suggestions').eq(0).find('.action').eq(0).hasClass('right')).toBe(true);
+            //when
+            createElement();
 
-        //check datagrid and filters are present
-        expect(playground.eq(0).find('.filter-list').length).toBe(1);
-        expect(playground.eq(0).find('.filter-list').find('.filter-search').length).toBe(1);
-        expect(playground.eq(0).find('datagrid').length).toBe(1);
+            //then
+            var playground = angular.element('body').find('.playground').eq(0);
+            var playgroundModal = playground.parent();
+
+            //check header is present and contains description and insertion point
+            expect(playgroundModal.find('.modal-header').eq(0).find('.left-header > li').length).toBe(2);
+            expect(playgroundModal.find('.modal-header').eq(0).find('.left-header > li').eq(1)[0].hasAttribute('insertion-playground-header-1')).toBe(true);
+        });
+    });
+
+    describe('suggestions', function() {
+        it('should render right slidable panel', function () {
+            //given
+            stateMock.playground.dataset = metadata;
+
+            //when
+            createElement();
+
+            //then: check right slidable is displayed transformations with right slide action
+            var playground = angular.element('body').find('.playground').eq(0);
+            expect(playground.eq(0).find('.suggestions').eq(0).hasClass('slide-hide')).toBe(false);
+            expect(playground.eq(0).find('.suggestions').eq(0).find('.action').eq(0).hasClass('right')).toBe(true);
+        });
     });
 
     describe('recipe header', function () {
         beforeEach(inject(function(StateService) {
             stateMock.playground.nameEditionMode = true;
-
             spyOn(StateService, 'setNameEditionMode').and.callFake(function(value) {
                 stateMock.playground.nameEditionMode = value;
             });
         }));
+
+        it('should render left slidable panel', function () {
+            //given
+            stateMock.playground.dataset = metadata;
+
+            //when
+            createElement();
+
+            //then : check left slidable is hidden recipe with left slide action
+            var playground = angular.element('body').find('.playground').eq(0);
+            expect(playground.eq(0).find('.recipe').eq(0).hasClass('slide-hide')).toBe(true);
+            expect(playground.eq(0).find('.recipe').eq(0).find('.action').eq(0).hasClass('right')).toBe(false);
+        });
 
         it('should show/hide action buttons in the recipe header', function () {
             //given
@@ -257,6 +290,22 @@ describe('Playground directive', function () {
             expect(ctrl.confirmPrepNameEdition).not.toHaveBeenCalled();
             expect(ctrl.cancelPrepNameEdition).not.toHaveBeenCalled();
         }));
+    });
+
+    describe('datagrid', function() {
+        it('should render datagrid with filters', function () {
+            //given
+            stateMock.playground.dataset = metadata;
+
+            //when
+            createElement();
+
+            //then : check datagrid and filters are present
+            var playground = angular.element('body').find('.playground').eq(0);
+            expect(playground.eq(0).find('.filter-list').length).toBe(1);
+            expect(playground.eq(0).find('.filter-list').find('.filter-search').length).toBe(1);
+            expect(playground.eq(0).find('datagrid').length).toBe(1);
+        });
     });
 
     describe('hide playground', function () {

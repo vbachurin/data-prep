@@ -17,8 +17,8 @@
             getPreparations: getPreparations,
 
             //details, content
-            getContent: getContent,
-            getDetails: getDetails,
+            getContent: PreparationRestService.getContent,
+            getDetails: PreparationRestService.getDetails,
 
             //preparation lifecycle
             create: create,
@@ -34,9 +34,9 @@
             setHead: PreparationRestService.setHead,
 
             //preview
-            getPreviewDiff: getPreviewDiff,
-            getPreviewUpdate: getPreviewUpdate,
-            getPreviewAdd: getPreviewAdd
+            getPreviewDiff: PreparationRestService.getPreviewDiff,
+            getPreviewUpdate: PreparationRestService.getPreviewUpdate,
+            getPreviewAdd: PreparationRestService.getPreviewAdd
         };
 
         //---------------------------------------------------------------------------------
@@ -88,35 +88,6 @@
             return preparationsList() !== null ?
                 $q.when(preparationsList()) :
                 refreshPreparations();
-        }
-
-        //---------------------------------------------------------------------------------
-        //----------------------------------DETAILS/CONTENT--------------------------------
-        //---------------------------------------------------------------------------------
-        /**
-         * @ngdoc method
-         * @name getContent
-         * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {string} preparationId The preparation id
-         * @param {string} version The version (step id) to load
-         * @param {int} sample The wanted sample size (or null for the full preparation content).
-         * @description Get preparation records at the specific 'version' step
-         * @returns {promise} The GET promise
-         */
-        function getContent(preparationId, version, sample) {
-            return PreparationRestService.getContent(preparationId, version, sample);
-        }
-
-        /**
-         * @ngdoc method
-         * @name getDetails
-         * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {string} preparationId The preparation id
-         * @description Get current preparation details
-         * @returns {promise} The GET promise
-         */
-        function getDetails(preparationId) {
-            return PreparationRestService.getDetails(preparationId);
         }
 
         //---------------------------------------------------------------------------------
@@ -221,62 +192,6 @@
          */
         function paramsHasChanged(step, newParams) {
             return JSON.stringify(newParams) !== JSON.stringify(step.actionParameters.parameters);
-        }
-
-        //---------------------------------------------------------------------------------
-        //----------------------------------------PREVIEW----------------------------------
-        //---------------------------------------------------------------------------------
-
-        /**
-         * @ngdoc method
-         * @name getPreviewDiff
-         * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {string} preparationId The preparation id
-         * @param {string} currentStep The current loaded step
-         * @param {string} previewStep The target preview step
-         * @param {string} recordsTdpId The records TDP ids to preview
-         * @param {number} sampleSize The sample size
-         * @param {string} canceler The canceler promise
-         * @description POST Preview diff between 2 unchanged steps of a recipe
-         * @returns {promise} The POST promise
-         */
-        function getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, sampleSize, canceler) {
-            return PreparationRestService.getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, sampleSize, canceler);
-        }
-        /**
-         * @ngdoc method
-         * @name getPreviewUpdate
-         * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {string} preparationId The preparation id
-         * @param {string} currentStep The current loaded step
-         * @param {string} updateStep The target step to update
-         * @param {string} newParams The new parameters
-         * @param {string} recordsTdpId The records TDP ids to preview
-         * @param {number} sampleSize The sample size
-         * @param {string} canceler The canceler promise
-         * @description POST preview diff between 2 same actions but with 1 updated step
-         * @returns {promise} The POST promise
-         */
-        function getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, sampleSize, canceler) {
-            return PreparationRestService.getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, sampleSize, canceler);
-        }
-
-        /**
-         * @ngdoc method
-         * @name getPreviewAdd
-         * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {string} preparationId The preparation id
-         * @param {string} datasetId The dataset id
-         * @param {string} action The action name to add
-         * @param {string} params The action parameters
-         * @param {string} recordsTdpId The records TDP ids to preview
-         * @param {string} canceler The canceler promise
-         * @param {number} sampleSize The sample size
-         * @description POST preview diff between the preparation head and a new added transformation
-         * @returns {promise} The POST promise
-         */
-        function getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, sampleSize, canceler) {
-            return PreparationRestService.getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, sampleSize, canceler);
         }
     }
 

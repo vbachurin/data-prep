@@ -51,17 +51,16 @@
          * @name getContent
          * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @param {string} preparationId The preparation id to load
-         * @param {string} version The version (step id) to load
-         * @param {int} sample optional sample size
-         * @description Get preparation records at the specific 'version' step
+         * @param {string} stepId The step id to load
+         * @description Get preparation records at the specific step
          * @returns {promise} The GET promise
          */
-        function getContent(preparationId, version, sample) {
-            var url = RestURLs.preparationUrl + '/' + preparationId + '/content?version=' + version;
-            if (sample) {
-                url += '&sample='+sample;
-            }
-            return $http.get(url);
+        function getContent(preparationId, stepId) {
+            var url = RestURLs.preparationUrl + '/' + preparationId + '/content?version=' + stepId;
+            return $http.get(url)
+                .then(function(res) {
+                    return res.data;
+                });
         }
 
         /**
@@ -240,18 +239,16 @@
          * @param {string} currentStep The current loaded step
          * @param {string} previewStep The target preview step
          * @param {string} recordsTdpId The records TDP ids to preview
-         * @param {number} sampleSize The sample size
          * @param {string} canceler The canceler promise
          * @description POST Preview diff between 2 unchanged steps of a recipe
          * @returns {promise} The POST promise
          */
-        function getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, sampleSize, canceler) {
+        function getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, canceler) {
             var params = {
                 tdpIds: recordsTdpId,
                 currentStepId: currentStep.transformation.stepId,
                 previewStepId: previewStep.transformation.stepId,
-                preparationId: preparationId,
-                sample: sampleSize
+                preparationId: preparationId
             };
 
             var request = {
@@ -276,12 +273,11 @@
          * @param {string} updateStep The target step to update
          * @param {string} newParams The new parameters
          * @param {string} recordsTdpId The records TDP ids to preview
-         * @param {number} sampleSize The sample size
          * @param {string} canceler The canceler promise
          * @description POST preview diff between 2 same actions but with 1 updated step
          * @returns {promise} The POST promise
          */
-        function getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, sampleSize, canceler) {
+        function getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, canceler) {
             var actionParam = {
                 action : {
                     action: updateStep.actionParameters.action,
@@ -290,8 +286,7 @@
                 tdpIds: recordsTdpId,
                 currentStepId: currentStep.transformation.stepId,
                 updateStepId: updateStep.transformation.stepId,
-                preparationId: preparationId,
-                sample: sampleSize
+                preparationId: preparationId
             };
 
             var request = {
@@ -316,12 +311,11 @@
          * @param {string} action The action to add
          * @param {string} params The action parameters
          * @param {string} recordsTdpId The records TDP ids to preview
-         * @param {number} sampleSize The sample size
          * @param {string} canceler The canceler promise
          * @description POST preview diff between the preparation head and a new added transformation
          * @returns {promise} The POST promise
          */
-        function getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, sampleSize, canceler) {
+        function getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, canceler) {
             var actionParam = {
                 action : {
                     action: action,
@@ -329,8 +323,7 @@
                 },
                 tdpIds: recordsTdpId,
                 datasetId: datasetId,
-                preparationId: preparationId,
-                sample: sampleSize
+                preparationId: preparationId
             };
 
             var request = {

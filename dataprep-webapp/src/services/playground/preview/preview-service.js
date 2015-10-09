@@ -147,15 +147,14 @@
          * @param {object} currentStep The current active step
          * @param {object} previewStep The step to preview
          * @param {string} targetColumnId The column id to focus on
-         * @param {number} sampleSize The sample size
          * @description Call the diff preview service and replace records in the grid.
          * It cancel the previous preview first
          */
-        function getPreviewDiffRecords(preparationId, currentStep, previewStep, targetColumnId, sampleSize) {
+        function getPreviewDiffRecords(preparationId, currentStep, previewStep, targetColumnId) {
             stopPendingPreview();
             initPreviewIdNeeded();
 
-            PreparationService.getPreviewDiff(preparationId, currentStep, previewStep, displayedTdpIds, sampleSize, previewCanceler)
+            PreparationService.getPreviewDiff(preparationId, currentStep, previewStep, displayedTdpIds, previewCanceler)
                 .then(function(response) {
                     DatagridService.focusedColumn = targetColumnId;
                     return response;
@@ -174,15 +173,14 @@
          * @param {object} currentStep The current active step
          * @param {object} updateStep The step to update for the preview preview
          * @param {object} newParams The new parameters to apply on the step to update
-         * @param {number} sampleSize The sample size
          * @description Call the update step preview service and replace records in the grid.
          * It cancel the previous preview first
          */
-        function getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams, sampleSize) {
+        function getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams) {
             stopPendingPreview();
             initPreviewIdNeeded();
 
-            PreparationService.getPreviewUpdate(preparationId, currentStep, updateStep, newParams, displayedTdpIds, sampleSize, previewCanceler)
+            PreparationService.getPreviewUpdate(preparationId, currentStep, updateStep, newParams, displayedTdpIds, previewCanceler)
                 .then(function(response) {
                     DatagridService.focusedColumn = updateStep.column.id;
                     return response;
@@ -201,15 +199,14 @@
          * @param {object} datasetId The dataset id
          * @param {object} action The action to append
          * @param {object} params The action parameters
-         * @param {string|number} sampleSize The sample size
          * @description Call the update step preview service and replace records in the grid.
          * It cancel the previous preview first
          */
-        function getPreviewAddRecords(preparationId, datasetId, action, params, sampleSize) {
+        function getPreviewAddRecords(preparationId, datasetId, action, params) {
             stopPendingPreview();
             initPreviewIdNeeded();
 
-            PreparationService.getPreviewAdd(preparationId, datasetId, action, params, displayedTdpIds, sampleSize, previewCanceler)
+            PreparationService.getPreviewAdd(preparationId, datasetId, action, params, displayedTdpIds, previewCanceler)
                 .then(function(response) {
                     /*jshint camelcase: false */
                     DatagridService.focusedColumn = params.column_id;

@@ -116,7 +116,7 @@
             var currentStep = RecipeService.getLastActiveStep();
             var preparationId = state.playground.preparation.id;
             var columnToFocusId = previewStep.column.id;
-            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, columnToFocusId, state.playground.sampleSize);
+            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, columnToFocusId);
         }
 
         /**
@@ -131,7 +131,7 @@
             var currentStep = RecipeService.getLastActiveStep();
             var preparationId = state.playground.preparation.id;
             var columnToFocusId = disabledStep.column.id;
-            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, columnToFocusId, state.playground.sampleSize);
+            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, columnToFocusId);
         }
     }
 

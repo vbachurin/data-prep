@@ -69,8 +69,7 @@ describe('Early Preview Service', function () {
                 scope: transfoScope,
                 column_id: column.id,
                 column_name: column.name
-            },
-            stateMock.playground.sampleSize
+            }
         );
     }));
 
@@ -102,8 +101,7 @@ describe('Early Preview Service', function () {
                 scope: transfoScope,
                 column_id: column.id,
                 column_name: column.name
-            },
-            stateMock.playground.sampleSize
+            }
         );
     }));
 
@@ -194,8 +192,7 @@ describe('Early Preview Service', function () {
                 scope: transfoScope,
                 column_id: column.id,
                 column_name: column.name
-            },
-            stateMock.playground.sampleSize
+            }
         );
     }));
 });
