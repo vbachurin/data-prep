@@ -68,6 +68,8 @@
                         var allParameters = ExportService.getParameters();
                         if (allParameters && allParameters['exportParameters.fileName']){
                             parameters['exportParameters.' + param.name] = allParameters['exportParameters.fileName'];
+                        } else if (vm.state.playground.preparation && vm.state.playground.preparation.name) {
+                            parameters['exportParameters.' + param.name] = vm.state.playground.preparation.name;
                         } else {
                             parameters['exportParameters.' + param.name] = vm.state.playground.dataset.name;
                         }
