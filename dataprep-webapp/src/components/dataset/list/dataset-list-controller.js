@@ -27,6 +27,7 @@
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
         vm.showChangeName = false;
+        var originalDatasetName;
 
         /**
          * @ngdoc property
@@ -143,7 +144,7 @@
          * @ngdoc method
          * @name clone
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description Delete a dataset
+         * @description Clone a dataset
          * @param {object} dataset - the dataset to clone
          */
         vm.clone = function(dataset){
@@ -156,13 +157,19 @@
 
         /**
          * @ngdoc method
-         * @name rename
+         * @name showRenameInput
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description Open a modal asking a new name for the dataset
-         * @param {object} dataset - the dataset to rename
+         * @description save a copy of the original dataset name to restore it if the new name has not been saved.
+         * @param {object} dataset - the dataset to clone
          */
-        vm.rename = function(dataset){
-            vm.currentDataset = dataset;
+        vm.showRenameInput = function(dataset){
+            originalDatasetName = dataset.name;
+            dataset.showChangeName=true
+        };
+
+        vm.cancelRename = function(dataset){
+            dataset.showChangeName=false;
+            dataset.name = originalDatasetName;
         };
 
         /**
