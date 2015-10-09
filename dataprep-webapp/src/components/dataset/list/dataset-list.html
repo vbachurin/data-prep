@@ -36,16 +36,16 @@
             <div ng-switch on="dataset.showChangeName">
 
               <div ng-switch-when="true">
-
-                <a data-icon="a" class="btn-icon" ng-click="dataset.showChangeName=false"></a>
+                <input type="text" data-ng-model="dataset.name">
+                <a class="check-btn" data-icon="b" ng-click="datasetListCtrl.rename(dataset)"></a>
+                <a class="cancel-btn" data-icon="d" ng-click="dataset.showChangeName=false"></a>
               </div>
               <div ng-switch-default>
                 <div class="inventory-text">
                   <div class="inventory-title"
                        ng-click="datasetListCtrl.uploadWorkflowService.openDataset(dataset)">{{dataset.name}}
                   </div>
-                  <a data-icon="a" class="btn-icon" ng-click="dataset.showChangeName=true"></a>
-
+                  <a class="edit-btn" data-icon="a" ng-click="dataset.showChangeName=true"></a>
                   <div class="inventory-description"
                        ng-click="datasetListCtrl.uploadWorkflowService.openDataset(dataset)">{{ 'INVENTORY_DETAILS' | translate:dataset }}</div>
                 </div>

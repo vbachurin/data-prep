@@ -27,7 +27,6 @@
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
         vm.showChangeName = false;
-        vm.currentDataset = null;
 
         /**
          * @ngdoc property
@@ -163,7 +162,6 @@
          * @param {object} dataset - the dataset to rename
          */
         vm.rename = function(dataset){
-            vm.showChangeName = true;
             vm.currentDataset = dataset;
         };
 
@@ -173,8 +171,8 @@
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description Trigger the dataset rename in the backend
          */
-        vm.doRename = function(){
-            return DatasetService.update(vm.currentDataset)
+        vm.rename = function(dataset){
+            return DatasetService.update(dataset)
                 .then(function(){
                   vm.showChangeName = false;
                 })
