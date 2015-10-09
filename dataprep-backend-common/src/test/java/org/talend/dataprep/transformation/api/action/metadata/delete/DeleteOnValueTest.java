@@ -154,6 +154,28 @@ public class DeleteOnValueTest {
     }
 
     @Test
+    public void test_TDP_663() throws IOException {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("name", "David Bowie");
+        values.put("city", "AAA Berlin BBB"); // notice the space after 'Berlin '
+        final DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> regexpParameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                DeleteOnValueTest.class.getResourceAsStream("deleteOnValueAction.json"));
+        regexpParameters.put("value", "*");
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), regexpParameters, "city");
+
+        // then
+        assertFalse(row.isDeleted());
+        assertEquals("David Bowie", row.get("name"));
+        assertEquals("AAA Berlin BBB", row.get("city"));
+    }
+
+    @Test
     public void should_not_delete_because_value_not_found() {
         //given
         final Map<String, String> values = new HashMap<>();

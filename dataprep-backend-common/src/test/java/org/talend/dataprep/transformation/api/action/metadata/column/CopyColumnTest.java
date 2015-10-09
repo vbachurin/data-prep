@@ -173,6 +173,79 @@ public class CopyColumnTest {
                 .isNotEmpty().contains(semanticDomain);
     }
 
+
+    @Test
+    public void test_TDP_567_with_force_true() throws Exception {
+        List<ColumnMetadata> input = new ArrayList<>();
+        final ColumnMetadata original = createMetadata("0001", "column");
+        original.setStatistics(new Statistics());
+
+        SemanticDomain semanticDomain = new SemanticDomain("mountain_goat", "Mountain goat pale pale", 1);
+
+        original.setDomain("beer");
+        original.setDomainFrequency(1);
+        original.setDomainLabel("the best beer");
+        original.setDomainForced(true);
+        original.setTypeForced(true);
+        original.setSemanticDomains(Collections.singletonList(semanticDomain));
+
+        input.add(original);
+        RowMetadata rowMetadata = new RowMetadata(input);
+
+        Assertions.assertThat(rowMetadata.getColumns()).isNotNull().isNotEmpty().hasSize(1);
+
+        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+
+        List<ColumnMetadata> expected = rowMetadata.getColumns();
+
+        Assertions.assertThat(expected).isNotNull().isNotEmpty().hasSize(2);
+
+        assertEquals(expected.get(1).getStatistics(), original.getStatistics());
+
+        Assertions.assertThat(expected.get(1)) //
+                .isEqualToComparingOnlyGivenFields(original, "domain", "domainLabel", "domainFrequency", "domainForced",
+                        "typeForced");
+
+        Assertions.assertThat(expected.get(1).getSemanticDomains()).isNotNull() //
+                .isNotEmpty().contains(semanticDomain);
+    }
+
+    @Test
+    public void test_TDP_567_with_force_false() throws Exception {
+        List<ColumnMetadata> input = new ArrayList<>();
+        final ColumnMetadata original = createMetadata("0001", "column");
+        original.setStatistics(new Statistics());
+
+        SemanticDomain semanticDomain = new SemanticDomain("mountain_goat", "Mountain goat pale pale", 1);
+
+        original.setDomain("beer");
+        original.setDomainFrequency(1);
+        original.setDomainLabel("the best beer");
+        original.setDomainForced(false);
+        original.setTypeForced(false);
+        original.setSemanticDomains(Collections.singletonList(semanticDomain));
+
+        input.add(original);
+        RowMetadata rowMetadata = new RowMetadata(input);
+
+        Assertions.assertThat(rowMetadata.getColumns()).isNotNull().isNotEmpty().hasSize(1);
+
+        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+
+        List<ColumnMetadata> expected = rowMetadata.getColumns();
+
+        Assertions.assertThat(expected).isNotNull().isNotEmpty().hasSize(2);
+
+        assertEquals(expected.get(1).getStatistics(), original.getStatistics());
+
+        Assertions.assertThat(expected.get(1)) //
+                .isEqualToComparingOnlyGivenFields(original, "domain", "domainLabel", "domainFrequency", "domainForced",
+                        "typeForced");
+
+        Assertions.assertThat(expected.get(1).getSemanticDomains()).isNotNull() //
+                .isNotEmpty().contains(semanticDomain);
+    }
+
     @Test
     public void should_accept_column() {
         assertTrue(action.acceptColumn(getColumn(Type.ANY)));

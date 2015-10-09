@@ -75,16 +75,10 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements Column
     private ColumnMetadata createNewColumn(final ColumnMetadata column) {
         return ColumnMetadata.Builder //
                 .column() //
+                .copy(column) //
+                .computedId(null) //
                 .name(column.getName() + COPY_APPENDIX) //
-                .type(Type.get(column.getType())) //
-                .statistics(column.getStatistics()) //
-                .headerSize(column.getHeaderSize()) //
-                .domain( column.getDomain() ) //
-                .domainLabel( column.getDomainLabel() ) //
-                .domainFrequency( column.getDomainFrequency() ) //
-                .semanticDomains( column.getSemanticDomains() ) //
                 .build();
     }
-
 
 }
