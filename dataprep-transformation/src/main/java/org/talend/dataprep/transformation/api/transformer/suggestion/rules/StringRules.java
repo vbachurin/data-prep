@@ -7,6 +7,7 @@ import static org.talend.dataprep.transformation.api.transformer.suggestion.rule
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.transformation.api.action.metadata.text.LowerCase;
@@ -22,6 +23,7 @@ public class StringRules extends BasicRules {
      * @return A {@link SuggestionEngineRule rule} that hides Trim ("remove leading & trailing spaces") if no leading
      * and trailing spaces
      */
+    @Bean
     public static SuggestionEngineRule trailingSpaceRule() {
         return forActions(Trim.TRIM_ACTION_NAME) //
                 .when(IS_STRING) //
@@ -44,6 +46,7 @@ public class StringRules extends BasicRules {
     /**
      * @return A {@link SuggestionEngineRule rule} that hides Upper Case if all values are in upper case.
      */
+    @Bean
     public static SuggestionEngineRule upperCaseRule() {
         return forActions(UpperCase.UPPER_CASE_ACTION_NAME) //
                 .when(IS_STRING) //
@@ -61,12 +64,12 @@ public class StringRules extends BasicRules {
                     return NEGATIVE;
                 }) //
                 .build();
-
     }
 
     /**
      * @return A {@link SuggestionEngineRule rule} that hides Lower Case if all values are in lower case.
      */
+    @Bean
     public static SuggestionEngineRule lowerCaseRule() {
         return forActions(LowerCase.LOWER_CASE_ACTION_NAME) //
                 .when(IS_STRING) //
@@ -84,12 +87,12 @@ public class StringRules extends BasicRules {
                     return NEGATIVE;
                 }) //
                 .build();
-
     }
 
     /**
      * @return A {@link SuggestionEngineRule rule} that hides title case if all values are in title case
      */
+    @Bean
     public static SuggestionEngineRule properCaseRule() {
         return forActions(ProperCase.PROPER_CASE_ACTION_NAME) //
                 .when(IS_STRING) //
@@ -107,7 +110,8 @@ public class StringRules extends BasicRules {
                                 }
                                 for (int i = 1; i < token.length(); i++) {
                                     if (token.charAt(i) != 'a') {
-                                        // A remaining character of word is not proper case, Proper Case should be suggested.
+                                        // A remaining character of word is not proper case, Proper Case should be
+                                        // suggested.
                                         return POSITIVE;
                                     }
                                 }
@@ -117,6 +121,5 @@ public class StringRules extends BasicRules {
                     return NEGATIVE;
                 }) //
                 .build();
-
     }
 }

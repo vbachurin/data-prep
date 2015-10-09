@@ -6,6 +6,7 @@ import static org.talend.dataprep.transformation.api.transformer.suggestion.rule
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.delete.DeleteInvalid;
 import org.talend.dataprep.transformation.api.action.metadata.fillinvalid.FillWithBooleanIfInvalid;
 import org.talend.dataprep.transformation.api.action.metadata.fillinvalid.FillWithDateIfInvalid;
@@ -16,6 +17,10 @@ import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionE
 @Component
 public class InvalidRules extends BasicRules {
 
+    private static long getInvalidCount(ColumnMetadata columnMetadata) {
+        return Math.max(columnMetadata.getStatistics().getInvalid(), columnMetadata.getQuality().getInvalid());
+    }
+
     /**
      * @return A {@link SuggestionEngineRule rule} that hides "delete invalid" if no invalid.
      */
@@ -23,7 +28,7 @@ public class InvalidRules extends BasicRules {
     public static SuggestionEngineRule deleteInvalidRule() {
         return forActions(DeleteInvalid.DELETE_INVALID_ACTION_NAME) //
                 .then(columnMetadata -> {
-                    if (columnMetadata.getStatistics().getInvalid() > 0) {
+                    if (getInvalidCount(columnMetadata) > 0) {
                         return POSITIVE;
                     }
                     return NEGATIVE;
@@ -41,7 +46,7 @@ public class InvalidRules extends BasicRules {
                 FillWithNumericIfInvalid.FILL_INVALID_ACTION_NAME, //
                 FillWithStringIfInvalid.FILL_INVALID_ACTION_NAME) //
                         .then(columnMetadata -> {
-                            if (columnMetadata.getStatistics().getInvalid() > 0) {
+                            if (getInvalidCount(columnMetadata) > 0) {
                                 return POSITIVE;
                             }
                             return NEGATIVE;

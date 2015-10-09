@@ -27,4 +27,13 @@ public class BasicRules {
         return Type.STRING.isAssignableFrom(type);
     };
 
+    /**
+     * A helper to filter {@link Type#DATE} columns (including column where semantic domain is 'date').
+     */
+    protected static final Predicate<ColumnMetadata> IS_DATE = columnMetadata -> {
+        final Type type = Type.get(columnMetadata.getType());
+        return Type.DATE.isAssignableFrom(type) || "date".equalsIgnoreCase(columnMetadata.getDomain());
+    };
+
+
 }
