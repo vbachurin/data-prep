@@ -8,7 +8,11 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 public class TaskExecution {
 
-    @Bean
+    /**
+     * @return A {@link TaskExecutor} for non-blocking CSV serialization.
+     * @see org.talend.dataprep.schema.io.CSVSerializer
+     */
+    @Bean(name = "serializer#csv#executor")
     TaskExecutor getTaskExecutor() {
         final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(4);
