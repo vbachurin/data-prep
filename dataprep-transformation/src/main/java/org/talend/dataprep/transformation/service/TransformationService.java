@@ -43,6 +43,7 @@ import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
 import org.talend.dataprep.transformation.aggregation.api.AggregationResult;
 import org.talend.dataprep.transformation.api.action.dynamic.DynamicType;
 import org.talend.dataprep.transformation.api.action.dynamic.GenericParameter;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
@@ -271,15 +272,40 @@ public class TransformationService {
     private SuggestionEngine suggestionEngine;
 
     /**
+     * Returns all {@link ActionMetadata actions} data prep may apply to a column. Column is optional and only needed
+     * to fill out default parameter values.
+     * @return A list of {@link ActionMetadata} that can be applied to this column.
+     * @see #suggest(ColumnMetadata, int)
+     */
+    @RequestMapping(value = "/actions/column", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Return all actions for a column (regardless of column metadata)", notes = "This operation returns an array of actions.")
+    @ResponseBody
+    public List<ActionMetadata> actions(@RequestBody(required = false) ColumnMetadata column) {
+        // look for all actions applicable to the column type
+        return Stream.of(allActions) //
+                .filter(am -> !ActionCategory.COLUMN_METADATA.getDisplayName().equals(am.getCategory())) // Don't return column metadata actions
+                .map(am -> {
+                    if (column != null) {
+                        return am.adapt(column);
+                    } else {
+                        return am;
+                    }
+                }) //
+                .collect(toList());
+    }
+
+    /**
      * Suggest what {@link ActionMetadata actions} can be applied to <code>column</code>.
      * @param column A {@link ColumnMetadata column} definition.
+     * @param limit An optional limit parameter to return the first <code>limit</code> suggestions.
      * @return A list of {@link ActionMetadata} that can be applied to this column.
      * @see #suggest(DataSet)
      */
     @RequestMapping(value = "/suggest/column", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Suggest actions for a given column metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
     @ResponseBody
-    public List<ActionMetadata> suggest(@RequestBody(required = false) ColumnMetadata column) {
+    public List<ActionMetadata> suggest(@RequestBody(required = false) ColumnMetadata column, //
+                                        @RequestParam(value = "limit", defaultValue = "5", required = false) int limit) {
         if (column == null) {
             return Collections.emptyList();
         }
@@ -290,6 +316,7 @@ public class TransformationService {
                 .collect(toList());
         return suggestionEngine.score(actions, column).stream() //
                 .filter(s -> s.getScore() > 0) // Keep only strictly positive score (negative and 0 indicates not applicable)
+                .limit(limit)
                 .map(Suggestion::getAction) // Get the action for positive suggestions
                 .collect(Collectors.toList());
     }
@@ -298,7 +325,7 @@ public class TransformationService {
      * Suggest what {@link ActionMetadata actions} can be applied to <code>dataSetMetadata</code>.
      * @param dataSet A {@link DataSetMetadata dataset} definition.
      * @return A list of {@link ActionMetadata} that can be applied to this data set.
-     * @see #suggest(ColumnMetadata)
+     * @see #suggest(ColumnMetadata, int)
      */
     @RequestMapping(value = "/suggest/dataset", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Suggest actions for a given data set metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
