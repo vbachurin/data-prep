@@ -6,6 +6,7 @@ import static org.talend.dataprep.transformation.api.transformer.suggestion.rule
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.delete.DeleteEmpty;
 import org.talend.dataprep.transformation.api.action.metadata.fillempty.FillWithBooleanIfEmpty;
 import org.talend.dataprep.transformation.api.action.metadata.fillempty.FillWithDateIfEmpty;
@@ -16,6 +17,10 @@ import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionE
 @Component
 public class EmptyRules extends BasicRules {
 
+    private static long getEmptyCount(ColumnMetadata columnMetadata) {
+        return Math.max(columnMetadata.getStatistics().getEmpty(), columnMetadata.getQuality().getEmpty());
+    }
+
     /**
      * @return A {@link SuggestionEngineRule rule} that hides "delete empty" if no empty.
      */
@@ -23,7 +28,7 @@ public class EmptyRules extends BasicRules {
     public static SuggestionEngineRule deleteEmptyRule() {
         return forActions(DeleteEmpty.DELETE_EMPTY_ACTION_NAME) //
                 .then(columnMetadata -> {
-                    if (columnMetadata.getStatistics().getEmpty() > 0) {
+                    if (getEmptyCount(columnMetadata) > 0) {
                         return POSITIVE;
                     }
                     return NEGATIVE;
@@ -41,7 +46,7 @@ public class EmptyRules extends BasicRules {
                 FillWithIntegerIfEmpty.FILL_EMPTY_ACTION_NAME, //
                 FillWithStringIfEmpty.FILL_EMPTY_ACTION_NAME) //
                         .then(columnMetadata -> {
-                            if (columnMetadata.getStatistics().getEmpty() > 0) {
+                            if (getEmptyCount(columnMetadata) > 0) {
                                 return POSITIVE;
                             }
                             return NEGATIVE;
