@@ -5,6 +5,14 @@ describe('Transformation simple params directive', function () {
     beforeEach(module('data-prep.transformation-params'));
     beforeEach(module('htmlTemplates'));
 
+    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+        $translateProvider.translations('en', {
+            'COLON': ': '
+        });
+        $translateProvider.preferredLanguage('en');
+    }));
+
+
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
 

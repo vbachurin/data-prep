@@ -1,4 +1,7 @@
 {
+  "_comment": "Punctuations",
+  "COLON": ": ",
+
   "_comment": "Navbar",
   "EDIT_PROFIL": "Edit profil",
   "SEARCH": "Search anything here",
