@@ -19,7 +19,7 @@
          * @returns {HttpPromise} The POST promise
          */
         this.getTransformations = function(stringifiedColumn) {
-            return $http.post(RestURLs.transformUrl + '/suggest/column', stringifiedColumn);
+            return $http.post(RestURLs.transformUrl + '/actions/column', stringifiedColumn);
         };
 
 
