@@ -26,8 +26,7 @@
 
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
-        vm.showChangeName = false;
-        var originalDatasetName;
+        vm.originalDatasetName=null;
 
         /**
          * @ngdoc property
@@ -163,13 +162,20 @@
          * @param {object} dataset - the dataset to clone
          */
         vm.showRenameInput = function(dataset){
-            originalDatasetName = dataset.name;
+            vm.originalDatasetName = dataset.name;
             dataset.showChangeName=true
         };
 
+        /**
+         * @ngdoc method
+         * @name cancelRename
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description restore original dataset name
+         * @param {object} dataset - the dataset to clone
+         */
         vm.cancelRename = function(dataset){
             dataset.showChangeName=false;
-            dataset.name = originalDatasetName;
+            dataset.name = vm.originalDatasetName;
         };
 
         /**
@@ -182,7 +188,7 @@
             $rootScope.$emit('talend.loading.start');
             return DatasetService.update(dataset)
                 .then(function(){
-                  vm.showChangeName = false;
+                  dataset.showChangeName = false;
                 })
                 .then(function() {
                           MessageService.success('RENAME_SUCCESS_TITLE', 'RENAME_SUCCESS');

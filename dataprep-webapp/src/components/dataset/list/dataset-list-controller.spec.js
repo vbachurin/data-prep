@@ -288,9 +288,18 @@ describe('Dataset list controller', function () {
             spyOn(MessageService, 'success').and.returnValue();
         }));
 
-        it('clone must call clone service', inject(function ($q, DatasetService, MessageService) {
+        it('clone must call rename service', inject(function ($q, DatasetService, MessageService) {
             //given
             var dataset = datasets[0];
+
+
+            //when
+            ctrl.showRenameInput(dataset);
+            scope.$digest();
+
+            //then
+            expect(dataset.showChangeName).toBe(true);
+            expect(ctrl.originalDatasetName).toBe(dataset.name);
 
 
             //when
@@ -298,15 +307,7 @@ describe('Dataset list controller', function () {
             scope.$digest();
 
             //then
-            expect(ctrl.showChangeName).toBe(true);
-            expect(ctrl.currentDataset).toBe(dataset);
-
-            //when
-            ctrl.doRename(dataset);
-            scope.$digest();
-
-            //then
-            expect(ctrl.showChangeName).toBe(false);
+            expect(dataset.showChangeName).toBe(false);
             expect(DatasetService.update).toHaveBeenCalledWith(dataset);
             expect(MessageService.success).toHaveBeenCalledWith('RENAME_SUCCESS_TITLE', 'RENAME_SUCCESS');
         }));
