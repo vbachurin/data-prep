@@ -36,10 +36,12 @@
             <div class="datasets-name-input" ng-switch on="dataset.showChangeName">
 
               <div ng-switch-when="true">
-                <input type="text" data-ng-model="dataset.name">
-                <div>
-                  <a class="check-btn" data-icon="b" ng-click="datasetListCtrl.rename(dataset)"></a>
-                  <a class="cancel-btn" data-icon="d" ng-click="datasetListCtrl.cancelRename(dataset)"></a>
+                <div class="inventory-text">
+                  <div>
+                    <input type="text" data-ng-model="dataset.name">
+                    <a class="check-btn" data-icon="b" ng-click="datasetListCtrl.rename(dataset)"></a>
+                    <a class="cancel-btn" data-icon="d" ng-click="datasetListCtrl.cancelRename(dataset)"></a>
+                  </div>
                 </div>
               </div>
               <div ng-switch-default>
