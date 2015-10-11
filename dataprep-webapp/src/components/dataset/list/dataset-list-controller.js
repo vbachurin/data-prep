@@ -163,7 +163,7 @@
          */
         vm.showRenameInput = function(dataset){
             vm.originalDatasetName = dataset.name;
-            dataset.showChangeName=true
+            dataset.showChangeName=true;
         };
 
         /**
