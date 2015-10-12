@@ -22,7 +22,7 @@ public class UrlTokenExtractors {
         @Override
         public String extractToken(URI url) {
             final String scheme = url.getScheme();
-            return (scheme == null ? "" : scheme.toLowerCase());
+            return scheme == null ? "" : scheme.toLowerCase();
         }
     };
 
@@ -55,7 +55,7 @@ public class UrlTokenExtractors {
         @Override
         public String extractToken(URI url) {
             final int port = url.getPort();
-            return (port == -1 ? "" : port + "");
+            return port == -1 ? "" : port + "";
         }
 
         @Override
@@ -126,7 +126,7 @@ public class UrlTokenExtractors {
         @Override
         public String extractToken(URI url) {
             final String userInfo = url.getUserInfo();
-            return (userInfo == null ? "" : userInfo.split(":")[0]);
+            return userInfo == null ? "" : userInfo.split(":")[0];
         }
     };
 
@@ -143,7 +143,7 @@ public class UrlTokenExtractors {
         @Override
         public String extractToken(URI url) {
             final String userInfo = url.getUserInfo();
-            return (userInfo == null ? "" : userInfo.split(":")[1]);
+            return userInfo == null ? "" : userInfo.split(":")[1];
         }
     };
 

@@ -27,7 +27,7 @@ public class Defaults {
      * exception as its own.
      */
     public static Function<Exception, RuntimeException> passthrough() {
-        return (e) -> (RuntimeException) e;
+        return e -> (RuntimeException) e;
     }
 
     /**

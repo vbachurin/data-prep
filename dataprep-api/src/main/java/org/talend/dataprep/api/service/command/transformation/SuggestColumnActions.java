@@ -39,7 +39,7 @@ public class SuggestColumnActions extends GenericCommand<InputStream> {
             post.setEntity(new InputStreamEntity(input));
             return post;
         });
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, e));
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, e));
         on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(asNull());
         on(HttpStatus.OK).then(pipeStream());
     }

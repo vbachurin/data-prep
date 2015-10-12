@@ -23,6 +23,7 @@ public class HazelcastLockFactory implements LockFactory {
      * @param id the if where to put the lock.
      * @return a distributed lock.
      */
+    @Override
     public DistributedLock getLock(String id) {
         final ILock lock = hci.getLock(id);
         return new HazelcastDistributedLock(id, lock);

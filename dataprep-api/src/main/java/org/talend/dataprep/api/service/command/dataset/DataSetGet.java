@@ -41,7 +41,7 @@ public class DataSetGet extends GenericCommand<InputStream> {
             }
             return new HttpGet(url);
         });
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e,
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e,
                 ExceptionContext.build().put("id", dataSetId)));
         on(HttpStatus.NO_CONTENT).then(emptyStream());
         on(HttpStatus.OK).then(pipeStream());

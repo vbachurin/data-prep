@@ -56,7 +56,7 @@ public class DataSetDelete extends GenericCommand<Void> {
         super(PreparationAPI.DATASET_GROUP, client);
         this.dataSetId = dataSetId;
         execute(() -> onExecute(dataSetId));
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET, e,
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET, e,
                 ExceptionContext.build().put("dataSetId", dataSetId)));
         on(HttpStatus.OK).then((req, res) -> {
             contentCache.evict(new ContentCacheKey(dataSetId)); // clear the cache (dataset and all its preparations)

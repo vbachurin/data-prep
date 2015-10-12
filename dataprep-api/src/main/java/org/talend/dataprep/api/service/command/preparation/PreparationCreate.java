@@ -25,7 +25,7 @@ public class PreparationCreate extends GenericCommand<String> {
     private PreparationCreate(HttpClient client, Preparation preparation) {
         super(APIService.PREPARATION_GROUP, client);
         execute(() -> onExecute(preparation));
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_CREATE_PREPARATION, e));
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_CREATE_PREPARATION, e));
         on(HttpStatus.OK).then(asString());
     }
 

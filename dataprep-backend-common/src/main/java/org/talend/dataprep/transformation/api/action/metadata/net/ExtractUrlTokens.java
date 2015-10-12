@@ -85,9 +85,9 @@ public class ExtractUrlTokens extends AbstractActionMetadata implements ColumnAc
                     urlTokenExtractor.getType());
             final String local = rowMetadata.insertAfter(columnToInsertAfter.getId(), newColumnMetadata);
 
-            final String tokenValue = (url == null ? "" : urlTokenExtractor.extractToken(url));
+            final String tokenValue = url == null ? "" : urlTokenExtractor.extractToken(url);
 
-            row.set(local, (tokenValue == null ? "" : tokenValue));
+            row.set(local, tokenValue == null ? "" : tokenValue);
 
             columnToInsertAfter = newColumnMetadata;
         }
