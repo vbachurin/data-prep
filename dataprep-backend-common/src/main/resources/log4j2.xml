@@ -5,7 +5,7 @@
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%t] [%marker] %-5level %logger{36} - %msg%n}"/>
         </Console>
 
-        <Socket name="logstash" host="192.168.0.12" port="4560" ignoreExceptions="false">
+        <Socket name="logstash" host="10.42.10.99" port="4560" ignoreExceptions="false">
             <JSONLayout compact="true" eventEol="true"/>
         </Socket>
 
