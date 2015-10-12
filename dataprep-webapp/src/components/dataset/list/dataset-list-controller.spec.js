@@ -288,7 +288,7 @@ describe('Dataset list controller', function () {
             spyOn(MessageService, 'success').and.returnValue();
         }));
 
-        it('clone must call rename service', inject(function ($q, DatasetService, MessageService) {
+        it('rename must call rename service', inject(function ($q, DatasetService, MessageService) {
             //given
             var dataset = datasets[0];
 
