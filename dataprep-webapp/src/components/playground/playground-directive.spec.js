@@ -19,8 +19,7 @@ describe('Playground directive', function () {
     beforeEach(module('htmlTemplates'));
     beforeEach(module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'FILE_DETAILS': 'File: {{name}} ({{records}} lines)',
-            'SAMPLE_SIZE': 'Below is a sample size of'
+            'FILE_DETAILS': 'File: {{name}} ({{records}} lines)'
         });
         $translateProvider.preferredLanguage('en');
     }));

@@ -9,7 +9,7 @@ describe('Recipe Bullet service', function () {
     var stateMock;
 
     beforeEach(module('data-prep.services.recipe', function($provide) {
-        stateMock = {playground: {preparation: {id: preparationId}, sampleSize: 100}};
+        stateMock = {playground: {preparation: {id: preparationId}}};
         $provide.constant('state', stateMock);
     }));
 
