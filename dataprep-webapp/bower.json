@@ -2,8 +2,8 @@
   "name": "data-prep",
   "version": "1.0.0",
   "main": [
-    "dist/scripts/app-*.js",
-    "dist/styles/app-*.css"
+    "dataprep-webapp/dist/scripts/app-*.js",
+    "dataprep-webapp/dist/styles/app-*.css"
   ],
   "authors": [
     "Talend"
