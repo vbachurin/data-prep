@@ -1,21 +1,16 @@
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
-import static java.util.stream.Collectors.toList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
-import java.util.*;
-
-import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.TypeUtils;
-import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
 import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.datascience.common.inference.type.DataType;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Utility class for the ActionsMetadata

@@ -25,7 +25,7 @@ public class DataSetGetMetadata extends GenericCommand<DataSetMetadata> {
     private DataSetGetMetadata(HttpClient client, String dataSetId) {
         super(PreparationAPI.DATASET_GROUP, client);
         execute(() -> new HttpGet(datasetServiceUrl + "/datasets/" + dataSetId + "/metadata"));
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_METADATA, e));
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_METADATA, e));
         on(HttpStatus.NO_CONTENT).then(asNull());
         on(HttpStatus.OK).then((req, res) -> {
             try {

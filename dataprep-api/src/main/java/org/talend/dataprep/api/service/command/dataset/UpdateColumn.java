@@ -35,7 +35,7 @@ public class UpdateColumn extends GenericCommand<Void> {
             post.setEntity(new InputStreamEntity(body));
             return post;
         });
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_CREATE_OR_UPDATE_DATASET, e,
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_CREATE_OR_UPDATE_DATASET, e,
                 ExceptionContext.build().put("id", dataSetId)));
         on(HttpStatus.OK).then((req, res) -> {
             contentCache.evict(new ContentCacheKey(dataSetId));

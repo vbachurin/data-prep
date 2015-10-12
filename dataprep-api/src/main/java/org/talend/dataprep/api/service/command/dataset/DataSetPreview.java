@@ -30,7 +30,7 @@ public class DataSetPreview extends GenericCommand<InputStream> {
     public DataSetPreview(HttpClient client, String dataSetId, boolean metadata, boolean columns, String sheetName) {
         super(PreparationAPI.TRANSFORM_GROUP, client);
         execute(() -> onExecute(dataSetId, metadata, columns, sheetName));
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e,
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e,
                 ExceptionContext.build().put("id", dataSetId)));
         on(HttpStatus.ACCEPTED, HttpStatus.NO_CONTENT).then(emptyStream());
         on(HttpStatus.OK).then(pipeStream());
