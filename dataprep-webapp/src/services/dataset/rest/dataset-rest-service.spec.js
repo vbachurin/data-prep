@@ -104,7 +104,6 @@ describe('Dataset Rest Service', function () {
         expect(result).toEqual(datasets);
     }));
 
-
     it('should call dataset creation rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
         //given
         var datasetId = null;

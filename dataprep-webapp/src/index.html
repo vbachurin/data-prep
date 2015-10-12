@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="no-js" ng-app="data-prep" ng-cloak>
+<html lang="en" class="no-js" ng-cloak>
     <head>
         <meta charset="utf-8">
         <title>Talend - DataPrep</title>
@@ -83,9 +83,7 @@
         <script src="services/utils/moment/moment-filter.js"></script>
         <script src="services/utils/message/message-service.js"></script>
         <script src="services/utils/converter/converter-service.js"></script>
-        <script src="services/utils/constants/utils-constants.js"></script>
         <script src="services/utils/config/utils-rest-urls-service.js"></script>
-        <script src="services/utils/config/config-service.js"></script>
         <script src="services/utils/click/disable-right-click-directive.js"></script>
         <script src="services/upload-workflow/upload-workflow-module.js"></script>
         <script src="services/upload-workflow/upload-workflow-service.js"></script>
@@ -254,6 +252,10 @@
         <script src="assets/maps/us-all.js"></script>
         <script src="app.js"></script>
         <!-- endinject -->
+
+        <script language="JavaScript">
+            fetchConfiguration().then(bootstrapDataPrepApplication.bind(null, ['data-prep']));
+        </script>
 
 <!-- inject:partials -->
 <!-- angular templates will be automatically converted in js and inserted here -->
