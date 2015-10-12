@@ -4,10 +4,11 @@ import java.io.*;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -27,7 +28,7 @@ public class CSVSerializer implements Serializer {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(CSVSerializer.class);
 
-    @Autowired
+    @Resource(name = "serializer#csv#executor")
     TaskExecutor executor;
 
     @Override

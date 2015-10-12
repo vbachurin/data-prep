@@ -1,8 +1,8 @@
 <span class="badge-notice"
       ng-class="badgeCtrl.type">
-    <span class="badge-item text">{{badgeCtrl.text}}</span>
+    <span ng-if="!badgeCtrl.obj.value" class="badge-item text">{{badgeCtrl.text}}</span>
     <span ng-if="badgeCtrl.obj.value">
-        <span class="badge-item">{{badgeCtrl.sign}} </span>
+        <span class="badge-item">{{badgeCtrl.text}}{{badgeCtrl.sign}}</span>
         <span class="badge-item">
             <input ng-if="badgeCtrl.editable === true" class="editable-input textEllipsis" type="text"
                    ng-model="badgeCtrl.value" title="{{badgeCtrl.value}}"/>

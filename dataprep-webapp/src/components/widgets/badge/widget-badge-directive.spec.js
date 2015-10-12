@@ -10,6 +10,14 @@ describe('Badge directive', function () {
 
     beforeEach(module('talend.widget'));
     beforeEach(module('htmlTemplates'));
+
+    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+        $translateProvider.translations('en', {
+            'COLON': ': '
+        });
+        $translateProvider.preferredLanguage('en');
+    }));
+
     beforeEach(function() {
         spyOn(fns, 'change').and.returnValue();
         spyOn(fns, 'close').and.returnValue();
@@ -75,9 +83,8 @@ describe('Badge directive', function () {
             createElement();
 
             //then
-            expect(element.find('span.badge-item').length).toBe(3);
-            expect(element.find('span.badge-item.text').eq(0).text()).toBe('Displayed text');
-            expect(element.find('span.badge-item').eq(1).text().trim()).toBe(':');
+            expect(element.find('span.badge-item').length).toBe(2);
+            expect(element.find('span.badge-item').eq(0).text()).toBe('Displayed text: ');
             expect(element.find('.editable-input').eq(0).val()).toBe('toto');
         });
 

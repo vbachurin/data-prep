@@ -14,22 +14,22 @@
      *     <li>bind obj.value to the input value</li>
      * </ul>
      */
-    function BadgeCtrl($scope) {
+    function BadgeCtrl($scope, $translate) {
         var vm = this;
         vm.value = '';
 
         switch (vm.type){
             case 'contains':
-                vm.sign = '≅';
+                vm.sign = ' ≅ ';
                 break;
             case 'exact':
-                vm.sign = '=';
+                vm.sign = ' = ';
                 break;
             case 'inside_range':
-                vm.sign = 'in';
+                vm.sign = ' in ';
                 break;
             default:
-                vm.sign = ':';
+                vm.sign = $translate.instant('COLON');
         }
 
         /**

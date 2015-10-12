@@ -10,6 +10,13 @@ describe('Badge controller', function () {
 
     beforeEach(module('talend.widget'));
 
+    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+        $translateProvider.translations('en', {
+            'COLON': ': '
+        });
+        $translateProvider.preferredLanguage('en');
+    }));
+
     beforeEach(inject(function ($rootScope, $controller) {
         spyOn(fns, 'change').and.returnValue();
         spyOn(fns, 'close').and.returnValue();
@@ -37,7 +44,7 @@ describe('Badge controller', function () {
         var ctrl = createController();
 
         //then
-        expect(ctrl.sign).toEqual('in');
+        expect(ctrl.sign).toEqual(' in ');
     });
 
     it('should set the sign caracter to : ":"', function () {
@@ -48,7 +55,7 @@ describe('Badge controller', function () {
         var ctrl = createController();
 
         //then
-        expect(ctrl.sign).toEqual(':');
+        expect(ctrl.sign).toEqual(': ');
     });
 
     it('should set the sign caracter to : "≅"', function () {
@@ -59,7 +66,7 @@ describe('Badge controller', function () {
         var ctrl = createController();
 
         //then
-        expect(ctrl.sign).toEqual('≅');
+        expect(ctrl.sign).toEqual(' ≅ ');
     });
 
     it('should set the sign caracter to : "=" ', function () {
@@ -70,7 +77,7 @@ describe('Badge controller', function () {
         var ctrl = createController();
 
         //then
-        expect(ctrl.sign).toEqual('=');
+        expect(ctrl.sign).toEqual(' = ');
     });
 
     it('should call onChange callback if the editable value has changed', function () {

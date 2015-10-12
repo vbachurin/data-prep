@@ -10,8 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.talend.dataprep.exception.TDPException;
+import org.springframework.context.annotation.Lazy;
 import org.talend.daikon.exception.ExceptionContext;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 @Configuration
@@ -24,6 +25,7 @@ public class HDFS {
     private String hdfsLocation;
 
     @Bean
+    @Lazy
     public FileSystem getHDFSFileSystem() {
         try {
             FileSystem fileSystem = FileSystem.get(new URI(hdfsLocation), new org.apache.hadoop.conf.Configuration());
