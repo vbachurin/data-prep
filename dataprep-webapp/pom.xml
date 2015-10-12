@@ -335,6 +335,13 @@
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
 							<dockerDirectory>${basedir}/docker</dockerDirectory>
+                            <resources>
+                                <resource>
+                                    <targetPath>/dist</targetPath>
+                                    <directory>${basedir}/dist</directory>
+                                    <include>**/*</include>
+                                </resource>
+                            </resources>
                         </configuration>
                         <executions>
                             <execution>
