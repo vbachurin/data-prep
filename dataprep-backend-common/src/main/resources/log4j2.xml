@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration> <!-- status="debug"> -->
     <appenders>
-        <Console name="console" target="SYSTEM_OUT">
+        <Console name="console" target="SYSTEM_OUT" ignoreExceptions="false">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%t] [%marker] %-5level %logger{36} - %msg%n}"/>
         </Console>
+
+        <Socket name="logstash" host="10.42.10.99" port="4560" ignoreExceptions="false">
+            <JSONLayout compact="true" eventEol="true"/>
+        </Socket>
+
+        <Failover name="failover" primary="logstash" retryIntervalSeconds="60">
+            <Failovers>
+                <AppenderRef ref="console"/>
+            </Failovers>
+        </Failover>
+
     </appenders>
-    <!--
-    <appenders>
-      <RollingRandomAccessFile name="console" fileName="./dataprep-transformation.log"
-                               filePattern="./dataprep-transformation-%d{yyyyMMdd}.log"
-                               immediateFlush="true" append="true">
-        <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n}" />
-        <Policies>
-          <TimeBasedTriggeringPolicy />
-        </Policies>
-      </RollingRandomAccessFile>
-    </appenders>
-    -->
+
     <loggers>
         <!-- http client logging -->
         <!-- enable headers etc... logging -->
@@ -25,8 +25,9 @@
         <!--logger name="org.apache.http.wire" level="debug"/-->
         <logger name="org.springframework" level="info"/>
         <root level="info" includeLocation="true">
-            <appender-ref ref="console"/>
+            <appender-ref ref="failover"/>
         </root>
     </loggers>
+
 </configuration>
 
