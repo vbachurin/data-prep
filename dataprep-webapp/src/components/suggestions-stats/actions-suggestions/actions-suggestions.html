@@ -3,7 +3,7 @@
     <div class="title" ng-if="!actionsSuggestionsCtrl.column.name">Actions</div>
     <div class="Description" ng-if="! actionsSuggestionsCtrl.columnSuggestions">Select a column to display its actions</div>
     
-    <talend-tabs tab="actionsSuggestionsCtrl.tab" ng-if="actionsSuggestionsCtrl.columnSuggestions">
+    <talend-tabs tab="actionsSuggestionsCtrl.tab" action-on-click="actionsSuggestionsCtrl.resizePanels()" ng-if="actionsSuggestionsCtrl.columnSuggestions">
         <talend-tabs-item tab-title="Text">
             <div class="action-suggestion-tab-items">Coming soon ...</div>
         </talend-tabs-item>
@@ -13,7 +13,7 @@
         <talend-tabs-item tab-title="Line">
             <div class="action-suggestion-tab-items">Coming soon ...</div>
         </talend-tabs-item>
-        <talend-tabs-item tab-title="Column" default="true">
+        <talend-tabs-item tab-title="Column" default="true" action-on-init="actionsSuggestionsCtrl.resizePanels()">
             <input type="search"
                    class="action-search"
                    placeholder="{{::'FIND_FUNCTION' | translate}}"
