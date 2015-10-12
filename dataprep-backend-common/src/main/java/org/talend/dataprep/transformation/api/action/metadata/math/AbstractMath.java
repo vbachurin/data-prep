@@ -24,12 +24,9 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 /**
- * This will compute the largest (closest to positive infinity) value that is less than or equal to the cell value and
- * is equal to a mathematical integer.
- *
- * @see Math#floor(double)
+ * Abstract class for Math operation on {@link Type#NUMERIC} values
  */
-public abstract class AbstractRound extends AbstractActionMetadata implements ColumnAction {
+public abstract class AbstractMath extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * @see ActionMetadata#getCategory()
@@ -40,21 +37,23 @@ public abstract class AbstractRound extends AbstractActionMetadata implements Co
     }
 
     @Override
-    public void applyOnColumn(final DataSetRow row, final TransformationContext context, final Map<String, String> parameters, final String columnId) {
+    public void applyOnColumn(final DataSetRow row, final TransformationContext context, final Map<String, String> parameters,
+            final String columnId) {
         final String value = row.get(columnId);
         if (value == null) {
             return;
         }
 
         try {
-            int result = compute(Double.valueOf(value));
+            double doubleValue = Double.valueOf(value);
+            long result = compute(doubleValue);
             row.set(columnId, String.valueOf(result));
         } catch (NumberFormatException nfe2) {
             // Nan: nothing to do, but fail silently (no change in value)
         }
     }
 
-    protected abstract int compute(double from);
+    protected abstract long compute(double from);
 
     /**
      * @see ActionMetadata#acceptColumn(ColumnMetadata)

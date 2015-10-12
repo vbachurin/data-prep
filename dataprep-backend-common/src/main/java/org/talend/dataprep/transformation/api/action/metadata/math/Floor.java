@@ -22,7 +22,8 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
  * @see Math#floor(double)
  */
 @Component(Floor.ACTION_BEAN_PREFIX + Floor.FLOOR_ACTION_NAME)
-public class Floor extends AbstractRound {
+public class Floor extends AbstractMath
+{
 
     /**
      * The action name.
@@ -38,8 +39,8 @@ public class Floor extends AbstractRound {
     }
 
     @Override
-    protected int compute(double from) {
-        return (int) Math.floor(from);
+    protected long compute(double from) {
+        return (long) Math.floor(from);
     }
 
 }
