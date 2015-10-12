@@ -154,7 +154,13 @@
             stopPendingPreview();
             initPreviewIdNeeded();
 
-            PreparationService.getPreviewDiff(preparationId, currentStep, previewStep, displayedTdpIds, previewCanceler)
+            var params = {
+                preparationId: preparationId,
+                currentStepId: currentStep.transformation.stepId,
+                previewStepId: previewStep.transformation.stepId,
+                tdpIds: displayedTdpIds
+            };
+            PreparationService.getPreviewDiff(params, previewCanceler)
                 .then(function(response) {
                     DatagridService.focusedColumn = targetColumnId;
                     return response;
@@ -180,7 +186,17 @@
             stopPendingPreview();
             initPreviewIdNeeded();
 
-            PreparationService.getPreviewUpdate(preparationId, currentStep, updateStep, newParams, displayedTdpIds, previewCanceler)
+            var params = {
+                preparationId: preparationId,
+                tdpIds: displayedTdpIds,
+                currentStepId: currentStep.transformation.stepId,
+                updateStepId: updateStep.transformation.stepId,
+                action : {
+                    action: updateStep.actionParameters.action,
+                    parameters: newParams
+                }
+            };
+            PreparationService.getPreviewUpdate(params, previewCanceler)
                 .then(function(response) {
                     DatagridService.focusedColumn = updateStep.column.id;
                     return response;
@@ -198,18 +214,27 @@
          * @param {string} preparationId The preparation id
          * @param {object} datasetId The dataset id
          * @param {object} action The action to append
-         * @param {object} params The action parameters
+         * @param {object} actionParams The action parameters
          * @description Call the update step preview service and replace records in the grid.
          * It cancel the previous preview first
          */
-        function getPreviewAddRecords(preparationId, datasetId, action, params) {
+        function getPreviewAddRecords(preparationId, datasetId, action, actionParams) {
             stopPendingPreview();
             initPreviewIdNeeded();
 
-            PreparationService.getPreviewAdd(preparationId, datasetId, action, params, displayedTdpIds, previewCanceler)
+            var params = {
+                action : {
+                    action: action,
+                    parameters: actionParams
+                },
+                tdpIds: displayedTdpIds,
+                datasetId: datasetId,
+                preparationId: preparationId
+            };
+            PreparationService.getPreviewAdd(params, previewCanceler)
                 .then(function(response) {
                     /*jshint camelcase: false */
-                    DatagridService.focusedColumn = params.column_id;
+                    DatagridService.focusedColumn = actionParams.column_id;
                     return response;
                 })
                 .then(replaceRecords)

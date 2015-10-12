@@ -235,22 +235,12 @@
          * @ngdoc method
          * @name getPreviewDiff
          * @methodOf data-prep.services.preparation.service:PreparationRestService
-         * @param {string} preparationId The preparation id to preview
-         * @param {string} currentStep The current loaded step
-         * @param {string} previewStep The target preview step
-         * @param {string} recordsTdpId The records TDP ids to preview
+         * @param {object} params The preview parameters
          * @param {string} canceler The canceler promise
          * @description POST Preview diff between 2 unchanged steps of a recipe
          * @returns {promise} The POST promise
          */
-        function getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, canceler) {
-            var params = {
-                tdpIds: recordsTdpId,
-                currentStepId: currentStep.transformation.stepId,
-                previewStepId: previewStep.transformation.stepId,
-                preparationId: preparationId
-            };
-
+        function getPreviewDiff(params, canceler) {
             var request = {
                 method: 'POST',
                 url: RestURLs.previewUrl + '/diff',
@@ -268,34 +258,19 @@
          * @ngdoc method
          * @name getPreviewUpdate
          * @methodOf data-prep.services.preparation.service:PreparationRestService
-         * @param {string} preparationId The preparation id to preview
-         * @param {string} currentStep The current loaded step
-         * @param {string} updateStep The target step to update
-         * @param {string} newParams The new parameters
-         * @param {string} recordsTdpId The records TDP ids to preview
+         * @param {object} params The preview parameters
          * @param {string} canceler The canceler promise
          * @description POST preview diff between 2 same actions but with 1 updated step
          * @returns {promise} The POST promise
          */
-        function getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, canceler) {
-            var actionParam = {
-                action : {
-                    action: updateStep.actionParameters.action,
-                    parameters: newParams
-                },
-                tdpIds: recordsTdpId,
-                currentStepId: currentStep.transformation.stepId,
-                updateStepId: updateStep.transformation.stepId,
-                preparationId: preparationId
-            };
-
+        function getPreviewUpdate(params, canceler) {
             var request = {
                 method: 'POST',
                 url: RestURLs.previewUrl + '/update',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                data: actionParam,
+                data: params,
                 timeout: canceler.promise
             };
 
@@ -306,33 +281,19 @@
          * @ngdoc method
          * @name getPreviewAdd
          * @methodOf data-prep.services.preparation.service:PreparationRestService
-         * @param {string} preparationId The preparation id to preview
-         * @param {string} datasetId The dataset id to preview
-         * @param {string} action The action to add
-         * @param {string} params The action parameters
-         * @param {string} recordsTdpId The records TDP ids to preview
+         * @param {object} params The preview parameters
          * @param {string} canceler The canceler promise
          * @description POST preview diff between the preparation head and a new added transformation
          * @returns {promise} The POST promise
          */
-        function getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, canceler) {
-            var actionParam = {
-                action : {
-                    action: action,
-                    parameters: params
-                },
-                tdpIds: recordsTdpId,
-                datasetId: datasetId,
-                preparationId: preparationId
-            };
-
+        function getPreviewAdd(params, canceler) {
             var request = {
                 method: 'POST',
                 url: RestURLs.previewUrl + '/add',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                data: actionParam,
+                data: params,
                 timeout: canceler.promise
             };
 

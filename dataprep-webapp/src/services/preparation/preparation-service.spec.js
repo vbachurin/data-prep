@@ -340,32 +340,50 @@ describe('Preparation Service', function () {
         it('should get diff preview', inject(function ($q, PreparationService, PreparationRestService) {
             //given
             var preparationId = '6cd546546548a745';
-            var currentStep = {id: '86574251524'};
-            var previewStep = {id: '65487874887'};
+            var currentStep = {transformation: {stepId: '86574251524'}};
+            var previewStep = {transformation: {stepId: '65487874887'}};
             var recordsTdpId = [1,2,3];
             var canceler = $q.defer();
 
+            var params = {
+                preparationId: preparationId,
+                currentStepId: currentStep.transformation.stepId,
+                previewStepId: previewStep.transformation.stepId,
+                tdpIds: recordsTdpId
+            };
+
             //when
-            PreparationService.getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, canceler);
+            PreparationService.getPreviewDiff(params, canceler);
 
             //then
-            expect(PreparationRestService.getPreviewDiff).toHaveBeenCalledWith(preparationId, currentStep, previewStep, recordsTdpId, canceler);
+            expect(PreparationRestService.getPreviewDiff).toHaveBeenCalledWith(params, canceler);
         }));
 
         it('should get diff preview', inject(function ($q, PreparationService, PreparationRestService) {
             //given
             var preparationId = '6cd546546548a745';
-            var currentStep = {id: '86574251524'};
-            var updateStep = {id: '65487874887'};
+            var currentStep = {transformation: {stepId: '86574251524'}};
+            var updateStep = {transformation: {stepId: '65487874887'},  actionParameters: {action: 'fillEmptyWithValue'}};
             var newParams = {value: 'toto'};
             var recordsTdpId = [1,2,3];
             var canceler = $q.defer();
 
+            var params = {
+                preparationId: preparationId,
+                tdpIds: recordsTdpId,
+                currentStepId: currentStep.transformation.stepId,
+                updateStepId: updateStep.transformation.stepId,
+                action : {
+                    action: updateStep.actionParameters.action,
+                    parameters: newParams
+                }
+            };
+
             //when
-            PreparationService.getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, canceler);
+            PreparationService.getPreviewUpdate(params, canceler);
 
             //then
-            expect(PreparationRestService.getPreviewUpdate).toHaveBeenCalledWith(preparationId, currentStep, updateStep, newParams, recordsTdpId, canceler);
+            expect(PreparationRestService.getPreviewUpdate).toHaveBeenCalledWith(params, canceler);
         }));
 
         it('should get add preview', inject(function ($q, PreparationService, PreparationRestService) {
@@ -373,15 +391,25 @@ describe('Preparation Service', function () {
             var preparationId = '6cd546546548a745';
             var datasetId = '754a54654fd694e6464';
             var action = 'cut';
-            var params = {value: 'toto'};
+            var actionParams = {value: 'toto'};
             var recordsTdpId = [1,2,3];
             var canceler = $q.defer();
 
+            var params = {
+                action : {
+                    action: action,
+                    parameters: actionParams
+                },
+                tdpIds: recordsTdpId,
+                datasetId: datasetId,
+                preparationId: preparationId
+            };
+
             //when
-            PreparationService.getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, canceler);
+            PreparationService.getPreviewAdd(params, canceler);
 
             //then
-            expect(PreparationRestService.getPreviewAdd).toHaveBeenCalledWith(preparationId, datasetId, action, params, recordsTdpId, canceler);
+            expect(PreparationRestService.getPreviewAdd).toHaveBeenCalledWith(params, canceler);
         }));
     });
 

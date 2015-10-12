@@ -368,12 +368,7 @@ describe('Preparation REST Service', function () {
             //given
             var done = false;
             var canceled = false;
-            var currentStep = {transformation: {stepId: '18046df82f0946af05ee766d0ac06f92f63e7047'}};
-            var previewStep = {transformation: {stepId: '856980bacf0890c89bc318856980bacf0890c89b'}};
-            var recordsTdpId = [1,2,3,4,5];
             var canceler = $q.defer();
-
-            var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
 
             var expectedParams = {
                 tdpIds: [1,2,3,4,5],
@@ -388,7 +383,7 @@ describe('Preparation REST Service', function () {
 
 
             //when
-            PreparationRestService.getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, canceler)
+            PreparationRestService.getPreviewDiff(expectedParams, canceler)
                 .then(function() {
                     done = true;
                 })
@@ -407,12 +402,7 @@ describe('Preparation REST Service', function () {
             //given
             var done = false;
             var canceled = false;
-            var currentStep = {transformation: {stepId: '18046df82f0946af05ee766d0ac06f92f63e7047'}};
-            var previewStep = {transformation: {stepId: '856980bacf0890c89bc318856980bacf0890c89b'}};
-            var recordsTdpId = [1,2,3,4,5];
             var canceler = $q.defer();
-
-            var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
 
             var expectedParams = {
                 tdpIds: [1,2,3,4,5],
@@ -426,7 +416,7 @@ describe('Preparation REST Service', function () {
                 .respond(200);
 
             //when
-            PreparationRestService.getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, canceler)
+            PreparationRestService.getPreviewDiff(expectedParams, canceler)
                 .then(function() {
                     done = true;
                 })
@@ -445,15 +435,10 @@ describe('Preparation REST Service', function () {
             //given
             var done = false;
             var canceled = false;
-            var currentStep = {transformation: {stepId: '18046df82f0946af05ee766d0ac06f92f63e7047'}};
-            var updateStep = {transformation: {stepId: '856980bacf0890c89bc318856980bacf0890c89b'}, actionParameters: {action: 'cut'}};
             var newParams = {value: 'toto'};
-            var recordsTdpId = [1,2,3,4,5];
             var canceler = $q.defer();
 
-            var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
-
-            var expectedParams = {
+            var params = {
                 action : {
                     action: 'cut',
                     parameters: newParams
@@ -465,12 +450,12 @@ describe('Preparation REST Service', function () {
             };
 
             $httpBackend
-                .expectPOST(RestURLs.previewUrl + '/update', expectedParams)
+                .expectPOST(RestURLs.previewUrl + '/update', params)
                 .respond(200);
 
 
             //when
-            PreparationRestService.getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, canceler)
+            PreparationRestService.getPreviewUpdate(params, canceler)
                 .then(function() {
                     done = true;
                 })
@@ -489,15 +474,10 @@ describe('Preparation REST Service', function () {
             //given
             var done = false;
             var canceled = false;
-            var currentStep = {transformation: {stepId: '18046df82f0946af05ee766d0ac06f92f63e7047'}};
-            var updateStep = {transformation: {stepId: '856980bacf0890c89bc318856980bacf0890c89b'}, actionParameters: {action: 'cut'}};
             var newParams = {value: 'toto'};
-            var recordsTdpId = [1,2,3,4,5];
             var canceler = $q.defer();
 
-            var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
-
-            var expectedParams = {
+            var params = {
                 action : {
                     action: 'cut',
                     parameters: newParams
@@ -509,12 +489,12 @@ describe('Preparation REST Service', function () {
             };
 
             $httpBackend
-                .expectPOST(RestURLs.previewUrl + '/update', expectedParams)
+                .expectPOST(RestURLs.previewUrl + '/update', params)
                 .respond(200);
 
 
             //when
-            PreparationRestService.getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, canceler)
+            PreparationRestService.getPreviewUpdate(params, canceler)
                 .then(function() {
                     done = true;
                 })
@@ -533,18 +513,12 @@ describe('Preparation REST Service', function () {
             //given
             var done = false;
             var canceled = false;
-            var action = 'cut';
-            var params = {value: 'toto'};
-            var recordsTdpId = [1,2,3,4,5];
             var canceler = $q.defer();
 
-            var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
-            var datasetId = '856980bacf0890c89bc318856980bacf0890c89b';
-
-            var expectedParams = {
+            var params = {
                 action : {
-                    action: action,
-                    parameters: params
+                    action: 'cut',
+                    parameters: {value: 'toto'}
                 },
                 tdpIds: [1,2,3,4,5],
                 preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
@@ -552,11 +526,11 @@ describe('Preparation REST Service', function () {
             };
 
             $httpBackend
-                .expectPOST(RestURLs.previewUrl + '/add', expectedParams)
+                .expectPOST(RestURLs.previewUrl + '/add', params)
                 .respond(200);
 
             //when
-            PreparationRestService.getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, canceler)
+            PreparationRestService.getPreviewAdd(params, canceler)
                 .then(function() {
                     done = true;
                 })
@@ -575,18 +549,12 @@ describe('Preparation REST Service', function () {
             //given
             var done = false;
             var canceled = false;
-            var action = 'cut';
-            var params = {value: 'toto'};
-            var recordsTdpId = [1,2,3,4,5];
             var canceler = $q.defer();
 
-            var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
-            var datasetId = '856980bacf0890c89bc318856980bacf0890c89b';
-
-            var expectedParams = {
+            var params = {
                 action : {
-                    action: action,
-                    parameters: params
+                    action: 'cut',
+                    parameters: {value: 'toto'}
                 },
                 tdpIds: [1,2,3,4,5],
                 preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
@@ -594,11 +562,11 @@ describe('Preparation REST Service', function () {
             };
 
             $httpBackend
-                .expectPOST(RestURLs.previewUrl + '/add', expectedParams)
+                .expectPOST(RestURLs.previewUrl + '/add', params)
                 .respond(200);
 
             //when
-            PreparationRestService.getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, canceler)
+            PreparationRestService.getPreviewAdd(params, canceler)
                 .then(function() {
                     done = true;
                 })
