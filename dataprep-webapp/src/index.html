@@ -36,10 +36,7 @@
             your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <toaster-container
-                toaster-options="{'position-class': 'toast-top-60-width', 'body-output-type': 'trustedHtml', 'close-button': true}"></toaster-container>
-        <talend-loading></talend-loading>
-        <ui-view class="main-layout"></ui-view>
+        <dataprep-app></dataprep-app>
 
         <!-- build:js scripts/vendor.js -->
         <!-- bower:js -->
@@ -210,10 +207,12 @@
         <script src="components/playground/playground-directive.js"></script>
         <script src="components/playground/playground-controller.js"></script>
         <script src="components/navbar/navbar-module.js"></script>
+        <script src="components/navbar/navbar-directive.js"></script>
         <script src="components/navbar/navbar-controller.js"></script>
         <script src="components/lookup/lookup-module.js"></script>
         <script src="components/lookup/lookup-directive.js"></script>
         <script src="components/home/home-module.js"></script>
+        <script src="components/home/home-directive.js"></script>
         <script src="components/home/home-controller.js"></script>
         <script src="components/history-control/history-control-module.js"></script>
         <script src="components/history-control/history-control-directive.js"></script>
@@ -249,6 +248,8 @@
         <script src="components/datagrid/editor/talend-editor.js"></script>
         <script src="components/datagrid/datagrid-directive.js"></script>
         <script src="components/datagrid/datagrid-controller.js"></script>
+        <script src="components/app/app-module.js"></script>
+        <script src="components/app/app-directive.js"></script>
         <script src="assets/maps/us-all.js"></script>
         <script src="app.js"></script>
         <!-- endinject -->

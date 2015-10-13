@@ -7,10 +7,9 @@ var fetchConfiguration, bootstrapDataPrepApplication;
         [
             'ngSanitize',
             'ui.router', //more advanced router
-            'data-prep.navbar',
-            'data-prep.home',
+            'data-prep.app', //app root
             'data-prep.services.rest', //rest interceptors
-            'data-prep.services.utils',
+            'data-prep.services.utils', //for configuration
             'bgDirectives'
         ])
 
@@ -35,18 +34,14 @@ var fetchConfiguration, bootstrapDataPrepApplication;
             $stateProvider
                 .state('nav', {
                     abstract: true,
-                    controller: 'NavbarCtrl',
-                    controllerAs: 'navbarCtrl',
-                    templateUrl: 'components/navbar/navbar.html'
+                    template: '<navbar></navbar>'
                 })
                 .state('nav.home', {
                     abstract: true,
                     url: '/home',
-                    templateUrl: 'components/home/home.html',
-                    controller: 'HomeCtrl',
-                    controllerAs: 'homeCtrl',
+                    template: '<home></home>',
                     resolve: {
-                        //waiting for translation resource to be load
+                        //HACK to be fixed : waiting for translation resource to be load
                         //once the $translate promise is resolve, the router will perform the asked routing
                         translateLoaded: function ($translate) {
                             return $translate('ALL_FOLDERS');
