@@ -34,21 +34,35 @@
              */
             currentColumn: null,
 
+            /**
+             * @ngdoc property
+             * @name searchActionString
+             * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
+             * @description Actions to search
+             */
+            searchActionString: '',
+
             setColumn: setColumn,
             selectTab: selectTab,
             reset: reset
+
         };
 
         return service;
+
+
 
         /**
          * @ngdoc method
          * @name setColumn
          * @methodOf data-prep.services.transformation.service:SuggestionService
          * @param {object} column The new selected column
-         * @description Set the selected column and init its suggested transformations
+         * @description Set the selected column and init its suggested transformations and reset action search
          */
         function setColumn(column) {
+
+            resetSearchAction();
+
             if (column === service.currentColumn) {
                 return;
             }
@@ -77,6 +91,22 @@
         function reset() {
             service.currentColumn = null;
             ColumnSuggestionService.reset();
+        }
+
+
+        /**
+         * @ngdoc method
+         * @name reset
+         * @methodOf data-prep.services.transformation.service:SuggestionService
+         * @description Reset the suggestions
+         */
+        function resetSearchAction() {
+            service.searchActionString = '';
+            angular.forEach(ColumnSuggestionService.transformations, function(item){
+                item.label = item.label.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
+                item.label = item.label.replace(new RegExp('(</span>)', 'g'), '');
+
+            });
         }
     }
 

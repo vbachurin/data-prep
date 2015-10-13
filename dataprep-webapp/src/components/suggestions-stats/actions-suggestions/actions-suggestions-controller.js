@@ -55,15 +55,6 @@
 
 
         /**
-         * @ngdoc property
-         * @name searchActionString
-         * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
-         * @description Actions to search
-         */
-        vm.searchActionString = '';
-
-
-        /**
          * @ngdoc method
          * @name initDynamicParams
          * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
