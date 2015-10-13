@@ -226,7 +226,8 @@ public class PreparationService {
     @ApiOperation(value = "Delete an action in a preparation", notes = "Delete a step and all following steps from a preparation")
     @Timed
     public void deleteAction(@PathVariable("id") final String id, //
-                             @PathVariable("stepId") final String stepToDeleteId) throws TDPException {
+            @PathVariable("stepId")
+    final String stepToDeleteId) {
         if (ROOT_STEP.getId().equals(stepToDeleteId)) {
             throw new TDPException(PREPARATION_ROOT_STEP_CANNOT_BE_DELETED);
         }
@@ -256,7 +257,8 @@ public class PreparationService {
     @Timed
     public void setPreparationHead(
             @PathVariable("id") final String preparationId,
-            @PathVariable("headId") final String headId) throws TDPException {
+ @PathVariable("headId")
+    final String headId) {
 
         final Step head = getStep(headId);
         if (head == null) {

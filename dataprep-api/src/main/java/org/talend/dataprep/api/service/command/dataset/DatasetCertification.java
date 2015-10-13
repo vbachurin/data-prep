@@ -19,7 +19,7 @@ public class DatasetCertification extends GenericCommand<Void> {
     private DatasetCertification(HttpClient client, String dataSetId) {
         super(PreparationAPI.DATASET_GROUP, client);
         execute(() -> new HttpPut(datasetServiceUrl + "/datasets/" + dataSetId + "/processcertification"));
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_CERTIFY_DATASET, e));
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_CERTIFY_DATASET, e));
         on(HttpStatus.OK).then(asNull());
     }
 }

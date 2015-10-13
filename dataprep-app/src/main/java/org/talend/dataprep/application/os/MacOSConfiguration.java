@@ -26,6 +26,7 @@ public class MacOSConfiguration implements ApplicationListener {
         if (event instanceof EmbeddedServletContainerInitializedEvent) {
             try {
                 // tell macosx to keep the menu associated with the screen and what the app title is
+                System.setProperty("java.awt.headless", "false");
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
                 System.setProperty("com.apple.eawt.CocoaComponent.CompatibilityMode", "false");
                 System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Talend Data Preparation");

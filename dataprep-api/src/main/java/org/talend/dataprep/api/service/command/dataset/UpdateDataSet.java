@@ -29,7 +29,7 @@ public class UpdateDataSet extends GenericCommand<String> {
             put.setEntity(new InputStreamEntity(dataSetContent));
             return put;
         });
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_CREATE_OR_UPDATE_DATASET, e));
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_CREATE_OR_UPDATE_DATASET, e));
         on(HttpStatus.NO_CONTENT).then(emptyString());
         on(HttpStatus.OK).then(asString());
     }

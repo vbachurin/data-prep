@@ -35,7 +35,7 @@ public class SetFavorite extends GenericCommand<String> {
     private SetFavorite(HttpClient client, String dataSetId, boolean unset) {
         super(PreparationAPI.DATASET_GROUP, client);
         execute(() -> new HttpPut(datasetServiceUrl + "/datasets/" + dataSetId + "/favorite?unset=" + unset));
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_SET_FAVORITE_DATASET, e,
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_SET_FAVORITE_DATASET, e,
                 ExceptionContext.build().put("id", dataSetId)));
         on(HttpStatus.OK).then(Defaults.<String> asNull());
     }

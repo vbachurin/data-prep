@@ -74,8 +74,8 @@ public class XlsUtils {
      * Return the {@link Workbook workbook} to be found in the stream (assuming stream contains an Excel file). If
      * stream is <b>not</b> an Excel content, returns <code>null</code>.
      * 
-     * @param stream A non-null stream that eventually contains an Excel file.
-     * @return The {@link Workbook workbook} in stream or <code>null</code> if stream is not an Excel file.
+     * @param stream A non-null stream that eventually contains an Excel file. ExtractUrlTokens.java* @return The
+     * {@link Workbook workbook} in stream or <code>null</code> if stream is not an Excel file.
      * @throws IOException
      */
     public static Workbook getWorkbook(InputStream stream) throws IOException {
@@ -95,7 +95,7 @@ public class XlsUtils {
             try {
                 return new HSSFWorkbook(new ByteArrayInputStream(bytes));
             } catch (Exception e1) {
-                LOGGER.debug("{} not a HSSFWorkbook too", e);
+                LOGGER.debug("{} not a HSSFWorkbook too", e1);
                 return null;
             }
         }

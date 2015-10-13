@@ -10,7 +10,6 @@
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
     <artifactId>dataprep-transformation</artifactId>
-    <version>1.0.m9-SNAPSHOT</version>
     <name>dataprep-transformation</name>
     <properties>
         <start-class>org.talend.dataprep.transformation.Application</start-class>

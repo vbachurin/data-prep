@@ -32,7 +32,7 @@ public class SuggestDataSetActions extends ChainedCommand<InputStream, DataSetMe
     private SuggestDataSetActions(HttpClient client, HystrixCommand<DataSetMetadata> retrieveMetadata) {
         super(PreparationAPI.TRANSFORM_GROUP, client, retrieveMetadata);
         execute(this::onExecute);
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, e));
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, e));
         on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(asNull());
         on(HttpStatus.OK).then(pipeStream());
     }
