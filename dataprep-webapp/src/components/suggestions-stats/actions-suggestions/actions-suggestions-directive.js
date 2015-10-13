@@ -46,7 +46,7 @@
 
                 scope.$watch(
                     function () {
-                        return ctrl.searchActionString;
+                        return ctrl.suggestionService.searchActionString ;
                     },
                     function () {
                         angular.forEach(ctrl.columnSuggestions, function(item){
@@ -54,9 +54,9 @@
                             item.label = item.label.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
                             item.label = item.label.replace(new RegExp('(</span>)', 'g'), '');
 
-                            if(ctrl.searchActionString){
-                                if(item.label.toLowerCase().indexOf(ctrl.searchActionString) !== -1){
-                                    item.label = item.label.replace(new RegExp('('+ctrl.searchActionString+')', 'gi'),
+                            if(ctrl.suggestionService.searchActionString ){
+                                if(item.label.toLowerCase().indexOf(ctrl.suggestionService.searchActionString ) !== -1){
+                                    item.label = item.label.replace(new RegExp('('+ctrl.suggestionService.searchActionString +')', 'gi'),
                                         '<span class="highlighted">$1</span>');
                                 }
                             }
@@ -64,11 +64,6 @@
                         });
                     }
                 );
-
-
-                scope.$watch(ctrl.searchActionString, function() {
-
-                });
             }
         };
     }
