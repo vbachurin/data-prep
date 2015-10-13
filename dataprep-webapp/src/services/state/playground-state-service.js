@@ -52,6 +52,8 @@
             playgroundState.dataView.setItems(data.records, 'tdpId');
             playgroundState.dataView.endUpdate();
             playgroundState.allLinesLength = playgroundState.dataView.getItems().length;
+            //When we change the sample size
+            updateShownLinesLength();
         }
 
         function setDataView(dataView) {
@@ -59,7 +61,7 @@
         }
 
         function updateShownLinesLength() {
-            playgroundState.shownLinesLength = playgroundState.dataView.getLength();
+            playgroundState.shownLinesLength = playgroundState.dataView ? playgroundState.dataView.getLength() : 0;
         }
 
         function setPreparation(preparation) {

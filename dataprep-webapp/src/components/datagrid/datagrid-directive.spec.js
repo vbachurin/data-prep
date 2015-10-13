@@ -1,12 +1,22 @@
 describe('Datagrid directive', function() {
     'use strict';
 
-    var stateMock, scope, createElement, element, grid, createdColumns = [{id: '0001', tdpColMetadata: {id: '0001'}}, {id: '0002', tdpColMetadata: {id: '0002'}}];
+    var stateMock, dataViewMock, scope, createElement, element, grid, createdColumns = [{id: '0001', tdpColMetadata: {id: '0001'}}, {id: '0002', tdpColMetadata: {id: '0002'}}];
+
+    beforeEach(function () {
+        dataViewMock = new DataViewMock();
+        spyOn(dataViewMock.onRowCountChanged, 'subscribe').and.returnValue();
+        spyOn(dataViewMock.onRowsChanged, 'subscribe').and.returnValue();
+    });
+
 
     beforeEach(module('data-prep.datagrid', function ($provide) {
+
         stateMock = {playground: {}};
+        stateMock.playground.dataView = dataViewMock;
         $provide.constant('state', stateMock);
     }));
+
     beforeEach(module('htmlTemplates'));
 
     beforeEach(inject(function($rootScope, $compile, DatagridGridService, DatagridColumnService, DatagridSizeService, DatagridStyleService, DatagridExternalService, StateService) {

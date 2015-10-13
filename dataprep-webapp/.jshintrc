@@ -41,6 +41,8 @@
     "$": false,
     // Lodash
     "_": false,
+    //DataView
+    "DataView":false,
     // SlickGrid
     "Slick": false,
     //Export

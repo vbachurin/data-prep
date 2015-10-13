@@ -17,6 +17,9 @@
             controller: function() {
                 this.filterService = FilterService;
                 this.state = state;
+                this.calculateLinesPercentage = function(){
+                    return ((state.playground.shownLinesLength / state.playground.allLinesLength)*100).toFixed(0) + '%';
+                };
             }
         };
     }

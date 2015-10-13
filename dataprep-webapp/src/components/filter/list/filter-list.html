@@ -15,7 +15,7 @@
         </div>
     </div>
     <div class="on-off-filters">
-        <button ng-show="filterCtrl.filterService.filters.length" ng-click="filterCtrl.filterService.removeAllFilters()" class="off-all-filters">Off</button>
-        <div>{{filterCtrl.state.playground.shownLinesLength}}/{{filterCtrl.state.playground.allLinesLength}}</div>
+        <a class="off-all-filters" title="Remove All Filters" ng-show="filterCtrl.filterService.filters.length" data-icon="A" ng-click="filterCtrl.filterService.removeAllFilters()"></a>
+        <div title="{{filterCtrl.calculateLinesPercentage()}} of lines are matching your filter(s)">{{filterCtrl.state.playground.shownLinesLength}}/{{filterCtrl.state.playground.allLinesLength}}</div>
     </div>
 </div>

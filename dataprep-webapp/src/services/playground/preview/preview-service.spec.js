@@ -2,7 +2,7 @@
 describe('Preview Service', function () {
     'use strict';
 
-    var stateMock;
+    var stateMock, dataViewMock;
     var gridRangeIndex = {top: 1, bottom: 5};
     var displayedTdpIds = [1,3,6,7,8];
     var originalData = {
@@ -49,10 +49,12 @@ describe('Preview Service', function () {
 
     beforeEach(inject(function ($q, PreviewService, DatagridService, PreparationService) {
         stateMock.playground.data = originalData;
+        dataViewMock = new DataViewMock();
+        stateMock.playground.dataView = dataViewMock;
         PreviewService.gridRangeIndex = gridRangeIndex;
 
         //simulate datagrid get item to have displayedTdpIds = [1,3,6,7,8]
-        spyOn(DatagridService.dataView, 'getItem').and.callFake(function(id) {
+        spyOn(stateMock.playground.dataView, 'getItem').and.callFake(function(id) {
             switch(id) {
                 case 1:
                     return originalData.records[1];
@@ -69,7 +71,7 @@ describe('Preview Service', function () {
         });
 
         //simulate datagrid get array index by (tdp) id
-        spyOn(DatagridService.dataView, 'getIdxById').and.callFake(function(id) {
+        spyOn(stateMock.playground.dataView, 'getIdxById').and.callFake(function(id) {
             switch(id) {
                 case 1:
                     return 1;

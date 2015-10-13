@@ -10,7 +10,7 @@
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.state.service:StateService
      */
-    function DatagridService(ConverterService, StateService, state) {
+    function DatagridService(ConverterService, StateService, state, $timeout) {
         var DELETE = 'DELETE';
         var REPLACE = 'REPLACE';
         var INSERT = 'INSERT';
@@ -103,7 +103,6 @@
                 self.focusedColumn = getLastNewColumnId(data.columns);
             }
             StateService.setCurrentData(data);
-            //updateDataviewRecords(data.records);
         };
 
         //------------------------------------------------------------------------------------------------------
@@ -350,18 +349,18 @@
             return true;
         }
 
-        /**
-         * @ngdoc method
-         * @name getAllFiltersFn
-         * @methodOf data-prep.services.playground.service:DatagridService
-         * @description [PRIVATE] Create a closure that contains the active filters to execute
-         * @returns {function} The filters closure
-         */
-        self.getAllFiltersFn = function () {
-            return function (item) {
-                return filterFn(item, self);
-            };
-        };
+        ///**
+        // * @ngdoc method
+        // * @name getAllFiltersFn
+        // * @methodOf data-prep.services.playground.service:DatagridService
+        // * @description [PRIVATE] Create a closure that contains the active filters to execute
+        // * @returns {function} The filters closure
+        // */
+        //self.getAllFiltersFn = function () {
+        //    return function (item) {
+        //        return filterFn(item, self);
+        //    };
+        //};
 
         /**
          * @ngdoc method
@@ -376,7 +375,8 @@
             });
             state.playground.dataView.setFilter(filterFn);
             state.playground.dataView.endUpdate();
-            StateService.updateShownLinesLength();
+            // $timeout due to the latency while changing a dataset
+            $timeout(StateService.updateShownLinesLength);
         };
 
         /**

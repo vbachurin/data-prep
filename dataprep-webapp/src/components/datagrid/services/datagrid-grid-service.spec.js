@@ -5,9 +5,24 @@ describe('Datagrid grid service', function () {
     'use strict';
 
     var realSlickGrid = Slick;
+    var dataViewMock, stateMock;
 
     beforeEach(module('data-prep.datagrid'));
     beforeEach(module('data-prep.suggestions-stats'));
+
+    beforeEach(function () {
+        dataViewMock = new DataViewMock();
+    });
+
+
+    beforeEach(module('data-prep.datagrid', function ($provide) {
+        stateMock = {playground: {}};
+        stateMock.playground.dataView = dataViewMock;
+        $provide.constant('state', stateMock);
+
+        spyOn(dataViewMock.onRowCountChanged, 'subscribe').and.returnValue();
+        spyOn(dataViewMock.onRowsChanged, 'subscribe').and.returnValue();
+    }));
 
     beforeEach(inject(function (DatagridColumnService, DatagridStyleService, DatagridSizeService,
                                 DatagridExternalService, DatagridTooltipService, DatagridService) {
@@ -17,8 +32,8 @@ describe('Datagrid grid service', function () {
         spyOn(DatagridExternalService, 'init').and.returnValue();
         spyOn(DatagridTooltipService, 'init').and.returnValue();
 
-        spyOn(DatagridService.dataView.onRowCountChanged, 'subscribe').and.returnValue();
-        spyOn(DatagridService.dataView.onRowsChanged, 'subscribe').and.returnValue();
+        //spyOn(stateMock.playground.dataView.onRowCountChanged, 'subscribe').and.returnValue();
+        //spyOn(stateMock.playground.dataView.onRowsChanged, 'subscribe').and.returnValue();
     }));
 
     beforeEach(function () {
@@ -51,8 +66,8 @@ describe('Datagrid grid service', function () {
             DatagridGridService.initGrid();
 
             //then
-            expect(DatagridService.dataView.onRowCountChanged.subscribe).toHaveBeenCalled();
-            expect(DatagridService.dataView.onRowsChanged.subscribe).toHaveBeenCalled();
+            expect(stateMock.playground.dataView.onRowCountChanged.subscribe).toHaveBeenCalled();
+            expect(stateMock.playground.dataView.onRowsChanged.subscribe).toHaveBeenCalled();
         }));
     });
 
@@ -64,7 +79,7 @@ describe('Datagrid grid service', function () {
             spyOn(grid, 'render').and.returnValue();
 
             //when
-            var onRowCountChanged = DatagridService.dataView.onRowCountChanged.subscribe.calls.argsFor(0)[0];
+            var onRowCountChanged = stateMock.playground.dataView.onRowCountChanged.subscribe.calls.argsFor(0)[0];
             onRowCountChanged();
 
             //then
@@ -81,7 +96,7 @@ describe('Datagrid grid service', function () {
             var args = {rows: []};
 
             //when
-            var onRowsChanged = DatagridService.dataView.onRowsChanged.subscribe.calls.argsFor(0)[0];
+            var onRowsChanged = stateMock.playground.dataView.onRowsChanged.subscribe.calls.argsFor(0)[0];
             onRowsChanged(null, args);
 
             //then
