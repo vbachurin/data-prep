@@ -43,6 +43,32 @@
                         angular.element('.stat-detail-tab-items').css('height', panel2.height()- statHeaderPanelsSizeMargin + 'px');
                     },200);
                 };
+
+                scope.$watch(
+                    function () {
+                        return ctrl.searchActionString;
+                    },
+                    function () {
+                        angular.forEach(ctrl.columnSuggestions, function(item){
+
+                            item.label = item.label.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
+                            item.label = item.label.replace(new RegExp('(</span>)', 'g'), '');
+
+                            if(ctrl.searchActionString){
+                                if(item.label.toLowerCase().indexOf(ctrl.searchActionString) !== -1){
+                                    item.label = item.label.replace(new RegExp('('+ctrl.searchActionString+')', 'gi'),
+                                        '<span class="highlighted">$1</span>');
+                                }
+                            }
+
+                        });
+                    }
+                );
+
+
+                scope.$watch(ctrl.searchActionString, function() {
+
+                });
             }
         };
     }
