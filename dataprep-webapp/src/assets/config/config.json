@@ -1,4 +1,3 @@
 {
-  "serverUrl": "http://10.42.10.99:8888",
-  "enableDebug": false
+  "serverUrl": "http://10.42.10.99:8888"
 }
