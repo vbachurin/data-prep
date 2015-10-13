@@ -112,10 +112,41 @@
         }
       }
 
+      input{
+        font-family: $base-font-family;
+        float: left;
+        padding: 5px 0 4px 3px;
+      }
+
       &.trash {
         font-size: 0.8em;
         display: none;
       }
+
+      &.edit-btn {
+        color: $medium-gray;
+        background-color: transparent;
+        font-size: .8em;
+        &:hover
+        { color: $dark-gray; }
+      }
+      &.cancel-btn {
+        margin-left: 0px;
+        color: $dark-gray;
+        background-color: $light-gray;
+        font-size: .5em;
+        &:hover
+        { background-color: darken($light-gray, 10%); }
+      }
+      &.check-btn {
+        margin-left: 5px;
+        color: $white;
+        background-color: $dark-green;
+        font-size: .5em;
+        &:hover
+        { background-color: darken($dark-green, 10%); }
+      }
+
     }
   }
 }

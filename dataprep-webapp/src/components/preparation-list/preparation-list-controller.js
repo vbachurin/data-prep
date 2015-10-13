@@ -12,9 +12,10 @@
      * @requires data-prep.services.state.service:StateService
      * @requires talend.widget.service:TalendConfirmService
      */
-    function PreparationListCtrl($stateParams, PlaygroundService, PreparationService, TalendConfirmService, MessageService, StateService) {
+    function PreparationListCtrl($rootScope, $stateParams, PlaygroundService, PreparationService, TalendConfirmService, MessageService, StateService) {
         var vm = this;
         vm.preparationService = PreparationService;
+        vm.originalPreparationName=null;
 
         /**
          * @ngdoc method
@@ -45,6 +46,32 @@
                     MessageService.success('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type:'preparation', name: preparation.name});
                 });
         };
+
+        vm.showRenameInput = function(preparation){
+          vm.originalPreparationName = preparation.name;
+          preparation.showChangeName = true;
+        };
+
+        vm.cancelRename = function(preparation){
+            preparation.name = vm.originalPreparationName;
+            preparation.showChangeName = false;
+        };
+
+        vm.rename = function(preparation){
+            $rootScope.$emit('talend.loading.start');
+            return PreparationService.setName(preparation.id, preparation.name)
+                .then(function(){
+                    preparation.showChangeName = false;
+                })
+                .then(function() {
+                  MessageService.success('RENAME_SUCCESS_TITLE', 'RENAME_SUCCESS');
+                })
+                //hide loading screen
+                .finally(function () {
+                  $rootScope.$emit('talend.loading.stop');
+                });
+        };
+
 
         /**
          * @ngdoc method

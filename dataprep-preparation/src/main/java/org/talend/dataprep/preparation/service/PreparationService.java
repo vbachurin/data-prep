@@ -151,6 +151,9 @@ public class PreparationService {
         Preparation preparation = preparationRepository.get(id, Preparation.class);
         preparation.setName(preparation.getName() + " Copy");
         preparation.setCreationDate( System.currentTimeMillis() );
+
+        List<String> stepIds = preparation.getSteps();
+
         preparationRepository.add(preparation);
         return preparation;
     }   
