@@ -1,36 +1,27 @@
 package org.talend.dataprep.dataset.service.analysis;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.location.SemanticDomain;
-import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.api.dataset.statistics.StatisticsUtils;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.lock.DistributedLock;
-import org.talend.dataquality.semantic.recognizer.CategoryFrequency;
 import org.talend.dataquality.semantic.recognizer.CategoryRecognizerBuilder;
 import org.talend.dataquality.semantic.statistics.SemanticAnalyzer;
-import org.talend.dataquality.semantic.statistics.SemanticType;
+import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
-import org.talend.datascience.common.inference.type.DataType;
 import org.talend.datascience.common.inference.type.DataTypeAnalyzer;
 
 @Component
@@ -69,62 +60,14 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
                         .setMode(CategoryRecognizerBuilder.Mode.LUCENE);
                 final DataTypeAnalyzer dataTypeAnalyzer = new DataTypeAnalyzer();
                 final SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(builder);
-                final Analyzer<Analyzers.Result> analyzer = Analyzers.with(dataTypeAnalyzer, semanticAnalyzer);
+                final Analyzer<Analyzers.Result> analyzer = Analyzers.with(dataTypeAnalyzer, //
+                        semanticAnalyzer, //
+                        new ValueQualityAnalyzer(TypeUtils.convert(metadata.getRow().getColumns())) //
+                );
                 // Determine schema for the content (on the 20 first rows).
                 stream.limit(20).map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
                 // Find the best suitable type
-                List<Analyzers.Result> columnTypes = analyzer.getResult();
-                final Iterator<ColumnMetadata> columns = metadata.getRow().getColumns().iterator();
-                columnTypes.forEach(columnResult -> {
-                    // Column data type
-                    final DataType dataType = columnResult.get(DataType.class);
-                    final Map<DataType.Type, Long> frequencies = dataType.getTypeFrequencies();
-                    frequencies.remove(DataType.Type.EMPTY); // TDP-226: Don't take into account EMPTY values.
-                    // Look at type frequencies distribution (if not spread enough, fall back to STRING).
-                    StandardDeviation standardDeviation = new StandardDeviation();
-                    double[] values = new double[frequencies.size()];
-                    int i = 0;
-                    for (Long frequency : frequencies.values()) {
-                        values[i++] = frequency;
-                    }
-                    final double stdDev = standardDeviation.evaluate(values);
-                    final Type type;
-                    if (stdDev < 1 && frequencies.size() > 1) {
-                        type = Type.STRING;
-                    } else {
-                        final DataType.Type suggestedType = dataType.getSuggestedType();
-                        type = Type.get(suggestedType.name());
-                    }
-                    // Semantic type
-                    final SemanticType semanticType = columnResult.get( SemanticType.class );
-
-                    if (columns.hasNext()) {
-                        final ColumnMetadata nextColumn = columns.next();
-                        LOGGER.debug("Column {} -> {}", nextColumn.getId(), type.getName());
-                        nextColumn.setType(type.getName());
-                        nextColumn.setDomain(semanticType.getSuggestedCategory());
-                        Map<CategoryFrequency, Long> altCategoryCounts = semanticType.getCategoryToCount();
-                        if (!altCategoryCounts.isEmpty()) {
-                            List<SemanticDomain> semanticDomains = new ArrayList<>(altCategoryCounts.size());
-                            for (Map.Entry<CategoryFrequency, Long> entry : altCategoryCounts.entrySet()) {
-                                // Find category display name
-                                final String id = entry.getKey().getCategoryId();
-                                final String categoryDisplayName = TypeUtils.getDomainLabel(id);
-                                // Remembers all suggested semantic categories
-                                semanticDomains.add(new SemanticDomain(id, categoryDisplayName, entry.getKey().getFrequency()));
-                                if (StringUtils.equals(nextColumn.getDomain(), id)) {
-                                    nextColumn.setDomainLabel(categoryDisplayName);
-                                    nextColumn.setDomainFrequency(entry.getValue());
-                                }
-                            }
-                            nextColumn.setSemanticDomains(semanticDomains);
-                        }
-
-                    } else {
-                        LOGGER.error("Unable to set type '" + type.getName() + "' to next column (no more column in dataset).");
-                    }
-
-                });
+                StatisticsUtils.setStatistics(metadata.getRow().getColumns(), analyzer.getResult());
                 LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
                 metadata.getLifecycle().schemaAnalyzed(true);
                 repository.add(metadata);

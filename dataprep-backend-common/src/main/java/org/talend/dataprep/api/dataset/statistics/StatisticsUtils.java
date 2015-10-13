@@ -5,10 +5,13 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.*;
 
+import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.Quality;
+import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;
+import org.talend.dataquality.semantic.recognizer.CategoryFrequency;
 import org.talend.dataquality.semantic.statistics.SemanticType;
 import org.talend.dataquality.statistics.cardinality.CardinalityStatistics;
 import org.talend.dataquality.statistics.frequency.DataFrequencyStatistics;
@@ -41,14 +44,24 @@ public class StatisticsUtils {
             if (result.exist(DataType.class) && !currentColumn.isTypeForced()
                     && !readOnlyColumns.contains(currentColumn.getId())) {
                 final DataType dataType = result.get(DataType.class);
-                currentColumn.setType(Type.get(dataType.getSuggestedType().name()).getName());
-            }
-            // Semantic types
-            if (result.exist(SemanticType.class) && !currentColumn.isDomainForced()
-                    && !readOnlyColumns.contains(currentColumn.getId())) {
-                final SemanticType semanticType = result.get(SemanticType.class);
-                currentColumn.setDomain(semanticType.getSuggestedCategory());
-                currentColumn.setDomainLabel(TypeUtils.getDomainLabel(semanticType));
+                final Map<DataType.Type, Long> frequencies = dataType.getTypeFrequencies();
+                frequencies.remove(DataType.Type.EMPTY); // TDP-226: Don't take into account EMPTY values.
+                // Look at type frequencies distribution (if not spread enough, fall back to STRING).
+                StandardDeviation standardDeviation = new StandardDeviation();
+                double[] values = new double[frequencies.size()];
+                int i = 0;
+                for (Long frequency : frequencies.values()) {
+                    values[i++] = frequency;
+                }
+                final double stdDev = standardDeviation.evaluate(values);
+                final Type type;
+                if (stdDev < 1 && frequencies.size() > 1) {
+                    type = Type.STRING;
+                } else {
+                    final DataType.Type suggestedType = dataType.getSuggestedType();
+                    type = Type.get(suggestedType.name());
+                }
+                currentColumn.setType(type.getName());
             }
             // Value quality (empty / invalid / ...)
             if (result.exist(ValueQualityStatistics.class)) {
@@ -64,6 +77,36 @@ public class StatisticsUtils {
                 statistics.setEmpty(valueQualityStatistics.getEmptyCount());
                 statistics.setInvalid(valueQualityStatistics.getInvalidCount());
                 statistics.setValid(valueQualityStatistics.getValidCount());
+            }
+            // Semantic types
+            if (result.exist(SemanticType.class) && !currentColumn.isDomainForced()
+                    && !readOnlyColumns.contains(currentColumn.getId())) {
+                final SemanticType semanticType = result.get(SemanticType.class);
+                final Map<CategoryFrequency, Long> foundSemanticTypes = semanticType.getCategoryToCount();
+                // TDP-471: Don't pick semantic type if lower than a threshold (arbitrary to 40%).
+                final Optional<Map.Entry<CategoryFrequency, Long>> entry = foundSemanticTypes.entrySet().stream()
+                        .filter(e -> !e.getKey().getCategoryName().isEmpty())
+                        .max((o1, o2) -> o1.getValue().intValue() - o2.getValue().intValue());
+                if (entry.isPresent()) {
+                    final long percentage = (entry.get().getValue() * 100) / statistics.getCount();
+                    if (percentage > 40) {
+                        currentColumn.setDomain(semanticType.getSuggestedCategory());
+                        currentColumn.setDomainLabel(TypeUtils.getDomainLabel(semanticType));
+                        currentColumn.setDomainFrequency(entry.get().getValue());
+                    }
+                }
+                // Remembers all suggested semantic categories
+                Map<CategoryFrequency, Long> altCategoryCounts = semanticType.getCategoryToCount();
+                if (!altCategoryCounts.isEmpty()) {
+                    List<SemanticDomain> semanticDomains = new ArrayList<>(altCategoryCounts.size());
+                    for (Map.Entry<CategoryFrequency, Long> current : altCategoryCounts.entrySet()) {
+                        // Find category display name
+                        final String id = current.getKey().getCategoryId();
+                        final String categoryDisplayName = TypeUtils.getDomainLabel(id);
+                        semanticDomains.add(new SemanticDomain(id, categoryDisplayName, current.getKey().getFrequency()));
+                    }
+                    currentColumn.setSemanticDomains(semanticDomains);
+                }
             }
             // Cardinality (distinct + duplicates)
             if (result.exist(CardinalityStatistics.class)) {
