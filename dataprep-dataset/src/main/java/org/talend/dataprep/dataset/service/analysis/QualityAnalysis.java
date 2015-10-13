@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.statistics.StatisticsUtils;
+import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
@@ -44,6 +44,9 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer, Asynchronous
 
     @Autowired
     ContentStoreRouter store;
+
+    @Autowired
+    StatisticsAdapter adapter;
 
     @JmsListener(destination = Destinations.QUALITY_ANALYSIS)
     public void analyzeQuality(Message message) {
@@ -151,7 +154,7 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer, Asynchronous
         records.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
         // Determine content size
         final List<Analyzers.Result> result = analyzer.getResult();
-        StatisticsUtils.setStatistics(columns, result);
+        adapter.adapt(columns, result);
         // Remember the number of records
         if (!result.isEmpty()) {
             final long recordCount = result.get(0).get(ValueQualityStatistics.class).getCount();

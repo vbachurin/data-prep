@@ -6,6 +6,7 @@ import java.text.NumberFormat;
 import java.util.*;
 
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.Quality;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
@@ -24,16 +25,14 @@ import org.talend.dataquality.statistics.text.TextLengthStatistics;
 import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.type.DataType;
 
-public class StatisticsUtils {
+@Component
+public class StatisticsAdapter {
 
-    private StatisticsUtils() {
+    public void adapt(List<ColumnMetadata> columns, List<Analyzers.Result> results) {
+        adapt(columns, results, Collections.<String> emptySet());
     }
 
-    public static void setStatistics(List<ColumnMetadata> columns, List<Analyzers.Result> results) {
-        setStatistics(columns, results, Collections.<String> emptySet());
-    }
-
-    public static void setStatistics(List<ColumnMetadata> columns, List<Analyzers.Result> results, Set<String> readOnlyColumns) {
+    public void adapt(List<ColumnMetadata> columns, List<Analyzers.Result> results, Set<String> readOnlyColumns) {
         final Iterator<ColumnMetadata> columnIterator = columns.iterator();
         for (Analyzers.Result result : results) {
             final ColumnMetadata currentColumn = columnIterator.next();

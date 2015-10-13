@@ -17,7 +17,7 @@ import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
-import org.talend.dataprep.api.dataset.statistics.StatisticsUtils;
+import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.exception.TDPException;
@@ -54,6 +54,9 @@ import org.talend.datascience.common.inference.type.DataTypeAnalyzer;
 class SimpleTransformer implements Transformer {
 
     public static final String CONTEXT_ANALYZER = "analyzer";
+
+    @Autowired
+    StatisticsAdapter adapter;
 
     @Autowired
     ActionParser actionParser;
@@ -174,7 +177,7 @@ class SimpleTransformer implements Transformer {
                 // End analysis and set the statistics
                 final Analyzer<Analyzers.Result> analyzer = (Analyzer<Analyzers.Result>) context.get(CONTEXT_ANALYZER);
                 analyzer.end();
-                StatisticsUtils.setStatistics(row.getColumns(), analyzer.getResult(), forcedColumns);
+                adapter.adapt(row.getColumns(), analyzer.getResult(), forcedColumns);
                 writer.write(context.getTransformedRowMetadata());
             }
             writer.endObject();

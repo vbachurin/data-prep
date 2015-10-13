@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.statistics.StatisticsUtils;
+import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
@@ -34,6 +34,9 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
 
     @Autowired
     ContentStoreRouter store;
+
+    @Autowired
+    StatisticsAdapter adapter;
 
     @Override
     public void analyze(String dataSetId) {
@@ -67,7 +70,7 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
                 // Determine schema for the content (on the 20 first rows).
                 stream.limit(20).map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
                 // Find the best suitable type
-                StatisticsUtils.setStatistics(metadata.getRow().getColumns(), analyzer.getResult());
+                adapter.adapt(metadata.getRow().getColumns(), analyzer.getResult());
                 LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
                 metadata.getLifecycle().schemaAnalyzed(true);
                 repository.add(metadata);
