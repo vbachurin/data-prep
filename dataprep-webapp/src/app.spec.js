@@ -39,23 +39,5 @@ describe('Dataprep app', function() {
             //then
             expect(httpProviderIt.useApplyAsync()).toBe(true);
         });
-
-        it('should set debugMode config to true when disableDebug constant is false', function() {
-            //given
-            var compileProviderIt = null;
-
-            //when
-            module('data-prep', function($compileProvider) {
-                compileProviderIt = $compileProvider;
-            });
-            inject(function($injector) {
-                var $httpBackend = $injector.get('$httpBackend');
-                $httpBackend.when('GET', 'i18n/en.json').respond({});
-                $httpBackend.when('GET', 'i18n/fr.json').respond({});
-            });
-
-            //then
-            expect(compileProviderIt.debugInfoEnabled()).toBe(true);
-        });
     });
 });
