@@ -19,4 +19,5 @@
 
     angular.module('data-prep.actions-suggestions')
         .filter('actionsSuggestionsSearchFilter', ActionsSuggestionsSearchFilter);
+
 })();

@@ -3,7 +3,7 @@
     <div class="title" ng-if="!actionsSuggestionsCtrl.column.name">Actions</div>
     <div class="Description" ng-if="! actionsSuggestionsCtrl.columnSuggestions">Select a column to display its actions</div>
     
-    <talend-tabs tab="actionsSuggestionsCtrl.tab" action-on-click="actionsSuggestionsCtrl.resizePanels()" ng-if="actionsSuggestionsCtrl.columnSuggestions">
+    <talend-tabs tab="actionsSuggestionsCtrl.tab" action-on-click="actionsSuggestionsCtrl.resizePanels()" ng-if="actionsSuggestionsCtrl.columnSuggestions" compile-template="{{actionsSuggestionsCtrl.searchActionString}}">
         <talend-tabs-item tab-title="Text">
             <div class="action-suggestion-tab-items">Coming soon ...</div>
         </talend-tabs-item>
@@ -17,7 +17,8 @@
             <input type="search"
                    class="action-search"
                    placeholder="{{::'FIND_FUNCTION' | translate}}"
-                   ng-model="actionsSuggestionsCtrl.searchActionString">
+                   ng-model="actionsSuggestionsCtrl.searchActionString"
+                   ng-model-options="{debounce: { default: 300, blur: 0 }}">
             <talend-accordions class="menu action-suggestion-tab-items">
                 <talend-accordions-item
                         ng-repeat="transfo in actionsSuggestionsCtrl.columnSuggestions | actionsSuggestionsSearchFilter:actionsSuggestionsCtrl.searchActionString track by transfo.name"
@@ -27,7 +28,7 @@
                     <a class="trigger"
                        ng-switch-when="false"
                        ng-if="transfo.dynamic"
-                       ng-click="actionsSuggestionsCtrl.select(transfo, 'column')">{{transfo.label}}</a>
+                       ng-click="actionsSuggestionsCtrl.select(transfo, 'column')" ng-bind-html="transfo.label"></a>
 
                     <!--no parameters-->
                     <a class="trigger"
@@ -35,10 +36,10 @@
                        ng-if="!transfo.dynamic"
                        ng-click="actionsSuggestionsCtrl.select(transfo, 'column')"
                        ng-mouseenter="actionsSuggestionsCtrl.earlyPreview(transfo, 'column')({})"
-                       ng-mouseleave="actionsSuggestionsCtrl.cancelEarlyPreview()">{{transfo.label}}</a>
+                       ng-mouseleave="actionsSuggestionsCtrl.cancelEarlyPreview()" ng-bind-html="transfo.label"></a>
 
                     <!--with static parameters-->
-                    <a class="trigger" ng-switch-when="true">{{transfo.label}}</a>
+                    <a class="trigger" ng-switch-when="true" ng-bind-html="transfo.label"></a>
                     <ul class="content" ng-switch-when="true">
                         <transform-params transformation="transfo"
                                           on-submit="actionsSuggestionsCtrl.transform(transfo, 'column')(params)"
