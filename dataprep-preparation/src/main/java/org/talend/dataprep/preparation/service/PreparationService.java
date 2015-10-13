@@ -28,9 +28,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.daikon.exception.ExceptionContext;
-import org.talend.dataprep.api.preparation.*;
+import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.api.preparation.AppendStep;
+import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.PreparationActions;
+import org.talend.dataprep.api.preparation.PreparationUtils;
+import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.PreparationErrorCodes;
@@ -101,9 +111,9 @@ public class PreparationService {
     @ApiOperation(value = "Delete a preparation by id", notes = "Delete a preparation content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing preparation id returns empty content.")
     @Timed
     public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the preparation to delete") String id) {
-        LOGGER.debug("Deletion of preparation #{} requested.", id);
+        LOGGER.debug( "Deletion of preparation #{} requested.", id );
         Preparation preparationToDelete = preparationRepository.get(id, Preparation.class);
-        preparationRepository.remove(preparationToDelete);
+        preparationRepository.remove( preparationToDelete );
         LOGGER.debug("Deletion of preparation #{} done.", id);
     }
 
@@ -114,11 +124,11 @@ public class PreparationService {
                          @ApiParam("preparation") @RequestBody final Preparation preparation) {
         Preparation previousPreparation = preparationRepository.get(id, Preparation.class);
         LOGGER.debug("Updating preparation with id {}: {}", preparation.id(), previousPreparation);
-        Preparation updated = previousPreparation.merge(preparation);
+        Preparation updated = previousPreparation.merge( preparation );
         if (!updated.id().equals(id)) {
             preparationRepository.remove(previousPreparation);
         }
-        preparationRepository.add(updated);
+        preparationRepository.add( updated );
         LOGGER.debug("Updated preparation: {}", updated);
         return updated.id();
     }
@@ -128,9 +138,23 @@ public class PreparationService {
     @Timed
     public Preparation get(@ApiParam("id") @PathVariable("id") String id) {
         LOGGER.debug("Get content of preparation details for #{}.", id);
-        return preparationRepository.get(id, Preparation.class);
+        return preparationRepository.get( id, Preparation.class );
     }
 
+
+    @RequestMapping(value = "/preparations/clone/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Clone preparation", notes = "Clone of the preparation with provided id. If no name provided the new name will the previous one concat with ' Copy' ")
+    @Timed
+    public Preparation clone(@ApiParam("id") @PathVariable("id") String id, //
+            @ApiParam(value = "Optional new name") @RequestParam(required = false) String name) {
+        LOGGER.debug( "Get content of preparation details for #{}.", id );
+        Preparation preparation = preparationRepository.get(id, Preparation.class);
+        preparation.setName(preparation.getName() + " Copy");
+        preparation.setCreationDate( System.currentTimeMillis() );
+        preparationRepository.add(preparation);
+        return preparation;
+    }   
+    
     @RequestMapping(value = "/preparations/{id}/steps", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all preparation steps id", notes = "Return the steps of the preparation with provided id.")
     @Timed
@@ -180,10 +204,10 @@ public class PreparationService {
     public void updateAction(@PathVariable("id") final String preparationId, //
                              @PathVariable("stepId") final String stepToModifyId, //
                              @RequestBody final AppendStep newStep) {
-        checkActionStepConsistency(newStep);
+        checkActionStepConsistency( newStep );
 
         LOGGER.debug("Modifying actions in preparation #{}", preparationId);
-        final Preparation preparation = getPreparation(preparationId);
+        final Preparation preparation = getPreparation( preparationId );
         LOGGER.debug("Current head for preparation #{}: {}", preparationId, preparation.getStep());
 
         // Get steps from "step to modify" to the head
@@ -195,8 +219,8 @@ public class PreparationService {
         final List<String> originalCreatedColumns = stm.getDiff().getCreatedColumns();
         final List<String> updatedCreatedColumns = newStep.getDiff().getCreatedColumns();
         final List<String> deletedColumns = originalCreatedColumns.stream() // columns that the step was creating but not anymore
-                .filter(id -> !updatedCreatedColumns.contains(id))
-                .collect(toList());
+                .filter( id -> !updatedCreatedColumns.contains( id ) )
+                .collect( toList() );
         final int columnsDiffNumber = updatedCreatedColumns.size() - originalCreatedColumns.size();
         final int maxCreatedColumnIdBeforeUpdate = (originalCreatedColumns.isEmpty()) ? MAX_VALUE : originalCreatedColumns.stream().mapToInt(Integer::parseInt).max().getAsInt();
 
@@ -262,8 +286,8 @@ public class PreparationService {
         if (head == null) {
             throw new TDPException(PREPARATION_STEP_DOES_NOT_EXIST,
                     ExceptionContext.build()
-                            .put("id", preparationId)
-                            .put("stepId", headId));
+                            .put( "id", preparationId )
+                            .put( "stepId", headId ));
         }
 
         final Preparation preparation = getPreparation(preparationId);
@@ -387,26 +411,26 @@ public class PreparationService {
         }
 
         final List<Step> steps = IntStream.range(stepIndex, stepsIds.size())
-                .mapToObj(index -> getStep(stepsIds.get(index)))
+                .mapToObj( index -> getStep( stepsIds.get( index ) ) )
                 .collect(toList());
 
         final List<List<Action>> stepActions = steps.stream()
-                .map(this::getActions)
-                .collect(toList());
+                .map( this::getActions )
+                .collect( toList() );
 
         return IntStream.range(1, steps.size())
-                .mapToObj(index -> {
-                    final List<Action> previous = stepActions.get(index - 1);
-                    final List<Action> current = stepActions.get(index);
-                    final Step step = steps.get(index);
+                .mapToObj( index -> {
+                    final List<Action> previous = stepActions.get( index - 1 );
+                    final List<Action> current = stepActions.get( index );
+                    final Step step = steps.get( index );
 
                     final AppendStep appendStep = new AppendStep();
-                    appendStep.setDiff(step.getDiff());
-                    appendStep.setActions(current.subList(previous.size(), current.size()));
+                    appendStep.setDiff( step.getDiff() );
+                    appendStep.setActions( current.subList( previous.size(), current.size() ) );
 
                     return appendStep;
-                })
-                .collect(toList());
+                } )
+                .collect( toList() );
     }
 
     /**
@@ -422,8 +446,8 @@ public class PreparationService {
         if (!fromStepId.equals(steps.get(0))) {
             throw new TDPException(PREPARATION_STEP_DOES_NOT_EXIST,
                     ExceptionContext.build()
-                            .put("id", preparation.getId())
-                            .put("stepId", fromStepId));
+                            .put( "id", preparation.getId() )
+                            .put( "stepId", fromStepId ));
         }
         return steps;
     }
@@ -518,14 +542,15 @@ public class PreparationService {
         return step -> {
             final List<String> stepCreatedCols = step.getDiff().getCreatedColumns();
             final List<String> shiftedStepCreatedCols = stepCreatedCols.stream()
-                    .map(colIdStr -> {
-                        final int columnId = Integer.parseInt(colIdStr);
-                        if (columnId > shiftColumnAfterId) {
-                            return format.format(columnId + shiftNumber);
+                    .map( colIdStr -> {
+                        final int columnId = Integer.parseInt( colIdStr );
+                        if ( columnId > shiftColumnAfterId )
+                        {
+                            return format.format( columnId + shiftNumber );
                         }
                         return colIdStr;
-                    })
-                    .collect(toList());
+                    } )
+                    .collect( toList() );
             step.getDiff().setCreatedColumns(shiftedStepCreatedCols);
             return step;
         };
@@ -587,7 +612,7 @@ public class PreparationService {
         }
 
         actionsSteps.stream()
-                .forEach(step -> appendStepToHead(preparation, step));
+                .forEach( step -> appendStepToHead( preparation, step ) );
     }
 
     /**
