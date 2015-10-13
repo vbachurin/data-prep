@@ -15,6 +15,8 @@ import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.AbstractResource;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.resource.ResourceTransformer;
@@ -33,6 +35,14 @@ public class WebApplication extends WebMvcConfigurerAdapter {
 
     @Value("${server.port}")
     private int port;
+
+    @Controller
+    public static class FaviconController {
+        @RequestMapping("/favicon.ico")
+        String favicon() {
+            return "forward:/assets/images/favicon.png";
+        }
+    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
