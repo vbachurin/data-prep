@@ -6,6 +6,7 @@ import java.text.NumberFormat;
 import java.util.*;
 
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.Quality;
@@ -27,6 +28,12 @@ import org.talend.datascience.common.inference.type.DataType;
 
 @Component
 public class StatisticsAdapter {
+
+    /**
+     * Defines the minimum threshold for a semantic type suggestion. Defaults to 40% if not defined.
+     */
+    @Value("#{'${semantic.threshold:40}'}")
+    private int semanticThreshold;
 
     public void adapt(List<ColumnMetadata> columns, List<Analyzers.Result> results) {
         adapt(columns, results, Collections.<String> emptySet());
@@ -82,13 +89,13 @@ public class StatisticsAdapter {
                     && !readOnlyColumns.contains(currentColumn.getId())) {
                 final SemanticType semanticType = result.get(SemanticType.class);
                 final Map<CategoryFrequency, Long> foundSemanticTypes = semanticType.getCategoryToCount();
-                // TDP-471: Don't pick semantic type if lower than a threshold (arbitrary to 40%).
+                // TDP-471: Don't pick semantic type if lower than a threshold.
                 final Optional<Map.Entry<CategoryFrequency, Long>> entry = foundSemanticTypes.entrySet().stream()
                         .filter(e -> !e.getKey().getCategoryName().isEmpty())
                         .max((o1, o2) -> o1.getValue().intValue() - o2.getValue().intValue());
                 if (entry.isPresent()) {
                     final long percentage = (entry.get().getValue() * 100) / statistics.getCount();
-                    if (percentage > 40) {
+                    if (percentage > semanticThreshold) {
                         currentColumn.setDomain(semanticType.getSuggestedCategory());
                         currentColumn.setDomainLabel(TypeUtils.getDomainLabel(semanticType));
                         currentColumn.setDomainFrequency(entry.get().getValue());
