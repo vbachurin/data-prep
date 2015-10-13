@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    angular.module('data-prep',
+    var app = angular.module('data-prep',
         [
             'ngSanitize',
             'ui.router', //more advanced router
@@ -98,7 +98,27 @@
         })
 
         //Configure server api urls
-        .run(function(ConfigService) {
-            ConfigService.init();
+        //.run(function(ConfigService) {
+        //    ConfigService.init();
+        //})
+    ;
+
+    $.when( $.ajax( "/assets/config/config.json" ) )
+        .then(function( data, textStatus, jqXHR ) {
+            console.log(data);
+            return data;
+        })
+        .then(function(config){
+            app
+                //Debug config
+                .config(['$compileProvider', function ($compileProvider) {
+                    $compileProvider.debugInfoEnabled(config.enableDebug);
+                }])
+                //Configure server api urls
+                .run(['RestURLs', function (RestURLs) {
+                    RestURLs.setServerUrl(config.serverUrl);
+                }]);
+            angular.bootstrap(document, ['data-prep']);
         });
+
 })();

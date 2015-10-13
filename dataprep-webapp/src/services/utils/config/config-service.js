@@ -13,11 +13,11 @@
          * @methodOf data-prep.services.utils.service:ConfigService
          * @description Fetch the current front server configuration file and trigger the actual configuration
          */
-        this.init = function init() {
-            return $http.get('/assets/config/config.json')
-                .then(function(config) {
-                    RestURLs.setServerUrl(config.data.serverUrl);
-                });
+        this.init = function init(config) {
+            //return $http.get('/assets/config/config.json')
+            //    .then(function(config) {
+                    RestURLs.setServerUrl(config.serverUrl);
+             //   });
         };
     }
 
