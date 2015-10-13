@@ -47,16 +47,37 @@
                 });
         };
 
+        /**
+         * @ngdoc method
+         * @name showRenameInput
+         * @methodOf data-prep.preparation-list.controller:PreparationListCtrl
+         * @param {object} preparation - the preparation to show rename input
+         * @description change a flag value to trigger input display
+         */
         vm.showRenameInput = function(preparation){
           vm.originalPreparationName = preparation.name;
           preparation.showChangeName = true;
         };
 
+        /**
+         * @ngdoc method
+         * @name cancelRename
+         * @methodOf data-prep.preparation-list.controller:PreparationListCtrl
+         * @param {object} preparation - the preparation to cancel rename input
+         * @description change back a flag value to trigger input display and restore previous name
+         */
         vm.cancelRename = function(preparation){
             preparation.name = vm.originalPreparationName;
             preparation.showChangeName = false;
         };
 
+        /**
+         * @ngdoc method
+         * @name rename
+         * @methodOf data-prep.preparation-list.controller:PreparationListCtrl
+         * @param {object} preparation - the preparation to rename
+         * @description trigger backend call to update preparation name
+         */
         vm.rename = function(preparation){
             $rootScope.$emit('talend.loading.start');
             return PreparationService.setName(preparation.id, preparation.name)
