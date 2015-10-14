@@ -5,6 +5,7 @@ import static org.talend.dataprep.api.type.Type.STRING;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -40,6 +41,11 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
     public static final String REPLACE_VALUE_PARAMETER = "replace_value"; //$NON-NLS-1$
 
     /**
+     * Scope Value
+     */
+    public static final String REPLACE_ENTIRE_CELL_PARAMETER = "replace_entire_cell"; //$NON-NLS-1$
+
+    /**
      * @see ActionMetadata#getName()
      */
     @Override
@@ -63,6 +69,7 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
         final List<Parameter> parameters = super.getParameters();
         parameters.add(new Parameter(CELL_VALUE_PARAMETER, ParameterType.STRING, EMPTY));
         parameters.add(new Parameter(REPLACE_VALUE_PARAMETER, ParameterType.STRING, EMPTY));
+        parameters.add(new Parameter(REPLACE_ENTIRE_CELL_PARAMETER, ParameterType.BOOLEAN, "false"));
         return parameters;
     }
 
@@ -87,9 +94,15 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
         try {
             Pattern p = Pattern.compile(toMatch);
 
-            if (value != null && p.matcher(value.trim()).matches()) {
+            if (value != null) {
                 final String toReplace = parameters.get(REPLACE_VALUE_PARAMETER);
-                row.set(columnId, toReplace);
+                final boolean replaceEntireCell = new Boolean(parameters.get(REPLACE_ENTIRE_CELL_PARAMETER));
+                final Matcher matcher = p.matcher(value);
+
+                if (!replaceEntireCell || matcher.matches()) {
+                    final String newValue = (replaceEntireCell ? toReplace : matcher.replaceFirst(toReplace));
+                    row.set(columnId, newValue);
+                }
             }
         } catch (PatternSyntaxException e) {
             // In case the pattern is not valid, consider that the value does not match: nothing to do.

@@ -20,6 +20,7 @@ import static org.talend.dataprep.api.type.Type.BOOLEAN;
 import static org.talend.dataprep.api.type.Type.STRING;
 import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.*;
 import static org.talend.dataprep.transformation.api.action.metadata.text.ReplaceOnValue.CELL_VALUE_PARAMETER;
+import static org.talend.dataprep.transformation.api.action.metadata.text.ReplaceOnValue.REPLACE_ENTIRE_CELL_PARAMETER;
 import static org.talend.dataprep.transformation.api.action.metadata.text.ReplaceOnValue.REPLACE_VALUE_PARAMETER;
 
 import java.util.HashMap;
@@ -45,7 +46,7 @@ public class ReplaceOnValueTest {
         final List<Parameter> actionParams = action.getParameters();
 
         //then
-        assertThat(actionParams, hasSize(5));
+        assertThat(actionParams, hasSize(6));
 
         final List<String> paramNames = actionParams.stream().map(Parameter::getName).collect(toList());
         assertThat(paramNames, IsIterableContainingInAnyOrder.containsInAnyOrder(
@@ -53,7 +54,8 @@ public class ReplaceOnValueTest {
                 ROW_ID.getKey(),
                 SCOPE.getKey(),
                 CELL_VALUE_PARAMETER,
-                REPLACE_VALUE_PARAMETER));
+                REPLACE_VALUE_PARAMETER,
+                REPLACE_ENTIRE_CELL_PARAMETER));
     }
 
     @Test
@@ -83,17 +85,18 @@ public class ReplaceOnValueTest {
     }
 
     @Test
-    public void should_replace_the_value_that_match_on_the_specified_column() {
+    public void should_replace_the_value_that_match_on_the_specified_column_entire() {
         //given
         final String columnId = "firstname";
 
         final Map<String, String> values = new HashMap<>();
-        values.put(columnId, "James");
+        values.put(columnId, "James Hetfield");
         final DataSetRow row = new DataSetRow(values);
 
         final Map<String,String> parameters = new HashMap<>();
-        parameters.put(CELL_VALUE_PARAMETER, "James");
+        parameters.put(CELL_VALUE_PARAMETER, "James.*");
         parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
+        parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "true");
 
         //when
         action.applyOnColumn(row, null, parameters, columnId);
@@ -101,6 +104,49 @@ public class ReplaceOnValueTest {
         //then
         assertThat(row.get(columnId), is("Jimmy"));
     }
+
+    @Test
+    public void should_replace_the_value_that_match_on_the_specified_column() {
+        //given
+        final String columnId = "firstname";
+
+        final Map<String, String> values = new HashMap<>();
+        values.put(columnId, "James Hetfield");
+        final DataSetRow row = new DataSetRow(values);
+
+        final Map<String,String> parameters = new HashMap<>();
+        parameters.put(CELL_VALUE_PARAMETER, "James");
+        parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
+        parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
+
+        //when
+        action.applyOnColumn(row, null, parameters, columnId);
+
+        //then
+        assertThat(row.get(columnId), is("Jimmy Hetfield"));
+    }
+
+    @Test
+    public void should_NOT_replace_the_value_that_DOESNT_match_on_the_specified_column_entire() {
+        //given
+        final String columnId = "firstname";
+
+        final Map<String, String> values = new HashMap<>();
+        values.put(columnId, "Toto");
+        final DataSetRow row = new DataSetRow(values);
+
+        final Map<String,String> parameters = new HashMap<>();
+        parameters.put(CELL_VALUE_PARAMETER, "James");
+        parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
+        parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "true");
+
+        //when
+        action.applyOnColumn(row, null, parameters, columnId);
+
+        //then
+        assertThat(row.get(columnId), is("Toto"));
+    }
+
 
     @Test
     public void should_NOT_replace_the_value_that_DOESNT_match_on_the_specified_column() {
@@ -114,6 +160,7 @@ public class ReplaceOnValueTest {
         final Map<String,String> parameters = new HashMap<>();
         parameters.put(CELL_VALUE_PARAMETER, "James");
         parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
+        parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
 
         //when
         action.applyOnColumn(row, null, parameters, columnId);
@@ -134,6 +181,7 @@ public class ReplaceOnValueTest {
         final Map<String, String> parameters = new HashMap<>();
         parameters.put(CELL_VALUE_PARAMETER, "James");
         parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
+        parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
 
         // when
         action.applyOnColumn(row, null, parameters, "no column here");
@@ -154,6 +202,7 @@ public class ReplaceOnValueTest {
         final Map<String,String> parameters = new HashMap<>();
         parameters.put(CELL_VALUE_PARAMETER, "James");
         parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
+        parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
 
         //when
         action.applyOnCell(row, null, parameters, 85L, columnId);
@@ -174,6 +223,7 @@ public class ReplaceOnValueTest {
         final Map<String,String> parameters = new HashMap<>();
         parameters.put(CELL_VALUE_PARAMETER, "James");
         parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
+        parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
 
         //when
         action.applyOnCell(row, null, parameters, 85L, columnId);
@@ -194,6 +244,7 @@ public class ReplaceOnValueTest {
         final Map<String, String> parameters = new HashMap<>();
         parameters.put(CELL_VALUE_PARAMETER, ".*Halle.*");
         parameters.put(REPLACE_VALUE_PARAMETER, "replaced");
+        parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
 
         // when
         action.applyOnCell(row, null, parameters, 85L, columnId);
@@ -215,6 +266,7 @@ public class ReplaceOnValueTest {
         final Map<String, String> parameters = new HashMap<>();
         parameters.put(CELL_VALUE_PARAMETER, "*");
         parameters.put(REPLACE_VALUE_PARAMETER, "replaced");
+        parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
 
         // when
         action.applyOnCell(row, null, parameters, 85L, columnId);
