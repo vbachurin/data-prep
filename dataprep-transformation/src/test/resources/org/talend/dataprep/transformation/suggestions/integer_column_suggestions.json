@@ -163,7 +163,7 @@
   },
   {
     "category": "math",
-    "name": "absolute_int",
+    "name": "absolute",
     "parameters": [
       {
         "name": "column_id",

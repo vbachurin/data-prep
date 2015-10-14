@@ -9,8 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.metadata.math.AbsoluteFloat;
-import org.talend.dataprep.transformation.api.action.metadata.math.AbsoluteInt;
+import org.talend.dataprep.transformation.api.action.metadata.math.Absolute;
 import org.talend.dataprep.transformation.api.action.metadata.math.Ceil;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
@@ -43,23 +42,22 @@ public class AbsoluteRuleTest {
 
     @Test
     public void testNegativeMatch() throws Exception {
-        assertThat(absoluteRule.apply(new AbsoluteFloat(), positiveIntColumn), is(NEGATIVE));
-        assertThat(absoluteRule.apply(new AbsoluteFloat(), positiveFloatColumn), is(NEGATIVE));
-        assertThat(absoluteRule.apply(new AbsoluteInt(), positiveFloatColumn), is(NEGATIVE));
-        assertThat(absoluteRule.apply(new AbsoluteInt(), positiveIntColumn), is(NEGATIVE));
+        assertThat(absoluteRule.apply(new Absolute(), positiveIntColumn), is(NEGATIVE));
+        assertThat(absoluteRule.apply(new Absolute(), positiveFloatColumn), is(NEGATIVE));
+        assertThat(absoluteRule.apply(new Absolute(), positiveFloatColumn), is(NEGATIVE));
+        assertThat(absoluteRule.apply(new Absolute(), positiveIntColumn), is(NEGATIVE));
     }
 
     @Test
     public void testPositiveMatch() throws Exception {
-        assertThat(absoluteRule.apply(new AbsoluteFloat(), negativeIntColumn), is(POSITIVE));
-        assertThat(absoluteRule.apply(new AbsoluteFloat(), negativeFloatColumn), is(POSITIVE));
-        assertThat(absoluteRule.apply(new AbsoluteInt(), negativeIntColumn), is(POSITIVE));
-        assertThat(absoluteRule.apply(new AbsoluteInt(), negativeFloatColumn), is(POSITIVE));
+        assertThat(absoluteRule.apply(new Absolute(), negativeIntColumn), is(POSITIVE));
+        assertThat(absoluteRule.apply(new Absolute(), negativeFloatColumn), is(POSITIVE));
+        assertThat(absoluteRule.apply(new Absolute(), negativeIntColumn), is(POSITIVE));
+        assertThat(absoluteRule.apply(new Absolute(), negativeFloatColumn), is(POSITIVE));
     }
 
     @Test
     public void testIgnoreRule() throws Exception {
-        assertThat(absoluteRule.apply(new AbsoluteInt(), stringColumn), is(NON_APPLICABLE));
-        assertThat(absoluteRule.apply(new AbsoluteFloat(), stringColumn), is(NON_APPLICABLE));
+        assertThat(absoluteRule.apply(new Absolute(), stringColumn), is(NON_APPLICABLE));
     }
 }
