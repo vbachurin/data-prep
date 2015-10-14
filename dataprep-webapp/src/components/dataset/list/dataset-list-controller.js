@@ -163,6 +163,12 @@
         vm.showRenameInput = function(dataset){
             dataset.originalName = dataset.name;
             dataset.showChangeName=true;
+
+            _.each( vm.datasets,function(current){
+                if (current.id!=dataset.id){
+                    vm.cancelRename(current);
+                }
+            });
         };
 
         /**
@@ -173,7 +179,9 @@
          * @param {object} dataset - the dataset to clone
          */
         vm.cancelRename = function(dataset){
-            dataset.name = dataset.originalName;
+            if (dataset.originalName){
+                dataset.name = dataset.originalName;
+            }
             dataset.showChangeName=false;
         };
 
