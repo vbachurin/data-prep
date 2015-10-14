@@ -9,7 +9,10 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
-import org.talend.dataprep.transformation.api.action.metadata.math.*;
+import org.talend.dataprep.transformation.api.action.metadata.math.Absolute;
+import org.talend.dataprep.transformation.api.action.metadata.math.Ceil;
+import org.talend.dataprep.transformation.api.action.metadata.math.Floor;
+import org.talend.dataprep.transformation.api.action.metadata.math.Round;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
 @Component
@@ -20,7 +23,7 @@ public class IntegerRules extends BasicRules {
      */
     @Bean
     public static SuggestionEngineRule absoluteRule() {
-        return forActions(AbsoluteFloat.ABSOLUTE_FLOAT_ACTION_NAME, AbsoluteInt.ABSOLUTE_INT_ACTION_NAME) //
+        return forActions(Absolute.ABSOLUTE_ACTION_NAME) //
                 .when(IS_NUMERIC) //
                 .then(columnMetadata -> {
                     if (columnMetadata.getStatistics().getMin() >= 0) {

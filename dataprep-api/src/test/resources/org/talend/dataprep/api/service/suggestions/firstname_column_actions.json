@@ -1467,42 +1467,6 @@
     "label": "Simplify Text (remove case, accent, etc.)"
   },
   {
-    "category": "math",
-    "name": "absolute_float",
-    "parameters": [
-      {
-        "name": "column_id",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "description": "The column on which apply this action to",
-        "label": "Column",
-        "default": ""
-      },
-      {
-        "name": "row_id",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "description": "The row on which apply this action to",
-        "label": "Row",
-        "default": ""
-      },
-      {
-        "name": "scope",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
-        "label": "Scope",
-        "default": ""
-      }
-    ],
-    "dynamic": false,
-    "description": "Compute the absolute value for all numeric values of this column.",
-    "label": "Absolute value"
-  },
-  {
     "name": "round",
     "category": "math",
     "parameters": [
@@ -1539,8 +1503,10 @@
     "label": "Round value"
   },
   {
+    "description": "Compute the absolute value for all numeric values of this column.",
     "category": "math",
-    "name": "absolute_int",
+    "label": "Absolute value",
+    "name": "absolute",
     "parameters": [
       {
         "name": "column_id",
@@ -1570,9 +1536,7 @@
         "default": ""
       }
     ],
-    "dynamic": false,
-    "description": "Compute the absolute value for all numeric values of this column.",
-    "label": "Absolute value"
+    "dynamic": false
   },
   {
     "name": "floor",
