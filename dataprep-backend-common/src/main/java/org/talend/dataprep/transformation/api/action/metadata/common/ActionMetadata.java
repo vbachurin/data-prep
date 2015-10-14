@@ -32,12 +32,23 @@ public interface ActionMetadata {
     Action create(Map<String, String> parameters);
 
     /**
+     * <p>
      * Adapts the current action metadata to the column. This method may return <code>this</code> if no action specific
      * change should be done. It may return a different instance with information from column (like a default value
      * inferred from column's name).
+     * </p>
+     * <p>
+     * Implementations are also expected to return <code>this</code> if {@link #acceptColumn(ColumnMetadata)} returns
+     * <code>false</code>.
+     * </p>
      *
      * @param column A {@link ColumnMetadata column} information.
-     * @return <code>this</code> if no change is required or a new action metadata with information extracted from
+     * @return <code>this</code> if any of the following is true:
+     * <ul>
+     *     <li>no change is required.</li>
+     *     <li>column type is not {@link #acceptColumn(ColumnMetadata) accepted} for current action.</li>
+     * </ul>
+     * OR a new action metadata with information extracted from
      * <code>column</code>.
      */
     default ActionMetadata adapt(ColumnMetadata column) {

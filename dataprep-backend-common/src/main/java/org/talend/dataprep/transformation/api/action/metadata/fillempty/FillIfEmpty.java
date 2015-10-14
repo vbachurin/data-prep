@@ -156,6 +156,9 @@ public class FillIfEmpty extends AbstractActionMetadata implements ColumnAction 
 
     @Override
     public ActionMetadata adapt(ColumnMetadata column) {
+        if (column == null || !acceptColumn(column)) {
+            return this;
+        }
         return new FillIfEmpty(Type.valueOf(column.getType().toUpperCase()));
     }
 }
