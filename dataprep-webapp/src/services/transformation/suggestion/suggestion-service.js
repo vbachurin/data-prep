@@ -104,8 +104,8 @@
         function resetSearchAction() {
             service.searchActionString = '';
             angular.forEach(ColumnSuggestionService.transformations, function(item){
-                item.label = item.label.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
-                item.label = item.label.replace(new RegExp('(</span>)', 'g'), '');
+                item.labelHtml = item.labelHtml.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
+                item.labelHtml = item.labelHtml.replace(new RegExp('(</span>)', 'g'), '');
 
             });
         }
