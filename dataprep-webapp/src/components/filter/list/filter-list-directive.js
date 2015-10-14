@@ -8,19 +8,14 @@
      * @restrict E
      * @requires data-prep.services.filter.service:FilterService
      */
-    function FilterList(FilterService, state) {
+    function FilterList() {
         return {
             restrict: 'E',
             replace: true,
             templateUrl: 'components/filter/list/filter-list.html',
             controllerAs: 'filterCtrl',
-            controller: function() {
-                this.filterService = FilterService;
-                this.state = state;
-                this.calculateLinesPercentage = function(){
-                    return ((state.playground.shownLinesLength / state.playground.allLinesLength)*100).toFixed(0) + '%';
-                };
-            }
+            controller: 'FilterListCtrl',
+            bindToController: true
         };
     }
 

@@ -220,39 +220,6 @@ describe('Datagrid service', function () {
             })).toBe(false);
         }));
 
-        //it('should return filter that executes all filters', inject(function (DatagridService, StateService) {
-        //    //given
-        //    var dataViewMock = new DataViewMock();
-        //    StateService.setDataView(dataViewMock);
-        //    var filterFnCol1 = function() {
-        //        return function (item) {
-        //            return item.col1.indexOf('toto') > -1;
-        //        };
-        //    };
-        //    var filterFnCol2 = function() {
-        //        return function (item) {
-        //            return item.col2.indexOf('toto') > -1;
-        //        };
-        //    };
-		//
-        //    DatagridService.addFilter(filterFnCol1);
-        //    DatagridService.addFilter(filterFnCol2);
-		//
-        //    //when
-        //    var superFilter = DatagridService.getAllFiltersFn();
-		//
-        //    //then
-        //    expect(superFilter({
-        //        col1: 'mon toto', col2: 'toto tata titi'
-        //    })).toBe(true);
-        //    expect(superFilter({
-        //        col1: 'mon tutu', col2: 'toto tata titi'
-        //    })).toBe(false);
-        //    expect(superFilter({
-        //        col1: 'mon toto', col2: 'tutu tata titi'
-        //    })).toBe(false);
-        //}));
-
         it('should do nothing on remove if filter is unknown', inject(function (DatagridService) {
             //given
             var filterFnCol1 = function() {

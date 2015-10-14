@@ -44,7 +44,7 @@ describe('Datagrid tooltip service', function() {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function(DatagridTooltipService, DatagridService) {
+    beforeEach(inject(function(DatagridTooltipService) {
         /*global SlickGridMock:false */
         gridMock = new SlickGridMock();
 

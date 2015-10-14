@@ -1,8 +1,6 @@
 .filter-list {
-  @include calc(width, "100% - 20px");
   background-color: $shadow-gray;
   color: $dark-gray;
-  overflow-x: auto;
   display: flex;
   flex-direction: row;
 
@@ -29,16 +27,19 @@
     }
   }
 
-  .on-off-filters{
+  .off-filters{
     display: flex;
     flex-direction: column;
     justify-content:center;
     align-items:center;
     align-content:center;
-    padding-right: 15px;
+    flex-basis: %;
     .off-all-filters{
       font-size: x-small;
       color: #FFFFFF;
+      &:hover{
+        color:steelblue;
+      }
     }
   }
 }

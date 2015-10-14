@@ -11,7 +11,6 @@ describe('Datagrid directive', function() {
 
 
     beforeEach(module('data-prep.datagrid', function ($provide) {
-
         stateMock = {playground: {}};
         stateMock.playground.dataView = dataViewMock;
         $provide.constant('state', stateMock);

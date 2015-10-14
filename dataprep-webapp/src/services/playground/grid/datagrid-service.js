@@ -26,13 +26,6 @@
          */
         self.metadata = null;
 
-        /**
-         * @ngdoc prope??????????????????
-         * @name dataVi??????????????????
-         * @propertyOf ??????????????????
-         * @description??????????????????
-         * @type {Object}
-         */
         StateService.setDataView(new Slick.Data.DataView({inlineFilters: false}));
 
         /**
@@ -50,19 +43,6 @@
 
         /**
          * @ngdoc method
-         * @name updateDataviewRecords
-         * @methodOf data-prep.services.playground.service:DatagridService
-         * @param {Object[]} records - the records to insert
-         * @description [PRIVATE] Set dataview records
-         */
-        //var updateDataviewRecords = function (records) {
-        //    self.dataView.beginUpdate();
-        //    self.dataView.setItems(records, 'tdpId');
-        //    self.dataView.endUpdate();
-        //};
-
-        /**
-         * @ngdoc method
          * @name setDataset
          * @methodOf data-prep.services.playground.service:DatagridService
          * @param {Object} metadata - the new metadata to load
@@ -73,7 +53,6 @@
             self.metadata = metadata;
             StateService.setCurrentData(data);
             self.focusedColumn = null;
-            //updateDataviewRecords(data.records);
         };
 
         /**
@@ -348,19 +327,6 @@
             }
             return true;
         }
-
-        ///**
-        // * @ngdoc method
-        // * @name getAllFiltersFn
-        // * @methodOf data-prep.services.playground.service:DatagridService
-        // * @description [PRIVATE] Create a closure that contains the active filters to execute
-        // * @returns {function} The filters closure
-        // */
-        //self.getAllFiltersFn = function () {
-        //    return function (item) {
-        //        return filterFn(item, self);
-        //    };
-        //};
 
         /**
          * @ngdoc method

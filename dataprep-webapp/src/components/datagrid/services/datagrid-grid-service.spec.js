@@ -25,15 +25,12 @@ describe('Datagrid grid service', function () {
     }));
 
     beforeEach(inject(function (DatagridColumnService, DatagridStyleService, DatagridSizeService,
-                                DatagridExternalService, DatagridTooltipService, DatagridService) {
+                                DatagridExternalService, DatagridTooltipService) {
         spyOn(DatagridColumnService, 'init').and.returnValue();
         spyOn(DatagridStyleService, 'init').and.returnValue();
         spyOn(DatagridSizeService, 'init').and.returnValue();
         spyOn(DatagridExternalService, 'init').and.returnValue();
         spyOn(DatagridTooltipService, 'init').and.returnValue();
-
-        //spyOn(stateMock.playground.dataView.onRowCountChanged, 'subscribe').and.returnValue();
-        //spyOn(stateMock.playground.dataView.onRowsChanged, 'subscribe').and.returnValue();
     }));
 
     beforeEach(function () {
@@ -61,7 +58,7 @@ describe('Datagrid grid service', function () {
             expect(DatagridTooltipService.init).toHaveBeenCalled();
         }));
 
-        it('should add grid listeners', inject(function (DatagridGridService, DatagridService) {
+        it('should add grid listeners', inject(function (DatagridGridService) {
             //when
             DatagridGridService.initGrid();
 
@@ -72,7 +69,7 @@ describe('Datagrid grid service', function () {
     });
 
     describe('grid handlers', function() {
-        it('should update row count and render grid on row count change', inject(function (DatagridGridService, DatagridService) {
+        it('should update row count and render grid on row count change', inject(function (DatagridGridService) {
             //given
             var grid = DatagridGridService.initGrid();
             spyOn(grid, 'updateRowCount').and.returnValue();
@@ -87,7 +84,7 @@ describe('Datagrid grid service', function () {
             expect(grid.render).toHaveBeenCalled();
         }));
 
-        it('should invalidate rows and render grid on rows changed', inject(function (DatagridGridService, DatagridService) {
+        it('should invalidate rows and render grid on rows changed', inject(function (DatagridGridService) {
             //given
             var grid = DatagridGridService.initGrid();
             spyOn(grid, 'invalidateRows').and.returnValue();

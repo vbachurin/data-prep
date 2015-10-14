@@ -14,8 +14,8 @@
             </talend-badge>
         </div>
     </div>
-    <div class="on-off-filters">
+    <div class="off-filters">
         <a class="off-all-filters" title="Remove All Filters" ng-show="filterCtrl.filterService.filters.length" data-icon="A" ng-click="filterCtrl.filterService.removeAllFilters()"></a>
-        <div title="{{filterCtrl.calculateLinesPercentage()}} of lines are matching your filter(s)">{{filterCtrl.state.playground.shownLinesLength}}/{{filterCtrl.state.playground.allLinesLength}}</div>
+        <div class="lines-quotient" title="{{filterCtrl.calculateLinesPercentage()}} of lines are matching your filter(s)">{{filterCtrl.state.playground.shownLinesLength}}/{{filterCtrl.state.playground.allLinesLength}}</div>
     </div>
 </div>
