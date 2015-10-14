@@ -47,7 +47,7 @@ describe('Export REST Service', function () {
         //given
         var types = null;
         $httpBackend
-            .expectGET(RestURLs.exportUrl+ '/types')
+            .expectGET(RestURLs.exportUrl+ '/formats')
             .respond(200, exportTypes);
 
         //when
