@@ -51,17 +51,16 @@
          * @name getContent
          * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @param {string} preparationId The preparation id to load
-         * @param {string} version The version (step id) to load
-         * @param {int} sample optional sample size
-         * @description Get preparation records at the specific 'version' step
+         * @param {string} stepId The step id to load
+         * @description Get preparation records at the specific step
          * @returns {promise} The GET promise
          */
-        function getContent(preparationId, version, sample) {
-            var url = RestURLs.preparationUrl + '/' + preparationId + '/content?version=' + version;
-            if (sample) {
-                url += '&sample='+sample;
-            }
-            return $http.get(url);
+        function getContent(preparationId, stepId) {
+            var url = RestURLs.preparationUrl + '/' + preparationId + '/content?version=' + stepId;
+            return $http.get(url)
+                .then(function(res) {
+                    return res.data;
+                });
         }
 
         /**
@@ -236,24 +235,12 @@
          * @ngdoc method
          * @name getPreviewDiff
          * @methodOf data-prep.services.preparation.service:PreparationRestService
-         * @param {string} preparationId The preparation id to preview
-         * @param {string} currentStep The current loaded step
-         * @param {string} previewStep The target preview step
-         * @param {string} recordsTdpId The records TDP ids to preview
-         * @param {number} sampleSize The sample size
+         * @param {object} params The preview parameters
          * @param {string} canceler The canceler promise
          * @description POST Preview diff between 2 unchanged steps of a recipe
          * @returns {promise} The POST promise
          */
-        function getPreviewDiff(preparationId, currentStep, previewStep, recordsTdpId, sampleSize, canceler) {
-            var params = {
-                tdpIds: recordsTdpId,
-                currentStepId: currentStep.transformation.stepId,
-                previewStepId: previewStep.transformation.stepId,
-                preparationId: preparationId,
-                sample: sampleSize
-            };
-
+        function getPreviewDiff(params, canceler) {
             var request = {
                 method: 'POST',
                 url: RestURLs.previewUrl + '/diff',
@@ -271,36 +258,19 @@
          * @ngdoc method
          * @name getPreviewUpdate
          * @methodOf data-prep.services.preparation.service:PreparationRestService
-         * @param {string} preparationId The preparation id to preview
-         * @param {string} currentStep The current loaded step
-         * @param {string} updateStep The target step to update
-         * @param {string} newParams The new parameters
-         * @param {string} recordsTdpId The records TDP ids to preview
-         * @param {number} sampleSize The sample size
+         * @param {object} params The preview parameters
          * @param {string} canceler The canceler promise
          * @description POST preview diff between 2 same actions but with 1 updated step
          * @returns {promise} The POST promise
          */
-        function getPreviewUpdate(preparationId, currentStep, updateStep, newParams, recordsTdpId, sampleSize, canceler) {
-            var actionParam = {
-                action : {
-                    action: updateStep.actionParameters.action,
-                    parameters: newParams
-                },
-                tdpIds: recordsTdpId,
-                currentStepId: currentStep.transformation.stepId,
-                updateStepId: updateStep.transformation.stepId,
-                preparationId: preparationId,
-                sample: sampleSize
-            };
-
+        function getPreviewUpdate(params, canceler) {
             var request = {
                 method: 'POST',
                 url: RestURLs.previewUrl + '/update',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                data: actionParam,
+                data: params,
                 timeout: canceler.promise
             };
 
@@ -311,35 +281,19 @@
          * @ngdoc method
          * @name getPreviewAdd
          * @methodOf data-prep.services.preparation.service:PreparationRestService
-         * @param {string} preparationId The preparation id to preview
-         * @param {string} datasetId The dataset id to preview
-         * @param {string} action The action to add
-         * @param {string} params The action parameters
-         * @param {string} recordsTdpId The records TDP ids to preview
-         * @param {number} sampleSize The sample size
+         * @param {object} params The preview parameters
          * @param {string} canceler The canceler promise
          * @description POST preview diff between the preparation head and a new added transformation
          * @returns {promise} The POST promise
          */
-        function getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, sampleSize, canceler) {
-            var actionParam = {
-                action : {
-                    action: action,
-                    parameters: params
-                },
-                tdpIds: recordsTdpId,
-                datasetId: datasetId,
-                preparationId: preparationId,
-                sample: sampleSize
-            };
-
+        function getPreviewAdd(params, canceler) {
             var request = {
                 method: 'POST',
                 url: RestURLs.previewUrl + '/add',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                data: actionParam,
+                data: params,
                 timeout: canceler.promise
             };
 

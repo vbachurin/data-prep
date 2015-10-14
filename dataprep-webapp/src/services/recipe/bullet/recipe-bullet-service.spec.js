@@ -9,7 +9,7 @@ describe('Recipe Bullet service', function () {
     var stateMock;
 
     beforeEach(module('data-prep.services.recipe', function($provide) {
-        stateMock = {playground: {preparation: {id: preparationId}, sampleSize: 100}};
+        stateMock = {playground: {preparation: {id: preparationId}}};
         $provide.constant('state', stateMock);
     }));
 
@@ -63,7 +63,7 @@ describe('Recipe Bullet service', function () {
         jasmine.clock().tick(1);
 
         //then
-        expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(preparationId, recipe[0], recipe[2], '0004', 100);
+        expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(preparationId, recipe[0], recipe[2], '0004');
     }));
 
     it('should cancel pending preview action on step hover', inject(function ($timeout, RecipeService, RecipeBulletService, PreviewService) {
@@ -147,7 +147,7 @@ describe('Recipe Bullet service', function () {
         jasmine.clock().tick(1);
 
         //then
-        expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(preparationId, recipe[3], previousStep, '0000', 100);
+        expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(preparationId, recipe[3], previousStep, '0000');
     }));
 
     it('should cancel current preview on mouse hover end after a delay of 100ms', inject(function ($timeout, PreviewService, RecipeBulletService) {

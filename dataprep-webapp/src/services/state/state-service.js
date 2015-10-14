@@ -15,7 +15,6 @@
             setCurrentData: PlaygroundStateService.setData,
             setCurrentPreparation: PlaygroundStateService.setPreparation,
             setNameEditionMode: PlaygroundStateService.setNameEditionMode,
-            setSampleSize: PlaygroundStateService.setSampleSize,
 
             //playground - recipe
             showRecipe: PlaygroundStateService.showRecipe,

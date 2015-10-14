@@ -22,7 +22,6 @@ describe('Column types Service', function () {
 
     it('should get types from backend call', inject(function ($rootScope, ColumnTypesService, RestURLs) {
         //given
-        console.log(RestURLs.typesUrl);
         var result = null;
         $httpBackend
             .expectGET(RestURLs.typesUrl)
