@@ -9,10 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.metadata.fillempty.FillWithBooleanIfEmpty;
-import org.talend.dataprep.transformation.api.action.metadata.fillempty.FillWithDateIfEmpty;
-import org.talend.dataprep.transformation.api.action.metadata.fillempty.FillWithIntegerIfEmpty;
-import org.talend.dataprep.transformation.api.action.metadata.fillempty.FillWithStringIfEmpty;
+import org.talend.dataprep.transformation.api.action.metadata.fillempty.FillIfEmpty;
 import org.talend.dataprep.transformation.api.action.metadata.text.ProperCase;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
@@ -39,18 +36,12 @@ public class FillEmptyRuleTest {
 
     @Test
     public void testNegativeMatch() throws Exception {
-        assertThat(fillEmptyRule.apply(new FillWithBooleanIfEmpty(), noEmptyColumn), is(NEGATIVE));
-        assertThat(fillEmptyRule.apply(new FillWithDateIfEmpty(), noEmptyColumn), is(NEGATIVE));
-        assertThat(fillEmptyRule.apply(new FillWithIntegerIfEmpty(), noEmptyColumn), is(NEGATIVE));
-        assertThat(fillEmptyRule.apply(new FillWithStringIfEmpty(), noEmptyColumn), is(NEGATIVE));
+        assertThat(fillEmptyRule.apply(new FillIfEmpty(), noEmptyColumn), is(NEGATIVE));
     }
 
     @Test
     public void testPositiveMatch() throws Exception {
-        assertThat(fillEmptyRule.apply(new FillWithBooleanIfEmpty(), mostEmptyColumn), is(POSITIVE));
-        assertThat(fillEmptyRule.apply(new FillWithDateIfEmpty(), mostEmptyColumn), is(POSITIVE));
-        assertThat(fillEmptyRule.apply(new FillWithIntegerIfEmpty(), mostEmptyColumn), is(POSITIVE));
-        assertThat(fillEmptyRule.apply(new FillWithStringIfEmpty(), mostEmptyColumn), is(POSITIVE));
+        assertThat(fillEmptyRule.apply(new FillIfEmpty(), mostEmptyColumn), is(POSITIVE));
     }
 
 }
