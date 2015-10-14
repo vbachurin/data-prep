@@ -28,14 +28,12 @@ The file structure is inspired by yeoman project called generator-gulp-angular :
 <pre>
 ├── README.md                               - this file
 ├── bower.json                              - javascript app external dependencies
-├── bower.json_latest_angular_no_boostrap   - js dependencies without bootstrap and using the latest angular (no used today)
 ├── bower_components/                       - untracked generated folder where external javascript dependencies are located
 ├── coverage/                               - untracked generated folder where karma istanbul plugin will put coverage files
-├── dev/                                    - untracked generated folder where you find an autonomous deployment of the app dev
-├── docker.base.dev.img/                    - dockefile generated to create a base image with npm, bower, git
+├── dist/                                   - untracked generated folder where you find an autonomous deployment of the app dev
+├── docker/                                 - dockefile and scripts to generate the docker image 
 ├── gulp/                                   - folder that contains all build files
 ├── gulpfile.js                             - gulp initial file
-├── node/                                   - untracked generated folder created when using maven
 ├── node_modules/                           - untracked generated folder for gulp build node modules
 ├── karma.conf.js                           - unit tests configuration
 ├── package.json                            - npm description for build tools dependencies
@@ -49,19 +47,20 @@ The file structure is inspired by yeoman project called generator-gulp-angular :
 The source file structure is based on the [Best Practice Recommendations for Angular App Structure](https://docs.google.com/document/d/1XXMvReO8-Awi1EZXAXS4PzDzdNvV6pGcuaF4Q9821Es/pub), except for css files that have their own structure
 
 <pre>
-├── app                                         - app source folder
-│   ├── home                                    - home page sources
-│       ├── home.html                           - home page
-│       ├── home-controller.js                  - home page controller
-│       ├── home-controller-spec.js             - home page controller unit tests
-│       ├── home-subheader.html                 - home page subheader included in home.html
-│   ├── ...                                     - other page folder
-│
 ├── assets                                      - assets source folder
 │   ├── fonts                                   - fonts folder
 │   └── images                                  - images folder
 │
-├── components                                  - reusable components folder
+├── i18n                                        - translation folder
+│   ├── en.json                                 - english translation files
+│   └── ...                                     - other Enterprise edition translation files
+│
+├── components                                  - components folder
+│   ├── home                                    - home page sources
+│       ├── home.html                           - home page
+│       ├── home-controller.js                  - home page controller
+│       ├── home-controller-spec.js             - home page controller unit tests
+│       └── home-subheader.html                 - home page subheader included in home.html
 │   ├── dataset                                 - dataset module folder
 │       ├── dataset-grid                        - dataset module folder
 │           ├── ...
@@ -73,8 +72,18 @@ The source file structure is based on the [Best Practice Recommendations for Ang
 │       ├── dataset-service.js                  - dataset angular service registered in dataset module
 │       └── dataset-service.spec.js             - dataset service unit tests
 │
-│   ├── utils                                   - filters, constants, ...
+│   ├── widgets                                 - Reusable components folder
 │   ├── ...                                     - other component folder
+│
+├── services                                    - common services source folder
+│   ├── dataset                                 - dataset related services
+│       ├── dataset-module.js                   - dataset services module declaration
+│       ├── list                                - dataset list services folder
+│         ├── dataset-list-service.js           - dataset list service
+│         ├── dataset-list-service.spec.js      - dataset list service unit tests
+│         ├── ...                               - other dataset list services
+│       ├── ...                                 - other dataset services folder
+│   ├── ...                                     - other services folder
 │
 ├── css                                         - style folder
 │   ├── base                                    - base styles (reset, typography, ...)
