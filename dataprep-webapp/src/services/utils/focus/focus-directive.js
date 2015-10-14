@@ -1,0 +1,38 @@
+(function() {
+    'use strict';
+
+    /**
+     * @ngdoc directive
+     * @name data-prep.services.utils:EnableFocus
+     * @description This directive set focus on a element depending on a model value
+     * @restrict A
+     * @usage
+     * <input type='text' enable-focus='ctrl.beerTime'/>
+     * in case of beer time the input text will have focus
+     */
+    function EnableFocus($timeout) {
+        return {
+            restrict: 'A',
+            link: function(scope, iElement, attrs) {
+                scope.$watch(attrs.enableFocus, function(newValue, oldValue) {
+                    if (newValue) {
+                        iElement[0].focus();
+                    }
+                });
+                iElement.bind("blur", function(e) {
+                    $timeout(function() {
+                        scope.$apply(attrs.enableFocus + "=false");
+                    }, 0);
+                });
+                iElement.bind("focus", function(e) {
+                    $timeout(function() {
+                        scope.$apply(attrs.enableFocus + "=true");
+                    }, 0);
+                })
+            }
+        };
+    }
+
+    angular.module('data-prep.services.utils')
+        .directive('enableFocus', EnableFocus);
+})();
