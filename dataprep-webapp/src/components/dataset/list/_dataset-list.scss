@@ -44,8 +44,9 @@
       &.edit-btn {
         color: $medium-gray;
         background-color: transparent;
-        &:hover
-        { color: $dark-gray; }
+        &:hover {
+          color: $dark-gray;
+        }
       }
       &.cancel-btn {
         margin-left: 0px;
