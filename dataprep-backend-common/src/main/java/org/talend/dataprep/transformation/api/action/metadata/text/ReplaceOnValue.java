@@ -89,23 +89,34 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
             return;
         }
 
-        final String toMatch = parameters.get(CELL_VALUE_PARAMETER);
+        final String newValue = computeNewValue(value, //
+                parameters.get(CELL_VALUE_PARAMETER), //
+                parameters.get(REPLACE_VALUE_PARAMETER), //
+                new Boolean(parameters.get(REPLACE_ENTIRE_CELL_PARAMETER)));
+        row.set(columnId, newValue);
+    }
+
+    protected String computeNewValue(String originalValue, String regexp, String replacement, boolean replaceEntireCell) {
+        if (originalValue == null) {
+            return originalValue;
+        }
 
         try {
-            Pattern p = Pattern.compile(toMatch);
+            Pattern p = Pattern.compile(regexp);
+            final Matcher matcher = p.matcher(originalValue);
 
-            if (value != null) {
-                final String toReplace = parameters.get(REPLACE_VALUE_PARAMETER);
-                final boolean replaceEntireCell = new Boolean(parameters.get(REPLACE_ENTIRE_CELL_PARAMETER));
-                final Matcher matcher = p.matcher(value);
-
-                if (!replaceEntireCell || matcher.matches()) {
-                    final String newValue = (replaceEntireCell ? toReplace : matcher.replaceFirst(toReplace));
-                    row.set(columnId, newValue);
+            if (replaceEntireCell) {
+                if (matcher.matches()) {
+                    return replacement;
+                } else {
+                    return originalValue;
                 }
+            } else {
+                return matcher.replaceFirst(replacement);
             }
         } catch (PatternSyntaxException e) {
             // In case the pattern is not valid, consider that the value does not match: nothing to do.
+            return originalValue;
         }
     }
 
