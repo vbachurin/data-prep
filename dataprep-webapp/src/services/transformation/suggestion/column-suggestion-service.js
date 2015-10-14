@@ -51,7 +51,14 @@
             self.transformations = null;
             TransformationCacheService.getTransformations(column)
                 .then(function (transformations) {
-                    self.transformations = filterAndGroup(transformations);
+                    var transformationsObj = filterAndGroup(transformations);
+
+                    //Add labelHtml which is copy of label in order to manage the highlight action label
+                    angular.forEach(transformationsObj, function(item){
+                        item.labelHtml= item.label;
+                    });
+
+                    self.transformations = transformationsObj;
                 });
         };
 
