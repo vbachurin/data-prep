@@ -9,14 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -32,14 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
@@ -123,7 +109,9 @@ public class TransformationService {
     @ApiOperation(value = "Export the preparation applying the transformation", notes = "This operation format the input data transformed using the supplied actions in the provided format.", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @VolumeMetered
     public void transform( //
-            @ApiParam(value = "Output format.")  @PathVariable("format") final String formatName, //
+            @ApiParam(value = "Output format.")
+    @PathVariable("format")
+    final String formatName, //
             @ApiParam(value = "Actions to perform on content.") @RequestPart(value = "actions", required = false) final Part actions, //
             @ApiParam(value = "Data set content as JSON.") @RequestPart(value = "content", required = false) final Part content, //
             final HttpServletResponse response, final HttpServletRequest request) {
@@ -143,8 +131,8 @@ public class TransformationService {
                 final String paramName = names.nextElement();
 
                 // filter out the content and the actions
-                if (StringUtils.equals("actions", paramName) || StringUtils.equals("content", paramName)
-                        || StringUtils.equals("name", paramName)) {
+                if (StringUtils.equals("actions", paramName) || StringUtils.equals("content", paramName) || //
+                        StringUtils.equals(ExportFormat.Parameter.FILENAME_PARAMETER, paramName)) {
                     continue;
                 }
 
@@ -156,18 +144,16 @@ public class TransformationService {
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
 
             // set headers
-            String name = request.getParameter("name");
+            String name = request.getParameter("exportParameters." + ExportFormat.Parameter.FILENAME_PARAMETER);
             if (StringUtils.isBlank(name)) {
                 name = "untitled";
-            } else {
-                name = new String(Base64.getDecoder().decode(name));
             }
+
             response.setContentType(format.getMimeType());
             response.setHeader("Content-Disposition", "attachment; filename=\"" + name + format.getExtension() + "\"");
 
             Configuration configuration = Configuration.builder() //
-                    .format(format.getName())
-                    .args(arguments)
+                    .format(format.getName()).args(arguments)
                     .output(response.getOutputStream()) //
                     .actions(decodedActions) //
                     .build();

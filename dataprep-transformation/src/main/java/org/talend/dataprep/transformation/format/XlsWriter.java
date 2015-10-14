@@ -5,6 +5,7 @@ import static org.talend.dataprep.transformation.format.XlsFormat.XLS;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -34,6 +35,10 @@ public class XlsWriter implements TransformerWriter {
     private int rowIdx = 0;
 
     private List<ColumnMetadata> columnsMetadata;
+
+    public XlsWriter(final OutputStream output, Map<String, Object> parameters) {
+        this(output);
+    }
 
     public XlsWriter(final OutputStream output) {
         this.outputStream = output;

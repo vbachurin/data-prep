@@ -1,7 +1,5 @@
 package org.talend.dataprep.transformation.aggregation.operation;
 
-import java.util.function.BiConsumer;
-
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.aggregation.api.AggregationResult;
@@ -23,7 +21,7 @@ public class Average extends AbstractAggregator implements Aggregator {
     }
 
     /**
-     * @see BiConsumer#accept(Object, Object)
+     * @see java.util.function.BiConsumer#accept(Object, Object)
      */
     @Override
     public void accept(DataSetRow row, AggregationResult result) {

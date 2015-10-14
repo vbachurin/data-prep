@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +17,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -74,14 +71,13 @@ public class Export extends PreparationCommand<InputStream> {
             }
 
             // fileName can come from parameters otherwise we use default preparation or dataset name
-            String fileName = input.getArguments().get("exportParameters." + ExportType.Parameter.FILENAME_PARAMETER);
-            if (StringUtils.isEmpty(fileName)) {
-                fileName = name;
+            String fileName = input.getArguments().get("exportParameters.fileName");
+            if (!StringUtils.isEmpty(fileName)) {
+                name = fileName;
             }
 
-            // TODO Vincent check merge
             final Map<String, String> inputArguments = input.getArguments();
-            inputArguments.put("name", name);
+            inputArguments.put("exportParameters.fileName", name);
 
             // Get dataset content and execute export service
             final String encodedActions = serializeActions(actions);
@@ -112,7 +108,7 @@ public class Export extends PreparationCommand<InputStream> {
     private URI getTransformationUri(final String exportFormat, final Map<String, String> params)
         throws URISyntaxException {
 
-        URIBuilder uriBuilder = new URIBuilder( this.transformationServiceUrl + "/transform/" + exportFormat );
+        URIBuilder uriBuilder = new URIBuilder(this.transformationServiceUrl + "/transform/" + exportFormat);
 
         if (params != null){
             for (Map.Entry<String,String> entry:params.entrySet()){

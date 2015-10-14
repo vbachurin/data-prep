@@ -5,12 +5,11 @@ import static org.hamcrest.core.Is.is;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.springframework.http.HttpStatus.OK;
 
-import java.util.Base64;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.talend.dataprep.transformation.Application;
+import org.talend.dataprep.transformation.format.ExportFormat;
 
 import com.jayway.restassured.response.Response;
 
@@ -91,7 +90,7 @@ public class ActionTests extends TransformationServiceBaseTests {
                 .multiPart("actions", actions) //
                 .multiPart("content", initialContent) //
                 .when() //
-                .post("/transform/JSON?name={name}", Base64.getEncoder().encodeToString(name.getBytes()));
+                .post("/transform/JSON?" + "exportParameters." + ExportFormat.Parameter.FILENAME_PARAMETER + "={name}", name);
 
         // then
         Assert.assertTrue(response.getContentType().startsWith("application/json"));

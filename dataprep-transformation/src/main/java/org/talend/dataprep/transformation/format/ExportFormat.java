@@ -3,7 +3,7 @@ package org.talend.dataprep.transformation.format;
 import java.io.Serializable;
 import java.util.List;
 
-import org.talend.dataprep.api.type.json.ExportTypeSerializer;
+import org.talend.dataprep.transformation.format.json.ExportFormatSerializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -96,7 +96,7 @@ public class ExportFormat {
      */
     public static class Parameter implements Serializable {
 
-        //TODO Vincent check where to put this constant
+        /** Common filename parameter name. */
         public static final String FILENAME_PARAMETER = "fileName";
 
         /** Parameter name. */

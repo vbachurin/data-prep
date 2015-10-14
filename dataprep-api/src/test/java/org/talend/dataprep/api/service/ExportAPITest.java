@@ -65,8 +65,7 @@ public class ExportAPITest extends ApiServiceTestBase {
         applyActionFromFile(preparationId, "export/delete_city.json");
 
         final String expectedExport = IOUtils
-                .toString(this.getClass()
-                .getResourceAsStream("export/expected_export_preparation_uppercase_firstname.csv"));
+                .toString(this.getClass().getResourceAsStream("export/expected_export_preparation_uppercase_firstname.csv"));
 
         final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
                 .getList("steps");
@@ -86,8 +85,7 @@ public class ExportAPITest extends ApiServiceTestBase {
         final String preparationId = createPreparationFromFile("export/export_dataset.csv", "testExport", "text/csv");
 
         final String expectedExport = IOUtils
-                .toString(this.getClass()
-                .getResourceAsStream("export/expected_export_default_separator.csv"));
+                .toString(this.getClass().getResourceAsStream("export/expected_export_default_separator.csv"));
 
         // when
         final String export = given().formParam("exportType", "CSV").formParam("preparationId", preparationId)
@@ -103,8 +101,7 @@ public class ExportAPITest extends ApiServiceTestBase {
         final String preparationId = createPreparationFromFile("export/export_dataset.csv", "testExport", "text/csv");
 
         final String expectedExport = IOUtils
-                .toString(this.getClass()
-                .getResourceAsStream("export/expected_export_semicolon_separator.csv"));
+                .toString(this.getClass().getResourceAsStream("export/expected_export_semicolon_separator.csv"));
 
         // when
         final String export = given().formParam("exportType", "CSV").formParam("exportParameters.csvSeparator", ";")
@@ -120,9 +117,9 @@ public class ExportAPITest extends ApiServiceTestBase {
         final Response response = given() //
                 .formParam("csvSeparator", ";") //
                 .formParam("preparationId", "4552157454657") //
-                .formParam( "stepId", "head" ) //
+                .formParam("stepId", "head") //
                 .when() //
-                .get( "/api/export" );
+                .get("/api/export");
 
         // then
         response.then().statusCode(400);
@@ -132,8 +129,7 @@ public class ExportAPITest extends ApiServiceTestBase {
     public void testExportCsvWithBadBodyInput_noPrepId_noDatasetId() throws Exception {
         // when
         final Response response = given().formParam("exportType", "CSV").formParam("csvSeparator", ";")
-                .formParam("stepId", "head")
-                .when().get("/api/export");
+                .formParam("stepId", "head").when().get("/api/export");
 
         // then
         response.then().statusCode(400);
@@ -149,7 +145,7 @@ public class ExportAPITest extends ApiServiceTestBase {
         // when
         final Response export = given() //
                 .formParam("exportType", "CSV") //
-                .formParam( "exportParameters.csvSeparator", ";" ) //
+                .formParam("exportParameters.csvSeparator", ";") //
                 .formParam("preparationId", preparationId) //
                 .formParam("stepId", "head") //
                 .formParam("exportParameters.fileName", fileName) //
@@ -171,12 +167,12 @@ public class ExportAPITest extends ApiServiceTestBase {
 
         // when
         final Response export = given() //
-            .formParam("exportType", CSV) //
-            .formParam( "exportParameters.csvSeparator", ";" ) //
+                .formParam("exportType", "CSV") //
+                .formParam("exportParameters.csvSeparator", ";") //
             .formParam("preparationId", preparationId) //
             .formParam("stepId", "head") //
             .when() //
-            .get( "/api/export" );
+                .get("/api/export");
 
         // then
         String contentDispositionHeaderValue = export.getHeader("Content-Disposition");

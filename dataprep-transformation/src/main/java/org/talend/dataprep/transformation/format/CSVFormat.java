@@ -3,7 +3,10 @@ package org.talend.dataprep.transformation.format;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 /**
  * CSV format type.
@@ -18,12 +21,26 @@ public class CSVFormat extends ExportFormat {
      * Default constructor.
      */
     public CSVFormat() {
-        super(CSV, "text/csv", ".csv", true, false,
-                Collections
-                        .singletonList(new Parameter("csvSeparator", "CHOOSE_SEPARATOR", "radio",
+        //@formatter:off
+        super("CSV", "text/csv", ".csv", true, false,
+                Lists.newArrayList(
+                        new Parameter("csvSeparator",
+                                "CHOOSE_SEPARATOR",
+                                "radio",
                                 new ParameterValue(";", "SEPARATOR_SEMI_COLON"),
-                                Arrays.asList(new ParameterValue("\u0009", "SEPARATOR_TAB"), // &#09;
+                                Arrays.asList(
+                                        new ParameterValue("\u0009", "SEPARATOR_TAB"), // &#09;
                                         new ParameterValue(" ", "SEPARATOR_SPACE"),
-                                        new ParameterValue(",", "SEPARATOR_COMMA")))));
+                                        new ParameterValue(",", "SEPARATOR_COMMA")
+                                )
+                        ),
+                        new Parameter(Parameter.FILENAME_PARAMETER,
+                                "EXPORT_FILENAME", 
+                                "text",
+                                new ParameterValue(StringUtils.EMPTY, "EXPORT_FILENAME_DEFAULT"),
+                                Collections.emptyList()
+                        )
+                ));
+        //@formatter:on
     }
 }

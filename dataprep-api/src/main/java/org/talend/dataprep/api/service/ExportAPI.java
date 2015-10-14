@@ -4,7 +4,6 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import java.io.InputStream;
-import java.util.Base64;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;

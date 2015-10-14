@@ -2,6 +2,7 @@ package org.talend.dataprep.transformation.format;
 
 import java.util.Collections;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,7 +17,16 @@ public class XlsFormat extends ExportFormat {
     /**
      * Default constructor.
      */
+    //@formatter:off
     public XlsFormat() {
-        super(XLS, "application/vnd.ms-excel", ".xls", false, true, Collections.<Parameter> emptyList());
+        super(XLS, "application/vnd.ms-excel", ".xls", true, true,
+                Collections.singletonList(
+                        new Parameter( Parameter.FILENAME_PARAMETER, //
+                            "EXPORT_FILENAME",  //
+                            "text", //
+                            new ParameterValue( StringUtils.EMPTY, "EXPORT_FILENAME_DEFAULT" ), //
+                            Collections.emptyList() //
+                )));
     }
+    //@formatter:on
 }
