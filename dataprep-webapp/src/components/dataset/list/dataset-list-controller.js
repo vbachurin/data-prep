@@ -174,8 +174,8 @@
          * @param {object} dataset - the dataset to clone
          */
         vm.cancelRename = function(dataset){
-            dataset.showChangeName=false;
             dataset.name = vm.originalDatasetName;
+            dataset.showChangeName=false;
         };
 
         /**

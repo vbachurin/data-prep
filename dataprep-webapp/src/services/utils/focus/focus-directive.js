@@ -8,7 +8,7 @@
      * @restrict A
      * @usage
      * <input type='text' enable-focus='ctrl.beerTime'/>
-     * in case of beer time the input text will have focus
+     * in case of beerTime === true the input text will have focus.
      */
     function EnableFocus($timeout) {
         return {
@@ -19,16 +19,6 @@
                         iElement[0].focus();
                     }
                 });
-                iElement.bind("blur", function(e) {
-                    $timeout(function() {
-                        scope.$apply(attrs.enableFocus + "=false");
-                    }, 0);
-                });
-                iElement.bind("focus", function(e) {
-                    $timeout(function() {
-                        scope.$apply(attrs.enableFocus + "=true");
-                    }, 0);
-                })
             }
         };
     }
