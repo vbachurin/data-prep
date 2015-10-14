@@ -294,12 +294,12 @@ public class TransformationService {
         // look for all actions applicable to the column type
         final List<ActionMetadata> actions = Stream.of(allActions) //
                 .filter(am -> am.acceptColumn(column)) // Filter on acceptable columns (for type)
-                .map(am -> am.adapt(column)) // Adapt default values (e.g. column name)
                 .collect(toList());
         return suggestionEngine.score(actions, column).stream() //
                 .filter(s -> s.getScore() > 0) // Keep only strictly positive score (negative and 0 indicates not applicable)
                 .limit(limit)
                 .map(Suggestion::getAction) // Get the action for positive suggestions
+                .map(am -> am.adapt(column)) // Adapt default values (e.g. column name)
                 .collect(Collectors.toList());
     }
 

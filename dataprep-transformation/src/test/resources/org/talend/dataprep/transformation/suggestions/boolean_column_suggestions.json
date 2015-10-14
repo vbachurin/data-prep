@@ -128,7 +128,10 @@
     "label": "Fill invalid cells with value..."
   },
   {
-    "name": "fillemptywithdefaultboolean",
+    "description": "Fill empty cells of this column with given value",
+    "category": "data cleansing",
+    "label": "Fill empty cells with value...",
+    "name": "fillemptywithdefault",
     "parameters": [
       {
         "name": "column_id",
@@ -178,9 +181,6 @@
         "default": "True"
       }
     ],
-    "category": "data cleansing",
-    "dynamic": false,
-    "description": "Fill empty cells of this column with given value",
-    "label": "Fill empty cells with value..."
+    "dynamic": false
   }
 ]

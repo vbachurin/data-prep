@@ -117,7 +117,7 @@
     "label": "Fill invalid cells with value..."
   },
   {
-    "name": "fillemptywithdefaultinteger",
+    "name": "fillemptywithdefault",
     "parameters": [
       {
         "name": "column_id",
