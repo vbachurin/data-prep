@@ -26,7 +26,7 @@ public class FillInvalidRuleTest {
 
     @Before
     public void setUp() throws Exception {
-        fillInvalidRule = InvalidRules.fillInvalidRule();
+        fillInvalidRule = new InvalidRules().fillInvalidRule();
         allValidColumn.getStatistics().setInvalid(0);
         mostValidColumn.getStatistics().setInvalid(10);
     }
