@@ -9,6 +9,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -56,6 +57,9 @@ public class GenericCommand<T> extends HystrixCommand<T> {
 
     private Supplier<HttpRequestBase> httpCall;
 
+    /** Headers of the response received by the command. Set in the run command. */
+    private Header[] commandResponseHeaders = new Header[0];
+
     private Function<Exception, RuntimeException> onError = passthrough();
 
     protected GenericCommand(HystrixCommandGroupKey group, HttpClient client) {
@@ -79,6 +83,8 @@ public class GenericCommand<T> extends HystrixCommand<T> {
     protected T run() throws Exception {
         final HttpRequestBase request = httpCall.get();
         final HttpResponse response = client.execute(request);
+        commandResponseHeaders = response.getAllHeaders();
+
         final HttpStatus status = HttpStatus.valueOf(response.getStatusLine().getStatusCode());
         // handle response's HTTP status
         if (status.is4xxClientError() || status.is5xxServerError()) {
@@ -88,6 +94,13 @@ public class GenericCommand<T> extends HystrixCommand<T> {
             // Http status is not error so apply onError behavior
             return behavior.getOrDefault(status, missingBehavior()).apply(request, response);
         }
+    }
+
+    /**
+     * @return the CommandResponseHeader
+     */
+    public Header[] getCommandResponseHeaders() {
+        return commandResponseHeaders;
     }
 
     /**

@@ -27,7 +27,6 @@ import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.api.ExportParameters;
 import org.talend.dataprep.api.service.command.common.PreparationCommand;
-import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
@@ -43,6 +42,11 @@ public class Export extends PreparationCommand<InputStream> {
         on(HttpStatus.OK).then(pipeStream());
     }
 
+    /**
+     * @param input the export parameters.
+     * @param response http response to the client.
+     * @return the request to perform.
+     */
     private HttpRequestBase onExecute(ExportParameters input, HttpServletResponse response) {
         try {
             String name;
@@ -62,12 +66,11 @@ public class Export extends PreparationCommand<InputStream> {
                 actions = Collections.emptyList();
                 content = getDatasetContent(dataSetId);
             }
-            // Set response headers
-            response.setContentType(input.getExportType().getMimeType());
-            response.setHeader("Content-Disposition",
-                    "attachment; filename=\"" + name + input.getExportType().getExtension() + "\"");
-            // Get dataset content and execute export service
+
+            // Get dataset content and execute format service
             final String encodedActions = serializeActions(actions);
+            final Map<String, String> inputArguments = input.getArguments();
+            inputArguments.put("name", name);
             final String uri = getTransformationUri(input.getExportType(), input.getArguments());
             final HttpPost transformationCall = new HttpPost(uri);
 
@@ -84,14 +87,14 @@ public class Export extends PreparationCommand<InputStream> {
     }
 
     /**
-     * Create the transformation export uri
+     * Create the transformation format uri
      * 
-     * @param exportType The export type.
+     * @param exportFormat The format type.
      * @param params optional params
      * @return The built URI
      */
-    private String getTransformationUri(final ExportType exportType, final Map<String, String> params) {
-        String result = this.transformationServiceUrl + "/transform/" + exportType;
+    private String getTransformationUri(final String exportFormat, final Map<String, String> params) {
+        String result = this.transformationServiceUrl + "/transform/" + exportFormat;
         boolean hasQueryParams = false;
         if (params != null ) {
             for (Map.Entry<String,String> entry:params.entrySet()){

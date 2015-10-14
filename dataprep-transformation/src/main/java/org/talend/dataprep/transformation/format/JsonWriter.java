@@ -1,36 +1,64 @@
-package org.talend.dataprep.transformation.api.transformer.writer;
+package org.talend.dataprep.transformation.format;
+
+import static org.talend.dataprep.transformation.format.JsonFormat.JSON;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 
+@Scope("prototype")
+@Component("writer#" + JSON)
 public class JsonWriter implements TransformerWriter {
 
-    private final JsonGenerator generator;
+    /** The data-prep ready jackson module. */
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
 
-    public JsonWriter(final JsonGenerator generator) {
-        this.generator = generator;
+    /** Where this writer should write. */
+    private final OutputStream output;
+
+    /** Jackson generator. */
+    private JsonGenerator generator;
+
+    /**
+     * Default constructor.
+     *
+     * @param output Where this writer should write.
+     */
+    public JsonWriter(final OutputStream output) {
+        this.output = output;
     }
 
-    public static JsonWriter create(Jackson2ObjectMapperBuilder builder, OutputStream output) {
-        try {
-            final JsonFactory factory = builder.build().getFactory();
-            final JsonGenerator generator = factory.createGenerator(output);
-            generator.setCodec(builder.build());
-            return new JsonWriter(generator);
-        } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
-        }
+    /**
+     * Init the writer.
+     * 
+     * @throws IOException if an error occurs.
+     */
+    @PostConstruct
+    private void init() throws IOException {
+        this.generator = builder.build().getFactory().createGenerator(output);
     }
+
+    /*
+     * TODO Vincent to remove if unneeded public static JsonWriter create(Jackson2ObjectMapperBuilder builder,
+     * OutputStream output) { try { final JsonFactory factory = builder.build().getFactory(); final JsonGenerator
+     * generator = factory.createGenerator(output); generator.setCodec(builder.build()); return new
+     * JsonWriter(generator); } catch (IOException e) { throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON,
+     * e); } }
+     */
 
     @Override
     public void write(final RowMetadata rowMetadata) throws IOException {

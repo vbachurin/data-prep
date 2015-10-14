@@ -1,64 +1,47 @@
-package org.talend.dataprep.api.type;
+package org.talend.dataprep.transformation.format;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import org.talend.dataprep.api.type.json.ExportTypeSerializer;
+import org.talend.dataprep.transformation.format.json.ExportFormatSerializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-@JsonSerialize(using = ExportTypeSerializer.class)
-public enum ExportType {
+/**
+ * Models a type of format.
+ */
+@JsonSerialize(using = ExportFormatSerializer.class)
+public class ExportFormat {
 
-    //@formatter:off
-    // take care when declaring new export type as only one can be default :-)
-    CSV("text/csv", ".csv", true, false,
-        Collections.singletonList(
-                new Parameter("csvSeparator",
-                              "CHOOSE_SEPARATOR",
-                              "radio",
-                              new ParameterValue(";", "SEPARATOR_SEMI_COLON"),
-                              Arrays.asList(
-                                  new ParameterValue("\u0009", "SEPARATOR_TAB"), // &#09;
-                                  new ParameterValue(" ", "SEPARATOR_SPACE"),
-                                  new ParameterValue(",", "SEPARATOR_COMMA")
-                              )
-                )
-        )
-    ),
-    XLS("application/vnd.ms-excel", ".xls", false, true, Collections.<Parameter> emptyList()),
-    TABLEAU("application/tde", ".tde", false, false, Collections.<Parameter> emptyList()),
-    JSON("application/json", ".json", false, false, Collections.<Parameter> emptyList());
-    //@formatter:on
-
+    /** The format type human readable name. */
+    private final String name;
     /** The mime type. */
     private final String mimeType;
-
     /** The file extension. */
     private final String extension;
 
-    /** Does this export type need more parameters? (ui will open a new form in this case). */
+    /** Does this format type need more parameters? (ui will open a new form in this case). */
     private final boolean needParameters;
 
-    /** Is it the default export. */
+    /** Is it the default format. */
     private final boolean defaultExport;
 
-    /** List of extra parameters needed for this export (i.e separator for csv files etc...). */
+    /** List of extra parameters needed for this format (i.e separator for csv files etc...). */
     private final List<Parameter> parameters;
 
     /**
-     * Default constructor.
+     * Default protected constructor.
      *
-     * @param mimeType the export mime type.
+     * @param name the format type human readable name.
+     * @param mimeType the format mime type.
      * @param extension the file extension.
      * @param needParameters if the type needs parameters.
-     * @param defaultExport if it's the default export.
+     * @param defaultExport if it's the default format.
      * @param parameters the list of parameters.
      */
-    ExportType(final String mimeType, final String extension, final boolean needParameters, final boolean defaultExport,
-            final List<Parameter> parameters) {
+    public ExportFormat(final String name, final String mimeType, final String extension, final boolean needParameters,
+            final boolean defaultExport, final List<Parameter> parameters) {
+        this.name = name;
         this.mimeType = mimeType;
         this.extension = extension;
         this.needParameters = needParameters;
@@ -88,7 +71,7 @@ public enum ExportType {
     }
 
     /**
-     * @return true if it's the default export.
+     * @return true if it's the default format.
      */
     public boolean isDefaultExport() {
         return defaultExport;
@@ -101,6 +84,12 @@ public enum ExportType {
         return parameters;
     }
 
+    /**
+     * @return the Name
+     */
+    public String getName() {
+        return name;
+    }
 
     /**
      * Inner Parameter class.

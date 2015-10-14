@@ -1,23 +1,13 @@
 package org.talend.dataprep.transformation.api.transformer.configuration;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.talend.dataprep.api.type.ExportType;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
-import org.talend.dataprep.transformation.api.transformer.writer.CsvWriter;
-import org.talend.dataprep.transformation.api.transformer.writer.JsonWriter;
-import org.talend.dataprep.transformation.api.transformer.writer.TableauWriter;
-import org.talend.dataprep.transformation.api.transformer.writer.XlsWriter;
-
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.talend.dataprep.transformation.format.ExportFormat;
+import org.talend.dataprep.transformation.format.JsonFormat;
 
 /**
  * Full configuration for a transformation.
@@ -29,13 +19,13 @@ public class Configuration {
         SMALL
     }
     
-    /** The export format {@link org.talend.dataprep.api.type.ExportType} */
-    private final ExportType format;
+    /** The format format {@link ExportFormat} */
+    private final String format;
 
     /** The actions in JSON string format */
     private final String actions;
 
-    /** The arguments for export */
+    /** The arguments for format */
     private final Map<String, Object> arguments;
 
     /** Where to write the transformed content. */
@@ -50,7 +40,7 @@ public class Configuration {
      * Constructor for the transformer configuration.
      */
     protected Configuration(final OutputStream output, //
-            final ExportType format, //
+            final String format, //
             final String actions, //
             final Map<String, Object> arguments, //
             final Volume dataVolume) {
@@ -70,9 +60,9 @@ public class Configuration {
     }
 
     /**
-     * @return The expected output {@link ExportType format} of the transformation.
+     * @return The expected output {@link ExportFormat format} of the transformation.
      */
-    public ExportType format() {
+    public String formatId() {
         return format;
     }
 
@@ -84,7 +74,7 @@ public class Configuration {
     }
 
     /**
-     * @return Arguments for the {@link ExportType export type} (parameters depend on the export type).
+     * @return Arguments for the {@link ExportFormat format type} (parameters depend on the format type).
      */
     public Map<String, Object> getArguments() {
         return arguments;
@@ -104,34 +94,6 @@ public class Configuration {
         return transformationContext;
     }
 
-    /**
-     * @return The {@link TransformerWriter writer} to be used to send result back to client.
-     */
-    public TransformerWriter writer() {
-        switch (format) {
-        case CSV:
-            String separator = (String) arguments.get("exportParameters.csvSeparator");
-            if (separator == null) {
-                separator = ",";
-            }
-            return new CsvWriter(output, separator.charAt(0));
-        case XLS:
-            return new XlsWriter(output);
-        case TABLEAU:
-            return new TableauWriter(output);
-        case JSON:
-            try {
-                final ObjectMapper mapper = new ObjectMapper();
-                final JsonGenerator generator = mapper.getFactory().createGenerator(output);
-                return new JsonWriter(generator);
-            } catch (IOException e) {
-                throw new TDPException(TransformationErrorCodes.UNEXPECTED_EXCEPTION, e);
-            }
-        default:
-            throw new TDPException(TransformationErrorCodes.OUTPUT_TYPE_NOT_SUPPORTED);
-        }
-    }
-
     public Volume volume() {
         return dataVolume;
     }
@@ -142,9 +104,9 @@ public class Configuration {
     public static class Builder {
 
         /**
-         * The export format {@link org.talend.dataprep.api.type.ExportType}
+         * The format format {@link ExportFormat}
          */
-        private ExportType format = ExportType.JSON;
+        private String format = JsonFormat.JSON;
 
         /**
          * The actions in JSON string format
@@ -181,10 +143,10 @@ public class Configuration {
         /**
          * Builder DSL for format setter
          *
-         * @param format The export type.
+         * @param format The format type id.
          * @return The builder
          */
-        public Builder format(final ExportType format) {
+        public Builder format(final String format) {
             this.format = format;
             return this;
         }

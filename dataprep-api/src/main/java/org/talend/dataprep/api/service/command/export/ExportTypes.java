@@ -18,7 +18,7 @@ public class ExportTypes extends GenericCommand<InputStream> {
 
     private ExportTypes(final HttpClient client) {
         super(APIService.TRANSFORM_GROUP, client);
-        execute(() -> new HttpGet(this.transformationServiceUrl + "/export/types"));
+        execute(() -> new HttpGet(this.transformationServiceUrl + "/export/formats"));
         on(HttpStatus.OK).then(pipeStream());
     }
 

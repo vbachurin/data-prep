@@ -5,9 +5,14 @@ import static org.hamcrest.core.Is.is;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.springframework.http.HttpStatus.OK;
 
+import java.util.Base64;
+
 import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.talend.dataprep.transformation.Application;
+
+import com.jayway.restassured.response.Response;
 
 /**
  * Integration tests on actions.
@@ -72,6 +77,26 @@ public class ActionTests extends TransformationServiceBaseTests {
     // ------------------------------------------------------------------------------------------------------------------
     // --------------------------------------------------------Actions---------------------------------------------------
     // ------------------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void checkHeaders() throws Exception {
+        // given
+        final String actions = IOUtils.toString(Application.class.getResourceAsStream("actions/uppercaseAction.json"));
+        final String initialContent = IOUtils.toString(Application.class.getResourceAsStream("actions/input_case.json"));
+
+        String name = "TDDPrep";
+
+        // when
+        final Response response = given() //
+                .multiPart("actions", actions) //
+                .multiPart("content", initialContent) //
+                .when() //
+                .post("/transform/JSON?name={name}", Base64.getEncoder().encodeToString(name.getBytes()));
+
+        // then
+        Assert.assertTrue(response.getContentType().startsWith("application/json"));
+        Assert.assertEquals("attachment; filename=\"" + name + ".json\"", response.getHeader("Content-Disposition"));
+    }
 
     @Test
     public void uppercaseAction() throws Exception {

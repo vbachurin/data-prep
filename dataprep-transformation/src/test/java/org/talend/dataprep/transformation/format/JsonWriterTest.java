@@ -1,11 +1,11 @@
-package org.talend.dataprep.transformation.api.transformer.json;
+package org.talend.dataprep.transformation.format;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,24 +18,24 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.transformer.writer.JsonWriter;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
+/**
+ * Unit test for the JsonWriter.
+ * 
+ * @JsonWriter
+ */
+public class JsonWriterTest extends BaseFormatTest {
 
-public class JsonWriterTest {
-
+    /** The writer to test. */
     private JsonWriter writer;
 
-    private StringWriter output;
+    /** Where the writer should write. */
+    private ByteArrayOutputStream outputStream;
 
     @Before
     public void init() throws IOException {
-        output = new StringWriter();
-        final JsonGenerator generator = new JsonFactory().createGenerator(output);
-        generator.setCodec(new ObjectMapper());
-        writer = new JsonWriter(generator);
+        outputStream = new ByteArrayOutputStream();
+        writer = (JsonWriter) context.getBean("writer#JSON", outputStream);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class JsonWriterTest {
         writer.flush();
 
         // then
-        assertThat(output.toString(), sameJSONAs(expectedOutput).allowingExtraUnexpectedFields());
+        assertThat(new String(outputStream.toByteArray()), sameJSONAs(expectedOutput).allowingExtraUnexpectedFields());
     }
 
     @Test
@@ -77,7 +77,7 @@ public class JsonWriterTest {
         writer.flush();
 
         // then
-        assertThat(output.toString(), is(expectedCsv));
+        assertThat(new String(outputStream.toByteArray()), is(expectedCsv));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class JsonWriterTest {
         writer.flush();
 
         // then
-        assertThat(output.toString(), is("["));
+        assertThat(new String(outputStream.toByteArray()), is("["));
     }
 
     @Test
@@ -98,7 +98,7 @@ public class JsonWriterTest {
         writer.flush();
 
         // then
-        assertThat(output.toString(), sameJSONAs("[]"));
+        assertThat(new String(outputStream.toByteArray()), sameJSONAs("[]"));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class JsonWriterTest {
         writer.flush();
 
         // then
-        assertThat(output.toString(), is("{"));
+        assertThat(new String(outputStream.toByteArray()), is("{"));
     }
 
     @Test
@@ -119,7 +119,7 @@ public class JsonWriterTest {
         writer.flush();
 
         // then
-        assertThat(output.toString(), sameJSONAs("{}"));
+        assertThat(new String(outputStream.toByteArray()), sameJSONAs("{}"));
     }
 
 }

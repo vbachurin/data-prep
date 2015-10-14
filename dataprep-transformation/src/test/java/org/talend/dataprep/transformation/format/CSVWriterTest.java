@@ -1,14 +1,11 @@
-package org.talend.dataprep.transformation.api.transformer.writer;
+package org.talend.dataprep.transformation.format;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,16 +14,25 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 
-public class CsvWriterTest {
+/**
+ * Unit test for the CSVWriter.
+ * 
+ * @see CSVWriter
+ */
+public class CSVWriterTest extends BaseFormatTest {
 
-    private CsvWriter writer;
+    /** The writer to test. */
+    private CSVWriter writer;
 
+    /** Where the writer should... write! */
     private OutputStream outputStream;
 
     @Before
     public void init() {
         outputStream = new ByteArrayOutputStream();
-        writer = new CsvWriter(outputStream, ';');
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(CSVWriter.SEPARATOR_PARAM_NAME, ";");
+        writer = (CSVWriter) context.getBean("writer#CSV", outputStream, parameters);
     }
 
     @Test

@@ -22,6 +22,7 @@ import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.api.transformer.configuration.PreviewConfiguration;
+import org.talend.dataprep.transformation.format.WriterRegistrationService;
 
 /**
  * Transformer that preview the transformation (puts additional json content so that the front can display the
@@ -37,6 +38,10 @@ class DiffTransformer implements Transformer {
     @Autowired
     private ActionParser actionParser;
 
+    /** Service who knows about registered writers. */
+    @Autowired
+    private WriterRegistrationService writersService;
+
     /**
      * Starts the transformation in preview mode.
      *
@@ -49,7 +54,8 @@ class DiffTransformer implements Transformer {
             throw new IllegalArgumentException("Input cannot be null.");
         }
         final PreviewConfiguration previewConfiguration = (PreviewConfiguration) configuration;
-        final TransformerWriter writer = configuration.writer();
+        final TransformerWriter writer = writersService.getWriter(configuration.formatId(), configuration.output(),
+                configuration.getArguments());
 
         //parse and extract diff configuration
         final ParsedActions referenceActions = actionParser.parse(previewConfiguration.getReferenceActions());

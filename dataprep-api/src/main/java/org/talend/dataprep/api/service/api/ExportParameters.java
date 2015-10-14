@@ -4,44 +4,35 @@ import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
-import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.validation.OneNotBlank;
 
 /**
- * Parameter for dataset/preparation export
+ * Parameter for dataset/preparation format
  */
 @OneNotBlank({ "preparationId", "datasetId" })
 public class ExportParameters {
 
-    /**
-     * The export type
-     */
+    /** The export format. */
     @NotNull
-    private ExportType exportType;
+    private String exportType;
 
-    /**
-     * The preparation id to export. If this is null, datasetId must be set
-     */
+    /** The preparation id to format. If this is null, datasetId must be set. */
     private String preparationId;
 
-    /**
-     * The step id to export at a specific state. If null, the preparation head version will be exported
-     */
+    /** The step id to format at a specific state. If null, the preparation head version will be exported. */
     private String stepId;
 
-    /**
-     * The dataset id to export. If this is null, preparationId must be set
-     */
+    /** The dataset id to format. If this is null, preparationId must be set. */
     private String datasetId;
 
     private Map<String, String> arguments;
 
-    public ExportType getExportType() {
+    public String getExportType() {
         return exportType;
     }
 
-    public void setExportType(ExportType exportType) {
-        this.exportType = exportType;
+    public void setExportType(String format) {
+        this.exportType = format;
     }
 
     public String getPreparationId() {

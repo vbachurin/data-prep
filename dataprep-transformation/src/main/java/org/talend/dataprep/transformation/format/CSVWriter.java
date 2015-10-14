@@ -1,36 +1,62 @@
-package org.talend.dataprep.transformation.api.transformer.writer;
+package org.talend.dataprep.transformation.format;
+
+import static org.talend.dataprep.transformation.format.CSVFormat.CSV;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 
-import au.com.bytecode.opencsv.CSVWriter;
-
 /**
  * Write datasets in CSV.
  */
-public class CsvWriter implements TransformerWriter {
+@Scope("prototype")
+@Component("writer#" + CSV)
+public class CSVWriter implements TransformerWriter {
+
+    /** The default separator. */
+    private static final Character DEFAULT_SEPARATOR = ',';
+
+    /** Separator argument name. */
+    public static final String SEPARATOR_PARAM_NAME = "exportParameters.csvSeparator";
 
     /** The CSV writer. */
-    private final CSVWriter writer;
+    private final au.com.bytecode.opencsv.CSVWriter writer;
 
     /** the columns ids. */
     private String[] columnIds;
+
+
+    /**
+     * Simple constructor with default separator value.
+     * 
+     * @param output where this writer should... write !
+     */
+    public CSVWriter(final OutputStream output) {
+        writer = new au.com.bytecode.opencsv.CSVWriter(new OutputStreamWriter(output), DEFAULT_SEPARATOR);
+    }
 
     /**
      * Constructor.
      * 
      * @param output where to write the dataset.
-     * @param separator the separator to use.
+     * @param parameters parameters to get the separator from.
      */
-    public CsvWriter(final OutputStream output, final char separator) {
-        writer = new CSVWriter(new OutputStreamWriter(output), separator);
+    public CSVWriter(final OutputStream output, Map<String, Object> parameters) {
+        String actualSeparator = (String) parameters.get(SEPARATOR_PARAM_NAME);
+        if (actualSeparator == null || StringUtils.isBlank(actualSeparator) || actualSeparator.length() > 1) {
+            actualSeparator = String.valueOf(DEFAULT_SEPARATOR);
+        }
+        writer = new au.com.bytecode.opencsv.CSVWriter(new OutputStreamWriter(output), actualSeparator.charAt(0));
     }
 
     /**

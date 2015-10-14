@@ -163,19 +163,10 @@
                             <classesDirectory>${project.build.outputDirectory}</classesDirectory>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <executions>
                     <execution>
-                        <id>default-report</id>
-                        <configuration>
-                            <excludes>
-                                <exclude>lib/**/*</exclude>
-                            </excludes>
-                        </configuration>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

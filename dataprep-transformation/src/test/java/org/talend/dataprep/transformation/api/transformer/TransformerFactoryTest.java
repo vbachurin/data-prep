@@ -1,7 +1,7 @@
-package org.talend.dataprep.transformation.api.transformer.writer;
+package org.talend.dataprep.transformation.api.transformer;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.talend.dataprep.api.type.ExportType.CSV;
+import static org.talend.dataprep.transformation.format.CSVFormat.CSV;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -19,8 +19,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.transformation.Application;
-import org.talend.dataprep.transformation.api.transformer.Transformer;
-import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -29,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-public class ExportFactoryTest {
+public class TransformerFactoryTest {
 
     @Autowired
     Jackson2ObjectMapperBuilder builder;
@@ -43,19 +41,24 @@ public class ExportFactoryTest {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("exportParameters.csvSeparator", ";");
         final OutputStream outputStream = new ByteArrayOutputStream();
-        final Configuration configuration = Configuration.builder().args(arguments).format(CSV).output(outputStream)
-                .actions(IOUtils.toString(ExportFactoryTest.class.getResourceAsStream("upper_case_firstname.json"))).build();
-        final Transformer exporter = factory.get(configuration);
-        final String expectedCsv = IOUtils.toString(ExportFactoryTest.class
+        final Configuration configuration = Configuration.builder() //
+                .args(arguments) //
+                .format(CSV) //
+                .output(outputStream) //
+                .actions(IOUtils.toString(TransformerFactoryTest.class.getResourceAsStream("upper_case_firstname.json"))) //
+                .build();
+        final Transformer transformer = factory.get(configuration);
+        final String expectedCsv = IOUtils.toString(
+                TransformerFactoryTest.class
                 .getResourceAsStream("expected_export_preparation_uppercase_firstname.csv"));
 
         final ObjectMapper mapper = builder.build();
-        final InputStream inputStream = ExportFactoryTest.class.getResourceAsStream("export_dataset.json");
+        final InputStream inputStream = TransformerFactoryTest.class.getResourceAsStream("../../format/export_dataset.json");
         try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
 
             // when
-            exporter.transform(dataSet, configuration);
+            transformer.transform(dataSet, configuration);
             // then
             assertThat(outputStream.toString()).isEqualTo(expectedCsv);
         }

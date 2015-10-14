@@ -8,10 +8,9 @@ import org.hibernate.validator.HibernateValidator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.talend.dataprep.api.type.ExportType;
 
 /**
- * Unit test for the export parameters.
+ * Unit test for the format parameters.
  * 
  * @see ExportParameters
  *
@@ -73,7 +72,7 @@ public class ExportParametersTest {
         // given parameters without preparation not dataset id
         ExportParameters params = new ExportParameters();
         params.setDatasetId("dataset#19843");
-        params.setExportType(ExportType.CSV);
+        params.setExportType("TOTO");
 
         // when
         Set<ConstraintViolation<ExportParameters>> constraintViolations = validator.validate(params);

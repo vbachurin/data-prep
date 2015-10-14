@@ -1,4 +1,6 @@
-package org.talend.dataprep.transformation.api.transformer.writer;
+package org.talend.dataprep.transformation.format;
+
+import static org.talend.dataprep.transformation.format.XlsFormat.XLS;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,12 +11,16 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 
+@Scope("prototype")
+@Component("writer#" + XLS)
 public class XlsWriter implements TransformerWriter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XlsWriter.class);
