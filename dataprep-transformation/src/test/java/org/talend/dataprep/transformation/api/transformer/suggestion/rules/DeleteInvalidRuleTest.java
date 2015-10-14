@@ -23,7 +23,7 @@ public class DeleteInvalidRuleTest {
 
     @Before
     public void setUp() throws Exception {
-        deleteInvalidRule = InvalidRules.deleteInvalidRule();
+        deleteInvalidRule = new InvalidRules().deleteInvalidRule();
         allValidColumn.getStatistics().setInvalid(0);
         mostValidColumn.getStatistics().setInvalid(10);
     }
