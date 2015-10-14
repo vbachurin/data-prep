@@ -22,7 +22,7 @@
          * @returns {Promise}  The GET call promise
          */
         self.exportTypes = function() {
-            return $http.get(RestURLs.exportUrl + '/types');
+            return $http.get(RestURLs.exportUrl + '/formats');
         };
 
 

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -30,7 +33,6 @@ import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.api.ExportParameters;
 import org.talend.dataprep.api.service.command.common.PreparationCommand;
-import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
@@ -46,6 +48,11 @@ public class Export extends PreparationCommand<InputStream> {
         on(HttpStatus.OK).then(pipeStream());
     }
 
+    /**
+     * @param input the export parameters.
+     * @param response http response to the client.
+     * @return the request to perform.
+     */
     private HttpRequestBase onExecute(ExportParameters input, HttpServletResponse response) {
         try {
             String name;
@@ -71,13 +78,14 @@ public class Export extends PreparationCommand<InputStream> {
             if (StringUtils.isEmpty(fileName)) {
                 fileName = name;
             }
-            fileName = fileName + input.getExportType().getExtension();
-            
-            // Set response headers
-            response.setContentType(input.getExportType().getMimeType());
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
+            // TODO Vincent check merge
+            final Map<String, String> inputArguments = input.getArguments();
+            inputArguments.put("name", name);
+
             // Get dataset content and execute export service
             final String encodedActions = serializeActions(actions);
+
             final URI uri = getTransformationUri(input.getExportType(), input.getArguments());
             final HttpPost transformationCall = new HttpPost(uri);
 
@@ -95,16 +103,16 @@ public class Export extends PreparationCommand<InputStream> {
     }
 
     /**
-     * Create the transformation export uri
+     * Create the transformation format uri
      * 
-     * @param exportType The export type.
+     * @param exportFormat The format type.
      * @param params optional params
      * @return The built URI
      */
-    private URI getTransformationUri(final ExportType exportType, final Map<String, String> params)
+    private URI getTransformationUri(final String exportFormat, final Map<String, String> params)
         throws URISyntaxException {
 
-        URIBuilder uriBuilder = new URIBuilder( this.transformationServiceUrl + "/transform/" + exportType );
+        URIBuilder uriBuilder = new URIBuilder( this.transformationServiceUrl + "/transform/" + exportFormat );
 
         if (params != null){
             for (Map.Entry<String,String> entry:params.entrySet()){

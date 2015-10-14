@@ -45,7 +45,6 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.StepDiff;
-import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
@@ -61,6 +60,9 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.api.transformer.configuration.PreviewConfiguration;
+import org.talend.dataprep.transformation.format.ExportFormat;
+import org.talend.dataprep.transformation.format.FormatRegistrationService;
+import org.talend.dataprep.transformation.format.JsonFormat;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -97,29 +99,41 @@ public class TransformationService {
     @Autowired
     private AggregationService aggregationService;
 
+    /** The format registration service. */
+    @Autowired
+    private FormatRegistrationService formatRegistrationService;
+
 
     /**
      * Apply all <code>actions</code> to <code>content</code>. Actions is a Base64-encoded JSON list of
      * {@link ActionMetadata} with parameters.
      *
      * To prevent the actions to exceed URL length limit, everything is shipped within via the multipart request body.
-     * AggregationOperation allows client to customize the output format (see {@link ExportType available export types}
-     * ).
+     * AggregationOperation allows client to customize the output format (see {@link ExportFormat available format
+     * types} ).
      *
      * To prevent the actions to exceed URL length limit, everything is shipped within via the multipart request body.
      *
-     * @param format The output {@link ExportType format}. This format also set the MIME response type.
+     * @param formatName The output {@link ExportFormat format}. This format also set the MIME response type.
      * @param actions A Base64-encoded list of actions.
      * @param content A JSON input that complies with {@link DataSet} bean.
      * @param response The response used to send transformation result back to client.
      */
     @RequestMapping(value = "/transform/{format}", method = POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ApiOperation(value = "Export the preparation applying the transformation", notes = "This operation export the input data transformed using the supplied actions in the provided format.", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value = "Export the preparation applying the transformation", notes = "This operation format the input data transformed using the supplied actions in the provided format.", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @VolumeMetered
-    public void transform(@ApiParam(value = "Output format.") @PathVariable("format") final ExportType format, //
+    public void transform( //
+            @ApiParam(value = "Output format.")  @PathVariable("format") final String formatName, //
             @ApiParam(value = "Actions to perform on content.") @RequestPart(value = "actions", required = false) final Part actions, //
             @ApiParam(value = "Data set content as JSON.") @RequestPart(value = "content", required = false) final Part content, //
             final HttpServletResponse response, final HttpServletRequest request) {
+
+        final ExportFormat format = formatRegistrationService.getByName(formatName);
+        if (format == null) {
+            LOG.error("Export format {} not supported", formatName);
+            throw new TDPException(TransformationErrorCodes.OUTPUT_TYPE_NOT_SUPPORTED);
+        }
+
         final ObjectMapper mapper = builder.build();
         try (JsonParser parser = mapper.getFactory().createParser(content.getInputStream())) {
             Map<String, Object> arguments = new HashMap<>();
@@ -129,7 +143,8 @@ public class TransformationService {
                 final String paramName = names.nextElement();
 
                 // filter out the content and the actions
-                if (StringUtils.equals("actions", paramName) || StringUtils.equals("content", paramName)) {
+                if (StringUtils.equals("actions", paramName) || StringUtils.equals("content", paramName)
+                        || StringUtils.equals("name", paramName)) {
                     continue;
                 }
 
@@ -139,11 +154,20 @@ public class TransformationService {
             }
             String decodedActions = actions == null ? StringUtils.EMPTY : IOUtils.toString(actions.getInputStream());
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+
+            // set headers
+            String name = request.getParameter("name");
+            if (StringUtils.isBlank(name)) {
+                name = "untitled";
+            } else {
+                name = new String(Base64.getDecoder().decode(name));
+            }
             response.setContentType(format.getMimeType());
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + name + format.getExtension() + "\"");
 
             Configuration configuration = Configuration.builder() //
-                    .format(format) //
-                    .args(arguments) //
+                    .format(format.getName())
+                    .args(arguments)
                     .output(response.getOutputStream()) //
                     .actions(decodedActions) //
                     .build();
@@ -152,11 +176,6 @@ public class TransformationService {
             // Ignore (end of input)
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
-        } catch (UnsupportedOperationException e) {
-            if (format != null) {
-                throw new TDPException(TransformationErrorCodes.OUTPUT_TYPE_NOT_SUPPORTED, e);
-            }
-            throw e;
         }
     }
 
@@ -174,7 +193,7 @@ public class TransformationService {
                 .withIndexes(indexes) //
                 .fromReference( //
                         Configuration.builder() //
-                                .format(ExportType.JSON) //
+                                .format(JsonFormat.JSON) //
                                 .output(output) //
                                 .actions(referenceActions) //
                                 .build() //
@@ -336,18 +355,17 @@ public class TransformationService {
     }
 
     /**
-     * Get the available export types
+     * Get the available export formats
      */
-    @RequestMapping(value = "/export/types", method = GET)
-    @ApiOperation(value = "Get the available export types")
+    @RequestMapping(value = "/export/formats", method = GET)
+    @ApiOperation(value = "Get the available format types")
     @Timed
     public void exportTypes(final HttpServletResponse response) {
-        List<ExportType> exportTypes = new ArrayList<>(Arrays.asList(ExportType.values()));
-        exportTypes.remove(ExportType.JSON); // Don't expose JSON to external callers.
+        final List<ExportFormat> types = formatRegistrationService.getExternalFormats();
         try {
             builder.build() //
                     .writer() //
-                    .writeValue(response.getOutputStream(), exportTypes);
+                    .writeValue(response.getOutputStream(), types);
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
