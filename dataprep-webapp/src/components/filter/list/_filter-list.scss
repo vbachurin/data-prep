@@ -1,14 +1,14 @@
 .filter-list {
   background-color: $shadow-gray;
   color: $dark-gray;
-  display: flex;
-  flex-direction: row;
+  @include display(flex);
+  @include flex-direction(row);
 
   .filters-compartment{
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    flex-basis: 95%;
+    @include display(flex);
+    @include flex-wrap(wrap);
+    @include flex-direction(row);
+    @include flex-basis(95%);
 
     input[type="search"] {
       background-color: $white;
@@ -20,6 +20,10 @@
       width: 150px;
       border: 1px solid darken($light-gray, 10%);
     }
+    .ac-container {
+      color: $dark-gray;
+      position: fixed !important;
+    }
 
     .filter-component{
       line-height: 45px;
@@ -28,12 +32,12 @@
   }
 
   .off-filters{
-    display: flex;
-    flex-direction: column;
-    justify-content:center;
-    align-items:center;
-    align-content:center;
-    flex-basis: 4%;
+    @include display(flex);
+    @include flex-direction(column);
+    @include justify-content(center);
+    @include align-items(center);
+    @include align-content(center);
+    @include flex-basis(4%);
     .off-all-filters{
       font-size: x-small;
       color: #FFFFFF;
