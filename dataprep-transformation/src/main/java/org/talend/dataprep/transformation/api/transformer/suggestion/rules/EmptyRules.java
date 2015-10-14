@@ -8,10 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.delete.DeleteEmpty;
-import org.talend.dataprep.transformation.api.action.metadata.fillempty.FillWithBooleanIfEmpty;
-import org.talend.dataprep.transformation.api.action.metadata.fillempty.FillWithDateIfEmpty;
-import org.talend.dataprep.transformation.api.action.metadata.fillempty.FillWithIntegerIfEmpty;
-import org.talend.dataprep.transformation.api.action.metadata.fillempty.FillWithStringIfEmpty;
+import org.talend.dataprep.transformation.api.action.metadata.fillempty.FillIfEmpty;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
 @Component
@@ -41,10 +38,7 @@ public class EmptyRules extends BasicRules {
      */
     @Bean
     public static SuggestionEngineRule fillEmptyRule() {
-        return forActions(FillWithBooleanIfEmpty.FILL_EMPTY_ACTION_NAME, //
-                FillWithDateIfEmpty.FILL_EMPTY_ACTION_NAME, //
-                FillWithIntegerIfEmpty.FILL_EMPTY_ACTION_NAME, //
-                FillWithStringIfEmpty.FILL_EMPTY_ACTION_NAME) //
+        return forActions(FillIfEmpty.FILL_EMPTY_ACTION_NAME) //
                         .then(columnMetadata -> {
                             if (getEmptyCount(columnMetadata) > 0) {
                                 return POSITIVE;
