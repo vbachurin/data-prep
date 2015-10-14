@@ -185,7 +185,9 @@
             enumerable: true,
             configurable: false,
             get: function () {
-                return this.columnSuggestionService.transformations;
+                var transformationsObj = this.columnSuggestionService.transformations;
+                transformationsObj.labelHtml= transformationsObj.label;
+                return transformationsObj;
             }
         });
 

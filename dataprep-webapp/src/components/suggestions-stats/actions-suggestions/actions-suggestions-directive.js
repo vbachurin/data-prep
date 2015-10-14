@@ -51,12 +51,12 @@
                     function () {
                         angular.forEach(ctrl.columnSuggestions, function(item){
 
-                            item.label = item.label.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
-                            item.label = item.label.replace(new RegExp('(</span>)', 'g'), '');
+                            item.labelHtml = item.labelHtml.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
+                            item.labelHtml = item.labelHtml.replace(new RegExp('(</span>)', 'g'), '');
 
                             if(ctrl.suggestionService.searchActionString ){
-                                if(item.label.toLowerCase().indexOf(ctrl.suggestionService.searchActionString ) !== -1){
-                                    item.label = item.label.replace(new RegExp('('+ctrl.suggestionService.searchActionString +')', 'gi'),
+                                if(item.labelHtml.toLowerCase().indexOf(ctrl.suggestionService.searchActionString ) !== -1){
+                                    item.labelHtml = item.labelHtml.replace(new RegExp('('+ctrl.suggestionService.searchActionString +')', 'gi'),
                                         '<span class="highlighted">$1</span>');
                                 }
                             }
