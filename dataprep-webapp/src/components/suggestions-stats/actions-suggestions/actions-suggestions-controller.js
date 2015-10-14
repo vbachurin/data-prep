@@ -159,6 +159,18 @@
                     });
             };
         };
+
+        /**
+         * @ngdoc method
+         * @name removeHtmlFromObj
+         * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
+         * @description Remove html code inserted when highlighting text from object
+         */
+        vm.removeHtmlFromObj = function removeHtmlFromObj(action) {
+            action.label = action.label.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
+            action.label = action.label.replace(new RegExp('(</span>)', 'g'), '');
+        };
+
     }
 
     /**

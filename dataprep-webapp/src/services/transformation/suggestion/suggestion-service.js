@@ -44,7 +44,8 @@
 
             setColumn: setColumn,
             selectTab: selectTab,
-            reset: reset
+            reset: reset,
+            resetSearchAction: resetSearchAction
 
         };
 
