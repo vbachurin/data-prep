@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.type.json.ExportTypeSerializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -14,23 +16,37 @@ public enum ExportType {
 
     //@formatter:off
     // take care when declaring new export type as only one can be default :-)
-    CSV("text/csv", ".csv", true, false,
-        Collections.singletonList(
-                new Parameter("csvSeparator",
-                              "CHOOSE_SEPARATOR",
-                              "radio",
-                              new ParameterValue(";", "SEPARATOR_SEMI_COLON"),
-                              Arrays.asList(
-                                  new ParameterValue("\u0009", "SEPARATOR_TAB"), // &#09;
-                                  new ParameterValue(" ", "SEPARATOR_SPACE"),
-                                  new ParameterValue(",", "SEPARATOR_COMMA")
-                              )
-                )
-        )
-    ),
-    XLS("application/vnd.ms-excel", ".xls", false, true, Collections.<Parameter> emptyList()),
-    TABLEAU("application/tde", ".tde", false, false, Collections.<Parameter> emptyList()),
-    JSON("application/json", ".json", false, false, Collections.<Parameter> emptyList());
+    CSV("text/csv", ".csv", true, false, //
+        Lists.newArrayList( //
+                            new Parameter( "csvSeparator", //
+                                           "CHOOSE_SEPARATOR", //
+                                           "radio", //
+                                           new ParameterValue( ";", "SEPARATOR_SEMI_COLON" ), //
+                                           Arrays.asList( //
+                                                          new ParameterValue( "\u0009", "SEPARATOR_TAB" ), // &#09;
+                                                          new ParameterValue( " ", "SEPARATOR_SPACE" ), //
+                                                          new ParameterValue( ",", "SEPARATOR_COMMA" ) //
+                                           ) //
+                            ), //
+                            new Parameter( Parameter.FILENAME_PARAMETER, //
+                                           "EXPORT_FILENAME",  //
+                                            "text", //
+                                            new ParameterValue( StringUtils.EMPTY, "EXPORT_FILENAME_DEFAULT" ), //
+                                            Collections.emptyList() //
+                            ) //
+        ) //
+    ), //
+    XLS("application/vnd.ms-excel", ".xls", true, true, //
+        Collections.singletonList( new Parameter( Parameter.FILENAME_PARAMETER, //
+                                           "EXPORT_FILENAME",  //
+                                           "text", //
+                                           new ParameterValue( StringUtils.EMPTY, "EXPORT_FILENAME_DEFAULT" ), //
+                                           Collections.emptyList() //
+                            ) //
+        ) //
+    ), //
+    TABLEAU("application/tde", ".tde", false, false, Collections.<Parameter> emptyList()), //
+    JSON("application/json", ".json", false, false, Collections.<Parameter> emptyList()); //
     //@formatter:on
 
     /** The mime type. */
@@ -106,6 +122,8 @@ public enum ExportType {
      * Inner Parameter class.
      */
     public static class Parameter implements Serializable {
+
+        public static final String FILENAME_PARAMETER = "fileName";
 
         /** Parameter name. */
         private final String name;

@@ -47,13 +47,8 @@ public class ExportAPI extends APIService {
                 final String paramName = names.nextElement();
                 if (StringUtils.contains(paramName, "exportParameters.")) {
                     final String paramValue = request.getParameter(paramName);
-                    if (StringUtils.isNotEmpty(paramValue)) {
-                        final String decodeParamValue = paramValue.getBytes().length > 1 ? //
-                        new String(Base64.getDecoder().decode(paramValue))
-                                : //
-                                paramValue;
-                        arguments.put(paramName, decodeParamValue);
-                    }
+                    arguments.put(paramName, StringUtils.isNotEmpty(paramValue)? paramValue : StringUtils.EMPTY);
+
                 }
             }
             input.setArguments(arguments);

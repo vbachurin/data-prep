@@ -183,16 +183,6 @@ public abstract class PreparationCommand<T> extends GenericCommand<T> {
         return builder.build().writeValueAsString(listToEncode);
     }
 
-    /**
-     * Encode the string to base 64
-     *
-     * @param toEncode The string to encode
-     * @return the encoded string
-     */
-    protected String encode(String toEncode) {
-        return Base64.getEncoder().encodeToString(toEncode.getBytes());
-    }
-
     protected List<Action> getPreparationActions(Preparation preparation, String stepId) throws IOException {
         if (StringUtils.isEmpty(stepId) || Step.ROOT_STEP.id().equals(stepId)) {
             // No need for a connection to retrieve an empty list.

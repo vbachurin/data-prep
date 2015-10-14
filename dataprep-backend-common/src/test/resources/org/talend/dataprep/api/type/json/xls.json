@@ -2,6 +2,6 @@
   "mimeType": "application/vnd.ms-excel",
   "extension": ".xls",
   "id": "XLS",
-  "needParameters": "false",
+  "needParameters": "true",
   "defaultExport": "true"
 }

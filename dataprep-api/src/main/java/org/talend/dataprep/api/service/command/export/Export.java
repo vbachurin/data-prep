@@ -4,6 +4,8 @@ import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.InputStreamBody;
@@ -62,13 +65,20 @@ public class Export extends PreparationCommand<InputStream> {
                 actions = Collections.emptyList();
                 content = getDatasetContent(dataSetId);
             }
+
+            // fileName can come from parameters otherwise we use default preparation or dataset name
+            String fileName = input.getArguments().get("exportParameters." + ExportType.Parameter.FILENAME_PARAMETER);
+            if (StringUtils.isEmpty(fileName)) {
+                fileName = name;
+            }
+            fileName = fileName + input.getExportType().getExtension();
+            
             // Set response headers
             response.setContentType(input.getExportType().getMimeType());
-            response.setHeader("Content-Disposition",
-                    "attachment; filename=\"" + name + input.getExportType().getExtension() + "\"");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
             // Get dataset content and execute export service
             final String encodedActions = serializeActions(actions);
-            final String uri = getTransformationUri(input.getExportType(), input.getArguments());
+            final URI uri = getTransformationUri(input.getExportType(), input.getArguments());
             final HttpPost transformationCall = new HttpPost(uri);
 
             HttpEntity reqEntity = MultipartEntityBuilder.create()
@@ -78,7 +88,8 @@ public class Export extends PreparationCommand<InputStream> {
 
             transformationCall.setEntity(reqEntity);
             return transformationCall;
-        } catch (IOException e) {
+
+        } catch (IOException | URISyntaxException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
@@ -90,28 +101,20 @@ public class Export extends PreparationCommand<InputStream> {
      * @param params optional params
      * @return The built URI
      */
-    private String getTransformationUri(final ExportType exportType, final Map<String, String> params) {
-        String result = this.transformationServiceUrl + "/transform/" + exportType;
-        boolean hasQueryParams = false;
-        if (params != null ) {
+    private URI getTransformationUri(final ExportType exportType, final Map<String, String> params)
+        throws URISyntaxException {
+
+        URIBuilder uriBuilder = new URIBuilder( this.transformationServiceUrl + "/transform/" + exportType );
+
+        if (params != null){
             for (Map.Entry<String,String> entry:params.entrySet()){
-                result = appendQueryParam( result, entry.getKey() + "=" + encode( entry.getValue() ), hasQueryParams );
-                hasQueryParams = true;
+                uriBuilder.addParameter( entry.getKey(), entry.getValue() );
             }
         }
-        return result;
+
+        return uriBuilder.build();
+
     }
 
-    /**
-     * Append a query param to an url
-     * 
-     * @param url The base url
-     * @param param The param to append
-     * @param alreadyHasParams True if url already have query params
-     * @return The url with query param
-     */
-    private String appendQueryParam(final String url, final String param, final boolean alreadyHasParams) {
-        return url + (alreadyHasParams ? "&" : "?") + param;
-    }
 
 }
