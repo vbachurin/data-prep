@@ -45,19 +45,6 @@
         //--------------------------------------------------------------------------------------------------------------
         //--------------------------------------------------RECIPE HEADER-----------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
-        /**
-         * @ngdoc property
-         * @name sampleSizes
-         * @methodOf data-prep.playground.controller:PlaygroundCtrl
-         * @description List all the available sample size.
-         */
-        vm.sampleSizes = [
-            {display:'50', value: 50},
-            {display:'100', value: 100},
-            {display:'500', value: 500},
-            {display:'full dataset', value: null}
-        ];
-        StateService.setSampleSize(vm.sampleSizes[1].value);
 
         /**
          * @ngdoc method

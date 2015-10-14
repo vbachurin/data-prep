@@ -16,8 +16,6 @@ import org.talend.dataprep.api.service.command.transformation.Transform;
 import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.cache.ContentCacheKey;
 
-import com.netflix.hystrix.HystrixCommand;
-
 /**
  * Command used to retrieve the preparation content.
  */
@@ -60,7 +58,7 @@ public class PreparationGetContent extends PreparationCommand<InputStream> {
     }
 
     /**
-     * @see HystrixCommand#run()
+     * @see com.netflix.hystrix.HystrixCommand#run()
      */
     @Override
     protected InputStream run() throws Exception {

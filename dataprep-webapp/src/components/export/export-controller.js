@@ -62,6 +62,18 @@
             if (exportType.parameters) {
                 _.forEach(exportType.parameters, function(param) {
                     parameters['exportParameters.' + param.name] = param.defaultValue.value;
+                    //hack for fileName as we don't know it with exportTypes parameters
+                    //so if empty use the dataset.name
+                    if (param.name === 'fileName'){
+                        var allParameters = ExportService.getParameters();
+                        if (allParameters && allParameters['exportParameters.fileName']){
+                            parameters['exportParameters.' + param.name] = allParameters['exportParameters.fileName'];
+                        } else if (vm.state.playground.preparation && vm.state.playground.preparation.name) {
+                            parameters['exportParameters.' + param.name] = vm.state.playground.preparation.name;
+                        } else {
+                            parameters['exportParameters.' + param.name] = vm.state.playground.dataset.name;
+                        }
+                    }
                 });
                 vm.showModal = true;
             }

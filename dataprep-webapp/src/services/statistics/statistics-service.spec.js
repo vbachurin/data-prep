@@ -637,7 +637,6 @@ describe('Statistics service', function () {
         var datasetId = 'abcd';                             // the current data id
         var preparationId = '2132548345365';                // the current preparation id
         var stepId = '9878645468';                          // the currently viewed step id
-        var sampleSize = 500;                               // the sample size
         var column = {'id': '0002', 'name': 'state'};       // the column where to perform the aggregation
         var aggregation = 'MAX';                            // the aggregation operation
 
@@ -681,7 +680,7 @@ describe('Statistics service', function () {
             spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
 
             //when
-            StatisticsService.processAggregation(datasetId, null, stepId, sampleSize, column, aggregation);
+            StatisticsService.processAggregation(datasetId, null, stepId, column, aggregation);
             $rootScope.$digest();
 
             //then
@@ -689,7 +688,6 @@ describe('Statistics service', function () {
                 datasetId: 'abcd',
                 preparationId: null,
                 stepId: '9878645468',
-                sampleSize: 500,
                 operations: [{operator: 'MAX', columnId: '0002'}],
                 groupBy: ['0001']
             });
@@ -709,12 +707,12 @@ describe('Statistics service', function () {
             });
         }));
 
-        it('should update histogram data from REST call result and aggregation infos on preparation', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+        it('should update histogram data from aggregation infos on preparation', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
             //given
             spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
 
             //when
-            StatisticsService.processAggregation(datasetId, preparationId, stepId, sampleSize, column, aggregation);
+            StatisticsService.processAggregation(datasetId, preparationId, stepId, column, aggregation);
             $rootScope.$digest();
 
             //then
@@ -722,42 +720,9 @@ describe('Statistics service', function () {
                 datasetId: null,
                 preparationId: '2132548345365',
                 stepId: '9878645468',
-                sampleSize: 500,
                 operations: [{operator: 'MAX', columnId: '0002'}],
                 groupBy: ['0001']
             });
-            expect(StatisticsService.histogram).toEqual({
-                data: [
-                    {'data': 'Lansing', 'max': 15, 'formattedValue': 'Lansing'},
-                    {'data': 'Helena', 'max': 5, 'formattedValue': 'Helena'},
-                    {'data': 'Baton Rouge', 'max': 64, 'formattedValue': 'Baton Rouge'},
-                    {'data': 'Annapolis', 'max': 4, 'formattedValue': 'Annapolis'},
-                    {'data': 'Pierre', 'max': 104, 'formattedValue': 'Pierre'}
-                ],
-                key: 'MAX',
-                label: 'MAX',
-                column: StatisticsService.selectedColumn,
-                aggregationColumn: column,
-                aggregation: aggregation
-            });
-        }));
-
-        it('should update histogram with content from cache', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
-            //given
-            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
-
-            //given : rest call to populate cache
-            StatisticsService.processAggregation(datasetId, preparationId, stepId, sampleSize, column, aggregation);
-            $rootScope.$digest();
-            expect(StatisticsRestService.getAggregations.calls.count()).toBe(1);
-            StatisticsService.histogram = null;
-
-            //when
-            StatisticsService.processAggregation(datasetId, preparationId, stepId, sampleSize, column, aggregation);
-            $rootScope.$digest();
-
-            //then
-            expect(StatisticsRestService.getAggregations.calls.count()).toBe(1);
             expect(StatisticsService.histogram).toEqual({
                 data: [
                     {'data': 'Lansing', 'max': 15, 'formattedValue': 'Lansing'},
@@ -779,7 +744,7 @@ describe('Statistics service', function () {
             spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.reject());
 
             //when
-            StatisticsService.processAggregation(datasetId, preparationId, stepId, sampleSize, column, aggregation);
+            StatisticsService.processAggregation(datasetId, preparationId, stepId, column, aggregation);
             $rootScope.$digest();
 
             //then

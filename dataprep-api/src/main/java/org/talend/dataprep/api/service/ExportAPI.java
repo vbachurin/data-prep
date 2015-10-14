@@ -4,7 +4,6 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import java.io.InputStream;
-import java.util.Base64;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,10 +15,12 @@ import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.Header;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.service.api.ExportParameters;
+import org.talend.dataprep.api.service.command.common.GenericCommand;
 import org.talend.dataprep.api.service.command.export.Export;
 import org.talend.dataprep.api.service.command.export.ExportTypes;
 import org.talend.dataprep.exception.TDPException;
@@ -47,19 +48,21 @@ public class ExportAPI extends APIService {
                 final String paramName = names.nextElement();
                 if (StringUtils.contains(paramName, "exportParameters.")) {
                     final String paramValue = request.getParameter(paramName);
-                    if (StringUtils.isNotEmpty(paramValue)) {
-                        final String decodeParamValue = paramValue.getBytes().length > 1 ? //
-                        new String(Base64.getDecoder().decode(paramValue))
-                                : //
-                                paramValue;
-                        arguments.put(paramName, decodeParamValue);
-                    }
+                    arguments.put(paramName, StringUtils.isNotEmpty(paramValue)? paramValue : StringUtils.EMPTY);
+
                 }
             }
             input.setArguments(arguments);
-            final HystrixCommand<InputStream> command = getCommand(Export.class, getClient(), input, response);
+            final GenericCommand<InputStream> command = getCommand(Export.class, getClient(), input, response);
             final ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(command.execute(), outputStream);
+            final InputStream commandInputStream = command.execute();
+
+            // copy all headers from the command response so that the mime-type is correctly forwarded for instance
+            final Header[] commandResponseHeaders = command.getCommandResponseHeaders();
+            for (Header header : commandResponseHeaders) {
+                response.setHeader(header.getName(), header.getValue());
+            }
+            IOUtils.copyLarge(commandInputStream, outputStream);
             outputStream.flush();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_EXPORT_CONTENT, e);
@@ -67,10 +70,10 @@ public class ExportAPI extends APIService {
     }
 
     /**
-     * Get the available export types
+     * Get the available export formats
      */
-    @RequestMapping(value = "/api/export/types", method = GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get the available export types")
+    @RequestMapping(value = "/api/export/formats", method = GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get the available format types")
     @Timed
     public void exportTypes(final HttpServletResponse response) {
         try {

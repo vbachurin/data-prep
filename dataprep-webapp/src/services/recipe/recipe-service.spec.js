@@ -730,6 +730,21 @@ describe('Recipe service', function () {
             expect(result).toBe(expectedStep);
         }));
 
+        it('should return the initial step when index is negative', inject(function($rootScope, RecipeService) {
+            //given
+            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+            RecipeService.refresh();
+            $rootScope.$digest();
+
+            var initialStep = { transformation: {stepId: 'f6e172c33bdacbc69bca9d32b2bd78174712a171' }};
+
+            //when
+            var result = RecipeService.getStep(-1, false);
+
+            //then
+            expect(result).toEqual(initialStep);
+        }));
+
         it('should return null when the index is superior to the recipe length', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};

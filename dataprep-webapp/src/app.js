@@ -1,24 +1,21 @@
-(function() {
+var fetchConfiguration, bootstrapDataPrepApplication;
+
+(function () {
     'use strict';
 
-    angular.module('data-prep',
+    var app = angular.module('data-prep',
         [
             'ngSanitize',
             'ui.router', //more advanced router
-            'data-prep.navbar',
-            'data-prep.home',
+            'data-prep.app', //app root
             'data-prep.services.rest', //rest interceptors
-            'data-prep.services.utils',
+            'data-prep.services.utils', //for configuration
             'bgDirectives'
         ])
 
         //Performance config
-        .config(['$httpProvider', '$compileProvider', 'disableDebug', function ($httpProvider, $compileProvider, disableDebug) {
+        .config(['$httpProvider', function ($httpProvider) {
             $httpProvider.useApplyAsync(true);
-
-            if(disableDebug) {
-                $compileProvider.debugInfoEnabled(false);
-            }
         }])
 
         //Translate config
@@ -37,20 +34,16 @@
             $stateProvider
                 .state('nav', {
                     abstract: true,
-                    controller: 'NavbarCtrl',
-                    controllerAs: 'navbarCtrl',
-                    templateUrl: 'components/navbar/navbar.html'
+                    template: '<navbar></navbar>'
                 })
                 .state('nav.home', {
                     abstract: true,
                     url: '/home',
-                    templateUrl: 'components/home/home.html',
-                    controller: 'HomeCtrl',
-                    controllerAs: 'homeCtrl',
+                    template: '<home></home>',
                     resolve: {
-                        //waiting for translation resource to be load
+                        //HACK to be fixed : waiting for translation resource to be load
                         //once the $translate promise is resolve, the router will perform the asked routing
-                        translateLoaded : function($translate) {
+                        translateLoaded: function ($translate) {
                             return $translate('ALL_FOLDERS');
                         }
                     }
@@ -95,10 +88,29 @@
         .run(function ($window, $translate) {
             var language = ($window.navigator.language === 'fr') ? 'fr' : 'en';
             $translate.use(language);
-        })
-
-        //Configure server api urls
-        .run(function(ConfigService) {
-            ConfigService.init();
         });
+
+    fetchConfiguration = function fetchConfiguration() {
+        var initInjector = angular.injector(['ng']);
+        var $http = initInjector.get('$http');
+
+        return $http.get('/assets/config/config.json')
+            .then(function (config) {
+                app
+                    //Debug config
+                    .config(['$compileProvider', function ($compileProvider) {
+                        $compileProvider.debugInfoEnabled(config.data.enableDebug);
+                    }])
+                    //Configure server api urls
+                    .run(['RestURLs', function (RestURLs) {
+                        RestURLs.setServerUrl(config.data.serverUrl);
+                    }]);
+            });
+    };
+
+    bootstrapDataPrepApplication = function bootstrapDataPrepApplication(modules) {
+        angular.element(document).ready(function () {
+            angular.bootstrap(document, modules);
+        });
+    };
 })();
