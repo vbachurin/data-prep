@@ -10,7 +10,7 @@
      * <input type='text' enable-focus='ctrl.beerTime'/>
      * in case of beerTime === true the input text will have focus.
      */
-    function EnableFocus($timeout) {
+    function EnableFocus() {
         return {
             restrict: 'A',
             link: function(scope, iElement, attrs) {

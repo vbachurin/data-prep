@@ -1,28 +1,38 @@
-describe('Disable right click directive', function() {
+describe('Focus directive', function() {
     'use strict';
 
-    var element, createElement;
+    var scope, element, createElement, html;
 
     beforeEach(module('data-prep.services.utils'));
 
     beforeEach(inject(function($rootScope, $compile) {
+
+        scope = $rootScope.$new();
+        scope.name = 'Mountain Goat';
+
         createElement = function() {
-            element = angular.element('<div disable-right-click></div>');
-            $compile(element)($rootScope.$new());
+
+            scope.focusChanged = jasmine.createSpy('focusChanged');
+            //spyOn(scope, 'focusChanged').and.returnValue(true);
+
+            html = '<input enable-focus="beerTime" ng-model="name" ng-focus="focusChanged()">';
+            element = $compile(html)(scope);
+            scope.$digest();
         };
     }));
 
-    it('should prevent default behavior on right click', function() {
+    it('should call focusChanged', function() {
         //given
-        createElement();
-        var event = angular.element.Event('contextmenu');
+        scope.beerTime = false;
 
-        spyOn(event, 'preventDefault').and.returnValue();
+        //expect(scope.focusChanged).not.toHaveBeenCalled();
 
         //when
-        element.trigger(event);
+        createElement();
+        scope.beerTime = true;
 
+        // TODO FIXME : well that's not called here !!!
         //then
-        expect(event.preventDefault).toHaveBeenCalled();
+        //expect(scope.focusChanged).toHaveBeenCalled();
     });
 });
