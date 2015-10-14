@@ -26,7 +26,6 @@
 
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
-        vm.originalDatasetName=null;
 
         /**
          * @ngdoc property
@@ -162,7 +161,7 @@
          * @param {object} dataset - the dataset to clone
          */
         vm.showRenameInput = function(dataset){
-            vm.originalDatasetName = dataset.name;
+            dataset.originalName = dataset.name;
             dataset.showChangeName=true;
         };
 
@@ -174,7 +173,7 @@
          * @param {object} dataset - the dataset to clone
          */
         vm.cancelRename = function(dataset){
-            dataset.name = vm.originalDatasetName;
+            dataset.name = dataset.originalName;
             dataset.showChangeName=false;
         };
 
