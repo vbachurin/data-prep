@@ -15,7 +15,6 @@
     function PreparationListCtrl($rootScope, $stateParams, PlaygroundService, PreparationService, TalendConfirmService, MessageService, StateService) {
         var vm = this;
         vm.preparationService = PreparationService;
-        vm.originalPreparationName=null;
 
         /**
          * @ngdoc method
@@ -55,7 +54,7 @@
          * @description change a flag value to trigger input display
          */
         vm.showRenameInput = function(preparation){
-          vm.originalPreparationName = preparation.name;
+          preparation.originalName = preparation.name;
           preparation.showChangeName = true;
         };
 
@@ -67,7 +66,7 @@
          * @description change back a flag value to trigger input display and restore previous name
          */
         vm.cancelRename = function(preparation){
-            preparation.name = vm.originalPreparationName;
+            preparation.name = preparation.originalName;
             preparation.showChangeName = false;
         };
 
