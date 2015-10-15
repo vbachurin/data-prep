@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -45,7 +46,7 @@ public class BaseTests extends TransformationServiceBaseTests {
         }
 
         List<String> expected = Arrays.asList("XLS", "CSV");
-        Assert.assertEquals(expected, actual);
+        Assertions.assertThat(actual).isNotNull().isNotEmpty().containsAll( expected );
 
     }
 
