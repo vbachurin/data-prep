@@ -36,6 +36,15 @@
 
             /**
              * @ngdoc property
+             * @name showAllAction
+             * @propertyOf data-prep.services.transformation.service:SuggestionService
+             * @description show all actions or all of them
+             * @type {Object}
+             */
+            showAllAction: false,
+
+            /**
+             * @ngdoc property
              * @name searchActionString
              * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
              * @description Actions to search
@@ -69,7 +78,7 @@
             }
 
             service.currentColumn = column;
-            ColumnSuggestionService.initTransformations(column, false);
+            ColumnSuggestionService.initTransformations(column, service.showAllAction);
         }
 
         /**

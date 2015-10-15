@@ -54,15 +54,6 @@
         vm.showModalContent = null;
 
         /**
-         * @ngdoc property
-         * @name showAllAction
-         * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
-         * @description show all actions or some suggested actions
-         */
-        vm.showAllAction = false;
-
-
-        /**
          * @ngdoc method
          * @name initDynamicParams
          * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
@@ -179,7 +170,7 @@
             //Reset action search
             this.suggestionService.searchActionString = '';
 
-            if (vm.showAllAction) {
+            if (this.suggestionService.showAllAction) {
                 this.columnSuggestionService.initTransformations(vm.suggestionService.currentColumn, true);
             }else {
                 this.columnSuggestionService.initTransformations(vm.suggestionService.currentColumn, false);
