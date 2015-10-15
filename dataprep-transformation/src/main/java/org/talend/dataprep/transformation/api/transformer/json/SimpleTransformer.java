@@ -144,9 +144,7 @@ class SimpleTransformer implements Transformer {
                 records = records.map(r -> action.apply(r.clone(), context));
             }
             records = records.map(r -> {
-                //
                 context.setTransformedRowMetadata(r.getRowMetadata());
-                // Configure analyzer
                 if (transformColumns) {
                     // Use analyzer (for empty values, semantic...)
                     if (!r.isDeleted()) {
