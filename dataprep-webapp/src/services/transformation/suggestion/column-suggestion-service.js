@@ -45,11 +45,12 @@
          * @name initTransformations
          * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
          * @param {object} column The target column
+         * @param {boolean} showAll show all transformation or some of them
          * @description Get and preparation the transformations from backend
          */
-        this.initTransformations = function initTransformations(column) {
+        this.initTransformations = function initTransformations(column, showAll) {
             self.transformations = null;
-            TransformationCacheService.getTransformations(column)
+            TransformationCacheService.getTransformations(column, showAll)
                 .then(function (transformations) {
                     var transformationsObj = filterAndGroup(transformations);
 

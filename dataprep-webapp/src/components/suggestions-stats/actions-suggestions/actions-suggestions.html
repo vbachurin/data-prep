@@ -1,8 +1,20 @@
 <div class="actions-suggestions">
-    <div class="title" ng-if="actionsSuggestionsCtrl.column.name">Actions{{:: 'COLON' | translate}}{{actionsSuggestionsCtrl.column.name}}</div>
-    <div class="title" ng-if="!actionsSuggestionsCtrl.column.name">Actions</div>
+    <div class="title-div" ng-if="actionsSuggestionsCtrl.column.name">
+        <span class="title title-action" title="{{actionsSuggestionsCtrl.column.name}}">{{actionsSuggestionsCtrl.column.name}}</span>
+        <span class="title-view-all">
+            <span class="">View all</span>
+            <label class="label-switch">
+                <input type="checkbox"
+                       ng-model='actionsSuggestionsCtrl.showAllAction'
+                       ng-change='actionsSuggestionsCtrl.toggleShowAction()'/>
+                <div class="checkbox"></div>
+            </label>
+        </span>
+
+    </div>
+
     <div class="Description" ng-if="! actionsSuggestionsCtrl.columnSuggestions">Select a column to display its actions</div>
-    
+
     <talend-tabs tab="actionsSuggestionsCtrl.tab" action-on-click="actionsSuggestionsCtrl.resizePanels()" ng-if="actionsSuggestionsCtrl.columnSuggestions" compile-template="{{actionsSuggestionsCtrl.searchActionString}}">
         <talend-tabs-item tab-title="Text">
             <div class="action-suggestion-tab-items">Coming soon ...</div>
