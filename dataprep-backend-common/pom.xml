@@ -3,14 +3,19 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
+
+    <version>1.0.m9-SNAPSHOT</version>
+    <name>dataprep-backend-common</name>
+    <packaging>jar</packaging>
+    <artifactId>dataprep-backend-common</artifactId>
+
     <parent>
         <groupId>org.talend.dataprep</groupId>
         <artifactId>dataprep-backend</artifactId>
         <version>1.0.m9-SNAPSHOT</version>
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
-    <packaging>jar</packaging>
-    <artifactId>dataprep-backend-common</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>com.mangofactory</groupId>
@@ -149,6 +154,20 @@
         	<version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
-    <version>1.0.m9-SNAPSHOT</version>
-    <name>dataprep-backend-common</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
