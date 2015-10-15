@@ -19,7 +19,7 @@
          * @description Fetch the transformations on a column of the dataset
          * @returns {HttpPromise} The POST promise
          */
-        this.getTransformations = function(stringifiedColumn, showAll) {
+         this.getTransformations = function(stringifiedColumn, showAll) {
             if(showAll) {
                 //Fetch the all transformations on a column of the dataset
                 return $http.post(RestURLs.transformUrl + '/actions/column', stringifiedColumn);
@@ -27,7 +27,7 @@
             //Fetch some suggested transformations on a column of the dataset (5 by default)
             //To change the number of suggested transformations, add "?limit=10" to the end of URL
             return $http.post(RestURLs.transformUrl + '/suggest/column', stringifiedColumn);
-        };
+         };
 
 
         /**

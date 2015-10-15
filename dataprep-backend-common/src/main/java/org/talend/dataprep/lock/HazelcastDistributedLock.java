@@ -53,6 +53,7 @@ public class HazelcastDistributedLock implements DistributedLock {
      * 
      * Specified by: lock() in Lock
      */
+    @Override
     public void lock() {
         lock.lock();
     }
@@ -60,6 +61,7 @@ public class HazelcastDistributedLock implements DistributedLock {
     /**
      * Releases the lock.
      */
+    @Override
     public void unlock() {
         lock.unlock();
     }
@@ -69,6 +71,7 @@ public class HazelcastDistributedLock implements DistributedLock {
      * 
      * @return the key used for the lock
      */
+    @Override
     public String getKey() {
         return lockKey;
     }

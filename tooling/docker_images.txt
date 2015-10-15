@@ -1,2 +1,0 @@
-images=talend/dataprep-api talend/dataprep-dataset talend/dataprep-transformation talend/dataprep-preparation talend/dataprep-webapp talend/dataprep-data
-registry=talend-registry:5000

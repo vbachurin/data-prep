@@ -34,7 +34,7 @@ public class ErrorList extends GenericCommand<InputStream> {
     private ErrorList(HttpClient client, HystrixCommandGroupKey groupKey, ServiceType type) {
         super(groupKey, client);
         execute(() -> onExecute(type));
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_LIST_ERRORS, e));
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_LIST_ERRORS, e));
         on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyStream());
         on(HttpStatus.OK).then(pipeStream());
     }

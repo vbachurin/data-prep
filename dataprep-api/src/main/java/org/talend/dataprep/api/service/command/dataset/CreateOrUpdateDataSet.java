@@ -45,7 +45,7 @@ public class CreateOrUpdateDataSet extends GenericCommand<String> {
             put.setEntity(new InputStreamEntity(dataSetContent));
             return put;
         });
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_CREATE_OR_UPDATE_DATASET, e));
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_CREATE_OR_UPDATE_DATASET, e));
         on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyString());
         on(HttpStatus.OK).then((req, res) -> {
             contentCache.evict(new ContentCacheKey(id)); // clear the cache (dataset and all its preparations)

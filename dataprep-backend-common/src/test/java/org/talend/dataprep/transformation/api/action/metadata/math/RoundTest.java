@@ -71,10 +71,10 @@ public class RoundTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "aNumber");
+        action.applyOnColumn( row, new TransformationContext(), parameters, "aNumber" );
 
         //then
-        assertEquals(expected, row.get("aNumber"));
+        assertEquals( expected, row.get( "aNumber" ) );
     }
 
     @Test
@@ -82,14 +82,32 @@ public class RoundTest {
         testCommon("5.0", "5");
         testCommon("5.1", "5");
         testCommon("5.5", "6");
-        testCommon("5.8", "6");
+        testCommon( "5.8", "6" );
     }
 
     @Test
     public void testNegative() {
         testCommon("-5.0", "-5");
-        testCommon("-5.4", "-5");
-        testCommon("-5.6", "-6");
+        testCommon( "-5.4", "-5" );
+        testCommon( "-5.6", "-6" );
+    }
+
+    @Test
+    public void test_huge_numbers_positive() {
+        testCommon("131234567890.1", "131234567890");
+        testCommon("131234567890.5", "131234567891");
+        testCommon("131234567890.9", "131234567891");
+        testCommon("89891234567897.9", "89891234567898");
+        testCommon("34891234567899.9", "34891234567900");
+        testCommon("678999999999999.9", "679000000000000");
+    }
+
+    @Test
+    public void test_huge_numbers_negative() {
+        testCommon("-131234567890.1", "-131234567890");
+        testCommon("-89891234567897.9", "-89891234567898");
+        testCommon("-34891234567899.9", "-34891234567900");
+        testCommon("-678999999999999.9", "-679000000000000");
     }
 
     @Test

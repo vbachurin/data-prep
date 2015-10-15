@@ -16,7 +16,7 @@ describe('Transformation Rest Service', function() {
 
         var result = [{'category':'case','items':[],'name':'uppercase','value':'','type':'OPERATION','parameters':[{'name':'column_name','type':'string','default':''}]},{'category':'case','items':[],'name':'lowercase','value':'','type':'OPERATION','parameters':[{'name':'column_name','type':'string','default':''}]}];
         $httpBackend
-            .expectPOST(RestURLs.transformUrl + '/suggest/column', JSON.stringify(column))
+            .expectPOST(RestURLs.transformUrl + '/actions/column', JSON.stringify(column))
             .respond(200, result);
 
         //when

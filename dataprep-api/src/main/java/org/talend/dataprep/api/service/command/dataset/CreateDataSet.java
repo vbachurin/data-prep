@@ -39,7 +39,7 @@ public class CreateDataSet extends GenericCommand<String> {
     private CreateDataSet(HttpClient client, String name, String contentType, InputStream dataSetContent) {
         super(PreparationAPI.DATASET_GROUP, client);
         execute(() -> onExecute(name, contentType, dataSetContent));
-        onError((e) -> {
+        onError(e -> {
             if (e instanceof TDPException) {
                 // Go for a pass-through for "UNSUPPORTED CONTENT"
                 final TDPException tdpException = (TDPException) e;
