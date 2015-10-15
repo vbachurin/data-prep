@@ -41,7 +41,6 @@
                   <div>
                     <input type="text" data-ng-model="dataset.name" id="dataset_{{::dataset.id}}"
                            enable-focus="dataset.showChangeName" select-on-focus="true"
-                           ng-keypress="datasetListCtrl.nameInputKeyPressed($event,dataset)"
                            ng-keydown="datasetListCtrl.nameInputKeyPressed($event,dataset)">
                     <a class="check-btn" data-icon="b" ng-click="datasetListCtrl.rename(dataset)"></a>
                     <a class="cancel-btn" data-icon="d" ng-click="datasetListCtrl.cancelRename(dataset)"></a>
