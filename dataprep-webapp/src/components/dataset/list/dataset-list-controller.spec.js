@@ -299,7 +299,7 @@ describe('Dataset list controller', function () {
 
             //then
             expect(dataset.showChangeName).toBe(true);
-            expect(ctrl.originalDatasetName).toBe(dataset.name);
+            expect(dataset.originalName).toBe(dataset.name);
 
 
             //when
