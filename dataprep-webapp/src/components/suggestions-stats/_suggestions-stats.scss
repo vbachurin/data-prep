@@ -28,8 +28,8 @@
     height: calc(100vh - 56px);
 
     .split-handler {
-      height: 20px;
-      background-color: white !important;
+      height: 12px;
+      background-color: $light-gray !important;
       background: url("/assets/images/dataprep-panel-splitter.png")  no-repeat center;
     }
   }
