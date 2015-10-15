@@ -41,9 +41,11 @@
       font-size: .5em;
       padding: 8px 5px;
       border-radius: 50px;
+
       &.edit-btn {
         color: $medium-gray;
         background-color: transparent;
+        display: none;
         &:hover {
           color: $dark-gray;
         }

@@ -22,7 +22,8 @@
     </div>
 
     <div class="inventory-list" id="datasets-list">
-        <div class="inventory-entry" ng-repeat="dataset in datasetListCtrl.datasets track by $index" ng-switch="dataset.draft" id="dataset_{{$index}}" >
+        <div class="inventory-entry" ng-repeat="dataset in datasetListCtrl.datasets track by $index" ng-switch="dataset.draft" id="dataset_{{$index}}"
+             ng-mouseover="datasetListCtrl.overDataset(dataset,true)" ng-mouseleave="datasetListCtrl.overDataset(dataset,false)">
 
             <div class="inventory-icon" ng-switch="dataset.type" ng-click="datasetListCtrl.uploadWorkflowService.openDataset(dataset)">
                 <img src="/assets/images/inventory/csv_file.png" ng-switch-when="text/csv"/>
@@ -53,7 +54,8 @@
                     <span class="inventory-title"
                          ng-click="datasetListCtrl.uploadWorkflowService.openDataset(dataset)">{{dataset.name}}
                     </span>
-                    <a class="edit-btn" data-icon="a" ng-click="datasetListCtrl.showRenameInput(dataset)"></a>
+                    <a class="edit-btn" id="edit_btn_dataset_{{::dataset.id}}"
+                       data-icon="a" ng-click="datasetListCtrl.showRenameInput(dataset)"></a>
                   </div>
                   <div class="inventory-description"
                        ng-click="datasetListCtrl.uploadWorkflowService.openDataset(dataset)">{{ 'INVENTORY_DETAILS' | translate:dataset }}</div>
