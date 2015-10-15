@@ -69,7 +69,7 @@
             }
 
             service.currentColumn = column;
-            ColumnSuggestionService.initTransformations(column);
+            ColumnSuggestionService.initTransformations(column, false);
         }
 
         /**

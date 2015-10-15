@@ -53,6 +53,14 @@
          */
         vm.showModalContent = null;
 
+        /**
+         * @ngdoc property
+         * @name showAllAction
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
+         * @description show all actions or some suggested actions
+         */
+        vm.showAllAction = false;
+
 
         /**
          * @ngdoc method
@@ -162,13 +170,16 @@
 
         /**
          * @ngdoc method
-         * @name removeHtmlFromObj
+         * @name toggleShowAction
          * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
          * @description Remove html code inserted when highlighting text from object
          */
-        vm.removeHtmlFromObj = function removeHtmlFromObj(action) {
-            action.label = action.label.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
-            action.label = action.label.replace(new RegExp('(</span>)', 'g'), '');
+        vm.toggleShowAction = function toggleShowAction() {
+            if (vm.showAllAction) {
+                this.columnSuggestionService.initTransformations(vm.suggestionService.currentColumn, true);
+            }else {
+                this.columnSuggestionService.initTransformations(vm.suggestionService.currentColumn, false);
+            }
         };
 
     }
