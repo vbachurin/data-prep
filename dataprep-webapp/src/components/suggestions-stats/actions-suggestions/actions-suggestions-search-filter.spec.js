@@ -4,15 +4,18 @@ describe('Actions suggestions search filter', function () {
     var transformations = [
         {
             'name': 'ceil_value',
-            'label': 'Ceil value'
+            'label': 'Ceil value',
+            'labelHtml': 'Ceil value'
         },
         {
             'name': 'floor_value',
-            'label': 'Floor value'
+            'label': 'Floor value',
+            'labelHtml': 'Floor value'
         },
         {
             'name': 'round_value',
-            'label': 'Round value'
+            'label': 'Round value',
+            'labelHtml': 'Round value'
         }
     ];
 

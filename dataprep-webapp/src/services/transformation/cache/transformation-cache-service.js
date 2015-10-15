@@ -41,7 +41,7 @@
             }
 
             //fetch menus from REST and adapt them. The Promise is put in cache, it is then replaced by the value.
-            var fetchPromise = TransformationService.getTransformations(key, showAll)
+            var fetchPromise = TransformationService.getTransformations(JSON.stringify(column), showAll)
                 .then(function(menus) {
                     suggestionsCache[key] = menus;
                     return menus;

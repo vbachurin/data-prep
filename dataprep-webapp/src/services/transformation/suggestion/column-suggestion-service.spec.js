@@ -35,12 +35,12 @@ describe('Column suggestion service', function () {
         ColumnSuggestionService.transformations = {};
 
         //when
-        ColumnSuggestionService.initTransformations(firstSelectedColumn);
+        ColumnSuggestionService.initTransformations(firstSelectedColumn, true);
         expect(ColumnSuggestionService.transformations).toBeFalsy();
         $rootScope.$digest();
 
         //then : transformations initialized
-        expect(TransformationCacheService.getTransformations).toHaveBeenCalledWith(firstSelectedColumn);
+        expect(TransformationCacheService.getTransformations).toHaveBeenCalledWith(firstSelectedColumn, true);
 
         //then : column category filtered
         var suggestedTransformations = ColumnSuggestionService.transformations;
@@ -50,6 +50,7 @@ describe('Column suggestion service', function () {
 
         //then : result alphabetically sorted
         expect(suggestedTransformations[0].label).toEqual('a');
+        expect(suggestedTransformations[0].labelHtml).toEqual('a');
         expect(suggestedTransformations[suggestedTransformations.length - 1].label).toEqual('v');
     }));
 });
