@@ -255,7 +255,7 @@ public class ComputeTimeSinceTest extends BaseDateTests {
     @Test
     public void should_compute_twice_diff_units() throws IOException {
         //given
-        final String date = "07/15/2014 12:00";
+        final String date = "07/15/2014 02:00";
         final String resultInMonth = computeTimeSince(date, "M/d/yyyy HH:mm", ChronoUnit.MONTHS);
         final String resultInYears = computeTimeSince(date, "M/d/yyyy HH:mm", ChronoUnit.YEARS);
 
