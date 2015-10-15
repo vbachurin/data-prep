@@ -165,11 +165,12 @@
             dataset.showChangeName=true;
 
             _.each( vm.datasets,function(current){
-                if (current.id!=dataset.id){
+                if (current.id!==dataset.id){
                     vm.cancelRename(current);
                 }
             });
         };
+
 
         /**
          * @ngdoc method
@@ -183,6 +184,17 @@
                 dataset.name = dataset.originalName;
             }
             dataset.showChangeName=false;
+        };
+
+        vm.nameInputKeyPressed = function(event,dataset){
+            // 27 ESC
+            // 13 enter
+            if (event.keyCode===27){
+                vm.cancelRename(dataset);
+            }
+            if (event.keyCode===13){
+                vm.rename(dataset);
+            }
         };
 
         /**
