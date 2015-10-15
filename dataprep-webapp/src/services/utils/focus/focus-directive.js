@@ -17,6 +17,7 @@
                 scope.$watch(attrs.enableFocus, function(newValue, oldValue) {
                     if (newValue) {
                         iElement[0].focus();
+                        iElement[0].select();
                     }
                 });
             }
