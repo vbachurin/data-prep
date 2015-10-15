@@ -11,9 +11,7 @@
      * @requires data-prep.services.statistics.service:StatisticsRestService
      * @requires data-prep.state.service:StateService
      */
-    function StatisticsService($q, $timeout, $filter, $cacheFactory, DatagridService, FilterService, ConverterService, TextFormatService, StatisticsRestService, state) {
-
-        var aggregationCache = $cacheFactory('aggregationStatistics', {capacity: 5});
+    function StatisticsService($timeout, $filter, DatagridService, FilterService, ConverterService, TextFormatService, StatisticsRestService, state) {
 
         var service = {
             boxPlot: null,
@@ -32,7 +30,6 @@
 
             //TODO temporary method to be replaced with new geo chart
             getGeoDistribution: getGeoDistribution
-
         };
 
         return service;
@@ -203,28 +200,6 @@
             }
 
             service.rangeLimits = rangeLimits;
-        }
-
-        /**
-         * @ngdoc method
-         * @name getAggregationData
-         * @methodOf data-prep.services.statistics.service:StatisticsCacheService
-         * @param {object} aggregationParameters The aggregation parameters
-         * @description Get aggregations from cache if present, from REST call otherwise.
-         */
-        function getAggregationData(aggregationParameters) {
-            var cacheKey = JSON.stringify(aggregationParameters);
-            var aggregationData = aggregationCache.get(cacheKey);
-
-            if (aggregationData) {
-                return $q.when(aggregationData);
-            }
-
-            return StatisticsRestService.getAggregations(aggregationParameters)
-                .then(function (response) {
-                    aggregationCache.put(cacheKey, response);
-                    return response;
-                });
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -428,12 +403,11 @@
          * @param {string} datasetId The column to visualize
          * @param {string} preparationId The column to visualize
          * @param {string} stepId The column to visualize
-         * @param {number} sampleSize The sample size
          * @param {object} column The column to visualize
          * @param {object} aggregation The column to visualize
          * @description Processes the statistics aggregation for visualization
          */
-        function processAggregation(datasetId, preparationId, stepId, sampleSize, column, aggregation) {
+        function processAggregation(datasetId, preparationId, stepId, column, aggregation) {
             if (!aggregation) {
                 return processData(service.selectedColumn);
             }
@@ -446,7 +420,6 @@
                 datasetId: preparationId ? null : datasetId,
                 preparationId: preparationId,
                 stepId: stepId,
-                sampleSize: sampleSize,
                 operations: [{
                     operator: aggregation,
                     columnId: column.id
@@ -454,7 +427,7 @@
                 groupBy: [service.selectedColumn.id]
             };
 
-            getAggregationData(aggregationParameters)
+            StatisticsRestService.getAggregations(aggregationParameters)
                 .then(function (response) {
                     initClassicHistogram(aggregation, $filter('translate')(aggregation), response);
                     service.histogram.aggregationColumn = column;
@@ -476,7 +449,7 @@
             resetCharsWithoutCache();
 
             //caches
-            aggregationCache.removeAll();
+            StatisticsRestService.resetCache();
         }
 
         /**

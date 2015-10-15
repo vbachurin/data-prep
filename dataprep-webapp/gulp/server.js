@@ -31,7 +31,7 @@ function browserSyncInit(baseDir, files, browser) {
 }
 
 //serve the app for dev, it uses the assets/config/config.mine.json prioritarily.
-gulp.task('serve', ['clean'], function () {
+gulp.task('serve', ['clean:dev'], function () {
   gulp.start('copy-personnal-files');
   gulp.start('watch');
   browserSyncInit([
@@ -49,7 +49,7 @@ gulp.task('serve', ['clean'], function () {
 });
 
 //serve the app for dev, ignoring the file assets/config/config.mine.json
-gulp.task('serve:default', ['clean'], function () {
+gulp.task('serve:default', ['clean:dev'], function () {
   gulp.start('watch');
   browserSyncInit([
     '.tmp',

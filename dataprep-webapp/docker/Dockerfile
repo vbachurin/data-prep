@@ -3,7 +3,7 @@ FROM talend-registry:5000/talend/miningnix:1.8
 RUN apk --update add bash
 
 # copy the script that will init host:port of api rest service
-COPY docker/init_docker.sh /init_docker.sh
+COPY init_docker.sh /init_docker.sh
 #RUN chmod +x init_docker.sh
 
 # override the nginx default conf

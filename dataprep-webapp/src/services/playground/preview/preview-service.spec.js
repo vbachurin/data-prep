@@ -5,7 +5,6 @@ describe('Preview Service', function () {
     var stateMock;
     var gridRangeIndex = {top: 1, bottom: 5};
     var displayedTdpIds = [1,3,6,7,8];
-    var sampleSize = 587;
     var originalData = {
         records: [
             {tdpId : 0, firstname: 'Tata'},
@@ -102,18 +101,19 @@ describe('Preview Service', function () {
             };
 
             //when
-            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null, sampleSize);
+            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null);
             $rootScope.$digest();
 
             //then
             expect(PreparationService.getPreviewDiff).toHaveBeenCalled();
 
             var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
-            expect(previewArgs[0]).toBe(preparationId);
-            expect(previewArgs[1]).toBe(currentStep);
-            expect(previewArgs[2]).toBe(previewStep);
-            expect(previewArgs[3]).toEqual(displayedTdpIds);
-            expect(previewArgs[4]).toBe(sampleSize);
+            expect(previewArgs[0]).toEqual({
+                preparationId: preparationId,
+                currentStepId: currentStep.transformation.stepId,
+                previewStepId: previewStep.transformation.stepId,
+                tdpIds: displayedTdpIds
+            });
 
             expect(DatagridService.execute).toHaveBeenCalledWith(undefined); //reverter but no preview to revert
             expect(DatagridService.execute).toHaveBeenCalledWith(previewExecutor); //preview diff
@@ -152,14 +152,14 @@ describe('Preview Service', function () {
                 transformation: { stepId: '2'}
             };
 
-            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null, sampleSize);
+            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null);
             var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
-            var previewCanceler = previewArgs[5];
+            var previewCanceler = previewArgs[1];
 
             expect(previewCanceler.promise.$$state.status).toBe(0);
 
             //when
-            PreviewService.getPreviewDiffRecords(currentStep, previewStep, null);
+            PreviewService.getPreviewDiffRecords(preparationId, currentStep, previewStep, null);
 
             //then
             expect(previewCanceler.promise.$$state.status).toBe(1);
@@ -172,11 +172,13 @@ describe('Preview Service', function () {
             var preparationId = '86c4135ab218646f54';
             var currentStep = {
                 column:{id: '0001'},
-                transformation: { stepId: '1'}
+                transformation: { stepId: '1'},
+                actionParameters: {action: 'fillEmptyWithValue'}
             };
             var updateStep = {
                 column:{id: '0000'},
-                transformation: { stepId: '2'}
+                transformation: { stepId: '2'},
+                actionParameters: {action: 'fillEmptyWithValue'}
             };
             var newParams = {value: '--'};
 
@@ -188,11 +190,16 @@ describe('Preview Service', function () {
             expect(PreparationService.getPreviewUpdate).toHaveBeenCalled();
 
             var previewArgs = PreparationService.getPreviewUpdate.calls.mostRecent().args;
-            expect(previewArgs[0]).toBe(preparationId);
-            expect(previewArgs[1]).toBe(currentStep);
-            expect(previewArgs[2]).toBe(updateStep);
-            expect(previewArgs[3]).toBe(newParams);
-            expect(previewArgs[4]).toEqual(displayedTdpIds);
+            expect(previewArgs[0]).toEqual({
+                preparationId: preparationId,
+                tdpIds: displayedTdpIds,
+                currentStepId: currentStep.transformation.stepId,
+                updateStepId: updateStep.transformation.stepId,
+                action: {
+                    action: updateStep.actionParameters.action,
+                    parameters: newParams
+                }
+            });
 
             expect(DatagridService.execute).toHaveBeenCalledWith(undefined); //reverter but no preview to revert
             expect(DatagridService.execute).toHaveBeenCalledWith(previewExecutor); //preview diff
@@ -203,16 +210,18 @@ describe('Preview Service', function () {
             var preparationId = '86c4135ab218646f54';
             var currentStep = {
                 column:{id:'0001'},
-                transformation: { stepId: '1'}
+                transformation: { stepId: '1'},
+                actionParameters: {action: 'fillEmptyWithValue'}
             };
             var updateStep = {
                 column:{id:'0000'},
-                transformation: { stepId: '2'}
+                transformation: { stepId: '2'},
+                actionParameters: {action: 'fillEmptyWithValue'}
             };
             var newParams = {value: '--'};
 
             //when
-            PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams, sampleSize);
+            PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams);
             $rootScope.$digest();
 
             //then
@@ -224,22 +233,24 @@ describe('Preview Service', function () {
             var preparationId = '86c4135ab218646f54';
             var currentStep = {
                 column:{id:'0001'},
-                transformation: { stepId: '1'}
+                transformation: { stepId: '1'},
+                actionParameters: {action: 'fillEmptyWithValue'}
             };
             var updateStep = {
                 column:{id:'0000'},
-                transformation: { stepId: '2'}
+                transformation: { stepId: '2'},
+                actionParameters: {action: 'fillEmptyWithValue'}
             };
             var newParams = {value: '--'};
 
-            PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams, sampleSize);
+            PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams);
             var previewArgs = PreparationService.getPreviewUpdate.calls.mostRecent().args;
-            var previewCanceler = previewArgs[6];
+            var previewCanceler = previewArgs[1];
 
             expect(previewCanceler.promise.$$state.status).toBe(0);
 
             //when
-            PreviewService.getPreviewUpdateRecords(currentStep, updateStep, newParams);
+            PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, newParams);
 
             //then
             expect(previewCanceler.promise.$$state.status).toBe(1);
@@ -253,25 +264,29 @@ describe('Preview Service', function () {
             var preparationId = '86c4135ab218646f54';
             var datasetId = '46c541b683ef5151';
             var action = 'fillEmptyWithValue';
-            var params = {
+            var actionParams = {
                 scope: 'column',
                 column_id: '0001',
                 value: '--'
             };
 
             //when
-            PreviewService.getPreviewAddRecords(preparationId, datasetId, action, params);
+            PreviewService.getPreviewAddRecords(preparationId, datasetId, action, actionParams);
             $rootScope.$digest();
 
             //then
             expect(PreparationService.getPreviewAdd).toHaveBeenCalled();
 
             var previewArgs = PreparationService.getPreviewAdd.calls.mostRecent().args;
-            expect(previewArgs[0]).toBe(preparationId);
-            expect(previewArgs[1]).toBe(datasetId);
-            expect(previewArgs[2]).toBe(action);
-            expect(previewArgs[3]).toBe(params);
-            expect(previewArgs[4]).toEqual(displayedTdpIds);
+            expect(previewArgs[0]).toEqual({
+                action : {
+                    action: action,
+                    parameters: actionParams
+                },
+                tdpIds: displayedTdpIds,
+                datasetId: datasetId,
+                preparationId: preparationId
+            });
 
             expect(DatagridService.execute).toHaveBeenCalledWith(undefined); //reverter but no preview to revert
             expect(DatagridService.execute).toHaveBeenCalledWith(previewExecutor); //preview diff
@@ -307,9 +322,9 @@ describe('Preview Service', function () {
                 value: '--'
             };
 
-            PreviewService.getPreviewAddRecords(preparationId, datasetId, action, params, sampleSize);
+            PreviewService.getPreviewAddRecords(preparationId, datasetId, action, params);
             var previewArgs = PreparationService.getPreviewAdd.calls.mostRecent().args;
-            var previewCanceler = previewArgs[6];
+            var previewCanceler = previewArgs[1];
 
             expect(previewCanceler.promise.$$state.status).toBe(0);
 
@@ -340,7 +355,7 @@ describe('Preview Service', function () {
         it('should stop pending preview', inject(function(PreviewService, PreparationService) {
             //given
             var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
-            var previewCanceler = previewArgs[5];
+            var previewCanceler = previewArgs[1];
 
             expect(previewCanceler.promise.$$state.status).toBe(0);
 
@@ -380,7 +395,7 @@ describe('Preview Service', function () {
         it('should stop pending preview on cancel call', inject(function(PreviewService, PreparationService) {
             //given
             var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
-            var previewCanceler = previewArgs[5];
+            var previewCanceler = previewArgs[1];
 
             expect(previewCanceler.promise.$$state.status).toBe(0);
 

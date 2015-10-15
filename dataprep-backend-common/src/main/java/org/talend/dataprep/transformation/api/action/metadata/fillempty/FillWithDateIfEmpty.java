@@ -46,13 +46,4 @@ public class FillWithDateIfEmpty extends AbstractFillIfEmpty {
         return Type.DATE.equals(Type.get(column.getType()));
     }
 
-    /**
-     * Note: this method is used for JSON serialization and used in web UI, please consider this when making changes.
-     * 
-     * @return <code>true</code> if this action is date related so the datetimepicker can be display
-     */
-    public boolean isDate() {
-        return true;
-    }
-
 }

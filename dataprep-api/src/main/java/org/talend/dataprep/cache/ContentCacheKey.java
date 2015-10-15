@@ -2,8 +2,6 @@ package org.talend.dataprep.cache;
 
 import org.talend.dataprep.api.preparation.Preparation;
 
-import org.talend.dataprep.api.preparation.Preparation;
-
 /**
  * Content cache key used to group all information needed by the cache.
  */

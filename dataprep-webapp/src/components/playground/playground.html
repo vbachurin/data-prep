@@ -6,15 +6,7 @@
     <div class="modal-header">
         <ul class="left-header">
             <li translate="FILE_DETAILS" translate-value-name="{{playgroundCtrl.state.playground.dataset.name}}" translate-value-records="{{playgroundCtrl.state.playground.dataset.records}}"></li>
-            <li>
-                <span class="sample_label">{{ 'SAMPLE_SIZE' | translate }}: </span>
-                <select id="playground-sampling-select"
-                        ng-model="playgroundCtrl.state.playground.sampleSize"
-                        ng-options="size.value as size.display for size in playgroundCtrl.sampleSizes"
-                        ng-change="playgroundCtrl.playgroundService.changeSampleSize()"
-                        class="sample">
-                </select>
-            </li>
+            <li ng-if="playgroundCtrl.state.enterprise" insertion-playground-header-1></li>
         </ul>
 
         <ul class="right-header">

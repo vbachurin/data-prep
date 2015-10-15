@@ -1,16 +1,9 @@
 [
   {
-    "mimeType": "application/tde",
-    "extension": ".tde",
-    "id": "TABLEAU",
-    "needParameters": "false",
-    "defaultExport": "false"
-  },
-  {
     "mimeType": "application/vnd.ms-excel",
     "extension": ".xls",
     "id": "XLS",
-    "needParameters": "false",
+    "needParameters": "true",
     "defaultExport": "true"
   },
   {
@@ -42,6 +35,15 @@
             "labelKey": "SEPARATOR_COMMA"
           }
         ]
+      },
+      {
+        "name": "fileName",
+        "labelKey": "EXPORT_FILENAME",
+        "type": "text",
+        "defaultValue": {
+          "value": "",
+          "labelKey": "EXPORT_FILENAME_DEFAULT"
+        }
       }
     ]
   }

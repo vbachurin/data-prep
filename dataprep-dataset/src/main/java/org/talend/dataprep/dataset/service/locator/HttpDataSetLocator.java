@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetLocation;
-import org.talend.dataprep.api.dataset.location.HttpLocation;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,8 +40,7 @@ public class HttpDataSetLocator implements DataSetLocator {
     public DataSetLocation getLocation(InputStream connectionParameters) throws IOException {
         ObjectMapper mapper = builder.build();
         JsonParser parser = mapper.getFactory().createParser(connectionParameters);
-        HttpLocation location = mapper.reader(DataSetLocation.class).readValue(parser);
-        return location;
+        return mapper.reader(DataSetLocation.class).readValue(parser);
     }
 
 }

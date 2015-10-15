@@ -1,11 +1,13 @@
 package org.talend.dataprep.api.preparation.json;
 
+import static java.util.stream.Collectors.toList;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +20,6 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-
-import static java.util.stream.Collectors.toList;
-import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
 /**
  * Serialize preparations in json.

@@ -7,7 +7,6 @@
         <version>1.0.m9-SNAPSHOT</version>
     </parent>
     <artifactId>dataprep-platform</artifactId>
-    <version>1.0.m9-SNAPSHOT</version>
     <name>dataprep-platform</name>
     <packaging>pom</packaging>
     <build>

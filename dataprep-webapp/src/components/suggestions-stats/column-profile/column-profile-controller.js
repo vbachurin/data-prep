@@ -88,11 +88,10 @@
             }
 
             var datasetId = state.playground.dataset.id;
-            var sampleSize = state.playground.sampleSize;
             var preparationId = state.playground.preparation ? state.playground.preparation.id : null;
             var stepId = preparationId ? RecipeService.getLastActiveStep().id : null;
 
-            StatisticsService.processAggregation(datasetId, preparationId, stepId, sampleSize, column, aggregation);
+            StatisticsService.processAggregation(datasetId, preparationId, stepId, column, aggregation);
         };
 
         //------------------------------------------------------------------------------------------------------

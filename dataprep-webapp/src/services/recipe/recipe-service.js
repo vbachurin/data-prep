@@ -96,6 +96,9 @@
          * @returns {object} The recipe step
          */
         function getStep(index, defaultLast) {
+            if(index < 0) {
+                return initialState;
+            }
             if(index >= recipe.length || index < 0) {
                 return defaultLast ? recipe[recipe.length - 1] : null;
             }

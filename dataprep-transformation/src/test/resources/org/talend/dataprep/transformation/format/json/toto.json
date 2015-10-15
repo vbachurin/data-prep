@@ -1,0 +1,32 @@
+{
+  "mimeType": "text/toto",
+  "extension": ".toto",
+  "id": "TOTO",
+  "needParameters": "true",
+  "defaultExport": "false",
+  "parameters": [
+    {
+      "name": "totoSeparator",
+      "labelKey": "CHOOSE_SEPARATOR",
+      "type": "radio",
+      "defaultValue": {
+        "value": "|",
+        "labelKey": "SEPARATOR_PIPE"
+      },
+      "values": [
+        {
+          "value": "\t",
+          "labelKey": "SEPARATOR_TAB"
+        },
+        {
+          "value": ":",
+          "labelKey": "SEPARATOR_COLUMN"
+        },
+        {
+          "value": ".",
+          "labelKey": "SEPARATOR_DOT"
+        }
+      ]
+    }
+  ]
+}

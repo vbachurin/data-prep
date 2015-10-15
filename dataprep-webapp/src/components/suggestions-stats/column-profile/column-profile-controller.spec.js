@@ -145,20 +145,18 @@ describe('ColumnProfile controller', function () {
             var datasetId = '13654634856752';
             var preparationId = '5463514684';
             var stepId = '698656896987486';
-            var sampleSize = 500;
             var column = {id: '0001'};
             var aggregation = {name: 'MAX'};
 
             stateMock.playground.dataset = {id: datasetId};
             stateMock.playground.preparation = {id: preparationId};
-            stateMock.playground.sampleSize = sampleSize;
             spyOn(RecipeService, 'getLastActiveStep').and.returnValue({id: stepId});
 
             //when
             ctrl.changeAggregation(column, aggregation);
 
             //then
-            expect(StatisticsService.processAggregation).toHaveBeenCalledWith(datasetId, preparationId, stepId, sampleSize, column, aggregation);
+            expect(StatisticsService.processAggregation).toHaveBeenCalledWith(datasetId, preparationId, stepId, column, aggregation);
         }));
 
         it('should change aggregation chart with dataset id (no preparation)', inject(function(StatisticsService, PlaygroundService, PreparationService, RecipeService) {
@@ -168,12 +166,10 @@ describe('ColumnProfile controller', function () {
 
             var datasetId = '13654634856752';
             var column = {id: '0001'};
-            var sampleSize = 500;
             var aggregation = {name: 'MAX'};
 
             stateMock.playground.dataset = {id: datasetId};
             stateMock.playground.preparation = null;
-            stateMock.playground.sampleSize = sampleSize;
             spyOn(RecipeService, 'getLastActiveStep').and.callFake(function() {
                 throw new Error('should NOT call RecipeService because there is no preparation');
             });
@@ -182,7 +178,7 @@ describe('ColumnProfile controller', function () {
             ctrl.changeAggregation(column, aggregation);
 
             //then
-            expect(StatisticsService.processAggregation).toHaveBeenCalledWith(datasetId, null, null, sampleSize, column, aggregation);
+            expect(StatisticsService.processAggregation).toHaveBeenCalledWith(datasetId, null, null, column, aggregation);
         }));
 
         it('should do nothing if the current histogram is already the wanted aggregation', inject(function(StatisticsService) {

@@ -83,7 +83,9 @@ describe('Playground Service', function () {
         var dataset = {id: 'e85afAa78556d5425bc2'};
         var assertNewPreparationInitialization, assertNewPreparationNotInitialized;
 
-        beforeEach(inject(function (PlaygroundService, DatasetService, FilterService, RecipeService, DatagridService, TransformationCacheService, SuggestionService, HistoryService, StatisticsService, PreviewService, StateService) {
+        beforeEach(inject(function ($rootScope, PlaygroundService, DatasetService, FilterService, RecipeService, DatagridService, TransformationCacheService, SuggestionService, HistoryService, StatisticsService, PreviewService, StateService) {
+            spyOn($rootScope, '$emit').and.returnValue();
+
             assertNewPreparationInitialization = function () {
                 expect(StateService.resetPlayground).toHaveBeenCalled();
                 expect(StateService.setCurrentDataset).toHaveBeenCalledWith(dataset);
@@ -152,6 +154,19 @@ describe('Playground Service', function () {
 
             //then
             assertNewPreparationInitialization();
+        }));
+
+        it('should manage loading spinner', inject(function ($rootScope, PlaygroundService) {
+            //given
+            expect($rootScope.$emit).not.toHaveBeenCalled();
+
+            //when
+            PlaygroundService.initPlayground(dataset);
+            expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
+            $rootScope.$digest();
+
+            //then
+            expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
         }));
 
         it('should reset preparation name', inject(function ($rootScope, PlaygroundService) {
@@ -237,7 +252,7 @@ describe('Playground Service', function () {
 
         beforeEach(inject(function ($rootScope, $q, StateService, PreparationService, RecipeService, PlaygroundService, FilterService, DatagridService, TransformationCacheService, SuggestionService, HistoryService, StatisticsService, PreviewService) {
             spyOn($rootScope, '$emit').and.returnValue();
-            spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: data}));
+            spyOn(PreparationService, 'getContent').and.returnValue($q.when(data));
             spyOn(RecipeService, 'disableStepsAfter').and.returnValue();
 
             assertDatasetLoadInitialized = function (metadata, data) {
@@ -252,7 +267,6 @@ describe('Playground Service', function () {
                 expect(StatisticsService.resetCharts).toHaveBeenCalled();
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
             };
-
             assertDatasetLoadNotInitialized = function () {
                 expect(StateService.resetPlayground).not.toHaveBeenCalled();
                 expect(StateService.setCurrentDataset).not.toHaveBeenCalled();
@@ -333,8 +347,7 @@ describe('Playground Service', function () {
             assertDatasetLoadInitialized({id: '1'}, data);
         }));
 
-        it('should NOT change playground if the preparation to load is already loaded',
-            inject(function ($rootScope, PlaygroundService) {
+        it('should NOT change playground if the preparation to load is already loaded', inject(function ($rootScope, PlaygroundService) {
                 //given
                 var preparation = {
                     id: '6845521254541',
@@ -396,38 +409,6 @@ describe('Playground Service', function () {
             expect($rootScope.$emit).not.toHaveBeenCalledWith('talend.loading.start');
             expect(PreparationService.getContent).not.toHaveBeenCalled();
         }));
-
-        it('should load preparation sample when sample size is changed', inject(function (PlaygroundService, PreparationService, RecipeService) {
-            //given
-            stateMock.playground.preparation = {id: '5746518486846'};
-
-            var lastActiveStep = {transformation: {stepId: '53df45d3s8425'}};
-            spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(2);
-            spyOn(RecipeService, 'getStep').and.returnValue(lastActiveStep);
-
-            //when
-            stateMock.playground.sampleSize = 50;
-            PlaygroundService.changeSampleSize();
-
-            //then
-            expect(PreparationService.getContent).toHaveBeenCalledWith('5746518486846', '53df45d3s8425', 50);
-        }));
-
-        it('should load the full preparation sample when sample size is changed to full dataset', inject(function (PlaygroundService, PreparationService, RecipeService) {
-            //given
-            stateMock.playground.preparation = {id: '79a8746bc546874'};
-
-            var lastActiveStep = {transformation: {stepId: '53df45d3s8425'}};
-            spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(2);
-            spyOn(RecipeService, 'getStep').and.returnValue(lastActiveStep);
-
-            //when
-            stateMock.playground.sampleSize = null;
-            PlaygroundService.changeSampleSize();
-
-            //then
-            expect(PreparationService.getContent).toHaveBeenCalledWith('79a8746bc546874', '53df45d3s8425', null);
-        }));
     });
 
     describe('transformation steps', function () {
@@ -468,7 +449,7 @@ describe('Playground Service', function () {
             spyOn(PreparationService, 'appendStep').and.returnValue($q.when(true));
             spyOn(PreparationService, 'updateStep').and.returnValue($q.when(true));
             spyOn(PreparationService, 'removeStep').and.returnValue($q.when(true));
-            spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: preparationHeadContent}));
+            spyOn(PreparationService, 'getContent').and.returnValue($q.when(preparationHeadContent));
             spyOn(RecipeService, 'getLastStep').and.returnValue(lastStep);
             spyOn(RecipeService, 'getPreviousStep').and.callFake(function (step) {
                 return step === lastStep ? previousLastStep : null;
@@ -598,7 +579,6 @@ describe('Playground Service', function () {
             it('should refresh datagrid with head content', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService, PreviewService) {
                 //given
                 stateMock.playground.preparation = {id: '15de46846f8a46'};
-                stateMock.playground.sampleSize = 8792;
                 var action = 'uppercase';
                 var parameters = {
                     param1: 'param1Value',
@@ -613,7 +593,7 @@ describe('Playground Service', function () {
                 $rootScope.$digest();
 
                 //then
-                expect(PreparationService.getContent).toHaveBeenCalledWith('15de46846f8a46', 'head', 8792);
+                expect(PreparationService.getContent).toHaveBeenCalledWith('15de46846f8a46', 'head');
                 expect(DatagridService.updateData).toHaveBeenCalledWith(preparationHeadContent);
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
             }));
@@ -766,7 +746,6 @@ describe('Playground Service', function () {
             it('should load previous last active step', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService, PreviewService) {
                 //given
                 stateMock.playground.preparation = {id: '456415ae348e6046dc'};
-                stateMock.playground.sampleSize = 7856;
                 var parameters = {value: 'toto', column_id: '0001'};
 
                 //when
@@ -774,7 +753,7 @@ describe('Playground Service', function () {
                 $rootScope.$digest();
 
                 //then
-                expect(PreparationService.getContent).toHaveBeenCalledWith('456415ae348e6046dc', lastActiveStep.transformation.stepId, 7856);
+                expect(PreparationService.getContent).toHaveBeenCalledWith('456415ae348e6046dc', lastActiveStep.transformation.stepId);
                 expect(DatagridService.updateData).toHaveBeenCalledWith(preparationHeadContent);
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
             }));
@@ -909,14 +888,13 @@ describe('Playground Service', function () {
             it('should update datagrid', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService, PreviewService) {
                 //given
                 stateMock.playground.preparation = {id: preparationId};
-                stateMock.playground.sampleSize = null;
 
                 //when
                 PlaygroundService.removeStep(stepToDelete);
                 $rootScope.$digest();
 
                 //then
-                expect(PreparationService.getContent).toHaveBeenCalledWith(preparationId, 'head', null);
+                expect(PreparationService.getContent).toHaveBeenCalledWith(preparationId, 'head');
                 expect(DatagridService.focusedColumn).toBeFalsy();
                 expect(DatagridService.updateData).toHaveBeenCalledWith(preparationHeadContent);
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
@@ -971,15 +949,12 @@ describe('Playground Service', function () {
                 }));
 
                 it('should refresh datagrid content on UNDO', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService, PreviewService) {
-                    //given
-                    stateMock.playground.sampleSize = 8791;
-
                     //when
                     undo();
                     $rootScope.$digest();
 
                     //then
-                    expect(PreparationService.getContent).toHaveBeenCalledWith(preparationId, 'head', 8791);
+                    expect(PreparationService.getContent).toHaveBeenCalledWith(preparationId, 'head');
                     expect(DatagridService.updateData).toHaveBeenCalledWith(preparationHeadContent);
                     expect(PreviewService.reset).toHaveBeenCalledWith(false);
                 }));
@@ -1069,8 +1044,8 @@ describe('Playground Service', function () {
 
     describe('recipe panel display management', function () {
 
-        beforeEach(inject(function ($q, PreparationService, DatagridService, RecipeService, StateService) {
-            spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: {columns: [{}]}}));
+        beforeEach(inject(function ($q, PreparationService, RecipeService, StateService) {
+            spyOn(PreparationService, 'getContent').and.returnValue($q.when({columns: [{}]}));
             spyOn(PreparationService, 'appendStep').and.callFake(function () {
                 RecipeService.getRecipe().push({});
                 return $q.when(true);
@@ -1227,8 +1202,8 @@ describe('Playground Service', function () {
 
     describe('preparation name edition mode', function () {
 
-        beforeEach(inject(function ($q, PreparationService, DatagridService, RecipeService, StateService) {
-            spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: {columns: [{}]}}));
+        beforeEach(inject(function ($q, PreparationService, RecipeService, StateService) {
+            spyOn(PreparationService, 'getContent').and.returnValue($q.when({columns: [{}]}));
             spyOn(PreparationService, 'appendStep').and.callFake(function () {
                 RecipeService.getRecipe().push({});
                 return $q.when(true);
@@ -1265,34 +1240,4 @@ describe('Playground Service', function () {
             expect(StateService.setNameEditionMode).toHaveBeenCalledWith(false);
         }));
     });
-
-    describe('dataset management when no preparation is done yet', function () {
-
-        it('should load dataset sample when sample size is changed', inject(function (PlaygroundService, PreparationService, DatasetService) {
-            //given
-            stateMock.playground.preparation = null;
-            stateMock.playground.sampleSize = 578;
-            stateMock.playground.dataset = {id: '123d120394ab0c53'};
-
-            //when
-            PlaygroundService.changeSampleSize();
-
-            //then
-            expect(DatasetService.getContent).toHaveBeenCalledWith('123d120394ab0c53', true, 578);
-        }));
-
-        it('should load dataset sample when sample size is changed', inject(function (PlaygroundService, PreparationService, DatasetService) {
-            //given
-            stateMock.playground.preparation = null;
-            stateMock.playground.sampleSize = 324;
-            stateMock.playground.dataset = {id: '123d120394ab0c53'};
-
-            //when
-            PlaygroundService.changeSampleSize();
-
-            //then
-            expect(DatasetService.getContent).toHaveBeenCalledWith('123d120394ab0c53', true, 324);
-        }));
-    });
-
 });

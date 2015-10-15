@@ -78,8 +78,24 @@
       },
       "domain": "US_STATE_CODE",
       "domainLabel": "US State Code",
-      "domainFrequency": 0.0,
-      "semanticDomains": [],
+      "domainFrequency": 4.0,
+      "semanticDomains": [
+        {
+          "id": "US_STATE_CODE",
+          "label": "US State Code",
+          "frequency": 100.0
+        },
+        {
+          "id": "COUNTRY_CODE_ISO2",
+          "label": "Country Code ISO2",
+          "frequency": 75.0
+        },
+        {
+          "id": "CITY",
+          "label": "City",
+          "frequency": 25.0
+        }
+      ],
       "domainForced": false,
       "typeForced": false
     }

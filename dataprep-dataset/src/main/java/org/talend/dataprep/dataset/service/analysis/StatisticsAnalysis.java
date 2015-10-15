@@ -16,7 +16,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
-import org.talend.dataprep.api.dataset.statistics.StatisticsUtils;
+import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.dataset.service.Destinations;
@@ -49,6 +49,9 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
 
     @Autowired
     ContentStoreRouter store;
+
+    @Autowired
+    StatisticsAdapter adapter;
 
     @JmsListener(destination = Destinations.STATISTICS_ANALYSIS)
     public void analyzeQuality(Message message) {
@@ -144,7 +147,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
         stream.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
         analyzer.end();
         // Store results back in data set
-        StatisticsUtils.setStatistics(columns, analyzer.getResult());
+        adapter.adapt(columns, analyzer.getResult());
     }
 
     /**

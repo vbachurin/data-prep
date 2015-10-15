@@ -91,8 +91,9 @@ public class StatisticsUtilsTest {
 
         stringColumn = ColumnMetadata.Builder.column().type(Type.STRING).name("col0").build();
         integerColumn = ColumnMetadata.Builder.column().type(Type.INTEGER).name("col1").build();
-        StatisticsUtils.setStatistics(Collections.singletonList(integerColumn), Collections.singletonList(result));
-        StatisticsUtils.setStatistics(Collections.singletonList(stringColumn), Collections.singletonList(result));
+        StatisticsAdapter adapter = new StatisticsAdapter();
+        adapter.adapt(Collections.singletonList(integerColumn), Collections.singletonList(result));
+        adapter.adapt(Collections.singletonList(stringColumn), Collections.singletonList(result));
 
     }
 

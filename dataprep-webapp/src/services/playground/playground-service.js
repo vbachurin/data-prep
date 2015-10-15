@@ -44,7 +44,6 @@
             initPlayground: initPlayground,     // load dataset
             load: load,                         // load preparation
             loadStep: loadStep,                 // load preparation step
-            changeSampleSize: changeSampleSize, // load dataset/preparation with a sample size
 
             //preparation
             createOrUpdatePreparation: createOrUpdatePreparation,
@@ -91,7 +90,8 @@
         function initPlayground(dataset) {
             if(!state.playground.dataset || state.playground.preparation || dataset.id !== state.playground.dataset.id) {
 
-                return DatasetService.getContent(dataset.id, false, state.playground.sampleSize)
+                $rootScope.$emit('talend.loading.start');
+                return DatasetService.getContent(dataset.id, false)
                     .then(function(data) {
                         //TODO : temporary fix because asked to.
                         //TODO : when error status during import and get dataset content is managed by backend,
@@ -111,78 +111,14 @@
                         if(OnboardingService.shouldStartTour('playground')) {
                             setTimeout(OnboardingService.startTour.bind(null, 'playground'), 300);
                         }
+                    })
+                    .finally(function() {
+                        $rootScope.$emit('talend.loading.stop');
                     });
             }
             else {
                 return $q.when(true);
             }
-        }
-
-        /**
-         * @ngdoc method
-         * @name changeSampleSize
-         * @methodOf data-prep.services.playground.service:PlaygroundService
-         * @description change the sample size
-         * @returns {Promise} The process promise
-         */
-         function changeSampleSize() {
-            // deal with preparation or dataset
-            if (state.playground.preparation) {
-                return changePreparationSampleSize();
-            }
-            else {
-                return changeDataSetSampleSize();
-            }
-        }
-
-        /**
-         * @ngdoc method
-         * @name changeDataSetSampleSize
-         * @methodOf data-prep.services.playground.service:PlaygroundService
-         * @param {int} the wanted sample size
-         * @description change the sample size for the dataset.
-         * @returns {Promise} The process promise
-         */
-        function changePreparationSampleSize() {
-            // get the current step
-            var index = RecipeService.getActiveThresholdStepIndex();
-            var step = RecipeService.getStep(index);
-
-            $rootScope.$emit('talend.loading.start');
-
-            return PreparationService.getContent(state.playground.preparation.id, step.transformation.stepId, state.playground.sampleSize)
-                .then(function(response) {
-                    DatagridService.updateData(response.data);
-                })
-                .finally(function() {
-                    $rootScope.$emit('talend.loading.stop');
-                });
-        }
-
-        /**
-         * @ngdoc method
-         * @name changePreparationSampleSize
-         * @methodOf data-prep.services.playground.service:PlaygroundService
-         * @param {int} the wanted sample size
-         * @description change the sample size for the preparation.
-         * @returns {Promise} The process promise
-         */
-        function changeDataSetSampleSize() {
-            $rootScope.$emit('talend.loading.start');
-            return DatasetService.getContent(state.playground.dataset.id, true, state.playground.sampleSize)
-                .then(function (data) {
-                    //TODO : temporary fix because asked to.
-                    //TODO : when error status during import and get dataset content is managed by backend,
-                    //TODO : remove this controle and the 'data-prep.services.utils'/MessageService dependency
-                    if (!data || !data.records) {
-                        MessageService.error('INVALID_DATASET_TITLE', 'INVALID_DATASET');
-                        throw Error('Empty data');
-                    }
-                    DatagridService.updateData(data);
-                })
-                .finally(function() {
-                    $rootScope.$emit('talend.loading.stop');
-                });
         }
 
         /**
@@ -197,19 +133,19 @@
             <li>load grid with 'head' version content</li>
             <li>reinit recipe panel with preparation steps</li>
          </ul>
-         * @returns {Promise} - the process promise
+         * @returns {Promise} The process promise
          */
         function load(preparation) {
             if(!state.playground.preparation || state.playground.preparation.id !== preparation.id) {
 
                 $rootScope.$emit('talend.loading.start');
-                return PreparationService.getContent(preparation.id, 'head', state.playground.sampleSize)
+                return PreparationService.getContent(preparation.id, 'head')
                     .then(function(response) {
                         setName(preparation.name);
-                        reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response.data, preparation);
+                        reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response, preparation);
                         StateService.showRecipe();
                         StateService.setNameEditionMode(false);
-                        StateService.setGridSelection(response.data.columns[0]);
+                        StateService.setGridSelection(response.columns[0]);
                     })
                     .finally(function() {
                         $rootScope.$emit('talend.loading.stop');
@@ -225,7 +161,6 @@
          * @name loadStep
          * @methodOf data-prep.services.playground.service:PlaygroundService
          * @param {object} step The preparation step to load
-         * @param {string} focusColumnId The column id to focus on
          * @description Load a specific step content in the current preparation, and update the recipe
          * @returns {Promise} The process promise
          */
@@ -236,9 +171,9 @@
             }
 
             $rootScope.$emit('talend.loading.start');
-            return PreparationService.getContent(state.playground.preparation.id, step.transformation.stepId, state.playground.sampleSize)
+            return PreparationService.getContent(state.playground.preparation.id, step.transformation.stepId)
                 .then(function(response) {
-                    DatagridService.updateData(response.data);
+                    DatagridService.updateData(response);
                     RecipeService.disableStepsAfter(step);
                     PreviewService.reset(false);
                 })
@@ -466,13 +401,12 @@
          * @ngdoc method
          * @name updatePreparationDatagrid
          * @methodOf data-prep.services.playground.service:PlaygroundService
-         * @param {string} focusColumnId The column id to focus on
          * @description Perform an datagrid refresh with the preparation head
          */
         function updatePreparationDatagrid() {
-            return PreparationService.getContent(state.playground.preparation.id, 'head', state.playground.sampleSize)
+            return PreparationService.getContent(state.playground.preparation.id, 'head')
                 .then(function(response) {
-                    DatagridService.updateData(response.data);
+                    DatagridService.updateData(response);
                     PreviewService.reset(false);
                 });
         }

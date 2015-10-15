@@ -116,7 +116,7 @@ describe('rangeSlider directive', function () {
             flushAllD3Transitions();
 
             //then
-            expect(isolateScope.brush.extent()).toEqual([20, 20.1]);
+            expect(isolateScope.brush.extent()).toEqual([20, 20.01]);
         });
 
         it('should the min and max labels to the provided min/max values', function () {

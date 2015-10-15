@@ -22,7 +22,7 @@ public class DataSetList extends GenericCommand<InputStream> {
     private DataSetList(HttpClient client, String sort, String order) {
         super(PreparationAPI.TRANSFORM_GROUP, client);
         execute(() -> new HttpGet(datasetServiceUrl + "/datasets?sort=" + sort + "&order=" + order));
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_LIST_DATASETS, e));
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_LIST_DATASETS, e));
         on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyStream());
         on(HttpStatus.OK).then(pipeStream());
     }

@@ -14,7 +14,6 @@
             setPreparation: setPreparation,
             setNameEditionMode: setNameEditionMode,
             reset: reset,
-            setSampleSize: setSampleSize,
             setData: setData,
 
             //recipe
@@ -63,10 +62,6 @@
 
         function hide() {
             playgroundState.visible = false;
-        }
-
-        function setSampleSize(sampleSize) {
-            playgroundState.sampleSize = sampleSize;
         }
 
         function reset() {

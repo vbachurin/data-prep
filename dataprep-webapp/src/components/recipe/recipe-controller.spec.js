@@ -5,11 +5,10 @@ describe('Recipe controller', function() {
 
     var createController, scope;
     var lastActiveStep = {inactive: false};
-    var sampleSize = 500;
     var stateMock;
 
     beforeEach(module('data-prep.recipe', function($provide) {
-        stateMock = {playground: {preparation: {id: '132da49ef87694ab64e6'}, sampleSize: sampleSize}};
+        stateMock = {playground: {preparation: {id: '132da49ef87694ab64e6'}}};
         $provide.constant('state', stateMock);
     }));
 
@@ -236,8 +235,7 @@ describe('Recipe controller', function() {
             stateMock.playground.preparation.id,
             lastActiveStep,
             step,
-            {pattern: '--', column_id: '0', column_name: 'state', scope: 'column'},
-            sampleSize);
+            {pattern: '--', column_id: '0', column_name: 'state', scope: 'column'});
     }));
 
     describe('step parameters', function () {

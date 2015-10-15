@@ -151,6 +151,7 @@ public class HDFSContentCache implements ContentCache {
         try {
             files = fileSystem.listStatus(entry.getParent(), p -> p.getName().startsWith(key.getSample()));
         } catch (IOException e) {
+            LOGGER.debug("error reading {}", key, e);
             return null;
         }
 

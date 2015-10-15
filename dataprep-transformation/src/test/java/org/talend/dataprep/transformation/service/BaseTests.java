@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,7 +33,7 @@ public class BaseTests extends TransformationServiceBaseTests {
 
     @Test
     public void shouldListExportTypes() throws Exception {
-        String json = when().get("/export/types").asString();
+        String json = when().get("/export/formats").asString();
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode types = mapper.readTree(json);
@@ -44,8 +45,8 @@ public class BaseTests extends TransformationServiceBaseTests {
             actual.add(types.get(i).get("id").asText());
         }
 
-        List<String> expected = Arrays.asList("CSV", "XLS", "TABLEAU");
-        Assert.assertEquals(expected, actual);
+        List<String> expected = Arrays.asList("XLS", "CSV");
+        Assertions.assertThat(actual).isNotNull().isNotEmpty().containsAll( expected );
 
     }
 

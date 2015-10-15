@@ -1,0 +1,18 @@
+{
+  "mimeType": "application/vnd.ms-excel",
+  "extension": ".xls",
+  "id": "XLS",
+  "needParameters": "true",
+  "defaultExport": "true",
+  "parameters": [
+    {
+      "name": "fileName",
+      "labelKey": "EXPORT_FILENAME",
+      "type": "text",
+      "defaultValue": {
+        "value": "",
+        "labelKey": "EXPORT_FILENAME_DEFAULT"
+      }
+    }
+  ]
+}

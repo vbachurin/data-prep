@@ -17,7 +17,7 @@ import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
-import org.talend.dataprep.api.dataset.statistics.StatisticsUtils;
+import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.exception.TDPException;
@@ -30,6 +30,7 @@ import org.talend.dataprep.transformation.api.action.metadata.SchemaChangeAction
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
+import org.talend.dataprep.transformation.format.WriterRegistrationService;
 import org.talend.dataquality.semantic.recognizer.CategoryRecognizerBuilder;
 import org.talend.dataquality.semantic.statistics.SemanticAnalyzer;
 import org.talend.dataquality.statistics.cardinality.CardinalityAnalyzer;
@@ -56,7 +57,14 @@ class SimpleTransformer implements Transformer {
     public static final String CONTEXT_ANALYZER = "analyzer";
 
     @Autowired
+    StatisticsAdapter adapter;
+
+    @Autowired
     ActionParser actionParser;
+
+    /** Service who knows about registered writers. */
+    @Autowired
+    private WriterRegistrationService writersService;
 
     /** The data-prep jackson builder. */
     @Autowired
@@ -119,7 +127,8 @@ class SimpleTransformer implements Transformer {
         if (input == null) {
             throw new IllegalArgumentException("Input cannot be null.");
         }
-        final TransformerWriter writer = configuration.writer();
+        final TransformerWriter writer = writersService.getWriter(configuration.formatId(), configuration.output(),
+                configuration.getArguments());
         try {
             writer.startObject();
             final ParsedActions parsedActions = actionParser.parse(configuration.getActions());
@@ -174,7 +183,7 @@ class SimpleTransformer implements Transformer {
                 // End analysis and set the statistics
                 final Analyzer<Analyzers.Result> analyzer = (Analyzer<Analyzers.Result>) context.get(CONTEXT_ANALYZER);
                 analyzer.end();
-                StatisticsUtils.setStatistics(row.getColumns(), analyzer.getResult(), forcedColumns);
+                adapter.adapt(row.getColumns(), analyzer.getResult(), forcedColumns);
                 writer.write(context.getTransformedRowMetadata());
             }
             writer.endObject();

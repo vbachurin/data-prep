@@ -149,7 +149,7 @@
       },
       "domain": "",
       "domainLabel": "",
-      "domainFrequency": 20.0,
+      "domainFrequency": 0.0,
       "semanticDomains": [
         {
           "id": "",
@@ -393,7 +393,7 @@
       },
       "domain": "",
       "domainLabel": "",
-      "domainFrequency": 20.0,
+      "domainFrequency": 0.0,
       "semanticDomains": [
         {
           "id": "",
@@ -508,7 +508,7 @@
       },
       "domain": "",
       "domainLabel": "",
-      "domainFrequency": 20.0,
+      "domainFrequency": 0.0,
       "semanticDomains": [
         {
           "id": "",
@@ -623,7 +623,7 @@
       },
       "domain": "",
       "domainLabel": "",
-      "domainFrequency": 20.0,
+      "domainFrequency": 0.0,
       "semanticDomains": [
         {
           "id": "",
@@ -734,7 +734,7 @@
       },
       "domain": "",
       "domainLabel": "",
-      "domainFrequency": 20.0,
+      "domainFrequency": 0.0,
       "semanticDomains": [
         {
           "id": "",
@@ -966,7 +966,7 @@
       },
       "domain": "",
       "domainLabel": "",
-      "domainFrequency": 20.0,
+      "domainFrequency": 0.0,
       "semanticDomains": [
         {
           "id": "",
@@ -1178,7 +1178,7 @@
       },
       "domain": "",
       "domainLabel": "",
-      "domainFrequency": 20.0,
+      "domainFrequency": 0.0,
       "semanticDomains": [
         {
           "id": "",
@@ -1390,7 +1390,7 @@
       },
       "domain": "",
       "domainLabel": "",
-      "domainFrequency": 20.0,
+      "domainFrequency": 0.0,
       "semanticDomains": [
         {
           "id": "",
