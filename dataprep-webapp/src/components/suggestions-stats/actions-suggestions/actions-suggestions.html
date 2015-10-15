@@ -31,7 +31,7 @@
                    placeholder="{{::'FIND_FUNCTION' | translate}}"
                    ng-model="actionsSuggestionsCtrl.suggestionService.searchActionString"
                    ng-model-options="{debounce: { default: 300, blur: 0 }}"
-                   add-reset-button-to-input="actionsSuggestionsCtrl.suggestionService.resetSearchAction">
+                   add-reset-button-to-input>
             <talend-accordions class="menu action-suggestion-tab-items">
                 <talend-accordions-item
                         ng-repeat="transfo in actionsSuggestionsCtrl.columnSuggestions | actionsSuggestionsSearchFilter:actionsSuggestionsCtrl.suggestionService.searchActionString track by transfo.name"

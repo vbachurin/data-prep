@@ -53,9 +53,7 @@
 
             setColumn: setColumn,
             selectTab: selectTab,
-            reset: reset,
-            resetSearchAction: resetSearchAction
-
+            reset: reset
         };
 
         return service;
@@ -113,9 +111,7 @@
         function resetSearchAction() {
             service.searchActionString = '';
             angular.forEach(ColumnSuggestionService.transformations, function(item){
-                item.labelHtml = item.labelHtml.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
-                item.labelHtml = item.labelHtml.replace(new RegExp('(</span>)', 'g'), '');
-
+                item.labelHtml = item.label;
             });
         }
     }

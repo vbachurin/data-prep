@@ -166,15 +166,9 @@
          * @description Remove html code inserted when highlighting text from object
          */
         vm.toggleShowAction = function toggleShowAction() {
-
             //Reset action search
             this.suggestionService.searchActionString = '';
-
-            if (this.suggestionService.showAllAction) {
-                this.columnSuggestionService.initTransformations(vm.suggestionService.currentColumn, true);
-            }else {
-                this.columnSuggestionService.initTransformations(vm.suggestionService.currentColumn, false);
-            }
+            this.columnSuggestionService.initTransformations(vm.suggestionService.currentColumn, this.suggestionService.showAllAction);
         };
 
     }
