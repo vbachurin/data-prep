@@ -206,9 +206,7 @@
         };
 
         vm.overDataset = function(dataset,visible){
-          console.log("vm.overDataset:"+dataset.id);
-          if(visible)
-          {
+          if(visible){
               angular.element( '#edit_btn_dataset_' + dataset.id ).show();
           } else {
               angular.element( '#edit_btn_dataset_' + dataset.id ).hide();
