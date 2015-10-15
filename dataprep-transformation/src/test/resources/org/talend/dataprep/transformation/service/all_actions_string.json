@@ -1790,7 +1790,7 @@
         "canBeBlank": false,
         "description": "The new column name",
         "label": "New name",
-        "default": "firstname"
+        "default": "id"
       }
     ],
     "category": "column_metadata",
