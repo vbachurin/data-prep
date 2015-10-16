@@ -26,16 +26,24 @@
          * @name filterAndGroup
          * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
          * @param {object[]} transfos The transformations list
+         * @param {boolean} showAll show all transformation or some of them
          * @description Keep only the non 'columns' category and group them by category
          * @returns {object} An object containing {key: value} = {category: [transformations]}
          */
-        function filterAndGroup(transfos) {
+        function filterAndGroup(transfos, showAll) {
+            if (showAll) {
+                return _.chain(transfos)
+                    .filter(function (transfo) {
+                        return transfo.category !== COLUMN_CATEGORY;
+                    })
+                    .sortBy(function (action) {
+                        return action.label.toLowerCase();
+                    })
+                    .value();
+            }
             return _.chain(transfos)
                 .filter(function (transfo) {
                     return transfo.category !== COLUMN_CATEGORY;
-                })
-                .sortBy(function (action) {
-                    return action.label.toLowerCase();
                 })
                 .value();
         }
@@ -52,7 +60,7 @@
             self.transformations = null;
             TransformationCacheService.getTransformations(column, showAll)
                 .then(function (transformations) {
-                    var transformationsObj = filterAndGroup(transformations);
+                    var transformationsObj = filterAndGroup(transformations, showAll);
 
                     //Add labelHtml which is copy of label in order to manage the highlight action label
                     angular.forEach(transformationsObj, function(item){

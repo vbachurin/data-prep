@@ -53,4 +53,29 @@ describe('Column suggestion service', function () {
         expect(suggestedTransformations[0].labelHtml).toEqual('a');
         expect(suggestedTransformations[suggestedTransformations.length - 1].label).toEqual('v');
     }));
+
+
+    it('should filter "column" category', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService) {
+        //given
+        ColumnSuggestionService.transformations = {};
+
+        //when
+        ColumnSuggestionService.initTransformations(firstSelectedColumn, false);
+        expect(ColumnSuggestionService.transformations).toBeFalsy();
+        $rootScope.$digest();
+
+        //then : transformations initialized
+        expect(TransformationCacheService.getTransformations).toHaveBeenCalledWith(firstSelectedColumn, false);
+
+        //then : column category filtered
+        var suggestedTransformations = ColumnSuggestionService.transformations;
+        expect(suggestedTransformations).toBeDefined();
+        var columnCategoryTransformation = _.find(suggestedTransformations, {category: 'column_metadata'});
+        expect(columnCategoryTransformation).toBeFalsy();
+
+        //then : result alphabetically sorted
+        expect(suggestedTransformations[0].label).toEqual('f');
+        expect(suggestedTransformations[0].labelHtml).toEqual('f');
+        expect(suggestedTransformations[suggestedTransformations.length - 1].label).toEqual('m');
+    }));
 });
