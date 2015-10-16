@@ -5,7 +5,7 @@
             restrict: 'A',
             require: 'ngModel',
             link: function (scope, iElement, iAttrs, ngModel) {
-                var margin = 15;
+                var margin = 5;
                 var wrapper = angular.element('<div style="position:relative;"></div>');
 
                 iElement.wrap(wrapper);
