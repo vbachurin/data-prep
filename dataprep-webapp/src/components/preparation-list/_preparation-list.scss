@@ -127,8 +127,10 @@
         color: $medium-gray;
         background-color: transparent;
         font-size: .8em;
-        &:hover
-        { color: $dark-gray; }
+        display: none;
+        &:hover {
+          color: $dark-gray;
+        }
       }
       &.cancel-btn {
         margin-left: 0px;

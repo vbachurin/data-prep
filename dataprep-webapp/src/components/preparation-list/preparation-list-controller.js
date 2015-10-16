@@ -78,10 +78,15 @@
          * @description trigger backend call to update preparation name
          */
         vm.rename = function(preparation){
+            // do not trigger backend call if the name didn't change
+            if (preparation.name === preparation.originalName){
+                preparation.showChangeName = false;
+                return;
+            }
             $rootScope.$emit('talend.loading.start');
             return PreparationService.setName(preparation.id, preparation.name)
                 .then(function(){
-                    preparation.showChangeName = false;
+                  preparation.showChangeName = false;
                 })
                 .then(function() {
                   MessageService.success('RENAME_SUCCESS_TITLE', 'RENAME_SUCCESS');
@@ -92,6 +97,19 @@
                 });
         };
 
+        vm.clone = function(preparation){
+          console.log('clone:');
+        };
+
+        vm.overPreparationEntry = function ( preparation ) {
+            angular.element('#edit_btn_'+preparation.id).show();
+            angular.element('#clone_btn_'+preparation.id).show();
+        };
+
+        vm.leavePreparationEntry = function ( preparation ) {
+            angular.element('#edit_btn_'+preparation.id).hide();
+            angular.element('#clone_btn_'+preparation.id).hide();
+        };
 
         /**
          * @ngdoc method
