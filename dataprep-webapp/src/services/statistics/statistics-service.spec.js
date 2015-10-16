@@ -40,6 +40,7 @@ describe('Statistics service', function () {
     };
 
     var barChartStrCol = {
+        id: '0010',
         'domain': 'barchartAndString',
         'type': 'string',
         'statistics': {
@@ -150,8 +151,12 @@ describe('Statistics service', function () {
         'domain': '',
         'type': 'unknown'
     };
+    var stateMock;
 
-    beforeEach(module('data-prep.services.statistics'));
+    beforeEach(module('data-prep.services.statistics', function ($provide) {
+        stateMock = {playground: {}};
+        $provide.constant('state', stateMock);
+    }));
 
     describe('filters', function () {
         beforeEach(inject(function(FilterService) {
@@ -161,7 +166,7 @@ describe('Statistics service', function () {
         it('should add a new "inside_range" filter', inject(function (StatisticsService, FilterService, $timeout) {
             //given
             StatisticsService.rangeLimits = {};
-            StatisticsService.selectedColumn = {id: '0000', statistics: {min: 5, max: 55}};
+            stateMock.playground.column = {id: '0000', statistics: {min: 5, max: 55}};
 
             //when
             StatisticsService.addRangeFilter([0,22]);
@@ -181,7 +186,7 @@ describe('Statistics service', function () {
             //given
             StatisticsService.rangeLimits = {};
             StatisticsService.histogram = {};
-            StatisticsService.selectedColumn = {id: '0000', statistics: {min: 5, max: 55}};
+            stateMock.playground.column = {id: '0000', statistics: {min: 5, max: 55}};
 
             //when
             FilterService.filters = [{colId:'0000', type:'inside_range', args:{interval:[10, 22]}}];
@@ -199,7 +204,8 @@ describe('Statistics service', function () {
             var originalRangeLimits = {};
             StatisticsService.histogram = {};
             StatisticsService.rangeLimits = originalRangeLimits;
-            StatisticsService.selectedColumn = {id: '0000', statistics: {min: 5, max: 55}};
+            var column = {id: '0000', statistics: {min: 5, max: 55}};
+            stateMock.playground.column = column;
 
             FilterService.filters = [{colId:'0000', type:'inside_range', args:{interval:[0, 22]}}];
             StatisticsService.addRangeFilter([0,22]);
@@ -226,14 +232,14 @@ describe('Statistics service', function () {
                 min: 5,
                 max: 55
             });
-            expect(StatisticsService.histogram.activeLimits).toEqual([StatisticsService.selectedColumn.statistics.min, StatisticsService.selectedColumn.statistics.max]);
+            expect(StatisticsService.histogram.activeLimits).toEqual([column.statistics.min, column.statistics.max]);
         }));
 
         it('should do nothing on "inside_range" filter remove when the selected column is NOT the same', inject(function (StatisticsService, FilterService, $timeout) {
             //given
             StatisticsService.rangeLimits = {};
             StatisticsService.histogram = {};
-            StatisticsService.selectedColumn = {id: '0000', statistics: {min: 5, max: 55}};
+            stateMock.playground.column = {id: '0000', statistics: {min: 5, max: 55}};
             StatisticsService.addRangeFilter([0, 22]);
             $timeout.flush();
 
@@ -254,9 +260,10 @@ describe('Statistics service', function () {
             it('should set stateDistribution for geo chart when the column domain contains STATE_CODE', inject(function (StatisticsService) {
                 //given
                 expect(StatisticsService.stateDistribution).toBeFalsy();
+                stateMock.playground.column = mapCol;
 
                 //when
-                StatisticsService.processData(mapCol);
+                StatisticsService.processData();
 
                 //then
                 expect(StatisticsService.stateDistribution).toBe(mapCol);
@@ -264,11 +271,12 @@ describe('Statistics service', function () {
 
             it('should reset non geo chart data when the column domain contains STATE_CODE', inject(function (StatisticsService) {
                 //given
+                stateMock.playground.column = mapCol;
                 StatisticsService.boxPlot = {};
                 StatisticsService.histogram = {};
 
                 //when
-                StatisticsService.processData(mapCol);
+                StatisticsService.processData();
 
                 //then
                 expect(StatisticsService.boxPlot).toBeFalsy();
@@ -279,11 +287,12 @@ describe('Statistics service', function () {
         describe('Histogram data H/V barchart', function () {
             it('should reset non histogram data when column type is "string"', inject(function (StatisticsService) {
                 //given
+                stateMock.playground.column = barChartStrCol;
                 StatisticsService.boxPlot = {};
                 StatisticsService.stateDistribution = {};
 
                 //when
-                StatisticsService.processData(barChartStrCol);
+                StatisticsService.processData();
 
                 //then
                 expect(StatisticsService.boxPlot).toBeFalsy();
@@ -292,10 +301,11 @@ describe('Statistics service', function () {
 
             it('should set the frequency data with formatted value when column type is "string"', inject(function (StatisticsService) {
                 //given
+                stateMock.playground.column = barChartStrCol;
                 expect(StatisticsService.histogram).toBeFalsy();
 
                 //when
-                StatisticsService.processData(barChartStrCol);
+                StatisticsService.processData();
 
                 //then
                 expect(StatisticsService.histogram).toEqual({
@@ -313,11 +323,12 @@ describe('Statistics service', function () {
 
             it('should reset non histogram data when column type is "boolean"', inject(function (StatisticsService) {
                 //given
+                stateMock.playground.column = barChartBoolCol;
                 StatisticsService.boxPlot = {};
                 StatisticsService.stateDistribution = {};
 
                 //when
-                StatisticsService.processData(barChartBoolCol);
+                StatisticsService.processData();
 
                 //then
                 expect(StatisticsService.boxPlot).toBeFalsy();
@@ -326,10 +337,11 @@ describe('Statistics service', function () {
 
             it('should set the frequency data when column type is "boolean"', inject(function (StatisticsService) {
                 //given
+                stateMock.playground.column = barChartBoolCol;
                 expect(StatisticsService.histogram).toBeFalsy();
 
                 //when
-                StatisticsService.processData(barChartBoolCol);
+                StatisticsService.processData();
 
                 //then
                 expect(StatisticsService.histogram).toEqual({
@@ -342,10 +354,11 @@ describe('Statistics service', function () {
 
             it('should reset non histogram data when column type is "number"', inject(function (StatisticsService) {
                 //given
+                stateMock.playground.column = barChartNumCol;
                 StatisticsService.stateDistribution = {};
 
                 //when
-                StatisticsService.processData(barChartNumCol);
+                StatisticsService.processData();
 
                 //then
                 expect(StatisticsService.boxPlot).toBeFalsy();
@@ -354,10 +367,11 @@ describe('Statistics service', function () {
 
             it('should set the range data frequency when column type is "number"', inject(function (StatisticsService) {
                 //given
+                stateMock.playground.column = barChartNumCol;
                 expect(StatisticsService.histogram).toBeFalsy();
 
                 //when
-                StatisticsService.processData(barChartNumCol);
+                StatisticsService.processData();
 
                 //then
                 expect(StatisticsService.histogram.data[1].data).toEqual([barChartNumCol.statistics.histogram[1].range.min, barChartNumCol.statistics.histogram[1].range.max]);
@@ -365,10 +379,11 @@ describe('Statistics service', function () {
 
             it('should set histogram vertical mode to true when column type is "number"', inject(function (StatisticsService) {
                 //given
+                stateMock.playground.column = barChartNumCol;
                 expect(StatisticsService.histogram).toBeFalsy();
 
                 //when
-                StatisticsService.processData(barChartNumCol);
+                StatisticsService.processData();
 
                 //then
                 expect(StatisticsService.histogram.vertical).toBe(true);
@@ -377,12 +392,13 @@ describe('Statistics service', function () {
 
         it('should reset charts data when column type is not supported', inject(function (StatisticsService) {
             //given
+            stateMock.playground.column = unknownTypeCol;
             StatisticsService.boxPlot = {};
             StatisticsService.histogram = {};
             StatisticsService.stateDistribution = {};
 
             //when
-            StatisticsService.processData(unknownTypeCol);
+            StatisticsService.processData();
 
             //then
             expect(StatisticsService.histogram).toBeFalsy();
@@ -394,7 +410,7 @@ describe('Statistics service', function () {
     describe('The statistics values', function () {
         it('should init common statistics when the column type is not "number" or "text"', inject(function (StatisticsService) {
             //given
-            var col = {
+            stateMock.playground.column = {
                 id: '0001',
                 type: 'boolean',
                 domain: 'US_STATE_CODE',
@@ -409,7 +425,7 @@ describe('Statistics service', function () {
             };
 
             //when
-            StatisticsService.processData(col);
+            StatisticsService.processData();
 
             //then
             expect(StatisticsService.statistics).toBeTruthy();
@@ -426,7 +442,7 @@ describe('Statistics service', function () {
 
         it('should init number statistics whithout quantile', inject(function (StatisticsService) {
             //given
-            var col = {
+            stateMock.playground.column = {
                 'id': '0001',
                 type: 'integer',
                 domain: 'city name',
@@ -448,7 +464,7 @@ describe('Statistics service', function () {
             };
 
             //when
-            StatisticsService.processData(col);
+            StatisticsService.processData();
 
             //then
             expect(StatisticsService.statistics).toBeTruthy();
@@ -470,7 +486,7 @@ describe('Statistics service', function () {
 
         it('should init number statistics with quantile', inject(function (StatisticsService) {
             //given
-            var col = {
+            stateMock.playground.column = {
                 'id': '0001',
                 type: 'integer',
                 domain: 'code postal',
@@ -494,7 +510,7 @@ describe('Statistics service', function () {
             };
 
             //when
-            StatisticsService.processData(col);
+            StatisticsService.processData();
 
             //then
             expect(StatisticsService.statistics).toBeTruthy();
@@ -519,7 +535,7 @@ describe('Statistics service', function () {
 
         it('should init text statistics', inject(function (StatisticsService) {
             //given
-            var col = {
+            stateMock.playground.column = {
                 'id': '0001',
                 type: 'string',
                 domain: 'text',
@@ -540,7 +556,7 @@ describe('Statistics service', function () {
             expect(StatisticsService.statistics).toBeFalsy();
 
             //when
-            StatisticsService.processData(col);
+            StatisticsService.processData();
 
             //then
             expect(StatisticsService.statistics).toBeTruthy();
@@ -563,7 +579,7 @@ describe('Statistics service', function () {
     describe('The boxplot data', function () {
         it('should reset boxplotData when quantile values are NaN', inject(function (StatisticsService) {
             //given
-            var col = {
+            stateMock.playground.column = {
                 'id': '0001',
                 type: 'integer',
                 domain: 'city name',
@@ -585,7 +601,7 @@ describe('Statistics service', function () {
             };
 
             //when
-            StatisticsService.processData(col);
+            StatisticsService.processData();
 
             //then
             expect(StatisticsService.boxPlot).toBeFalsy();
@@ -593,7 +609,7 @@ describe('Statistics service', function () {
 
         it('should set boxplotData statistics with quantile', inject(function (StatisticsService) {
             //given
-            var col = {
+            stateMock.playground.column = {
                 'id': '0001',
                 type: 'integer',
                 domain: 'code postal',
@@ -617,7 +633,7 @@ describe('Statistics service', function () {
             };
 
             //when
-            StatisticsService.processData(col);
+            StatisticsService.processData();
 
             //then
             expect(StatisticsService.boxPlot).toEqual({
@@ -634,7 +650,7 @@ describe('Statistics service', function () {
 
     describe('Aggregation statistics', function () {
         var currentColumn = {'id': '0001', 'name': 'city'}; // the selected column
-        var datasetId = 'abcd';                             // the current data id
+        var datasetId = '13654634856752';                   // the current data id
         var preparationId = '2132548345365';                // the current preparation id
         var stepId = '9878645468';                          // the currently viewed step id
         var column = {'id': '0002', 'name': 'state'};       // the column where to perform the aggregation
@@ -648,159 +664,218 @@ describe('Statistics service', function () {
             {'data': 'Pierre', 'max': 104}
         ];
 
-        beforeEach(inject(function($window, StatisticsService, DatagridService) {
-            StatisticsService.selectedColumn = currentColumn;
-
-            DatagridService.metadata = {};
-            DatagridService.metadata.id = '0000';
-
-            $window.localStorage.clear();
-
+        beforeEach(inject(function(StatisticsService, RecipeService, StorageService) {
+            stateMock.playground.column = currentColumn;
+            stateMock.playground.dataset = {id: datasetId};
+            stateMock.playground.preparation = {id: preparationId};
+            spyOn(RecipeService, 'getLastActiveStep').and.returnValue({id: stepId});
+            spyOn(StorageService, 'setAggregation').and.returnValue();
+            spyOn(StorageService, 'removeAggregation').and.returnValue();
         }));
 
-        it('should update histogram data with classical occurence histogram when no aggregation is provided', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
-            //given
-            StatisticsService.selectedColumn = barChartStrCol;
-            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when());
+        describe('with NO provided aggregation', function() {
+            it('should update histogram data with classical occurrence histogram', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+                //given
+                stateMock.playground.column = barChartStrCol;
+                spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when());
 
-            //when
-            StatisticsService.processAggregation();
+                //when
+                StatisticsService.processAggregation();
 
-            //then
-            expect(StatisticsRestService.getAggregations).not.toHaveBeenCalled();
-            expect(StatisticsService.histogram).toEqual({
-                data: [
-                    {data: '   toto', occurences: 202, formattedValue: '<span class="hiddenChars">   </span>toto'},
-                    {data: 'titi', occurences: 2, formattedValue: 'titi'},
-                    {data: 'coucou', occurences: 102, formattedValue: 'coucou'},
-                    {data: 'cici', occurences: 22, formattedValue: 'cici'}
-                ],
-                key: 'occurrences',
-                label: 'Occurrences',
-                column: barChartStrCol
-            });
-        }));
+                //then
+                expect(StatisticsRestService.getAggregations).not.toHaveBeenCalled();
+                expect(StatisticsService.histogram).toEqual({
+                    data: [
+                        {data: '   toto', occurences: 202, formattedValue: '<span class="hiddenChars">   </span>toto'},
+                        {data: 'titi', occurences: 2, formattedValue: 'titi'},
+                        {data: 'coucou', occurences: 102, formattedValue: 'coucou'},
+                        {data: 'cici', occurences: 22, formattedValue: 'cici'}
+                    ],
+                    key: 'occurrences',
+                    label: 'Occurrences',
+                    column: barChartStrCol
+                });
+            }));
 
-        it('should update histogram data from REST call result and aggregation infos on dataset', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
-            //given
-            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
+            it('should remove saved aggregation on current column/preparation/dataset from storage', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService, StorageService) {
+                //given
+                stateMock.playground.column = barChartStrCol;
+                spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when());
+                expect(StorageService.removeAggregation).not.toHaveBeenCalled();
 
-            //when
-            StatisticsService.processAggregation(datasetId, null, stepId, column, aggregation);
-            $rootScope.$digest();
+                //when
+                StatisticsService.processAggregation();
 
-            //then
-            expect(StatisticsRestService.getAggregations).toHaveBeenCalledWith({
-                datasetId: 'abcd',
-                preparationId: null,
-                stepId: '9878645468',
-                operations: [{operator: 'MAX', columnId: '0002'}],
-                groupBy: ['0001']
-            });
-            expect(StatisticsService.histogram).toEqual({
-                data: [
-                    {'data': 'Lansing', 'max': 15, 'formattedValue': 'Lansing'},
-                    {'data': 'Helena', 'max': 5, 'formattedValue': 'Helena'},
-                    {'data': 'Baton Rouge', 'max': 64, 'formattedValue': 'Baton Rouge'},
-                    {'data': 'Annapolis', 'max': 4, 'formattedValue': 'Annapolis'},
-                    {'data': 'Pierre', 'max': 104, 'formattedValue': 'Pierre'}
-                ],
-                key: 'MAX',
-                label: 'MAX',
-                column: StatisticsService.selectedColumn,
-                aggregationColumn: column,
-                aggregation: aggregation
-            });
-        }));
+                //then
+                expect(StorageService.removeAggregation).toHaveBeenCalledWith(datasetId, preparationId, barChartStrCol.id);
+            }));
+        });
 
-        it('should update histogram data from aggregation infos on preparation', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
-            //given
-            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
+        describe('with provided aggregation', function() {
+            it('should update histogram data from REST call result and aggregation infos on dataset', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+                //given
+                spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
+                stateMock.playground.preparation = null;
 
-            //when
-            StatisticsService.processAggregation(datasetId, preparationId, stepId, column, aggregation);
-            $rootScope.$digest();
+                //when
+                StatisticsService.processAggregation(column, aggregation);
+                $rootScope.$digest();
 
-            //then
-            expect(StatisticsRestService.getAggregations).toHaveBeenCalledWith({
-                datasetId: null,
-                preparationId: '2132548345365',
-                stepId: '9878645468',
-                operations: [{operator: 'MAX', columnId: '0002'}],
-                groupBy: ['0001']
-            });
-            expect(StatisticsService.histogram).toEqual({
-                data: [
-                    {'data': 'Lansing', 'max': 15, 'formattedValue': 'Lansing'},
-                    {'data': 'Helena', 'max': 5, 'formattedValue': 'Helena'},
-                    {'data': 'Baton Rouge', 'max': 64, 'formattedValue': 'Baton Rouge'},
-                    {'data': 'Annapolis', 'max': 4, 'formattedValue': 'Annapolis'},
-                    {'data': 'Pierre', 'max': 104, 'formattedValue': 'Pierre'}
-                ],
-                key: 'MAX',
-                label: 'MAX',
-                column: StatisticsService.selectedColumn,
-                aggregationColumn: column,
-                aggregation: aggregation
-            });
-        }));
+                //then
+                expect(StatisticsRestService.getAggregations).toHaveBeenCalledWith({
+                    datasetId: '13654634856752',
+                    preparationId: null,
+                    stepId: null,
+                    operations: [{operator: 'MAX', columnId: '0002'}],
+                    groupBy: ['0001']
+                });
+                expect(StatisticsService.histogram).toEqual({
+                    data: [
+                        {'data': 'Lansing', 'max': 15, 'formattedValue': 'Lansing'},
+                        {'data': 'Helena', 'max': 5, 'formattedValue': 'Helena'},
+                        {'data': 'Baton Rouge', 'max': 64, 'formattedValue': 'Baton Rouge'},
+                        {'data': 'Annapolis', 'max': 4, 'formattedValue': 'Annapolis'},
+                        {'data': 'Pierre', 'max': 104, 'formattedValue': 'Pierre'}
+                    ],
+                    key: 'MAX',
+                    label: 'MAX',
+                    column: stateMock.playground.column,
+                    aggregationColumn: column,
+                    aggregation: aggregation
+                });
+            }));
 
-        it('should reset histogram when REST WS call fails', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
-            //given
-            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.reject());
+            it('should update histogram data from aggregation infos on preparation', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+                //given
+                spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
 
-            //when
-            StatisticsService.processAggregation(datasetId, preparationId, stepId, column, aggregation);
-            $rootScope.$digest();
+                //when
+                StatisticsService.processAggregation(column, aggregation);
+                $rootScope.$digest();
 
-            //then
-            expect(StatisticsService.histogram).toBeFalsy();
-        }));
+                //then
+                expect(StatisticsRestService.getAggregations).toHaveBeenCalledWith({
+                    datasetId: null,
+                    preparationId: '2132548345365',
+                    stepId: '9878645468',
+                    operations: [{operator: 'MAX', columnId: '0002'}],
+                    groupBy: ['0001']
+                });
+                expect(StatisticsService.histogram).toEqual({
+                    data: [
+                        {'data': 'Lansing', 'max': 15, 'formattedValue': 'Lansing'},
+                        {'data': 'Helena', 'max': 5, 'formattedValue': 'Helena'},
+                        {'data': 'Baton Rouge', 'max': 64, 'formattedValue': 'Baton Rouge'},
+                        {'data': 'Annapolis', 'max': 4, 'formattedValue': 'Annapolis'},
+                        {'data': 'Pierre', 'max': 104, 'formattedValue': 'Pierre'}
+                    ],
+                    key: 'MAX',
+                    label: 'MAX',
+                    column: stateMock.playground.column,
+                    aggregationColumn: column,
+                    aggregation: aggregation
+                });
+            }));
 
+            it('should save column aggregation in storage', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService, StorageService) {
+                //given
+                spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
+                expect(StorageService.setAggregation).not.toHaveBeenCalled();
 
-        it('should NOT call processAggregation when selecting a new column without a default aggregation', inject(function ($q, $rootScope, StatisticsService, RecipeService) {
-            //given
-            spyOn(StatisticsService, 'processAggregation').and.returnValue();
-            spyOn(RecipeService, 'getLastActiveStep').and.returnValue({id: '0000'});
+                //when
+                StatisticsService.processAggregation(column, aggregation);
+                $rootScope.$digest();
 
-            //when
-            StatisticsService.updateAggregation();
+                //then
+                expect(StorageService.setAggregation).toHaveBeenCalledWith('13654634856752', '2132548345365', '0001', { aggregation: 'MAX', aggregationColumnId: '0002' });
+            }));
 
-            //then
-            expect(StatisticsService.processAggregation).not.toHaveBeenCalled();
-        }));
+            it('should reset histogram when REST WS call fails', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+                //given
+                spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.reject());
 
-        it('should call processAggregation when selecting a new column with a default aggregation', inject(function ($window, $q, $rootScope, StatisticsService, RecipeService) {
-            //given
-            spyOn(StatisticsService, 'processAggregation').and.returnValue();
-            spyOn(RecipeService, 'getLastActiveStep').and.returnValue({id: '0000'});
+                //when
+                StatisticsService.processAggregation(datasetId, preparationId, stepId, column, aggregation);
+                $rootScope.$digest();
 
-            StatisticsService.selectedColumn = {id: '0000', statistics: {min: 5, max: 55}};
+                //then
+                expect(StatisticsService.histogram).toBeFalsy();
+            }));
+        });
 
-            var localStorageKey = 'org.talend.dataprep.col_aggregation_0000_0000';
+        describe('update aggregation', function() {
+            it('should update histogram data with classical occurrence when there is no saved aggregation on the current preparation/dataset/column', inject(function($rootScope, StatisticsService, StorageService) {
+                //given
+                stateMock.playground.column = barChartStrCol;
+                spyOn(StorageService, 'getAggregation').and.returnValue();
 
-            var localStorageValue = {};
-            localStorageValue.aggregation = 'MAX';
-            localStorageValue.aggregationColumnId = '0001';
+                //when
+                StatisticsService.updateAggregation();
+                $rootScope.$digest();
 
-            $window.localStorage.setItem(localStorageKey, JSON.stringify(localStorageValue));
+                //then
+                expect(StorageService.getAggregation).toHaveBeenCalledWith(datasetId, preparationId, barChartStrCol.id);
+                expect(StatisticsService.histogram).toEqual({
+                    data: [
+                        {data: '   toto', occurences: 202, formattedValue: '<span class="hiddenChars">   </span>toto'},
+                        {data: 'titi', occurences: 2, formattedValue: 'titi'},
+                        {data: 'coucou', occurences: 102, formattedValue: 'coucou'},
+                        {data: 'cici', occurences: 22, formattedValue: 'cici'}
+                    ],
+                    key: 'occurrences',
+                    label: 'Occurrences',
+                    column: barChartStrCol
+                });
+            }));
 
-            //when
-            StatisticsService.updateAggregation();
+            it('should update histogram data from saved aggregation configuration', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService, DatagridService, StorageService) {
+                //given
+                spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
+                var savedAggregation = {
+                    aggregationColumnId: '0002',
+                    aggregation: 'MAX'
+                };
+                spyOn(StorageService, 'getAggregation').and.returnValue(savedAggregation);
+                var datagridNumericColumns = [
+                    {id: '0002', name: 'state'},
+                    {id: '0003', name: 'name'}
+                ];
+                spyOn(DatagridService, 'getNumericColumns').and.returnValue(datagridNumericColumns);
 
-            //then
-            expect(StatisticsService.processAggregation).toHaveBeenCalled();
+                //when
+                StatisticsService.updateAggregation();
+                $rootScope.$digest();
 
-            $window.localStorage.removeItem(localStorageKey);
-        }));
-
-
+                //then
+                expect(StatisticsRestService.getAggregations).toHaveBeenCalledWith({
+                    datasetId: null,
+                    preparationId: '2132548345365',
+                    stepId: '9878645468',
+                    operations: [{operator: 'MAX', columnId: '0002'}],
+                    groupBy: ['0001']
+                });
+                expect(StatisticsService.histogram).toEqual({
+                    data: [
+                        {'data': 'Lansing', 'max': 15, 'formattedValue': 'Lansing'},
+                        {'data': 'Helena', 'max': 5, 'formattedValue': 'Helena'},
+                        {'data': 'Baton Rouge', 'max': 64, 'formattedValue': 'Baton Rouge'},
+                        {'data': 'Annapolis', 'max': 4, 'formattedValue': 'Annapolis'},
+                        {'data': 'Pierre', 'max': 104, 'formattedValue': 'Pierre'}
+                    ],
+                    key: 'MAX',
+                    label: 'MAX',
+                    column: stateMock.playground.column,
+                    aggregationColumn: column,
+                    aggregation: aggregation
+                });
+            }));
+        });
     });
 
     describe('The range slider', function() {
         it('should set range and brush limits to the min and max of the column', inject(function (StatisticsService, FilterService) {
             //given
-            var col = {
+            stateMock.playground.column = {
                 'id': '0001',
                 type: 'integer',
                 domain: 'city name',
@@ -823,7 +898,7 @@ describe('Statistics service', function () {
             FilterService.filters = [];
 
             //when
-            StatisticsService.processData(col);
+            StatisticsService.processData();
 
             //then
             expect(StatisticsService.rangeLimits).toEqual({
@@ -835,7 +910,7 @@ describe('Statistics service', function () {
 
         it('should update the brush limits to the existing range filter values', inject(function (StatisticsService, FilterService) {
             //given
-            var col = {
+            stateMock.playground.column = {
                 'id': '0001',
                 type: 'integer',
                 domain: 'city name',
@@ -858,7 +933,7 @@ describe('Statistics service', function () {
             FilterService.filters = [{colId:'0001', type:'inside_range', args:{interval:[5,10]}}];
 
             //when
-            StatisticsService.processData(col);
+            StatisticsService.processData();
 
             //then
             expect(StatisticsService.rangeLimits).toEqual({
@@ -874,7 +949,7 @@ describe('Statistics service', function () {
 
         it('should update the brush limits to the minimum', inject(function (StatisticsService, FilterService) {
             //given
-            var col = {
+            stateMock.playground.column = {
                 'id': '0001',
                 type: 'integer',
                 domain: 'city name',
@@ -898,7 +973,7 @@ describe('Statistics service', function () {
             FilterService.filters = [{colId:'0001', type:'inside_range', args:{interval:[-15,-10]}}];
 
             //when
-            StatisticsService.processData(col);
+            StatisticsService.processData();
 
             //then
             expect(StatisticsService.rangeLimits).toEqual({
@@ -913,7 +988,7 @@ describe('Statistics service', function () {
 
         it('should update the brush limits to the [minimum, maximum] ', inject(function (StatisticsService, FilterService) {
             //given
-            var col = {
+            stateMock.playground.column = {
                 'id': '0001',
                 type: 'integer',
                 domain: 'city name',
@@ -937,7 +1012,7 @@ describe('Statistics service', function () {
             FilterService.filters = [{colId:'0001', type:'inside_range', args:{interval:[-15,20]}}];
 
             //when
-            StatisticsService.processData(col);
+            StatisticsService.processData();
 
             //then
             expect(StatisticsService.rangeLimits).toEqual({
@@ -952,7 +1027,7 @@ describe('Statistics service', function () {
 
         it('should update the brush limits to the maximum', inject(function (StatisticsService, FilterService) {
             //given
-            var col = {
+            stateMock.playground.column = {
                 'id': '0001',
                 type: 'integer',
                 domain: 'city name',
@@ -975,7 +1050,7 @@ describe('Statistics service', function () {
             FilterService.filters = [{colId:'0001', type:'inside_range', args:{interval:[25,30]}}];
 
             //when
-            StatisticsService.processData(col);
+            StatisticsService.processData();
 
             //then
             expect(StatisticsService.rangeLimits).toEqual({
@@ -990,7 +1065,7 @@ describe('Statistics service', function () {
 
         it('should update the brush limits to [minBrush, maximum]', inject(function (StatisticsService, FilterService) {
             //given
-            var col = {
+            stateMock.playground.column = {
                 'id': '0001',
                 type: 'integer',
                 domain: 'city name',
@@ -1013,7 +1088,7 @@ describe('Statistics service', function () {
             FilterService.filters = [{colId:'0001', type:'inside_range', args:{interval:[5,30]}}];
 
             //when
-            StatisticsService.processData(col);
+            StatisticsService.processData();
 
             //then
             expect(StatisticsService.rangeLimits).toEqual({
@@ -1028,7 +1103,7 @@ describe('Statistics service', function () {
 
         it('should update the brush limits to [minimum, maxBrush]', inject(function (StatisticsService, FilterService) {
             //given
-            var col = {
+            stateMock.playground.column = {
                 'id': '0001',
                 type: 'integer',
                 domain: 'city name',
@@ -1051,7 +1126,7 @@ describe('Statistics service', function () {
             FilterService.filters = [{colId:'0001', type:'inside_range', args:{interval:[-25,10]}}];
 
             //when
-            StatisticsService.processData(col);
+            StatisticsService.processData();
 
             //then
             expect(StatisticsService.rangeLimits).toEqual({
@@ -1066,7 +1141,11 @@ describe('Statistics service', function () {
     });
 
     describe('utils', function() {
-        it('should reset all data', inject(function (StatisticsService) {
+        beforeEach(inject(function(StatisticsRestService) {
+            spyOn(StatisticsRestService, 'resetCache').and.returnValue();
+        }));
+
+        it('should reset all charts, statistics, cache', inject(function (StatisticsRestService, StatisticsService) {
             //given
             StatisticsService.boxPlot = {};
             StatisticsService.histogram = {};
@@ -1074,19 +1153,54 @@ describe('Statistics service', function () {
             StatisticsService.statistics = {};
 
             //when
-            StatisticsService.resetCharts();
+            StatisticsService.reset(true, true, true);
 
             //then
             expect(StatisticsService.boxPlot).toBeFalsy();
             expect(StatisticsService.histogram).toBeFalsy();
             expect(StatisticsService.stateDistribution).toBeFalsy();
             expect(StatisticsService.statistics).toBeFalsy();
+            expect(StatisticsRestService.resetCache).toHaveBeenCalled();
+        }));
+
+        it('should NOT reset charts', inject(function (StatisticsService) {
+            //given
+            StatisticsService.boxPlot = {};
+            StatisticsService.histogram = {};
+            StatisticsService.stateDistribution = {};
+
+            //when
+            StatisticsService.reset(false, true, true);
+
+            //then
+            expect(StatisticsService.boxPlot).toBeTruthy();
+            expect(StatisticsService.histogram).toBeTruthy();
+            expect(StatisticsService.stateDistribution).toBeTruthy();
+        }));
+
+        it('should NOT reset statistics', inject(function (StatisticsService) {
+            //given
+            StatisticsService.statistics = {};
+
+            //when
+            StatisticsService.reset(true, false, true);
+
+            //then
+            expect(StatisticsService.statistics).toBeTruthy();
+        }));
+
+        it('should NOT reset cache', inject(function (StatisticsRestService, StatisticsService) {
+            //when
+            StatisticsService.reset(true, true, false);
+
+            //then
+            expect(StatisticsRestService.resetCache).not.toHaveBeenCalled();
         }));
 
         it('should get numeric columns (as aggregation columns) from datagrid service', inject(function(StatisticsService, DatagridService) {
             //given
             var selectedcolumn = {id: '0001'};
-            StatisticsService.selectedColumn = selectedcolumn;
+            stateMock.playground.column = selectedcolumn;
 
             var datagridNumericColumns = [
                 {id: '0002'},
