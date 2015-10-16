@@ -309,7 +309,7 @@ describe('Dataset list controller', function () {
             //then
             expect(dataset.showChangeName).toBe(false);
             expect(DatasetService.update).toHaveBeenCalledWith(dataset);
-            expect(MessageService.success).toHaveBeenCalledWith('RENAME_SUCCESS_TITLE', 'RENAME_SUCCESS');
+            expect(MessageService.success).toHaveBeenCalledWith('DATASET_RENAME_SUCCESS_TITLE', 'DATASET_RENAME_SUCCESS');
         }));
 
     });

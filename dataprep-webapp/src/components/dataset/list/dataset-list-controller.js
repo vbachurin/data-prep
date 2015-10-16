@@ -238,7 +238,7 @@
                   dataset.renaming = false;
                 })
                 .then(function() {
-                  MessageService.success('RENAME_SUCCESS_TITLE', 'RENAME_SUCCESS');
+                  MessageService.success('DATASET_RENAME_SUCCESS_TITLE', 'DATASET_RENAME_SUCCESS');
                 })
                 //hide loading screen
                 .finally(function () {
