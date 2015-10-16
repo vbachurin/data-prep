@@ -12,6 +12,7 @@
         return {
             //lifecycle
             create: create,
+            clone: clone,
             update: update,
             delete: deletePreparation,
 
@@ -98,6 +99,23 @@
             };
 
             return $http(request);
+        }
+
+        /**
+         * @ngdoc method
+         * @name clone
+         * @methodOf data-prep.services.preparation.service:PreparationRestService
+         * @param {string} preparationId The preparation id
+         * @param {string} name The optional preparation name
+         * @description Clone the preparation
+         * @returns {promise} The GET promise
+         */
+        function clone(preparationId, name) {
+            var url = RestURLs.preparationUrl + '/clone/' + preparationId;
+            if (name){
+                url += '?name='+encodeURIComponent(name);
+            }
+            return $http.get(url);
         }
 
         /**

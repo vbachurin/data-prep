@@ -98,7 +98,15 @@
         };
 
         vm.clone = function(preparation){
-          console.log('clone:');
+            $rootScope.$emit('talend.loading.start');
+            return PreparationService.clone(preparation.id)
+                .then(function() {
+                    MessageService.success('CLONING_SUCCESS_TITLE', 'CLONING_SUCCESS');
+                })
+                //hide loading screen
+                .finally(function () {
+                    $rootScope.$emit('talend.loading.stop');
+                });
         };
 
         vm.overPreparationEntry = function ( preparation ) {
