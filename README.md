@@ -54,7 +54,6 @@ The following projects provide scripts to automate platform deployment as well a
 
 | _Project_                  | _Description_ |
 |:-------------------------|-------------|
-| [dataprep-platform](dataprep-platform)         | *Scripts for starting a back-end platform (based on Fig & Docker)* |
 | [dataprep-platform-tests](dataprep-platform-tests)         | *Stress tests and reporting for back-end (based on Gatling)* |
 
 ## Build
