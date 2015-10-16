@@ -220,15 +220,22 @@
          * @description Trigger the dataset rename in the backend
          */
         vm.rename = function(dataset){
+            // avoid multiple backend call
+            if (dataset.renaming){
+                return;
+            }
+            dataset.renaming = true;
             // no need to trigger update if name not changed
             if (dataset.name === dataset.originalName){
                 dataset.showChangeName = false;
+                dataset.renaming = false;
                 return;
             }
             $rootScope.$emit('talend.loading.start');
             return DatasetService.update(dataset)
                 .then(function(){
                   dataset.showChangeName = false;
+                  dataset.renaming = false;
                 })
                 .then(function() {
                   MessageService.success('RENAME_SUCCESS_TITLE', 'RENAME_SUCCESS');
