@@ -16,7 +16,6 @@ describe('Actions suggestions-stats directive', function() {
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function() {
-            scope = $rootScope.$new();
             element = angular.element('<actions-suggestions></actions-suggestions>');
             body.append(element);
             $compile(element)(scope);
