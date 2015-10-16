@@ -11,7 +11,7 @@
                 iElement.wrap(wrapper);
 
                 var clearButton = angular.element('<div style="position: absolute;"><img src="/assets/images/common-input-clear.png" alt="x"></div>');
-                var loupeIcone = angular.element('<div style="position: absolute;"><img src="/assets/images/icone-loupe.gif" alt=""></div>');
+                var loupeIcone = angular.element('<div style="position: absolute;"><img src="/assets/images/icone-loupe.png" alt=""></div>');
 
                 clearButton.css('top','2px');
                 clearButton.css('left',iElement.width()-margin);
