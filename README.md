@@ -9,8 +9,7 @@
 | [dataprep-backend](dataprep-backend)               | *parent project for all backend projects*                            |
 | [dataprep-dataset](dataprep-dataset)               | *rest service to manage datasets (import, export, sample, stats)*    |
 | [dataprep-metrics](dataprep-metrics)               | *library to monitor rest services*                                   |
-| [dataprep-platform-tests](dataprep-platform_tests) | *Gatling config for stress testing on rest services*                 |
-| [dataprep-platform](dataprep-platform)             | *fig files*                                                          |
+| [dataprep-platform-tests](dataprep-platform_tests) | *Gatling config for stress testing on rest services*                  |
 | [dataprep-preparation](dataprep-preparation)       | *rest service to manage preparations (create, list steps, get data)* |
 | [dataprep-transformation](dataprep-transformation) | *rest service to apply transformations (actions are here)*           |
 | [dataprep-webapp](dataprep-webapp)                 | *web app (AngularJS)*                                                |
