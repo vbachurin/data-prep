@@ -300,7 +300,7 @@ describe('Dataset list controller', function () {
             //then
             expect(dataset.showChangeName).toBe(true);
             expect(dataset.originalName).toBe(dataset.name);
-
+            dataset.name = dataset.name + '_beer';
 
             //when
             ctrl.rename(dataset);
