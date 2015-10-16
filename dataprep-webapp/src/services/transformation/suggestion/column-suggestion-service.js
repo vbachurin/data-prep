@@ -31,15 +31,22 @@
          * @returns {object} An object containing {key: value} = {category: [transformations]}
          */
         function filterAndGroup(transfos, showAll) {
+
+            //Add labelHtml which is copy of label in order to manage the highlight action label
+            angular.forEach(transfos, function(item){
+                item.labelHtml= item.label;
+            });
+
             if (showAll) {
-                return _.chain(transfos)
-                    .filter(function (transfo) {
-                        return transfo.category !== COLUMN_CATEGORY;
-                    })
-                    .sortBy(function (action) {
-                        return action.label.toLowerCase();
-                    })
-                    .value();
+                var transfosFiltered = _.chain(transfos)
+                                        .filter(function (transfo) {
+                                            return transfo.category !== COLUMN_CATEGORY;
+                                        })
+                                        .sortBy(function (action) {
+                                            return action.label.toLowerCase();
+                                        })
+                                        .value();
+                return _.groupBy(transfosFiltered, function(action){ return action.category;});
             }
             return _.chain(transfos)
                 .filter(function (transfo) {
@@ -60,14 +67,7 @@
             self.transformations = null;
             TransformationCacheService.getTransformations(column, showAll)
                 .then(function (transformations) {
-                    var transformationsObj = filterAndGroup(transformations, showAll);
-
-                    //Add labelHtml which is copy of label in order to manage the highlight action label
-                    angular.forEach(transformationsObj, function(item){
-                        item.labelHtml= item.label;
-                    });
-
-                    self.transformations = transformationsObj;
+                    self.transformations = filterAndGroup(transformations, showAll);
                 });
         };
 
