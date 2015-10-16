@@ -3,7 +3,7 @@
 
     /**
      * @ngdoc service
-     * @name data-prep.services.uploadWorkflowService:UploadWorkflowService
+     * @name data-prep.services.datasetWorkflowService:UploadWorkflowService
      * @description UploadWorkflowService service. This service exposes functions to open the different types of dataset
      * @requires data-prep.services.dataset.service:DatasetService
      * @requires data-prep.services.utils.service:MessageService
@@ -55,6 +55,6 @@
         };
     }
 
-    angular.module('data-prep.services.uploadWorkflowService')
+    angular.module('data-prep.services.datasetWorkflowService')
         .service('UploadWorkflowService', UploadWorkflowService);
 })();

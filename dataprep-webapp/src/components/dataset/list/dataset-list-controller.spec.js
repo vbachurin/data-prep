@@ -247,4 +247,25 @@ describe('Dataset list controller', function () {
             expect(ctrl.datasets).toBe(refreshedDatasets);
         }));
     });
+
+    describe('Replace an existing dataset with a new one', function() {
+        beforeEach(inject(function (UpdateWorkflowService) {
+            spyOn(UpdateWorkflowService,'updateDataset').and.returnValue();
+        }));
+
+        it('should update the existing dataset with the new file', inject(function (UpdateWorkflowService) {
+            //given
+            var ctrl          = createController();
+            var existingDataset = {};
+            var newDataSet = {};
+            ctrl.updateDatasetFile = [existingDataset];
+            ctrl.datasetToUpdate = newDataSet;
+
+            //when
+            ctrl.uploadUpdatedDatasetFile();
+
+            //then
+            expect(UpdateWorkflowService.updateDataset).toHaveBeenCalledWith(existingDataset, newDataSet);
+        }));
+    });
 });
