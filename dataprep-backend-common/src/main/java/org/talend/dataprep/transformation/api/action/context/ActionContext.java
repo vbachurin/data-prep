@@ -36,7 +36,7 @@ public class ActionContext {
      * <code>name</code> was previously created. Supplier is <b>not</b> allowed to return <code>null</code>.
      * @param postCreate A {@link Consumer consumer} to perform changes on column created by <code>supplier</code>. A
      * default post create would be to insert column in a {@link org.talend.dataprep.api.dataset.RowMetadata row}.
-     * 
+     *
      * @return A {@link ColumnMetadata column} id with name <code>name</code>.
      * @throws IllegalArgumentException In case the <code>supplier</code> returned a <code>null</code> instance.
      */
