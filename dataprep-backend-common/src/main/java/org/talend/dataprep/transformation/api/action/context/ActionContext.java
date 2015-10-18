@@ -34,8 +34,10 @@ public class ActionContext {
      * @param name A column name as string. All values are accepted, no collision with other action can occur.
      * @param supplier A {@link Supplier supplier} that provides a new {@link ColumnMetadata} in case no column with
      * <code>name</code> was previously created. Supplier is <b>not</b> allowed to return <code>null</code>.
-     *
-     * @return A {@link ColumnMetadata column} with name <code>name</code>.
+     * @param postCreate A {@link Consumer consumer} to perform changes on column created by <code>supplier</code>. A
+     * default post create would be to insert column in a {@link org.talend.dataprep.api.dataset.RowMetadata row}.
+     * 
+     * @return A {@link ColumnMetadata column} id with name <code>name</code>.
      * @throws IllegalArgumentException In case the <code>supplier</code> returned a <code>null</code> instance.
      */
     public String column(String name, Supplier<ColumnMetadata> supplier, Consumer<ColumnMetadata> postCreate) {
@@ -47,12 +49,19 @@ public class ActionContext {
                 throw new IllegalArgumentException("Cannot use a null column for '" + name + "'");
             }
             newColumn.setId(null); // Ensure no id is set before calling postCreate (postCreate will set the correct id)
+            if (postCreate == null) {
+                throw new IllegalArgumentException("Post create parameter can not be null.");
+            }
             postCreate.accept(newColumn);
             columns.put(name, newColumn);
             return newColumn.getId();
         }
     }
 
+    /**
+     * @return A new {@link ActionContext} instance that can not be modified: an immutable ActionContext will <b>not</b>
+     * let action add a new column, but allows to get previously created ones.
+     */
     public ActionContext asImmutable() {
         final ActionContext actionContext = new ActionContext(parent);
         actionContext.columns = Collections.unmodifiableMap(this.columns);
