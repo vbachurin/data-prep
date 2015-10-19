@@ -55,12 +55,20 @@
                                 item.labelHtml = item.labelHtml.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
                                 item.labelHtml = item.labelHtml.replace(new RegExp('(</span>)', 'g'), '');
 
+                                item.categoryHtml = item.categoryHtml.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
+                                item.categoryHtml = item.categoryHtml.replace(new RegExp('(</span>)', 'g'), '');
+
                                 if(ctrl.suggestionService.searchActionString ){
                                     if(item.labelHtml.toLowerCase().indexOf(ctrl.suggestionService.searchActionString ) !== -1){
                                         item.labelHtml = item.labelHtml.replace(new RegExp('('+ctrl.suggestionService.searchActionString +')', 'gi'),
                                             '<span class="highlighted">$1</span>');
                                     }
+                                    if(item.categoryHtml.toLowerCase().indexOf(ctrl.suggestionService.searchActionString ) !== -1){
+                                        item.categoryHtml = item.categoryHtml.replace(new RegExp('('+ctrl.suggestionService.searchActionString +')', 'gi'),
+                                            '<span class="highlighted">$1</span>');
+                                    }
                                 }
+
                             });
                         };
 
@@ -70,6 +78,7 @@
                             angular.forEach(ctrl.columnSuggestions, function(actions){
                                 highlightText(actions);
                             });
+                            ctrl.columnSuggestionService.updateTransformations();
                         }
                     }
                 );

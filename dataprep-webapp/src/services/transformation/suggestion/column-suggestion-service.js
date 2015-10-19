@@ -21,6 +21,26 @@
          */
         self.transformations = null;
 
+
+        //Sort by object key
+        function sortObject(o) {
+            var sorted = {},
+                key, a = [];
+
+            for (key in o) {
+                if (o.hasOwnProperty(key)) {
+                    a.push(key.toLowerCase());
+                }
+            }
+
+            a.sort();
+
+            for (key = 0; key < a.length; key++) {
+                sorted[a[key]] = o[a[key]];
+            }
+            return sorted;
+        }
+
         /**
          * @ngdoc method
          * @name filterAndGroup
@@ -35,26 +55,8 @@
             //Add labelHtml which is copy of label in order to manage the highlight action label
             angular.forEach(transfos, function(item){
                 item.labelHtml= item.label;
+                item.categoryHtml= item.category;
             });
-
-            //Sort by object key
-            function sortObject(o) {
-                var sorted = {},
-                    key, a = [];
-
-                for (key in o) {
-                    if (o.hasOwnProperty(key)) {
-                        a.push(key.toLowerCase());
-                    }
-                }
-
-                a.sort();
-
-                for (key = 0; key < a.length; key++) {
-                    sorted[a[key]] = o[a[key]];
-                }
-                return sorted;
-            }
 
             if (showAll) {
                 var transfosFiltered = _.chain(transfos)
@@ -65,7 +67,7 @@
                                             return action.label.toLowerCase();
                                         })
                                         .value();
-                return sortObject(_.groupBy(transfosFiltered, function(action){ return action.category;}));
+                return sortObject(_.groupBy(transfosFiltered, function(action){ return action.categoryHtml;}));
             }
             return _.chain(transfos)
                 .filter(function (transfo) {
@@ -88,6 +90,25 @@
                 .then(function (transformations) {
                     self.transformations = filterAndGroup(transformations, showAll);
                 });
+        };
+
+        /**
+         * @ngdoc method
+         * @name updateTransformations
+         * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
+         * @description update self.transformations keys when highlighting
+         */
+        this.updateTransformations = function updateTransformations() {
+            var transfos = _.flatten(_.values(self.transformations));
+            var transfosFiltered = _.chain(transfos)
+                .filter(function (transfo) {
+                    return transfo.category !== COLUMN_CATEGORY;
+                })
+                .sortBy(function (action) {
+                    return action.label.toLowerCase();
+                })
+                .value();
+            self.transformations =  sortObject(_.groupBy(transfosFiltered, function(action){ return action.categoryHtml;}));
         };
 
         /**
