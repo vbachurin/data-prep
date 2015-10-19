@@ -6,7 +6,8 @@
             <div class="preparation-name-input" ng-switch on="preparation.showChangeName">
                 <div ng-switch-when="true">
                     <div>
-                        <input type="text" data-ng-model="preparation.name">
+                        <input type="text" data-ng-model="preparation.name"
+                               ng-keydown="preparationListCtrl.nameInputKeyPressed($event,preparation)">
                         <a class="check-btn" data-icon="b" ng-click="preparationListCtrl.rename(preparation)"></a>
                         <a class="cancel-btn" data-icon="d" ng-click="preparationListCtrl.cancelRename(preparation)"></a>
                     </div>
