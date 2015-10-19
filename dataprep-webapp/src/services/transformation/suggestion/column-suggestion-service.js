@@ -37,6 +37,25 @@
                 item.labelHtml= item.label;
             });
 
+            //Sort by object key
+            function sortObject(o) {
+                var sorted = {},
+                    key, a = [];
+
+                for (key in o) {
+                    if (o.hasOwnProperty(key)) {
+                        a.push(key.toLowerCase());
+                    }
+                }
+
+                a.sort();
+
+                for (key = 0; key < a.length; key++) {
+                    sorted[a[key]] = o[a[key]];
+                }
+                return sorted;
+            }
+
             if (showAll) {
                 var transfosFiltered = _.chain(transfos)
                                         .filter(function (transfo) {
@@ -46,7 +65,7 @@
                                             return action.label.toLowerCase();
                                         })
                                         .value();
-                return _.groupBy(transfosFiltered, function(action){ return action.category;});
+                return sortObject(_.groupBy(transfosFiltered, function(action){ return action.category;}));
             }
             return _.chain(transfos)
                 .filter(function (transfo) {
