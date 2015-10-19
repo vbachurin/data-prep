@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.filter.FilterService;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -40,6 +40,9 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
     /** The validator. */
     @Autowired
     private ActionMetadataValidation validator;
+
+    @Autowired
+    private FilterService filterService;
 
     /**
      * Get the columnId from parameters
@@ -73,6 +76,15 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      */
     private ScopeCategory getScope(final Map<String, String> parameters) {
         return ScopeCategory.from(parameters.get(SCOPE.getKey()));
+    }
+
+    /**
+     * Get the row filter from parameters.
+     * @param parameters the transformation parameters
+     * @return A {@link Predicate filter} for data set rows.
+     */
+    private Predicate<DataSetRow> getFilter(Map<String, String> parameters) {
+        return filterService.build(parameters.get(ImplicitParameters.FILTER.getKey()));
     }
 
     /**
@@ -134,16 +146,6 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
             }
             return row;
         }).build();
-    }
-
-    private Predicate<DataSetRow> getFilter(Map<String, String> parameters) {
-        // TODO Parsing stuff
-        final String value = parameters.get(ImplicitParameters.FILTER.getKey());
-        if (StringUtils.isEmpty(value)) {
-            return r -> true;
-        } else {
-            return r -> true;
-        }
     }
 
     /**
