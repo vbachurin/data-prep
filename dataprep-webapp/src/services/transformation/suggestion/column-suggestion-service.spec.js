@@ -48,10 +48,11 @@ describe('Column suggestion service', function () {
         var columnCategoryTransformation = _.find(suggestedTransformations, {category: 'column_metadata'});
         expect(columnCategoryTransformation).toBeFalsy();
 
-        //then : result alphabetically sorted
-        expect(suggestedTransformations[0].label).toEqual('a');
-        expect(suggestedTransformations[0].labelHtml).toEqual('a');
-        expect(suggestedTransformations[suggestedTransformations.length - 1].label).toEqual('v');
+        //then : result grouped
+        expect(suggestedTransformations.case.length).toBe(3);
+        expect(suggestedTransformations.clear.length).toBe(1);
+        expect(suggestedTransformations.quickfix.length).toBe(2);
+
     }));
 
 
