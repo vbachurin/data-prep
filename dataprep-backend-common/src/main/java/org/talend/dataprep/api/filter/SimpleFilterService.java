@@ -33,20 +33,31 @@ public class SimpleFilterService implements FilterService {
             } else {
                 final JsonNode node = elements.next();
                 final String columnName = node.get("field").asText();
-                final String value = node.get("value").asText();
-                if (tree.has("eq")) {
-                    return r -> StringUtils.equals(r.get(columnName), value);
-                } else if (tree.has("gt")) {
-                    return safe(r -> Integer.parseInt(r.get(columnName)) > Integer.parseInt(value));
-                } else if (tree.has("lt")) {
-                    return safe(r -> Integer.parseInt(r.get(columnName)) < Integer.parseInt(value));
-                } else if (tree.has("gte")) {
-                    return safe(r -> Integer.parseInt(r.get(columnName)) >= Integer.parseInt(value));
-                } else if (tree.has("lte")) {
-                    return safe(r -> Integer.parseInt(r.get(columnName)) <= Integer.parseInt(value));
+                final String value = node.has("value") ? node.get("value").asText() : null;
+                if (value != null) {
+                    if (tree.has("eq")) {
+                        return r -> StringUtils.equals(r.get(columnName), value);
+                    } else if (tree.has("gt")) {
+                        return safe(r -> Integer.parseInt(r.get(columnName)) > Integer.parseInt(value));
+                    } else if (tree.has("lt")) {
+                        return safe(r -> Integer.parseInt(r.get(columnName)) < Integer.parseInt(value));
+                    } else if (tree.has("gte")) {
+                        return safe(r -> Integer.parseInt(r.get(columnName)) >= Integer.parseInt(value));
+                    } else if (tree.has("lte")) {
+                        return safe(r -> Integer.parseInt(r.get(columnName)) <= Integer.parseInt(value));
+                    }
                 } else {
-                    throw new UnsupportedOperationException("Not supported: " + tree.asText());
+                    if (tree.has("range")) {
+                        final String start = node.get("start").asText();
+                        final String end = node.get("end").asText();
+                        return safe(r -> {
+                            final int columnValue = Integer.parseInt(r.get(columnName));
+                            return columnValue >= Integer.parseInt(start) && columnValue <= Integer.parseInt(end);
+                        });
+                    }
                 }
+
+                throw new UnsupportedOperationException("Not supported: " + tree.asText());
             }
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_FILTER, e);

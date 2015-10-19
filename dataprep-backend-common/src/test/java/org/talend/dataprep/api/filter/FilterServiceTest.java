@@ -124,4 +124,22 @@ public class FilterServiceTest {
         assertThat(nonMatchPredicate.test(row), is(false));
     }
 
+    @Test
+    public void testRange() throws Exception {
+        // Test match on "0 <= 0002 <= 2"
+        final Predicate<DataSetRow> matchPredicate = service.build("{\"range\": {\"field\": \"0002\",\"start\": \"0\",\"end\": \"2\"}}");
+        assertThat(matchPredicate.test(row), is(true));
+        // Test non match on "0 <= 0002 <= 1"
+        final Predicate<DataSetRow> nonMatchPredicate = service.build("{\"range\": {\"field\": \"0002\",\"start\": \"0\",\"end\": \"1\"}}");
+        assertThat(nonMatchPredicate.test(row), is(false));
+    }
+
+    @Test
+    public void testRangeOnString() throws Exception {
+        // Test match on "0 <= 0001 <= 2"
+        final Predicate<DataSetRow> matchPredicate = service.build("{\"range\": {\"field\": \"0001\",\"start\": \"0\",\"end\": \"2\"}}");
+        assertThat(matchPredicate.test(row), is(false));
+    }
+
+
 }
