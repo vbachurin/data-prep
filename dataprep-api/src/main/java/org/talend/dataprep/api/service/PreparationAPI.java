@@ -122,7 +122,7 @@ public class PreparationAPI extends APIService {
             LOG.debug("Cloning preparation (pool: {} )...", getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
-        PreparationClone preparationClone = getCommand(PreparationClone.class, client, id, name);
+        PreparationClone preparationClone = getCommand( PreparationClone.class, client, id, name);
         preparationClone.execute();
         if (LOG.isDebugEnabled()) {
             LOG.debug( "Cloned preparation (pool: {} )...", getConnectionManager().getTotalStats() );
