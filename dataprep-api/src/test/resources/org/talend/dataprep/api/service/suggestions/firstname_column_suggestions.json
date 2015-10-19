@@ -1001,7 +1001,7 @@
       }
     ],
     "dynamic": false,
-    "description": "Performs pattern matching",
+    "description": "Creates a new column fill with <i>true</i> or <i>false</i> regarding if the value matches or not given pattern",
     "label": "Matches Pattern"
   },
   {
