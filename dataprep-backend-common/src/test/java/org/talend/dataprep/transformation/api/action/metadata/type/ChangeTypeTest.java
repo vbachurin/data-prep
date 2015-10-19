@@ -67,7 +67,7 @@ public class ChangeTypeTest {
                     .domainLabel("French Beer") //
                     .build();
 
-            Assertions.assertThat(typeChange.acceptColumn(columnMetadata)).isFalse();
+            Assertions.assertThat(typeChange.acceptColumn(columnMetadata)).isTrue();
         }
     }
 }

@@ -130,7 +130,7 @@ public class TypeChangeTest {
             final boolean accepted = domainChange.acceptColumn(columnMetadata);
 
             // then
-            assertThat(accepted).isFalse();
+            assertThat(accepted).isTrue();
         }
     }
 }
