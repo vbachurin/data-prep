@@ -48,30 +48,6 @@
 
         /**
          * @ngdoc method
-         * @name showRenameInput
-         * @methodOf data-prep.preparation-list.controller:PreparationListCtrl
-         * @param {object} preparation - the preparation to show rename input
-         * @description change a flag value to trigger input display
-         */
-        vm.showRenameInput = function(preparation){
-          preparation.originalName = preparation.name;
-          preparation.showChangeName = true;
-        };
-
-        /**
-         * @ngdoc method
-         * @name cancelRename
-         * @methodOf data-prep.preparation-list.controller:PreparationListCtrl
-         * @param {object} preparation - the preparation to cancel rename input
-         * @description change back a flag value to trigger input display and restore previous name
-         */
-        vm.cancelRename = function(preparation){
-            preparation.name = preparation.originalName;
-            preparation.showChangeName = false;
-        };
-
-        /**
-         * @ngdoc method
          * @name rename
          * @methodOf data-prep.preparation-list.controller:PreparationListCtrl
          * @param {object} preparation - the preparation to rename
@@ -97,6 +73,13 @@
                 });
         };
 
+        /**
+         * @ngdoc method
+         * @name clone
+         * @methodOf data-prep.preparation-list.controller:PreparationListCtrl
+         * @param {object} preparation - the preparation to clone
+         * @description trigger backend call to clone preparation
+         */
         vm.clone = function(preparation){
             $rootScope.$emit('talend.loading.start');
             return PreparationService.clone(preparation.id)
@@ -109,11 +92,59 @@
                 });
         };
 
+
+        /**
+         * @ngdoc method
+         * @name showRenameInput
+         * @methodOf data-prep.preparation-list.controller:PreparationListCtrl
+         * @param {object} preparation - the preparation to show rename input
+         * @description change a flag value to trigger input display
+         */
+        vm.showRenameInput = function(preparation){
+            _.find(vm.preparationService.preparationsList(), function(current) {
+                if (preparation.id !== current.id){
+                    console.log('call cancel rename:'+current.name);
+                    vm.cancelRename(current);
+                }
+            });
+            preparation.originalName = preparation.name;
+            preparation.showChangeName = true;
+
+        };
+
+        /**
+         * @ngdoc method
+         * @name cancelRename
+         * @methodOf data-prep.preparation-list.controller:PreparationListCtrl
+         * @param {object} preparation - the preparation to cancel rename input
+         * @description change back a flag value to trigger input display and restore previous name
+         */
+        vm.cancelRename = function(preparation){
+            if (preparation.originalName) {
+                preparation.name = preparation.originalName;
+            }
+            preparation.showChangeName = false;
+        };
+
+        /**
+         * @ngdoc method
+         * @name overPreparationEntry
+         * @methodOf data-prep.preparation-list.controller:PreparationListCtrl
+         * @param {object} preparation - the preparation
+         * @description show edit and clone buttons when over a preparation
+         */
         vm.overPreparationEntry = function ( preparation ) {
             angular.element('#edit_btn_'+preparation.id).show();
             angular.element('#clone_btn_'+preparation.id).show();
         };
 
+        /**
+         * @ngdoc method
+         * @name leavePreparationEntry
+         * @methodOf data-prep.preparation-list.controller:PreparationListCtrl
+         * @param {object} preparation - the preparation
+         * @description hide edit and clone buttons when out of a preparation
+         */
         vm.leavePreparationEntry = function ( preparation ) {
             angular.element('#edit_btn_'+preparation.id).hide();
             angular.element('#clone_btn_'+preparation.id).hide();
