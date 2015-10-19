@@ -25,16 +25,6 @@
         <project.inceptionYear>2015</project.inceptionYear>
         <project.organization>Talend</project.organization>
     </properties>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>talend_nexus_deployment</id>
-            <url>http://newbuild.talend.com:8081/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <id>talend_nexus_deployment</id>
-            <url>http://newbuild.talend.com:8081/nexus/content/repositories/releases/</url>
-        </repository>
-    </distributionManagement>
     <repositories>
         <repository>
             <id>spring-milestones</id>
@@ -95,7 +85,6 @@
         <module>../dataprep-metrics</module>
         <module>../dataprep-preparation</module>
         <module>../dataprep-api</module>
-        <module>../dataprep-platform</module>
         <module>../dataprep-platform-tests</module>
     </modules>
     <dependencyManagement>
@@ -523,6 +512,13 @@
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>3.2.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.dataprep</groupId>
+                <artifactId>dataprep-backend-common</artifactId>
+                <type>test-jar</type>
+                <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

@@ -9,8 +9,7 @@
 | [dataprep-backend](dataprep-backend)               | *parent project for all backend projects*                            |
 | [dataprep-dataset](dataprep-dataset)               | *rest service to manage datasets (import, export, sample, stats)*    |
 | [dataprep-metrics](dataprep-metrics)               | *library to monitor rest services*                                   |
-| [dataprep-platform-tests](dataprep-platform_tests) | *Gatling config for stress testing on rest services*                 |
-| [dataprep-platform](dataprep-platform)             | *fig files*                                                          |
+| [dataprep-platform-tests](dataprep-platform_tests) | *Gatling config for stress testing on rest services*                  |
 | [dataprep-preparation](dataprep-preparation)       | *rest service to manage preparations (create, list steps, get data)* |
 | [dataprep-transformation](dataprep-transformation) | *rest service to apply transformations (actions are here)*           |
 | [dataprep-webapp](dataprep-webapp)                 | *web app (AngularJS)*                                                |
@@ -54,7 +53,6 @@ The following projects provide scripts to automate platform deployment as well a
 
 | _Project_                  | _Description_ |
 |:-------------------------|-------------|
-| [dataprep-platform](dataprep-platform)         | *Scripts for starting a back-end platform (based on Fig & Docker)* |
 | [dataprep-platform-tests](dataprep-platform-tests)         | *Stress tests and reporting for back-end (based on Gatling)* |
 
 ## Build

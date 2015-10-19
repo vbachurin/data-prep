@@ -107,6 +107,12 @@
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.talend.dataprep</groupId>
+            <artifactId>dataprep-backend-common</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>
