@@ -66,7 +66,7 @@
 
             <div ng-if="actionsSuggestionsCtrl.suggestionService.showAllAction" class="action-suggestion-tab-items">
                 <div ng-repeat="(category, transformations) in actionsSuggestionsCtrl.columnSuggestions">
-                    <div class="action-category">{{category | uppercase}}</div>
+                    <div class="action-category" ng-show="(transformations | actionsSuggestionsSearchFilter:actionsSuggestionsCtrl.suggestionService.searchActionString).length">{{category | uppercase}}</div>
                     <div>
                         <talend-accordions class="menu">
                             <talend-accordions-item

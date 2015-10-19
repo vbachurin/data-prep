@@ -9,7 +9,9 @@
             var result = [];
             searchActionString = searchActionString.toLowerCase();
             angular.forEach(arr, function(item){
-                if(item.labelHtml.toLowerCase().indexOf(searchActionString) !== -1){
+                if(item.labelHtml.toLowerCase().indexOf(searchActionString) !== -1 ||
+                    item.description.toLowerCase().indexOf(searchActionString) !== -1 ||
+                    item.category.toLowerCase().indexOf(searchActionString) !== -1){
                     result.push(item);
                 }
             });
