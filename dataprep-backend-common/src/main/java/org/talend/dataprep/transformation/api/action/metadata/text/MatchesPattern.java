@@ -110,23 +110,40 @@ public class MatchesPattern extends AbstractActionMetadata implements ColumnActi
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         // Retrieve the pattern to use
         final String realPattern = getPattern(parameters);
-        try {
-            final Pattern pattern = Pattern.compile(realPattern);
 
-            // create new column and append it after current column
-            final RowMetadata rowMetadata = row.getRowMetadata();
-            final ColumnMetadata column = rowMetadata.getById(columnId);
-            final ColumnMetadata newCol = createNewColumn(column);
-            final String matchingColumn = rowMetadata.insertAfter(columnId, newCol);
+        // create new column and append it after current column
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        final ColumnMetadata column = rowMetadata.getById(columnId);
+        final ColumnMetadata newCol = createNewColumn(column);
+        final String matchingColumn = rowMetadata.insertAfter(columnId, newCol);
 
-            // is the pattern matching
-            final String value = row.get(columnId);
-            final Matcher matcher = pattern.matcher(value == null ? "" : value);
-            row.set(matchingColumn, toStringTrueFalse(matcher.matches()));
-        } catch (PatternSyntaxException e) {
-            return;
+        final String value = row.get(columnId);
+
+        final String newValue = toStringTrueFalse(computeNewValue(value, realPattern));
+
+        row.set(matchingColumn, newValue);
+    }
+
+    /**
+     * Computes if a given string matches or not given pattern.
+     *
+     * @param value the value to test
+     * @param pattern the pattern to match the value against
+     * @return true if 'value' matches 'pattern', false if not or if 'pattern' is not a vlid pattern or is null or empty
+     */
+    protected boolean computeNewValue(String value, String pattern) {
+        if (pattern == null || pattern.length() < 1) {
+            // In case of empty pattern, consider that value does not match:
+            return false;
         }
-
+        try {
+            final Pattern p = Pattern.compile(pattern);
+            final Matcher matcher = p.matcher(value == null ? "" : value);
+            return matcher.matches();
+        } catch (PatternSyntaxException e) {
+            // In case of wrong pattern, consider that value does not match:
+            return false;
+        }
     }
 
     /**

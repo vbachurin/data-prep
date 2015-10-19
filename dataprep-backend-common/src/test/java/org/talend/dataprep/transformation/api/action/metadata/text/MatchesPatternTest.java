@@ -97,50 +97,34 @@ public class MatchesPatternTest {
      * @see Split#create(Map)
      */
     @Test
-    public void shouldNotMatchPattern() {
-        // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0000", "lorem bacon");
-        values.put("0001", " ");
-        values.put("0002", "01/01/2015");
-        final DataSetRow row = new DataSetRow(values);
+    public void shouldOrNotMatchPattern() {
+        assertFalse(action.computeNewValue(" ", "[a-zA-Z]*"));
+        assertTrue(action.computeNewValue("aA", "[a-zA-Z]*"));
 
-        final Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("0000", "lorem bacon");
-        expectedValues.put("0001", " ");
-        expectedValues.put("0003", "false");
-        expectedValues.put("0002", "01/01/2015");
-
-        // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
-
-        // then
-        assertEquals(expectedValues, row.values());
+        assertFalse(action.computeNewValue("Ouch !","[a-zA-Z0-9]*"));
+        assertTrue(action.computeNewValue("Houba 2 fois", "[a-zA-Z0-9 ]*"));
     }
 
     /**
      * @see Split#create(Map)
      */
     @Test
-    public void shouldMatchEmptyString() {
-        // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0000", "lorem bacon");
-        values.put("0001", "");
-        values.put("0002", "01/01/2015");
-        final DataSetRow row = new DataSetRow(values);
+    public void shouldNotMatchPattern() {
+        assertFalse(action.computeNewValue(" ", "[a-zA-Z]*"));
+        assertFalse(action.computeNewValue("aaaa8", "[a-zA-Z]*"));
+        assertFalse(action.computeNewValue(" a8 ", "[a-zA-Z]*"));
+        assertFalse(action.computeNewValue("aa:", "[a-zA-Z]*"));
+    }
 
-        final Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("0000", "lorem bacon");
-        expectedValues.put("0001", "");
-        expectedValues.put("0003", "true");
-        expectedValues.put("0002", "01/01/2015");
-
-        // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
-
-        // then
-        assertEquals(expectedValues, row.values());
+    /**
+     * @see Split#create(Map)
+     */
+    @Test
+    public void shouldMatchOrNotoEmptyString() {
+        assertTrue(action.computeNewValue("", ".*"));
+        assertTrue(action.computeNewValue("", "[a-zA-Z]*"));
+        assertFalse(action.computeNewValue(" ", "[a-zA-Z]*"));
+        assertTrue(action.computeNewValue(" ", "[a-zA-Z ]*"));
     }
 
     /**
@@ -148,25 +132,9 @@ public class MatchesPatternTest {
      */
     @Test
     public void shouldMatchEmptyStringEmptyPattern() {
-        // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0000", "lorem bacon");
-        values.put("0001", "");
-        values.put("0002", "01/01/2015");
-        final DataSetRow row = new DataSetRow(values);
-
-        final Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("0000", "lorem bacon");
-        expectedValues.put("0001", "");
-        expectedValues.put("0003", "true");
-        expectedValues.put("0002", "01/01/2015");
-        parameters.put("proposed_pattern", "");
-
-        // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
-
-        // then
-        assertEquals(expectedValues, row.values());
+        assertFalse(action.computeNewValue("", ""));
+        assertFalse(action.computeNewValue("  ", ""));
+        assertFalse(action.computeNewValue("un petit texte", ""));
     }
 
     /**
@@ -174,24 +142,9 @@ public class MatchesPatternTest {
      */
     @Test
     public void shouldNotMatchBadPattern() {
-        // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0000", "lorem bacon");
-        values.put("0001", "");
-        values.put("0002", "01/01/2015");
-        final DataSetRow row = new DataSetRow(values);
-
-        final Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("0000", "lorem bacon");
-        expectedValues.put("0001", "");
-        expectedValues.put("0002", "01/01/2015");
-        parameters.put("proposed_pattern", "*");
-
-        // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
-
-        // then
-        assertEquals(expectedValues, row.values());
+        assertFalse(action.computeNewValue("", "*"));
+        assertFalse(action.computeNewValue("  ", "*"));
+        assertFalse(action.computeNewValue("un petit texte", "*"));
     }
 
     /**
