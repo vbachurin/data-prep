@@ -112,7 +112,9 @@
             service.searchActionString = '';
             angular.forEach(ColumnSuggestionService.transformations, function(item){
                 item.labelHtml = item.label;
+                item.categoryHtml = item.category;
             });
+            ColumnSuggestionService.updateTransformations();
         }
     }
 
