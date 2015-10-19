@@ -17,10 +17,13 @@ import static org.talend.dataprep.transformation.api.action.metadata.common.Impl
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -30,7 +33,6 @@ import org.talend.dataprep.transformation.api.action.validation.ActionMetadataVa
  * Base class for all single column action.
  */
 public abstract class AbstractActionMetadata implements ActionMetadata {
-
 
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractActionMetadata.class);
@@ -79,13 +81,13 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
     @Override
     public final boolean acceptScope(final ScopeCategory scope) {
         switch (scope) {
-            case CELL:
+        case CELL:
             return this instanceof CellAction;
-            case LINE:
+        case LINE:
             return this instanceof RowAction;
-            case COLUMN:
+        case COLUMN:
             return this instanceof ColumnAction;
-            case TABLE:
+        case TABLE:
             return this instanceof DataSetAction;
         default:
             return false;
@@ -102,33 +104,47 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
         final Long rowId = getRowId(parameters);
         final String columnId = getColumnId(parameters);
         final ScopeCategory scope = getScope(parameters);
+        final Predicate<DataSetRow> filter = getFilter(parameters);
 
         return builder().withRow((row, context) -> {
+            if (!filter.test(row)) {
+                return row; // Return unmodified row since it didn't pass the filter.
+            }
+            // Select the correct method to call depending on scope.
             switch (scope) {
-                case CELL:
-                    if (rowId != null && rowId.equals(row.getTdpId())) {
+            case CELL:
+                if (rowId != null && rowId.equals(row.getTdpId())) {
                     ((CellAction) this).applyOnCell(row, context, parameters, rowId, columnId);
-                    }
-                    break;
-                case COLUMN:
+                }
+                break;
+            case COLUMN:
                 ((ColumnAction) this).applyOnColumn(row, context, parameters, columnId);
-                    break;
-                case LINE:
-                    if (rowId != null && rowId.equals(row.getTdpId())) {
+                break;
+            case LINE:
+                if (rowId != null && rowId.equals(row.getTdpId())) {
                     ((RowAction) this).applyOnRow(row, context, parameters, rowId);
-                    }
-                    break;
-                case TABLE:
+                }
+                break;
+            case TABLE:
                 ((DataSetAction) this).applyOnDataSet(row, context, parameters);
                 break;
             default:
                 LOGGER.warn("Is there a new action scope ??? {}", scope);
-                    break;
+                break;
             }
             return row;
         }).build();
     }
 
+    private Predicate<DataSetRow> getFilter(Map<String, String> parameters) {
+        // TODO Parsing stuff
+        final String value = parameters.get(ImplicitParameters.FILTER.getKey());
+        if (StringUtils.isEmpty(value)) {
+            return r -> true;
+        } else {
+            return r -> true;
+        }
+    }
 
     /**
      * @see ActionMetadata#getParameters()

@@ -82,6 +82,7 @@ public interface ActionMetadata {
 
     /**
      * @return A 'category' for the action used to group similar actions (eg. 'math', 'repair'...).
+     * @see org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory
      */
     String getCategory();
 
