@@ -49,19 +49,28 @@
                         return ctrl.suggestionService.searchActionString ;
                     },
                     function () {
-                        angular.forEach(ctrl.columnSuggestions, function(item){
 
-                            item.labelHtml = item.labelHtml.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
-                            item.labelHtml = item.labelHtml.replace(new RegExp('(</span>)', 'g'), '');
+                        var highlightText = function(actions){
+                            angular.forEach(actions, function(item){
+                                item.labelHtml = item.labelHtml.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
+                                item.labelHtml = item.labelHtml.replace(new RegExp('(</span>)', 'g'), '');
 
-                            if(ctrl.suggestionService.searchActionString ){
-                                if(item.labelHtml.toLowerCase().indexOf(ctrl.suggestionService.searchActionString ) !== -1){
-                                    item.labelHtml = item.labelHtml.replace(new RegExp('('+ctrl.suggestionService.searchActionString +')', 'gi'),
-                                        '<span class="highlighted">$1</span>');
+                                if(ctrl.suggestionService.searchActionString ){
+                                    if(item.labelHtml.toLowerCase().indexOf(ctrl.suggestionService.searchActionString ) !== -1){
+                                        item.labelHtml = item.labelHtml.replace(new RegExp('('+ctrl.suggestionService.searchActionString +')', 'gi'),
+                                            '<span class="highlighted">$1</span>');
+                                    }
                                 }
-                            }
+                            });
+                        };
 
-                        });
+                        if(!ctrl.suggestionService.showAllAction) {
+                            highlightText(ctrl.columnSuggestions);
+                        } else {
+                            angular.forEach(ctrl.columnSuggestions, function(actions){
+                                highlightText(actions);
+                            });
+                        }
                     }
                 );
             }
