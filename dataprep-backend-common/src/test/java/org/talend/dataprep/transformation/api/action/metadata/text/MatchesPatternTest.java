@@ -39,263 +39,260 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
  * @see Split
  */
 public class MatchesPatternTest {
-	/**
-	 * The action to test.
-	 */
-	private MatchesPattern action;
 
-	private Map<String, String> parameters;
+    /**
+     * The action to test.
+     */
+    private MatchesPattern action;
 
-	@Before
-	public void init() throws IOException {
-		action = new MatchesPattern();
+    private Map<String, String> parameters;
 
-		parameters = ActionMetadataTestUtils.parseParameters( //
-				action, //
-				MatchesPatternTest.class.getResourceAsStream("matchesPattern.json"));
-	}
+    @Before
+    public void init() throws IOException {
+        action = new MatchesPattern();
 
-	@Test
-	public void testAdapt() throws Exception {
-		assertThat(action.adapt(null), is(action));
-		ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
-		assertThat(action.adapt(column), is(action));
-	}
+        parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                MatchesPatternTest.class.getResourceAsStream("matchesPattern.json"));
+    }
 
-	@Test
-	public void testCategory() throws Exception {
-		assertThat(action.getCategory(), is(ActionCategory.STRINGS.getDisplayName()));
-	}
+    @Test
+    public void testAdapt() throws Exception {
+        assertThat(action.adapt(null), is(action));
+        ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
+        assertThat(action.adapt(column), is(action));
+    }
 
-	/**
-	 * @see Split#create(Map)
-	 */
-	@Test
-	public void shouldMatchPattern() {
-		// given
-		final Map<String, String> values = new HashMap<>();
-		values.put("0000", "lorem bacon");
-		values.put("0001", "Bacon");
-		values.put("0002", "01/01/2015");
-		final DataSetRow row = new DataSetRow(values);
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(action.getCategory(), is(ActionCategory.STRINGS.getDisplayName()));
+    }
 
-		final Map<String, String> expectedValues = new HashMap<>();
-		expectedValues.put("0000", "lorem bacon");
-		expectedValues.put("0001", "Bacon");
-		expectedValues.put("0003", "true");
-		expectedValues.put("0002", "01/01/2015");
+    /**
+     * @see Split#create(Map)
+     */
+    @Test
+    public void shouldMatchPattern() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon");
+        values.put("0002", "01/01/2015");
+        final DataSetRow row = new DataSetRow(values);
 
-		// when
-		action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon");
+        expectedValues.put("0003", "true");
+        expectedValues.put("0002", "01/01/2015");
 
-		// then
-		assertEquals(expectedValues, row.values());
-	}
-	
-	/**
-	 * @see Split#create(Map)
-	 */
-	@Test
-	public void shouldNotMatchPattern() {
-		// given
-		final Map<String, String> values = new HashMap<>();
-		values.put("0000", "lorem bacon");
-		values.put("0001", " ");
-		values.put("0002", "01/01/2015");
-		final DataSetRow row = new DataSetRow(values);
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
-		final Map<String, String> expectedValues = new HashMap<>();
-		expectedValues.put("0000", "lorem bacon");
-		expectedValues.put("0001", " ");
-		expectedValues.put("0003", "false");
-		expectedValues.put("0002", "01/01/2015");
-		
-		
+        // then
+        assertEquals(expectedValues, row.values());
+    }
 
-		// when
-		action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+    /**
+     * @see Split#create(Map)
+     */
+    @Test
+    public void shouldNotMatchPattern() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "lorem bacon");
+        values.put("0001", " ");
+        values.put("0002", "01/01/2015");
+        final DataSetRow row = new DataSetRow(values);
 
-		// then
-		assertEquals(expectedValues, row.values());
-	}
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", " ");
+        expectedValues.put("0003", "false");
+        expectedValues.put("0002", "01/01/2015");
 
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
-	/**
-	 * @see Split#create(Map)
-	 */
-	@Test
-	public void shouldMatchEmptyString() {
-		// given
-		final Map<String, String> values = new HashMap<>();
-		values.put("0000", "lorem bacon");
-		values.put("0001", "");
-		values.put("0002", "01/01/2015");
-		final DataSetRow row = new DataSetRow(values);
+        // then
+        assertEquals(expectedValues, row.values());
+    }
 
-		final Map<String, String> expectedValues = new HashMap<>();
-		expectedValues.put("0000", "lorem bacon");
-		expectedValues.put("0001", "");
-		expectedValues.put("0003", "true");
-		expectedValues.put("0002", "01/01/2015");
+    /**
+     * @see Split#create(Map)
+     */
+    @Test
+    public void shouldMatchEmptyString() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "lorem bacon");
+        values.put("0001", "");
+        values.put("0002", "01/01/2015");
+        final DataSetRow row = new DataSetRow(values);
 
-		// when
-		action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "");
+        expectedValues.put("0003", "true");
+        expectedValues.put("0002", "01/01/2015");
 
-		// then
-		assertEquals(expectedValues, row.values());
-	}
-	
-	/**
-	 * @see Split#create(Map)
-	 */
-	@Test
-	public void shouldMatchEmptyStringEmptyPattern() {
-		// given
-		final Map<String, String> values = new HashMap<>();
-		values.put("0000", "lorem bacon");
-		values.put("0001", "");
-		values.put("0002", "01/01/2015");
-		final DataSetRow row = new DataSetRow(values);
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
-		final Map<String, String> expectedValues = new HashMap<>();
-		expectedValues.put("0000", "lorem bacon");
-		expectedValues.put("0001", "");
-		expectedValues.put("0003", "true");
-		expectedValues.put("0002", "01/01/2015");
-		parameters.put("proposed_pattern", "");
+        // then
+        assertEquals(expectedValues, row.values());
+    }
 
-		// when
-		action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+    /**
+     * @see Split#create(Map)
+     */
+    @Test
+    public void shouldMatchEmptyStringEmptyPattern() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "lorem bacon");
+        values.put("0001", "");
+        values.put("0002", "01/01/2015");
+        final DataSetRow row = new DataSetRow(values);
 
-		// then
-		assertEquals(expectedValues, row.values());
-	}
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "");
+        expectedValues.put("0003", "true");
+        expectedValues.put("0002", "01/01/2015");
+        parameters.put("proposed_pattern", "");
 
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
-	/**
-	 * @see Split#create(Map)
-	 */
-	@Test
-	public void shouldNotMatchBadPattern() {
-		// given
-		final Map<String, String> values = new HashMap<>();
-		values.put("0000", "lorem bacon");
-		values.put("0001", "");
-		values.put("0002", "01/01/2015");
-		final DataSetRow row = new DataSetRow(values);
+        // then
+        assertEquals(expectedValues, row.values());
+    }
 
-		final Map<String, String> expectedValues = new HashMap<>();
-		expectedValues.put("0000", "lorem bacon");
-		expectedValues.put("0001", "");
-		expectedValues.put("0002", "01/01/2015");
-		parameters.put("proposed_pattern", "*");
+    /**
+     * @see Split#create(Map)
+     */
+    @Test
+    public void shouldNotMatchBadPattern() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "lorem bacon");
+        values.put("0001", "");
+        values.put("0002", "01/01/2015");
+        final DataSetRow row = new DataSetRow(values);
 
-		// when
-		action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "");
+        expectedValues.put("0002", "01/01/2015");
+        parameters.put("proposed_pattern", "*");
 
-		// then
-		assertEquals(expectedValues, row.values());
-	}
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
-	/**
-	 * @see Split#create(Map)
-	 */
-	@Test
-	public void shouldMatchPatternTwice() {
-		// given
-		final Map<String, String> values = new HashMap<>();
-		values.put("0000", "lorem bacon");
-		values.put("0001", "Bacon");
-		values.put("0002", "01/01/2015");
-		final DataSetRow row = new DataSetRow(values);
+        // then
+        assertEquals(expectedValues, row.values());
+    }
 
-		final Map<String, String> expectedValues = new HashMap<>();
-		expectedValues.put("0000", "lorem bacon");
-		expectedValues.put("0001", "Bacon");
-		expectedValues.put("0004", "true");
-		expectedValues.put("0003", "true");
-		expectedValues.put("0002", "01/01/2015");
+    /**
+     * @see Split#create(Map)
+     */
+    @Test
+    public void shouldMatchPatternTwice() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon");
+        values.put("0002", "01/01/2015");
+        final DataSetRow row = new DataSetRow(values);
 
-		// when
-		action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
-		action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon");
+        expectedValues.put("0004", "true");
+        expectedValues.put("0003", "true");
+        expectedValues.put("0002", "01/01/2015");
 
-		// then
-		assertEquals(expectedValues, row.values());
-	}
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
-	/**
-	 * @see ComputeLength#create(Map)
-	 */
-	@Test
-	public void shouldUpdateMetadata() {
-		// given
-		final List<ColumnMetadata> input = new ArrayList<>();
-		input.add(createMetadata("0000", "recipe"));
-		input.add(createMetadata("0001", "steps"));
-		input.add(createMetadata("0002", "last update"));
-		final RowMetadata rowMetadata = new RowMetadata(input);
+        // then
+        assertEquals(expectedValues, row.values());
+    }
 
-		final List<ColumnMetadata> expected = new ArrayList<>();
-		expected.add(createMetadata("0000", "recipe"));
-		expected.add(createMetadata("0001", "steps"));
-		expected.add(createMetadata("0003", "steps_matching", Type.BOOLEAN));
-		expected.add(createMetadata("0002", "last update"));
+    /**
+     * @see ComputeLength#create(Map)
+     */
+    @Test
+    public void shouldUpdateMetadata() {
+        // given
+        final List<ColumnMetadata> input = new ArrayList<>();
+        input.add(createMetadata("0000", "recipe"));
+        input.add(createMetadata("0001", "steps"));
+        input.add(createMetadata("0002", "last update"));
+        final RowMetadata rowMetadata = new RowMetadata(input);
 
-		// when
-		action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+        final List<ColumnMetadata> expected = new ArrayList<>();
+        expected.add(createMetadata("0000", "recipe"));
+        expected.add(createMetadata("0001", "steps"));
+        expected.add(createMetadata("0003", "steps_matching", Type.BOOLEAN));
+        expected.add(createMetadata("0002", "last update"));
 
-		// then
-		assertEquals(expected, rowMetadata.getColumns());
-	}
+        // when
+        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
 
-	/**
-	 * @see ComputeLength#create(Map)
-	 */
-	@Test
-	public void shouldUpdateMetadataTwice() {
-		// given
-		final List<ColumnMetadata> input = new ArrayList<>();
-		input.add(createMetadata("0000", "recipe"));
-		input.add(createMetadata("0001", "steps"));
-		input.add(createMetadata("0002", "last update"));
-		final RowMetadata rowMetadata = new RowMetadata(input);
+        // then
+        assertEquals(expected, rowMetadata.getColumns());
+    }
 
-		final List<ColumnMetadata> expected = new ArrayList<>();
-		expected.add(createMetadata("0000", "recipe"));
-		expected.add(createMetadata("0001", "steps"));
-		expected.add(createMetadata("0004", "steps_matching", Type.BOOLEAN));
-		expected.add(createMetadata("0003", "steps_matching", Type.BOOLEAN));
-		expected.add(createMetadata("0002", "last update"));
+    /**
+     * @see ComputeLength#create(Map)
+     */
+    @Test
+    public void shouldUpdateMetadataTwice() {
+        // given
+        final List<ColumnMetadata> input = new ArrayList<>();
+        input.add(createMetadata("0000", "recipe"));
+        input.add(createMetadata("0001", "steps"));
+        input.add(createMetadata("0002", "last update"));
+        final RowMetadata rowMetadata = new RowMetadata(input);
 
-		// when
-		action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
-		action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+        final List<ColumnMetadata> expected = new ArrayList<>();
+        expected.add(createMetadata("0000", "recipe"));
+        expected.add(createMetadata("0001", "steps"));
+        expected.add(createMetadata("0004", "steps_matching", Type.BOOLEAN));
+        expected.add(createMetadata("0003", "steps_matching", Type.BOOLEAN));
+        expected.add(createMetadata("0002", "last update"));
 
-		// then
-		assertEquals(expected, rowMetadata.getColumns());
-	}
+        // when
+        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
 
-	@Test
-	public void shouldAcceptColumn() {
-		assertTrue(action.acceptColumn(getColumn(Type.STRING)));
-	}
+        // then
+        assertEquals(expected, rowMetadata.getColumns());
+    }
 
-	@Test
-	public void shouldNotAcceptColumn() {
-		assertFalse(action.acceptColumn(getColumn(Type.NUMERIC)));
-		assertFalse(action.acceptColumn(getColumn(Type.FLOAT)));
-		assertFalse(action.acceptColumn(getColumn(Type.DATE)));
-		assertFalse(action.acceptColumn(getColumn(Type.BOOLEAN)));
-	}
+    @Test
+    public void shouldAcceptColumn() {
+        assertTrue(action.acceptColumn(getColumn(Type.STRING)));
+    }
 
-	private ColumnMetadata createMetadata(String id, String name) {
-		return createMetadata(id, name, Type.BOOLEAN);
-	}
+    @Test
+    public void shouldNotAcceptColumn() {
+        assertFalse(action.acceptColumn(getColumn(Type.NUMERIC)));
+        assertFalse(action.acceptColumn(getColumn(Type.FLOAT)));
+        assertFalse(action.acceptColumn(getColumn(Type.DATE)));
+        assertFalse(action.acceptColumn(getColumn(Type.BOOLEAN)));
+    }
 
-	private ColumnMetadata createMetadata(String id, String name, Type type) {
-		return ColumnMetadata.Builder.column().computedId(id).name(name).type(type).headerSize(12).empty(0).invalid(2)
-				.valid(5).build();
-	}
+    private ColumnMetadata createMetadata(String id, String name) {
+        return createMetadata(id, name, Type.BOOLEAN);
+    }
+
+    private ColumnMetadata createMetadata(String id, String name, Type type) {
+        return ColumnMetadata.Builder.column().computedId(id).name(name).type(type).headerSize(12).empty(0).invalid(2).valid(5)
+                .build();
+    }
 
 }
