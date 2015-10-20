@@ -105,5 +105,64 @@ describe('Storage service', function() {
             //then
             expect($window.localStorage.getItem(expectedKey)).toBeFalsy();
         }));
+
+        it('should remove all aggregations for the dataset/preparation from local storage', inject(function($window, StorageService) {
+            //given
+            var datasetId = '87a646f763bd545b684';
+            var preparationId = '72515d3212cf565b624';
+            var aggregation = {
+                aggregation: 'MAX',
+                aggregationColumnId: '0002'
+            };
+
+            var key1 = 'org.talend.dataprep.aggregation.87a646f763bd545b684.72515d3212cf565b624.0001';
+            var key2 = 'org.talend.dataprep.aggregation.87a646f763bd545b684.72515d3212cf565b624.0002';
+            var otherPreparationKey = 'org.talend.dataprep.aggregation.87a646f763bd545b684.f65412585ab156b4663.0002';
+            $window.localStorage.setItem(key1, JSON.stringify(aggregation));
+            $window.localStorage.setItem(key2, JSON.stringify(aggregation));
+            $window.localStorage.setItem(otherPreparationKey, JSON.stringify(aggregation));
+
+            //when
+            StorageService.removeAllAggregations(datasetId, preparationId);
+
+            //then
+            expect($window.localStorage.getItem(key1)).toBeFalsy();
+            expect($window.localStorage.getItem(key2)).toBeFalsy();
+            expect($window.localStorage.getItem(otherPreparationKey)).toBeTruthy();
+        }));
+
+        it('should save all dataset aggregations for the preparation', inject(function($window, StorageService) {
+            //given
+            var datasetId = '87a646f763bd545b684';
+            var preparationId = '72515d3212cf565b624';
+            var aggregation1 = JSON.stringify({
+                aggregation: 'MAX',
+                aggregationColumnId: '0002'
+            });
+            var aggregation2 = JSON.stringify({
+                aggregation: 'SUM',
+                aggregationColumnId: '0003'
+            });
+            var otherAggregation = JSON.stringify({
+                aggregation: 'MIN',
+                aggregationColumnId: '0003'
+            });
+
+            var key1 = 'org.talend.dataprep.aggregation.87a646f763bd545b684..0001';
+            var key2 = 'org.talend.dataprep.aggregation.87a646f763bd545b684..0002';
+            var otherKey = 'org.talend.dataprep.aggregation.9b87564ef564e651.56ef46541e32251a25.0002';
+            $window.localStorage.setItem(key1, aggregation1);
+            $window.localStorage.setItem(key2, aggregation2);
+            $window.localStorage.setItem(otherKey, otherAggregation);
+
+            //when
+            StorageService.savePreparationAggregationsFromDataset(datasetId, preparationId);
+
+            //then
+            var prepKey1 = 'org.talend.dataprep.aggregation.87a646f763bd545b684.72515d3212cf565b624.0001';
+            var prepKey2 = 'org.talend.dataprep.aggregation.87a646f763bd545b684.72515d3212cf565b624.0002';
+            expect($window.localStorage.getItem(prepKey1)).toBe(aggregation1);
+            expect($window.localStorage.getItem(prepKey2)).toBe(aggregation2);
+        }));
     });
 });

@@ -57,7 +57,7 @@
                         SuggestionService.selectTab(lastSelectedTab);
                     }
                     if (columnHasChanged) {
-                        StatisticsService.updateAggregation();
+                        StatisticsService.updateStatistics();
                         SuggestionService.setColumn(lastSelectedColumn);
                     }
                 }, 200);

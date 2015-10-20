@@ -26,11 +26,11 @@
             addRangeFilter: addRangeFilter,
 
             //statistics entry points
-            processData: processData,
-            processAggregation: processAggregation,
-            getAggregationColumns: getAggregationColumns,
-            reset: reset,
-            updateAggregation: updateAggregation,
+            processData: processData,                       // basic charts
+            processAggregation: processAggregation,         // aggregation charts
+            getAggregationColumns: getAggregationColumns,   // possible aggregation columns
+            updateStatistics: updateStatistics,             // update stats + trigger chart
+            reset: reset,                                   // reset charts/statistics/cache
 
             //TODO temporary method to be replaced with new geo chart
             getGeoDistribution: getGeoDistribution
@@ -337,7 +337,7 @@
         }
 
         //--------------------------------------------------------------------------------------------------------------
-        //-------------------------------------------------COMMON-------------------------------------------------------
+        //---------------------------------------------NON AGGREGATION--------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
@@ -383,8 +383,7 @@
          */
         function processData() {
             var column = state.playground.column;
-            reset(true, true, false);
-            initStatisticsValues(column);
+            reset(true, false, false);
 
             //TODO replace with new geo chart
             if (column.domain.indexOf('STATE_CODE') !== -1) {
@@ -445,21 +444,6 @@
 
         /**
          * @ngdoc method
-         * @name updateAggregation
-         * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @description update aggregation for a selected column
-         */
-        function updateAggregation() {
-            var columnAggregation = getSavedColumnAggregation();
-
-            var aggregatedColumn = columnAggregation && _.findWhere(getAggregationColumns(), {id: columnAggregation.aggregationColumnId});
-            var aggregation = columnAggregation && columnAggregation.aggregation;
-
-            service.processAggregation(aggregatedColumn, aggregation);
-        }
-
-        /**
-         * @ngdoc method
          * @name getSavedColumnAggregation
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @description Get the saved dataset column aggregation.
@@ -502,9 +486,39 @@
             return StorageService.setAggregation(datasetId, preparationId, columnId, aggregation);
         }
 
+        /**
+         * @ngdoc method
+         * @name resetCharts
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Removes all the data to disable all visualization
+         */
+        function getAggregationColumns() {
+            var column = state.playground.column;
+            //TODO JSO : put a cache again that is invalidated when one of the columns change
+            return DatagridService.getNumericColumns(column);
+        }
+
         //--------------------------------------------------------------------------------------------------------------
-        //-------------------------------------------------UTILS--------------------------------------------------------
+        //-------------------------------------------------COMMON-------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name updateStatistics
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description update aggregation for a selected column
+         */
+        function updateStatistics() {
+            var column = state.playground.column;
+            reset(true, true, false);
+            initStatisticsValues(column);
+
+            var columnAggregation = getSavedColumnAggregation();
+            var aggregatedColumn = columnAggregation && _.findWhere(getAggregationColumns(), {id: columnAggregation.aggregationColumnId});
+            var aggregation = columnAggregation && columnAggregation.aggregation;
+
+            service.processAggregation(aggregatedColumn, aggregation);
+        }
+
         /**
          * @ngdoc method
          * @name reset
@@ -529,18 +543,6 @@
             if(cache) {
                 StatisticsRestService.resetCache();
             }
-        }
-
-        /**
-         * @ngdoc method
-         * @name resetCharts
-         * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @description Removes all the data to disable all visualization
-         */
-        function getAggregationColumns() {
-            var column = state.playground.column;
-            //TODO JSO : put a cache again that is invalidated when one of the columns change
-            return DatagridService.getNumericColumns(column);
         }
     }
 
