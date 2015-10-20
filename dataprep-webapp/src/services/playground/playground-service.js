@@ -105,7 +105,6 @@
                         reset(dataset, data);
                         StateService.hideRecipe();
                         StateService.setNameEditionMode(true);
-                        StateService.setGridSelection(data.columns[0]);
                     })
                     .then(function() {
                         if(OnboardingService.shouldStartTour('playground')) {
@@ -145,7 +144,6 @@
                         reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response, preparation);
                         StateService.showRecipe();
                         StateService.setNameEditionMode(false);
-                        StateService.setGridSelection(response.columns[0]);
                     })
                     .finally(function() {
                         $rootScope.$emit('talend.loading.stop');
