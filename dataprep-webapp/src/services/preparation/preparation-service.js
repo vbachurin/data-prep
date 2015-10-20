@@ -146,7 +146,11 @@
          */
         function setName(preparationId, name) {
             return PreparationListService.update(preparationId, name)
-                .then(consolidatePreparationsAndDatasets);
+                .then(consolidatePreparationsAndDatasets)
+                .then(function(preparation) {
+                    StorageService.moveAggregations(preparation.dataSetId, preparationId, preparation.id);
+                    return preparation;
+                });
         }
 
         /**

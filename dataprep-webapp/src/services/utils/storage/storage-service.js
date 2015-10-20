@@ -14,7 +14,8 @@
             getAggregation: getAggregation,
             removeAggregation: removeAggregation,
             removeAllAggregations: removeAllAggregations,
-            savePreparationAggregationsFromDataset: savePreparationAggregationsFromDataset
+            savePreparationAggregationsFromDataset: savePreparationAggregationsFromDataset,
+            moveAggregations: moveAggregations
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -167,6 +168,35 @@
 
             _.forEach(aggregationsToAdd, function(aggregDef) {
                 setAggregation(datasetId, preparationId, aggregDef.columnId, aggregDef.aggregation);
+            });
+        }
+
+        /**
+         * @ngdoc method
+         * @name moveAggregations
+         * @methodOf data-prep.services.utils.service:StorageService
+         * @param {string} datasetId The dataset id
+         * @param {string} oldPreparationId The new preparation id
+         * @param {string} newPreparationId The old preparation id
+         * @description Move all preparation aggregation to another preparation id
+         */
+        function moveAggregations(datasetId, oldPreparationId, newPreparationId) {
+            var preparationAggregationPrefix = getAggregationKey(datasetId, oldPreparationId, '');
+            var aggregationsToMove = [];
+
+            for (var i = 0, len = $window.localStorage.length; i < len; i++) {
+                var key = $window.localStorage.key(i);
+                if(key.indexOf(preparationAggregationPrefix) === 0) {
+                    aggregationsToMove.push({
+                        columnId: key.substring(key.lastIndexOf('.') + 1),
+                        aggregation: getItem(key)
+                    });
+                }
+            }
+
+            _.forEach(aggregationsToMove, function(aggregDef) {
+                setAggregation(datasetId, newPreparationId, aggregDef.columnId, aggregDef.aggregation);
+                removeAggregation(datasetId, oldPreparationId, aggregDef.columnId);
             });
         }
     }

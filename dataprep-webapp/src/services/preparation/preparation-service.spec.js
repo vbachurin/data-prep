@@ -8,6 +8,9 @@ describe('Preparation Service', function () {
     var preparations = [{id: '4385fa764bce39593a405d91bc88', dataSetId: '3214a5454ef8642c13'}, {id: '58444bce39593a405d9456'}, {id: '2545764bce39593a405d91bc8673'}];
     var newPreparationId = '6cd546546548a745';
 
+    var updatedDatasetId = '99ac8561e62f34131';
+    var updatedPreparationId = '5ea51464f515125e3';
+
     beforeEach(module('data-prep.services.preparation'));
 
     beforeEach(inject(function($q, DatasetListService, PreparationListService, PreparationRestService, StorageService) {
@@ -19,7 +22,7 @@ describe('Preparation Service', function () {
 
         spyOn(PreparationListService, 'refreshPreparations').and.returnValue($q.when(preparations));
         spyOn(PreparationListService, 'create').and.returnValue($q.when({id: newPreparationId}));
-        spyOn(PreparationListService, 'update').and.returnValue($q.when(true));
+        spyOn(PreparationListService, 'update').and.returnValue($q.when({id: updatedPreparationId, dataSetId: updatedDatasetId}));
         spyOn(PreparationListService, 'delete').and.returnValue($q.when(true));
 
         spyOn(PreparationRestService, 'updateStep').and.returnValue($q.when(true));
@@ -31,6 +34,7 @@ describe('Preparation Service', function () {
 
         spyOn(StorageService, 'savePreparationAggregationsFromDataset').and.returnValue();
         spyOn(StorageService, 'removeAllAggregations').and.returnValue();
+        spyOn(StorageService, 'moveAggregations').and.returnValue();
     }));
 
     describe('getter/refresher', function() {
@@ -221,6 +225,19 @@ describe('Preparation Service', function () {
 
                 //then
                 expect(PreparationListService.update).toHaveBeenCalledWith(preparationId, name);
+            }));
+
+            it('should move aggregations to the new preparation id key in localStorage', inject(function ($rootScope, PreparationService, StorageService) {
+                //given
+                var preparationId = '6cd546546548a745';
+                var name = 'my preparation';
+
+                //when
+                PreparationService.setName(preparationId, name);
+                $rootScope.$digest();
+
+                //then
+                expect(StorageService.moveAggregations).toHaveBeenCalledWith(updatedDatasetId, preparationId, updatedPreparationId);
             }));
 
             it('should consolidate preparations and datasets on name update', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService) {
