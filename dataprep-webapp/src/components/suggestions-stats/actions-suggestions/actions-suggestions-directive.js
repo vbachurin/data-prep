@@ -46,6 +46,15 @@
 
                 scope.$watch(
                     function () {
+                        return ctrl.suggestionService.showAllAction ;
+                    },
+                    function () {
+                        ctrl.resizePanels();
+                    }
+                );
+
+                scope.$watch(
+                    function () {
                         return ctrl.suggestionService.searchActionString ;
                     },
                     function () {

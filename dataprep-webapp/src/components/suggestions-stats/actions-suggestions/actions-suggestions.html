@@ -1,7 +1,7 @@
 <div class="actions-suggestions">
     <div class="title-div" ng-if="actionsSuggestionsCtrl.column.name">
         <span class="title title-action" title="{{actionsSuggestionsCtrl.column.name}}">{{actionsSuggestionsCtrl.column.name}}</span>
-        <span class="title-view-all">
+        <span id="view-all-span" class="title-view-all">
             <span class="">View all</span>
             <label class="label-switch">
                 <input type="checkbox"
@@ -15,7 +15,7 @@
 
     <div class="Description" ng-if="! actionsSuggestionsCtrl.columnSuggestions">Select a column to display its actions</div>
 
-    <talend-tabs tab="actionsSuggestionsCtrl.tab" action-on-click="actionsSuggestionsCtrl.resizePanels()" ng-if="actionsSuggestionsCtrl.columnSuggestions" compile-template="{{actionsSuggestionsCtrl.searchActionString}}">
+    <talend-tabs tab="actionsSuggestionsCtrl.tab" action-on-click="actionsSuggestionsCtrl.resizePanels()" ng-if="actionsSuggestionsCtrl.columnSuggestions">
         <talend-tabs-item tab-title="Text">
             <div class="action-suggestion-tab-items">Coming soon ...</div>
         </talend-tabs-item>
