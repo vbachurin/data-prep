@@ -183,18 +183,6 @@ describe('Playground Service', function () {
             expect(PlaygroundService.originalPreparationName).toBeFalsy();
         }));
 
-        it('should select first column on dataset load', inject(function ($rootScope, PlaygroundService, StateService) {
-            //given
-            spyOn(StateService, 'setGridSelection').and.returnValue();
-
-            //when
-            PlaygroundService.initPlayground(dataset);
-            $rootScope.$digest();
-
-            //then
-            expect(StateService.setGridSelection).toHaveBeenCalledWith(datasetContent.columns[0]);
-        }));
-
         it('should start playground unboarding tour', inject(function ($rootScope, PlaygroundService, OnboardingService) {
             //given
             spyOn(OnboardingService, 'shouldStartTour').and.returnValue(true);
@@ -295,23 +283,6 @@ describe('Playground Service', function () {
 
             //then
             assertDatasetLoadInitialized(preparation.dataset, data);
-        }));
-
-        it('should select first column on preparation load', inject(function ($rootScope, PlaygroundService, StateService) {
-            //given
-            spyOn(StateService, 'setGridSelection').and.returnValue();
-            var preparation = {
-                id: '6845521254541',
-                dataset: {id: '1'}
-            };
-            stateMock.playground.preparation = {id: '5746518486846'};
-
-            //when
-            PlaygroundService.load(preparation);
-            $rootScope.$apply();
-
-            //then
-            expect(StateService.setGridSelection).toHaveBeenCalledWith(data.columns[0]);
         }));
 
         it('should manage loading spinner on preparation load', inject(function ($rootScope, PlaygroundService) {
