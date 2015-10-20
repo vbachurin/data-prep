@@ -110,11 +110,19 @@
          */
         function resetSearchAction() {
             service.searchActionString = '';
-            angular.forEach(ColumnSuggestionService.transformations, function(item){
-                item.labelHtml = item.label;
-                item.categoryHtml = item.category;
-            });
-            ColumnSuggestionService.updateTransformations();
+
+            if(!service.showAllAction) {
+                angular.forEach(ColumnSuggestionService.transformations, function(item){
+                    item.labelHtml = item.label;
+                });
+            } else {
+                angular.forEach(ColumnSuggestionService.transformations, function(transfo){
+                    angular.forEach(transfo, function(item) {
+                        item.categoryHtml = item.category;
+                    });
+                });
+                ColumnSuggestionService.updateTransformations();
+            }
         }
     }
 

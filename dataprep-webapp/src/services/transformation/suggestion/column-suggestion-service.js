@@ -63,8 +63,8 @@
                                         .filter(function (transfo) {
                                             return transfo.category !== COLUMN_CATEGORY;
                                         })
-                                        .sortBy(function (action) {
-                                            return action.label.toLowerCase();
+                                        .sortBy(function (transfo) {
+                                            return transfo.label.toLowerCase();
                                         })
                                         .value();
                 return sortObject(_.groupBy(transfosFiltered, function(action){ return action.categoryHtml;}));
@@ -104,8 +104,8 @@
                 .filter(function (transfo) {
                     return transfo.category !== COLUMN_CATEGORY;
                 })
-                .sortBy(function (action) {
-                    return action.label.toLowerCase();
+                .sortBy(function (transfo) {
+                    return transfo.label.toLowerCase();
                 })
                 .value();
             self.transformations =  sortObject(_.groupBy(transfosFiltered, function(action){ return action.categoryHtml;}));
