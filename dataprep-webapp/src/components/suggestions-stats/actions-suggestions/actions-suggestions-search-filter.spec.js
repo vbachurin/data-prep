@@ -5,23 +5,29 @@ describe('Actions suggestions search filter', function () {
         {
             'name': 'ceil_value',
             'label': 'Ceil value',
-            'labelHtml': 'Ceil value'
+            'labelHtml': 'Ceil value',
+            'description': 'f',
+            'category': 'w'
         },
         {
             'name': 'floor_value',
             'label': 'Floor value',
-            'labelHtml': 'Floor value'
+            'labelHtml': 'Floor value',
+            'description': 's',
+            'category': 'x'
         },
         {
             'name': 'round_value',
             'label': 'Round value',
-            'labelHtml': 'Round value'
+            'labelHtml': 'Round value',
+            'description': 'k',
+            'category': 'f'
         }
     ];
 
     beforeEach(module('data-prep.actions-suggestions'));
 
-    it('should filter action list', inject(function ($filter) {
+    it('should filter action list by label', inject(function ($filter) {
         //given
         var actionSearchFilter = $filter('actionsSuggestionsSearchFilter');
         var result = [];
@@ -51,6 +57,47 @@ describe('Actions suggestions search filter', function () {
         result = actionSearchFilter(transformations, 'ooo');
         //then
         expect(result.length).toBe(0);
+
+    }));
+
+    it('should filter action list by description', inject(function ($filter) {
+        //given
+        var actionSearchFilter = $filter('actionsSuggestionsSearchFilter');
+        var result = [];
+
+        //when
+        result = actionSearchFilter(transformations, 's');
+        //then
+        expect(result.length).toBe(1);
+        expect(result[0].label).toBe('Floor value');
+
+    }));
+
+    it('should filter action list by category', inject(function ($filter) {
+        //given
+        var actionSearchFilter = $filter('actionsSuggestionsSearchFilter');
+        var result = [];
+
+        //when
+        result = actionSearchFilter(transformations, 'w');
+        //then
+        expect(result.length).toBe(1);
+        expect(result[0].label).toBe('Ceil value');
+
+    }));
+
+    it('should filter action list by multi criteria', inject(function ($filter) {
+        //given
+        var actionSearchFilter = $filter('actionsSuggestionsSearchFilter');
+        var result = [];
+
+        //when
+        result = actionSearchFilter(transformations, 'f');
+        //then
+        expect(result.length).toBe(3);
+        expect(result[0].label).toBe('Ceil value');
+        expect(result[1].label).toBe('Floor value');
+        expect(result[2].label).toBe('Round value');
 
     }));
 });

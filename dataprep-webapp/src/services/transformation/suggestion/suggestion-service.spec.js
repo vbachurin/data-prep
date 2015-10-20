@@ -34,10 +34,10 @@ describe('Suggestion Service', function() {
     }));
 
 
-    it('should reset action search', inject(function(SuggestionService, ColumnSuggestionService) {
+    it('should reset action search when showAllActionis false', inject(function(SuggestionService, ColumnSuggestionService) {
         //given
         var column = {id: '0001'};
-        SuggestionService.showAllAction = true;
+        SuggestionService.showAllAction = false;
         ColumnSuggestionService.transformations =
             [
                 {name: 'rename', category: 'column_metadata', label: 'z', labelHtml: '<span class="highlighted">z</span>'},
@@ -50,6 +50,22 @@ describe('Suggestion Service', function() {
         //then
         expect(SuggestionService.searchActionString).toBeFalsy();
         expect(ColumnSuggestionService.transformations[0].labelHtml).toBe('z');
+
+    }));
+
+
+    it('should reset action search when showAllActionis true', inject(function(SuggestionService, ColumnSuggestionService) {
+        //given
+        var column = {id: '0001'};
+        SuggestionService.showAllAction = true;
+        ColumnSuggestionService.transformations =
+        {'quickfi<span class="highlighted">x</span>': [{name: 'cluster', label: 'cluster', category: 'quickfix', categoryHtml: 'quickfi<span class="highlighted">x</span>'}]};
+
+        //when
+        SuggestionService.setColumn(column, SuggestionService.showAllAction);
+        //then
+        expect(SuggestionService.searchActionString).toBeFalsy();
+        expect(ColumnSuggestionService.transformations.quickfix[0].categoryHtml).toBe('quickfix');
 
     }));
 
