@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.preparation;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +9,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class MixedContentMap implements Map<String, String> {
+public class MixedContentMap implements Map<String, String>, Serializable {
 
     private final Map<String, String> map = new HashMap<>();
 
@@ -137,4 +138,5 @@ public class MixedContentMap implements Map<String, String> {
             BiFunction<? super String, ? super String, ? extends String> remappingFunction) {
         return map.merge(key, value, remappingFunction);
     }
+
 }

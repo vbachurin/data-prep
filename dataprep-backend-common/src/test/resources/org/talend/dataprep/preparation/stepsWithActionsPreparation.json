@@ -59,10 +59,7 @@
           "label": "Filter",
           "default": ""
         }
-      ],
-      "dynamic": false,
-      "description": "Converts all of the cell values in this column to upper case",
-      "label": "Change case to UPPER"
+      ]
     }
   ]
 }
