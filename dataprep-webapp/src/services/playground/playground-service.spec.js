@@ -28,7 +28,7 @@ describe('Playground Service', function () {
         spyOn(RecipeService, 'refresh').and.returnValue($q.when(true));
         spyOn(StateService, 'resetPlayground').and.returnValue();
         spyOn(StateService, 'setCurrentDataset').and.returnValue();
-        spyOn(StatisticsService, 'resetCharts').and.returnValue();
+        spyOn(StatisticsService, 'reset').and.returnValue();
         spyOn(SuggestionService, 'reset').and.returnValue();
         spyOn(TransformationCacheService, 'invalidateCache').and.returnValue();
     }));
@@ -95,7 +95,7 @@ describe('Playground Service', function () {
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(SuggestionService.reset).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
-                expect(StatisticsService.resetCharts).toHaveBeenCalled();
+                expect(StatisticsService.reset).toHaveBeenCalledWith(true, true, true);
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
             };
             assertNewPreparationNotInitialized = function () {
@@ -107,7 +107,7 @@ describe('Playground Service', function () {
                 expect(TransformationCacheService.invalidateCache).not.toHaveBeenCalled();
                 expect(SuggestionService.reset).not.toHaveBeenCalled();
                 expect(HistoryService.clear).not.toHaveBeenCalled();
-                expect(StatisticsService.resetCharts).not.toHaveBeenCalled();
+                expect(StatisticsService.reset).not.toHaveBeenCalled();
                 expect(PreviewService.reset).not.toHaveBeenCalled();
             };
 
@@ -264,7 +264,7 @@ describe('Playground Service', function () {
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(SuggestionService.reset).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
-                expect(StatisticsService.resetCharts).toHaveBeenCalled();
+                expect(StatisticsService.reset).toHaveBeenCalledWith(true, true, true);
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
             };
             assertDatasetLoadNotInitialized = function () {
@@ -276,7 +276,7 @@ describe('Playground Service', function () {
                 expect(TransformationCacheService.invalidateCache).not.toHaveBeenCalled();
                 expect(SuggestionService.reset).not.toHaveBeenCalled();
                 expect(HistoryService.clear).not.toHaveBeenCalled();
-                expect(StatisticsService.resetCharts).not.toHaveBeenCalled();
+                expect(StatisticsService.reset).not.toHaveBeenCalled();
                 expect(PreviewService.reset).not.toHaveBeenCalled();
             };
         }));

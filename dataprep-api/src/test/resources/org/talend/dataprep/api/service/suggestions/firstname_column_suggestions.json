@@ -620,6 +620,13 @@
         "description": "The new value to set",
         "label": "Replace",
         "default": ""
+      },
+      {
+        "name": "replace_entire_cell",
+        "type": "boolean",
+        "implicit": false,
+        "label": "Replace entire cell",
+        "default": "false"
       }
     ],
     "dynamic": false,

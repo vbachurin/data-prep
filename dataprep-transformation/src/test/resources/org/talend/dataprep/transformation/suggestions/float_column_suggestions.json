@@ -529,5 +529,11 @@
     "description": "Change Type",
     "dynamic": false,
     "label": "Change Type"
+  },
+  {
+    "name": "delete_negative_values",
+    "dynamic": false,
+    "label": "Remove negatie values",
+    "category":"data cleansing"
   }
 ]
