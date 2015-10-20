@@ -112,7 +112,7 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
                     return originalValue;
                 }
             } else {
-                return matcher.replaceFirst(replacement);
+                return matcher.replaceAll(replacement);
             }
         } catch (PatternSyntaxException e) {
             // In case the pattern is not valid, consider that the value does not match: nothing to do.

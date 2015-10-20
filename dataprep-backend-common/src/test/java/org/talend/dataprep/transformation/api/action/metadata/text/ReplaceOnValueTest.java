@@ -192,6 +192,27 @@ public class ReplaceOnValueTest {
     }
 
     @Test
+    public void should_replace_many_values_that_match_on_the_specified_cell() {
+        // given
+        final String columnId = "firstname";
+
+        final Map<String, String> values = new HashMap<>();
+        values.put(columnId, "James Cleveland James");
+        final DataSetRow row = new DataSetRow(values);
+
+        final Map<String, String> parameters = new HashMap<>();
+        parameters.put(CELL_VALUE_PARAMETER, "James");
+        parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
+        parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
+
+        // when
+        action.applyOnCell(row, null, parameters, 85L, columnId);
+
+        // then
+        assertThat(row.get(columnId), is("Jimmy Cleveland Jimmy"));
+    }
+
+    @Test
     public void should_NOT_replace_the_value_that_DOESNT_match_on_the_specified_cell() {
         // given
         final String columnId = "firstname";
