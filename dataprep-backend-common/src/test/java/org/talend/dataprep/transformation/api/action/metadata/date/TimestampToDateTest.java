@@ -51,7 +51,7 @@ public class TimestampToDateTest extends BaseDateTests {
     @Before
     public void init() throws IOException {
         parameters = ActionMetadataTestUtils.parseParameters( //
-                action, //
+                //
                 TimestampToDateTest.class.getResourceAsStream("timestampToDate.json"));
     }
 

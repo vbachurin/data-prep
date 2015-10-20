@@ -2,6 +2,9 @@
   {
     "category": "split",
     "name": "extract_url_tokens",
+    "dynamic": false,
+    "description": "Extracts protocol, host, port, query, etc... from an url in separated columns",
+    "label": "Extract url tokens",
     "parameters": [
       {
         "name": "column_id",
@@ -39,14 +42,14 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Extracts protocol, host, port, query, etc... from an url in separated columns",
-    "label": "Extract url tokens"
+    ]
   },
   {
     "category": "split",
     "name": "extractemaildomain",
+    "dynamic": false,
+    "description": "Extract local and domain parts from an email",
+    "label": "Extract email tokens",
     "parameters": [
       {
         "name": "column_id",
@@ -84,14 +87,59 @@
         "label": "Filter",
         "default": ""
       }
-    ],
+    ]
+  },
+  {
+    "category": "filtered",
+    "name": "delete_lines",
     "dynamic": false,
-    "description": "Extract local and domain parts from an email",
-    "label": "Extract email tokens"
+    "description": "Delete lines that match filter",
+    "label": "Delete lines",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      },
+      {
+        "name": "filter",
+        "type": "filter",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "An optional filter to apply action on matching values only.",
+        "label": "Filter",
+        "default": ""
+      }
+    ]
   },
   {
     "name": "delete_empty",
     "category": "data cleansing",
+    "dynamic": false,
+    "description": "Delete rows that have this cell empty",
+    "label": "Delete lines with empty cell",
     "parameters": [
       {
         "name": "column_id",
@@ -129,14 +177,14 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Delete rows that have this cell empty",
-    "label": "Delete lines with empty cell"
+    ]
   },
   {
     "name": "delete_invalid",
     "category": "data cleansing",
+    "dynamic": false,
+    "description": "Delete rows that have this invalid cell",
+    "label": "Delete lines with invalid cell",
     "parameters": [
       {
         "name": "column_id",
@@ -174,10 +222,7 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Delete rows that have this invalid cell",
-    "label": "Delete lines with invalid cell"
+    ]
   },
   {
     "name": "clear_invalid",
@@ -268,6 +313,51 @@
     "dynamic": false,
     "description": "Delete rows that have a specific value in cell in this column",
     "label": "Delete lines that match..."
+  },
+  {
+    "category": "filtered",
+    "name": "keep_only",
+    "dynamic": false,
+    "description": "Keep only lines that match filter",
+    "label": "Keep only",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      },
+      {
+        "name": "filter",
+        "type": "filter",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "An optional filter to apply action on matching values only.",
+        "label": "Filter",
+        "default": ""
+      }
+    ]
   },
   {
     "name": "change_date_pattern",
@@ -795,6 +885,9 @@
   {
     "category": "strings",
     "name": "compute_length",
+    "dynamic": false,
+    "description": "Extracts the number of digits of this column",
+    "label": "Compute length",
     "parameters": [
       {
         "name": "column_id",
@@ -832,10 +925,7 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Extracts the number of digits of this column",
-    "label": "Compute length"
+    ]
   },
   {
     "category": "strings",
@@ -894,6 +984,9 @@
   {
     "category": "strings",
     "name": "uppercase",
+    "dynamic": false,
+    "description": "Converts all of the cell values in this column to upper case",
+    "label": "Change case to UPPER",
     "parameters": [
       {
         "name": "column_id",
@@ -931,14 +1024,14 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Converts all of the cell values in this column to upper case",
-    "label": "Change case to UPPER"
+    ]
   },
   {
     "category": "strings advanced",
     "name": "remove_non_num_chars",
+    "dynamic": false,
+    "description": "For example â¬10.5k will become 10.5",
+    "label": "Remove all non numeric characters",
     "parameters": [
       {
         "name": "column_id",
@@ -976,15 +1069,14 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "For example â¬10.5k will become 10.5",
-    "label": "Remove all non numeric characters"
+    ]
   },
   {
     "dynamic": true,
     "category": "strings advanced",
     "name": "textclustering",
+    "description": "Replace all similar values with the right one (i.e. cluster)",
+    "label": "Find and group similar text...",
     "parameters": [
       {
         "name": "column_id",
@@ -1022,9 +1114,7 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "description": "Replace all similar values with the right one (i.e. cluster)",
-    "label": "Find and group similar text..."
+    ]
   },
   {
     "category": "strings",
@@ -1136,6 +1226,9 @@
   {
     "category": "strings",
     "name": "lowercase",
+    "dynamic": false,
+    "description": "Converts all of the cell values in this column to lower case",
+    "label": "Change case to lower",
     "parameters": [
       {
         "name": "column_id",
@@ -1173,10 +1266,7 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Converts all of the cell values in this column to lower case",
-    "label": "Change case to lower"
+    ]
   },
   {
     "category": "split",
@@ -1444,6 +1534,9 @@
   {
     "category": "strings advanced",
     "name": "remove_non_alpha_num_chars",
+    "dynamic": false,
+    "description": "For example â¬10.5k will become 105",
+    "label": "Remove all non alpha numeric characters",
     "parameters": [
       {
         "name": "column_id",
@@ -1481,14 +1574,14 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "For example â¬10.5k will become 105",
-    "label": "Remove all non alpha numeric characters"
+    ]
   },
   {
     "category": "strings",
     "name": "propercase",
+    "dynamic": false,
+    "description": "Converts all of the cell values in this column to title case (i.e. \"data prep\" -> \"Data Prep\") ",
+    "label": "Change case to Title",
     "parameters": [
       {
         "name": "column_id",
@@ -1526,14 +1619,14 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Converts all of the cell values in this column to title case (i.e. \"data prep\" -> \"Data Prep\") ",
-    "label": "Change case to Title"
+    ]
   },
   {
     "category": "strings",
     "name": "trim",
+    "dynamic": false,
+    "description": "Remove trailing and leading spaces (i.e. trim)",
+    "label": "Remove trailing and leading spaces",
     "parameters": [
       {
         "name": "column_id",
@@ -1571,10 +1664,7 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Remove trailing and leading spaces (i.e. trim)",
-    "label": "Remove trailing and leading spaces"
+    ]
   },
   {
     "description": "Fill empty cells of this column with given value",
@@ -1633,6 +1723,9 @@
   {
     "category": "strings advanced",
     "name": "normalize",
+    "dynamic": false,
+    "description": "Simplify content of this column (ie: FranÃ§ois -> francois)",
+    "label": "Simplify Text (remove case, accent, etc.)",
     "parameters": [
       {
         "name": "column_id",
@@ -1670,14 +1763,14 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Simplify content of this column (ie: FranÃ§ois -> francois)",
-    "label": "Simplify Text (remove case, accent, etc.)"
+    ]
   },
   {
     "name": "floor",
     "category": "math",
+    "dynamic": false,
+    "description": "Round value to the largest integer value that is less than or equal to the argument",
+    "label": "Floor value",
     "parameters": [
       {
         "name": "column_id",
@@ -1715,14 +1808,14 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Round value to the largest integer value that is less than or equal to the argument",
-    "label": "Floor value"
+    ]
   },
   {
     "name": "delete_negative_values",
     "category": "data cleansing",
+    "dynamic": false,
+    "description": "Lines with a negative value in this column will be deleted",
+    "label": "Remove negative values",
     "parameters": [
       {
         "name": "column_id",
@@ -1760,14 +1853,14 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Lines with a negative value in this column will be deleted",
-    "label": "Remove negative values"
+    ]
   },
   {
     "name": "round",
     "category": "math",
+    "dynamic": false,
+    "description": "Round value to the closest integer",
+    "label": "Round value",
     "parameters": [
       {
         "name": "column_id",
@@ -1805,16 +1898,14 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Round value to the closest integer",
-    "label": "Round value"
+    ]
   },
   {
     "description": "Compute the absolute value for all numeric values of this column.",
     "category": "math",
     "label": "Absolute value",
     "name": "absolute",
+    "dynamic": false,
     "parameters": [
       {
         "name": "column_id",
@@ -1852,12 +1943,14 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false
+    ]
   },
   {
     "name": "round_down",
     "category": "math",
+    "dynamic": false,
+    "description": "Round towards zero. Never increments the digit prior to a discarded fraction (i.e. truncates)",
+    "label": "Remove fractional part",
     "parameters": [
       {
         "name": "column_id",
@@ -1895,14 +1988,14 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Round towards zero. Never increments the digit prior to a discarded fraction (i.e. truncates)",
-    "label": "Remove fractional part"
+    ]
   },
   {
     "name": "ceil",
     "category": "math",
+    "dynamic": false,
+    "description": "Round value to the smallest integer value that is greater than or equal to the argument",
+    "label": "Ceil value",
     "parameters": [
       {
         "name": "column_id",
@@ -1940,14 +2033,14 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Round value to the smallest integer value that is greater than or equal to the argument",
-    "label": "Ceil value"
+    ]
   },
   {
     "category": "boolean",
     "name": "negate",
+    "dynamic": false,
+    "description": "Reverse the boolean value of cells in this column",
+    "label": "Negate value",
     "parameters": [
       {
         "name": "column_id",
@@ -1985,14 +2078,14 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Reverse the boolean value of cells in this column",
-    "label": "Negate value"
+    ]
   },
   {
     "category": "column_metadata",
     "name": "copy",
+    "dynamic": false,
+    "description": "Creates an exact copy of this column",
+    "label": "Duplicate",
     "parameters": [
       {
         "name": "column_id",
@@ -2030,10 +2123,7 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Creates an exact copy of this column",
-    "label": "Duplicate"
+    ]
   },
   {
     "category": "columns",
@@ -2173,6 +2263,9 @@
   {
     "category": "column_metadata",
     "name": "domain_change",
+    "dynamic": false,
+    "description": "Change semantic domain of this column",
+    "label": "Change Domain",
     "parameters": [
       {
         "name": "column_id",
@@ -2210,14 +2303,14 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Change semantic domain of this column",
-    "label": "Change Domain"
+    ]
   },
   {
     "category": "column_metadata",
     "name": "type_change",
+    "dynamic": false,
+    "description": "Change type of this column",
+    "label": "Change Type",
     "parameters": [
       {
         "name": "column_id",

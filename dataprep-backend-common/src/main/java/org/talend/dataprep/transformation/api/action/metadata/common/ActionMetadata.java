@@ -148,7 +148,7 @@ public abstract class ActionMetadata {
      * @param parameters the transformation parameters
      * @return A {@link Predicate filter} for data set rows.
      */
-    private Predicate<DataSetRow> getFilter(Map<String, String> parameters) {
+    protected Predicate<DataSetRow> getFilter(Map<String, String> parameters) {
         return filterService.build(parameters.get(ImplicitParameters.FILTER.getKey()));
     }
 
@@ -189,7 +189,7 @@ public abstract class ActionMetadata {
         final Predicate<DataSetRow> filter = getFilter(parameters);
 
         return builder().withRow((row, context) -> {
-            if (!filter.test(row)) {
+            if (implicitFilter() && !filter.test(row)) {
                 return row; // Return unmodified row since it didn't pass the filter.
             }
             // Select the correct method to call depending on scope.
@@ -216,6 +216,15 @@ public abstract class ActionMetadata {
             }
             return row;
         }).build();
+    }
+
+    /**
+     * @return <code>true</code> if there should be an implicit filtering before the action gets executed. Actions that
+     * don't want to take care of filtering should return <code>true</code> (default). Implementations may override this
+     * method and return <code>false</code> if they want to handle themselves filtering.
+     */
+    protected boolean implicitFilter() {
+        return true;
     }
 
     /**

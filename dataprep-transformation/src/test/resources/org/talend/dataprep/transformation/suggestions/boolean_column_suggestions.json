@@ -2,6 +2,9 @@
   {
     "name": "delete_empty",
     "category": "data cleansing",
+    "dynamic": false,
+    "description": "Delete rows that have this cell empty",
+    "label": "Delete lines with empty cell",
     "parameters": [
       {
         "name": "column_id",
@@ -39,14 +42,14 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Delete rows that have this cell empty",
-    "label": "Delete lines with empty cell"
+    ]
   },
   {
     "name": "delete_invalid",
     "category": "data cleansing",
+    "dynamic": false,
+    "description": "Delete rows that have this invalid cell",
+    "label": "Delete lines with invalid cell",
     "parameters": [
       {
         "name": "column_id",
@@ -84,10 +87,7 @@
         "label": "Filter",
         "default": ""
       }
-    ],
-    "dynamic": false,
-    "description": "Delete rows that have this invalid cell",
-    "label": "Delete lines with invalid cell"
+    ]
   },
   {
     "name": "clear_invalid",
