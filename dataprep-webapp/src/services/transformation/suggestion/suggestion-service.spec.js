@@ -59,13 +59,13 @@ describe('Suggestion Service', function() {
         var column = {id: '0001'};
         SuggestionService.showAllAction = true;
         ColumnSuggestionService.transformations =
-        {'quickfi<span class="highlighted">x</span>': [{name: 'cluster', label: 'cluster', category: 'quickfix', categoryHtml: 'quickfi<span class="highlighted">x</span>'}]};
+        {'QUICKFI<span class="highlighted">X</span>': [{name: 'cluster', label: 'cluster', category: 'quickfix', categoryHtml: 'QUICKFI<span class="highlighted">X</span>'}]};
 
         //when
         SuggestionService.setColumn(column, SuggestionService.showAllAction);
         //then
         expect(SuggestionService.searchActionString).toBeFalsy();
-        expect(ColumnSuggestionService.transformations.quickfix[0].categoryHtml).toBe('quickfix');
+        expect(ColumnSuggestionService.transformations.QUICKFIX[0].categoryHtml).toBe('QUICKFIX');
 
     }));
 

@@ -118,7 +118,7 @@
             } else {
                 angular.forEach(ColumnSuggestionService.transformations, function(transfo){
                     angular.forEach(transfo, function(item) {
-                        item.categoryHtml = item.category;
+                        item.categoryHtml = item.category.toUpperCase();
                     });
                 });
                 ColumnSuggestionService.updateTransformations();
