@@ -1,164 +1,200 @@
 [
   {
-    "name": "delete_empty",
-    "category": "data cleansing",
-    "parameters": [
+    "description":"Fill empty cells of this column with given value",
+    "category":"data cleansing",
+    "label":"Fill empty cells with text...",
+    "name":"fillemptywithdefault",
+    "parameters":[
       {
-        "name": "column_id",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "description": "The column on which apply this action to",
-        "label": "Column",
-        "default": ""
+        "name":"column_id",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The column on which apply this action to",
+        "label":"Column",
+        "default":""
       },
       {
-        "name": "row_id",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "description": "The row on which apply this action to",
-        "label": "Row",
-        "default": ""
+        "name":"row_id",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The row on which apply this action to",
+        "label":"Row",
+        "default":""
       },
       {
-        "name": "scope",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
-        "label": "Scope",
-        "default": ""
+        "name":"scope",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label":"Scope",
+        "default":""
+      },
+      {
+        "name":"empty_default_value",
+        "type":"string",
+        "implicit":false,
+        "canBeBlank":true,
+        "description":"The value to set in empty cells",
+        "label":"Value",
+        "default":""
       }
     ],
-    "dynamic": false,
-    "description": "Delete rows that have this cell empty",
-    "label": "Delete lines with empty cell"
+    "dynamic":false
   },
   {
-    "name": "delete_invalid",
-    "category": "data cleansing",
-    "parameters": [
+    "name":"fillinvalidwithdefault",
+    "parameters":[
       {
-        "name": "column_id",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "description": "The column on which apply this action to",
-        "label": "Column",
-        "default": ""
+        "name":"column_id",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The column on which apply this action to",
+        "label":"Column",
+        "default":""
       },
       {
-        "name": "row_id",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "description": "The row on which apply this action to",
-        "label": "Row",
-        "default": ""
+        "name":"row_id",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The row on which apply this action to",
+        "label":"Row",
+        "default":""
       },
       {
-        "name": "scope",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
-        "label": "Scope",
-        "default": ""
+        "name":"scope",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label":"Scope",
+        "default":""
+      },
+      {
+        "name":"invalid_default_value",
+        "type":"string",
+        "implicit":false,
+        "canBeBlank":false,
+        "description":"The value to set in invalid cells",
+        "label":"Value",
+        "default":""
       }
     ],
-    "dynamic": false,
-    "description": "Delete rows that have this invalid cell",
-    "label": "Delete lines with invalid cell"
+    "category":"data cleansing",
+    "dynamic":false,
+    "description":"Fill invalid cells of this column with given value",
+    "label":"Fill invalid cells with value..."
   },
   {
-    "name": "fillinvalidwithdefault",
-    "parameters": [
+    "name":"delete_empty",
+    "category":"data cleansing",
+    "parameters":[
       {
-        "name": "column_id",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "description": "The column on which apply this action to",
-        "label": "Column",
-        "default": ""
+        "name":"column_id",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The column on which apply this action to",
+        "label":"Column",
+        "default":""
       },
       {
-        "name": "row_id",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "description": "The row on which apply this action to",
-        "label": "Row",
-        "default": ""
+        "name":"row_id",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The row on which apply this action to",
+        "label":"Row",
+        "default":""
       },
       {
-        "name": "scope",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
-        "label": "Scope",
-        "default": ""
-      },
-      {
-        "name": "invalid_default_value",
-        "type": "string",
-        "implicit": false,
-        "canBeBlank": false,
-        "description": "The value to set in invalid cells",
-        "label": "Value",
-        "default": ""
+        "name":"scope",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label":"Scope",
+        "default":""
       }
     ],
-    "category": "data cleansing",
-    "dynamic": false,
-    "description": "Fill invalid cells of this column with given value",
-    "label": "Fill invalid cells with value..."
+    "dynamic":false,
+    "description":"Delete rows that have this cell empty",
+    "label":"Delete lines with empty cell"
   },
   {
-    "name": "fillemptywithdefault",
-    "parameters": [
+    "name":"delete_invalid",
+    "category":"data cleansing",
+    "parameters":[
       {
-        "name": "column_id",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "description": "The column on which apply this action to",
-        "label": "Column",
-        "default": ""
+        "name":"column_id",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The column on which apply this action to",
+        "label":"Column",
+        "default":""
       },
       {
-        "name": "row_id",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "description": "The row on which apply this action to",
-        "label": "Row",
-        "default": ""
+        "name":"row_id",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The row on which apply this action to",
+        "label":"Row",
+        "default":""
       },
       {
-        "name": "scope",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
-        "label": "Scope",
-        "default": ""
-      },
-      {
-        "name": "empty_default_value",
-        "type": "string",
-        "implicit": false,
-        "canBeBlank": true,
-        "description": "The value to set in empty cells",
-        "label": "Value",
-        "default": ""
+        "name":"scope",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label":"Scope",
+        "default":""
       }
     ],
-    "category": "data cleansing",
-    "dynamic": false,
-    "description": "Fill empty cells of this column with given value",
-    "label": "Fill empty cells with text..."
+    "dynamic":false,
+    "description":"Delete rows that have this invalid cell",
+    "label":"Delete lines with invalid cell"
+  },
+  {
+    "category":"split",
+    "name":"extractemaildomain",
+    "parameters":[
+      {
+        "name":"column_id",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The column on which apply this action to",
+        "label":"Column",
+        "default":""
+      },
+      {
+        "name":"row_id",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The row on which apply this action to",
+        "label":"Row",
+        "default":""
+      },
+      {
+        "name":"scope",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label":"Scope",
+        "default":""
+      }
+    ],
+    "dynamic":false,
+    "description":"Extract local and domain parts from an email",
+    "label":"Extract email tokens"
   }
 ]

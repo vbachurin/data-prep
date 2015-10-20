@@ -248,7 +248,7 @@
     ],
     "category": "dates",
     "dynamic": false,
-    "description": "Computes time elapsed since this date in the desired unit",
+    "description": "Computes elapsed time since this date, in the desired unit (year, month, day, hour)",
     "label": "Compute time since"
   },
   {
@@ -383,7 +383,7 @@
     ],
     "category": "dates",
     "dynamic": false,
-    "description": "Creates columns with year, month, day, etc...",
+    "description": "Creates columns with year, month, day, hour, minute, second, etc...",
     "label": "Extract date tokens"
   }
 ]
