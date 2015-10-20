@@ -85,7 +85,6 @@
         <module>../dataprep-metrics</module>
         <module>../dataprep-preparation</module>
         <module>../dataprep-api</module>
-        <module>../dataprep-platform-tests</module>
     </modules>
     <dependencyManagement>
         <dependencies>
