@@ -93,13 +93,13 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
     @Override
     public final boolean acceptScope(final ScopeCategory scope) {
         switch (scope) {
-        case CELL:
+            case CELL:
             return this instanceof CellAction;
-        case LINE:
+            case LINE:
             return this instanceof RowAction;
-        case COLUMN:
+            case COLUMN:
             return this instanceof ColumnAction;
-        case TABLE:
+            case TABLE:
             return this instanceof DataSetAction;
         default:
             return false;
@@ -124,25 +124,25 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
             }
             // Select the correct method to call depending on scope.
             switch (scope) {
-            case CELL:
-                if (rowId != null && rowId.equals(row.getTdpId())) {
+                case CELL:
+                    if (rowId != null && rowId.equals(row.getTdpId())) {
                     ((CellAction) this).applyOnCell(row, context, parameters, rowId, columnId);
-                }
-                break;
-            case COLUMN:
+                    }
+                    break;
+                case COLUMN:
                 ((ColumnAction) this).applyOnColumn(row, context, parameters, columnId);
-                break;
-            case LINE:
-                if (rowId != null && rowId.equals(row.getTdpId())) {
+                    break;
+                case LINE:
+                    if (rowId != null && rowId.equals(row.getTdpId())) {
                     ((RowAction) this).applyOnRow(row, context, parameters, rowId);
-                }
-                break;
-            case TABLE:
+                    }
+                    break;
+                case TABLE:
                 ((DataSetAction) this).applyOnDataSet(row, context, parameters);
                 break;
             default:
                 LOGGER.warn("Is there a new action scope ??? {}", scope);
-                break;
+                    break;
             }
             return row;
         }).build();

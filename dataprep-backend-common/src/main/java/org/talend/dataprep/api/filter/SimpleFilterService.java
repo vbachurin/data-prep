@@ -18,10 +18,7 @@ public class SimpleFilterService implements FilterService {
 
     @Override
     public Predicate<DataSetRow> build(String filterAsString) {
-        if (filterAsString == null) {
-            throw new IllegalArgumentException("Filter cannot be null");
-        }
-        if (StringUtils.EMPTY.equals(filterAsString)) {
+        if (StringUtils.isEmpty(filterAsString)) {
             return r -> true;
         }
         try {

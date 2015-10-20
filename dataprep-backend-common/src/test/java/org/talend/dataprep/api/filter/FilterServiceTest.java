@@ -30,9 +30,10 @@ public class FilterServiceTest {
         row = new DataSetRow(values);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNullFilter() throws Exception {
-        service.build(null);
+        final Predicate<DataSetRow> predicate = service.build(null);
+        assertThat(predicate.test(row), is(true));
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -3,10 +3,12 @@ package org.talend.dataprep.transformation.service;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.springframework.test.util.AssertionErrors.assertEquals;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.talend.dataprep.transformation.Application;
 
 /**
  * Integration tests on column actions.
