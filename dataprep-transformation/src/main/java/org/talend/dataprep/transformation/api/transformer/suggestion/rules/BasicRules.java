@@ -35,5 +35,20 @@ public class BasicRules {
         return Type.DATE.isAssignableFrom(type) || "date".equalsIgnoreCase(columnMetadata.getDomain());
     };
 
+    /**
+     * A helper to filter columns where semantic domain=email.
+     */
+    protected static final Predicate<ColumnMetadata> IS_EMAIL = columnMetadata -> {
+        final String domain = columnMetadata.getDomain();
+        return "email".equalsIgnoreCase(columnMetadata.getDomain());
+    };
+
+    /**
+     * A helper to filter columns where semantic domain=url.
+     */
+    protected static final Predicate<ColumnMetadata> IS_URL = columnMetadata -> {
+        final String domain = columnMetadata.getDomain();
+        return "url".equalsIgnoreCase(columnMetadata.getDomain());
+    };
 
 }
