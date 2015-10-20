@@ -528,8 +528,7 @@
     ],
     "description": "Change Type",
     "dynamic": false,
-    "label": "Change Type",
-    "dynamic": false
+    "label": "Change Type"
   },
   {
     "name": "delete_negative_values",

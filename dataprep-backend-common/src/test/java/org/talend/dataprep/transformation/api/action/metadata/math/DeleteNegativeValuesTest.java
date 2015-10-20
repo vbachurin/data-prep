@@ -187,6 +187,23 @@ public class DeleteNegativeValuesTest {
     }
 
     @Test
+    public void should_not_delete_because_space_between_sign_and_value() {
+        //given
+        final Map<String, String> values = new HashMap<>();
+        values.put("name", "David Bowie");
+        values.put("age", "- 6");
+        final DataSetRow row = new DataSetRow(values);
+
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "age");
+
+        //then
+        assertFalse(row.isDeleted());
+        assertEquals("David Bowie", row.get("name"));
+        assertEquals("- 6", row.get("age"));
+    }
+
+    @Test
     public void should_accept_column() {
         assertTrue(action.acceptColumn(getColumn(Type.NUMERIC)));
         assertTrue(action.acceptColumn(getColumn(Type.FLOAT)));
