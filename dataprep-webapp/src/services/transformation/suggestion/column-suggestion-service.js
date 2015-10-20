@@ -29,7 +29,7 @@
 
             for (key in o) {
                 if (o.hasOwnProperty(key)) {
-                    a.push(key.toLowerCase());
+                    a.push(key);
                 }
             }
 
@@ -55,7 +55,7 @@
             //Add labelHtml which is copy of label in order to manage the highlight action label
             angular.forEach(transfos, function(item){
                 item.labelHtml= item.label;
-                item.categoryHtml= item.category;
+                item.categoryHtml= item.category.toUpperCase();
             });
 
             if (showAll) {

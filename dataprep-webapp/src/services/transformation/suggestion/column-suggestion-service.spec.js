@@ -49,9 +49,9 @@ describe('Column suggestion service', function () {
         expect(columnCategoryTransformation).toBeFalsy();
 
         //then : result grouped
-        expect(suggestedTransformations.case.length).toBe(3);
-        expect(suggestedTransformations.clear.length).toBe(1);
-        expect(suggestedTransformations.quickfix.length).toBe(2);
+        expect(suggestedTransformations.CASE.length).toBe(3);
+        expect(suggestedTransformations.CLEAR.length).toBe(1);
+        expect(suggestedTransformations.QUICKFIX.length).toBe(2);
 
     }));
 
