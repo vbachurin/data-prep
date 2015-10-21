@@ -31,8 +31,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Extracts protocol, host, port, etc... from an url in separated columns",
+    "dynamic": false,
     "label": "Extract url tokens"
   },
   {
@@ -67,8 +67,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Extract local and domain parts from an email",
+    "dynamic": false,
     "label": "Extract email tokens"
   },
   {
@@ -103,8 +103,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Delete rows that have this cell empty",
+    "dynamic": false,
     "label": "Delete lines with empty cell"
   },
   {
@@ -139,8 +139,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Delete rows that have this invalid cell",
+    "dynamic": false,
     "label": "Delete lines with invalid cell"
   },
   {
@@ -184,8 +184,8 @@
       }
     ],
     "category": "data cleansing",
-    "dynamic": false,
     "description": "Delete rows that have a specific value in cell in this column",
+    "dynamic": false,
     "label": "Delete lines that match..."
   },
   {
@@ -302,8 +302,8 @@
       }
     ],
     "category": "dates",
-    "dynamic": false,
     "description": "Change date pattern to use on a date column",
+    "dynamic": false,
     "label": "Change date pattern"
   },
   {
@@ -364,8 +364,8 @@
       }
     ],
     "category": "dates",
-    "dynamic": false,
     "description": "Computes time elapsed since this date in the desired unit",
+    "dynamic": false,
     "label": "Compute time since"
   },
   {
@@ -482,8 +482,8 @@
         "default": "MM.dd.yyyy"
       }
     ],
-    "dynamic": false,
     "description": "Given a timestamp (ellapsed time since epoch in second), will create a new column with the date",
+    "dynamic": false,
     "label": "Compute timestamp to date"
   },
   {
@@ -617,8 +617,8 @@
       }
     ],
     "category": "dates",
-    "dynamic": false,
     "description": "Creates columns with year, month, day, etc...",
+    "dynamic": false,
     "label": "Extract date tokens"
   },
   {
@@ -673,8 +673,8 @@
       }
     ],
     "category": "data cleansing",
-    "dynamic": false,
     "description": "Fill invalid cells of this column with given value",
+    "dynamic": false,
     "label": "Fill invalid cells with value..."
   },
   {
@@ -718,8 +718,8 @@
       }
     ],
     "category": "data cleansing",
-    "dynamic": false,
     "description": "Fill invalid cells of this column with given value",
+    "dynamic": false,
     "label": "Fill invalid cells with value..."
   },
   {
@@ -763,8 +763,8 @@
       }
     ],
     "category": "data cleansing",
-    "dynamic": false,
     "description": "Fill invalid cells of this column with given value",
+    "dynamic": false,
     "label": "Fill invalid cells with value..."
   },
   {
@@ -808,8 +808,8 @@
       }
     ],
     "category": "data cleansing",
-    "dynamic": false,
     "description": "Fill invalid cells of this column with given value",
+    "dynamic": false,
     "label": "Fill invalid cells with value..."
   },
   {
@@ -844,8 +844,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Extracts the number of digits of this column to a new one",
+    "dynamic": false,
     "label": "Compute length"
   },
   {
@@ -889,8 +889,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Remove specified text from cells in this column",
+    "dynamic": false,
     "label": "Remove part of the text..."
   },
   {
@@ -925,8 +925,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Converts all of the cell values in this column to upper case",
+    "dynamic": false,
     "label": "Change case to UPPER"
   },
   {
@@ -961,8 +961,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "For example â¬10.5k will become 10.5",
+    "dynamic": false,
     "label": "Remove all non numeric characters"
   },
   {
@@ -1095,8 +1095,8 @@
         "default": "To index"
       }
     ],
-    "dynamic": false,
     "description": "Extracts substring in a new column",
+    "dynamic": false,
     "label": "Substring"
   },
   {
@@ -1131,8 +1131,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Converts all of the cell values in this column to lower case",
+    "dynamic": false,
     "label": "Change case to lower"
   },
   {
@@ -1219,8 +1219,8 @@
         "default": ":"
       }
     ],
-    "dynamic": false,
     "description": "Split column from separators",
+    "dynamic": false,
     "label": "Split the text in parts..."
   },
   {
@@ -1282,8 +1282,8 @@
         "default": "false"
       }
     ],
-    "dynamic": false,
     "description": "Replace cells that have a specific value",
+    "dynamic": false,
     "label": "Replace cells that match..."
   },
   {
@@ -1367,8 +1367,8 @@
         "default": "[a-zA-Z]*"
       }
     ],
-    "dynamic": false,
     "description": "Creates a new column fill with <i>true</i> or <i>false</i> regarding if the value matches or not given pattern",
+    "dynamic": false,
     "label": "Matches Pattern"
   },
   {
@@ -1403,8 +1403,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "For example â¬10.5k will become 105",
+    "dynamic": false,
     "label": "Remove all non alpha numeric characters"
   },
   {
@@ -1439,8 +1439,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Converts all of the cell values in this column to title case (i.e. \"data prep\" -> \"Data Prep\") ",
+    "dynamic": false,
     "label": "Change case to Title"
   },
   {
@@ -1475,8 +1475,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Remove trailing and leading spaces",
+    "dynamic": false,
     "label": "Remove trailing and leading spaces"
   },
   {
@@ -1556,8 +1556,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Simplify content of this column (ie: FranÃ§ois -> francois)",
+    "dynamic": false,
     "label": "Simplify Text (remove case, accent, etc.)"
   },
   {
@@ -1592,8 +1592,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Round value to the closest integer",
+    "dynamic": false,
     "label": "Round value"
   },
   {
@@ -1628,8 +1628,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Lines with a negative value in this column will be deleted",
+    "dynamic": false,
     "label": "Remove negatie values"
   },
   {
@@ -1700,8 +1700,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Return the largest integer value that is less than or equal to the argument",
+    "dynamic": false,
     "label": "Floor value"
   },
   {
@@ -1736,8 +1736,8 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Return the smallest integer value that is greater than or equal to the argument",
+    "dynamic": false,
     "label": "Ceil value"
   },
   {
@@ -1772,9 +1772,45 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Reverse the boolean value of cells in this column",
+    "dynamic": false,
     "label": "Negate value"
+  },
+  {
+    "category": "column_metadata",
+    "name": "copy",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "description": "Creates an exact copy of this column",
+    "dynamic": false,
+    "label": "Duplicate"
   },
   {
     "category": "columns",
@@ -1844,8 +1880,125 @@
         "default": ""
       }
     ],
-    "dynamic": false,
     "description": "Combine this column with another one",
+    "dynamic": false,
     "label": "Concatenate with..."
+  },
+  {
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      },
+      {
+        "name": "new_column_name",
+        "type": "string",
+        "implicit": false,
+        "canBeBlank": false,
+        "description": "The new column name",
+        "label": "New name",
+        "default": "firstname"
+      }
+    ],
+    "category": "column_metadata",
+    "name": "rename_column",
+    "description": "Rename this column",
+    "dynamic": false,
+    "label": "Rename"
+  },
+  {
+    "category": "column_metadata",
+    "name": "domain_change",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "description": "Change Domain",
+    "dynamic": false,
+    "label": "Change Domain"
+  },
+  {
+    "category": "column_metadata",
+    "name": "type_change",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "description": "Change Type",
+    "dynamic": false,
+    "label": "Change Type"
   }
 ]

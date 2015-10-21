@@ -1777,6 +1777,42 @@
     "label": "Negate value"
   },
   {
+    "category": "column_metadata",
+    "name": "copy",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Creates an exact copy of this column",
+    "label": "Duplicate"
+  },
+  {
     "category": "columns",
     "name": "concat",
     "parameters": [
@@ -1847,5 +1883,122 @@
     "dynamic": false,
     "description": "Combine this column with another one",
     "label": "Concatenate with..."
+  },
+  {
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      },
+      {
+        "name": "new_column_name",
+        "type": "string",
+        "implicit": false,
+        "canBeBlank": false,
+        "description": "The new column name",
+        "label": "New name",
+        "default": ""
+      }
+    ],
+    "category": "column_metadata",
+    "name": "rename_column",
+    "dynamic": false,
+    "description": "Rename this column",
+    "label": "Rename"
+  },
+  {
+    "category": "column_metadata",
+    "name": "domain_change",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Change Domain",
+    "label": "Change Domain"
+  },
+  {
+    "category": "column_metadata",
+    "name": "type_change",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Change Type",
+    "label": "Change Type"
   }
 ]
