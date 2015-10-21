@@ -259,10 +259,9 @@ describe('Dataset list controller', function () {
             var existingDataset = {};
             var newDataSet = {};
             ctrl.updateDatasetFile = [existingDataset];
-            ctrl.datasetToUpdate = newDataSet;
 
             //when
-            ctrl.uploadUpdatedDatasetFile();
+            ctrl.uploadUpdatedDatasetFile(newDataSet);
 
             //then
             expect(UpdateWorkflowService.updateDataset).toHaveBeenCalledWith(existingDataset, newDataSet);

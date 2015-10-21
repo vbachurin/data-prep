@@ -19,6 +19,7 @@
      * @requires data-prep.services.uploadWorkflowService.service:UploadWorkflowService
      * @requires data-prep.services.state.service:StateService
      * @requires data-prep.services.onboarding:OnboardingService
+     * @requires data-prep.services.datasetWorkflowService:UpdateWorkflowService
      */
     function DatasetListCtrl(UpdateWorkflowService, $stateParams, DatasetService, DatasetListSortService, PlaygroundService,
                              TalendConfirmService, MessageService, UploadWorkflowService, StateService) {
@@ -123,24 +124,12 @@
 
         /**
          * @ngdoc method
-         * @name updateCurrentDataset
-         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description [PRIVATE] triggers the file selection window
-         * @param {object} dataset The dataset to replace
-         */
-        vm.updateCurrentDataset = function updateCurrentDataset(existingDataset){
-            vm.datasetToUpdate = existingDataset;
-            document.getElementById('updateDatasetFile').click();
-        };
-
-        /**
-         * @ngdoc method
          * @name uploadUpdatedDatasetFile
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description [PRIVATE] updates the existing dataset with the uploadd one
          */
-        vm.uploadUpdatedDatasetFile = function uploadUpdatedDatasetFile(){
-            UpdateWorkflowService.updateDataset(vm.updateDatasetFile[0], vm.datasetToUpdate);
+        vm.uploadUpdatedDatasetFile = function uploadUpdatedDatasetFile(dataset){
+            UpdateWorkflowService.updateDataset(vm.updateDatasetFile[0], dataset);
         };
 
         /**
