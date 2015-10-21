@@ -30,7 +30,7 @@ describe('Editable Text widget directive', function () {
         element.remove();
     });
 
-    describe("render", function () {
+    describe('render', function () {
         it('should render with visible edition mode elements', function () {
             //given
             scope.editionMode = true;
@@ -102,7 +102,7 @@ describe('Editable Text widget directive', function () {
         });
     });
 
-    describe("actions", function() {
+    describe('actions', function() {
         it('should execute text click callback', function() {
             //given
             scope.onTextClick = jasmine.createSpy('onTextClick');
