@@ -50,8 +50,6 @@ import org.talend.dataprep.transformation.api.transformer.configuration.Configur
 import org.talend.dataprep.transformation.api.transformer.configuration.PreviewConfiguration;
 import org.talend.dataprep.transformation.api.transformer.suggestion.Suggestion;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngine;
-import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineImpl;
-import org.talend.dataprep.transformation.api.transformer.suggestion.model.Suggestion;
 import org.talend.dataprep.transformation.format.ExportFormat;
 import org.talend.dataprep.transformation.format.FormatRegistrationService;
 import org.talend.dataprep.transformation.format.JsonFormat;
