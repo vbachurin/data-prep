@@ -171,7 +171,7 @@ describe('Slidable directive', function () {
         createResizableElement('right');
 
         //then
-        expect(element[0].style.flex).toBe('0 0 500px');
+        expect(element[0].style['-webkit-flex']).toBe('0 0 500px');
     }));
 
     it('should remove transition when resize start', function() {
@@ -209,13 +209,14 @@ describe('Slidable directive', function () {
         createResizableElement('right');
         var resize = element.resizable('option', 'resize');
 
-        expect(element[0].style.flex).toBeFalsy();
+
+        expect(element[0].style['-webkit-flex']).toBeFalsy();
 
         //when
         resize(null, {size: {width: 250}});
         scope.$digest();
 
         //then
-        expect(element[0].style.flex).toBe('0 250px');
+        expect(element[0].style['-webkit-flex']).toBe('0 1 250px');
     });
 });

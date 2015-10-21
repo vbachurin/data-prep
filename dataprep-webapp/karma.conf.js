@@ -5,10 +5,10 @@ module.exports = function(config) {
     config.set({
         autoWatch : false,
         frameworks: ['jasmine'],
-        browsers : ['PhantomJS'],
+        browsers : ['PhantomJS2'],
 
         plugins : [
-            'karma-phantomjs-launcher',
+            'karma-phantomjs2-launcher',
             'karma-jasmine',
             'karma-coverage',
             'karma-ng-html2js-preprocessor',
