@@ -27,13 +27,6 @@
         var service = {
             /**
              * @ngdoc property
-             * @name originalPreparationName
-             * @propertyOf data-prep.services.playground.service:PlaygroundService
-             * @description the original preparation name - used to check if the name has changed
-             */
-            originalPreparationName: '',
-            /**
-             * @ngdoc property
              * @name preparationName
              * @propertyOf data-prep.services.playground.service:PlaygroundService
              * @description the current preparation
@@ -72,11 +65,6 @@
             PreviewService.reset(false);
         }
 
-        function setName(name) {
-            service.preparationName = name;
-            service.originalPreparationName = name;
-        }
-
         /**
          * @ngdoc method
          * @name initPlayground
@@ -101,7 +89,7 @@
                             throw Error('Empty data');
                         }
 
-                        setName('');
+                        service.preparationName = '';
                         reset(dataset, data);
                         StateService.hideRecipe();
                         StateService.setNameEditionMode(true);
@@ -141,7 +129,7 @@
                 $rootScope.$emit('talend.loading.start');
                 return PreparationService.getContent(preparation.id, 'head')
                     .then(function(response) {
-                        setName(preparation.name);
+                        service.preparationName = preparation.name;
                         reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response, preparation);
                         StateService.showRecipe();
                         StateService.setNameEditionMode(false);
@@ -194,21 +182,15 @@
          * @returns {Promise} The process promise
          */
         function createOrUpdatePreparation(name) {
-            if(service.originalPreparationName !== name) {
-                var promise = state.playground.preparation ?
-                    PreparationService.setName(state.playground.preparation.id, name) :
-                    PreparationService.create(state.playground.dataset.id, name);
+            var promise = state.playground.preparation ?
+                PreparationService.setName(state.playground.preparation.id, name) :
+                PreparationService.create(state.playground.dataset.id, name);
 
-                return promise.then(function(preparation) {
-                    StateService.setCurrentPreparation(preparation);
-                    service.originalPreparationName = name;
-                    service.preparationName = name;
-                    return preparation;
-                });
-            }
-            else {
-                return $q.reject('name unchanged');
-            }
+            return promise.then(function(preparation) {
+                StateService.setCurrentPreparation(preparation);
+                service.preparationName = name;
+                return preparation;
+            });
         }
 
         /**
@@ -268,7 +250,7 @@
                 createOrUpdatePreparation(DEFAULT_NAME)
                     .then(function(preparation) {
                         preparation.draft = true;
-                        setName('');
+                        service.preparationName = '';
                         return preparation;
                     });
 

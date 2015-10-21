@@ -127,7 +127,8 @@
          * @ngdoc method
          * @name update
          * @methodOf data-prep.services.dataset.service:DatasetListService
-         * @param {object} dataset The dataset to delete         * @description Update a dataset from backend and refresh its internal list
+         * @param {object} dataset The dataset to delete
+         * @description Update a dataset from backend and refresh its internal list
          * @returns {promise} The pending POST promise
          */
         function update(dataset) {

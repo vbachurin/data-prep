@@ -17,7 +17,6 @@ describe('Actions suggestions-stats directive', function() {
         scope = $rootScope.$new();
 
         createElement = function() {
-            scope = $rootScope.$new();
             element = angular.element('<actions-suggestions></actions-suggestions>');
             $compile(element)(scope);
             scope.$digest();

@@ -21,51 +21,11 @@
       font-weight: bold;
       text-align: center;
       cursor: pointer;
-      &:hover{
+      &:hover {
         color: $dark-blue;
         text-decoration: underline;
       }
     }
-  }
-
-  .datasets-name-input{
-
-    input{
-      font-family: $base-font-family;
-      float: left;
-      padding: 5px 0 4px 3px;
-    }
-
-    a {
-      font-family: $iconsfont;
-      font-size: .5em;
-      padding: 8px 5px;
-      border-radius: 50px;
-
-      &.edit-btn {
-        color: $medium-gray;
-        background-color: transparent;
-        display: none;
-        &:hover {
-          color: $dark-gray;
-        }
-      }
-      &.cancel-btn {
-        margin-left: 0px;
-        color: $dark-gray;
-        background-color: $light-gray;
-        &:hover
-        { background-color: darken($light-gray, 10%); }
-      }
-      &.check-btn {
-        margin-left: 5px;
-        color: $white;
-        background-color: $dark-green;
-        &:hover
-        { background-color: darken($dark-green, 10%); }
-      }
-    }
-
   }
 
   #datasets-list {
@@ -74,6 +34,23 @@
     bottom: 0;
     left: 0;
     right: 0;
-  }
 
+    .inventory-title {
+      padding: 3px 0;
+    }
+
+    .edition-text-input {
+      width: 220px;
+    }
+
+    .edit-btn {
+      visibility: hidden;
+    }
+
+    .inventory-entry:hover {
+      .edit-btn {
+        visibility: visible;
+      }
+    }
+  }
 }
