@@ -50,24 +50,23 @@
             <div ng-switch-when="false" class="inventory-actions">
                 <a data-icon="c" class="btn-icon btn-transparent" ng-if="!!dataset.defaultPreparation"
                    ui-sref="nav.home.preparations({prepid: dataset.defaultPreparation.id})"></a>
-                <a data-icon="g" class="btn-icon btn-transparent"></a>
+                <a data-icon="g" title="{{::'REPLACE_FILE_CONTENT' | translate}}"  class="btn-icon btn-transparent" ng-click="datasetListCtrl.updateCurrentDataset(dataset)"></a>
+                <input type="file"
+                       id="updateDatasetFile"
+                       name="updateDatasetFile"
+                       class="ng-hide"
+                       ng-file-select
+                       accept="*.csv"
+                       ng-model="datasetListCtrl.updateDatasetFile"
+                       ng-file-change="datasetListCtrl.uploadUpdatedDatasetFile()"
+                        />
                 <a data-icon="h" class="btn-icon btn-transparent"></a>
                 <div class="divider btn-transparent"></div>
                 <a data-icon="e" class="btn-icon btn-transparent"
                    ng-click="datasetListCtrl.delete(dataset)"></a>
                 <div class="divider btn-transparent"></div>
-                <a data-icon="s" title="Replace this file content" class="btn-icon btn-transparent"
-                   ng-click="datasetListCtrl.updateCurrentDataset(dataset)">
-                </a>
-                <input type="file"
-                   id="updateDatasetFile"
-                   name="updateDatasetFile"
-                   class="ng-hide"
-                   ng-file-select
-                   accept="*.csv"
-                   ng-model="datasetListCtrl.updateDatasetFile"
-                   ng-file-change="datasetListCtrl.uploadUpdatedDatasetFile()"
-                />
+                <a data-icon="s" class="btn-icon btn-transparent"
+                   ng-click="datasetListCtrl.datasetService.processCertification(dataset)"></a>
                 <a data-icon="f" class="btn-icon btn-transparent favorite" ng-class="{'favorite-true':dataset.favorite}"
                    ng-click="datasetListCtrl.datasetService.toggleFavorite(dataset)"></a>
             </div>
