@@ -21,7 +21,7 @@
      * @param {function} onBrushEnd The callback on slider move
      * */
 
-    function RangeSlider() {
+    function RangeSlider($translate) {
         return {
             restrict: 'E',
             scope: {
@@ -260,9 +260,9 @@
                     //--------------------------------------------------------------------------------------------------
                     //shows the message Error with details on comma existence
                     function showMsgErr() {
-                        var msgErr = 'Invalid Entered Value';
+                        var msgErr = $translate.instant('INVALID_VALUE_RANGE_SLIDER') ;
                         var minMaxStr = document.getElementsByName('minRange')[0].value + document.getElementsByName('maxRange')[0].value;
-                        var finalMsgErr = ctrl.checkCommaExistence(minMaxStr) ? msgErr + ': Use "." instead of ","' : msgErr;
+                        var finalMsgErr = ctrl.checkCommaExistence(minMaxStr) ? msgErr + $translate.instant('INVALID_VALUE_RANGE_SLIDER_CONTENT') : msgErr;
                         d3.select('text.invalid-value-msg').text(finalMsgErr);
                     }
 
