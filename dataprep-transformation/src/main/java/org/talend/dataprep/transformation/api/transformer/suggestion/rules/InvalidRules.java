@@ -4,6 +4,7 @@ import static org.talend.dataprep.transformation.api.transformer.suggestion.Sugg
 import static org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule.POSITIVE;
 import static org.talend.dataprep.transformation.api.transformer.suggestion.rules.GenericRule.GenericRuleBuilder.forActions;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -16,6 +17,13 @@ import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionE
 
 @Component
 public class InvalidRules extends BasicRules {
+
+    /**
+     * Defines the minimum threshold for invalid values corrections. Defaults to 0 (if invalid > 0, returns invalid
+     * corrective actions).
+     */
+    @Value("#{'${invalid.threshold:0}'}")
+    private int invalidThreshold;
 
     private static long getInvalidCount(ColumnMetadata columnMetadata) {
         return Math.max(columnMetadata.getStatistics().getInvalid(), columnMetadata.getQuality().getInvalid());
@@ -40,7 +48,7 @@ public class InvalidRules extends BasicRules {
      * @return A {@link SuggestionEngineRule rule} that hides "fill invalid" if no invalid.
      */
     @Bean
-    public static SuggestionEngineRule fillInvalidRule() {
+    public SuggestionEngineRule fillInvalidRule() {
         return forActions(FillWithBooleanIfInvalid.FILL_EMPTY_ACTION_NAME, //
                 FillWithDateIfInvalid.FILL_INVALID_ACTION_NAME, //
                 FillWithNumericIfInvalid.FILL_INVALID_ACTION_NAME, //

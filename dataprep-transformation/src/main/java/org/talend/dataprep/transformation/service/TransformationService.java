@@ -281,13 +281,8 @@ public class TransformationService {
     @ResponseBody
     public List<ActionMetadata> actions(@RequestBody(required = false) ColumnMetadata column) {
         // look for all actions applicable to the column type
-        return Stream.of(allActions).map(am -> {
-                    if (column != null) {
-                        return am.adapt(column);
-                    } else {
-                        return am;
-                    }
-                }) //
+        return Stream.of(allActions) //
+                .map(am -> column != null ? am.adapt(column) : am) //
                 .collect(toList());
     }
 
