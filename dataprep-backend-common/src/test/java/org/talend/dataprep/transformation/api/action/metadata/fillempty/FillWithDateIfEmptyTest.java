@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.setStatistics;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +34,7 @@ public class FillWithDateIfEmptyTest {
      */
     public FillWithDateIfEmptyTest() {
         action = new FillIfEmpty();
-        action.adapt(ColumnMetadata.Builder.column().type(Type.DATE).build());
+        action = (FillIfEmpty) action.adapt(ColumnMetadata.Builder.column().type(Type.DATE).build());
     }
 
     @Test
@@ -46,7 +46,7 @@ public class FillWithDateIfEmptyTest {
         values.put("0003", "100");
 
         final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Arrays.asList(ColumnMetadata.Builder.column() //
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
                 .type(Type.DATE) //
                 .computedId("0002") //
                 .build()));
@@ -74,7 +74,7 @@ public class FillWithDateIfEmptyTest {
         values.put("0003", "100");
 
         final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Arrays.asList(ColumnMetadata.Builder.column() //
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
                 .type(Type.DATE) //
                 .computedId("0002") //
                 .build()));

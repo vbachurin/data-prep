@@ -18,6 +18,8 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
+import org.talend.dataprep.transformation.api.action.metadata.date.DatePattern;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
@@ -42,6 +44,11 @@ public class FillIfEmpty extends AbstractActionMetadata implements ColumnAction 
     private static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
     private static final String DEFAULT_DATE_VALUE = DEFAULT_FORMATTER.format(LocalDateTime.of(1970, Month.JANUARY, 1, 10, 0));
+
+    /**
+     * Component that parses dates.
+     */
+    private final DateParser dateParser = new DateParser(); // TODO investigate why this instantiation is required, should be auto with Autowired
 
     private final Type type;
 
@@ -142,7 +149,16 @@ public class FillIfEmpty extends AbstractActionMetadata implements ColumnAction 
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final String value = row.get(columnId);
         if (value == null || value.trim().length() == 0) {
-            row.set(columnId, parameters.get(DEFAULT_VALUE_PARAMETER));
+            if (type.equals(Type.DATE)) {
+                final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
+                final LocalDateTime date = dateParser.parse(parameters.get(DEFAULT_VALUE_PARAMETER), columnMetadata);
+                final DatePattern mostFrequentPattern = dateParser.getMostFrequentPattern(columnMetadata);
+                DateTimeFormatter ourNiceFormatter = (mostFrequentPattern == null ? DEFAULT_FORMATTER : mostFrequentPattern
+                        .getFormatter());
+                row.set(columnId, ourNiceFormatter.format(date));
+            } else {
+                row.set(columnId, parameters.get(DEFAULT_VALUE_PARAMETER));
+            }
         }
     }
 
