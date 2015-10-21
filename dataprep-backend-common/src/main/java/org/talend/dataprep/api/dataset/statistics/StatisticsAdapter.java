@@ -90,8 +90,9 @@ public class StatisticsAdapter {
                 if (entry.isPresent()) {
                     // TODO (TDP-734) Take into account limit of the semantic analyzer.
                     final long percentage;
-                    if (statistics.getCount() < 100) {
-                        percentage = (entry.get().getValue() * 100) / statistics.getCount();
+                    final long count = statistics.getCount();
+                    if (count < 100 && count > 0) {
+                        percentage = (entry.get().getValue() * 100) / count;
                     } else {
                         percentage = entry.get().getValue();
                     }
