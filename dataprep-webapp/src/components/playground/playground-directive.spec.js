@@ -13,7 +13,7 @@ describe('Playground directive', function () {
     };
 
     beforeEach(module('data-prep.playground', function($provide) {
-        stateMock = {playground: {visible: true}};
+        stateMock = {playground: {visible: true, filter: {gridFilters: []}}};
         $provide.constant('state', stateMock);
     }));
     beforeEach(module('htmlTemplates'));

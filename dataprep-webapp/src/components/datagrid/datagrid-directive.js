@@ -67,7 +67,7 @@
                  * @description [PRIVATE] Get the filter list
                  */
                 var getFilters = function getFilters() {
-                    return FilterService.filters;
+                    return state.playground.filter.gridFilters;
                 };
 
                 //------------------------------------------------------------------------------------------------------

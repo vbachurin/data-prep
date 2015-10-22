@@ -181,7 +181,7 @@
         function initRangeLimits() {
             var column = state.playground.column;
             var statistics = column.statistics;
-            var currentRangeFilter = _.find(FilterService.filters, function (filter) {
+            var currentRangeFilter = _.find(state.playground.filter.gridFilters, function (filter) {
                 return filter.colId === column.id && filter.type === 'inside_range';
             });
 

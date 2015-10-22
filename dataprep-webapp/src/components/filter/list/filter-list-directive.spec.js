@@ -56,7 +56,8 @@ describe('Filter list directive', function() {
         stateMock = {
             playground: {
                 shownLinesLength: 5,
-                allLinesLength:10
+                allLinesLength:10,
+                filter: {gridFilters: []}
             }
         };
         $provide.constant('state', stateMock);
@@ -79,9 +80,9 @@ describe('Filter list directive', function() {
         element.remove();
     });
 
-    it('should render filter list badges', inject(function(FilterService) {
+    it('should render filter list badges', function() {
         //given
-        FilterService.filters = filters;
+        stateMock.playground.filter.gridFilters = filters;
 
         //when
         createElement();
@@ -98,11 +99,11 @@ describe('Filter list directive', function() {
         expect(element.find('.badge-notice').eq(3).find('.description').eq(0).text()).toBe('[214 .. 233]');
         //expect(element.find('.off-all-filters').css('display')).toBe('block');
         expect(element.find('.lines-quotient').eq(0).text()).toBe('5/10');
-    }));
+    });
 
     it('should call FilterService.removeFilter on badge close icon click', inject(function(FilterService) {
         //given
-        FilterService.filters = filters;
+        stateMock.playground.filter.gridFilters = filters;
         spyOn(FilterService, 'removeFilter').and.returnValue();
 
         createElement();
@@ -117,7 +118,7 @@ describe('Filter list directive', function() {
 
     it('should call FilterService.removeAllFilters on OFF button click', inject(function(FilterService) {
         //given
-        FilterService.filters = filters;
+        stateMock.playground.filter.gridFilters = filters;
         spyOn(FilterService, 'removeAllFilters').and.returnValue();
 
         createElement();

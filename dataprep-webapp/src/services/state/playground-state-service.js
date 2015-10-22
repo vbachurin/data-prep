@@ -3,8 +3,9 @@
 
     var playgroundState = {};
 
-    function PlaygroundStateService(RecipeStateService, recipeState) {
+    function PlaygroundStateService(RecipeStateService, recipeState, FilterStateService, filterState) {
         playgroundState.recipe = recipeState;
+        playgroundState.filter = filterState;
 
         return {
             //playground
@@ -24,7 +25,13 @@
             setGridSelection: setGridSelection,
             setLookupVisibility: setLookupVisibility,
             updateShownLinesLength: updateShownLinesLength,
-            setDataView: setDataView
+            setDataView: setDataView,
+
+            //filters
+            addGridFilter: FilterStateService.addGridFilter,
+            updateGridFilter: FilterStateService.updateGridFilter,
+            removeGridFilter: FilterStateService.removeGridFilter,
+            removeAllGridFilters: FilterStateService.removeAllGridFilters
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -88,9 +95,9 @@
             playgroundState.preparation = null;
             playgroundState.nameEditionMode = false;
             playgroundState.lookupVisibility = false;
+
+            FilterStateService.reset();
         }
-
-
     }
 
     angular.module('data-prep.services.state')

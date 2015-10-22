@@ -11,7 +11,7 @@ describe('Datagrid directive', function() {
 
 
     beforeEach(module('data-prep.datagrid', function ($provide) {
-        stateMock = {playground: {}};
+        stateMock = {playground: {filter: {gridFilters: []}}};
         stateMock.playground.dataView = dataViewMock;
         $provide.constant('state', stateMock);
     }));
@@ -290,16 +290,16 @@ describe('Datagrid directive', function() {
     });
 
     describe('on filter change', function() {
-        beforeEach(inject(function(DatagridService, FilterService) {
+        beforeEach(function() {
             //given
             createElement();
             stateMock.playground.data = {columns: [{id: '0000'}, {id: '0001'}], preview: false};
             scope.$digest();
 
             //when
-            FilterService.filters = [{}];
+            stateMock.playground.filter.gridFilters = [{}];
             scope.$digest();
-        }));
+        });
 
         it('should reset cell styles', inject(function(DatagridStyleService) {
             //then

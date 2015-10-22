@@ -27,6 +27,12 @@
             updateShownLinesLength: PlaygroundStateService.updateShownLinesLength,
             setDataView: PlaygroundStateService.setDataView,
 
+            //playground - filters
+            addGridFilter: PlaygroundStateService.addGridFilter,
+            updateGridFilter: PlaygroundStateService.updateGridFilter,
+            removeGridFilter: PlaygroundStateService.removeGridFilter,
+            removeAllGridFilters: PlaygroundStateService.removeAllGridFilters,
+            
             //dataset
             startUploadingDataset: DatasetStateService.startUploadingDataset,
             finishUploadingDataset: DatasetStateService.finishUploadingDataset
