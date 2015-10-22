@@ -39,12 +39,10 @@ describe('Playground Service', function () {
         var newName = 'My new preparation name';
 
         PlaygroundService.preparationName = name;
-        PlaygroundService.originalPreparationName = name;
         stateMock.playground.dataset = {id: '123d120394ab0c53'};
         stateMock.playground.preparation = {id: 'e85afAa78556d5425bc2'};
 
         //when
-        PlaygroundService.preparationName = newName;
         PlaygroundService.createOrUpdatePreparation(newName);
         $rootScope.$digest();
 
@@ -52,31 +50,6 @@ describe('Playground Service', function () {
         expect(PreparationService.create).not.toHaveBeenCalled();
         expect(PreparationService.setName).toHaveBeenCalledWith('e85afAa78556d5425bc2', newName);
         expect(PlaygroundService.preparationName).toBe(newName);
-        expect(PlaygroundService.originalPreparationName).toBe(newName);
-    }));
-
-    it('should reject when provided name is the original name', inject(function ($rootScope, PlaygroundService, PreparationService) {
-        //given
-        var name = 'My preparation';
-        var newName = name;
-        var rejected = false;
-
-        PlaygroundService.originalPreparationName = name;
-        PlaygroundService.preparationName = newName;
-
-        //when
-        PlaygroundService.createOrUpdatePreparation(newName)
-            .catch(function () {
-                rejected = true;
-            });
-        $rootScope.$digest();
-
-        //then
-        expect(rejected).toBe(true);
-        expect(PreparationService.create).not.toHaveBeenCalled();
-        expect(PreparationService.setName).not.toHaveBeenCalled();
-        expect(PlaygroundService.preparationName).toBe(name);
-        expect(PlaygroundService.originalPreparationName).toBe(name);
     }));
 
     describe('init new preparation', function () {
@@ -121,7 +94,6 @@ describe('Playground Service', function () {
         it('should init playground when there is no loaded data yet', inject(function ($rootScope, PlaygroundService, PreparationService) {
             //given
             expect(PreparationService.preparationName).toBeFalsy();
-            expect(PreparationService.originalPreparationName).toBeFalsy();
 
             //when
             PlaygroundService.initPlayground(dataset);
@@ -172,7 +144,6 @@ describe('Playground Service', function () {
         it('should reset preparation name', inject(function ($rootScope, PlaygroundService) {
             //given
             PlaygroundService.preparationName = 'preparation name';
-            PlaygroundService.originalPreparationName = 'preparation name';
 
             //when
             PlaygroundService.initPlayground(dataset);
@@ -180,19 +151,6 @@ describe('Playground Service', function () {
 
             //then
             expect(PlaygroundService.preparationName).toBeFalsy();
-            expect(PlaygroundService.originalPreparationName).toBeFalsy();
-        }));
-
-        it('should select first column on dataset load', inject(function ($rootScope, PlaygroundService, StateService) {
-            //given
-            spyOn(StateService, 'setGridSelection').and.returnValue();
-
-            //when
-            PlaygroundService.initPlayground(dataset);
-            $rootScope.$digest();
-
-            //then
-            expect(StateService.setGridSelection).toHaveBeenCalledWith(datasetContent.columns[0]);
         }));
 
         it('should start playground unboarding tour', inject(function ($rootScope, PlaygroundService, OnboardingService) {
@@ -200,7 +158,6 @@ describe('Playground Service', function () {
             spyOn(OnboardingService, 'shouldStartTour').and.returnValue(true);
             spyOn(OnboardingService, 'startTour').and.returnValue();
             PlaygroundService.preparationName = 'preparation name';
-            PlaygroundService.originalPreparationName = 'preparation name';
 
             //when
             PlaygroundService.initPlayground(dataset);
@@ -217,7 +174,6 @@ describe('Playground Service', function () {
             spyOn(OnboardingService, 'shouldStartTour').and.returnValue(false);
             spyOn(OnboardingService, 'startTour').and.returnValue();
             PlaygroundService.preparationName = 'preparation name';
-            PlaygroundService.originalPreparationName = 'preparation name';
 
             //when
             PlaygroundService.initPlayground(dataset);
@@ -295,23 +251,6 @@ describe('Playground Service', function () {
 
             //then
             assertDatasetLoadInitialized(preparation.dataset, data);
-        }));
-
-        it('should select first column on preparation load', inject(function ($rootScope, PlaygroundService, StateService) {
-            //given
-            spyOn(StateService, 'setGridSelection').and.returnValue();
-            var preparation = {
-                id: '6845521254541',
-                dataset: {id: '1'}
-            };
-            stateMock.playground.preparation = {id: '5746518486846'};
-
-            //when
-            PlaygroundService.load(preparation);
-            $rootScope.$apply();
-
-            //then
-            expect(StateService.setGridSelection).toHaveBeenCalledWith(data.columns[0]);
         }));
 
         it('should manage loading spinner on preparation load', inject(function ($rootScope, PlaygroundService) {
