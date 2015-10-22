@@ -1,0 +1,13 @@
+<div>
+    <a data-icon="{{datasetListUploadFile.buttonDataIcon}}"
+       title="{{::datasetListUploadFile.buttonTitle | translate}}"
+       class="btn-icon btn-transparent"></a>
+    <input type="file"
+           id="{{datasetListUploadFile.buttonId}}"
+           class="ng-hide"
+           ng-file-select
+           accept="*.csv"
+           ng-model="datasetListUploadFile.fileModel"
+           ng-file-change="datasetListUploadFile.onFileChange()"
+            />
+</div>
