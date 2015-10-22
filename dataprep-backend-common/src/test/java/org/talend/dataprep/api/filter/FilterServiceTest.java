@@ -154,6 +154,16 @@ public class FilterServiceTest {
     }
 
     @Test
+    public void testContainsCaseNotSensitive() throws Exception {
+        // Test match on "0000 contains alu"
+        final Predicate<DataSetRow> matchPredicate = service.build("{\"contains\": {\"field\": \"0000\",\"value\": \"ALU\"}}");
+        assertThat(matchPredicate.test(row), is(true));
+        // Test non match on "0000 contains text"
+        final Predicate<DataSetRow> nonMatchPredicate = service.build("{\"contains\": {\"field\": \"0000\",\"value\": \"TEXT\"}}");
+        assertThat(nonMatchPredicate.test(row), is(false));
+    }
+
+    @Test
     public void testSimpleAndEquals() throws Exception {
         // Test match on "0000 = value && 0002 = 2"
         final Predicate<DataSetRow> matchPredicate = service.build(IOUtils.toString(FilterServiceTest.class.getResourceAsStream("simpleAnd_match.json")));

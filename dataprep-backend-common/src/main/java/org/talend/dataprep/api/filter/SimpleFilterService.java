@@ -53,7 +53,7 @@ public class SimpleFilterService implements FilterService {
             } else if (currentNode.has("lte")) {
                 return safe(r -> Integer.parseInt(r.get(columnName)) <= Integer.parseInt(value));
             } else if (currentNode.has("contains")) {
-                return r -> StringUtils.contains(r.get(columnName), value);
+                return r -> StringUtils.containsIgnoreCase(r.get(columnName), value);
             }
         } else {
             if (currentNode.has("range")) {
