@@ -32,7 +32,7 @@
       }
     ],
     "dynamic": false,
-    "description": "Extracts protocol, host, port, etc... from an url in separated columns",
+    "description": "Extracts protocol, host, port, query, etc... from an url in separated columns",
     "label": "Extract url tokens"
   },
   {
@@ -365,7 +365,7 @@
     ],
     "category": "dates",
     "dynamic": false,
-    "description": "Computes time elapsed since this date in the desired unit",
+    "description": "Computes elapsed time since this date, in the desired unit (year, month, day, hour)",
     "label": "Compute time since"
   },
   {
@@ -618,7 +618,7 @@
     ],
     "category": "dates",
     "dynamic": false,
-    "description": "Creates columns with year, month, day, etc...",
+    "description": "Creates columns with year, month, day, hour, minute, second, etc...",
     "label": "Extract date tokens"
   },
   {
@@ -845,7 +845,7 @@
       }
     ],
     "dynamic": false,
-    "description": "Extracts the number of digits of this column to a new one",
+    "description": "Extracts the number of digits of this column",
     "label": "Compute length"
   },
   {
@@ -998,7 +998,7 @@
         "default": ""
       }
     ],
-    "description": "Replace all similar values with the right one",
+    "description": "Replace all similar values with the right one (i.e. cluster)",
     "label": "Find and group similar text..."
   },
   {
@@ -1476,7 +1476,7 @@
       }
     ],
     "dynamic": false,
-    "description": "Remove trailing and leading spaces",
+    "description": "Remove trailing and leading spaces (i.e. trim)",
     "label": "Remove trailing and leading spaces"
   },
   {
@@ -1701,7 +1701,7 @@
       }
     ],
     "dynamic": false,
-    "description": "Return the largest integer value that is less than or equal to the argument",
+    "description": "Round value to the largest integer value that is less than or equal to the argument",
     "label": "Floor value"
   },
   {
@@ -1737,7 +1737,7 @@
       }
     ],
     "dynamic": false,
-    "description": "Return the smallest integer value that is greater than or equal to the argument",
+    "description": "Round value to the smallest integer value that is greater than or equal to the argument",
     "label": "Ceil value"
   },
   {
@@ -1962,7 +1962,7 @@
       }
     ],
     "dynamic": false,
-    "description": "Change Domain",
+    "description": "Change semantic domain of this column",
     "label": "Change Domain"
   },
   {
@@ -1998,7 +1998,7 @@
       }
     ],
     "dynamic": false,
-    "description": "Change Type",
+    "description": "Change type of this column",
     "label": "Change Type"
   }
 ]

@@ -245,44 +245,30 @@
         },
         "histogram": [
           {
-            "occurrences": 0,
-            "range": {
-              "min": 1.0,
-              "max": 6.0
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 6.0,
-              "max": 10.0
-            }
-          },
-          {
             "occurrences": 2,
             "range": {
-              "min": 10.0,
-              "max": 15.0
+              "min": 13.0,
+              "max": 17.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 15.0,
-              "max": 20.0
+              "min": 17.0,
+              "max": 21.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 20.0,
-              "max": 24.0
+              "min": 21.0,
+              "max": 25.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 24.0,
+              "min": 25.0,
               "max": 29.0
             }
           },
@@ -290,34 +276,41 @@
             "occurrences": 0,
             "range": {
               "min": 29.0,
-              "max": 34.0
+              "max": 33.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 34.0,
-              "max": 39.0
+              "min": 33.0,
+              "max": 37.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 39.0,
-              "max": 43.0
+              "min": 37.0,
+              "max": 41.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 41.0,
+              "max": 45.0
             }
           },
           {
             "occurrences": 1,
             "range": {
-              "min": 43.0,
-              "max": 48.0
+              "min": 45.0,
+              "max": 49.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 48.0,
+              "min": 49.0,
               "max": 53.0
             }
           },
@@ -325,27 +318,34 @@
             "occurrences": 2,
             "range": {
               "min": 53.0,
-              "max": 57.0
+              "max": 56.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 57.0,
-              "max": 62.0
+              "min": 56.0,
+              "max": 60.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 62.0,
-              "max": 67.0
+              "min": 60.0,
+              "max": 64.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 64.0,
+              "max": 68.0
             }
           },
           {
             "occurrences": 3,
             "range": {
-              "min": 67.0,
+              "min": 68.0,
               "max": 72.0
             }
           },
@@ -360,28 +360,28 @@
             "occurrences": 1,
             "range": {
               "min": 76.0,
-              "max": 81.0
+              "max": 80.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 81.0,
-              "max": 86.0
+              "min": 80.0,
+              "max": 84.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 86.0,
-              "max": 90.0
+              "min": 84.0,
+              "max": 88.0
             }
           },
           {
             "occurrences": 2,
             "range": {
-              "min": 90.0,
-              "max": 95.0
+              "min": 88.0,
+              "max": 92.0
             }
           }
         ],
@@ -821,140 +821,140 @@
             "occurrences": 9,
             "range": {
               "min": 16.7,
-              "max": 26.7
+              "max": 25.9
             }
           },
           {
             "occurrences": 2,
             "range": {
-              "min": 26.7,
-              "max": 36.7
+              "min": 25.9,
+              "max": 35.0
             }
           },
           {
             "occurrences": 1,
             "range": {
-              "min": 36.7,
-              "max": 46.8
+              "min": 35.0,
+              "max": 44.2
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 46.8,
-              "max": 56.8
+              "min": 44.2,
+              "max": 53.4
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 56.8,
-              "max": 66.8
+              "min": 53.4,
+              "max": 62.5
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 62.5,
+              "max": 71.7
             }
           },
           {
             "occurrences": 2,
             "range": {
-              "min": 66.8,
-              "max": 76.8
+              "min": 71.7,
+              "max": 80.9
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 76.8,
-              "max": 86.8
+              "min": 80.9,
+              "max": 90.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 86.8,
-              "max": 96.9
+              "min": 90.0,
+              "max": 99.2
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 96.9,
-              "max": 106.9
+              "min": 99.2,
+              "max": 108.4
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 106.9,
-              "max": 116.9
+              "min": 108.4,
+              "max": 117.5
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 116.9,
-              "max": 126.9
+              "min": 117.5,
+              "max": 126.7
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 126.9,
-              "max": 136.9
+              "min": 126.7,
+              "max": 135.8
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 136.9,
-              "max": 147.0
+              "min": 135.8,
+              "max": 145.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 147.0,
-              "max": 157.0
+              "min": 145.0,
+              "max": 154.2
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 157.0,
-              "max": 167.0
+              "min": 154.2,
+              "max": 163.3
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 167.0,
-              "max": 177.0
+              "min": 163.3,
+              "max": 172.5
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 177.0,
-              "max": 187.0
+              "min": 172.5,
+              "max": 181.7
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 187.0,
-              "max": 197.1
+              "min": 181.7,
+              "max": 190.8
             }
           },
           {
             "occurrences": 2,
             "range": {
-              "min": 197.1,
-              "max": 207.1
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 207.1,
-              "max": 217.1
+              "min": 190.8,
+              "max": 200.0
             }
           }
         ],
@@ -1033,11 +1033,25 @@
             "occurrences": 9,
             "range": {
               "min": 1.0,
+              "max": 1.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 1.0,
               "max": 2.0
             }
           },
           {
             "occurrences": 3,
+            "range": {
+              "min": 2.0,
+              "max": 2.0
+            }
+          },
+          {
+            "occurrences": 0,
             "range": {
               "min": 2.0,
               "max": 2.0
@@ -1061,6 +1075,27 @@
             "occurrences": 0,
             "range": {
               "min": 3.0,
+              "max": 3.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 3.0,
+              "max": 4.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 4.0,
+              "max": 4.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 4.0,
               "max": 4.0
             }
           },
@@ -1096,6 +1131,27 @@
             "occurrences": 0,
             "range": {
               "min": 6.0,
+              "max": 6.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 6.0,
+              "max": 7.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 7.0,
+              "max": 7.0
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 7.0,
               "max": 7.0
             }
           },
@@ -1111,62 +1167,6 @@
             "range": {
               "min": 8.0,
               "max": 8.0
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 8.0,
-              "max": 9.0
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 9.0,
-              "max": 9.0
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 9.0,
-              "max": 10.0
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 10.0,
-              "max": 11.0
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 11.0,
-              "max": 11.0
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 11.0,
-              "max": 12.0
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 12.0,
-              "max": 12.0
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 12.0,
-              "max": 13.0
             }
           }
         ],
@@ -1245,6 +1245,13 @@
             "occurrences": 5,
             "range": {
               "min": 16.7,
+              "max": 17.1
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 17.1,
               "max": 17.5
             }
           },
@@ -1252,34 +1259,62 @@
             "occurrences": 0,
             "range": {
               "min": 17.5,
-              "max": 18.2
+              "max": 17.9
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 18.2,
-              "max": 19.0
+              "min": 17.9,
+              "max": 18.4
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 19.0,
-              "max": 19.8
+              "min": 18.4,
+              "max": 18.8
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 18.8,
+              "max": 19.2
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 19.2,
+              "max": 19.6
             }
           },
           {
             "occurrences": 6,
             "range": {
-              "min": 19.8,
-              "max": 20.5
+              "min": 19.6,
+              "max": 20.0
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 20.5,
+              "min": 20.0,
+              "max": 20.4
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 20.4,
+              "max": 20.8
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 20.8,
               "max": 21.3
             }
           },
@@ -1287,6 +1322,13 @@
             "occurrences": 0,
             "range": {
               "min": 21.3,
+              "max": 21.7
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 21.7,
               "max": 22.1
             }
           },
@@ -1294,91 +1336,49 @@
             "occurrences": 0,
             "range": {
               "min": 22.1,
-              "max": 22.8
+              "max": 22.5
             }
           },
           {
             "occurrences": 0,
             "range": {
-              "min": 22.8,
-              "max": 23.6
+              "min": 22.5,
+              "max": 22.9
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 22.9,
+              "max": 23.3
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 23.3,
+              "max": 23.8
             }
           },
           {
             "occurrences": 1,
             "range": {
-              "min": 23.6,
-              "max": 24.4
+              "min": 23.8,
+              "max": 24.2
+            }
+          },
+          {
+            "occurrences": 0,
+            "range": {
+              "min": 24.2,
+              "max": 24.6
             }
           },
           {
             "occurrences": 4,
             "range": {
-              "min": 24.4,
-              "max": 25.1
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 25.1,
-              "max": 25.9
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 25.9,
-              "max": 26.6
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 26.6,
-              "max": 27.4
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 27.4,
-              "max": 28.2
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 28.2,
-              "max": 28.9
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 28.9,
-              "max": 29.7
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 29.7,
-              "max": 30.5
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 30.5,
-              "max": 31.2
-            }
-          },
-          {
-            "occurrences": 0,
-            "range": {
-              "min": 31.2,
-              "max": 32.0
+              "min": 24.6,
+              "max": 25.0
             }
           }
         ],
