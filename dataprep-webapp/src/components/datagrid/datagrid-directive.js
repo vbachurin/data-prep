@@ -120,9 +120,11 @@
 
                         //manage column selection (external)
                         clearTimeout(externalTimeout);
-                        externalTimeout = setTimeout(function () {
-                            DatagridExternalService.updateSuggestionPanel(selectedColumn);
-                        }, 0);
+                        if(!data.preview) {
+                            externalTimeout = setTimeout(function () {
+                                 DatagridExternalService.updateSuggestionPanel(selectedColumn);
+                            }, 0);
+                        }
 
                         //focus specific column
                         clearTimeout(focusTimeout);
