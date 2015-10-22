@@ -51,7 +51,7 @@ public abstract class AbstractMath extends AbstractActionMetadata implements Col
 
             bd = bd.setScale(0, getRoundingMode());
 
-            String result = String.valueOf(bd.longValue());
+            long result = bd.longValue();
 
             row.set(columnId, String.valueOf(result));
         } catch (NumberFormatException nfe2) {
