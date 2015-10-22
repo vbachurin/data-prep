@@ -13,6 +13,7 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
 @Service
 public class SimpleFilterService implements FilterService {
 
@@ -23,44 +24,58 @@ public class SimpleFilterService implements FilterService {
         }
         try {
             ObjectMapper mapper = new ObjectMapper();
-            final JsonNode tree = mapper.reader().readTree(filterAsString);
-            final Iterator<JsonNode> elements = tree.elements();
+            final JsonNode root = mapper.reader().readTree(filterAsString);
+            final Iterator<JsonNode> elements = root.elements();
             if (!elements.hasNext()) {
                 throw new IllegalArgumentException("Malformed filter: " + filterAsString);
             } else {
-                final JsonNode node = elements.next();
-                final String columnName = node.get("field").asText();
-                final String value = node.has("value") ? node.get("value").asText() : null;
-                if (value != null) {
-                    if (tree.has("eq")) {
-                        return r -> StringUtils.equals(r.get(columnName), value);
-                    } else if (tree.has("gt")) {
-                        return safe(r -> Integer.parseInt(r.get(columnName)) > Integer.parseInt(value));
-                    } else if (tree.has("lt")) {
-                        return safe(r -> Integer.parseInt(r.get(columnName)) < Integer.parseInt(value));
-                    } else if (tree.has("gte")) {
-                        return safe(r -> Integer.parseInt(r.get(columnName)) >= Integer.parseInt(value));
-                    } else if (tree.has("lte")) {
-                        return safe(r -> Integer.parseInt(r.get(columnName)) <= Integer.parseInt(value));
-                    } else if (tree.has("contains")) {
-                        return r -> StringUtils.contains(r.get(columnName), value);
-                    }
-                } else {
-                    if (tree.has("range")) {
-                        final String start = node.get("start").asText();
-                        final String end = node.get("end").asText();
-                        return safe(r -> {
-                            final int columnValue = Integer.parseInt(r.get(columnName));
-                            return columnValue >= Integer.parseInt(start) && columnValue <= Integer.parseInt(end);
-                        });
-                    }
-                }
-
-                throw new UnsupportedOperationException("Not supported: " + tree.asText());
+                return buildFilter(root);
             }
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_FILTER, e);
         }
+    }
+
+    private Predicate<DataSetRow> buildFilter(JsonNode currentNode) {
+        final Iterator<JsonNode> children = currentNode.elements();
+        final JsonNode currentNodeContent = children.next();
+        final String columnName = currentNodeContent.has("field") ? currentNodeContent.get("field").asText() : null;
+        final String value = currentNodeContent.has("value") ? currentNodeContent.get("value").asText() : null;
+        if (value != null) {
+            if (currentNode.has("eq")) {
+                return r -> StringUtils.equals(r.get(columnName), value);
+            } else if (currentNode.has("gt")) {
+                return safe(r -> Integer.parseInt(r.get(columnName)) > Integer.parseInt(value));
+            } else if (currentNode.has("lt")) {
+                return safe(r -> Integer.parseInt(r.get(columnName)) < Integer.parseInt(value));
+            } else if (currentNode.has("gte")) {
+                return safe(r -> Integer.parseInt(r.get(columnName)) >= Integer.parseInt(value));
+            } else if (currentNode.has("lte")) {
+                return safe(r -> Integer.parseInt(r.get(columnName)) <= Integer.parseInt(value));
+            } else if (currentNode.has("contains")) {
+                return r -> StringUtils.contains(r.get(columnName), value);
+            }
+        } else {
+            if (currentNode.has("range")) {
+                final String start = currentNodeContent.get("start").asText();
+                final String end = currentNodeContent.get("end").asText();
+                return safe(r -> {
+                    final int columnValue = Integer.parseInt(r.get(columnName));
+                    return columnValue >= Integer.parseInt(start) && columnValue <= Integer.parseInt(end);
+                });
+            } else if (currentNode.has("and")) {
+                if (currentNodeContent.size() != 2) {
+                    throw new IllegalArgumentException("Malformed 'and' (expected 2 children).");
+                }
+                return r -> buildFilter(currentNodeContent.get(0)).and(buildFilter(currentNodeContent.get(1))).test(r);
+            } else if (currentNode.has("or")) {
+                if (currentNodeContent.size() != 2) {
+                    throw new IllegalArgumentException("Malformed 'or' (expected 2 children).");
+                }
+                return r -> buildFilter(currentNodeContent.get(0)).or(buildFilter(currentNodeContent.get(1))).test(r);
+            }
+        }
+        throw new UnsupportedOperationException("Unsupported query: " + currentNode.toString());
     }
 
     private static Predicate<DataSetRow> safe(Predicate<DataSetRow> inner) {

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -152,4 +153,28 @@ public class FilterServiceTest {
         assertThat(nonMatchPredicate.test(row), is(false));
     }
 
+    @Test
+    public void testSimpleAndEquals() throws Exception {
+        // Test match on "0000 = value && 0002 = 2"
+        final Predicate<DataSetRow> matchPredicate = service.build(IOUtils.toString(FilterServiceTest.class.getResourceAsStream("simpleAnd_match.json")));
+        assertThat(matchPredicate.test(row), is(true));
+        // Test non match on "0000 = value && 0001 = 2"
+        final Predicate<DataSetRow> nonMatchPredicate = service.build(IOUtils.toString(FilterServiceTest.class.getResourceAsStream("simpleAnd_non_match.json")));
+        assertThat(nonMatchPredicate.test(row), is(false));
+    }
+
+    @Test
+    public void testComplexAndEquals() throws Exception {
+        // Test match on "0000 = value && 0001 = value with spaces && 0002 = 2"
+        final Predicate<DataSetRow> matchPredicate = service.build(IOUtils.toString(FilterServiceTest.class.getResourceAsStream("simpleAnd_match.json")));
+        assertThat(matchPredicate.test(row), is(true));
+        // Test non match on "0000 = value && 0001 = value with spaces && 0002 = 3"
+        final Predicate<DataSetRow> nonMatchPredicate = service.build(IOUtils.toString(FilterServiceTest.class.getResourceAsStream("simpleAnd_non_match.json")));
+        assertThat(nonMatchPredicate.test(row), is(false));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMalformedAnd() throws Exception {
+        service.build(IOUtils.toString(FilterServiceTest.class.getResourceAsStream("malformedAnd.json")));
+    }
 }
