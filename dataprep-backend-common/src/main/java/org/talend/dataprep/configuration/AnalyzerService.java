@@ -94,6 +94,7 @@ public class AnalyzerService {
         final ValueQualityAnalyzer valueQualityAnalyzer = new ValueQualityAnalyzer(types);
         valueQualityAnalyzer.setStoreInvalidValues(true);
         return Analyzers.with(valueQualityAnalyzer, //
+                new SummaryAnalyzer(types), //
                 new SemanticAnalyzer(categoryBuilder), //
                 new DataTypeAnalyzer());
     }
