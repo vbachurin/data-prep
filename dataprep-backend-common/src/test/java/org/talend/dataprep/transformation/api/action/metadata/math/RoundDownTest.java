@@ -31,9 +31,9 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTest
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 /**
- * Test class for Ceil action. Creates one consumer, and test it.
+ * Test class for RoundDown action. Creates one consumer, and test it.
  *
- * @see Ceil
+ * @see RoundDown
  */
 public class RoundDownTest {
 

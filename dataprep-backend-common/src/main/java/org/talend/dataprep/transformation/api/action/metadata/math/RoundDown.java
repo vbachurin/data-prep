@@ -23,7 +23,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
  * @see RoundingMode#DOWN
  */
 @Component(RoundDown.ACTION_BEAN_PREFIX + RoundDown.ACTION_NAME)
-public class RoundDown extends AbstractMath {
+public class RoundDown extends AbstractRound {
 
     /** The action name. */
     public static final String ACTION_NAME = "round_down"; //$NON-NLS-1$

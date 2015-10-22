@@ -31,24 +31,24 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTest
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 /**
- * Test class for Ceil action. Creates one consumer, and test it.
+ * Test class for RoundCeil action. Creates one consumer, and test it.
  *
- * @see Ceil
+ * @see RoundCeil
  */
-public class CeilTest {
+public class RoundCeilTest {
 
     /** The action ton test. */
-    private Ceil action;
+    private RoundCeil action;
 
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        action = new Ceil();
+        action = new RoundCeil();
 
         parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
-                CeilTest.class.getResourceAsStream("ceilAction.json"));
+                RoundCeilTest.class.getResourceAsStream("ceilAction.json"));
     }
 
     @Test

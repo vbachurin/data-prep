@@ -10,9 +10,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.transformation.api.action.metadata.math.Absolute;
-import org.talend.dataprep.transformation.api.action.metadata.math.Ceil;
-import org.talend.dataprep.transformation.api.action.metadata.math.Floor;
-import org.talend.dataprep.transformation.api.action.metadata.math.Round;
+import org.talend.dataprep.transformation.api.action.metadata.math.RoundCeil;
+import org.talend.dataprep.transformation.api.action.metadata.math.RoundFloor;
+import org.talend.dataprep.transformation.api.action.metadata.math.RoundHalfUp;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
 @Component
@@ -40,7 +40,7 @@ public class IntegerRules extends BasicRules {
      */
     @Bean
     public static SuggestionEngineRule integerRule() {
-        return forActions(Floor.FLOOR_ACTION_NAME, Round.ROUND_ACTION_NAME, Ceil.CELL_ACTION_NAME) //
+        return forActions(RoundFloor.ACTION_NAME, RoundHalfUp.ACTION_NAME, RoundCeil.ACTION_NAME) //
                 .when(IS_NUMERIC) //
                 .then(columnMetadata -> {
                     final List<PatternFrequency> patterns = columnMetadata.getStatistics().getPatternFrequencies();

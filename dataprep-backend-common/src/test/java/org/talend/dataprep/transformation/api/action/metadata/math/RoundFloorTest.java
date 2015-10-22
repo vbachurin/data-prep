@@ -12,6 +12,15 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -21,34 +30,25 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
-import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
-
 /**
- * Test class for Round action. Creates one consumer, and test it.
+ * Test class for RoundFloor action. Creates one consumer, and test it.
  *
- * @see Round
+ * @see RoundFloor
  */
-public class RoundTest {
+public class RoundFloorTest {
 
     /** The action ton test. */
-    private Round action;
+    private RoundFloor action;
 
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        action = new Round();
+        action = new RoundFloor();
 
         parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
-                RoundTest.class.getResourceAsStream("roundAction.json"));
+                RoundFloorTest.class.getResourceAsStream("floorAction.json"));
     }
 
     @Test
@@ -62,7 +62,6 @@ public class RoundTest {
     public void testCategory() throws Exception {
         assertThat(action.getCategory(), is(ActionCategory.MATH.getDisplayName()));
     }
-
 
     public void testCommon(String input, String expected) {
         //given
@@ -79,32 +78,30 @@ public class RoundTest {
 
     @Test
     public void testPositive() {
-        testCommon("5.0", "5");
+        testCommon( "5.0", "5" );
         testCommon("5.1", "5");
-        testCommon("5.5", "6");
-        testCommon( "5.8", "6" );
+        testCommon( "5.5", "5" );
+        testCommon( "5.8", "5" );
     }
 
     @Test
     public void testNegative() {
         testCommon("-5.0", "-5");
-        testCommon( "-5.4", "-5" );
+        testCommon( "-5.4", "-6" );
         testCommon( "-5.6", "-6" );
     }
 
     @Test
     public void test_huge_numbers_positive() {
         testCommon("131234567890.1", "131234567890");
-        testCommon("131234567890.5", "131234567891");
-        testCommon("131234567890.9", "131234567891");
-        testCommon("89891234567897.9", "89891234567898");
-        testCommon("34891234567899.9", "34891234567900");
-        testCommon("678999999999999.9", "679000000000000");
+        testCommon("89891234567897.9", "89891234567897");
+        testCommon("34891234567899.9", "34891234567899");
+        testCommon("678999999999999.9", "678999999999999");
     }
 
     @Test
     public void test_huge_numbers_negative() {
-        testCommon("-131234567890.1", "-131234567890");
+        testCommon("-131234567890.1", "-131234567891");
         testCommon("-89891234567897.9", "-89891234567898");
         testCommon("-34891234567899.9", "-34891234567900");
         testCommon("-678999999999999.9", "-679000000000000");

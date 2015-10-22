@@ -28,7 +28,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ColumnActio
 /**
  * Abstract class for Math operation on {@link Type#NUMERIC} values
  */
-public abstract class AbstractMath extends AbstractActionMetadata implements ColumnAction {
+public abstract class AbstractRound extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * @see ActionMetadata#getCategory()

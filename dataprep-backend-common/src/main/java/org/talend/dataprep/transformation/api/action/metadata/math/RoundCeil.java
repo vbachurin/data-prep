@@ -18,29 +18,27 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import java.math.RoundingMode;
 
 /**
- * Returns the closest long to the argument, with ties rounding to positive infinity.
- *
- * @see RoundingMode#HALF_UP
+ * Returns the smallest (closest to negative infinity) value that is greater than or equal to the value and is equal to
+ * a mathematical integer.
+ * 
+ * @see RoundingMode#CEILING
  */
-@Component(Round.ACTION_BEAN_PREFIX + Round.ROUND_ACTION_NAME)
-public class Round extends AbstractMath {
+@Component(RoundCeil.ACTION_BEAN_PREFIX + RoundCeil.ACTION_NAME)
+public class RoundCeil extends AbstractRound {
 
-    /**
-     * The action name.
-     */
-    public static final String ROUND_ACTION_NAME = "round"; //$NON-NLS-1$
+    /** The action name. */
+    public static final String ACTION_NAME = "ceil"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getName()
      */
     @Override
     public String getName() {
-        return ROUND_ACTION_NAME;
+        return ACTION_NAME;
     }
 
     @Override
     protected RoundingMode getRoundingMode() {
-        return RoundingMode.HALF_UP;
+        return RoundingMode.CEILING;
     }
-
 }

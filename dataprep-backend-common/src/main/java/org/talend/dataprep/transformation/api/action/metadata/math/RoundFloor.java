@@ -18,27 +18,29 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import java.math.RoundingMode;
 
 /**
- * Returns the smallest (closest to negative infinity) value that is greater than or equal to the value and is equal to
- * a mathematical integer.
- * 
- * @see RoundingMode#CEILING
+ * This will compute the largest (closest to positive infinity) value that is less than or equal to the cell value and
+ * is equal to a mathematical integer.
+ *
+ * @see RoundingMode#FLOOR
  */
-@Component(Ceil.ACTION_BEAN_PREFIX + Ceil.CELL_ACTION_NAME)
-public class Ceil extends AbstractMath {
+@Component(RoundFloor.ACTION_BEAN_PREFIX + RoundFloor.ACTION_NAME)
+public class RoundFloor extends AbstractRound {
 
-    /** The action name. */
-    public static final String CELL_ACTION_NAME = "ceil"; //$NON-NLS-1$
+    /**
+     * The action name.
+     */
+    public static final String ACTION_NAME = "floor"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getName()
      */
     @Override
     public String getName() {
-        return CELL_ACTION_NAME;
+        return ACTION_NAME;
     }
 
     @Override
     protected RoundingMode getRoundingMode() {
-        return RoundingMode.CEILING;
+        return RoundingMode.FLOOR;
     }
 }
