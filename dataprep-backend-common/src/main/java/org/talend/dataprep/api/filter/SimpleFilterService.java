@@ -42,6 +42,8 @@ public class SimpleFilterService implements FilterService {
                         return safe(r -> Integer.parseInt(r.get(columnName)) >= Integer.parseInt(value));
                     } else if (tree.has("lte")) {
                         return safe(r -> Integer.parseInt(r.get(columnName)) <= Integer.parseInt(value));
+                    } else if (tree.has("contains")) {
+                        return r -> StringUtils.contains(r.get(columnName), value);
                     }
                 } else {
                     if (tree.has("range")) {

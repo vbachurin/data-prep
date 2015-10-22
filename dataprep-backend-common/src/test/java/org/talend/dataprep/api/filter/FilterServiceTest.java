@@ -142,5 +142,14 @@ public class FilterServiceTest {
         assertThat(matchPredicate.test(row), is(false));
     }
 
+    @Test
+    public void testContains() throws Exception {
+        // Test match on "0000 contains alu"
+        final Predicate<DataSetRow> matchPredicate = service.build("{\"contains\": {\"field\": \"0000\",\"value\": \"alu\"}}");
+        assertThat(matchPredicate.test(row), is(true));
+        // Test non match on "0000 contains text"
+        final Predicate<DataSetRow> nonMatchPredicate = service.build("{\"contains\": {\"field\": \"0000\",\"value\": \"text\"}}");
+        assertThat(nonMatchPredicate.test(row), is(false));
+    }
 
 }
