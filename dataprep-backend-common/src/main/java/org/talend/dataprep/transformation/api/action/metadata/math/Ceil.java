@@ -15,6 +15,8 @@ package org.talend.dataprep.transformation.api.action.metadata.math;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
+import java.math.RoundingMode;
+
 /**
  * Returns the smallest (closest to negative infinity) value that is greater than or equal to the value and is equal to
  * a mathematical integer.
@@ -36,8 +38,7 @@ public class Ceil extends AbstractMath {
     }
 
     @Override
-    protected long compute(double from) {
-        double ceilValue = Math.ceil(from);
-        return (long) ceilValue;
+    protected RoundingMode getRoundingMode() {
+        return RoundingMode.CEILING;
     }
 }

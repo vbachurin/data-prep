@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -45,15 +47,19 @@ public abstract class AbstractMath extends AbstractActionMetadata implements Col
         }
 
         try {
-            double doubleValue = Double.valueOf(value);
-            long result = compute(doubleValue);
+            BigDecimal bd = new BigDecimal(value);
+
+            bd = bd.setScale(0, getRoundingMode());
+
+            String result = String.valueOf(bd.longValue());
+
             row.set(columnId, String.valueOf(result));
         } catch (NumberFormatException nfe2) {
             // Nan: nothing to do, but fail silently (no change in value)
         }
     }
 
-    protected abstract long compute(double from);
+    protected abstract RoundingMode getRoundingMode();
 
     /**
      * @see ActionMetadata#acceptColumn(ColumnMetadata)

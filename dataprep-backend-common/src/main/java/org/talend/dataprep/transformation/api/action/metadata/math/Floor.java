@@ -15,6 +15,10 @@ package org.talend.dataprep.transformation.api.action.metadata.math;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+
 /**
  * This will compute the largest (closest to positive infinity) value that is less than or equal to the cell value and
  * is equal to a mathematical integer.
@@ -38,8 +42,7 @@ public class Floor extends AbstractMath {
     }
 
     @Override
-    protected long compute(double from) {
-        return (long) Math.floor(from);
+    protected RoundingMode getRoundingMode() {
+        return RoundingMode.FLOOR;
     }
-
 }

@@ -15,6 +15,8 @@ package org.talend.dataprep.transformation.api.action.metadata.math;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
+import java.math.RoundingMode;
+
 /**
  * Returns the closest long to the argument, with ties rounding to positive infinity.
  *
@@ -37,7 +39,8 @@ public class Round extends AbstractMath {
     }
 
     @Override
-    protected long compute(double from) {
-        return Math.round(from);
+    protected RoundingMode getRoundingMode() {
+        return RoundingMode.HALF_UP;
     }
+
 }
