@@ -21,7 +21,7 @@ import java.math.RoundingMode;
  * Returns the smallest (closest to negative infinity) value that is greater than or equal to the value and is equal to
  * a mathematical integer.
  * 
- * @see Math#ceil(double)
+ * @see RoundingMode#CEILING
  */
 @Component(Ceil.ACTION_BEAN_PREFIX + Ceil.CELL_ACTION_NAME)
 public class Ceil extends AbstractMath {

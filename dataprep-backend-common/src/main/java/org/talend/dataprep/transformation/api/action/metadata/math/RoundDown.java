@@ -18,10 +18,9 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
 /**
- * Returns the smallest (closest to negative infinity) value that is greater than or equal to the value and is equal to
- * a mathematical integer.
+ * Round towards zero. Never increments the digit prior to a discarded fraction (i.e. truncates)
  * 
- * @see Math#ceil(double)
+ * @see RoundingMode#DOWN
  */
 @Component(RoundDown.ACTION_BEAN_PREFIX + RoundDown.ACTION_NAME)
 public class RoundDown extends AbstractMath {

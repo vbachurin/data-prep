@@ -21,7 +21,7 @@ import java.math.RoundingMode;
  * This will compute the largest (closest to positive infinity) value that is less than or equal to the cell value and
  * is equal to a mathematical integer.
  *
- * @see Math#floor(double)
+ * @see RoundingMode#FLOOR
  */
 @Component(Floor.ACTION_BEAN_PREFIX + Floor.FLOOR_ACTION_NAME)
 public class Floor extends AbstractMath {

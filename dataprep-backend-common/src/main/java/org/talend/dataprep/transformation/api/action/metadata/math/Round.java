@@ -20,7 +20,7 @@ import java.math.RoundingMode;
 /**
  * Returns the closest long to the argument, with ties rounding to positive infinity.
  *
- * @see Math#round(double)
+ * @see RoundingMode#HALF_UP
  */
 @Component(Round.ACTION_BEAN_PREFIX + Round.ROUND_ACTION_NAME)
 public class Round extends AbstractMath {
