@@ -3,6 +3,7 @@
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
 var wiredep = require('wiredep');
+var runSequence = require('run-sequence');
 
 var fullTestsFiles = [
     'src/*.js',
@@ -56,16 +57,16 @@ function runTests(singleRun, done, karmaConfPath, type) {
 }
 
 gulp.task('test:components', function (done) {
-    console.log('test:components');
-    runTests(true /* singleRun */, done, 'karma.conf.js', 'components')
+    return runTests(true /* singleRun */, done, 'karma.conf.js', 'components')
 });
 
 gulp.task('test:services', function (done) {
-    console.log('test:services');
-    runTests(true /* singleRun */, done, 'karma.conf.js', 'services')
+    return runTests(true /* singleRun */, done, 'karma.conf.js', 'services')
 });
 
-gulp.task('test:parts', ['test:components', 'test:services']);
+gulp.task('test:parts', function(done) {
+    return runSequence('test:services', 'test:components', done);
+});
 
 gulp.task('test', function (done) {
     runTests(true /* singleRun */, done, 'karma.conf.js')
