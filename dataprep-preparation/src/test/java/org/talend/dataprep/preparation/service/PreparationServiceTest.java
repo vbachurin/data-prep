@@ -28,12 +28,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.preparation.PreparationActions;
-import org.talend.dataprep.api.preparation.PreparationUtils;
-import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.preparation.Application;
 import org.talend.dataprep.preparation.store.PreparationRepository;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -330,6 +328,33 @@ public class PreparationServiceTest {
         final PreparationActions headAction = repository.get(head.getContent(), PreparationActions.class);
         assertThat(headAction.getActions(), hasSize(1));
         assertThat(headAction.getActions().get(0).getAction(), is("copy"));
+    }
+
+    @Test
+    public void should_add_action_with_filter_step_after_head() throws Exception {
+        // given
+        final String preparationId = createPreparation("1234", "my preparation");
+        Preparation preparation = repository.get(preparationId, Preparation.class);
+        final long oldModificationDate = preparation.getLastModificationDate();
+
+        assertThat(preparation.getStep().id(), is(ROOT_STEP.getId()));
+
+        // when
+        applyTransformation(preparationId, "copy_lastname_filter.json");
+
+        // then
+        final String expectedStepId = "1306e2ac2526530ec8cd75206eeaa4191eafe4fa";
+
+        preparation = repository.get(preparation.id(), Preparation.class);
+        assertThat(preparation.getStep().id(), is(expectedStepId));
+        assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
+
+        final Step head = repository.get(expectedStepId, Step.class);
+        final PreparationActions headAction = repository.get(head.getContent(), PreparationActions.class);
+        assertThat(headAction.getActions(), hasSize(1));
+        final Action copyAction = headAction.getActions().get(0);
+        assertThat(copyAction.getAction(), is("copy"));
+        assertThat(copyAction.getParameters().get(ImplicitParameters.FILTER.getKey()), is("{\"eq\":{\"field\":\"0001\",\"value\":\"value\"}}"));
     }
 
     @Test
