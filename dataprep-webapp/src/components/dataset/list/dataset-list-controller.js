@@ -149,8 +149,10 @@
 
         /**
          * @ngdoc method
-         * @name doRename
+         * @name rename
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @param {object} dataset The dataset to rename
+         * @param {string} name The new name
          * @description Rename a dataset
          */
         vm.rename = function(dataset, name){
