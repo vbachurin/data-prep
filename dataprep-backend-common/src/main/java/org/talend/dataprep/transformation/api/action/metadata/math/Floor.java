@@ -15,8 +15,6 @@ package org.talend.dataprep.transformation.api.action.metadata.math;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 
 /**
