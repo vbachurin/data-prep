@@ -3,8 +3,9 @@
 
     var state = {};
 
-    function StateService(PlaygroundStateService, playgroundState) {
+    function StateService(PlaygroundStateService, playgroundState, DatasetStateService, datasetState) {
         state.playground = playgroundState;
+        state.dataset = datasetState;
 
         return {
             //playground
@@ -22,7 +23,11 @@
 
             //playground - grid
             setGridSelection: PlaygroundStateService.setGridSelection,
-            setLookupVisibility: PlaygroundStateService.setLookupVisibility
+            setLookupVisibility: PlaygroundStateService.setLookupVisibility,
+
+            //dataset
+            startUploadingDataset: DatasetStateService.startUploadingDataset,
+            finishUploadingDataset: DatasetStateService.finishUploadingDataset
         };
     }
 

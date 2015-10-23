@@ -158,6 +158,9 @@
   "STRING": "TEXT",
   "FLOAT": "DECIMAL",
 
+  "_comment": "Dataset actions",
+  "REPLACE_FILE_CONTENT": "Replace this file content",
+
   "_comment": "Range slider",
   "INVALID_VALUE_RANGE_SLIDER": "Invalid Entered Value",
   "INVALID_VALUE_RANGE_SLIDER_CONTENT": ": Use \".\" instead of \",\""
