@@ -9,7 +9,9 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
-import org.talend.dataprep.transformation.api.action.metadata.math.*;
+import org.talend.dataprep.transformation.api.action.metadata.math.Absolute;
+import org.talend.dataprep.transformation.api.action.metadata.math.RoundDown;
+import org.talend.dataprep.transformation.api.action.metadata.math.RoundHalfUp;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngineRule;
 
 @Component
@@ -41,11 +43,12 @@ public class IntegerRules extends BasicRules {
                 .when(IS_NUMERIC) //
                 .then(columnMetadata -> {
                     final List<PatternFrequency> patterns = columnMetadata.getStatistics().getPatternFrequencies();
-                    if (patterns.size() == 1 && patterns.get(0).getPattern().indexOf('.') > 0) {
-                        return POSITIVE;
-                    } else {
-                        return NEGATIVE;
+                    for (PatternFrequency pattern : patterns) {
+                        if (patterns.get(0).getPattern().indexOf('.') > 0) {
+                            return POSITIVE;
+                        }
                     }
+                    return NEGATIVE;
                 }) //
                 .build();
     }
