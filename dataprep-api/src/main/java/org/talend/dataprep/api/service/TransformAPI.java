@@ -24,6 +24,7 @@ import org.talend.dataprep.api.service.command.preparation.PreparationGetContent
 import org.talend.dataprep.api.service.command.transformation.ColumnActions;
 import org.talend.dataprep.api.service.command.transformation.SuggestActionParams;
 import org.talend.dataprep.api.service.command.transformation.SuggestColumnActions;
+import org.talend.dataprep.api.service.command.transformation.SuggestLookupActions;
 import org.talend.dataprep.api.service.command.transformation.Transform;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
@@ -121,12 +122,13 @@ public class TransformAPI extends APIService {
 
         // Asks transformation service for suggested actions for column type and domain
         HystrixCommand<InputStream> getSuggestedActions = getCommand(SuggestColumnActions.class, client, body);
+        HystrixCommand<InputStream> getLookupActions = getCommand(SuggestLookupActions.class, client, getSuggestedActions);
         // Returns actions
         try {
             // olamy: this is weird to have to configure that manually whereas there is an annotation for the method!!
             response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
+            IOUtils.copyLarge(getLookupActions.execute(), outputStream);
             outputStream.flush();
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
