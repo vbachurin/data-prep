@@ -1,13 +1,16 @@
 (function() {
     'use strict';
 
-    function FilterBar() {
+    function FilterBar(state, FilterService) {
         return {
             restrict: 'E',
             templateUrl: 'components/filter/bar/filter-bar.html',
             scope: {},
             bindToController: true,
-            controller: 'FilterBarCtrl',
+            controller: function (){
+                this.filterService = FilterService;
+                this.state = state;
+            },
             controllerAs: 'filterBarCtrl'
         };
     }

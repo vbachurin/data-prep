@@ -4,8 +4,8 @@
        ng-if="filterMonitorCtrl.filters.length" data-icon="A"
        ng-click="filterMonitorCtrl.onReset()"></a>
 
-    <div class="lines-quotient"
-         title="{{ 'NB_LINES_MATCHING_FILTERS' | translate:{percentage: filterCtrl.percentage} }}">
+    <div id="filters-monitor-stats"
+         title="{{ 'NB_LINES_MATCHING_FILTERS' | translate:{percentage: filterMonitorCtrl.percentage} }}">
         {{filterMonitorCtrl.nbLines}}/{{filterMonitorCtrl.nbTotalLines}}
     </div>
 </div>

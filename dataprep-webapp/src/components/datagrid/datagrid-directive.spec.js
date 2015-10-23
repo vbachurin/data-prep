@@ -11,8 +11,10 @@ describe('Datagrid directive', function() {
 
 
     beforeEach(module('data-prep.datagrid', function ($provide) {
-        stateMock = {playground: {filter: {gridFilters: []}}};
-        stateMock.playground.dataView = dataViewMock;
+        stateMock = {playground: {
+            filter: {gridFilters: []},
+            grid: {dataView: dataViewMock}
+        }};
         $provide.constant('state', stateMock);
     }));
 
@@ -126,7 +128,7 @@ describe('Datagrid directive', function() {
 
                 it('should update selected column style', inject(function(DatagridService, DatagridStyleService) {
                     //given
-                    stateMock.playground.column = {id: '0001'};
+                    stateMock.playground.grid.selectedColumn = {id: '0001'};
                     expect(DatagridStyleService.updateColumnClass).not.toHaveBeenCalledWith(createdColumns, data.columns[1]);
 
                     //when
@@ -154,7 +156,7 @@ describe('Datagrid directive', function() {
                 it('should NOT reset cell style when there is a selected column', inject(function(DatagridService, DatagridStyleService) {
                     //given
                     expect(DatagridStyleService.resetCellStyles.calls.count()).toBe(1);
-                    stateMock.playground.column = {id: '0001'};
+                    stateMock.playground.grid.selectedColumn = {id: '0001'};
 
                     //when
                     stateMock.playground.data = {preview: false};
@@ -179,7 +181,7 @@ describe('Datagrid directive', function() {
                 expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
                 expect(DatagridGridService.navigateToFocusedColumn.calls.count()).toBe(0);
 
-                stateMock.playground.column = {id: '0001'};
+                stateMock.playground.grid.selectedColumn = {id: '0001'};
 
                 //when
                 stateMock.playground.data = {};
@@ -221,7 +223,7 @@ describe('Datagrid directive', function() {
 
             it('should update suggestion panel with 1st column when there is no selected column', inject(function(DatagridService, DatagridStyleService, DatagridExternalService) {
                 //given
-                stateMock.playground.column = {id: '9999'};
+                stateMock.playground.grid.selectedColumn = {id: '9999'};
 
                 //when
                 stateMock.playground.data = {};
@@ -234,7 +236,7 @@ describe('Datagrid directive', function() {
 
             it('should update suggestion panel when there is a selected column', inject(function(DatagridService, DatagridStyleService, DatagridExternalService) {
                 //given
-                stateMock.playground.column = {id: '0001'};
+                stateMock.playground.grid.selectedColumn = {id: '0001'};
 
                 //when
                 stateMock.playground.data = {};
@@ -247,7 +249,7 @@ describe('Datagrid directive', function() {
 
             it('should NOT update suggestion panel when in preview mode', inject(function(DatagridService, DatagridStyleService, DatagridExternalService) {
                 //given
-                stateMock.playground.column = {id: '0001'};
+                stateMock.playground.grid.selectedColumn = {id: '0001'};
                 expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
 
                 //when
@@ -262,16 +264,16 @@ describe('Datagrid directive', function() {
     });
 
     describe('on metadata change', function() {
-        beforeEach(inject(function(DatagridService) {
+        beforeEach(function() {
             //given
             createElement();
             stateMock.playground.data = {columns: [{id: '0000'}, {id: '0001'}], preview: false};
             scope.$digest();
 
             //when
-            DatagridService.metadata = {};
+            stateMock.playground.dataset = {};
             scope.$digest();
-        }));
+        });
 
         it('should reset cell styles', inject(function(DatagridStyleService) {
             //then

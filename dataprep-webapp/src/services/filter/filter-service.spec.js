@@ -280,6 +280,24 @@ describe('Filter service', function() {
             expect(StateService.removeAllGridFilters).toHaveBeenCalled();
         }));
 
+        it('should call each filter remove callback', inject(function(FilterService) {
+            //given
+            var removeFn1 = jasmine.createSpy('removeFilterCallback');
+            var removeFn2 = jasmine.createSpy('removeFilterCallback');
+            var filter0 = {};
+            var filter1 = {removeFilterFn: removeFn1};
+            var filter2 = {removeFilterFn: removeFn2};
+            var filter3 = {};
+            stateMock.playground.filter.gridFilters = [filter0, filter1, filter2, filter3];
+
+            //when
+            FilterService.removeAllFilters();
+
+            //then
+            expect(removeFn1).toHaveBeenCalled();
+            expect(removeFn2).toHaveBeenCalled();
+        }));
+
         it('should remove filter', inject(function(FilterService, StateService) {
             //given
             var filter = {};

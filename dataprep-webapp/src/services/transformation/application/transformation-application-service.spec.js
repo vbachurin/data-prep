@@ -38,7 +38,7 @@ describe('Transformation Application Service', function () {
             //given
             var transformation = {name: 'tolowercase'};
             var scope = 'column';
-            stateMock.playground.column = {id: '0001', name: 'firstname'};
+            stateMock.playground.grid.selectedColumn = {id: '0001', name: 'firstname'};
 
             //when
             TransformationApplicationService.append(transformation, scope);

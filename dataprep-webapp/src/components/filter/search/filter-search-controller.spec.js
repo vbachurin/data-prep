@@ -171,7 +171,7 @@ describe('filter search controller', function() {
         expect(suggestions.length).toBe(0);
     });
 
-    it('should reset input search on item select', function() {
+    it('should reset input search on item selection', function() {
         //given
         stateMock.playground.data = data;
         var ctrl = createController();
@@ -190,4 +190,24 @@ describe('filter search controller', function() {
         expect(ctrl.filterSearch).toBe('');
     });
 
+    it('should add filter on item selection', inject(function(FilterService) {
+        //given
+        stateMock.playground.data = data;
+        var ctrl = createController();
+        ctrl.filterSearch = 'ala';
+
+        expect(FilterService.addFilter).not.toHaveBeenCalled();
+
+        //when
+        /*jshint camelcase: false */
+        ctrl.filterSuggestOptions.on_select({
+            label: 'ala in <b>State</b>',
+            value: 'ala',
+            columnName: 'State',
+            columnId: '0002'
+        });
+
+        //then
+        expect(FilterService.addFilter).toHaveBeenCalledWith('contains', '0002', 'State', { phrase: 'ala' });
+    }));
 });

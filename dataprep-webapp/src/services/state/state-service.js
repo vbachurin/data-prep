@@ -10,6 +10,7 @@
         return {
             //playground
             hidePlayground: PlaygroundStateService.hide,
+            showPlayground: PlaygroundStateService.show,
             resetPlayground: PlaygroundStateService.reset,
             setCurrentDataset: PlaygroundStateService.setDataset,
             setCurrentData: PlaygroundStateService.setData,
@@ -29,7 +30,7 @@
             addGridFilter: PlaygroundStateService.addGridFilter,
             removeGridFilter: PlaygroundStateService.removeGridFilter,
             removeAllGridFilters: PlaygroundStateService.removeAllGridFilters,
-            updateGridFilter: PlaygroundStateService.updateGridFilter
+            updateGridFilter: PlaygroundStateService.updateGridFilter,
             
             //dataset
             startUploadingDataset: DatasetStateService.startUploadingDataset,

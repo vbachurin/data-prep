@@ -47,7 +47,7 @@ describe('Datagrid service', function () {
     describe('grid data', function () {
         it('should update data records', inject(function (DatagridService, StateService) {
             //given
-            DatagridService.metadata = {name: 'my dataset'};
+            stateMock.playground.dataset = {name: 'my dataset'};
             stateMock.playground.data = {columns: [], records: []};
 
             var data = {columns: [], 'records': [{tdpId: 1, col: 'value'}]};
@@ -319,7 +319,6 @@ describe('Datagrid service', function () {
             DatagridService.execute(executor);
 
             //then
-            expect(DatagridService.focusedColumn).toBe('0002');
             expect(stateMock.playground.grid.dataView.insertItem).toHaveBeenCalledWith(2, {
                 tdpId: 2,
                 firstname: 'Titi Bis',
@@ -332,6 +331,44 @@ describe('Datagrid service', function () {
                 __tdpDiff: {firstname: 'update'}
             });
 
+        }));
+
+        it('should set focus on created columns when applying executor', inject(function (DatagridService) {
+            //given
+            var executor = {
+                columns: diff.columns,
+                preview: true,
+                instructions: [
+                    {type: 'INSERT', row: {tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new'}, index: 2},
+                    {type: 'DELETE', row: {tdpId: 3, firstname: 'Toto', __tdpRowDiff: 'delete'}},
+                    {type: 'REPLACE', row: {tdpId: 7, firstname: 'Pepe 2', __tdpDiff: {firstname: 'update'}}}
+                ]
+            };
+
+            //when
+            DatagridService.execute(executor);
+
+            //then
+            expect(DatagridService.focusedColumn).toBe('0002');
+        }));
+
+        it('should NOT set focus on any column when applying executor if there are no created columns', inject(function (DatagridService) {
+            //given
+            var executor = {
+                columns: originalData.columns,
+                preview: true,
+                instructions: [
+                    {type: 'INSERT', row: {tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new'}, index: 2},
+                    {type: 'DELETE', row: {tdpId: 3, firstname: 'Toto', __tdpRowDiff: 'delete'}},
+                    {type: 'REPLACE', row: {tdpId: 7, firstname: 'Pepe 2', __tdpDiff: {firstname: 'update'}}}
+                ]
+            };
+
+            //when
+            DatagridService.execute(executor);
+
+            //then
+            expect(DatagridService.focusedColumn).toBeFalsy();
         }));
 
         it('should return reverter on executor application', inject(function (DatagridService) {

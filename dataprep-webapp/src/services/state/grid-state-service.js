@@ -46,7 +46,7 @@
             };
 
             gridState.dataView.beginUpdate();
-            gridState.dataView.setFilterArgs({filters: _.map(filters, 'filterFn'), data: data});
+            gridState.dataView.setFilterArgs({filters: _.map(filters, 'filterFn')});
             gridState.dataView.setFilter(allFilterFn);
             gridState.dataView.endUpdate();
 

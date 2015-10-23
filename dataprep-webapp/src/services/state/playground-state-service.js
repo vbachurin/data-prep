@@ -94,9 +94,6 @@
         }
 
         function reset() {
-            playgroundState.column = null;
-            playgroundState.line = null;
-
             playgroundState.data = null;
             playgroundState.dataset = null;
             playgroundState.preparation = null;

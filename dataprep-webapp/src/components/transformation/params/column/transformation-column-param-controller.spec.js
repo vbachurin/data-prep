@@ -2,34 +2,33 @@ describe('Transform column param controller', function () {
     'use strict';
 
     var createController, scope;
-    var parameter = {value: {}};
-    var stateMock = {
-        playground: {
-            // available dataset/preparation columns
-            data: {
-                columns: [
-                    {id: '0001', name: 'first name'},
-                    {id: '0002', name: 'last name'},
-                    {id: '0003', name: 'birth date'}
-                ]
-            },
-            grid: {
-                // selected column
-                selectedColumn: {}
-            }
-        }
-    };
+    var parameter;
+    var stateMock;
 
     beforeEach(module('data-prep.transformation-params', function ($provide) {
-
-        // set the selected column to the first one
-        stateMock.playground.grid.selectedColumn = stateMock.playground.data.columns[0];
+        var columns =  [
+            {id: '0001', name: 'first name'},
+            {id: '0002', name: 'last name'},
+            {id: '0003', name: 'birth date'}
+        ];
+        stateMock = {
+            playground: {
+                // available dataset/preparation columns
+                data: {
+                    columns: columns
+                },
+                grid: {
+                    // set the selected column to the first one
+                    selectedColumn: columns[0]
+                }
+            }
+        };
 
         $provide.constant('state', stateMock);
     }));
 
-
     beforeEach(inject(function ($rootScope, $controller) {
+        parameter = {};
         scope = $rootScope.$new();
 
         createController = function () {
@@ -40,7 +39,6 @@ describe('Transform column param controller', function () {
             return ctrlFn();
         };
     }));
-
 
     it('should remove current column', function () {
         // when
@@ -59,6 +57,16 @@ describe('Transform column param controller', function () {
 
         // then
         expect(ctrl.parameter.value).toBe(stateMock.playground.data.columns[1].id);
+    });
 
+    it('should NOT set selected value when there is no columns', function () {
+        //given
+        stateMock.playground.data.columns = [];
+
+        // when
+        var ctrl = createController();
+
+        // then
+        expect(ctrl.parameter.value).toBeFalsy();
     });
 });
