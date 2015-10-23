@@ -12,6 +12,15 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -20,15 +29,6 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
-import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 /**
  * Test class for RoundHalfUp action. Creates one consumer, and test it.
@@ -49,6 +49,11 @@ public class RoundHalfUpTest {
         parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 RoundHalfUpTest.class.getResourceAsStream("roundAction.json"));
+    }
+
+    @Test
+    public void testName() {
+        assertEquals(RoundHalfUp.ACTION_NAME, action.getName());
     }
 
     @Test
