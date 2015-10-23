@@ -1,11 +1,13 @@
 package org.talend.dataprep.api.service.command.transformation;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.function.BiFunction;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -19,7 +21,7 @@ import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.ChainedCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
-import org.talend.dataprep.transformation.api.action.metadata.blending.Lookup;
+import org.talend.dataprep.transformation.api.action.metadata.datablending.Lookup;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -27,24 +29,24 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.netflix.hystrix.HystrixCommand;
 
 /**
- * Suggestion Lookup actions in addition to column actions.
+ * Suggestion Lookup actions in addition to dataset actions.
  *
  * Take the suggested column actions as input and add the lookup ones.
  */
 @Component
 @Scope("request")
-public class SuggestLookupActions extends ChainedCommand<InputStream, InputStream> {
+public class SuggestLookupActions extends ChainedCommand<InputStream, String> {
 
     /**
-     * Simplified constructor.
+     * Constructor.
      *
      * @param client the http client to use.
      * @param input the command to execute to get the input.
      */
-    public SuggestLookupActions(HttpClient client, SuggestColumnActions input) {
+    public SuggestLookupActions(HttpClient client, HystrixCommand<String> input, String dataSetId) {
         super(client, input);
         execute(() -> new HttpGet(datasetServiceUrl + "/datasets"));
-        on(HttpStatus.OK).then(process());
+        on(HttpStatus.OK).then(process(dataSetId));
         // on error, @see getFallBack()
     }
 
@@ -56,13 +58,14 @@ public class SuggestLookupActions extends ChainedCommand<InputStream, InputStrea
     @Override
     protected InputStream getFallback() {
         // return the previous command result
-        return getInput();
+        return new ByteArrayInputStream(getInput().getBytes());
     }
 
     /**
+     * @param dataSetId the current dataset id.
      * @return the function that aggregates the SuggestColumnActions with the lookups.
      */
-    private BiFunction<HttpRequestBase, HttpResponse, InputStream> process() {
+    private BiFunction<HttpRequestBase, HttpResponse, InputStream> process(String dataSetId) {
 
         return (request, response) -> {
 
@@ -79,7 +82,10 @@ public class SuggestLookupActions extends ChainedCommand<InputStream, InputStrea
 
                 // create and add all the possible lookup to the suggested actions
                 for (DataSetMetadata dataset : dataSets) {
-                    // TODO exclude current dataset (get this from the frontend and should be passed by the service)
+                    // exclude current dataset from possible lookup sources
+                    if (StringUtils.equals(dataSetId, dataset.getId())) {
+                        continue;
+                    }
                     final Lookup lookup = new Lookup();
                     lookup.adapt(dataset, getDatasetUrl(dataset));
                     final JsonNode jsonNode = builder.build().valueToTree(lookup);
