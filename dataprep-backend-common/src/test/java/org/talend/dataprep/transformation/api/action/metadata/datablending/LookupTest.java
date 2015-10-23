@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.action.metadata.blending;
+package org.talend.dataprep.transformation.api.action.metadata.datablending;
 
 import java.io.IOException;
 import java.util.Map;

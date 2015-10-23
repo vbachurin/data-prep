@@ -17,7 +17,7 @@ public enum ActionCategory {
     BOOLEAN("boolean"), //
     DATA_CLEANSING("data cleansing"), //
     FILTERED("filtered"), //
-    LOOKUP("blending");
+    DATA_BLENDING("data_blending");
 
     /** The category display name. */
     private final String displayName;

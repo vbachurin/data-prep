@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.action.metadata.blending;
+package org.talend.dataprep.transformation.api.action.metadata.datablending;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +13,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.DataSetAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.parameters.ColumnParameter;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -23,7 +23,7 @@ import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
  *
  */
 @Component(Lookup.ACTION_BEAN_PREFIX + Lookup.LOOKUP_ACTION_NAME)
-public class Lookup extends AbstractActionMetadata implements ColumnAction {
+public class Lookup extends AbstractActionMetadata implements DataSetAction {
 
     /** The action name. */
     public static final String LOOKUP_ACTION_NAME = "lookup"; //$NON-NLS-1$
@@ -50,7 +50,7 @@ public class Lookup extends AbstractActionMetadata implements ColumnAction {
      */
     @Override
     public String getCategory() {
-        return ActionCategory.LOOKUP.getDisplayName();
+        return ActionCategory.DATA_BLENDING.getDisplayName();
     }
 
     /**
@@ -68,10 +68,7 @@ public class Lookup extends AbstractActionMetadata implements ColumnAction {
     }
 
     /**
-     * Return true if the action can be applied to the given column metadata.
-     *
-     * @param column the column metadata to transform.
-     * @return true if the action can be applied to the given column metadata.
+     * @see ActionMetadata#acceptColumn(ColumnMetadata)
      */
     @Override
     public boolean acceptColumn(ColumnMetadata column) {
@@ -79,18 +76,6 @@ public class Lookup extends AbstractActionMetadata implements ColumnAction {
         return false;
     }
 
-    /**
-     * Apply action on a column.
-     *
-     * @param row the dataset row.
-     * @param context the transformation context.
-     * @param parameters the action parameters.
-     * @param columnId the column id to apply this action on.
-     */
-    @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
-
-    }
 
     /**
      * Adapt the parameters default values according to the given dataset.
@@ -101,6 +86,14 @@ public class Lookup extends AbstractActionMetadata implements ColumnAction {
     public void adapt(DataSetMetadata dataset, String datasetUrl) {
         nameParameterDefaultValue = dataset.getName();
         datasetIdParameterDefaultValue = dataset.getId();
-        datasetIdParameterDefaultValue = datasetUrl;
+        urlParameterDefaultValue = datasetUrl;
+    }
+
+    /**
+     * @see DataSetAction#applyOnDataSet(DataSetRow, TransformationContext, Map)
+     */
+    @Override
+    public void applyOnDataSet(DataSetRow row, TransformationContext context, Map<String, String> parameters) {
+        // nothing to do yet...
     }
 }
