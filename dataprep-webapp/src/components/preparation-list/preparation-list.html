@@ -3,18 +3,13 @@
         ng-mouseover="preparationListCtrl.overPreparationEntry(preparation)"
         ng-mouseleave="preparationListCtrl.leavePreparationEntry(preparation)">
         <div class="information">
-            <div class="preparation-name-input" ng-switch on="preparation.showChangeName">
-                <div ng-switch-when="true">
-                    <div>
-                        <input type="text" data-ng-model="preparation.name"
-                               ng-keydown="preparationListCtrl.nameInputKeyPressed($event,preparation)">
-                        <a class="check-btn" data-icon="b" ng-click="preparationListCtrl.rename(preparation)"></a>
-                        <a class="cancel-btn" data-icon="d" ng-click="preparationListCtrl.cancelRename(preparation)"></a>
-                    </div>
-                </div>
-                <div ng-switch-default>
-                  <p class="title one-line"><a ui-sref="nav.home.preparations({prepid: preparation.id})" title="{{preparation.name}}">{{preparation.name}}</a></p>
-                </div>
+            <div class="preparation-name-input">
+
+                <talend-editable-text text="preparation.name"
+                                      text-class="title one-line"
+                                      on-text-click="preparationListCtrl.load(preparation)"
+                                      on-validate="preparationListCtrl.rename(preparation, text)"></talend-editable-text>
+
             </div>
             <p class="description">
                 {{::'OWNED_BY' | translate}} <span class="important" title="{{preparation.author}}" >{{preparation.author}}</span><br/>
@@ -31,7 +26,6 @@
 
         <div class="actions">
             <a class="favorite" data-icon="f" ng-class="{selected: preparation.favorite}" ng-click="preparation.favorite = !preparation.favorite"></a>
-            <a class="edit-btn" data-icon="a" ng-click="preparationListCtrl.showRenameInput(preparation)" id="edit_btn_{{preparation.id}}"></a>
             <a class="clone-btn" data-icon="y" title="clone" ng-click="preparationListCtrl.clone(preparation)" id="clone_btn_{{preparation.id}}"></a>
             <a class="trash" data-icon="e" ng-click="preparationListCtrl.delete(preparation)"></a>
         </div>
