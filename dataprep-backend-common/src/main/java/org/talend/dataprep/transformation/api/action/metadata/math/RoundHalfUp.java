@@ -15,31 +15,32 @@ package org.talend.dataprep.transformation.api.action.metadata.math;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
+import java.math.RoundingMode;
+
 /**
- * This will compute the largest (closest to positive infinity) value that is less than or equal to the cell value and
- * is equal to a mathematical integer.
+ * Returns the closest long to the argument, with ties rounding to positive infinity.
  *
- * @see Math#floor(double)
+ * @see RoundingMode#HALF_UP
  */
-@Component(Floor.ACTION_BEAN_PREFIX + Floor.FLOOR_ACTION_NAME)
-public class Floor extends AbstractMath {
+@Component(RoundHalfUp.ACTION_BEAN_PREFIX + RoundHalfUp.ACTION_NAME)
+public class RoundHalfUp extends AbstractRound {
 
     /**
      * The action name.
      */
-    public static final String FLOOR_ACTION_NAME = "floor"; //$NON-NLS-1$
+    public static final String ACTION_NAME = "round"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getName()
      */
     @Override
     public String getName() {
-        return FLOOR_ACTION_NAME;
+        return ACTION_NAME;
     }
 
     @Override
-    protected long compute(double from) {
-        return (long) Math.floor(from);
+    protected RoundingMode getRoundingMode() {
+        return RoundingMode.HALF_UP;
     }
 
 }

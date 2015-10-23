@@ -1741,6 +1741,42 @@
     "label": "Ceil value"
   },
   {
+    "name": "round_down",
+    "category": "math",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Round towards zero. Never increments the digit prior to a discarded fraction (i.e. truncates)",
+    "label": "Remove fractional part"
+  },
+  {
     "category": "boolean",
     "name": "negate",
     "parameters": [

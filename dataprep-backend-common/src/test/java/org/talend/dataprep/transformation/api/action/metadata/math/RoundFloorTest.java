@@ -26,30 +26,34 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 /**
- * Test class for Floor action. Creates one consumer, and test it.
+ * Test class for RoundFloor action. Creates one consumer, and test it.
  *
- * @see Floor
+ * @see RoundFloor
  */
-public class FloorTest {
+public class RoundFloorTest {
 
     /** The action ton test. */
-    private Floor action;
+    private RoundFloor action;
 
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        action = new Floor();
+        action = new RoundFloor();
 
         parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
-                FloorTest.class.getResourceAsStream("floorAction.json"));
+                RoundFloorTest.class.getResourceAsStream("floorAction.json"));
+    }
+
+    @Test
+    public void testName() {
+        assertEquals(RoundFloor.ACTION_NAME, action.getName());
     }
 
     @Test

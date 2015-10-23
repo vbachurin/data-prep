@@ -223,7 +223,7 @@ describe('Datagrid directive', function() {
                 expect(DatagridExternalService.updateSuggestionPanel).toHaveBeenCalledWith(createdColumns[1]);
             }));
 
-            it('should update suggestion panel when on selected column', inject(function(DatagridService, DatagridStyleService, DatagridExternalService) {
+            it('should update suggestion panel when there is a selected column', inject(function(DatagridService, DatagridStyleService, DatagridExternalService) {
                 //given
                 stateMock.playground.column = {id: '0001'};
 
@@ -234,6 +234,20 @@ describe('Datagrid directive', function() {
 
                 //then
                 expect(DatagridExternalService.updateSuggestionPanel).toHaveBeenCalledWith(data.columns[1]);
+            }));
+
+            it('should NOT update suggestion panel when in preview mode', inject(function(DatagridService, DatagridStyleService, DatagridExternalService) {
+                //given
+                stateMock.playground.column = {id: '0001'};
+                expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
+
+                //when
+                stateMock.playground.data = {preview: true};
+                scope.$digest();
+                jasmine.clock().tick(1);
+
+                //then
+                expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
             }));
         });
     });

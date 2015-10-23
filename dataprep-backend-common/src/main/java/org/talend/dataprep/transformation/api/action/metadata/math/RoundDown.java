@@ -12,32 +12,32 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
+import java.math.RoundingMode;
+
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
 /**
- * Returns the smallest (closest to negative infinity) value that is greater than or equal to the value and is equal to
- * a mathematical integer.
+ * Round towards zero. Never increments the digit prior to a discarded fraction (i.e. truncates)
  * 
- * @see Math#ceil(double)
+ * @see RoundingMode#DOWN
  */
-@Component(Ceil.ACTION_BEAN_PREFIX + Ceil.CELL_ACTION_NAME)
-public class Ceil extends AbstractMath {
+@Component(RoundDown.ACTION_BEAN_PREFIX + RoundDown.ACTION_NAME)
+public class RoundDown extends AbstractRound {
 
     /** The action name. */
-    public static final String CELL_ACTION_NAME = "ceil"; //$NON-NLS-1$
+    public static final String ACTION_NAME = "round_down"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getName()
      */
     @Override
     public String getName() {
-        return CELL_ACTION_NAME;
+        return ACTION_NAME;
     }
 
     @Override
-    protected long compute(double from) {
-        double ceilValue = Math.ceil(from);
-        return (long) ceilValue;
+    protected RoundingMode getRoundingMode() {
+        return RoundingMode.DOWN;
     }
 }
