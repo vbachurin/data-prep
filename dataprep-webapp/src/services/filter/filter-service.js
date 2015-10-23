@@ -57,14 +57,6 @@
      */
     function FilterService($timeout, state, StateService, DatagridService, NumbersValidityService) {
         var service = {
-            /**
-             * @ngdoc property
-             * @name filters
-             * @propertyOf data-prep.services.filter.service:FilterService
-             * @description The filters list
-             */
-            filters: [],
-
             //utils
             getColumnsContaining: getColumnsContaining,
 
@@ -292,7 +284,6 @@
                     }
                     break;
             }
-            DatagridService.addFilter(filterFn);
             StateService.addGridFilter(filterInfo);
         }
 
@@ -320,8 +311,6 @@
          * @description Update an existing filter and update datagrid filters
          */
         function updateFilter(oldFilter, newValue) {
-            var oldFn = oldFilter.filterFn;
-
             var newFilterFn;
             var newFilter;
             var newArgs = {};
@@ -345,7 +334,6 @@
             }
             newFilter = new Filter(oldFilter.type, oldFilter.colId, oldFilter.colName, editableFilter, newArgs, newFilterFn, oldFilter.removeFilterFn);
 
-            DatagridService.updateFilter(oldFn, newFilter.filterFn);
             StateService.updateGridFilter(oldFilter, newFilter);
         }
 
@@ -356,8 +344,17 @@
          * @description Remove all the filters and update datagrid filters
          */
         function removeAllFilters() {
-            DatagridService.resetFilters();
+            var filters = state.playground.filter.gridFilters;
             StateService.removeAllGridFilters();
+
+            _.chain(filters)
+                .filter(function(filter) {
+                    return filter.removeFilterFn;
+                })
+                .forEach(function(filter) {
+                    filter.removeFilterFn(filter);
+                })
+                .value();
         }
 
         /**
@@ -368,7 +365,6 @@
          * @description Remove a filter and update datagrid filters
          */
         function removeFilter(filter) {
-            DatagridService.removeFilter(filter.filterFn);
             StateService.removeGridFilter(filter);
 
             if (filter.removeFilterFn) {

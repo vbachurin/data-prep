@@ -3,8 +3,13 @@
 
     var playgroundState = {};
 
-    function PlaygroundStateService(RecipeStateService, recipeState, FilterStateService, filterState) {
+    function PlaygroundStateService(
+        RecipeStateService, recipeState,
+        GridStateService, gridState,
+        FilterStateService, filterState) {
+
         playgroundState.recipe = recipeState;
+        playgroundState.grid = gridState;
         playgroundState.filter = filterState;
 
         return {
@@ -16,35 +21,22 @@
             setNameEditionMode: setNameEditionMode,
             reset: reset,
             setData: setData,
+            setLookupVisibility: setLookupVisibility,
 
             //recipe
             showRecipe: RecipeStateService.show,
             hideRecipe: RecipeStateService.hide,
 
             //datagrid
-            setGridSelection: setGridSelection,
-            setLookupVisibility: setLookupVisibility,
-            updateShownLinesLength: updateShownLinesLength,
-            setDataView: setDataView,
+            setColumnFocus: GridStateService.setColumnFocus,
+            setGridSelection: GridStateService.setGridSelection,
 
             //filters
-            addGridFilter: FilterStateService.addGridFilter,
-            updateGridFilter: FilterStateService.updateGridFilter,
-            removeGridFilter: FilterStateService.removeGridFilter,
-            removeAllGridFilters: FilterStateService.removeAllGridFilters
+            addGridFilter: addGridFilter,
+            updateGridFilter: updateGridFilter,
+            removeGridFilter: removeGridFilter,
+            removeAllGridFilters: removeAllGridFilters
         };
-
-        //--------------------------------------------------------------------------------------------------------------
-        //-----------------------------------------------------GRID-----------------------------------------------------
-        //--------------------------------------------------------------------------------------------------------------
-        function setGridSelection(column, line) {
-            playgroundState.column = column;
-            playgroundState.line = line;
-        }
-
-        function setLookupVisibility(visibility) {
-            playgroundState.lookupVisibility = visibility;
-        }
 
         //--------------------------------------------------------------------------------------------------------------
         //--------------------------------------------------PLAYGROUND--------------------------------------------------
@@ -55,20 +47,7 @@
 
         function setData(data) {
             playgroundState.data = data;
-            playgroundState.dataView.beginUpdate();
-            playgroundState.dataView.setItems(data.records, 'tdpId');
-            playgroundState.dataView.endUpdate();
-            playgroundState.allLinesLength = playgroundState.dataView.getItems().length;
-            //When we change the sample size
-            updateShownLinesLength();
-        }
-
-        function setDataView(dataView) {
-            playgroundState.dataView = dataView;
-        }
-
-        function updateShownLinesLength() {
-            playgroundState.shownLinesLength = playgroundState.dataView ? playgroundState.dataView.getLength() : 0;
+            GridStateService.setData(data);
         }
 
         function setPreparation(preparation) {
@@ -87,15 +66,44 @@
             playgroundState.visible = false;
         }
 
+        function setLookupVisibility(visibility) {
+            playgroundState.lookupVisibility = visibility;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------FILTERS----------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        function addGridFilter(filter) {
+            FilterStateService.addGridFilter(filter);
+            GridStateService.setFilter(filterState.gridFilters, playgroundState.data);
+        }
+
+        function updateGridFilter(oldFilter, newFilter) {
+            FilterStateService.updateGridFilter(oldFilter, newFilter);
+            GridStateService.setFilter(filterState.gridFilters, playgroundState.data);
+        }
+
+        function removeGridFilter(filter) {
+            FilterStateService.removeGridFilter(filter);
+            GridStateService.setFilter(filterState.gridFilters, playgroundState.data);
+        }
+
+        function removeAllGridFilters() {
+            FilterStateService.removeAllGridFilters();
+            GridStateService.setFilter(filterState.gridFilters, playgroundState.data);
+        }
+
         function reset() {
             playgroundState.column = null;
             playgroundState.line = null;
+
             playgroundState.data = null;
             playgroundState.dataset = null;
             playgroundState.preparation = null;
             playgroundState.nameEditionMode = false;
             playgroundState.lookupVisibility = false;
 
+            GridStateService.reset();
             FilterStateService.reset();
         }
     }

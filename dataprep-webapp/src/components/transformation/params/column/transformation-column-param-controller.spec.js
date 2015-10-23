@@ -13,17 +13,17 @@ describe('Transform column param controller', function () {
                     {id: '0003', name: 'birth date'}
                 ]
             },
-            // selected column
-            column: {}
+            grid: {
+                // selected column
+                selectedColumn: {}
+            }
         }
     };
-
-    stateMock.playground.column = stateMock.playground.data.columns[0];
 
     beforeEach(module('data-prep.transformation-params', function ($provide) {
 
         // set the selected column to the first one
-        stateMock.playground.column = stateMock.playground.data.columns[0];
+        stateMock.playground.grid.selectedColumn = stateMock.playground.data.columns[0];
 
         $provide.constant('state', stateMock);
     }));
@@ -52,7 +52,6 @@ describe('Transform column param controller', function () {
         expect(ctrl.columns[1]).toBe(stateMock.playground.data.columns[2]);
 
     });
-
 
     it('should set selected value to first column', function () {
         // when

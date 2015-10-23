@@ -10,7 +10,7 @@ describe('Datagrid style service', function () {
     }
 
     beforeEach(module('data-prep.datagrid', function ($provide) {
-        stateMock = {playground: {}};
+        stateMock = {playground: {grid: {}}};
         $provide.constant('state', stateMock);
     }));
 
@@ -174,11 +174,11 @@ describe('Datagrid style service', function () {
 
         beforeEach(function () {
             dataViewMock = new DataViewMock();
-            stateMock.playground.dataView = dataViewMock;
+            stateMock.playground.grid.dataView = dataViewMock;
         });
 
         beforeEach(inject(function(DatagridService) {
-            spyOn(stateMock.playground.dataView, 'getItem').and.returnValue({'0001': 'cell 1 content'});
+            spyOn(stateMock.playground.grid.dataView, 'getItem').and.returnValue({'0001': 'cell 1 content'});
             spyOn(DatagridService, 'getSameContentConfig').and.returnValue({
                 5: { '0001': 'highlight' },
                 18: { '0001': 'highlight' },

@@ -12,15 +12,17 @@ describe('Transformation column param directive', function () {
                     {id: '0003', name: 'birth date'}
                 ]
             },
-            // selected column
-            column: {}
+            grid: {
+                // selected column
+                selectedColumn: {}
+            }
         }
     };
 
     beforeEach(module('data-prep.transformation-params', function ($provide) {
 
         // set the selected column to the first one
-        stateMock.playground.column = stateMock.playground.data.columns[0];
+        stateMock.playground.grid.selectedColumn = stateMock.playground.data.columns[0];
 
         $provide.constant('state', stateMock);
     }));

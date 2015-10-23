@@ -1,22 +1,20 @@
 (function() {
 	'use strict';
-	function FilterListCtrl(FilterService, state){
+	function FilterListCtrl(){
 		var vm = this;
 
-		vm.filterService = FilterService;
-		vm.state = state;
-
-		/**
-		 * @ngdoc method
-		 * @name calculateLinesPercentage
-		 * @methodOf data-prep.filter-list.controller:FilterListCtrl
-		 * @description clculates the percentage of the shown lines nulber over the total lines numbers.
-		 * @returns {String} the label in a quotient format
-		 */
-		vm.calculateLinesPercentage = function(){
-			return ((state.playground.shownLinesLength / state.playground.allLinesLength)*100).toFixed(0) + '%';
+		vm.changeFilter = function changeFilter(filter, value) {
+			vm.onFilterChange({
+				filter: filter,
+				value: value
+			});
 		};
 
+		vm.removeFilter = function removeFilter(filter) {
+			vm.onFilterRemove({
+				filter: filter
+			});
+		};
 	}
 
 	angular.module('data-prep.filter-list')

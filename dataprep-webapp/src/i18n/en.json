@@ -44,8 +44,10 @@
   "ENTER_PREPARATION_NAME": "Enter preparation name",
   "FILE_DETAILS": "File: {{name}} ({{records}} lines)",
   "FILTER": "Search and Filter",
+  "NB_LINES_MATCHING_FILTERS": "{{percentage}}% of lines are matching your filter(s)",
   "NEW_FILTER": "New filter...",
   "PREPARATION": "Preparation",
+  "REMOVE_ALL_FILTER": "Remove all filters",
 
   "_comment": "Buttons",
   "CANCEL": "Cancel",

@@ -16,8 +16,9 @@ describe('Datagrid grid service', function () {
 
 
     beforeEach(module('data-prep.datagrid', function ($provide) {
-        stateMock = {playground: {}};
-        stateMock.playground.dataView = dataViewMock;
+        stateMock = {playground: {grid: {
+            dataView: dataViewMock
+        }}};
         $provide.constant('state', stateMock);
 
         spyOn(dataViewMock.onRowCountChanged, 'subscribe').and.returnValue();
@@ -63,8 +64,8 @@ describe('Datagrid grid service', function () {
             DatagridGridService.initGrid();
 
             //then
-            expect(stateMock.playground.dataView.onRowCountChanged.subscribe).toHaveBeenCalled();
-            expect(stateMock.playground.dataView.onRowsChanged.subscribe).toHaveBeenCalled();
+            expect(stateMock.playground.grid.dataView.onRowCountChanged.subscribe).toHaveBeenCalled();
+            expect(stateMock.playground.grid.dataView.onRowsChanged.subscribe).toHaveBeenCalled();
         }));
     });
 
@@ -76,7 +77,7 @@ describe('Datagrid grid service', function () {
             spyOn(grid, 'render').and.returnValue();
 
             //when
-            var onRowCountChanged = stateMock.playground.dataView.onRowCountChanged.subscribe.calls.argsFor(0)[0];
+            var onRowCountChanged = stateMock.playground.grid.dataView.onRowCountChanged.subscribe.calls.argsFor(0)[0];
             onRowCountChanged();
 
             //then
@@ -93,7 +94,7 @@ describe('Datagrid grid service', function () {
             var args = {rows: []};
 
             //when
-            var onRowsChanged = stateMock.playground.dataView.onRowsChanged.subscribe.calls.argsFor(0)[0];
+            var onRowsChanged = stateMock.playground.grid.dataView.onRowsChanged.subscribe.calls.argsFor(0)[0];
             onRowsChanged(null, args);
 
             //then

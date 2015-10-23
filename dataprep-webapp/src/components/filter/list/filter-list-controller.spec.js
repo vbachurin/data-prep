@@ -7,8 +7,7 @@ describe('filter list controller', function() {
 	beforeEach(module('data-prep.filter-list', function ($provide) {
 		stateMock = {
 			playground: {
-				shownLinesLength: 5,
-				allLinesLength:10
+				grid: {}
 			}
 		};
 		$provide.constant('state', stateMock);
@@ -24,14 +23,4 @@ describe('filter list controller', function() {
 		};
 	}));
 
-	it('should calculate the percentage', inject(function () {
-		//given
-		var ctrl = createController();
-
-		//when
-		var percentLabel = ctrl.calculateLinesPercentage();
-
-		//then
-		expect(percentLabel).toBe('50%');
-	}));
 });

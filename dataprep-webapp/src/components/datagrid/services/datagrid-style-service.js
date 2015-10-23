@@ -193,7 +193,7 @@
             clearTimeout(highlightCellTimeout);
             highlightCellTimeout = setTimeout(function() {
                 var column = grid.getColumns()[colIndex];
-                var content = state.playground.dataView.getItem(rowIndex)[column.id];
+                var content = state.playground.grid.dataView.getItem(rowIndex)[column.id];
 
                 var sameContentConfig = DatagridService.getSameContentConfig(column.id, content, 'highlight');
                 grid.setCellCssStyles('highlight', sameContentConfig);

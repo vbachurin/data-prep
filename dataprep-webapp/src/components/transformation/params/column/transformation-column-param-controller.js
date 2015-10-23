@@ -20,7 +20,7 @@
          * @description [PRIVATE] Init column param values
          */
         var initColumns = function () {
-            var currentColumn = state.playground.column;
+            var currentColumn = state.playground.grid.selectedColumn;
             vm.columns = _.filter(state.playground.data.columns, function(column) {
 
                 return currentColumn !== column;

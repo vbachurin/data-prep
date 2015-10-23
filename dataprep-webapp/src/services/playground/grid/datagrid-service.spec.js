@@ -35,31 +35,16 @@ describe('Datagrid service', function () {
     };
 
     beforeEach(module('data-prep.services.playground', function ($provide) {
-        stateMock = {playground: {}};
         dataViewMock = new DataViewMock();
-        stateMock.playground.dataView = dataViewMock;
+        stateMock = {playground: {grid: {dataView: dataViewMock}}};
         $provide.constant('state', stateMock);
     }));
 
     beforeEach(inject(function (StateService) {
         spyOn(StateService, 'setCurrentData').and.returnValue();
-        spyOn(StateService, 'setDataView').and.returnValue();
     }));
 
     describe('grid data', function () {
-        it('should set metadata and data', inject(function (DatagridService, StateService) {
-            //given
-            var metadata = {name: 'my dataset'};
-            var data = {columns: [], records: []};
-
-            //when
-            DatagridService.setDataset(metadata, data);
-
-            //then
-            expect(DatagridService.metadata).toBe(metadata);
-            expect(StateService.setCurrentData).toHaveBeenCalledWith(data);
-        }));
-
         it('should update data records', inject(function (DatagridService, StateService) {
             //given
             DatagridService.metadata = {name: 'my dataset'};
@@ -76,19 +61,6 @@ describe('Datagrid service', function () {
     });
 
     describe('focus on column', function () {
-        it('should reset focused column', inject(function (DatagridService) {
-            //given
-            var metadata = {name: 'my dataset'};
-            var data = {columns: [], records: []};
-            DatagridService.focusedColumn = '0001';
-
-            //when
-            DatagridService.setDataset(metadata, data);
-
-            //then
-            expect(DatagridService.focusedColumn).toBe(null);
-        }));
-
         it('should navigate to the column having the highest Id', inject(function (DatagridService) {
             //given
             stateMock.playground.data = {
@@ -117,134 +89,6 @@ describe('Datagrid service', function () {
         }));
     });
 
-    describe('filters', function () {
-        it('should add filter', inject(function (DatagridService) {
-            //given
-            expect(DatagridService.filters.length).toBe(0);
-            var filterFn = function (item) {
-                return item.col1.indexOf('toto') > -1;
-            };
-
-            //when
-            DatagridService.addFilter(filterFn);
-
-            //then
-            expect(DatagridService.filters.length).toBe(1);
-            var predicate = DatagridService.filters[0];
-            expect(predicate({col1: 'mon toto'})).toBe(true);
-            expect(predicate({col1: 'ma tata'})).toBe(false);
-        }));
-
-        it('should reset filters', inject(function (DatagridService) {
-            //given
-            DatagridService.filters = [{}, {}];
-
-            //when
-            DatagridService.resetFilters();
-
-            //then
-            expect(DatagridService.filters.length).toBe(0);
-        }));
-
-        it('should remove filter', inject(function (DatagridService) {
-            //given
-            var filterFnCol1 = function (item) {
-                return item.col1.indexOf('toto') > -1;
-            };
-            var filterFnCol2 = function (item) {
-                return item.col2.indexOf('toto') > -1;
-            };
-            DatagridService.addFilter(filterFnCol1);
-            DatagridService.addFilter(filterFnCol2);
-            expect(DatagridService.filters.length).toBe(2);
-
-            //when
-            DatagridService.removeFilter(filterFnCol1);
-
-            //then
-            expect(DatagridService.filters.length).toBe(1);
-            expect(DatagridService.filters[0]).toBe(filterFnCol2);
-        }));
-
-        it('should update filter', inject(function (DatagridService) {
-            //given
-            var filterFnCol1 = function (item) {
-                return item.col1.indexOf('toto') > -1;
-            };
-            var filterFnCol2 = function (item) {
-                return item.col2.indexOf('toto') > -1;
-            };
-            var newFilterFnCol2 = function (item) {
-                return item.col2.indexOf('tata') > -1;
-            };
-            DatagridService.addFilter(filterFnCol1);
-            DatagridService.addFilter(filterFnCol2);
-            expect(DatagridService.filters.length).toBe(2);
-
-            //when
-            DatagridService.updateFilter(filterFnCol2, newFilterFnCol2);
-
-            //then
-            expect(DatagridService.filters.length).toBe(2);
-            expect(DatagridService.filters[0]).toBe(filterFnCol1);
-            expect(DatagridService.filters[1]).toBe(newFilterFnCol2);
-        }));
-
-        it('should set successive filters to DataView', inject(function (DatagridService) {
-            //given
-            dataViewMock.setItems(originalData.records, 'tdpId');
-            var filterFnCol1 = function() {
-                return function (item) {
-                    return item.col1.indexOf('toto') > -1;
-                };
-            };
-            var filterFnCol2 = function() {
-                return function (item) {
-                    return item.col2.indexOf('toto') > -1;
-                };
-            };
-
-            //when
-            DatagridService.addFilter(filterFnCol1);
-            DatagridService.addFilter(filterFnCol2);
-
-            //then
-            expect(dataViewMock.filter({
-                col1: 'mon toto', col2: 'toto tata titi'
-            })).toBe(true);
-            expect(dataViewMock.filter({
-                col1: 'mon tutu', col2: 'toto tata titi'
-            })).toBe(false);
-            expect(dataViewMock.filter({
-                col1: 'mon toto', col2: 'tutu tata titi'
-            })).toBe(false);
-        }));
-
-        it('should do nothing on remove if filter is unknown', inject(function (DatagridService) {
-            //given
-            var filterFnCol1 = function() {
-                return function (item) {
-                    return item.col1.indexOf('toto') > -1;
-                };
-            };
-            var filterFnCol2 = function() {
-                return function (item) {
-                    return item.col2.indexOf('toto') > -1;
-                };
-            };
-            DatagridService.addFilter(filterFnCol1);
-
-            expect(DatagridService.filters.length).toBe(1);
-
-            //when
-            DatagridService.removeFilter(filterFnCol2);
-
-            //then
-            expect(DatagridService.filters.length).toBe(1);
-            expect(DatagridService.filters[0]).toBe(filterFnCol1);
-        }));
-    });
-
     describe('utils functions', function () {
         it('should return the rows containing non empty searched value', inject(function (DatagridService) {
             //given
@@ -259,36 +103,13 @@ describe('Datagrid service', function () {
                     {tdpId: 7, text: 'mi titi est ici'}
                 ]
             };
-            DatagridService.setDataset({}, data);
-            stateMock.playground.dataView.setItems(data.records);
+            stateMock.playground.grid.dataView.setItems(data.records);
 
             //when
             var rowsId = DatagridService.getSameContentConfig('text', 'mi titi est ici', 'myClass');
 
             //then
             expect(rowsId).toEqual({4: {text: 'myClass'}, 6: {text: 'myClass'}});
-        }));
-
-        it('should return the rows with empty value', inject(function (DatagridService) {
-            //given
-            var data = {
-                columns: [], records: [
-                    {tdpId: 1, text: 'mon toto est ici'},
-                    {tdpId: 2, text: ''},
-                    {tdpId: 3, text: 'la tata est ici'},
-                    {tdpId: 4, text: 'mon toto est la'},
-                    {tdpId: 5, text: ''},
-                    {tdpId: 6, text: 'mi titi est la'}
-                ]
-            };
-            DatagridService.setDataset({}, data);
-            stateMock.playground.dataView.setItems(data.records);
-
-            //when
-            var rowsId = DatagridService.getSameContentConfig('text', '', 'myClass');
-
-            //then
-            expect(rowsId).toEqual({1: {text: 'myClass'}, 4: {text: 'myClass'}});
         }));
 
         it('should return every column id', inject(function (DatagridService) {
@@ -443,7 +264,7 @@ describe('Datagrid service', function () {
     describe('preview operations', function () {
         beforeEach(inject(function () {
             dataViewMock.setItems(originalData.records, 'tdpId');
-            stateMock.playground.dataView = dataViewMock;
+            stateMock.playground.grid.dataView = dataViewMock;
             stateMock.playground.data = originalData;
 
             spyOn(dataViewMock, 'beginUpdate').and.returnValue();
@@ -475,9 +296,9 @@ describe('Datagrid service', function () {
             DatagridService.execute(executor);
 
             //then
-            expect(stateMock.playground.dataView.insertItem).not.toHaveBeenCalled();
-            expect(stateMock.playground.dataView.deleteItem).not.toHaveBeenCalled();
-            expect(stateMock.playground.dataView.updateItem).not.toHaveBeenCalled();
+            expect(stateMock.playground.grid.dataView.insertItem).not.toHaveBeenCalled();
+            expect(stateMock.playground.grid.dataView.deleteItem).not.toHaveBeenCalled();
+            expect(stateMock.playground.grid.dataView.updateItem).not.toHaveBeenCalled();
 
             expect(stateMock.playground.data).toBe(originalData);
         }));
@@ -499,13 +320,13 @@ describe('Datagrid service', function () {
 
             //then
             expect(DatagridService.focusedColumn).toBe('0002');
-            expect(stateMock.playground.dataView.insertItem).toHaveBeenCalledWith(2, {
+            expect(stateMock.playground.grid.dataView.insertItem).toHaveBeenCalledWith(2, {
                 tdpId: 2,
                 firstname: 'Titi Bis',
                 __tdpRowDiff: 'new'
             });
-            expect(stateMock.playground.dataView.deleteItem).toHaveBeenCalledWith(3);
-            expect(stateMock.playground.dataView.updateItem).toHaveBeenCalledWith(7, {
+            expect(stateMock.playground.grid.dataView.deleteItem).toHaveBeenCalledWith(3);
+            expect(stateMock.playground.grid.dataView.updateItem).toHaveBeenCalledWith(7, {
                 tdpId: 7,
                 firstname: 'Pepe 2',
                 __tdpDiff: {firstname: 'update'}

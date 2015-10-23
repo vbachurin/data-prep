@@ -47,7 +47,7 @@
                  * @description [PRIVATE] Get the loaded metadata
                  */
                 var getMetadata = function getMetadata() {
-                    return DatagridService.metadata;
+                    return state.playground.dataset;
                 };
 
                 /**
@@ -98,7 +98,7 @@
                         initGridIfNeeded();
                         var columns;
                         var selectedColumn;
-                        var stateSelectedColumn = ctrl.state.playground.column;
+                        var stateSelectedColumn = ctrl.state.playground.grid.selectedColumn;
 
                         //create columns, manage style and size, set columns in grid
                         clearTimeout(columnTimeout);

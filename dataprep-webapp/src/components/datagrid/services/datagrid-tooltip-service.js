@@ -56,7 +56,7 @@
                 }
 
                 var row = cell.row;
-                var item = state.playground.dataView.getItem(row);
+                var item = state.playground.grid.dataView.getItem(row);
 
                 var column = grid.getColumns()[cell.cell];
                 var value = item[column.id] + '';

@@ -287,24 +287,24 @@ describe('Playground Service', function () {
         }));
 
         it('should NOT change playground if the preparation to load is already loaded', inject(function ($rootScope, PlaygroundService) {
-                //given
-                var preparation = {
-                    id: '6845521254541',
-                    dataset: {id: '1', name: 'my dataset'}
-                };
-                var oldMetadata = {};
+            //given
+            var preparation = {
+                id: '6845521254541',
+                dataset: {id: '1', name: 'my dataset'}
+            };
+            var oldMetadata = {};
 
-                stateMock.playground.dataset = oldMetadata;
-                stateMock.playground.preparation = preparation;
+            stateMock.playground.dataset = oldMetadata;
+            stateMock.playground.preparation = preparation;
 
-                //when
-                PlaygroundService.load(preparation);
-                $rootScope.$apply();
+            //when
+            PlaygroundService.load(preparation);
+            $rootScope.$apply();
 
-                //then
-                assertDatasetLoadNotInitialized();
-                expect($rootScope.$emit).not.toHaveBeenCalled();
-            }));
+            //then
+            assertDatasetLoadNotInitialized();
+            expect($rootScope.$emit).not.toHaveBeenCalled();
+        }));
 
         it('should load preparation content at a specific step', inject(function ($rootScope, StateService, PlaygroundService, FilterService, RecipeService, DatagridService, PreviewService) {
             //given

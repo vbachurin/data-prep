@@ -38,8 +38,9 @@ describe('Datagrid tooltip service', function() {
 
     beforeEach(module('data-prep.datagrid', function ($provide) {
         dataViewMock = new DataViewMock();
-        stateMock = {playground: {}};
-        stateMock.playground.dataView = dataViewMock;
+        stateMock = {playground: {grid: {
+            dataView: dataViewMock
+        }}};
 
         $provide.constant('state', stateMock);
     }));
@@ -52,7 +53,7 @@ describe('Datagrid tooltip service', function() {
         spyOn(gridMock.onMouseEnter, 'subscribe').and.returnValue();
         spyOn(gridMock.onMouseLeave, 'subscribe').and.returnValue();
 
-        spyOn(stateMock.playground.dataView, 'getItem').and.returnValue(item);
+        spyOn(stateMock.playground.grid.dataView, 'getItem').and.returnValue(item);
         DatagridTooltipService.tooltipRuler = RulerMock;
     }));
 

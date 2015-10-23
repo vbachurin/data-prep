@@ -19,14 +19,4 @@ describe('playground state service', function () {
 	};
 
 	beforeEach(module('data-prep.services.state'));
-
-	it('should keep in memory the right numbers of the shown & all lines', inject(function (PlaygroundStateService, playgroundState) {
-		//when
-		PlaygroundStateService.setData(originalData);
-
-		//then
-		expect(playgroundState.allLinesLength).toBe(12);
-		expect(playgroundState.shownLinesLength).toBe(12);
-	}));
-
 });

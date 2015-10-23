@@ -8,10 +8,6 @@ describe('Filter service', function() {
     }));
 
     beforeEach(inject(function(DatagridService, StateService) {
-        spyOn(DatagridService, 'resetFilters').and.returnValue();
-        spyOn(DatagridService, 'addFilter').and.returnValue();
-        spyOn(DatagridService, 'removeFilter').and.returnValue();
-        spyOn(DatagridService, 'updateFilter').and.returnValue();
         spyOn(StateService, 'addGridFilter').and.returnValue();
     }));
 
@@ -20,7 +16,7 @@ describe('Filter service', function() {
     });
 
     describe('add filter', function() {
-        it('should add "contains" filter and add datagrid filter', inject(function(FilterService, DatagridService, StateService) {
+        it('should add "contains" filter', inject(function(FilterService, StateService) {
             //given
             var removeFnCallback = function() {};
             expect(StateService.addGridFilter).not.toHaveBeenCalled();
@@ -40,8 +36,6 @@ describe('Filter service', function() {
             expect(filterInfo.filterFn()({col1: ' toto est ici'})).toBeTruthy();
             expect(filterInfo.filterFn()({col1: ' tata est ici'})).toBeFalsy();
             expect(filterInfo.removeFilterFn).toBe(removeFnCallback);
-
-            expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
         }));
 
         it('should add "contains" filter with wildcard', inject(function(FilterService, StateService) {
@@ -92,7 +86,7 @@ describe('Filter service', function() {
             expect(filterInfo.filterFn()({col1: 'toici '})).toBeFalsy();
         }));
 
-        it('should add "invalid records" filter and add datagrid filter', inject(function(FilterService, DatagridService, StateService) {
+        it('should add "invalid records" filter', inject(function(FilterService, StateService) {
             //given
             expect(StateService.addGridFilter).not.toHaveBeenCalled();
             var invalidValues = ['NA', 'N/A', 'N.A'];
@@ -118,11 +112,9 @@ describe('Filter service', function() {
             expect(filterInfo.args).toBeFalsy();
             expect(filterInfo.filterFn(data)({col1: 'NA'})).toBeTruthy();
             expect(filterInfo.filterFn(data)({col1: ' tata est ici'})).toBeFalsy();
-
-            expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
         }));
 
-        it('should add "empty records" filter and add datagrid filter', inject(function(FilterService, DatagridService, StateService) {
+        it('should add "empty records" filter', inject(function(FilterService, StateService) {
             //given
             expect(StateService.addGridFilter).not.toHaveBeenCalled();
 
@@ -141,11 +133,9 @@ describe('Filter service', function() {
             expect(filterInfo.args).toBeFalsy();
             expect(filterInfo.filterFn()({col1: ''})).toBeTruthy();
             expect(filterInfo.filterFn()({col1: ' tata est ici'})).toBeFalsy();
-
-            expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
         }));
 
-        it('should add "valid records" filter and add datagrid filter', inject(function(FilterService, DatagridService, StateService) {
+        it('should add "valid records" filter', inject(function(FilterService, StateService) {
             //given
             expect(StateService.addGridFilter).not.toHaveBeenCalled();
             var invalidValues = ['m', 'p'];
@@ -172,11 +162,9 @@ describe('Filter service', function() {
             expect(filterInfo.filterFn(data)({col1: 'a'})).toBeTruthy();
             expect(filterInfo.filterFn(data)({col1: 'm'})).toBeFalsy();
             expect(filterInfo.filterFn(data)({col1: ''})).toBeFalsy();
-
-            expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
         }));
 
-        it('should add "inside range" filter and add datagrid filter', inject(function(FilterService, DatagridService, StateService) {
+        it('should add "inside range" filter', inject(function(FilterService, StateService) {
             //given
             expect(StateService.addGridFilter).not.toHaveBeenCalled();
 
@@ -198,8 +186,6 @@ describe('Filter service', function() {
             expect(filterInfo.filterFn()({col1:'5'})).toBeTruthy();
             expect(filterInfo.filterFn()({col1:'-5'})).toBeFalsy();
 
-            expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
-
             var filterInfo2 = StateService.addGridFilter.calls.argsFor(1)[0];
             expect(filterInfo2.type).toBe('inside_range');
             expect(filterInfo2.colId).toBe('col2');
@@ -209,8 +195,6 @@ describe('Filter service', function() {
             expect(filterInfo2.args).toEqual({interval:  [0, 1000000]});
             expect(filterInfo2.filterFn()({col2: '1000'})).toBeTruthy();
             expect(filterInfo2.filterFn()({col2: '-5'})).toBeFalsy();
-
-            expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo2.filterFn);
         }));
 
         it('should not throw exception on non existing column (that could be removed by a step) in contains filter', inject(function(FilterService, StateService) {
@@ -257,7 +241,7 @@ describe('Filter service', function() {
     });
 
     describe('add filter and digest', function() {
-        it('should add a filter wrapped in $timeout to trigger a digest', inject(function($timeout, FilterService, DatagridService, StateService) {
+        it('should add a filter wrapped in $timeout to trigger a digest', inject(function($timeout, FilterService, StateService) {
             //given
             var removeFnCallback = function() {};
             expect(StateService.addGridFilter).not.toHaveBeenCalled();
@@ -279,8 +263,6 @@ describe('Filter service', function() {
             expect(filterInfo.filterFn()({col1: ' toto est ici'})).toBeTruthy();
             expect(filterInfo.filterFn()({col1: ' tata est ici'})).toBeFalsy();
             expect(filterInfo.removeFilterFn).toBe(removeFnCallback);
-
-            expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
         }));
     });
 
@@ -298,14 +280,6 @@ describe('Filter service', function() {
             expect(StateService.removeAllGridFilters).toHaveBeenCalled();
         }));
 
-        it('should remove all datagrid filters', inject(function(FilterService, DatagridService) {
-            //when
-            FilterService.removeAllFilters();
-
-            //then
-            expect(DatagridService.resetFilters).toHaveBeenCalled();
-        }));
-
         it('should remove filter', inject(function(FilterService, StateService) {
             //given
             var filter = {};
@@ -315,17 +289,6 @@ describe('Filter service', function() {
 
             //then
             expect(StateService.removeGridFilter).toHaveBeenCalledWith(filter);
-        }));
-
-        it('should remove datagrid filter', inject(function(FilterService, DatagridService) {
-            //given
-            var filter = {filterFn: function() {}};
-
-            //when
-            FilterService.removeFilter(filter);
-
-            //then
-            expect(DatagridService.removeFilter).toHaveBeenCalledWith(filter.filterFn);
         }));
 
         it('should call filter remove callback', inject(function(FilterService) {
@@ -346,7 +309,7 @@ describe('Filter service', function() {
             spyOn(StateService, 'updateGridFilter').and.returnValue();
         }));
 
-        it('should update "contains" filter and update datagrid filter', inject(function(FilterService, DatagridService, StateService) {
+        it('should update "contains" filter', inject(function(FilterService, StateService) {
             //given
             var oldFilter = {
                 type: 'contains',
@@ -372,11 +335,9 @@ describe('Filter service', function() {
             expect(newFilter.colId).toBe('col2');
             expect(newFilter.colName).toBe('column 2');
             expect(newFilter.args.phrase).toBe('Tata');
-
-            expect(DatagridService.updateFilter).toHaveBeenCalledWith(oldFilter.filterFn, newFilter.filterFn);
         }));
 
-        it('should update "exact" filter and update datagrid filter', inject(function(FilterService, DatagridService, StateService) {
+        it('should update "exact" filter', inject(function(FilterService, StateService) {
             //given
             var oldFilter = {
                 type: 'exact',
@@ -404,10 +365,9 @@ describe('Filter service', function() {
             expect(newFilter.colName).toBe('column 2');
             expect(newFilter.args.phrase).toBe('Tata');
             expect(newFilter.value).toBe('Tata');
-            expect(DatagridService.updateFilter).toHaveBeenCalledWith(oldFilter.filterFn, newFilter.filterFn);
         }));
 
-        it('should update "inside_range" filter after a brush and update datagrid filter', inject(function(FilterService, DatagridService, StateService) {
+        it('should update "inside_range" filter after a brush', inject(function(FilterService, StateService) {
             //given
             var oldFilter = {
                 type: 'inside_range',
@@ -435,7 +395,6 @@ describe('Filter service', function() {
             expect(newFilter.colName).toBe('column 1');
             expect(newFilter.args.interval).toEqual([0,22]);
             expect(newFilter.value).toBe('[0 .. 22]');
-            expect(DatagridService.updateFilter).toHaveBeenCalledWith(oldFilter.filterFn, newFilter.filterFn);
         }));
 
         it('should update "inside range" filter when adding an existing range filter', inject(function(FilterService, StateService) {

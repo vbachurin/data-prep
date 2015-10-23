@@ -11,11 +11,15 @@
     function FilterList() {
         return {
             restrict: 'E',
-            replace: true,
             templateUrl: 'components/filter/list/filter-list.html',
+            scope: {
+                filters: '=',
+                onFilterChange: '&',
+                onFilterRemove: '&'
+            },
+            bindToController: true,
             controllerAs: 'filterCtrl',
-            controller: 'FilterListCtrl',
-            bindToController: true
+            controller: 'FilterListCtrl'
         };
     }
 
