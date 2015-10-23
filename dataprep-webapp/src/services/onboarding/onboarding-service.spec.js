@@ -61,7 +61,7 @@ describe('Onboarding service', function() {
         expect(options.nextLabel).toBe('NEXT');
         expect(options.prevLabel).toBe('BACK');
         expect(options.skipLabel).toBe('SKIP');
-        expect(options.doneLabel).toBe('OK, LET ME TRY!');
+        expect(options.doneLabel).toBe('LET ME TRY');
     }));
 
     it('should create/adapt tour step', inject(function(OnboardingService) {
@@ -74,7 +74,7 @@ describe('Onboarding service', function() {
         expect(options.steps[0]).toEqual({
             element: '.no-js',
             position: 'right',
-            intro: '<div class="introjs-tooltiptitle">Welcome to Talend Data Preparation</div><div class="introjs-tooltipcontent">To learn more about Talend Data Preparation, take this quick tour</div>'
+            intro: '<div class="introjs-tooltiptitle"><center>Welcome to</br>Talend Data Preparation</center></div><div class="introjs-tooltipcontent">To quickly learn how to use it, click <b>Next</b>.</div>'
         });
     }));
 
