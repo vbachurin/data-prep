@@ -109,8 +109,7 @@
          * @description hide edit and clone buttons when out of a preparation
          */
         vm.leavePreparationEntry = function ( preparation ) {
-            //angular.element('#edit_btn_'+preparation.id).hide();
-            //angular.element('#clone_btn_'+preparation.id).hide();
+            angular.element('#clone_btn_'+preparation.id).hide();
         };
 
         /**
