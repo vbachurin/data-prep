@@ -22,10 +22,11 @@
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.state.service:state
+     * @requires data-prep.state.service:StateService
      * @restrict E
      */
     function Datagrid(DatagridGridService, DatagridColumnService, DatagridStyleService, DatagridSizeService,
-                      DatagridTooltipService, DatagridExternalService, DatagridService, FilterService, state) {
+                      DatagridTooltipService, DatagridExternalService, DatagridService, FilterService, state, StateService) {
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/datagrid.html',
@@ -108,6 +109,7 @@
                                 if (!selectedColumn) {
                                     DatagridStyleService.resetCellStyles();
                                     selectedColumn = columns[1];
+                                    StateService.setGridSelection(selectedColumn.tdpColMetadata);
                                 }
                             }
 
@@ -118,11 +120,11 @@
 
                         //manage column selection (external)
                         clearTimeout(externalTimeout);
-                        externalTimeout = setTimeout(function () {
-                            if(selectedColumn) {
-                                DatagridExternalService.updateSuggestionPanel(selectedColumn);
-                            }
-                        }, 0);
+                        if(!data.preview) {
+                            externalTimeout = setTimeout(function () {
+                                 DatagridExternalService.updateSuggestionPanel(selectedColumn);
+                            }, 0);
+                        }
 
                         //focus specific column
                         clearTimeout(focusTimeout);

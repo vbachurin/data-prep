@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.util.Iterator;
 
 import org.apache.commons.io.IOUtils;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.talend.daikon.exception.json.JsonErrorCode;
@@ -50,13 +51,13 @@ public class DataSetAPITest extends ApiServiceTestBase {
     @Test
     public void testDataSetList() throws Exception {
         // given
-        final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
+        final String dataSetId = createDataset( "dataset/dataset.csv", "testDataset", "text/csv" );
 
         // when
         final String list = when().get("/api/datasets").asString();
 
         // then
-        assertTrue(list.contains(dataSetId));
+        assertTrue( list.contains( dataSetId ) );
     }
 
     @Test
@@ -151,28 +152,55 @@ public class DataSetAPITest extends ApiServiceTestBase {
         createPreparationFromDataset(dataSetId, "testPreparation");
 
         // when/then
-        final Response response = when().delete("/api/datasets/" + dataSetId);
+        final Response response = when().delete( "/api/datasets/" + dataSetId );
 
         //then
         final int statusCode = response.statusCode();
-        assertThat(statusCode, is(409));
+        assertThat( statusCode, is( 409 ) );
 
         final String responseAsString = response.asString();
-        final JsonPath json = JsonPath.from(responseAsString);
-        assertThat(json.get("code"), is("TDP_API_DATASET_STILL_IN_USE"));
+        final JsonPath json = JsonPath.from( responseAsString );
+        assertThat( json.get( "code" ), is( "TDP_API_DATASET_STILL_IN_USE" ) );
     }
 
     @Test
     public void testDataSetCreate() throws Exception {
         // given
-        final String dataSetId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
-        final InputStream expected = PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_metadata.json");
+        final String dataSetId = createDataset( "dataset/dataset.csv", "tagada", "text/csv" );
+        final InputStream expected = PreparationAPITest.class.getResourceAsStream(
+            "dataset/expected_dataset_with_metadata.json" );
 
         // when
         final String contentAsString = when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
 
         // then
-        assertThat(contentAsString, sameJSONAsFile(expected));
+        assertThat(contentAsString, sameJSONAsFile( expected ));
+    }
+
+    @Test
+    public void testDataSetCreate_clone() throws Exception {
+        // given
+        final String dataSetId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
+        InputStream expected = PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_metadata.json");
+
+        // when
+        String contentAsString = when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
+
+        // then
+        assertThat( contentAsString, sameJSONAsFile( expected ) );
+
+
+        final String clonedDataSetId = when().get("/api/datasets/clone/{id}", dataSetId).asString();
+
+        Assertions.assertThat( clonedDataSetId ).isNotEmpty().isNotEqualTo( dataSetId );
+
+        contentAsString = when().get("/api/datasets/{id}?metadata=true&columns=false", clonedDataSetId).asString();
+
+        expected = PreparationAPITest.class.getResourceAsStream( "dataset/expected_dataset_with_metadata_clone.json" );
+
+        // then
+        assertThat( contentAsString, sameJSONAsFile( expected ) );
+
     }
 
     @Test
@@ -252,10 +280,8 @@ public class DataSetAPITest extends ApiServiceTestBase {
         assertEquals("Test with spaces", metadata.getName());
     }
 
-
-
     @Test
-    public void testDataSetColumnsuggestions() throws Exception {
+    public void testDataSetColumnSuggestions() throws Exception {
         // given
         final String columnDescription = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("suggestions/firstname_column_metadata.json"));
 
@@ -263,7 +289,19 @@ public class DataSetAPITest extends ApiServiceTestBase {
         final String content = given().body(columnDescription).when().post("/api/transform/suggest/column").asString();
 
         // then
-        final InputStream expected = PreparationAPITest.class.getResourceAsStream("suggestions/firstname_column_suggestions.json");
+        assertThat(content, sameJSONAs("[]")); // All values in column are valid, no corrective action proposed.
+    }
+
+    @Test
+    public void testDataSetColumnActions() throws Exception {
+        // given
+        final String columnDescription = IOUtils.toString(PreparationAPITest.class.getResourceAsStream("suggestions/firstname_column_metadata.json"));
+
+        // when
+        final String content = given().body(columnDescription).when().post("/api/transform/actions/column").asString();
+
+        // then
+        final InputStream expected = PreparationAPITest.class.getResourceAsStream("suggestions/firstname_column_actions.json");
         assertThat(content, sameJSONAsFile(expected));
     }
 

@@ -86,6 +86,8 @@
   "DATASET_NAME": "Dataset Name",
   "IMPORT_EXCEL_FILE": "Import Excel File",
   "STYLESHEET": "Style sheet",
+  "RENAME": "Rename",
+  "NO_THANKS": "No, Thanks !",
 
   "INVALIDVALUE":"Invalid Value",
 
@@ -98,6 +100,10 @@
   "DATASET_UPDATE_SUCCESS": "The dataset \"{{dataset}}\" has been updated",
   "REMOVE_SUCCESS_TITLE": "{{type}} removed",
   "REMOVE_SUCCESS": "The {{type}} \"{{name}}\" has been removed.",
+  "CLONE_SUCCESS_TITLE": "Dataset clone",
+  "CLONE_SUCCESS": "The dataset has been cloned",
+  "DATASET_RENAME_SUCCESS_TITLE": "Dataset rename",
+  "DATASET_RENAME_SUCCESS": "The dataset has been renamed",
 
   "_comment": "Errors",
   "DELETE_DATASET_ERROR": "Deletion not allowed, dataset still used by preparation(s)",
@@ -123,6 +129,9 @@
   "NO_PARAMS_ACTION_MSG":"No Simple Parameters Were Found !!!",
   "COLUMN_TYPE_IS": "This column is a",
   "COLUMN_TYPE_SET": "Set as",
+
+  "_comment": "Action panel",
+  "FIND_FUNCTION": "Find a Function...",
 
   "_comment": "Statistics",
   "COUNT": "Count",
@@ -152,4 +161,7 @@
   "_comment": "Dataset actions",
   "REPLACE_FILE_CONTENT": "Replace this file content"
 
+  "_comment": "Range slider",
+  "INVALID_VALUE_RANGE_SLIDER": "Invalid Entered Value",
+  "INVALID_VALUE_RANGE_SLIDER_CONTENT": ": Use \".\" instead of \",\""
 }

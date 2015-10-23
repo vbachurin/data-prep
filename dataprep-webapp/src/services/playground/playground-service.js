@@ -27,13 +27,6 @@
         var service = {
             /**
              * @ngdoc property
-             * @name originalPreparationName
-             * @propertyOf data-prep.services.playground.service:PlaygroundService
-             * @description the original preparation name - used to check if the name has changed
-             */
-            originalPreparationName: '',
-            /**
-             * @ngdoc property
              * @name preparationName
              * @propertyOf data-prep.services.playground.service:PlaygroundService
              * @description the current preparation
@@ -64,17 +57,12 @@
 
             FilterService.removeAllFilters();
             RecipeService.refresh();
-            StatisticsService.resetCharts();
+            StatisticsService.reset(true, true, true);
             DatagridService.setDataset(dataset, data);
             TransformationCacheService.invalidateCache();
             SuggestionService.reset();
             HistoryService.clear();
             PreviewService.reset(false);
-        }
-
-        function setName(name) {
-            service.preparationName = name;
-            service.originalPreparationName = name;
         }
 
         /**
@@ -101,11 +89,10 @@
                             throw Error('Empty data');
                         }
 
-                        setName('');
+                        service.preparationName = '';
                         reset(dataset, data);
                         StateService.hideRecipe();
                         StateService.setNameEditionMode(true);
-                        StateService.setGridSelection(data.columns[0]);
                     })
                     .then(function() {
                         if(OnboardingService.shouldStartTour('playground')) {
@@ -141,11 +128,10 @@
                 $rootScope.$emit('talend.loading.start');
                 return PreparationService.getContent(preparation.id, 'head')
                     .then(function(response) {
-                        setName(preparation.name);
+                        service.preparationName = preparation.name;
                         reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response, preparation);
                         StateService.showRecipe();
                         StateService.setNameEditionMode(false);
-                        StateService.setGridSelection(response.columns[0]);
                     })
                     .finally(function() {
                         $rootScope.$emit('talend.loading.stop');
@@ -194,21 +180,15 @@
          * @returns {Promise} The process promise
          */
         function createOrUpdatePreparation(name) {
-            if(service.originalPreparationName !== name) {
-                var promise = state.playground.preparation ?
-                    PreparationService.setName(state.playground.preparation.id, name) :
-                    PreparationService.create(state.playground.dataset.id, name);
+            var promise = state.playground.preparation ?
+                PreparationService.setName(state.playground.preparation.id, name) :
+                PreparationService.create(state.playground.dataset.id, name);
 
-                return promise.then(function(preparation) {
-                    StateService.setCurrentPreparation(preparation);
-                    service.originalPreparationName = name;
-                    service.preparationName = name;
-                    return preparation;
-                });
-            }
-            else {
-                return $q.reject('name unchanged');
-            }
+            return promise.then(function(preparation) {
+                StateService.setCurrentPreparation(preparation);
+                service.preparationName = name;
+                return preparation;
+            });
         }
 
         /**
@@ -268,7 +248,7 @@
                 createOrUpdatePreparation(DEFAULT_NAME)
                     .then(function(preparation) {
                         preparation.draft = true;
-                        setName('');
+                        service.preparationName = '';
                         return preparation;
                     });
 
