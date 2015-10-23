@@ -270,7 +270,7 @@ public class DataSetRow implements Cloneable {
         if (columns.isEmpty()) {
             return clone();
         }
-        if (columns.size() != values.size()) {
+        if (columns.size() < values.size()) {
             throw new IllegalArgumentException("Expected " + values.size() + " columns but got " + columns.size());
         }
 
@@ -300,6 +300,18 @@ public class DataSetRow implements Cloneable {
         final List<String> strings = stream.map(Map.Entry::getValue) //
                 .map(String::valueOf) //
                 .collect(Collectors.<String> toList());
+        // Fill remaining values
+        // TODO Wait for TDQ-11141 to be fixed to allow different row sizes.
+        final int valuesToAdd = rowMetadata.getColumns().size() - strings.size();
+        for (int i = 0; i < valuesToAdd; i++) {
+            final ColumnMetadata column = rowMetadata.getColumns().get(strings.size());
+            final Type type = Type.get(column.getType());
+            if (Type.STRING.isAssignableFrom(type) || Type.DATE.isAssignableFrom(type)) {
+                strings.add(StringUtils.EMPTY);
+            } else if (Type.NUMERIC.isAssignableFrom(type)) {
+                strings.add("0");
+            }
+        }
         return strings.toArray(new String[strings.size()]);
     }
 
@@ -317,5 +329,112 @@ public class DataSetRow implements Cloneable {
      */
     public boolean isEmpty() {
         return values.isEmpty() || values.values().stream().filter(s -> !StringUtils.isEmpty(s)).count() == 0;
+    }
+
+    public DataSetRow immutable() {
+        return new ImmutableDataSetRow(this);
+    }
+
+    private static class ImmutableDataSetRow extends DataSetRow {
+
+        private final DataSetRow delegate;
+        private final boolean deleted;
+
+        public ImmutableDataSetRow(DataSetRow delegate) {
+            super(delegate.rowMetadata);
+            this.delegate = delegate;
+            deleted = delegate.isDeleted();
+        }
+
+        @Override
+        public RowMetadata getRowMetadata() {
+            return delegate.getRowMetadata();
+        }
+
+        @Override
+        public DataSetRow set(String name, String value) {
+            return this;
+        }
+
+        @Override
+        public String get(String id) {
+            return delegate.get(id);
+        }
+
+        @Override
+        public boolean isDeleted() {
+            return deleted;
+        }
+
+        @Override
+        public void setDeleted(boolean deleted) {
+        }
+
+        @Override
+        public void diff(DataSetRow oldRow) {
+            delegate.diff(oldRow);
+        }
+
+        @Override
+        public Map<String, Object> values() {
+            return Collections.unmodifiableMap(delegate.values());
+        }
+
+        @Override
+        public Map<String, Object> valuesWithId() {
+            return Collections.unmodifiableMap(delegate.valuesWithId());
+        }
+
+        @Override
+        public void clear() {
+        }
+
+        @Override
+        public DataSetRow clone() {
+            return this;
+        }
+
+        @Override
+        public boolean shouldWrite() {
+            return delegate.shouldWrite();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return delegate.equals(o);
+        }
+
+        @Override
+        public int hashCode() {
+            return delegate.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return delegate.toString();
+        }
+
+        @Override
+        public DataSetRow order(List<ColumnMetadata> columns) {
+            return delegate.order(columns);
+        }
+
+        @Override
+        public Long getTdpId() {
+            return delegate.getTdpId();
+        }
+
+        @Override
+        public void setTdpId(Long tdpId) {
+        }
+
+        @Override
+        public void setRowMetadata(RowMetadata rowMetadata) {
+        }
+
+        @Override
+        public DataSetRow immutable() {
+            return this;
+        }
     }
 }

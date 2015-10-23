@@ -190,7 +190,8 @@ public abstract class ActionMetadata {
 
         return builder().withRow((row, context) -> {
             if (implicitFilter() && !filter.test(row)) {
-                return row; // Return unmodified row since it didn't pass the filter.
+                // Return non-modifiable row since it didn't pass the filter (but metadata might be modified).
+                row = row.immutable();
             }
             // Select the correct method to call depending on scope.
             switch (scope) {
