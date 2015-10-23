@@ -1630,7 +1630,7 @@
     ],
     "dynamic": false,
     "description": "Lines with a negative value in this column will be deleted",
-    "label": "Remove negatie values"
+    "label": "Remove negative values"
   },
   {
     "description": "Compute the absolute value for all numeric values of this column.",
