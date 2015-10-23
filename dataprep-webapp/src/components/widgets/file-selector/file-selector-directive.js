@@ -8,16 +8,15 @@
             scope: {
                 buttonDataIcon: '@',
                 buttonTitle: '@',
-                buttonId: '@',
                 fileModel: '=',
                 onFileChange: '&'
             },
             bindToController: true,
-            controllerAs: 'datasetListUploadFile',
+            controllerAs: 'talendFileSelectorCtrl',
             controller: function() {},
-            link: function(scope, element, attr, ctrl) {
-                element.bind('click', function() {
-                    document.getElementById(ctrl.buttonId).click();
+            link: function(scope, element) {
+                element.find('span').bind('click', function() {
+                    element.find('input').click();
                 });
             }
         };

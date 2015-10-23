@@ -3,25 +3,42 @@ describe('Upload File directive', function() {
 
     var element, createElement;
     var body = angular.element('body');
-    beforeEach(module('data-prep.dataset-list'));
+    var scope;
+    beforeEach(module('talend.widget'));
+    beforeEach(module('htmlTemplates'));
 
     beforeEach(inject(function($rootScope, $compile) {
         createElement = function() {
-            element = angular.element('<div upload-file="updateDatasetFile_0"></div><input id="updateDatasetFile_0">');
+
+            scope = $rootScope.$new();
+            scope.updateDatasetFile = 'file';
+            scope.uploadUpdatedDatasetFile = function(){};
+
+            element = angular.element('<talend-file-selector button-data-icon="g" button-title="REPLACE_FILE_CONTENT" file-model="updateDatasetFile" on-file-change="uploadUpdatedDatasetFile(dataset)">'+
+                   '</talend-file-selector>');
             body.append(element);
-            $compile(element)($rootScope.$new());
+            $compile(element)(scope);
+            scope.$digest();
+
         };
     }));
 
-    it('should trigger click', function() {
+    it('should trigger click on input', function() {
         //given
         createElement();
         var event = angular.element.Event('click');
-        var spyEvent = spyOnEvent($('#updateDatasetFile_0')[0], 'click'); // jshint ignore:line
-        //when
-        $('div').eq(0).trigger(event);
+        var ctrl = element.controller('talendFileSelector');
+        var clicked = false;
+        element.find('input').bind('click', function() {
+            clicked = true;
+        });
 
+        //when
+        element.find('span').trigger(event);
         //then
-        expect(spyEvent).toHaveBeenTriggered();
+        expect(ctrl.buttonDataIcon).toBe('g');
+        expect(ctrl.buttonTitle).toBe('REPLACE_FILE_CONTENT');
+        expect(ctrl.fileModel).toBe('file');
+        expect(clicked).toBeTruthy();
     });
 });
