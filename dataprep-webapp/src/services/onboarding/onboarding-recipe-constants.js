@@ -18,7 +18,7 @@
         {
             element: '#help-history',
             title: '',
-            content: "And don't worry, at any time, you can undo or redo your last changes.",
+            content: 'And don\'t worry, at any time, you can undo or redo your last changes.',
             position: 'left'
         }
     ];
