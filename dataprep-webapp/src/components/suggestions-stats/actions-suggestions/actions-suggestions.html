@@ -37,7 +37,7 @@
                                 <a class="trigger"
                                    ng-switch-when="false"
                                    ng-if="transfo.dynamic"
-                                   ng-click="actionsSuggestionsCtrl.select(transfo, 'column')" ng-bind-html="transfo.labelHtml"></a>
+                                   ng-click="actionsSuggestionsCtrl.select(transfo, 'column')" ng-bind-html="transfo.labelHtml+'...'"></a>
 
                                 <!--no parameters-->
                                 <a class="trigger"
@@ -48,7 +48,7 @@
                                    ng-mouseleave="actionsSuggestionsCtrl.cancelEarlyPreview()" ng-bind-html="transfo.labelHtml"></a>
 
                                 <!--with static parameters-->
-                                <a class="trigger" ng-switch-when="true" ng-bind-html="transfo.labelHtml"></a>
+                                <a class="trigger" ng-switch-when="true" ng-bind-html="transfo.labelHtml+'...'"></a>
                                 <ul class="content" ng-switch-when="true">
                                     <transform-form transformation="transfo"
                                                       on-submit="actionsSuggestionsCtrl.transform(transfo, 'column')(params)"
