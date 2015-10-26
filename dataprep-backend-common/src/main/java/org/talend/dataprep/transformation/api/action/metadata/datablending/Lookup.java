@@ -28,14 +28,14 @@ public class Lookup extends AbstractActionMetadata implements DataSetAction {
     /** The action name. */
     public static final String LOOKUP_ACTION_NAME = "lookup"; //$NON-NLS-1$
 
-    /** Default value of the name parameter. */
-    private String nameParameterDefaultValue = StringUtils.EMPTY;
+    /** Adapted value of the name parameter. */
+    private String adaptedNameValue = StringUtils.EMPTY;
 
-    /** Default value of the dataset_id parameter. */
-    private String datasetIdParameterDefaultValue = StringUtils.EMPTY;
+    /** Adapted value of the dataset_id parameter. */
+    private String adaptedDatasetIdValue = StringUtils.EMPTY;
 
-    /** Default value of the url parameter. */
-    private String urlParameterDefaultValue = StringUtils.EMPTY;
+    /** Adapted value of the url parameter. */
+    private String adaptedUrlValue = StringUtils.EMPTY;
 
     /**
      * @return A unique name used to identify action.
@@ -59,11 +59,12 @@ public class Lookup extends AbstractActionMetadata implements DataSetAction {
     @Override
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = ImplicitParameters.getParameters();
-        parameters.add(new Parameter("name", ParameterType.STRING, nameParameterDefaultValue, false, false));
-        parameters.add(new Parameter("dataset_id", ParameterType.STRING, datasetIdParameterDefaultValue, false, false));
-        parameters.add(new Parameter("url", ParameterType.STRING, urlParameterDefaultValue, false, false));
-        parameters.add(new Parameter("join_on", ParameterType.STRING, StringUtils.EMPTY, false, false));
-        parameters.add(new ColumnParameter("selected_columns", StringUtils.EMPTY, false, false, Collections.emptyList(), true));
+        parameters.add(new Parameter("lookup_ds_name", ParameterType.STRING, adaptedNameValue, false, false));
+        parameters.add(new Parameter("lookup_ds_id", ParameterType.STRING, adaptedDatasetIdValue, false, false));
+        parameters.add(new Parameter("lookup_ds_url", ParameterType.STRING, adaptedUrlValue, false, false));
+        parameters.add(new Parameter("lookup_join_on", ParameterType.STRING, StringUtils.EMPTY, false, false));
+        parameters
+                .add(new ColumnParameter("lookup_selected_cols", StringUtils.EMPTY, false, false, Collections.emptyList(), true));
         return parameters;
     }
 
@@ -84,9 +85,9 @@ public class Lookup extends AbstractActionMetadata implements DataSetAction {
      * @param datasetUrl the dataset url to use in parameters.
      */
     public void adapt(DataSetMetadata dataset, String datasetUrl) {
-        nameParameterDefaultValue = dataset.getName();
-        datasetIdParameterDefaultValue = dataset.getId();
-        urlParameterDefaultValue = datasetUrl;
+        adaptedNameValue = dataset.getName();
+        adaptedDatasetIdValue = dataset.getId();
+        adaptedUrlValue = datasetUrl;
     }
 
     /**
