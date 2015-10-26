@@ -27,13 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.AppendStep;
@@ -47,6 +41,7 @@ import org.talend.dataprep.exception.error.PreparationErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.store.PreparationRepository;
+import org.talend.dataprep.security.Security;
 import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
 
 import com.wordnik.swagger.annotations.Api;
@@ -67,6 +62,10 @@ public class PreparationService {
 
     @Autowired
     private ActionMetadataValidation validator;
+
+    /** DataPrep abstraction to the underlying security (whether it's enabled or not). */
+    @Autowired
+    private Security security;
 
     @RequestMapping(value = "/preparations", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations ids the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
@@ -101,7 +100,7 @@ public class PreparationService {
                          final Preparation preparation) {
         LOGGER.debug("Create new preparation for data set {}", preparation.getDataSetId());
         preparation.setStep(ROOT_STEP);
-        preparation.setAuthor(getUserName());
+        preparation.setAuthor(security.getUserId());
         preparationRepository.add(preparation);
         LOGGER.debug("Created new preparation: {}", preparation);
         return preparation.id();
@@ -335,19 +334,6 @@ public class PreparationService {
     //------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------GETTERS/EXTRACTORS------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------
-
-    /**
-     * Get user name from Spring Security context
-     *
-     * @return "anonymous" if no user is currently logged in, the user name otherwise.
-     */
-    private static String getUserName() {
-        final Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal != null) {
-            return principal.toString();
-        }
-        return "anonymous"; //$NON-NLS-1
-    }
 
     /**
      * Get the actual step id by converting "head" and "origin" to the hash
