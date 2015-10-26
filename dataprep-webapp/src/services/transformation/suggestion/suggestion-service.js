@@ -36,15 +36,6 @@
 
             /**
              * @ngdoc property
-             * @name showAllAction
-             * @propertyOf data-prep.services.transformation.service:SuggestionService
-             * @description show all actions or all of them
-             * @type {Object}
-             */
-            showAllAction: false,
-
-            /**
-             * @ngdoc property
              * @name searchActionString
              * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
              * @description Actions to search
@@ -76,7 +67,7 @@
             }
 
             service.currentColumn = column;
-            ColumnSuggestionService.initTransformations(column, service.showAllAction);
+            ColumnSuggestionService.initTransformations(column);
         }
 
         /**
@@ -110,19 +101,7 @@
          */
         function resetSearchAction() {
             service.searchActionString = '';
-
-            if(!service.showAllAction) {
-                angular.forEach(ColumnSuggestionService.transformations, function(item){
-                    item.labelHtml = item.label;
-                });
-            } else {
-                angular.forEach(ColumnSuggestionService.transformations, function(transfo){
-                    angular.forEach(transfo, function(item) {
-                        item.categoryHtml = item.category.toUpperCase();
-                    });
-                });
-                ColumnSuggestionService.updateTransformations();
-            }
+            ColumnSuggestionService.initTransformations(service.currentColumn);
         }
     }
 
