@@ -5,7 +5,15 @@
       "parameters": {
         "column_id": "city",
         "column_name": "city name",
-        "scope": "column"
+        "scope": "column",
+        "lookup_ds_name": "cities",
+        "lookup_ds_id": "ds#1234",
+        "lookup_ds_url": "http://www.url.com",
+        "lookup_join_on": "0001",
+        "lookup_selected_cols": [
+          "0002",
+          "0004"
+        ]
       }
     }
   ]
