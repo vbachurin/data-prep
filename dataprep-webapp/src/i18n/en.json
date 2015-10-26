@@ -64,7 +64,7 @@
   "IMPORT_HDFS_DATASET": "Import HDFS DataSet",
 
   "_comment": "Common",
-  "LOADING": "Loading",
+  "LOADING": "Loading...",
   "PROCESSING": "Processing",
 
   "_comment": "Confirm",
@@ -84,10 +84,10 @@
   "SEPARATOR_TAB": "Tabulation",
   "SEPARATOR_SPACE": "Space",
   "SEPARATOR_COMMA": "Comma",
-  "CONTENT_100_FIRST_ROWS": "Content (100 first rows)",
-  "DATASET_NAME": "Dataset Name",
+  "CONTENT_100_FIRST_ROWS": "Content (100 first rows):",
+  "DATASET_NAME": "Dataset Name:",
   "IMPORT_EXCEL_FILE": "Import Excel File",
-  "STYLESHEET": "Style sheet",
+  "STYLESHEET": "Style sheet:",
   "RENAME": "Rename",
   "NO_THANKS": "No, Thanks !",
 

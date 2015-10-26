@@ -29,7 +29,7 @@
             <input type="search"
                    class="action-search"
                    id="action-suggestions-search"
-                   placeholder="{{::'FIND_FUNCTION' | translate}}"
+                   translate-once-placeholder="FIND_FUNCTION"
                    ng-model="actionsSuggestionsCtrl.suggestionService.searchActionString"
                    ng-model-options="{debounce: { default: 300, blur: 0 }}"
                    add-reset-button-to-input>

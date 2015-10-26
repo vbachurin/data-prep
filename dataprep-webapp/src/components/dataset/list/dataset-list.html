@@ -1,6 +1,6 @@
 <div class="inventory dataset">
     <div class="inventory-sort">
-        <div>{{ ::'SORTED_BY' | translate }}</div>
+        <div translate-once="SORTED_BY"></div>
         <div class="button-switch">
             <talend-button-switch
                     values="datasetListCtrl.sortList"
@@ -9,7 +9,7 @@
                     change-action="datasetListCtrl.updateSortBy(selected)">
             </talend-button-switch>
         </div>
-        <div> {{ ::'SORT_IN' | translate }} </div>
+        <div translate-once="SORT_IN"> </div>
         <div class="button-switch">
             <talend-button-switch
                     values="datasetListCtrl.orderList"
@@ -18,7 +18,7 @@
                     change-action="datasetListCtrl.updateSortOrder(selected)">
             </talend-button-switch>
         </div>
-        <div> {{ ::'SORT_ORDER' | translate }} </div>
+        <div translate-once="SORT_ORDER"></div>
     </div>
 
     <div class="inventory-list" id="datasets-list">
@@ -39,7 +39,7 @@
                                       text-class="inventory-title"
                                       on-text-click="datasetListCtrl.uploadWorkflowService.openDataset(dataset)"
                                       on-validate="datasetListCtrl.rename(dataset, text)"></talend-editable-text>
-                <div class="inventory-description">{{ 'INVENTORY_DETAILS' | translate:dataset }}</div>
+                <div class="inventory-description" translate-once="INVENTORY_DETAILS" translate-values="dataset"></div>
             </div>
 
             <!-- Draft actions icons -->

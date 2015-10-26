@@ -9,7 +9,7 @@
     <form class="editable-text-container" ng-show="editableTextCtrl.editionMode" ng-submit="editableTextCtrl.validate()">
         <input class="edition-text-input"
                type="text"
-               placeholder="{{:: editableTextCtrl.placeholder | translate}}"
+               translate-once-placeholder="{{editableTextCtrl.placeholder}}"
                ng-model="editableTextCtrl.editionText"/>
         <button class="valid-btn" data-icon="b"></button>
         <button type='button' class="cancel-btn" data-icon="d" ng-click="editableTextCtrl.cancel()"></button>
