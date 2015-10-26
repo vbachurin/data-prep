@@ -27,7 +27,7 @@
             replace: true,
             templateUrl: 'components/transformation/params/column/transformation-column-param.html',
             scope: {
-                parameter: '=',
+                parameter: '='
             },
             bindToController: true,
             controllerAs: 'columnParamCtrl',

@@ -20,9 +20,8 @@
          * @description [PRIVATE] Init column param values
          */
         var initColumns = function () {
-            var currentColumn = state.playground.column;
+            var currentColumn = state.playground.grid.selectedColumn;
             vm.columns = _.filter(state.playground.data.columns, function(column) {
-
                 return currentColumn !== column;
             });
         };
@@ -34,7 +33,7 @@
          * @description [PRIVATE] Init select default value
          */
         var initDefaultValue = function () {
-            if (vm.columns.length !== 0) {
+            if (vm.columns.length) {
                 vm.parameter.value = vm.columns[0].id;
             }
         };

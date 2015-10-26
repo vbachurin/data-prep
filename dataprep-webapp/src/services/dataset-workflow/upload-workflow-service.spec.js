@@ -1,7 +1,7 @@
 describe('UploadWorkflow Service', function () {
     'use strict';
 
-    beforeEach(module('data-prep.services.uploadWorkflowService'));
+    beforeEach(module('data-prep.services.datasetWorkflowService'));
     beforeEach(inject(function ($state, $q, DatasetSheetPreviewService, MessageService, DatasetService) {
         spyOn($state, 'go').and.returnValue(null);
         spyOn(DatasetSheetPreviewService, 'loadPreview').and.returnValue($q.when(true));
