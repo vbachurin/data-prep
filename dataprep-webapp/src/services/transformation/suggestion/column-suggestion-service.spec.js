@@ -46,21 +46,49 @@ describe('Column suggestion service', function () {
         expect(ColumnSuggestionService.transformations).toBeFalsy();
         $rootScope.$digest();
 
-        //then : transformations initialized
+        //then
         expect(TransformationCacheService.getTransformations).toHaveBeenCalledWith(firstSelectedColumn, true);
         expect(TransformationCacheService.getTransformations).toHaveBeenCalledWith(firstSelectedColumn, false);
 
-        //then : column category filtered
+        //then
         var suggestedTransformations = ColumnSuggestionService.transformations;
         expect(suggestedTransformations).toBeDefined();
         var columnCategoryTransformation = _.find(suggestedTransformations, {category: 'column_metadata'});
         expect(columnCategoryTransformation).toBeFalsy();
 
-        //then : result grouped
+        //then
         expect(suggestedTransformations.SUGGESTION.length).toBe(6);
+
         expect(suggestedTransformations.CASE.length).toBe(3);
+        expect(suggestedTransformations.CASE[0].label).toBe('t');
+        expect(suggestedTransformations.CASE[1].label).toBe('u');
+        expect(suggestedTransformations.CASE[2].label).toBe('v');
+
         expect(suggestedTransformations.CLEAR.length).toBe(1);
+
         expect(suggestedTransformations.QUICKFIX.length).toBe(2);
+        expect(suggestedTransformations.QUICKFIX[0].label).toBe('f');
+        expect(suggestedTransformations.QUICKFIX[1].label).toBe('m');
+
+    }));
+
+
+    it('should update transformations list after searching', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService) {
+        //given
+        ColumnSuggestionService.transformations = {
+            '<span class="highlighted">SUGGESTION</span>': [{name: 'cluster', categoryHtml: 'SUGGESTION', category: 'quickfix',label: 'f', labelHtml: 'f'}, {name: 'removetrailingspaces', categoryHtml: 'SUGGESTION',category: 'quickfix', label: 'm', labelHtml: 'm'}],
+            QUICKFIX: [{name: 'cluster', categoryHtml: 'QUICKFIX', category: 'quickfix', label: 'f', labelHtml: 'f'}, {name: 'removetrailingspaces', categoryHtml: 'QUICKFIX', category: 'quickfix',label: 'm', labelHtml: 'm'}]
+        };
+        //when
+        ColumnSuggestionService.updateTransformations();
+        $rootScope.$digest();
+
+        //then
+        expect(ColumnSuggestionService.transformations.SUGGESTION.length).toBe(2);
+
+        expect(ColumnSuggestionService.transformations.QUICKFIX.length).toBe(2);
+        expect(ColumnSuggestionService.transformations.QUICKFIX[0].label).toBe('f');
+        expect(ColumnSuggestionService.transformations.QUICKFIX[1].label).toBe('m');
 
     }));
 });
