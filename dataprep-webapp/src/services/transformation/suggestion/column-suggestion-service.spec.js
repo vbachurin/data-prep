@@ -4,6 +4,13 @@ describe('Column suggestion service', function () {
     var firstSelectedColumn = {id: '0001', name: 'col1'};
 
     beforeEach(module('data-prep.services.transformation'));
+    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+        $translateProvider.translations('en', {
+            'ACTION_SUGGESTION': 'Suggestion'
+        });
+        $translateProvider.preferredLanguage('en');
+    }));
+
     beforeEach(inject(function ($q, TransformationCacheService) {
         spyOn(TransformationCacheService, 'getTransformations').and.returnValue($q.when(
             [
@@ -35,37 +42,12 @@ describe('Column suggestion service', function () {
         ColumnSuggestionService.transformations = {};
 
         //when
-        ColumnSuggestionService.initTransformations(firstSelectedColumn, true);
+        ColumnSuggestionService.initTransformations(firstSelectedColumn);
         expect(ColumnSuggestionService.transformations).toBeFalsy();
         $rootScope.$digest();
 
         //then : transformations initialized
         expect(TransformationCacheService.getTransformations).toHaveBeenCalledWith(firstSelectedColumn, true);
-
-        //then : column category filtered
-        var suggestedTransformations = ColumnSuggestionService.transformations;
-        expect(suggestedTransformations).toBeDefined();
-        var columnCategoryTransformation = _.find(suggestedTransformations, {category: 'column_metadata'});
-        expect(columnCategoryTransformation).toBeFalsy();
-
-        //then : result grouped
-        expect(suggestedTransformations.CASE.length).toBe(3);
-        expect(suggestedTransformations.CLEAR.length).toBe(1);
-        expect(suggestedTransformations.QUICKFIX.length).toBe(2);
-
-    }));
-
-
-    it('should filter "column" category', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService) {
-        //given
-        ColumnSuggestionService.transformations = {};
-
-        //when
-        ColumnSuggestionService.initTransformations(firstSelectedColumn, false);
-        expect(ColumnSuggestionService.transformations).toBeFalsy();
-        $rootScope.$digest();
-
-        //then : transformations initialized
         expect(TransformationCacheService.getTransformations).toHaveBeenCalledWith(firstSelectedColumn, false);
 
         //then : column category filtered
@@ -74,9 +56,11 @@ describe('Column suggestion service', function () {
         var columnCategoryTransformation = _.find(suggestedTransformations, {category: 'column_metadata'});
         expect(columnCategoryTransformation).toBeFalsy();
 
-        //then : result alphabetically sorted
-        expect(suggestedTransformations[0].label).toEqual('f');
-        expect(suggestedTransformations[0].labelHtml).toEqual('f');
-        expect(suggestedTransformations[suggestedTransformations.length - 1].label).toEqual('m');
+        //then : result grouped
+        expect(suggestedTransformations.SUGGESTION.length).toBe(6);
+        expect(suggestedTransformations.CASE.length).toBe(3);
+        expect(suggestedTransformations.CLEAR.length).toBe(1);
+        expect(suggestedTransformations.QUICKFIX.length).toBe(2);
+
     }));
 });

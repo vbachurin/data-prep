@@ -60,7 +60,7 @@
          */
         function setColumn(column) {
 
-            resetSearchAction();
+            service.searchActionString = '';
 
             if (column === service.currentColumn) {
                 return;
@@ -90,18 +90,6 @@
         function reset() {
             service.currentColumn = null;
             ColumnSuggestionService.reset();
-        }
-
-
-        /**
-         * @ngdoc method
-         * @name reset
-         * @methodOf data-prep.services.transformation.service:SuggestionService
-         * @description Reset the suggestions
-         */
-        function resetSearchAction() {
-            service.searchActionString = '';
-            ColumnSuggestionService.initTransformations(service.currentColumn);
         }
     }
 

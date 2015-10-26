@@ -50,20 +50,16 @@
          * @description Keep only the non 'columns' category and group them by category
          * @returns {object} An object containing {key: value} = {category: [transformations]}
          */
-        function filterAndGroup(allTransformations, transformationsSuggested) {
+        function filterAndGroup(allTransformationsArray, transformationsSuggestedArray) {
 
-            //Add labelHtml which is copy of label in order to manage the highlight action label
+            var allTransformations = allTransformationsArray;
+            var transformationsSuggested = transformationsSuggestedArray;
+
+            //Process all transformations list
             angular.forEach(allTransformations, function(item){
                 item.labelHtml= item.label;
                 item.categoryHtml= item.category.toUpperCase();
             });
-
-            //Add labelHtml which is copy of label in order to manage the highlight action label
-            angular.forEach(transformationsSuggested, function(item){
-                item.labelHtml= item.label;
-                item.categoryHtml= $translate.instant('ACTION_SUGGESTION').toUpperCase();
-            });
-
             var allTransfosFiltered = _.chain(allTransformations)
                                     .filter(function (transfo) {
                                         return transfo.category !== COLUMN_CATEGORY;
@@ -75,14 +71,19 @@
             var allTransfosFilteredGroupedSorted = sortObject(_.groupBy(allTransfosFiltered, function(action){ return action.categoryHtml;}));
 
 
+            //Process suggested transformations list
+            angular.forEach(transformationsSuggested, function(item){
+                item.labelHtml= item.label;
+                item.categoryHtml= $translate.instant('ACTION_SUGGESTION').toUpperCase();
+            });
             var transfosSuggestedFiltered = _.chain(transformationsSuggested)
                                             .filter(function (transfo) {
                                                 return transfo.category !== COLUMN_CATEGORY;
                                             })
                                             .value();
-
             var transfosSuggestedFilteredGrouped = _.groupBy(transfosSuggestedFiltered, function(action){ return action.categoryHtml;});
 
+            //Concatenate these two lists
             return _.extend(transfosSuggestedFilteredGrouped, allTransfosFilteredGroupedSorted);
         }
 
