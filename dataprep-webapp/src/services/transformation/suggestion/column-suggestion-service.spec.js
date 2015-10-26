@@ -73,7 +73,7 @@ describe('Column suggestion service', function () {
     }));
 
 
-    it('should update transformations list after searching', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService) {
+    it('should update transformations list after searching', inject(function ($rootScope, ColumnSuggestionService) {
         //given
         ColumnSuggestionService.transformations = {
             '<span class="highlighted">SUGGESTION</span>': [{name: 'cluster', categoryHtml: 'SUGGESTION', category: 'quickfix',label: 'f', labelHtml: 'f'}, {name: 'removetrailingspaces', categoryHtml: 'SUGGESTION',category: 'quickfix', label: 'm', labelHtml: 'm'}],
