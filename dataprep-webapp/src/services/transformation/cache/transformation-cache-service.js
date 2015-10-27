@@ -19,12 +19,13 @@
          * @description [PRIVATE] Generate a unique key for the column.
          */
         var getKey = function getKey(column, showAll) {
-            return showAll? JSON.stringify(column)+ '_showAll': JSON.stringify(column);
+            return showAll? 'allActionsList': JSON.stringify(column);
         };
 
         /**
          * @ngdoc method
          * @name getTransformations
+         *
          * @methodOf data-prep.services.transformation.service:TransformationCacheService
          * @param {object} column The transformations target column
          * @param {boolean} showAll show all transformation or some of them

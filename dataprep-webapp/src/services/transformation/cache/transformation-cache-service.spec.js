@@ -139,11 +139,11 @@ describe('Transformation cache service', function() {
         expect(result).toEqual(transformationsMock());
     }));
 
-    it('should return the same result from cache', inject(function($rootScope, TransformationCacheService, TransformationService) {
+    it('should return the same result from cache and showAll is false', inject(function($rootScope, TransformationCacheService, TransformationService) {
         //given
         var oldResult = null;
         var newResult = null;
-        TransformationCacheService.getTransformations(column)
+        TransformationCacheService.getTransformations(column, false)
             .then(function(transformations) {
                 oldResult = transformations;
             });
@@ -151,7 +151,31 @@ describe('Transformation cache service', function() {
         expect(TransformationService.getTransformations.calls.count()).toBe(1);
 
         //when
-        TransformationCacheService.getTransformations(column)
+        TransformationCacheService.getTransformations(column,false)
+            .then(function(transformations) {
+                newResult = transformations;
+            });
+        $rootScope.$digest();
+
+        //then
+        expect(newResult).toBe(oldResult);
+        expect(TransformationService.getTransformations.calls.count()).toBe(1);
+    }));
+
+
+    it('should return the same result from cache and showAll is true', inject(function($rootScope, TransformationCacheService, TransformationService) {
+        //given
+        var oldResult = null;
+        var newResult = null;
+        TransformationCacheService.getTransformations(column,true)
+            .then(function(transformations) {
+                oldResult = transformations;
+            });
+
+        expect(TransformationService.getTransformations.calls.count()).toBe(1);
+
+        //when
+        TransformationCacheService.getTransformations(column, true)
             .then(function(transformations) {
                 newResult = transformations;
             });
