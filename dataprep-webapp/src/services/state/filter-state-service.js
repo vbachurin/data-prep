@@ -6,7 +6,7 @@
         applyTransformationOnFilters: false
     };
 
-    function FilterStateService(state) {
+    function FilterStateService() {
         return {
             //common
             reset: reset,
