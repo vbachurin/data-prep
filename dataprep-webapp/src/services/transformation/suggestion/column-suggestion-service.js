@@ -12,6 +12,8 @@
         var COLUMN_CATEGORY = 'column_metadata';
         var self = this;
 
+        self.allTransformations = [];
+
         /**
          * @ngdoc property
          * @name transformations
@@ -56,40 +58,44 @@
             var transformationsSuggested = transformationsSuggestedArray;
 
             //labelHtml is used to display actions list whereas label is used for preview
-            function addLabelHtmlBasedOnParameters (item) {
-                if(!!(item.parameters || item.items) || item.dynamic) {
-                    item.labelHtml= item.label + '...';
+            function addLabelHtmlBasedOnParameters(item) {
+                if (!!(item.parameters || item.items) || item.dynamic) {
+                    item.labelHtml = item.label + '...';
                 } else {
-                    item.labelHtml= item.label;
+                    item.labelHtml = item.label;
                 }
             }
 
             //Process all transformations list
-            angular.forEach(allTransformations, function(item){
-                addLabelHtmlBasedOnParameters (item);
-                item.categoryHtml= item.category.toUpperCase();
+            angular.forEach(allTransformations, function (item) {
+                addLabelHtmlBasedOnParameters(item);
+                item.categoryHtml = item.category.toUpperCase();
             });
             var allTransfosFiltered = _.chain(allTransformations)
-                                    .filter(function (transfo) {
-                                        return transfo.category !== COLUMN_CATEGORY;
-                                    })
-                                    .sortBy(function (transfo) {
-                                        return transfo.label.toLowerCase();
-                                    })
-                                    .value();
-            var allTransfosFilteredGroupedSorted = sortObject(_.groupBy(allTransfosFiltered, function(action){ return action.categoryHtml;}));
+                .filter(function (transfo) {
+                    return transfo.category !== COLUMN_CATEGORY;
+                })
+                .sortBy(function (transfo) {
+                    return transfo.label.toLowerCase();
+                })
+                .value();
+            var allTransfosFilteredGroupedSorted = sortObject(_.groupBy(allTransfosFiltered, function (action) {
+                return action.categoryHtml;
+            }));
 
             //Process suggested transformations list
-            angular.forEach(transformationsSuggested, function(item){
-                addLabelHtmlBasedOnParameters (item);
-                item.categoryHtml= $translate.instant('ACTION_SUGGESTION').toUpperCase();
+            angular.forEach(transformationsSuggested, function (item) {
+                addLabelHtmlBasedOnParameters(item);
+                item.categoryHtml = $translate.instant('ACTION_SUGGESTION').toUpperCase();
             });
             var transfosSuggestedFiltered = _.chain(transformationsSuggested)
-                                            .filter(function (transfo) {
-                                                return transfo.category !== COLUMN_CATEGORY;
-                                            })
-                                            .value();
-            var transfosSuggestedFilteredGrouped = _.groupBy(transfosSuggestedFiltered, function(action){ return action.categoryHtml;});
+                .filter(function (transfo) {
+                    return transfo.category !== COLUMN_CATEGORY;
+                })
+                .value();
+            var transfosSuggestedFilteredGrouped = _.groupBy(transfosSuggestedFiltered, function (action) {
+                return action.categoryHtml;
+            });
 
             //Concatenate these two lists with respective order
             return _.extend(transfosSuggestedFilteredGrouped, allTransfosFilteredGroupedSorted);
@@ -105,19 +111,21 @@
         this.initTransformations = function initTransformations(column) {
             self.transformations = null;
 
-            $q.all([
-                TransformationCacheService.getTransformations(column, true)
-                    .then(function (allTransformations) {
-                        return allTransformations;
-                    }),
-                TransformationCacheService.getTransformations(column, false)
-                    .then(function (transformationsSuggested) {
-                        return transformationsSuggested;
-                    })
-            ])
-            .then(function(values) {
+            $q
+                .all([
+                    TransformationCacheService.getTransformations(column, true)
+                        .then(function (allTransformations) {
+                            return allTransformations;
+                        }),
+                    TransformationCacheService.getTransformations(column, false)
+                        .then(function (transformationsSuggested) {
+                            return transformationsSuggested;
+                        })
+                ])
+                .then(function (values) {
+                    self.allTransformations = values[0];
                     self.transformations = filterAndGroup(values[0], values[1]);
-            });
+                });
         };
 
         /**
@@ -130,7 +138,9 @@
             //Remove old keys
             var transfos = _.flatten(_.values(self.transformations));
             //Update keys
-            self.transformations = _.groupBy(transfos, function(action){ return action.categoryHtml;});
+            self.transformations = _.groupBy(transfos, function (action) {
+                return action.categoryHtml;
+            });
         };
 
         /**
