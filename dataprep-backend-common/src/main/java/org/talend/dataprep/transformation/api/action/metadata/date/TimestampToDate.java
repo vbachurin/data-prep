@@ -77,7 +77,7 @@ public class TimestampToDate extends AbstractActionMetadata implements ColumnAct
         // create new column and append it after current column
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
-        final String newColumn = rowMetadata.insertAfter(columnId, createNewColumn(column));
+        final String newColumn = rowMetadata.insertAfter(columnId, createNewColumn(column, parameters));
 
         final String value = row.get(columnId);
         row.set(newColumn, getTimeStamp(value, newPattern.getFormatter()));
@@ -94,16 +94,25 @@ public class TimestampToDate extends AbstractActionMetadata implements ColumnAct
     }
 
     /**
-     * Create the new "string length" column
+     * Create the new "date" column.
      *
-     * @param column the current column metadata
+     * @param column the current column metadata.
+     * @param parameters action parameters, used to detect if a custom date format is being used.
      * @return the new column metadata
      */
-    private ColumnMetadata createNewColumn(final ColumnMetadata column) {
+    private ColumnMetadata createNewColumn(final ColumnMetadata column, Map<String, String> parameters) {
+        final Type type;
+        if ("custom".equals(parameters.get(NEW_PATTERN))) {
+            // Custom pattern might not be detected as a valid date, create the new column as string for the most
+            // permissive type detection.
+            type = Type.STRING;
+        } else {
+            type = Type.DATE;
+        }
         return ColumnMetadata.Builder //
                 .column() //
                 .name(column.getName() + APPENDIX) //
-                .type(Type.DATE) //
+                .type(type) //
                 .headerSize(column.getHeaderSize()) //
                 .build();
     }
