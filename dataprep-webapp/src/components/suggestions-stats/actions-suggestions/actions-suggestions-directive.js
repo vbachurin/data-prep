@@ -56,18 +56,21 @@
 
                         var highlightText = function(actions){
                             angular.forEach(actions, function(item){
+                                //Remove highlight html code from label
                                 item.labelHtml = item.labelHtml.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
                                 item.labelHtml = item.labelHtml.replace(new RegExp('(</span>)', 'g'), '');
-
+                                //Remove highlight html code from category
                                 item.categoryHtml = item.categoryHtml.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
                                 item.categoryHtml = item.categoryHtml.replace(new RegExp('(</span>)', 'g'), '');
 
                                 if(ctrl.suggestionService.searchActionString ){
                                     if(item.labelHtml.toLowerCase().indexOf(ctrl.suggestionService.searchActionString ) !== -1){
+                                        //Add html code to highlight searchActionString
                                         item.labelHtml = item.labelHtml.replace(new RegExp('('+removeRegex(ctrl.suggestionService.searchActionString) +')', 'gi'),
                                             '<span class="highlighted">$1</span>');
                                     }
                                     if(item.categoryHtml.toLowerCase().indexOf(ctrl.suggestionService.searchActionString ) !== -1){
+                                        //Add html code to highlight searchActionString
                                         item.categoryHtml = item.categoryHtml.replace(new RegExp('('+removeRegex(ctrl.suggestionService.searchActionString) +')', 'gi'),
                                             '<span class="highlighted">$1</span>');
                                     }
@@ -79,6 +82,7 @@
                         angular.forEach(ctrl.columnSuggestions, function(actions){
                             highlightText(actions);
                         });
+                        //Update category keys for highlighting
                         ctrl.columnSuggestionService.updateTransformations();
                     }
                 );

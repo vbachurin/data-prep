@@ -22,7 +22,7 @@
         self.transformations = null;
 
 
-        //Sort by object key
+        //Sort by object key in alphabetical order
         function sortObject(o) {
             var sorted = {},
                 key, a = [];
@@ -47,7 +47,7 @@
          * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
          * @param {object[]} allTransformationsArray All transformations list
          * @param {object[]} transformationsSuggestedArray Suggested transformations list
-         * @description Keep only the non 'columns' category and group them by category
+         * @description Keep only the non 'column_metadata' category and group them by category
          * @returns {object} An object containing {key: value} = {category: [transformations]}
          */
         function filterAndGroup(allTransformationsArray, transformationsSuggestedArray) {

@@ -1,6 +1,7 @@
 (function() {
     'use strict';
-
+    /*Filter by label, description and category of actions
+    * */
     function ActionsSuggestionsSearchFilter() {
         return function(arr, searchActionString){
             if(!searchActionString){

@@ -25,6 +25,7 @@
         /**
          * @ngdoc method
          * @name getTransformations
+         *
          * @methodOf data-prep.services.transformation.service:TransformationCacheService
          * @param {object} column The transformations target column
          * @param {boolean} showAll show all transformation or some of them
