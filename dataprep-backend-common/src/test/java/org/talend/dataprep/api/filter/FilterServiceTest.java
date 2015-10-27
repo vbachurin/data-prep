@@ -187,4 +187,34 @@ public class FilterServiceTest {
     public void testMalformedAnd() throws Exception {
         service.build(IOUtils.toString(FilterServiceTest.class.getResourceAsStream("malformedAnd.json")));
     }
+
+    @Test
+    public void testNot() throws Exception {
+        // Test match on "not(0000 = value1)"
+        final Predicate<DataSetRow> matchPredicate = service.build(IOUtils.toString(FilterServiceTest.class.getResourceAsStream("not.json")));
+        assertThat(matchPredicate.test(row), is(true));
+        // Test non match on "not(0000 = value)"
+        final Predicate<DataSetRow> nonMatchPredicate = service.build(IOUtils.toString(FilterServiceTest.class.getResourceAsStream("not_non_match.json")));
+        assertThat(nonMatchPredicate.test(row), is(false));
+    }
+
+    @Test
+    public void testAndNot() throws Exception {
+        // Test match on "not(0000 = value1) && not(0002 = 3)"
+        final Predicate<DataSetRow> matchPredicate = service.build(IOUtils.toString(FilterServiceTest.class.getResourceAsStream("simpleAnd_not_match.json")));
+        assertThat(matchPredicate.test(row), is(true));
+        // Test non match on "not(0000 = value) && not(0001 = 2)"
+        final Predicate<DataSetRow> nonMatchPredicate = service.build(IOUtils.toString(FilterServiceTest.class.getResourceAsStream("simpleAnd_not_non_match.json")));
+        assertThat(nonMatchPredicate.test(row), is(false));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMalformedNotWithArray() throws Exception {
+        service.build(IOUtils.toString(FilterServiceTest.class.getResourceAsStream("malformed_not_array.json")));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMalformedNotWithNull() throws Exception {
+        service.build(IOUtils.toString(FilterServiceTest.class.getResourceAsStream("malformed_not_null.json")));
+    }
 }

@@ -73,6 +73,14 @@ public class SimpleFilterService implements FilterService {
                     throw new IllegalArgumentException("Malformed 'or' (expected 2 children).");
                 }
                 return r -> buildFilter(currentNodeContent.get(0)).or(buildFilter(currentNodeContent.get(1))).test(r);
+            } else if (currentNode.has("not")) {
+                if (!currentNodeContent.isObject()) {
+                    throw new IllegalArgumentException("Malformed 'not' (expected 1 object child).");
+                }
+                if (currentNodeContent.size() == 0) {
+                    throw new IllegalArgumentException("Malformed 'not' (object child is empty).");
+                }
+                return buildFilter(currentNodeContent).negate();
             }
         }
         throw new UnsupportedOperationException("Unsupported query: " + currentNode.toString());
