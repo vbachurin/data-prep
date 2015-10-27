@@ -1,16 +1,13 @@
 package org.talend.dataprep.transformation.api.action.metadata.clear;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,8 +38,7 @@ public class ClearInvalidTest {
      */
     public ClearInvalidTest() throws IOException {
         action = new ClearInvalid();
-        parameters = ActionMetadataTestUtils.parseParameters(action, //
-                ClearInvalidTest.class.getResourceAsStream("clearInvalidAction.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(ClearInvalidTest.class.getResourceAsStream("clearInvalidAction.json"));
     }
 
     @Test
@@ -64,7 +60,7 @@ public class ClearInvalidTest {
         values.put("0003", "Something");
 
         final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(asList(ColumnMetadata.Builder.column() //
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
                 .type(Type.STRING) //
                 .computedId("0002") //
                 .invalidValues(newHashSet("N")) //
@@ -94,7 +90,7 @@ public class ClearInvalidTest {
         values.put("0003", "Something");
 
         final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(asList(ColumnMetadata.Builder.column() //
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
                 .type(Type.STRING) //
                 .computedId("0002") //
                 .invalidValues(newHashSet()) //
@@ -124,7 +120,7 @@ public class ClearInvalidTest {
         values.put("0003", "Something");
 
         final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(asList(ColumnMetadata.Builder.column() //
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
                 .type(Type.INTEGER) //
                 .computedId("0002") //
                 .invalidValues(newHashSet()) //
@@ -159,7 +155,7 @@ public class ClearInvalidTest {
         values.put("0003", "Something");
 
         final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(asList(ColumnMetadata.Builder.column() //
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
                 .type(Type.DATE) //
                 .computedId("0002") //
                 .invalidValues(newHashSet()) //
@@ -194,7 +190,7 @@ public class ClearInvalidTest {
         values.put("0003", "Something");
 
         final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(asList(ColumnMetadata.Builder.column() //
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
                 .type(Type.DATE) //
                 .computedId("0002") //
                 .invalidValues(newHashSet()) //
@@ -228,7 +224,7 @@ public class ClearInvalidTest {
         values.put("0003", "Something");
 
         final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(asList(ColumnMetadata.Builder.column() //
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
                 .type(Type.INTEGER) //
                 .computedId("0002") //
                 .invalidValues(newHashSet()) //
