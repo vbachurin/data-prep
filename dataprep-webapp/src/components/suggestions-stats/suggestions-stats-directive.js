@@ -23,7 +23,7 @@
 
                     var drag = false;
 
-                    var actionHeaderPanelsSizeMargin = 130;
+                    var actionHeaderPanelsSizeMargin = 150;
                     var statHeaderPanelsSizeMargin = 35;
 
                     iElement.bind('mousemove', function () {

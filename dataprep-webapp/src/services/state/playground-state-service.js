@@ -36,7 +36,8 @@
             addGridFilter: addGridFilter,
             updateGridFilter: updateGridFilter,
             removeGridFilter: removeGridFilter,
-            removeAllGridFilters: removeAllGridFilters
+            removeAllGridFilters: removeAllGridFilters,
+            convertFiltersToQueryFormat: FilterStateService.convertFiltersToQueryFormat
         };
 
         //--------------------------------------------------------------------------------------------------------------

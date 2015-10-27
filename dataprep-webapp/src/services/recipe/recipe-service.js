@@ -382,6 +382,9 @@
                         .zip(resp.data.actions, resp.data.metadata, resp.data.diff)
                         .map(createItem)
                         .value();
+                    _.each(oldRecipe, function(oldStep, index){
+                        newRecipe[index].stepFilters = oldStep.stepFilters;
+                    });
                     activeThresholdStep = null;
                     recipeStateBeforePreview = null;
                     recipe = newRecipe;
@@ -429,6 +432,17 @@
         //--------------------------------------------------------------------------------------------------------------
         //-----------------------------------------------------PREVIEW--------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
+
+
+        function getStepFilters (){
+            if(state.playground.filter.applyTransformationOnFilters){
+                return state.playground.filter.gridFilters.slice(0);
+            }
+            else {
+                return [];
+            }
+        }
+
         /**
          * @ngdoc method
          * @name earlyPreview
@@ -444,6 +458,8 @@
                 recipe: recipe,
                 lastActiveStep: activeThresholdStep
             };
+
+            var stepFilters = getStepFilters();
 
             //create the preview step
             var previewStep = {
@@ -463,7 +479,8 @@
                     action: transformation.name,
                     parameters: params
                 },
-                preview: true
+                preview: true,
+                stepFilters: stepFilters
             };
             TransformationService.initParamsValues(previewStep.transformation, params);
 

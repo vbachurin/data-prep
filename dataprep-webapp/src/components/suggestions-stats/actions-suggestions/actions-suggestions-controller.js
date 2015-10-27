@@ -12,14 +12,16 @@
      * @requires data-prep.services.playground.service:EarlyPreviewService
      */
     function ActionsSuggestionsCtrl(state, SuggestionService, ColumnSuggestionService, TransformationService,
-                                    TransformationApplicationService, EarlyPreviewService) {
+                                    TransformationApplicationService, EarlyPreviewService, StateService) {
 
         var vm = this;
         vm.columnSuggestionService = ColumnSuggestionService;
         vm.suggestionService = SuggestionService;
+        vm.state = state;
 
         vm.earlyPreview = EarlyPreviewService.earlyPreview;
         vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
+        vm.updateFilterStatus = StateService.updateFilterStatus;
 
         /**
          * @ngdoc property
@@ -157,6 +159,29 @@
                         setTimeout(EarlyPreviewService.activatePreview, 500);
                     });
             };
+        };
+
+        /**
+         * @ngdoc method
+         * @name toggleShowAction
+         * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
+         * @description Remove html code inserted when highlighting text from object
+         */
+        vm.toggleShowAction = function toggleShowAction() {
+            //Reset action search
+            this.suggestionService.searchActionString = '';
+            this.columnSuggestionService.initTransformations(vm.suggestionService.currentColumn, this.suggestionService.showAllAction);
+        };
+
+        /**
+         * @ngdoc method
+         * @name shouldShowFilteredActions
+         * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
+         * @param {object} transformation
+         * @description checks if the action should be shown or not
+         */
+        vm.shouldShowFilteredActions = function shouldShowFilteredActions(action){
+            return action.category !== 'filtered' || (state.playground.filter.applyTransformationOnFilters && action.category === 'filtered');
         };
     }
 

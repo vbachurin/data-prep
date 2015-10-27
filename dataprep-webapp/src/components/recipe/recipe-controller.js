@@ -10,7 +10,7 @@
      * @requires data-prep.services.playground.service:PreviewService
      * @requires data-prep.services.preparation.service:PreparationService
      */
-    function RecipeCtrl(state, RecipeService, PlaygroundService, PreparationService, PreviewService) {
+    function RecipeCtrl(state, RecipeService, PlaygroundService, PreparationService, PreviewService, StateService) {
         var vm = this;
         vm.recipeService = RecipeService;
 
@@ -61,6 +61,13 @@
                 .then(function() {
                     vm.showModal = {};
                 });
+        };
+
+        vm.removeStepFilter = function removeStepFilter(step, filter){
+            var filterPos = step.stepFilters.indexOf(filter);
+            step.stepFilters.splice(filterPos, 1);
+            var stepFiltersTree = StateService.convertFiltersToQueryFormat(step.stepFilters);
+            vm.updateStep(step, _.extend({},stepFiltersTree));
         };
 
         //---------------------------------------------------------------------------------------------

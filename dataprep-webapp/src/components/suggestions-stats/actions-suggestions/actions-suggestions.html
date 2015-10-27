@@ -3,7 +3,7 @@
         <span class="title title-action" title="{{actionsSuggestionsCtrl.column.name}}">{{actionsSuggestionsCtrl.column.name}}</span>
     </div>
 
-    <div class="Description" ng-if="! actionsSuggestionsCtrl.columnSuggestions">Select a column to display its actions</div>
+    <div class="Description" ng-if="!actionsSuggestionsCtrl.columnSuggestions">Select a column to display its actions</div>
 
     <talend-tabs tab="actionsSuggestionsCtrl.tab" action-on-click="actionsSuggestionsCtrl.resizePanels()" ng-if="actionsSuggestionsCtrl.columnSuggestions">
         <talend-tabs-item tab-title="Text">
@@ -33,6 +33,7 @@
                             <talend-accordions-item
                                     ng-repeat="transfo in transformations track by transfo.name"
                                     action="actionsSuggestionsCtrl.scrollToBottom"
+                                    ng-show="actionsSuggestionsCtrl.shouldShowFilteredActions(transfo)"
                                     ng-switch="!!(transfo.parameters || transfo.items)">
                                 <!--with dynamic parameters-->
                                 <a class="trigger"
@@ -108,4 +109,18 @@
 
         </div>
     </talend-modal>
+
+    <div class="filters-actions-form animate-show" ng-show="actionsSuggestionsCtrl.state.playground.filter.gridFilters.length">
+        <hr class="hr-style">
+        <form name="myForm">
+            Apply changes to:
+            <input type="radio" ng-model="actionsSuggestionsCtrl.state.playground.filter.applyTransformationOnFilters" ng-value="false" >
+            All Lines
+            <input type="radio" ng-model="actionsSuggestionsCtrl.state.playground.filter.applyTransformationOnFilters" ng-value="true" >
+            Filtered Lines
+        </form>
+        <hr class="hr-style">
+    </div>
+
+
 </div>
