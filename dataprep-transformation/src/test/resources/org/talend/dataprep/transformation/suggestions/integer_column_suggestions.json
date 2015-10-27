@@ -47,7 +47,7 @@
   {
     "description": "Fill empty cells of this column with given value",
     "category": "data cleansing",
-    "label": "Fill empty cells with value...",
+    "label": "Fill empty cells with value",
     "name": "fillemptywithdefault",
     "parameters": [
       {
@@ -281,7 +281,7 @@
   {
     "description": "Fill invalid cells of this column with given value",
     "category": "data cleansing",
-    "label": "Fill invalid cells with value...",
+    "label": "Fill invalid cells with value",
     "name": "fillinvalidwithdefault",
     "parameters": [
       {

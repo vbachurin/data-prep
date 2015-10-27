@@ -321,7 +321,7 @@
     "category": "data cleansing",
     "dynamic": false,
     "description": "Delete rows that have a specific value in cell in this column",
-    "label": "Delete lines that match..."
+    "label": "Delete lines that match"
   },
   {
     "category": "filtered",
@@ -840,7 +840,7 @@
   {
     "description": "Fill invalid cells of this column with given value",
     "category": "data cleansing",
-    "label": "Fill invalid cells with value...",
+    "label": "Fill invalid cells with value",
     "name": "fillinvalidwithdefault",
     "parameters": [
       {
@@ -988,7 +988,7 @@
     ],
     "dynamic": false,
     "description": "Remove specified text from cells in this column",
-    "label": "Remove part of the text..."
+    "label": "Remove part of the text"
   },
   {
     "category": "strings",
@@ -1085,7 +1085,7 @@
     "category": "strings advanced",
     "name": "textclustering",
     "description": "Replace all similar values with the right one (i.e. cluster)",
-    "label": "Find and group similar text...",
+    "label": "Find and group similar text",
     "parameters": [
       {
         "name": "column_id",
@@ -1372,7 +1372,7 @@
     ],
     "dynamic": false,
     "description": "Split column from separators",
-    "label": "Split the text in parts..."
+    "label": "Split the text in parts"
   },
   {
     "category": "strings",
@@ -1444,7 +1444,7 @@
     ],
     "dynamic": false,
     "description": "Replace cells that have a specific value",
-    "label": "Replace cells that match..."
+    "label": "Replace cells that match"
   },
   {
     "category": "strings",
@@ -1678,7 +1678,7 @@
   {
     "description": "Fill empty cells of this column with given value",
     "category": "data cleansing",
-    "label": "Fill empty cells with text...",
+    "label": "Fill empty cells with text",
     "name": "fillemptywithdefault",
     "parameters": [
       {
@@ -2059,7 +2059,7 @@
           "multiple": false
         },
         "description": "Select if you want to compute against a constant value or to another column",
-        "label": "Compute with...",
+        "label": "Compute with",
         "default": "Constant"
       }
     ],
@@ -2326,7 +2326,7 @@
     ],
     "dynamic": false,
     "description": "Combine this column with another one",
-    "label": "Concatenate with..."
+    "label": "Concatenate with"
   },
   {
     "parameters": [
