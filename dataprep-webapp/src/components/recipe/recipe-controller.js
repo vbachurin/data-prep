@@ -57,7 +57,7 @@
                 return;
             }
 
-            PlaygroundService.updateStep(step, newParams)
+            return PlaygroundService.updateStep(step, newParams)
                 .then(function() {
                     vm.showModal = {};
                 });

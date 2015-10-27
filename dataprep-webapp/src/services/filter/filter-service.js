@@ -380,6 +380,13 @@
 
         var theAndTree, theOrTree;
 
+        /**
+         * @ngdoc method
+         * @name convertFiltersArrayToTreeFormat
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {Array} the filters list to convert into a Tree
+         * @description Update an existing filter and update datagrid filters
+         */
         function convertFiltersArrayToTreeFormat(filtersArray){
             var formattedFilters = [];
             _.each(filtersArray, function(filter){
@@ -402,6 +409,7 @@
                         break;
                     case 'invalid_records':
                         createInvalidValuesTree(filter.colId, 'eq');
+                        //createInvalidPredicate(id)
                         formattedFilters.push(theOrTree);
                         break;
                     case 'empty_records':
@@ -414,6 +422,7 @@
                         break;
                     case 'valid_records':
                         createInvalidValuesTree(filter.colId, 'not');
+                        //negate(createInvalidPredicate(id)) + not empty
                         formattedFilters.push(theAndTree);
                         break;
                     case 'inside_range':
@@ -500,16 +509,17 @@
                 }
                 formattedInvalidValues.push(predicat);
             });
-
             //include empty records in the (in)valid filter
-            formattedInvalidValues.push({
-                not:{
-                    eq:{
-                        value: '',
-                        field: colId
+            if(sign === 'not'){
+                formattedInvalidValues.push({
+                    not:{
+                        eq:{
+                            value: '',
+                            field: colId
+                        }
                     }
-                }
-            });
+                });
+            }
 
             if(formattedInvalidValues.length === 1){//when there is only 1 (in)valid value
                 if(sign === 'not'){
