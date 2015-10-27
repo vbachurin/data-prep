@@ -61,6 +61,8 @@ public class Average extends AbstractAggregator implements Aggregator {
          * @param value the row value to process.
          */
         void process(String value) {
+            // Increase count (a new value is being processed).
+            count++;
             // skip null or empty value
             if (StringUtils.isEmpty(value)) {
                 return;
@@ -75,7 +77,6 @@ public class Average extends AbstractAggregator implements Aggregator {
             }
 
             sum += newAmount;
-            count++;
         }
 
         /**
