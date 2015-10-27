@@ -118,13 +118,8 @@
       }
 
       &.clone-btn {
-        color: $medium-gray;
-        background-color: transparent;
         font-size: .8em;
         display: none;
-        &:hover {
-          color: $dark-gray;
-        }
       }
 
       &.check-btn {
