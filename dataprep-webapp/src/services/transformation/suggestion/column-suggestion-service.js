@@ -45,8 +45,8 @@
          * @ngdoc method
          * @name filterAndGroup
          * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @param {object[]} allTransformations All transformations list
-         * @param {object[]} transformationsSuggested Suggested transformations list
+         * @param {object[]} allTransformationsArray All transformations list
+         * @param {object[]} transformationsSuggestedArray Suggested transformations list
          * @description Keep only the non 'columns' category and group them by category
          * @returns {object} An object containing {key: value} = {category: [transformations]}
          */
@@ -83,7 +83,7 @@
                                             .value();
             var transfosSuggestedFilteredGrouped = _.groupBy(transfosSuggestedFiltered, function(action){ return action.categoryHtml;});
 
-            //Concatenate these two lists
+            //Concatenate these two lists with respective order
             return _.extend(transfosSuggestedFilteredGrouped, allTransfosFilteredGroupedSorted);
         }
 
@@ -92,7 +92,7 @@
          * @name initTransformations
          * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
          * @param {object} column The target column
-         * @description Get and preparation the transformations from backend
+         * @description Get and process the transformations from backend
          */
         this.initTransformations = function initTransformations(column) {
             self.transformations = null;
@@ -116,10 +116,12 @@
          * @ngdoc method
          * @name updateTransformations
          * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @description update self.transformations keys when highlighting
+         * @description update self.transformations keys(actions' category) when highlighting
          */
         this.updateTransformations = function updateTransformations() {
+            //Remove old keys
             var transfos = _.flatten(_.values(self.transformations));
+            //Update keys
             self.transformations = _.groupBy(transfos, function(action){ return action.categoryHtml;});
         };
 

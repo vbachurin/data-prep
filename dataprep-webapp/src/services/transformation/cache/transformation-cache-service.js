@@ -19,7 +19,7 @@
          * @description [PRIVATE] Generate a unique key for the column.
          */
         var getKey = function getKey(column, showAll) {
-            return showAll? JSON.stringify(column)+ '_showAll': JSON.stringify(column);
+            return showAll? 'allActionsList': JSON.stringify(column);
         };
 
         /**
