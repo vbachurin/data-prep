@@ -500,6 +500,17 @@
                 }
                 formattedInvalidValues.push(predicat);
             });
+
+            //include empty records in the (in)valid filter
+            formattedInvalidValues.push({
+                not:{
+                    eq:{
+                        value: '',
+                        field: colId
+                    }
+                }
+            });
+
             if(formattedInvalidValues.length === 1){//when there is only 1 (in)valid value
                 if(sign === 'not'){
                     theAndTree = formattedInvalidValues[0];
