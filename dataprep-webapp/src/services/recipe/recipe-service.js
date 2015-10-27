@@ -353,7 +353,7 @@
                 },
                 actionParameters: actionValues,
                 diff: diff,
-                stepFilters: flatFilters
+                filters: flatFilters
             };
 
             TransformationService.initParamsValues(item.transformation, actionValues.parameters);
@@ -481,7 +481,7 @@
                     parameters: params
                 },
                 preview: true,
-                stepFilters: stepFilters
+                filters: stepFilters
             };
             TransformationService.initParamsValues(previewStep.transformation, params);
 

@@ -26,9 +26,9 @@
 
             <recipe-bullet class="step-trigger" step="step" ></recipe-bullet>
 
-            <div id="step-filters-list" ng-show="step.stepFilters.length">
+            <div id="step-filters-list" ng-show="step.filters.length">
                 <filter-list class="list"
-                         filters="step.stepFilters"
+                         filters="step.filters"
                          on-filter-remove="recipeCtrl.removeStepFilter(step, filter)"></filter-list>
             </div>
         </div>

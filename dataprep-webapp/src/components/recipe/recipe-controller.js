@@ -63,13 +63,25 @@
                 });
         };
 
+        /**
+         * @ngdoc method
+         * @name removeStepFilter
+         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @param {string} step The step id to update
+         * @param {object} filter the filter to be removed
+         * @description removes a filter in the step and updates the step
+         */
         vm.removeStepFilter = function removeStepFilter(step, filter){
-            var stepFiltersTree = FilterService.convertFiltersArrayToTreeFormat(step.stepFilters);
+            var copyStepFilters = step.filters.slice(0);
+            var filterPos = copyStepFilters.indexOf(filter);
+            copyStepFilters.splice(filterPos, 1);
+
+            var stepFiltersTree = FilterService.convertFiltersArrayToTreeFormat(copyStepFilters);
             //_.omit for the case where all the step filters have been removed because in that case stepFiltersTree === {}
             vm.updateStep(step, _.extend({}, _.omit(step.actionParameters.parameters, 'filter'), stepFiltersTree))
                 .then(function(){
-                    var filterPos = step.stepFilters.indexOf(filter);
-                    step.stepFilters.splice(filterPos, 1);
+                    var filterPos = step.filters.indexOf(filter);
+                    step.filters.splice(filterPos, 1);
                 });
         };
 
