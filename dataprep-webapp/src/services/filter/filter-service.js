@@ -66,7 +66,8 @@
             updateFilter: updateFilter,
             removeAllFilters: removeAllFilters,
             removeFilter: removeFilter,
-            convertFiltersArrayToTreeFormat: convertFiltersArrayToTreeFormat
+            convertFiltersArrayToTreeFormat: convertFiltersArrayToTreeFormat,
+            flattenFiltersTree: flattenFiltersTree
         };
         return service;
 
@@ -408,22 +409,31 @@
                         });
                         break;
                     case 'invalid_records':
-                        createInvalidValuesTree(filter.colId, 'eq');
+                        formattedFilters.push({
+                            'invalid': {
+                                'field': filter.colId
+                            }
+                        });
+                        //createInvalidValuesTree(filter.colId, 'eq');
                         //createInvalidPredicate(id)
-                        formattedFilters.push(theOrTree);
+                        //formattedFilters.push(theOrTree);
                         break;
                     case 'empty_records':
                         formattedFilters.push({
-                            'eq': {
-                                'field': filter.colId,
-                                'value': ''
+                            'empty': {
+                                'field': filter.colId
                             }
                         });
                         break;
                     case 'valid_records':
-                        createInvalidValuesTree(filter.colId, 'not');
+                        formattedFilters.push({
+                            'valid': {
+                                'field': filter.colId
+                            }
+                        });
+                        //createInvalidValuesTree(filter.colId, 'not');
                         //negate(createInvalidPredicate(id)) + not empty
-                        formattedFilters.push(theAndTree);
+                        //formattedFilters.push(theAndTree);
                         break;
                     case 'inside_range':
                         formattedFilters.push({
@@ -537,6 +547,89 @@
                     constructPairsTree(formattedInvalidValues, 2, 'or');
                 }
             }
+        }
+
+        /************************************************************************************/
+        /************************************ FLATTEN TREE **********************************/
+        /************************************************************************************/
+
+        function flattenFiltersTree(filterTree, flatFilters){
+            for (var key in filterTree){
+                var cond = filterTree[key];
+                if(cond instanceof Array){
+                    loopConditionsArray(cond, flatFilters)
+                }
+                else{
+                    flatFilters.push(convertToFilterStructure(cond, key));
+                }
+            }
+        }
+
+        function loopConditionsArray(tab, flatFilters){
+            _.each(tab, function(cond){
+                for (var key in cond){
+                    if(['or','and'].indexOf(key) !== -1){// TO DO if(key === 'and'){
+                        loopConditionsArray(cond[key], flatFilters);
+                    }
+                    else{
+                        flatFilters.push(convertToFilterStructure(cond, key));
+                    }
+                }
+            })
+        }
+
+        function getColumnName(colId){
+            var filterColumn = _.filter(state.playground.data.columns, function (col){
+                return col.id === colId;
+            });
+            return _.pluck(filterColumn, 'name')[0];
+        }
+
+        function convertToFilterStructure(cond, key){
+            var filter = {editable:false};
+
+            //function Filter(type, colId, colName, editable, args, filterFn, removeFilterFn)
+            switch (key) {
+                case 'contains':
+                    filter.type = 'contains';
+                    filter.args = {phrase: cond[key].value};
+
+                    filter.colId = cond[key].field;
+                    filter.colName = getColumnName(filter.colId);
+                    break;
+                case 'eq':
+                    filter.type = 'exact';
+                    filter.args = {phrase: cond[key].value};
+                    filter.colId = cond[key].field;
+                    filter.colName = getColumnName(filter.colId);
+                    break;
+                case 'invalid':
+                    filter.type = 'invalid_records';
+
+                    filter.colId = cond.field;
+                    filter.colName = getColumnName(filter.colId);
+                    break;
+                case 'empty':
+                    filter.type = 'empty_records';
+
+                    filter.colId = cond.field;
+                    filter.colName = getColumnName(filter.colId);
+                    break;
+                case 'valid':
+                    filter.type = 'valid_records';
+
+                    filter.colId = cond[key].field;
+                    filter.colName = getColumnName(filter.colId);
+                    break;
+                case 'range':
+                    filter.type = 'inside_range';
+
+                    filter.colId = cond[key].field;
+                    filter.colName = getColumnName(filter.colId);
+                    filter.args = {interval:[cond[key].start, cond[key].end]};
+                    break;
+            }
+            return new Filter(filter.type, filter.colId, filter.colName, filter.editable, filter.args, null, null);
         }
     }
 

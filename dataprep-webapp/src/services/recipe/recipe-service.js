@@ -8,7 +8,7 @@
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.transformation.service:TransformationService
      */
-    function RecipeService(state, PreparationService, TransformationService) {
+    function RecipeService(state, PreparationService, TransformationService, FilterService) {
         var clusterType = 'CLUSTER';
 
         /**
@@ -334,6 +334,9 @@
             var metadata = actionStep[2];
             var diff = actionStep[3];
 
+            var flatFilters = [];
+            FilterService.flattenFiltersTree(actionValues.parameters.filter, flatFilters);
+
             var item = {
                 column: {
                     /*jshint camelcase: false */
@@ -349,7 +352,8 @@
                     dynamic: metadata.dynamic
                 },
                 actionParameters: actionValues,
-                diff: diff
+                diff: diff,
+                stepFilters: flatFilters
             };
 
             TransformationService.initParamsValues(item.transformation, actionValues.parameters);
@@ -382,9 +386,9 @@
                         .zip(resp.data.actions, resp.data.metadata, resp.data.diff)
                         .map(createItem)
                         .value();
-                    _.each(oldRecipe, function(oldStep, index){
-                        newRecipe[index].stepFilters = oldStep.stepFilters;
-                    });
+                   //_.each(oldRecipe, function(oldStep, index){
+                   //    newRecipe[index].stepFilters = oldStep.stepFilters;
+                   //});
                     activeThresholdStep = null;
                     recipeStateBeforePreview = null;
                     recipe = newRecipe;
