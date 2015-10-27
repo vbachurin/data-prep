@@ -9,6 +9,11 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * A {@link Map} implementation for JSON (de)serialization to be used to indicate Map may receive mixed boolean /
+ * numeric and JSON object as values. This implementation is a trigger so
+ * {@link org.talend.dataprep.api.preparation.json.MixedContentMapModule} module is used to (de)serialize map content.
+ */
 public class MixedContentMap implements Map<String, String>, Serializable {
 
     private final Map<String, String> map = new HashMap<>();

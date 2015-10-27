@@ -319,16 +319,27 @@ public class DataSetRow implements Cloneable {
         return values.isEmpty() || values.values().stream().filter(s -> !StringUtils.isEmpty(s)).count() == 0;
     }
 
-    public DataSetRow filtered() {
-        return new FilteredDataSetRow(this);
+    /**
+     * @return A {@link DataSetRow} as 'unmodifiable': all previously set values cannot change (changes would be
+     * silently ignored), setting a new column will set empty string (value will be discarded).
+     */
+    public DataSetRow unmodifiable() {
+        return new UnmodifiableDataSetRow(this);
     }
 
-    private static class FilteredDataSetRow extends DataSetRow {
+    /**
+     * A wrapper implementation of {@link DataSetRow} that prevents changes on previous values and set empty string for
+     * all new columns. This implementation allows modification on {@link RowMetadata}.
+     * 
+     * @see #set(String, String)
+     */
+    private static class UnmodifiableDataSetRow extends DataSetRow {
 
         private final DataSetRow delegate;
+
         private final boolean deleted;
 
-        public FilteredDataSetRow(DataSetRow delegate) {
+        public UnmodifiableDataSetRow(DataSetRow delegate) {
             super(delegate.rowMetadata);
             this.delegate = delegate;
             deleted = delegate.isDeleted();
@@ -339,6 +350,17 @@ public class DataSetRow implements Cloneable {
             return delegate.getRowMetadata();
         }
 
+        @Override
+        public void setRowMetadata(RowMetadata rowMetadata) {
+        }
+
+        /**
+         * This method prevents changes on previous values and set empty string for all new columns.
+         * 
+         * @param name - the key A column name.
+         * @param value - the value The value to be set for column name.
+         * @return This data set row for chaining calls.
+         */
         @Override
         public DataSetRow set(String name, String value) {
             if (delegate.get(name) == null) {
@@ -420,11 +442,7 @@ public class DataSetRow implements Cloneable {
         }
 
         @Override
-        public void setRowMetadata(RowMetadata rowMetadata) {
-        }
-
-        @Override
-        public DataSetRow filtered() {
+        public DataSetRow unmodifiable() {
             return this;
         }
     }
