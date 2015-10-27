@@ -36,11 +36,7 @@
                         //Force to resize tabs containers
                         var panel1 = angular.element('.split-pane1');
                         var panel2 = angular.element('.split-pane2');
-<<<<<<< HEAD
-                        var actionHeaderPanelsSizeMargin = 130;
-=======
                         var actionHeaderPanelsSizeMargin = 150;
->>>>>>> TDP-434 new branch after master front-end changes
                         var statHeaderPanelsSizeMargin = 35;
 
 
