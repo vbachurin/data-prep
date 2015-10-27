@@ -414,7 +414,7 @@
                         break;
                     case 'valid_records':
                         createInvalidValuesTree(filter.colId, 'not');
-                        formattedFilters.push(theOrTree);
+                        formattedFilters.push(theAndTree);
                         break;
                     case 'inside_range':
                         formattedFilters.push({
@@ -484,17 +484,37 @@
             var formattedInvalidValues = [];
             _.each(invalidValues, function(invalidValue){
                 var predicat = {};
-                predicat[sign] = {
-                    'field': colId,
-                    'value': invalidValue
-                };
+                if(sign === 'not'){
+                    predicat.not = {
+                        eq:{
+                            'field': colId,
+                            'value': invalidValue
+                        }
+                    };
+                }
+                else{
+                    predicat[sign] = {
+                        'field': colId,
+                        'value': invalidValue
+                    };
+                }
                 formattedInvalidValues.push(predicat);
             });
-            if(formattedInvalidValues.length === 1){
-                theOrTree = formattedInvalidValues[0];
+            if(formattedInvalidValues.length === 1){//when there is only 1 (in)valid value
+                if(sign === 'not'){
+                    theAndTree = formattedInvalidValues[0];
+                }
+                else{
+                    theOrTree = formattedInvalidValues[0];
+                }
             }
             else{
-                constructPairsTree(formattedInvalidValues, 2, 'or');
+                if(sign === 'not'){
+                    constructPairsTree(formattedInvalidValues, 2, 'and');
+                }
+                else{
+                    constructPairsTree(formattedInvalidValues, 2, 'or');
+                }
             }
         }
     }
