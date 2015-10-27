@@ -8,7 +8,7 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.state.constant:state
      */
-    function TransformationApplicationService(PlaygroundService, state, StateService) {
+    function TransformationApplicationService(PlaygroundService, state, FilterService) {
         return {
             append: append,
             appendClosure: appendClosure
@@ -42,7 +42,7 @@
                 params.column_id = column.id;
                 params.column_name = column.name;
 
-                var stepFilters = StateService.convertFiltersToQueryFormat(state.playground.filter.gridFilters);
+                var stepFilters = FilterService.convertFiltersArrayToTreeFormat(state.playground.filter.gridFilters);
                 if(state.playground.filter.applyTransformationOnFilters){
                     _.extend(params, stepFilters);
                 }

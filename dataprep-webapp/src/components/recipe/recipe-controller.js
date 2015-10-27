@@ -10,7 +10,7 @@
      * @requires data-prep.services.playground.service:PreviewService
      * @requires data-prep.services.preparation.service:PreparationService
      */
-    function RecipeCtrl(state, RecipeService, PlaygroundService, PreparationService, PreviewService, StateService) {
+    function RecipeCtrl(state, RecipeService, PlaygroundService, PreparationService, PreviewService, StateService, FilterService) {
         var vm = this;
         vm.recipeService = RecipeService;
 
@@ -66,8 +66,9 @@
         vm.removeStepFilter = function removeStepFilter(step, filter){
             var filterPos = step.stepFilters.indexOf(filter);
             step.stepFilters.splice(filterPos, 1);
-            var stepFiltersTree = StateService.convertFiltersToQueryFormat(step.stepFilters);
-            vm.updateStep(step, _.extend({},stepFiltersTree));
+            var stepFiltersTree = FilterService.convertFiltersArrayToTreeFormat(step.stepFilters);
+            //_.omit for the case where all the step filters have been removed because in that case stepFiltersTree === {}
+            vm.updateStep(step, _.extend({}, _.omit(step.actionParameters.parameters, 'filter'), stepFiltersTree));
         };
 
         //---------------------------------------------------------------------------------------------

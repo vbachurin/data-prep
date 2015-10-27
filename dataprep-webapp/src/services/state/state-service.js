@@ -32,7 +32,6 @@
             removeGridFilter: PlaygroundStateService.removeGridFilter,
             removeAllGridFilters: PlaygroundStateService.removeAllGridFilters,
             updateGridFilter: PlaygroundStateService.updateGridFilter,
-            convertFiltersToQueryFormat: PlaygroundStateService.convertFiltersToQueryFormat,
             
             //dataset
             startUploadingDataset: DatasetStateService.startUploadingDataset,
