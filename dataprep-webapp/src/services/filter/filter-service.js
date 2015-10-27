@@ -379,14 +379,14 @@
         //-----------------------------------------------------CONVERT FILTERS TO QUERY FORMAT--------------------------
         //--------------------------------------------------------------------------------------------------------------
 
-        var theAndTree, theOrTree;
+        var theAndTree;
 
         /**
          * @ngdoc method
          * @name convertFiltersArrayToTreeFormat
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {Array} the filters list to convert into a Tree
-         * @description Update an existing filter and update datagrid filters
+         * @description converts an array of filters into a tree
          */
         function convertFiltersArrayToTreeFormat(filtersArray){
             var formattedFilters = [];
@@ -414,9 +414,6 @@
                                 'field': filter.colId
                             }
                         });
-                        //createInvalidValuesTree(filter.colId, 'eq');
-                        //createInvalidPredicate(id)
-                        //formattedFilters.push(theOrTree);
                         break;
                     case 'empty_records':
                         formattedFilters.push({
@@ -431,9 +428,6 @@
                                 'field': filter.colId
                             }
                         });
-                        //createInvalidValuesTree(filter.colId, 'not');
-                        //negate(createInvalidPredicate(id)) + not empty
-                        //formattedFilters.push(theAndTree);
                         break;
                     case 'inside_range':
                         formattedFilters.push({
@@ -458,106 +452,49 @@
                 return {};
             }
             else {
-                constructPairsTree(formattedFilters, 2, 'and');
+                constructPairsTree(formattedFilters, 2);
                 return {filter: theAndTree};
             }
 
         }
 
-        function constructPairsTree(arr, n, operator){
+        function constructPairsTree(flatFilters){
             var res = [];
             var jsnObj;
-            while (arr.length) {
-                if(arr.length === 1){
-                    var lastRemainingFilter = arr.pop();
+            while (flatFilters.length) {
+                if(flatFilters.length === 1){
+                    var lastRemainingFilter = flatFilters.pop();
                     var lastAndConstructedFilter = res.pop();
                     jsnObj = {};
-                    jsnObj[operator] = [];
-                    jsnObj[operator].push(lastAndConstructedFilter);
-                    jsnObj[operator].push(lastRemainingFilter);
+                    jsnObj.and = [];
+                    jsnObj.and.push(lastAndConstructedFilter);
+                    jsnObj.and.push(lastRemainingFilter);
                     res.push(jsnObj);
                 }
                 else{
-                    var two = arr.splice(0, n);
+                    var two = flatFilters.splice(0, 2);
                     jsnObj = {};
-                    jsnObj[operator] = two;
+                    jsnObj.and = two;
                     res.push(jsnObj);
                 }
             }
             if(res.length>1){
-                constructPairsTree(res, 2, operator);
+                constructPairsTree(res);
             }
             else if(res.length === 1){
-                if(operator === 'and'){
-                    theAndTree = res[0];
-                }
-                else{
-                    theOrTree = res[0];
-                }
+                theAndTree = res[0];
             }
         }
 
-        function createInvalidValuesTree(colId, sign){
-            var column = _.find(state.playground.data.columns, {id: colId});
-            var invalidValues = column.quality.invalidValues;
-            var formattedInvalidValues = [];
-            _.each(invalidValues, function(invalidValue){
-                var predicat = {};
-                if(sign === 'not'){
-                    predicat.not = {
-                        eq:{
-                            'field': colId,
-                            'value': invalidValue
-                        }
-                    };
-                }
-                else{
-                    predicat[sign] = {
-                        'field': colId,
-                        'value': invalidValue
-                    };
-                }
-                formattedInvalidValues.push(predicat);
-            });
-            //include empty records in the (in)valid filter
-            if(sign === 'not'){
-                formattedInvalidValues.push({
-                    not:{
-                        eq:{
-                            value: '',
-                            field: colId
-                        }
-                    }
-                });
-            }
-
-            if(formattedInvalidValues.length === 1){//when there is only 1 (in)valid value
-                if(sign === 'not'){
-                    theAndTree = formattedInvalidValues[0];
-                }
-                else{
-                    theOrTree = formattedInvalidValues[0];
-                }
-            }
-            else{
-                if(sign === 'not'){
-                    constructPairsTree(formattedInvalidValues, 2, 'and');
-                }
-                else{
-                    constructPairsTree(formattedInvalidValues, 2, 'or');
-                }
-            }
-        }
-
-        /************************************************************************************/
-        /************************************ FLATTEN TREE **********************************/
-        /************************************************************************************/
+        /**********************************************************************************************/
+        /************************************** FLATTEN FILTERS TREE **********************************/
+        /**********************************************************************************************/
 
         function flattenFiltersTree(filterTree, flatFilters){
             for (var key in filterTree){
                 var cond = filterTree[key];
                 if(cond instanceof Array){
-                    loopConditionsArray(cond, flatFilters)
+                    loopConditionsArray(cond, flatFilters);
                 }
                 else{
                     flatFilters.push(convertToFilterStructure(cond, key));
@@ -572,10 +509,10 @@
                         loopConditionsArray(cond[key], flatFilters);
                     }
                     else{
-                        flatFilters.push(convertToFilterStructure(cond, key));
+                        flatFilters.push(convertToFilterStructure(cond[key], key));
                     }
                 }
-            })
+            });
         }
 
         function getColumnName(colId){
@@ -587,46 +524,29 @@
 
         function convertToFilterStructure(cond, key){
             var filter = {editable:false};
-
-            //function Filter(type, colId, colName, editable, args, filterFn, removeFilterFn)
+            filter.colId = cond.field;
+            filter.colName = getColumnName(filter.colId);
             switch (key) {
                 case 'contains':
                     filter.type = 'contains';
-                    filter.args = {phrase: cond[key].value};
-
-                    filter.colId = cond[key].field;
-                    filter.colName = getColumnName(filter.colId);
+                    filter.args = {phrase: cond.value};
                     break;
                 case 'eq':
                     filter.type = 'exact';
-                    filter.args = {phrase: cond[key].value};
-                    filter.colId = cond[key].field;
-                    filter.colName = getColumnName(filter.colId);
-                    break;
-                case 'invalid':
-                    filter.type = 'invalid_records';
-
-                    filter.colId = cond.field;
-                    filter.colName = getColumnName(filter.colId);
-                    break;
-                case 'empty':
-                    filter.type = 'empty_records';
-
-                    filter.colId = cond.field;
-                    filter.colName = getColumnName(filter.colId);
-                    break;
-                case 'valid':
-                    filter.type = 'valid_records';
-
-                    filter.colId = cond[key].field;
-                    filter.colName = getColumnName(filter.colId);
+                    filter.args = {phrase: cond.value};
                     break;
                 case 'range':
                     filter.type = 'inside_range';
-
-                    filter.colId = cond[key].field;
-                    filter.colName = getColumnName(filter.colId);
-                    filter.args = {interval:[cond[key].start, cond[key].end]};
+                    filter.args = {interval:[cond.start, cond.end]};
+                    break;
+                case 'invalid':
+                    filter.type = 'invalid_records';
+                    break;
+                case 'empty':
+                    filter.type = 'empty_records';
+                    break;
+                case 'valid':
+                    filter.type = 'valid_records';
                     break;
             }
             return new Filter(filter.type, filter.colId, filter.colName, filter.editable, filter.args, null, null);

@@ -64,11 +64,13 @@
         };
 
         vm.removeStepFilter = function removeStepFilter(step, filter){
-            var filterPos = step.stepFilters.indexOf(filter);
-            step.stepFilters.splice(filterPos, 1);
             var stepFiltersTree = FilterService.convertFiltersArrayToTreeFormat(step.stepFilters);
             //_.omit for the case where all the step filters have been removed because in that case stepFiltersTree === {}
-            vm.updateStep(step, _.extend({}, _.omit(step.actionParameters.parameters, 'filter'), stepFiltersTree));
+            vm.updateStep(step, _.extend({}, _.omit(step.actionParameters.parameters, 'filter'), stepFiltersTree))
+                .then(function(){
+                    var filterPos = step.stepFilters.indexOf(filter);
+                    step.stepFilters.splice(filterPos, 1);
+                });
         };
 
         //---------------------------------------------------------------------------------------------

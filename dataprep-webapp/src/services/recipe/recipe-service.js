@@ -386,9 +386,6 @@
                         .zip(resp.data.actions, resp.data.metadata, resp.data.diff)
                         .map(createItem)
                         .value();
-                   //_.each(oldRecipe, function(oldStep, index){
-                   //    newRecipe[index].stepFilters = oldStep.stepFilters;
-                   //});
                     activeThresholdStep = null;
                     recipeStateBeforePreview = null;
                     recipe = newRecipe;
