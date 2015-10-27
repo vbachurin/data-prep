@@ -57,7 +57,12 @@
 
             //Process all transformations list
             angular.forEach(allTransformations, function(item){
-                item.labelHtml= item.label;
+                if(!!(item.parameters || item.items) || item.dynamic) {
+                    item.labelHtml= item.label + '...';
+                } else {
+                    item.labelHtml= item.label;
+                }
+
                 item.categoryHtml= item.category.toUpperCase();
             });
             var allTransfosFiltered = _.chain(allTransformations)
@@ -73,7 +78,11 @@
 
             //Process suggested transformations list
             angular.forEach(transformationsSuggested, function(item){
-                item.labelHtml= item.label;
+                if(!!(item.parameters || item.items) || item.dynamic) {
+                    item.labelHtml= item.label + '...';
+                } else {
+                    item.labelHtml= item.label;
+                }
                 item.categoryHtml= $translate.instant('ACTION_SUGGESTION').toUpperCase();
             });
             var transfosSuggestedFiltered = _.chain(transformationsSuggested)
