@@ -2,10 +2,12 @@ package org.talend.dataprep.api.filter;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -56,7 +58,29 @@ public class SimpleFilterService implements FilterService {
                 return r -> StringUtils.containsIgnoreCase(r.get(columnName), value);
             }
         } else {
-            if (currentNode.has("range")) {
+            if (currentNode.has("invalid")) {
+                return r -> {
+                    final ColumnMetadata column = r.getRowMetadata().getById(columnName);
+                    if (column != null) {
+                        final Set<String> invalidValues = column.getQuality().getInvalidValues();
+                        String columnValue = r.get(columnName);
+                        return invalidValues.contains(columnValue);
+                    }
+                    return true;
+                };
+            } else if (currentNode.has("valid")) {
+                return r -> {
+                    final ColumnMetadata column = r.getRowMetadata().getById(columnName);
+                    if (column != null) {
+                        final Set<String> invalidValues = column.getQuality().getInvalidValues();
+                        String columnValue = r.get(columnName);
+                        return !StringUtils.isEmpty(columnValue) && !invalidValues.contains(columnValue);
+                    }
+                    return true;
+                };
+            } else if (currentNode.has("empty")) {
+                return r -> StringUtils.isEmpty(r.get(columnName));
+            } else if (currentNode.has("range")) {
                 final String start = currentNodeContent.get("start").asText();
                 final String end = currentNodeContent.get("end").asText();
                 return safe(r -> {

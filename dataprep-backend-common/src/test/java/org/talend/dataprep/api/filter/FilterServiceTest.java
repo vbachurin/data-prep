@@ -26,6 +26,7 @@ public class FilterServiceTest {
                 put("0000", "value");
                 put("0001", "value with spaces");
                 put("0002", "2");
+                put("0003", "");
             }
         };
         row = new DataSetRow(values);
@@ -217,4 +218,39 @@ public class FilterServiceTest {
     public void testMalformedNotWithNull() throws Exception {
         service.build(IOUtils.toString(FilterServiceTest.class.getResourceAsStream("malformed_not_null.json")));
     }
+
+    @Test
+    public void testInvalid() throws Exception {
+        row.getRowMetadata().getById("0000").getQuality().getInvalidValues().add("value");
+        // Test match on "invalid(0000)"
+        final Predicate<DataSetRow> matchPredicate = service.build("{\"invalid\": {\"field\": \"0000\"}}");
+        assertThat(matchPredicate.test(row), is(true));
+        // Test non match on "invalid(0001)"
+        final Predicate<DataSetRow> nonMatchPredicate = service.build("{\"invalid\": {\"field\": \"0001\"}}");
+        assertThat(nonMatchPredicate.test(row), is(false));
+    }
+
+    @Test
+    public void testValid() throws Exception {
+        row.getRowMetadata().getById("0000").getQuality().getInvalidValues().add("value");
+        // Test match on "valid(0001)"
+        final Predicate<DataSetRow> matchPredicate = service.build("{\"valid\": {\"field\": \"0001\"}}");
+        assertThat(matchPredicate.test(row), is(true));
+        // Test non match on "valid(0000)"
+        final Predicate<DataSetRow> nonMatchPredicate = service.build("{\"valid\": {\"field\": \"0000\"}}");
+        assertThat(nonMatchPredicate.test(row), is(false));
+    }
+
+    @Test
+    public void testEmpty() throws Exception {
+        // Test match on "empty(0003)"
+        final Predicate<DataSetRow> matchPredicate = service.build("{\"empty\": {\"field\": \"0003\"}}");
+        assertThat(matchPredicate.test(row), is(true));
+        // Test non match on "empty(0000)"
+        final Predicate<DataSetRow> nonMatchPredicate = service.build("{\"empty\": {\"field\": \"0000\"}}");
+        assertThat(nonMatchPredicate.test(row), is(false));
+    }
+
+
+
 }
