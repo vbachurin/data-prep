@@ -172,8 +172,8 @@ public class StatisticsAdapter {
                 statistics.setVariance(summaryStatistics.getVariance());
             }
             // Histogram
-            if (isNumeric && result.exist(HistogramStatistics.class)) {
-                final HistogramStatistics histogramStatistics = result.get(HistogramStatistics.class);
+            if (isNumeric && result.exist(DCHistogramStatistics.class)) {
+                final DCHistogramStatistics histogramStatistics = result.get(DCHistogramStatistics.class);
                 // Build a decimal format based on most frequent pattern
                 final String pattern = statistics.getPatternFrequencies().get(0).getPattern().replace('9', '#');
                 final NumberFormat format;

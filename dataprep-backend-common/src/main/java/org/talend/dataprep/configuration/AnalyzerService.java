@@ -25,7 +25,7 @@ import org.talend.dataquality.standardization.index.ClassPathDirectory;
 import org.talend.dataquality.statistics.cardinality.CardinalityAnalyzer;
 import org.talend.dataquality.statistics.frequency.DataFrequencyAnalyzer;
 import org.talend.dataquality.statistics.frequency.PatternFrequencyAnalyzer;
-import org.talend.dataquality.statistics.numeric.histogram.HistogramAnalyzer;
+//import org.talend.dataquality.statistics.numeric.histogram.HistogramAnalyzer;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramColumnParameter;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramParameter;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileAnalyzer;
@@ -38,6 +38,7 @@ import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.ValueQualityStatistics;
 import org.talend.datascience.common.inference.type.DataType;
 import org.talend.datascience.common.inference.type.DataTypeAnalyzer;
+import org.talend.dataprep.api.dataset.statistics.DCHistogramAnalyzer;
 
 @Service
 public class AnalyzerService implements DisposableBean {
@@ -97,8 +98,9 @@ public class AnalyzerService implements DisposableBean {
                     histogramParameter.putColumnParameter(i, columnParameter);
                 }
             }
+
         }
-        final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types, histogramParameter);
+        final DCHistogramAnalyzer histogramAnalyzer = new DCHistogramAnalyzer(types, histogramParameter);
         final SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(categoryBuilder);
         // Configure value quality analysis
         final ValueQualityAnalyzer valueQualityAnalyzer = qualityAnalyzer(columns);
