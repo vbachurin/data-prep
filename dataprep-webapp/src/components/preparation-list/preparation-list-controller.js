@@ -62,7 +62,7 @@
                   preparation.showChangeName = false;
                 })
                 .then(function() {
-                  MessageService.success('RENAME_SUCCESS_TITLE', 'RENAME_SUCCESS');
+                  MessageService.success('PREPARATION_RENAME_SUCCESS_TITLE', 'PREPARATION_RENAME_SUCCESS');
                 })
                 //hide loading screen
                 .finally(function () {
@@ -81,7 +81,7 @@
             $rootScope.$emit('talend.loading.start');
             return PreparationService.clone(preparation.id)
                 .then(function() {
-                    MessageService.success('CLONING_SUCCESS_TITLE', 'CLONING_SUCCESS');
+                    MessageService.success('PREPARATION_CLONING_SUCCESS_TITLE', 'PREPARATION_CLONING_SUCCESS');
                 })
                 //hide loading screen
                 .finally(function () {
