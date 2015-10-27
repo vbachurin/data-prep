@@ -1,10 +1,12 @@
 package org.talend.dataprep.transformation.api.action.metadata.datablending;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.STRING;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -17,7 +19,6 @@ import org.talend.dataprep.transformation.api.action.metadata.common.DataSetActi
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.parameters.ColumnParameter;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 
 /**
  *
@@ -29,13 +30,13 @@ public class Lookup extends AbstractActionMetadata implements DataSetAction {
     public static final String LOOKUP_ACTION_NAME = "lookup"; //$NON-NLS-1$
 
     /** Adapted value of the name parameter. */
-    private String adaptedNameValue = StringUtils.EMPTY;
+    private String adaptedNameValue = EMPTY;
 
     /** Adapted value of the dataset_id parameter. */
-    private String adaptedDatasetIdValue = StringUtils.EMPTY;
+    private String adaptedDatasetIdValue = EMPTY;
 
     /** Adapted value of the url parameter. */
-    private String adaptedUrlValue = StringUtils.EMPTY;
+    private String adaptedUrlValue = EMPTY;
 
     /**
      * @return A unique name used to identify action.
@@ -59,12 +60,11 @@ public class Lookup extends AbstractActionMetadata implements DataSetAction {
     @Override
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = ImplicitParameters.getParameters();
-        parameters.add(new Parameter("lookup_ds_name", ParameterType.STRING, adaptedNameValue, false, false));
-        parameters.add(new Parameter("lookup_ds_id", ParameterType.STRING, adaptedDatasetIdValue, false, false));
-        parameters.add(new Parameter("lookup_ds_url", ParameterType.STRING, adaptedUrlValue, false, false));
-        parameters.add(new Parameter("lookup_join_on", ParameterType.STRING, StringUtils.EMPTY, false, false));
-        parameters
-                .add(new ColumnParameter("lookup_selected_cols", StringUtils.EMPTY, false, false, Collections.emptyList(), true));
+        parameters.add(new Parameter("lookup_ds_name", STRING, adaptedNameValue, false, false));
+        parameters.add(new Parameter("lookup_ds_id", STRING, adaptedDatasetIdValue, false, false));
+        parameters.add(new Parameter("lookup_ds_url", STRING, adaptedUrlValue, false, false));
+        parameters.add(new Parameter("lookup_join_on", STRING, EMPTY, false, false));
+        parameters.add(new ColumnParameter("lookup_selected_cols", EMPTY, false, false, Collections.emptyList(), true));
         return parameters;
     }
 
