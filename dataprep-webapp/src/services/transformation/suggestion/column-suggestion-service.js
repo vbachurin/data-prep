@@ -55,14 +55,18 @@
             var allTransformations = allTransformationsArray;
             var transformationsSuggested = transformationsSuggestedArray;
 
-            //Process all transformations list
-            angular.forEach(allTransformations, function(item){
+            //labelHtml is used to display actions list whereas label is used for preview
+            function addLabelHtmlBasedOnParameters (item) {
                 if(!!(item.parameters || item.items) || item.dynamic) {
                     item.labelHtml= item.label + '...';
                 } else {
                     item.labelHtml= item.label;
                 }
+            }
 
+            //Process all transformations list
+            angular.forEach(allTransformations, function(item){
+                addLabelHtmlBasedOnParameters (item);
                 item.categoryHtml= item.category.toUpperCase();
             });
             var allTransfosFiltered = _.chain(allTransformations)
@@ -75,14 +79,9 @@
                                     .value();
             var allTransfosFilteredGroupedSorted = sortObject(_.groupBy(allTransfosFiltered, function(action){ return action.categoryHtml;}));
 
-
             //Process suggested transformations list
             angular.forEach(transformationsSuggested, function(item){
-                if(!!(item.parameters || item.items) || item.dynamic) {
-                    item.labelHtml= item.label + '...';
-                } else {
-                    item.labelHtml= item.label;
-                }
+                addLabelHtmlBasedOnParameters (item);
                 item.categoryHtml= $translate.instant('ACTION_SUGGESTION').toUpperCase();
             });
             var transfosSuggestedFiltered = _.chain(transformationsSuggested)

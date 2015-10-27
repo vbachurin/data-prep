@@ -21,7 +21,8 @@ describe('Column suggestion service', function () {
                 {name: 'touppercase', category: 'case', label: 'u'},
                 {name: 'removeempty', category: 'clear', label: 'a'},
                 {name: 'totitlecase', category: 'case', label: 't'},
-                {name: 'removetrailingspaces', category: 'quickfix', label: 'm'}
+                {name: 'removetrailingspaces', category: 'quickfix', label: 'm'},
+                {name: 'split', category: 'split', label: 'l', dynamic: true}
             ]
         ));
     }));
@@ -57,18 +58,22 @@ describe('Column suggestion service', function () {
         expect(columnCategoryTransformation).toBeFalsy();
 
         //then
-        expect(suggestedTransformations.SUGGESTION.length).toBe(6);
+        expect(suggestedTransformations.SUGGESTION.length).toBe(7);
 
         expect(suggestedTransformations.CASE.length).toBe(3);
-        expect(suggestedTransformations.CASE[0].label).toBe('t');
-        expect(suggestedTransformations.CASE[1].label).toBe('u');
-        expect(suggestedTransformations.CASE[2].label).toBe('v');
+        expect(suggestedTransformations.CASE[0].labelHtml).toBe('t');
+        expect(suggestedTransformations.CASE[1].labelHtml).toBe('u');
+        expect(suggestedTransformations.CASE[2].labelHtml).toBe('v');
 
         expect(suggestedTransformations.CLEAR.length).toBe(1);
+        expect(suggestedTransformations.CLEAR[0].labelHtml).toBe('a');
 
         expect(suggestedTransformations.QUICKFIX.length).toBe(2);
-        expect(suggestedTransformations.QUICKFIX[0].label).toBe('f');
-        expect(suggestedTransformations.QUICKFIX[1].label).toBe('m');
+        expect(suggestedTransformations.QUICKFIX[0].labelHtml).toBe('f');
+        expect(suggestedTransformations.QUICKFIX[1].labelHtml).toBe('m');
+
+        expect(suggestedTransformations.SPLIT.length).toBe(1);
+        expect(suggestedTransformations.SPLIT[0].labelHtml).toBe('l...');
 
     }));
 
