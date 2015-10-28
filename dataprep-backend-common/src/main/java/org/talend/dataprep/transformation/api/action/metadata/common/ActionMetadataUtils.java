@@ -8,8 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.TypeUtils;
-import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
-import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
+import org.talend.dataquality.statistics.quality.DataTypeQualityAnalyzer;
+import org.talend.datascience.common.inference.ValueQualityStatistics;
 import org.talend.datascience.common.inference.type.DataType;
 
 /**
@@ -47,7 +47,7 @@ public class ActionMetadataUtils {
         // perform a second analysis because column metadata statistics may have been performed on a
         // sample smaller than the dataset
         DataType.Type[] types = TypeUtils.convert(Collections.singletonList(colMetadata));
-        final ValueQualityAnalyzer analyzer = new ValueQualityAnalyzer(types, true);
+        final DataTypeQualityAnalyzer analyzer = new DataTypeQualityAnalyzer(types, true);
         analyzer.analyze(value);
         analyzer.end();
 

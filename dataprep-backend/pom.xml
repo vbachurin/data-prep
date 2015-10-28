@@ -20,7 +20,7 @@
         <log4j.version>2.2</log4j.version>
         <java.version>1.8</java.version>
         <junit.version>4.12</junit.version>
-        <org.talend.dataquality.version>1.2.0</org.talend.dataquality.version>
+        <org.talend.dataquality.version>1.3.1</org.talend.dataquality.version>
         <org.talend.dataquality.record.linkage.version>3.0.0</org.talend.dataquality.record.linkage.version>
         <project.inceptionYear>2015</project.inceptionYear>
         <project.organization>Talend</project.organization>

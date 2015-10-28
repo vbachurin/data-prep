@@ -41,20 +41,26 @@ public class AnalyzerService {
             final CategoryRecognizerBuilder categoryBuilder = CategoryRecognizerBuilder.newBuilder() //
                     .ddPath(ddPath) //
                     .kwPath(kwPath) //
-                    .setMode(CategoryRecognizerBuilder.Mode.LUCENE);
+                    .lucene();
             // Set min and max for each column in histogram
             final HistogramParameter histogramParameter = new HistogramParameter();
             for (int i = 0; i < columns.size(); i++) {
                 ColumnMetadata column = columns.get(i);
                 final boolean isNumeric = Type.NUMERIC.isAssignableFrom(Type.get(column.getType()));
                 if (isNumeric) {
-                    final HistogramColumnParameter columnParameter = new HistogramColumnParameter();
                     final Statistics statistics = column.getStatistics();
-                    columnParameter.setParameters(statistics.getMin(), statistics.getMax(), 20);
-                    histogramParameter.putColumnParameter(i, columnParameter);
+                    final double min = statistics.getMin();
+                    final double max = statistics.getMax();
+                    if (min < max) {
+                        final HistogramColumnParameter columnParameter = new HistogramColumnParameter();
+                        columnParameter.setParameters(min, max, 20);
+                        histogramParameter.putColumnParameter(i, columnParameter);
+                    }
                 }
             }
             final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types, histogramParameter);
+            final SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(categoryBuilder);
+            semanticAnalyzer.setLimit(100);
             return Analyzers.with(new ValueQualityAnalyzer(types),
                     // Type analysis (especially useful for new columns).
                     new DataTypeAnalyzer(),
@@ -71,7 +77,7 @@ public class AnalyzerService {
                     // Text length analysis (for applicable columns)
                     new TextLengthAnalyzer(),
                     // Semantic analysis
-                    new SemanticAnalyzer(categoryBuilder));
+                    semanticAnalyzer);
         } catch (URISyntaxException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
@@ -87,7 +93,7 @@ public class AnalyzerService {
             categoryBuilder = CategoryRecognizerBuilder.newBuilder() //
                     .ddPath(ddPath) //
                     .kwPath(kwPath) //
-                    .setMode(CategoryRecognizerBuilder.Mode.LUCENE);
+                    .lucene();
         } catch (URISyntaxException e) {
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
         }
@@ -109,7 +115,7 @@ public class AnalyzerService {
             categoryBuilder = CategoryRecognizerBuilder.newBuilder() //
                     .ddPath(ddPath) //
                     .kwPath(kwPath) //
-                    .setMode(CategoryRecognizerBuilder.Mode.LUCENE);
+                    .lucene();
         } catch (URISyntaxException e) {
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
         }

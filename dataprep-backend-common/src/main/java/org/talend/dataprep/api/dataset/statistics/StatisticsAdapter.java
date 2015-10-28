@@ -22,9 +22,9 @@ import org.talend.dataquality.statistics.frequency.PatternFrequencyStatistics;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramStatistics;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileStatistics;
 import org.talend.dataquality.statistics.numeric.summary.SummaryStatistics;
-import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.dataquality.statistics.text.TextLengthStatistics;
 import org.talend.datascience.common.inference.Analyzers;
+import org.talend.datascience.common.inference.ValueQualityStatistics;
 import org.talend.datascience.common.inference.type.DataType;
 
 @Component
@@ -90,17 +90,12 @@ public class StatisticsAdapter {
                         .max((o1, o2) -> o1.getValue().intValue() - o2.getValue().intValue());
                 if (entry.isPresent()) {
                     // TODO (TDP-734) Take into account limit of the semantic analyzer.
-                    final long percentage;
-                    final long count = statistics.getCount();
-                    if (count < 100 && count > 0) {
-                        percentage = (entry.get().getValue() * 100) / count;
-                    } else {
-                        percentage = entry.get().getValue();
-                    }
+                    final Long value = entry.get().getValue();
+                    final long percentage = normalize(statistics, value);
                     if (percentage > semanticThreshold) {
                         currentColumn.setDomain(semanticType.getSuggestedCategory());
                         currentColumn.setDomainLabel(TypeUtils.getDomainLabel(semanticType));
-                        currentColumn.setDomainFrequency(entry.get().getValue());
+                        currentColumn.setDomainFrequency(value);
                     } else {
                         // Ensure the domain is cleared if percentage is lower than threshold (earlier analysis - e.g.
                         // on the first 20 lines - may be over threshold, but full scan may decide otherwise.
@@ -117,7 +112,7 @@ public class StatisticsAdapter {
                         // Find category display name
                         final String id = current.getKey().getCategoryId();
                         final String categoryDisplayName = TypeUtils.getDomainLabel(id);
-                        semanticDomains.add(new SemanticDomain(id, categoryDisplayName, current.getKey().getFrequency()));
+                        semanticDomains.add(new SemanticDomain(id, categoryDisplayName, normalize(statistics, current.getKey().getCount())));
                     }
                     currentColumn.setSemanticDomains(semanticDomains);
                 }
@@ -203,5 +198,16 @@ public class StatisticsAdapter {
                 textLengthSummary.setMaximalLength(textLengthStatistics.getMaxTextLength());
             }
         }
+    }
+
+    private static long normalize(Statistics statistics, Number value) {
+        long percentage;
+        final long count = statistics.getCount();
+        if (count > 0) {
+            percentage = (value.longValue() * 100) / count;
+        } else {
+            percentage = value.longValue();
+        }
+        return percentage;
     }
 }
