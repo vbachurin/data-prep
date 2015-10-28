@@ -66,7 +66,7 @@ describe('Column suggestion service', function () {
         expect(suggestedTransformations.SPLIT.length).toBe(1);
     }));
 
-    it('should insert html label (with "..." with parameters) in each transformation/suggestions', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService) {
+    it('should insert html label (with "..." with parameters) in each transformation/suggestions', inject(function ($rootScope, ColumnSuggestionService) {
         //given
         ColumnSuggestionService.transformations = {};
 
