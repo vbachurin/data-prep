@@ -66,6 +66,7 @@
   "_comment": "Common",
   "LOADING": "Loading...",
   "PROCESSING": "Processing",
+  "COMING_SOON": "Coming soon...",
 
   "_comment": "Confirm",
   "DELETE_PERMANENTLY": "You are going to permanently delete the {{type}} \"{{name}}\".",
@@ -136,7 +137,6 @@
   "FIND_FUNCTION": "Find a Function...",
   "ACTION_SUGGESTION": "Suggestion",
 
-
   "_comment": "Statistics",
   "COUNT": "Count",
   "DISTINCT_COUNT": "Distinct",
@@ -161,6 +161,7 @@
   "APPLY_TO_ALL_CELLS": "Apply to all cells with this value",
   "STRING": "TEXT",
   "FLOAT": "DECIMAL",
+  "NO_ADVANCED_CHART": "No advanced chart for the current selection",
 
   "_comment": "Dataset actions",
   "REPLACE_FILE_CONTENT": "Update dataset with another file",
