@@ -25,6 +25,13 @@ describe('Column suggestion service', function () {
                 {name: 'split', category: 'split', label: 'l', dynamic: true}
             ]
         ));
+
+        spyOn(TransformationCacheService, 'getSuggestions').and.returnValue($q.when(
+            [
+                {name: 'tolowercase', category: 'case', label: 'v'},
+                {name: 'touppercase', category: 'case', label: 'u'}
+            ]
+        ));
     }));
 
     it('should reset the suggested transformations', inject(function (ColumnSuggestionService) {
@@ -38,7 +45,7 @@ describe('Column suggestion service', function () {
         expect(ColumnSuggestionService.transformations).toBeFalsy();
     }));
 
-    it('should filter "column" category, sort and group the transformations by category', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService) {
+    it('should group the transformations by category', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService) {
         //given
         ColumnSuggestionService.transformations = {};
 
@@ -48,35 +55,51 @@ describe('Column suggestion service', function () {
         $rootScope.$digest();
 
         //then
-        expect(TransformationCacheService.getTransformations).toHaveBeenCalledWith(firstSelectedColumn, true);
-        expect(TransformationCacheService.getTransformations).toHaveBeenCalledWith(firstSelectedColumn, false);
+        expect(TransformationCacheService.getTransformations).toHaveBeenCalledWith(firstSelectedColumn);
+        expect(TransformationCacheService.getSuggestions).toHaveBeenCalledWith(firstSelectedColumn);
+
+        var suggestedTransformations = ColumnSuggestionService.transformations;
+        expect(suggestedTransformations.SUGGESTION.length).toBe(2);
+        expect(suggestedTransformations.CASE.length).toBe(3);
+        expect(suggestedTransformations.CLEAR.length).toBe(1);
+        expect(suggestedTransformations.QUICKFIX.length).toBe(2);
+        expect(suggestedTransformations.SPLIT.length).toBe(1);
+    }));
+
+    it('should insert html label (with "..." with parameters) in each transformation/suggestions', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService) {
+        //given
+        ColumnSuggestionService.transformations = {};
+
+        //when
+        ColumnSuggestionService.initTransformations(firstSelectedColumn);
+        $rootScope.$digest();
 
         //then
         var suggestedTransformations = ColumnSuggestionService.transformations;
-        expect(suggestedTransformations).toBeDefined();
-        var columnCategoryTransformation = _.find(suggestedTransformations, {category: 'column_metadata'});
-        expect(columnCategoryTransformation).toBeFalsy();
 
-        //then
-        expect(suggestedTransformations.SUGGESTION.length).toBe(7);
-
-        expect(suggestedTransformations.CASE.length).toBe(3);
+        expect(suggestedTransformations.SUGGESTION.length).toBe(2);
         expect(suggestedTransformations.CASE[0].labelHtml).toBe('t');
         expect(suggestedTransformations.CASE[1].labelHtml).toBe('u');
         expect(suggestedTransformations.CASE[2].labelHtml).toBe('v');
-
-        expect(suggestedTransformations.CLEAR.length).toBe(1);
         expect(suggestedTransformations.CLEAR[0].labelHtml).toBe('a');
-
-        expect(suggestedTransformations.QUICKFIX.length).toBe(2);
         expect(suggestedTransformations.QUICKFIX[0].labelHtml).toBe('f');
         expect(suggestedTransformations.QUICKFIX[1].labelHtml).toBe('m');
-
-        expect(suggestedTransformations.SPLIT.length).toBe(1);
         expect(suggestedTransformations.SPLIT[0].labelHtml).toBe('l...');
-
     }));
 
+    it('should filter "column metadata" category', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService) {
+        //given
+        ColumnSuggestionService.transformations = {};
+
+        //when
+        ColumnSuggestionService.initTransformations(firstSelectedColumn);
+        $rootScope.$digest();
+
+        //then
+        var suggestedTransformations = ColumnSuggestionService.transformations;
+        var columnCategoryTransformation = _.find(suggestedTransformations, {category: 'column_metadata'});
+        expect(columnCategoryTransformation).toBeFalsy();
+    }));
 
     it('should update transformations list after searching', inject(function ($rootScope, ColumnSuggestionService) {
         //given
@@ -94,6 +117,5 @@ describe('Column suggestion service', function () {
         expect(ColumnSuggestionService.transformations.QUICKFIX.length).toBe(2);
         expect(ColumnSuggestionService.transformations.QUICKFIX[0].label).toBe('f');
         expect(ColumnSuggestionService.transformations.QUICKFIX[1].label).toBe('m');
-
     }));
 });
