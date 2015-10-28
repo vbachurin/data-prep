@@ -1,10 +1,13 @@
 <div class="column-profile" ng-switch="!!(columnProfileCtrl.histogram.data.length || columnProfileCtrl.stateDistribution)">
 
     <div id="column-profile-refresh"
-         ng-switch-when="false"
-         ng-switch="columnProfileCtrl.refreshInProgress">
-        <button ng-click="columnProfileCtrl.refresh()" ng-switch-when="false"><img src="/assets/images/refresh-small.png"></button>
-        <div ng-switch-when="true">Refreshing ...</div>
+         ng-switch-when="false">
+        <button ng-click="columnProfileCtrl.refresh()"
+                ng-disabled="columnProfileCtrl.refreshInProgress"
+                ng-switch="columnProfileCtrl.refreshInProgress">
+            <img ng-switch-when="false" src="/assets/images/refresh-small.png">
+            <span ng-switch-when="true"><i data-icon="c" class="icon continuous-rotate"></i></span>
+        </button>
     </div>
 
     <div ng-switch-when="true">
