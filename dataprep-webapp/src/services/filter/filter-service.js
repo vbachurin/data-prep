@@ -434,8 +434,8 @@
                         formattedFilters.push({
                                 'range': {
                                     field: filter.colId,
-                                    start: filter.args.interval[0],
-                                    end: filter.args.interval[1]
+                                    start: ''+filter.args.interval[0],
+                                    end: ''+filter.args.interval[1]
                                 }
                             }
                         );

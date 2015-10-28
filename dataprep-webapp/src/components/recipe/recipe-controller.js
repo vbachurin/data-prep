@@ -72,16 +72,14 @@
          * @description removes a filter in the step and updates the step
          */
         vm.removeStepFilter = function removeStepFilter(step, filter){
-            var copyStepFilters = step.filters.slice(0);
-            var filterPos = copyStepFilters.indexOf(filter);
-            copyStepFilters.splice(filterPos, 1);
+            var filterPos = step.filters.indexOf(filter);
+            var removedFilter = step.filters.splice(filterPos, 1);
 
-            var stepFiltersTree = FilterService.convertFiltersArrayToTreeFormat(copyStepFilters);
+            var stepFiltersTree = FilterService.convertFiltersArrayToTreeFormat(step.filters);
             //_.omit for the case where all the step filters have been removed because in that case stepFiltersTree === {}
             vm.updateStep(step, _.extend({}, _.omit(step.actionParameters.parameters, 'filter'), stepFiltersTree))
-                .then(function(){
-                    var filterPos = step.filters.indexOf(filter);
-                    step.filters.splice(filterPos, 1);
+                .catch(function(){
+                    step.filters.push(removedFilter);
                 });
         };
 

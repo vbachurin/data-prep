@@ -27,7 +27,6 @@ describe('Recipe controller', function() {
             recipe.splice(0, recipe.length);
             recipe.push(lastActiveStep);
         });
-        spyOn(PlaygroundService, 'updateStep').and.returnValue($q.when(true));
         spyOn(PreviewService, 'getPreviewDiffRecords').and.returnValue($q.when(true));
         spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when(true));
         spyOn(PreviewService, 'cancelPreview').and.returnValue(null);
@@ -382,6 +381,94 @@ describe('Recipe controller', function() {
 
             //then
             expect(PlaygroundService.removeStep).toHaveBeenCalledWith(step);
+        }));
+    });
+
+
+    describe('remove filter step', function() {
+        var filters = [
+            {
+                'type': 'exact',
+                'colId': '0000',
+                'colName': 'name',
+                'args': {
+                    'phrase': '        AMC  ',
+                    'caseSensitive': true
+                },
+                'value': '        AMC  '
+            }
+        ];
+        var step = {
+            transformation: {label: 'Replace empty value ...'},
+            actionParameters: {parameters: {column_name: 'firstname'}},
+            filters:filters
+        };
+
+        beforeEach(inject(function(FilterService) {
+            spyOn(FilterService, 'convertFiltersArrayToTreeFormat').and.returnValue({
+                filter:{
+                    valid:{
+                        field:'0001'
+                    }
+                }
+            });
+        }));
+
+        it('should remove step filter', inject(function(FilterService) {
+            //given
+            var ctrl = createController();
+
+            //when
+            ctrl.removeStepFilter(step, filters[0]);
+            scope.$digest();
+
+            //then
+            expect(FilterService.convertFiltersArrayToTreeFormat).toHaveBeenCalledWith(filters);
+            expect(step.filters.length).toBe(0);
+        }));
+    });
+
+    describe('remove filter step in case of failure', function() {
+        var filters = [
+            {
+                'type': 'exact',
+                'colId': '0000',
+                'colName': 'name',
+                'args': {
+                    'phrase': '        AMC  ',
+                    'caseSensitive': true
+                },
+                'value': '        AMC  '
+            }
+        ];
+        var step = {
+            transformation: {label: 'Replace empty value ...'},
+            actionParameters: {parameters: {column_name: 'firstname'}},
+            filters:filters
+        };
+
+        beforeEach(inject(function(FilterService, PlaygroundService, $q) {
+            spyOn(PlaygroundService, 'updateStep').and.returnValue($q.reject());
+            spyOn(FilterService, 'convertFiltersArrayToTreeFormat').and.returnValue({
+                filter:{
+                    valid:{
+                        field:'0001'
+                    }
+                }
+            });
+        }));
+
+
+        it('should fail while removing step filter', inject(function() {
+            //given
+            var ctrl = createController();
+
+            //when
+            ctrl.removeStepFilter(step, filters[0]);
+            scope.$digest();
+
+            //then
+            expect(step.filters.length).toBe(1);
         }));
     });
 });
