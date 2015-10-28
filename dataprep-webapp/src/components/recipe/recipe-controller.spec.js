@@ -437,6 +437,41 @@ describe('Recipe controller', function() {
             expect(FilterService.convertFiltersArrayToTreeFormat).toHaveBeenCalledWith(filters);
             expect(step.filters.length).toBe(0);
         }));
+
+        it('should show warning message on last step filter removal for a delete_lines action', inject(function(FilterService, MessageService) {
+            //given
+            spyOn(MessageService, 'warning').and.returnValue();
+            var ctrl = createController();
+            var filters = [
+                {
+                    'type': 'exact',
+                    'colId': '0000',
+                    'colName': 'name',
+                    'args': {
+                        'phrase': '        AMC  ',
+                        'caseSensitive': true
+                    },
+                    'value': '        AMC  '
+                }
+            ];
+            var step = {
+                transformation: {label: 'Replace empty value ...'},
+                actionParameters: {
+                    parameters: {column_name: 'firstname'},
+                    action: 'delete_lines'
+                },
+                filters:filters
+            };
+
+            //when
+            ctrl.removeStepFilter(step, filters[0]);
+            scope.$digest();
+
+            //then
+            expect(MessageService.warning).toHaveBeenCalled();
+            expect(FilterService.convertFiltersArrayToTreeFormat).not.toHaveBeenCalled();
+            expect(step.filters.length).toBe(1);
+        }));
     });
 
     describe('remove filter step in case of failure', function() {

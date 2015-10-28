@@ -74,6 +74,8 @@
   "NO_UNDONE_CONFIRM": "This operation cannot be undone. Are you sure ?",
   "DELETE_STEP": "You are going to remove this action : \"{{action}}\" on \"{{column}}\".",
   "DELETE_STEP_CASCADE_MODE_WARNING": "WARNING : all actions from the selected one to the end will be removed in this mode. If this is not what you want, try to remove a single action instead.",
+  "REMOVE_LAST_STEP_FILTER_TITLE": "WARNING : impossible action",
+  "REMOVE_LAST_STEP_FILTER_CONTENT": "WARNING : this action is not supported as it will remove all the lines",
   "UPDATE_EXISTING_DATASET": "Do you want to update existing \"{{dataset}}\" dataset ?",
 
   "_comment": "import remote dataset",
