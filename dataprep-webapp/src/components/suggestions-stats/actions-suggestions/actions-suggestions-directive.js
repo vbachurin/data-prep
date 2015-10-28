@@ -46,7 +46,7 @@
 
                 scope.$watch(
                     function () {
-                        return ctrl.suggestionService.searchActionString ;
+                        return ctrl.columnSuggestionService.searchActionString ;
                     },
                     function () {
 
@@ -55,24 +55,17 @@
                         }
 
                         var highlightText = function(actions){
-                            var searchValue = ctrl.suggestionService.searchActionString.toLowerCase();
                             angular.forEach(actions, function(item){
-                                //Remove highlight html code from label
-                                item.labelHtml = item.labelHtml.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
-                                item.labelHtml = item.labelHtml.replace(new RegExp('(</span>)', 'g'), '');
-                                //Remove highlight html code from category
-                                item.categoryHtml = item.categoryHtml.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
-                                item.categoryHtml = item.categoryHtml.replace(new RegExp('(</span>)', 'g'), '');
 
-                                if(searchValue){
-                                    if(item.labelHtml.toLowerCase().indexOf(searchValue) !== -1){
+                                if(ctrl.columnSuggestionService.searchActionString ){
+                                    if(item.labelHtml.toLowerCase().indexOf(ctrl.columnSuggestionService.searchActionString ) !== -1){
                                         //Add html code to highlight searchActionString
-                                        item.labelHtml = item.labelHtml.replace(new RegExp('('+removeRegex(ctrl.suggestionService.searchActionString) +')', 'gi'),
+                                        item.labelHtml = item.labelHtml.replace(new RegExp('('+removeRegex(ctrl.columnSuggestionService.searchActionString) +')', 'gi'),
                                             '<span class="highlighted">$1</span>');
                                     }
-                                    if(item.categoryHtml.toLowerCase().indexOf(searchValue) !== -1){
+                                    if(item.categoryHtml.toLowerCase().indexOf(ctrl.columnSuggestionService.searchActionString ) !== -1){
                                         //Add html code to highlight searchActionString
-                                        item.categoryHtml = item.categoryHtml.replace(new RegExp('('+removeRegex(ctrl.suggestionService.searchActionString) +')', 'gi'),
+                                        item.categoryHtml = item.categoryHtml.replace(new RegExp('('+removeRegex(ctrl.columnSuggestionService.searchActionString) +')', 'gi'),
                                             '<span class="highlighted">$1</span>');
                                     }
                                 }
@@ -80,7 +73,7 @@
                             });
                         };
 
-                        angular.forEach(ctrl.columnSuggestions, function(actions){
+                        angular.forEach(ctrl.columnSuggestionService.filteredTransformations, function(actions){
                             highlightText(actions);
                         });
                         //Update category keys for highlighting
