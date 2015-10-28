@@ -464,53 +464,53 @@ describe('Filter service', function() {
             //given
             var filters = [
                 {
-                    "type": "valid_records",
-                    "colId": "0000",
-                    "colName": "name",
-                    "value": "valid records"
+                    'type': 'valid_records',
+                    'colId': '0000',
+                    'colName': 'name',
+                    'value': 'valid records'
                 },
                 {
-                    "type": "exact",
-                    "colId": "0000",
-                    "colName": "name",
-                    "args": {
-                        "phrase": "        AMC  ",
-                        "caseSensitive": true
+                    'type': 'exact',
+                    'colId': '0000',
+                    'colName': 'name',
+                    'args': {
+                        'phrase': '        AMC  ',
+                        'caseSensitive': true
                     },
-                    "value": "        AMC  "
+                    'value': '        AMC  '
                 },
                 {
-                    "type": "contains",
-                    "colId": "0000",
-                    "colName": "name",
-                    "args": {
-                        "phrase": "amc"
+                    'type': 'contains',
+                    'colId': '0000',
+                    'colName': 'name',
+                    'args': {
+                        'phrase': 'amc'
                     },
-                    "value": "amc"
+                    'value': 'amc'
                 },
                 {
-                    "type": "inside_range",
-                    "colId": "0005",
-                    "colName": "weight (lb)",
-                    "args": {
-                        "interval": [
+                    'type': 'inside_range',
+                    'colId': '0005',
+                    'colName': 'weight (lb)',
+                    'args': {
+                        'interval': [
                             1786,
                             5140
                         ]
                     },
-                    "value": "[1,786 .. 5,140]"
+                    'value': '[1,786 .. 5,140]'
                 },
                 {
-                    "type": "invalid_records",
-                    "colId": "0001",
-                    "colName": "economy (mpg)",
-                    "value": "invalid records"
+                    'type': 'invalid_records',
+                    'colId': '0001',
+                    'colName': 'economy (mpg)',
+                    'value': 'invalid records'
                 },
                 {
-                    "type": "empty_records",
-                    "colId": "0004",
-                    "colName": "power (hp)",
-                    "value": "empty records"
+                    'type': 'empty_records',
+                    'colId': '0004',
+                    'colName': 'power (hp)',
+                    'value': 'empty records'
                 }
             ];
 
@@ -519,37 +519,37 @@ describe('Filter service', function() {
 
             //then
             expect(filtersTree.filter).toEqual({
-                "and": [
+                'and': [
                     {
-                        "and": [
+                        'and': [
                             {
-                                "and": [
+                                'and': [
                                     {
-                                        "valid": {
-                                            "field": "0000"
+                                        'valid': {
+                                            'field': '0000'
                                         }
                                     },
                                     {
-                                        "eq": {
-                                            "field": "0000",
-                                            "value": "        AMC  "
+                                        'eq': {
+                                            'field': '0000',
+                                            'value': '        AMC  '
                                         }
                                     }
                                 ]
                             },
                             {
-                                "and": [
+                                'and': [
                                     {
-                                        "contains": {
-                                            "field": "0000",
-                                            "value": "amc"
+                                        'contains': {
+                                            'field': '0000',
+                                            'value': 'amc'
                                         }
                                     },
                                     {
-                                        "range": {
-                                            "field": "0005",
-                                            "start": 1786,
-                                            "end": 5140
+                                        'range': {
+                                            'field': '0005',
+                                            'start': 1786,
+                                            'end': 5140
                                         }
                                     }
                                 ]
@@ -557,15 +557,15 @@ describe('Filter service', function() {
                         ]
                     },
                     {
-                        "and": [
+                        'and': [
                             {
-                                "invalid": {
-                                    "field": "0001"
+                                'invalid': {
+                                    'field': '0001'
                                 }
                             },
                             {
-                                "empty": {
-                                    "field": "0004"
+                                'empty': {
+                                    'field': '0004'
                                 }
                             }
                         ]
@@ -578,14 +578,14 @@ describe('Filter service', function() {
             //given
             var filters = [
                 {
-                    "type": "exact",
-                    "colId": "0000",
-                    "colName": "name",
-                    "args": {
-                        "phrase": "        AMC  ",
-                        "caseSensitive": true
+                    'type': 'exact',
+                    'colId': '0000',
+                    'colName': 'name',
+                    'args': {
+                        'phrase': '        AMC  ',
+                        'caseSensitive': true
                     },
-                    "value": "        AMC  "
+                    'value': '        AMC  '
                 }
             ];
 
@@ -594,9 +594,9 @@ describe('Filter service', function() {
 
             //then
             expect(filtersTree.filter).toEqual({
-                "eq": {
-                    "field": "0000",
-                    "value": "        AMC  "
+                'eq': {
+                    'field': '0000',
+                    'value': '        AMC  '
                 }
             });
         }));
@@ -618,16 +618,16 @@ describe('Filter service', function() {
         it('should return empty object', inject(function(FilterService) {
             //given
             var filtersTree = {
-                "and": [
+                'and': [
                     {
-                        "invalid": {
-                            "field": "0000"
+                        'invalid': {
+                            'field': '0000'
                         }
                     },
                     {
-                        "eq": {
-                            "field": "0001",
-                            "value": "Toum"
+                        'eq': {
+                            'field': '0001',
+                            'value': 'Toum'
                         }
                     }
                 ]
