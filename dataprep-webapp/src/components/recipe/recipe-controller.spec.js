@@ -58,101 +58,111 @@ describe('Recipe controller', function() {
         expect(ctrl.recipe[0].transformation).toEqual(transformation);
     }));
 
-    it('should create a closure that update the step parameters', inject(function($rootScope, PlaygroundService) {
-        //given
-        var ctrl = createController();
-        var step = {
-            column: {id: 'state'},
-            transformation: {
-                stepId: 'a598bc83fc894578a8b823',
-                name: 'cut'
-            },
-            actionParameters: {
-                action: 'cut',
-                parameters: {pattern: '.', column_name: 'state'}
-            }
-        };
-        var parameters = {pattern: '-'};
+    describe('update step', function() {
+        beforeEach(inject(function(PlaygroundService, $q) {
+            spyOn(PlaygroundService, 'updateStep').and.returnValue($q.when(true));
+        }));
+        it('should create a closure that update the step parameters', inject(function ($rootScope, PlaygroundService) {
+            //given
+            var ctrl       = createController();
+            var step       = {
+                column: {id: 'state'},
+                transformation: {
+                    stepId: 'a598bc83fc894578a8b823',
+                    name: 'cut'
+                },
+                actionParameters: {
+                    action: 'cut',
+                    parameters: {pattern: '.', column_name: 'state'}
+                }
+            };
+            var parameters = {pattern: '-'};
 
-        //when
-        var updateClosure = ctrl.stepUpdateClosure(step);
-        updateClosure(parameters);
-        $rootScope.$digest();
+            //when
+            var updateClosure = ctrl.stepUpdateClosure(step);
+            updateClosure(parameters);
+            $rootScope.$digest();
 
-        //then
-        expect(PlaygroundService.updateStep).toHaveBeenCalledWith(step, parameters);
-    }));
+            //then
+            expect(PlaygroundService.updateStep).toHaveBeenCalledWith(step, parameters);
+        }));
 
-    it('should update step when parameters are different', inject(function(PlaygroundService) {
-        //given
-        var ctrl = createController();
-        var step = {
-            column: {id: 'state'},
-            transformation: {
-                stepId: 'a598bc83fc894578a8b823',
-                name: 'cut'
-            },
-            actionParameters: {
-                action: 'cut',
-                parameters: {pattern: '.', column_name: 'state', column_id: '0001', scope: 'column'}
-            }
-        };
-        var parameters = {pattern: '-'};
+        it('should update step when parameters are different', inject(function (PlaygroundService) {
+            //given
+            var ctrl       = createController();
+            var step       = {
+                column: {id: 'state'},
+                transformation: {
+                    stepId: 'a598bc83fc894578a8b823',
+                    name: 'cut'
+                },
+                actionParameters: {
+                    action: 'cut',
+                    parameters: {pattern: '.', column_name: 'state', column_id: '0001', scope: 'column'}
+                }
+            };
+            var parameters = {pattern: '-'};
 
-        //when
-        ctrl.updateStep(step, parameters);
+            //when
+            ctrl.updateStep(step, parameters);
 
-        //then
-        expect(PlaygroundService.updateStep).toHaveBeenCalledWith(step, {pattern: '-', column_name: 'state', column_id: '0001', scope: 'column'});
-    }));
+            //then
+            expect(PlaygroundService.updateStep).toHaveBeenCalledWith(step, {
+                pattern: '-',
+                column_name: 'state',
+                column_id: '0001',
+                scope: 'column'
+            });
+        }));
 
-    it('should hide parameters modal on update step when parameters are different', inject(function($rootScope) {
-        //given
-        var ctrl = createController();
-        var step = {
-            column: {id: 'state'},
-            transformation: {
-                stepId: 'a598bc83fc894578a8b823',
-                name: 'cut'
-            },
-            actionParameters: {
-                action: 'cut',
-                parameters: {pattern: '.', column_name: 'state'}
-            }
-        };
-        var parameters = {pattern: '-'};
-        ctrl.showModal = {'a598bc83fc894578a8b823' : true};
+        it('should hide parameters modal on update step when parameters are different', inject(function ($rootScope) {
+            //given
+            var ctrl       = createController();
+            var step       = {
+                column: {id: 'state'},
+                transformation: {
+                    stepId: 'a598bc83fc894578a8b823',
+                    name: 'cut'
+                },
+                actionParameters: {
+                    action: 'cut',
+                    parameters: {pattern: '.', column_name: 'state'}
+                }
+            };
+            var parameters = {pattern: '-'};
+            ctrl.showModal = {'a598bc83fc894578a8b823': true};
 
-        //when
-        ctrl.updateStep(step, parameters);
-        $rootScope.$digest();
+            //when
+            ctrl.updateStep(step, parameters);
+            $rootScope.$digest();
 
-        //then
-        expect(ctrl.showModal).toEqual({});
-    }));
+            //then
+            expect(ctrl.showModal).toEqual({});
+        }));
 
-    it('should do nothing if parameters are unchanged', inject(function(PlaygroundService) {
-        //given
-        var ctrl = createController();
-        var step = {
-            column: {id: '0', name:'state'},
-            transformation: {
-                stepId: 'a598bc83fc894578a8b823',
-                name: 'cut'
-            },
-            actionParameters: {
-                action: 'cut',
-                parameters: {pattern: '.', column_id: '0', column_name: 'state'}
-            }
-        };
-        var parameters = {pattern: '.'};
+        it('should do nothing if parameters are unchanged', inject(function (PlaygroundService) {
+            //given
+            var ctrl       = createController();
+            var step       = {
+                column: {id: '0', name: 'state'},
+                transformation: {
+                    stepId: 'a598bc83fc894578a8b823',
+                    name: 'cut'
+                },
+                actionParameters: {
+                    action: 'cut',
+                    parameters: {pattern: '.', column_id: '0', column_name: 'state'}
+                }
+            };
+            var parameters = {pattern: '.'};
 
-        //when
-        ctrl.updateStep(step, parameters);
+            //when
+            ctrl.updateStep(step, parameters);
 
-        //then
-        expect(PlaygroundService.updateStep).not.toHaveBeenCalled();
-    }));
+            //then
+            expect(PlaygroundService.updateStep).not.toHaveBeenCalled();
+        }));
+    });
 
     it('should do nothing on update preview if the step is inactive', inject(function($rootScope, PreviewService) {
         //given
@@ -404,7 +414,8 @@ describe('Recipe controller', function() {
             filters:filters
         };
 
-        beforeEach(inject(function(FilterService) {
+        beforeEach(inject(function(FilterService, PlaygroundService, $q) {
+            spyOn(PlaygroundService, 'updateStep').and.returnValue($q.when(true));
             spyOn(FilterService, 'convertFiltersArrayToTreeFormat').and.returnValue({
                 filter:{
                     valid:{

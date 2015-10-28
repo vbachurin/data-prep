@@ -548,8 +548,8 @@ describe('Filter service', function() {
                                     {
                                         'range': {
                                             'field': '0005',
-                                            'start': 1786,
-                                            'end': 5140
+                                            'start': '1786',
+                                            'end': '5140'
                                         }
                                     }
                                 ]
