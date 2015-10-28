@@ -1014,6 +1014,11 @@ describe('Recipe service', function () {
                 value: 'James',
                 replace: 'Jimmy'
             };
+
+            stateMock.playground.filter = {
+                applyTransformationOnFilters: true,
+                gridFilters: [88]
+            };
         }));
 
         it('should create a new recipe with preview step appended', inject(function(RecipeService) {
@@ -1049,7 +1054,8 @@ describe('Recipe service', function () {
                     parameters: params
                 },
                 preview: true,
-                inactive: false
+                inactive: false,
+                filters:[88]
             });
             expect(recipe[3].transformation.parameters).not.toBe(transformation.parameters);
         }));
