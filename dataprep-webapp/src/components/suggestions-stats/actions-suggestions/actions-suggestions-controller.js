@@ -163,18 +163,6 @@
 
         /**
          * @ngdoc method
-         * @name toggleShowAction
-         * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
-         * @description Remove html code inserted when highlighting text from object
-         */
-        vm.toggleShowAction = function toggleShowAction() {
-            //Reset action search
-            this.suggestionService.searchActionString = '';
-            this.columnSuggestionService.initTransformations(vm.suggestionService.currentColumn, this.suggestionService.showAllAction);
-        };
-
-        /**
-         * @ngdoc method
          * @name shouldShowFilteredActions
          * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
          * @param {object} transformation

@@ -34,7 +34,6 @@ describe('Transformation Application Service', function () {
             stateMock.playground.grid.selectedColumn = {id: '0001', name: 'firstname'};
             stateMock.playground.filter.applyTransformationOnFilters = false;
 
-
             //when
             TransformationApplicationService.append(transformation, scope, params);
 

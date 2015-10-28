@@ -385,8 +385,9 @@
          * @ngdoc method
          * @name convertFiltersArrayToTreeFormat
          * @methodOf data-prep.services.filter.service:FilterService
-         * @param {Array} the filters list to convert into a Tree
+         * @param {Array} filtersArray filters list to convert into a Tree
          * @description converts an array of filters into a tree
+         * @returns {Object} returns the right format of the filter
          */
         function convertFiltersArrayToTreeFormat(filtersArray){
             var formattedFilters = [];
@@ -444,6 +445,13 @@
             return createFilterObject(formattedFilters);
         }
 
+        /**
+         * @ngdoc method
+         * @name createFilterObject
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {Array} formattedFilters formatted filters array
+         * @returns {Object} returns the right format of the filter
+         */
         function createFilterObject(formattedFilters){
             if(formattedFilters.length === 1){
                 return {filter: formattedFilters[0]};
@@ -452,12 +460,20 @@
                 return {};
             }
             else {
-                constructPairsTree(formattedFilters, 2);
+                constructPairsTree(formattedFilters);
                 return {filter: theAndTree};
             }
 
         }
 
+        /**
+         * @ngdoc method
+         * @name constructPairsTree
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {Array} flatFilters initial filter array to create the tree
+         * @description constructs the pairs tree
+         * @returns {Object} tree of AND pairs
+         */
         function constructPairsTree(flatFilters){
             var res = [];
             var jsnObj;
@@ -490,6 +506,14 @@
         /************************************** FLATTEN FILTERS TREE **********************************/
         /**********************************************************************************************/
 
+        /**
+         * @ngdoc method
+         * @name flattenFiltersTree
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {Array} filterTree initial filters tree
+         * @param {Array} flatFilters resulted array
+         * @description converts a tree into a flat array
+         */
         function flattenFiltersTree(filterTree, flatFilters){
             for (var key in filterTree){
                 var cond = filterTree[key];
@@ -502,6 +526,14 @@
             }
         }
 
+        /**
+         * @ngdoc method
+         * @name loopConditionsArray
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {Array} tab the array found in the tree
+         * @param {Array} flatFilters resulted array
+         * @description called each time there is an array in the tree
+         */
         function loopConditionsArray(tab, flatFilters){
             _.each(tab, function(cond){
                 for (var key in cond){
@@ -515,6 +547,14 @@
             });
         }
 
+        /**
+         * @ngdoc method
+         * @name getColumnName
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {String} colId column Id
+         * @description given a columnId it get the column name
+         * @returns the column name
+         */
         function getColumnName(colId){
             var filterColumn = _.filter(state.playground.data.columns, function (col){
                 return col.id === colId;
@@ -522,6 +562,15 @@
             return _.pluck(filterColumn, 'name')[0];
         }
 
+        /**
+         * @ngdoc method
+         * @name getColumnName
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {Object} cond filter found in the tree having Backend structure
+         * @param {String} key found in the filters tree
+         * @description creates a Filter instance according to the filter type
+         * @returns {Filter} instance of the Filter
+         */
         function convertToFilterStructure(cond, key){
             var filter = {editable:false};
             filter.colId = cond.field;
