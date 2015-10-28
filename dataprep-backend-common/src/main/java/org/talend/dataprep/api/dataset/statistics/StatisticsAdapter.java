@@ -69,16 +69,17 @@ public class StatisticsAdapter {
             if (result.exist(ValueQualityStatistics.class)) {
                 final Quality quality = currentColumn.getQuality();
                 final ValueQualityStatistics valueQualityStatistics = result.get(ValueQualityStatistics.class);
+                final int valid = (int) valueQualityStatistics.getValidCount() + (int) valueQualityStatistics.getUnknownCount();
                 // Set in column quality...
                 quality.setEmpty((int) valueQualityStatistics.getEmptyCount());
-                quality.setValid((int) valueQualityStatistics.getValidCount());
+                quality.setValid(valid);
                 quality.setInvalid((int) valueQualityStatistics.getInvalidCount());
                 quality.setInvalidValues(valueQualityStatistics.getInvalidValues());
                 // ... and statistics
                 statistics.setCount(valueQualityStatistics.getCount());
                 statistics.setEmpty(valueQualityStatistics.getEmptyCount());
                 statistics.setInvalid(valueQualityStatistics.getInvalidCount());
-                statistics.setValid(valueQualityStatistics.getValidCount());
+                statistics.setValid(valid);
             }
             // Semantic types
             if (result.exist(SemanticType.class) && !currentColumn.isDomainForced()) {
