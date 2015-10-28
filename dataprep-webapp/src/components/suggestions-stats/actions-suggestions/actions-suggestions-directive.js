@@ -55,15 +55,16 @@
                         }
 
                         var highlightText = function(actions){
+                            var searchValue = ctrl.columnSuggestionService.searchActionString.toLowerCase();
                             angular.forEach(actions, function(item){
 
-                                if(ctrl.columnSuggestionService.searchActionString ){
-                                    if(item.labelHtml.toLowerCase().indexOf(ctrl.columnSuggestionService.searchActionString ) !== -1){
+                                if(searchValue){
+                                    if(item.labelHtml.toLowerCase().indexOf(searchValue) !== -1){
                                         //Add html code to highlight searchActionString
                                         item.labelHtml = item.labelHtml.replace(new RegExp('('+removeRegex(ctrl.columnSuggestionService.searchActionString) +')', 'gi'),
                                             '<span class="highlighted">$1</span>');
                                     }
-                                    if(item.categoryHtml.toLowerCase().indexOf(ctrl.columnSuggestionService.searchActionString ) !== -1){
+                                    if(item.categoryHtml.toLowerCase().indexOf(searchValue) !== -1){
                                         //Add html code to highlight searchActionString
                                         item.categoryHtml = item.categoryHtml.replace(new RegExp('('+removeRegex(ctrl.columnSuggestionService.searchActionString) +')', 'gi'),
                                             '<span class="highlighted">$1</span>');
