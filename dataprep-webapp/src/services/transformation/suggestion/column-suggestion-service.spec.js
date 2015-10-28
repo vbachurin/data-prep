@@ -87,7 +87,7 @@ describe('Column suggestion service', function () {
         expect(suggestedTransformations.SPLIT[0].labelHtml).toBe('l...');
     }));
 
-    it('should filter "column metadata" category', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService) {
+    it('should filter "column metadata" category', inject(function ($rootScope, ColumnSuggestionService) {
         //given
         ColumnSuggestionService.transformations = {};
 
