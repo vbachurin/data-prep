@@ -137,58 +137,63 @@
         this.filterTransformations = function filterTransformations() {
 
             /**
-             * update self.filteredTransformations keys(actions' category) when highlighting
-             */
-            function updateTransformations() {
-                //Remove old keys
-                var transfos = _.flatten(_.values(self.filteredTransformations));
-                //Update keys
-                self.filteredTransformations = _.groupBy(transfos, function (action) {
-                    return action.categoryHtml;
-                });
-            }
-
-            /**
              * Escape regex expressions
              */
             function escapeRegex(text) {
                 return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
             }
 
-
-            if(!self.searchActionString){
-                self.filteredTransformations = _.cloneDeep(self.transformations);
-            } else {
-                self.filteredTransformations = {};
+            /**
+             * Filter transformations list to match search
+             */
+            function matchSearch(transfo) {
                 var searchStringLowerCase = self.searchActionString.toLowerCase();
 
-                _.forEach(self.transformations, function(transformations, category){
-                    self.filteredTransformations[category] = [];
-                    _.forEach(transformations, function(transformation){
-                        if(transformation.labelHtml.toLowerCase().indexOf(searchStringLowerCase) !== -1 ||
-                            transformation.description.toLowerCase().indexOf(searchStringLowerCase) !== -1 ||
-                            transformation.categoryHtml.toLowerCase().indexOf(searchStringLowerCase) !== -1){
+                //Remove highlight html code from label
+                transfo.labelHtml = transfo.labelHtml.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
+                transfo.labelHtml = transfo.labelHtml.replace(new RegExp('(</span>)', 'g'), '');
+                //Remove highlight html code from category
+                transfo.categoryHtml = transfo.categoryHtml.replace(new RegExp('(<span class="highlighted">)', 'g'), '');
+                transfo.categoryHtml = transfo.categoryHtml.replace(new RegExp('(</span>)', 'g'), '');
 
-                            var filterdTransformation = _.cloneDeep(transformation);
-
-                            if(filterdTransformation.labelHtml.toLowerCase().indexOf(searchStringLowerCase) !== -1){
-                                //Add html code to highlight searchActionString
-                                filterdTransformation.labelHtml = filterdTransformation.labelHtml.replace(new RegExp('('+escapeRegex(self.searchActionString) +')', 'gi'),
-                                    '<span class="highlighted">$1</span>');
-                            }
-                            if(filterdTransformation.categoryHtml.toLowerCase().indexOf(searchStringLowerCase) !== -1){
-                                //Add html code to highlight searchActionString
-                                filterdTransformation.categoryHtml = filterdTransformation.categoryHtml.replace(new RegExp('('+escapeRegex(self.searchActionString) +')', 'gi'),
-                                    '<span class="highlighted">$1</span>');
-                            }
-
-                            self.filteredTransformations[category].push(filterdTransformation);
-
-                        }
-                    });
-                });
-                updateTransformations();
+                if (!searchStringLowerCase) {
+                    return true;
+                }
+                return transfo.labelHtml.toLowerCase().indexOf(searchStringLowerCase) !== -1 ||
+                    transfo.description.toLowerCase().indexOf(searchStringLowerCase) !== -1 ||
+                    transfo.categoryHtml.toLowerCase().indexOf(searchStringLowerCase) !== -1;
             }
+
+            /**
+             * Highlight filtered transformations
+             */
+            function highlightText(transfo) {
+                var searchStringLowerCase = self.searchActionString.toLowerCase();
+
+                if (searchStringLowerCase) {
+                    if (transfo.labelHtml.toLowerCase().indexOf(searchStringLowerCase) !== -1) {
+                        //Add html code to highlight searchActionString
+                        transfo.labelHtml = transfo.labelHtml.replace(new RegExp('(' + escapeRegex(self.searchActionString) + ')', 'gi'),
+                            '<span class="highlighted">$1</span>');
+                    }
+                    if (transfo.categoryHtml.toLowerCase().indexOf(searchStringLowerCase) !== -1) {
+                        //Add html code to highlight searchActionString
+                        transfo.categoryHtml = transfo.categoryHtml.replace(new RegExp('(' + escapeRegex(self.searchActionString) + ')', 'gi'),
+                            '<span class="highlighted">$1</span>');
+                    }
+                }
+                return transfo;
+            }
+
+            self.filteredTransformations = _.chain(_.flatten(_.values(self.transformations)))
+                .filter(matchSearch)
+                .map(highlightText)
+                .value();
+
+            //regenerate self.filteredTransformations keys(actions' category) after filtering and highlighting
+            self.filteredTransformations = _.groupBy(self.filteredTransformations, function (action) {
+                return action.categoryHtml;
+            });
 
         };
 
