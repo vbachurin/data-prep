@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
@@ -20,10 +19,9 @@ import org.talend.dataprep.exception.error.APIErrorCodes;
 
 @Component
 @Scope("request")
-public class PreparationClone
-    extends GenericCommand<String> {
+public class PreparationClone extends GenericCommand<String> {
 
-    private PreparationClone( HttpClient client, String id, String name ) {
+    private PreparationClone(HttpClient client, String id, String name) {
         super(APIService.PREPARATION_GROUP, client);
         execute(() -> onExecute(id, name)); // $NON-NLS-1$
         onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_CREATE_PREPARATION, e));
