@@ -178,17 +178,16 @@
          * @ngdoc method
          * @name shouldRenderCategory
          * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
-         * @param {string} category The transformation category to test
-         * @param {array} transformations The transformations list
-         * @description Determine if the transformation should be rendered.
+         * @param {object} categoryTransformations The categories with their transformations
+         * @description Determine if the category should be rendered.
          * The 'suggestion' category is rendered if it has transformations to render
-         * @returns {boolean} True if the transformation should be rendered, False otherwise
+         * @returns {boolean} True if the category should be rendered, False otherwise
          */
-        vm.shouldRenderCategory = function shouldRenderCategory(category, transformations) {
+        vm.shouldRenderCategory = function shouldRenderCategory(categoryTransformations) {
 
-            return state.playground.filter.applyTransformationOnFilters ||  // display 'filtered' transformations (contained into 'suggestion' category)
-                category !== 'SUGGESTION' ||                                // not 'suggestion' category
-                _.find(transformations, function(transfo) {                 // 'suggestion' category: has transformations that is not a 'filtered' transformation
+            return state.playground.filter.applyTransformationOnFilters ||                      // display 'filtered' transformations (contained into 'suggestion' category)
+                categoryTransformations.category !== 'suggestion' ||                            // not 'suggestion' category
+                _.find(categoryTransformations.transformations, function(transfo) {             // 'suggestion' category: has transformations that is not a 'filtered' transformation
                     return transfo.category !== 'filtered';
                 });
         };
