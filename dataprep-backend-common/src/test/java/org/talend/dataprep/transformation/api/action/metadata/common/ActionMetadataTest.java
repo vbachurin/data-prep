@@ -78,8 +78,8 @@ public class ActionMetadataTest {
 
     @Test
     public void acceptScope_should_pass_with_table_transformation() throws Exception {
-        // when
-        final boolean result = tableTransformation.acceptScope(TABLE);
+        //when
+        final boolean result = tableTransformation.acceptScope(DATASET);
 
         // then
         assertThat(result, is(true));
@@ -114,8 +114,8 @@ public class ActionMetadataTest {
 
     @Test
     public void acceptScope_should_fail_with_non_table_transformation() throws Exception {
-        // when
-        final boolean result = columnTransformation.acceptScope(TABLE);
+        //when
+        final boolean result = columnTransformation.acceptScope(DATASET);
 
         // then
         assertThat(result, is(false));
