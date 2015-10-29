@@ -22,12 +22,18 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.AppendStep;
@@ -120,9 +126,7 @@ public class PreparationService {
     @ApiOperation(value = "Create a preparation", notes = "Returns the id of the updated preparation.")
     @Timed
     public String update(@ApiParam("id") @PathVariable("id") String id, //
-            @ApiParam("preparation")
-    @RequestBody
-    final Preparation preparation) {
+                         @RequestBody @ApiParam("preparation") final Preparation preparation) {
         Preparation previousPreparation = preparationRepository.get(id, Preparation.class);
         LOGGER.debug("Updating preparation with id {}: {}", preparation.id(), previousPreparation);
         Preparation updated = previousPreparation.merge(preparation);
@@ -149,7 +153,12 @@ public class PreparationService {
             @ApiParam(value = "Optional new name") @RequestParam(required = false) String name) {
         LOGGER.debug("Get content of preparation details for #{}.", id);
         Preparation preparation = preparationRepository.get(id, Preparation.class);
-        preparation.setName(preparation.getName() + " Copy");
+        if ( StringUtils.isEmpty( name )) {
+            preparation.setName( preparation.getName() + " Copy" );
+        } else {
+            preparation.setName( name );
+        }
+
         preparation.setCreationDate(System.currentTimeMillis());
 
         preparationRepository.add(preparation);
@@ -205,12 +214,10 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/actions/{stepId}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Updates an action in a preparation", notes = "Modifies an action in preparation's steps.")
     @Timed
-    public void updateAction(@PathVariable("id")
-    final String preparationId, //
-            @PathVariable("stepId")
-    final String stepToModifyId, //
-            @RequestBody
-    final AppendStep newStep) {
+    public void updateAction(@PathVariable("id") final String preparationId, //
+                            @PathVariable("stepId") final String stepToModifyId, //
+                            @RequestBody final AppendStep newStep) {
+        
         checkActionStepConsistency(newStep);
 
         LOGGER.debug("Modifying actions in preparation #{}", preparationId);
@@ -296,9 +303,8 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/head/{headId}", method = PUT)
     @ApiOperation(value = "Move preparation head", notes = "Set head to the specified head id")
     @Timed
-    public void setPreparationHead(@PathVariable("id")
-    final String preparationId, @PathVariable("headId")
-    final String headId) {
+    public void setPreparationHead(@PathVariable("id") final String preparationId, //
+                                   @PathVariable("headId") final String headId) {
 
         final Step head = getStep(headId);
         if (head == null) {
@@ -549,6 +555,7 @@ public class PreparationService {
      * @return The same step but modified
      */
     private Function<AppendStep, AppendStep> shiftCreatedColumns(final int shiftColumnAfterId, final int shiftNumber) {
+        
         final DecimalFormat format = new DecimalFormat("0000"); //$NON-NLS-1$
         return step -> {
             final List<String> stepCreatedCols = step.getDiff().getCreatedColumns();
