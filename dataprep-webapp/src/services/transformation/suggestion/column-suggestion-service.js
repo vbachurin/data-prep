@@ -6,93 +6,107 @@
      * @name data-prep.services.transformation.service:ColumnSuggestionService
      * @description Transformation Column suggestion service. This service provide the current column suggestions
      * @requires data-prep.services.transformation.service:TransformationCacheService
-     * @requires data-prep.services.utils.service:ConverterService
      */
-    function ColumnSuggestionService($q, $translate, TransformationCacheService) {
+    function ColumnSuggestionService($q, TransformationCacheService) {
         var COLUMN_CATEGORY = 'column_metadata';
-        var self = this;
+        var FILTERED_CATEGORY = 'filtered';
+        var SUGGESTION_CATEGORY = 'suggestion';
 
-        /**
-         * @ngdoc property
-         * @name transformations
-         * @propertyOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @description The currently selected column transformations
-         * @type {Object}
-         */
-        self.transformations = null;
+        var allCategories = null;
+        var service = {
+            allTransformations: [],                 // all selected column transformations
+            allSuggestions: [],                     // all selected column suggestions
+            searchActionString: '',                 // current user input to filter transformations
+            filteredTransformations: null,          // categories with their transformations to display, result of filter
 
+            initTransformations: initTransformations,
+            filterTransformations: filterTransformations,
+            reset: reset
+        };
+        return service;
 
-        //Sort by object key in alphabetical order
-        function sortObject(o) {
-            var sorted = {},
-                key, a = [];
+        //--------------------------------------------------------------------------------------------------------------
+        //----------------------------------------------------INIT------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
 
-            for (key in o) {
-                if (o.hasOwnProperty(key)) {
-                    a.push(key);
-                }
-            }
+        function setHtmlDisplayLabels(transformations) {
+            _.forEach(transformations, function(transfo) {
+                transfo.labelHtml = transfo.label + (transfo.parameters || transfo.dynamic ? '...' : '');
+            });
+        }
 
-            a.sort();
+        function isNotColumnCategory(category) {
+            return function (item) {
+                return item.category !== category;
+            };
+        }
 
-            for (key = 0; key < a.length; key++) {
-                sorted[a[key]] = o[a[key]];
-            }
-            return sorted;
+        function isColumnCategory(category) {
+            return function (item) {
+                return item.category === category;
+            };
+        }
+
+        function labelCriteria(transfo) {
+            return transfo.label.toLowerCase();
         }
 
         /**
          * @ngdoc method
-         * @name filterAndGroup
+         * @name prepareTransformations
          * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @param {object[]} allTransformationsArray All transformations list
-         * @param {object[]} transformationsSuggestedArray Suggested transformations list
-         * @description Keep only the non 'column_metadata' category and group them by category
+         * @param {object} suggestions Suggested transformations category
+         * @param {array} transformations All transformations list
+         * @description Keep only the non 'column_metadata', non 'filtered' categories and group them by category, then add suggestions before
          * @returns {object} An object containing {key: value} = {category: [transformations]}
          */
-        function filterAndGroup(allTransformationsArray, transformationsSuggestedArray) {
+        function prepareTransformations(suggestions, transformations) {
+            var groupedTransformations = _.chain(transformations)
+                .filter(isNotColumnCategory(COLUMN_CATEGORY))
+                .filter(isNotColumnCategory(FILTERED_CATEGORY))
+                .sortBy(labelCriteria)
+                .groupBy('category')
+                .value();
 
-            var allTransformations = allTransformationsArray;
-            var transformationsSuggested = transformationsSuggestedArray;
+            var adaptedTransformations = _.chain(Object.getOwnPropertyNames(groupedTransformations))
+                .sort()
+                .map(function(key) {
+                    return {
+                        category: key,
+                        categoryHtml: key.toUpperCase(),
+                        transformations: groupedTransformations[key]
+                    };
+                })
+                .value();
 
-            //labelHtml is used to display actions list whereas label is used for preview
-            function addLabelHtmlBasedOnParameters (item) {
-                if(!!(item.parameters || item.items) || item.dynamic) {
-                    item.labelHtml= item.label + '...';
-                } else {
-                    item.labelHtml= item.label;
-                }
-            }
+            return [suggestions].concat(adaptedTransformations);
+        }
 
-            //Process all transformations list
-            angular.forEach(allTransformations, function(item){
-                addLabelHtmlBasedOnParameters (item);
-                item.categoryHtml= item.category.toUpperCase();
-            });
-            var allTransfosFiltered = _.chain(allTransformations)
-                                    .filter(function (transfo) {
-                                        return transfo.category !== COLUMN_CATEGORY;
-                                    })
-                                    .sortBy(function (transfo) {
-                                        return transfo.label.toLowerCase();
-                                    })
-                                    .value();
-            var allTransfosFilteredGroupedSorted = sortObject(_.groupBy(allTransfosFiltered, function(action){ return action.categoryHtml;}));
+        /**
+         * @ngdoc method
+         * @name prepareSuggestions
+         * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
+         * @param {array} suggestions Suggested transformations list
+         * @param {array} transformations All transformations list
+         * @description Add 'filtered' category in suggestions
+         * @returns {object} The suggestions category containing real suggestions and 'filtered' category transformations
+         */
+        function prepareSuggestions(suggestions, transformations) {
 
-            //Process suggested transformations list
-            angular.forEach(transformationsSuggested, function(item){
-                addLabelHtmlBasedOnParameters (item);
-                item.categoryHtml= $translate.instant('ACTION_SUGGESTION').toUpperCase();
-            });
-            var transfosSuggestedFiltered = _.chain(transformationsSuggested)
-                                            .filter(function (transfo) {
-                                                return transfo.category !== COLUMN_CATEGORY;
-                                            })
-                                            .value();
-            var transfosSuggestedFilteredGrouped = _.groupBy(transfosSuggestedFiltered, function(action){ return action.categoryHtml;});
+            var adaptedFilteredTransformations = _.chain(transformations)
+                .filter(isColumnCategory(FILTERED_CATEGORY))
+                .sortBy(labelCriteria)
+                .value();
 
-            //Concatenate these two lists with respective order
-            return _.extend(transfosSuggestedFilteredGrouped, allTransfosFilteredGroupedSorted);
+            var adaptedSuggestions = _.chain(suggestions)
+                .filter(isNotColumnCategory(COLUMN_CATEGORY))
+                .value();
+
+            return {
+                category: SUGGESTION_CATEGORY,
+                categoryHtml: SUGGESTION_CATEGORY.toUpperCase(),
+                transformations: adaptedFilteredTransformations.concat(adaptedSuggestions)
+            };
         }
 
         /**
@@ -102,46 +116,124 @@
          * @param {object} column The target column
          * @description Get and process the transformations from backend
          */
-        this.initTransformations = function initTransformations(column) {
-            self.transformations = null;
+        function initTransformations(column) {
+            reset();
 
-            $q.all([
-                TransformationCacheService.getTransformations(column, true)
-                    .then(function (allTransformations) {
-                        return allTransformations;
-                    }),
-                TransformationCacheService.getTransformations(column, false)
-                    .then(function (transformationsSuggested) {
-                        return transformationsSuggested;
-                    })
-            ])
-            .then(function(values) {
-                    self.transformations = filterAndGroup(values[0], values[1]);
-            });
-        };
+            $q
+                .all([
+                    TransformationCacheService.getSuggestions(column),
+                    TransformationCacheService.getTransformations(column)
+                ])
+                .then(function (values) {
+                    setHtmlDisplayLabels(values[0]);
+                    setHtmlDisplayLabels(values[1]);
+
+                    var suggestions = prepareSuggestions(values[0], values[1]);
+                    allCategories = prepareTransformations(suggestions, values[1]);
+                    service.filteredTransformations = allCategories;
+                    service.allSuggestions = values[0];
+                    service.allTransformations = values[1];
+                });
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        //----------------------------------------------------FILTER----------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+
+        function escapeRegex(text) {
+            return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+        }
+
+        function categoryMatchSearch(category, searchValue) {
+            return category.toLowerCase().indexOf(searchValue) !== -1;
+        }
+
+        function transfosMatchSearch(searchValue) {
+            return function(transfo) {
+                return transfo.labelHtml.toLowerCase().indexOf(searchValue) !== -1 ||
+                    transfo.description.toLowerCase().indexOf(searchValue) !== -1;
+            };
+        }
+
+        function extractTransfosThatMatch(searchValue) {
+            return function(catTransfos) {
+                var category = catTransfos.category;
+                var transformations = catTransfos.transformations;
+
+                //category matches : display all this category transformations
+                //category does NOT match : filter to only have matching displayed label or description
+                if(! categoryMatchSearch(category, searchValue)) {
+                    transformations = _.filter(transformations, transfosMatchSearch(searchValue));
+                }
+
+                return {
+                    category: category,
+                    categoryHtml: category.toUpperCase(),
+                    transformations: transformations
+                };
+            };
+        }
+
+        function hasTransformations(catTransfo) {
+            return catTransfo.transformations.length;
+        }
+
+        function highlight(object, key, highlightText) {
+            var originalValue = object[key];
+            if (originalValue.toLowerCase().indexOf(highlightText) !== -1) {
+                object[key] = originalValue.replace(
+                    new RegExp('(' + escapeRegex(highlightText) + ')', 'gi'),
+                    '<span class="highlighted">$1</span>');
+            }
+        }
+
+        function highlightDisplayedLabels(searchValue) {
+            return function(catTransfo) {
+                highlight(catTransfo, 'categoryHtml', searchValue);
+                _.forEach(catTransfo.transformations, function(transfo) {
+                    highlight(transfo, 'labelHtml', searchValue);
+                });
+                return catTransfo;
+            };
+        }
 
         /**
          * @ngdoc method
-         * @name updateTransformations
+         * @name filterTransformations
          * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @description update self.transformations keys(actions' category) when highlighting
+         * @description Filter transformations list by searchString
          */
-        this.updateTransformations = function updateTransformations() {
-            //Remove old keys
-            var transfos = _.flatten(_.values(self.transformations));
-            //Update keys
-            self.transformations = _.groupBy(transfos, function(action){ return action.categoryHtml;});
-        };
+        function filterTransformations() {
+            setHtmlDisplayLabels(service.allSuggestions);
+            setHtmlDisplayLabels(service.allTransformations);
 
+            var searchValue = service.searchActionString.toLowerCase();
+
+            service.filteredTransformations = !searchValue ?
+                allCategories :
+                _.chain(allCategories)
+                    .map(extractTransfosThatMatch(searchValue))
+                    .filter(hasTransformations)
+                    .map(highlightDisplayedLabels(searchValue))
+                    .value();
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        //----------------------------------------------------RESET-----------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name reset
          * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
          * @description Reset the current column and the transformations
          */
-        this.reset = function reset() {
-            self.transformations = null;
-        };
+        function reset() {
+            service.allTransformations = [];
+            service.allSuggestions = [];
+            service.searchActionString = '';
+            service.filteredTransformations = null;
+            allCategories = null;
+        }
     }
 
     angular.module('data-prep.services.transformation')

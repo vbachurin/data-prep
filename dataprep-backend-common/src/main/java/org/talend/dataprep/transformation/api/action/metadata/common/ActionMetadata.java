@@ -215,7 +215,8 @@ public abstract class ActionMetadata {
                 LOGGER.warn("Is there a new action scope ??? {}", scope);
                 break;
             }
-            return row;
+            // For following actions, returns the row as modifiable to allow further modifications.
+            return row.modifiable();
         }).build();
     }
 

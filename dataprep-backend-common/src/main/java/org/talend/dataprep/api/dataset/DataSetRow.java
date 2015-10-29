@@ -327,6 +327,10 @@ public class DataSetRow implements Cloneable {
         return new UnmodifiableDataSetRow(this);
     }
 
+    public DataSetRow modifiable() {
+        return this;
+    }
+
     /**
      * A wrapper implementation of {@link DataSetRow} that prevents changes on previous values and set empty string for
      * all new columns. This implementation allows modification on {@link RowMetadata}.
@@ -444,6 +448,11 @@ public class DataSetRow implements Cloneable {
         @Override
         public DataSetRow unmodifiable() {
             return this;
+        }
+
+        @Override
+        public DataSetRow modifiable() {
+            return delegate;
         }
     }
 }

@@ -322,7 +322,8 @@
         function addRangeFilter(interval) {
             var selectedColumn = state.playground.grid.selectedColumn;
             var removeFilterFn = function removeFilterFn(filter) {
-                if (selectedColumn && filter.colId === selectedColumn.id) {
+                var actualSelectedColumn = state.playground.grid.selectedColumn;
+                if (filter.colId === actualSelectedColumn.id) {
                     initRangeLimits();
                     //to reset the bars colors
                     service.histogram.activeLimits = [selectedColumn.statistics.min, selectedColumn.statistics.max];
@@ -418,7 +419,7 @@
             reset(true, false, false);
             var datasetId = state.playground.dataset.id;
             var preparationId = state.playground.preparation && state.playground.preparation.id;
-            var stepId = preparationId && RecipeService.getLastActiveStep() && RecipeService.getLastActiveStep().id;
+            var stepId = preparationId && RecipeService.getLastActiveStep() && RecipeService.getLastActiveStep().transformation.stepId;
             var selectedColumn = state.playground.grid.selectedColumn;
 
             var aggregationParameters = {
