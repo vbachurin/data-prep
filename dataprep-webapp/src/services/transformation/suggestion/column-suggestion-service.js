@@ -135,37 +135,61 @@
          * @description Filter transformations list by searchString
          */
         this.filterTransformations = function filterTransformations() {
+
+            /**
+             * update self.filteredTransformations keys(actions' category) when highlighting
+             */
+            function updateTransformations() {
+                //Remove old keys
+                var transfos = _.flatten(_.values(self.filteredTransformations));
+                //Update keys
+                self.filteredTransformations = _.groupBy(transfos, function (action) {
+                    return action.categoryHtml;
+                });
+            }
+
+            /**
+             * Escape regex expressions
+             */
+            function escapeRegex(text) {
+                return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+            }
+
+
             if(!self.searchActionString){
                 self.filteredTransformations = _.cloneDeep(self.transformations);
-            }
-            self.filteredTransformations = {};
-            var searchStringLowerCase = self.searchActionString.toLowerCase();
-            _.forEach(self.transformations, function(transformations, category){
-                self.filteredTransformations[category] = [];
-                _.forEach(transformations, function(transformation){
-                    if(transformation.labelHtml.toLowerCase().indexOf(searchStringLowerCase) !== -1 ||
-                        transformation.description.toLowerCase().indexOf(searchStringLowerCase) !== -1 ||
-                        transformation.categoryHtml.toLowerCase().indexOf(searchStringLowerCase) !== -1){
-                        self.filteredTransformations[category].push(_.cloneDeep(transformation));
-                    }
+            } else {
+                self.filteredTransformations = {};
+                var searchStringLowerCase = self.searchActionString.toLowerCase();
+
+                _.forEach(self.transformations, function(transformations, category){
+                    self.filteredTransformations[category] = [];
+                    _.forEach(transformations, function(transformation){
+                        if(transformation.labelHtml.toLowerCase().indexOf(searchStringLowerCase) !== -1 ||
+                            transformation.description.toLowerCase().indexOf(searchStringLowerCase) !== -1 ||
+                            transformation.categoryHtml.toLowerCase().indexOf(searchStringLowerCase) !== -1){
+
+                            var filterdTransformation = _.cloneDeep(transformation);
+
+                            if(filterdTransformation.labelHtml.toLowerCase().indexOf(searchStringLowerCase) !== -1){
+                                //Add html code to highlight searchActionString
+                                filterdTransformation.labelHtml = filterdTransformation.labelHtml.replace(new RegExp('('+escapeRegex(self.searchActionString) +')', 'gi'),
+                                    '<span class="highlighted">$1</span>');
+                            }
+                            if(filterdTransformation.categoryHtml.toLowerCase().indexOf(searchStringLowerCase) !== -1){
+                                //Add html code to highlight searchActionString
+                                filterdTransformation.categoryHtml = filterdTransformation.categoryHtml.replace(new RegExp('('+escapeRegex(self.searchActionString) +')', 'gi'),
+                                    '<span class="highlighted">$1</span>');
+                            }
+
+                            self.filteredTransformations[category].push(filterdTransformation);
+
+                        }
+                    });
                 });
-            });
-        };
+                updateTransformations();
+            }
 
-
-        /**
-         * @ngdoc method
-         * @name updateTransformations
-         * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @description update self.filteredTransformations keys(actions' category) when highlighting
-         */
-        this.updateTransformations = function updateTransformations() {
-            //Remove old keys
-            var transfos = _.flatten(_.values(self.filteredTransformations));
-            //Update keys
-            self.filteredTransformations = _.groupBy(transfos, function (action) {
-                return action.categoryHtml;
-            });
         };
 
         /**

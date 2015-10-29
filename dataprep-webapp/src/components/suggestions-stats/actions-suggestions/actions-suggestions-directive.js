@@ -43,44 +43,6 @@
                         angular.element('.stat-detail-tab-items').css('height', panel2.height()- statHeaderPanelsSizeMargin + 'px');
                     },200);
                 };
-
-                scope.$watch(
-                    function () {
-                        return ctrl.columnSuggestionService.searchActionString ;
-                    },
-                    function () {
-
-                        function removeRegex(text) {
-                            return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-                        }
-
-                        var highlightText = function(actions){
-                            var searchValue = ctrl.columnSuggestionService.searchActionString.toLowerCase();
-                            angular.forEach(actions, function(item){
-
-                                if(searchValue){
-                                    if(item.labelHtml.toLowerCase().indexOf(searchValue) !== -1){
-                                        //Add html code to highlight searchActionString
-                                        item.labelHtml = item.labelHtml.replace(new RegExp('('+removeRegex(ctrl.columnSuggestionService.searchActionString) +')', 'gi'),
-                                            '<span class="highlighted">$1</span>');
-                                    }
-                                    if(item.categoryHtml.toLowerCase().indexOf(searchValue) !== -1){
-                                        //Add html code to highlight searchActionString
-                                        item.categoryHtml = item.categoryHtml.replace(new RegExp('('+removeRegex(ctrl.columnSuggestionService.searchActionString) +')', 'gi'),
-                                            '<span class="highlighted">$1</span>');
-                                    }
-                                }
-
-                            });
-                        };
-
-                        angular.forEach(ctrl.columnSuggestionService.filteredTransformations, function(actions){
-                            highlightText(actions);
-                        });
-                        //Update category keys for highlighting
-                        ctrl.columnSuggestionService.updateTransformations();
-                    }
-                );
             }
         };
     }
