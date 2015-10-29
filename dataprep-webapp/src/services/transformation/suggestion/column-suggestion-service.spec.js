@@ -14,22 +14,22 @@ describe('Column suggestion service', function () {
     beforeEach(inject(function ($q, TransformationCacheService) {
         spyOn(TransformationCacheService, 'getTransformations').and.returnValue($q.when(
             [
-                {name: 'rename', category: 'column_metadata', label: 'z'},
-                {name: 'cluster', category: 'quickfix', label: 'f'},
-                {name: 'split', category: 'column_metadata', label: 'c'},
-                {name: 'tolowercase', category: 'case', label: 'v'},
-                {name: 'touppercase', category: 'case', label: 'u'},
-                {name: 'removeempty', category: 'clear', label: 'a'},
-                {name: 'totitlecase', category: 'case', label: 't'},
-                {name: 'removetrailingspaces', category: 'quickfix', label: 'm'},
-                {name: 'split', category: 'split', label: 'l', dynamic: true}
+                {name: 'rename', category: 'column_metadata', label: 'z', description: 'test'},
+                {name: 'cluster', category: 'quickfix', label: 'f', description: 'test'},
+                {name: 'split', category: 'column_metadata', label: 'c', description: 'test'},
+                {name: 'tolowercase', category: 'case', label: 'v', description: 'test'},
+                {name: 'touppercase', category: 'case', label: 'u', description: 'test'},
+                {name: 'removeempty', category: 'clear', label: 'a', description: 'test'},
+                {name: 'totitlecase', category: 'case', label: 't', description: 'test'},
+                {name: 'removetrailingspaces', category: 'quickfix', label: 'm', description: 'test'},
+                {name: 'split', category: 'split', label: 'l', dynamic: true, description: 'test'}
             ]
         ));
 
         spyOn(TransformationCacheService, 'getSuggestions').and.returnValue($q.when(
             [
-                {name: 'tolowercase', category: 'case', label: 'v'},
-                {name: 'touppercase', category: 'case', label: 'u'}
+                {name: 'tolowercase', category: 'case', label: 'v', description: 'test'},
+                {name: 'touppercase', category: 'case', label: 'u', description: 'test'}
             ]
         ));
     }));
@@ -101,21 +101,83 @@ describe('Column suggestion service', function () {
         expect(columnCategoryTransformation).toBeFalsy();
     }));
 
-    //it('should update transformations list after searching', inject(function ($rootScope, ColumnSuggestionService) {
-    //    //given
-    //    ColumnSuggestionService.transformations = {
-    //        '<span class="highlighted">SUGGESTION</span>': [{name: 'cluster', categoryHtml: 'SUGGESTION', category: 'quickfix',label: 'f', labelHtml: 'f'}, {name: 'removetrailingspaces', categoryHtml: 'SUGGESTION',category: 'quickfix', label: 'm', labelHtml: 'm'}],
-    //        QUICKFIX: [{name: 'cluster', categoryHtml: 'QUICKFIX', category: 'quickfix', label: 'f', labelHtml: 'f'}, {name: 'removetrailingspaces', categoryHtml: 'QUICKFIX', category: 'quickfix',label: 'm', labelHtml: 'm'}]
-    //    };
-    //    //when
-    //    ColumnSuggestionService.updateTransformations();
-    //    $rootScope.$digest();
-    //
-    //    //then
-    //    expect(ColumnSuggestionService.transformations.SUGGESTION.length).toBe(2);
-    //
-    //    expect(ColumnSuggestionService.transformations.QUICKFIX.length).toBe(2);
-    //    expect(ColumnSuggestionService.transformations.QUICKFIX[0].label).toBe('f');
-    //    expect(ColumnSuggestionService.transformations.QUICKFIX[1].label).toBe('m');
-    //}));
+    it('should not filter transformations when searchActionString is empty', inject(function ($rootScope, ColumnSuggestionService) {
+        //given
+        ColumnSuggestionService.searchActionString = '';
+
+        //when
+        ColumnSuggestionService.initTransformations(firstSelectedColumn);
+        $rootScope.$digest();
+        ColumnSuggestionService.filterTransformations();
+        $rootScope.$digest();
+
+        //then
+        var filteredTransformations = ColumnSuggestionService.filteredTransformations;
+
+        expect(filteredTransformations.SUGGESTION.length).toBe(2);
+        expect(filteredTransformations.CASE[0].labelHtml).toBe('t');
+        expect(filteredTransformations.CASE[1].labelHtml).toBe('u');
+        expect(filteredTransformations.CASE[2].labelHtml).toBe('v');
+        expect(filteredTransformations.CLEAR[0].labelHtml).toBe('a');
+        expect(filteredTransformations.QUICKFIX[0].labelHtml).toBe('f');
+        expect(filteredTransformations.QUICKFIX[1].labelHtml).toBe('m');
+        expect(filteredTransformations.SPLIT[0].labelHtml).toBe('l...');
+    }));
+
+    it('should filter transformations when searchActionString is not empty', inject(function ($rootScope, ColumnSuggestionService) {
+        //given
+        ColumnSuggestionService.initTransformations(firstSelectedColumn);
+        $rootScope.$digest();
+
+        //when
+        ColumnSuggestionService.searchActionString = 'l';
+
+        ColumnSuggestionService.filterTransformations();
+        $rootScope.$digest();
+
+        //then
+        var filteredTransformations = ColumnSuggestionService.filteredTransformations;
+        expect(filteredTransformations['C<span class="highlighted">L</span>EAR'].length).toBe(1);
+        expect(filteredTransformations['C<span class="highlighted">L</span>EAR'][0].labelHtml).toBe('a');
+        expect(filteredTransformations['SP<span class="highlighted">L</span>IT'].length).toBe(1);
+        expect(filteredTransformations['SP<span class="highlighted">L</span>IT'][0].labelHtml).toBe('<span class="highlighted">l</span>...');
+    }));
+
+    it('should filter transformations with case insensitive', inject(function ($rootScope, ColumnSuggestionService) {
+        //given
+        ColumnSuggestionService.initTransformations(firstSelectedColumn);
+        $rootScope.$digest();
+
+        //when
+        ColumnSuggestionService.searchActionString = 'L';
+
+        ColumnSuggestionService.filterTransformations();
+        $rootScope.$digest();
+
+        //then
+        var filteredTransformations = ColumnSuggestionService.filteredTransformations;
+        expect(_.values(filteredTransformations).length).toBe(2);
+        expect(filteredTransformations['C<span class="highlighted">L</span>EAR'].length).toBe(1);
+        expect(filteredTransformations['C<span class="highlighted">L</span>EAR'][0].labelHtml).toBe('a');
+        expect(filteredTransformations['SP<span class="highlighted">L</span>IT'].length).toBe(1);
+        expect(filteredTransformations['SP<span class="highlighted">L</span>IT'][0].labelHtml).toBe('<span class="highlighted">l</span>...');
+    }));
+
+    it('should filter transformations by escaping regex', inject(function ($rootScope, ColumnSuggestionService) {
+        //given
+        ColumnSuggestionService.initTransformations(firstSelectedColumn);
+        $rootScope.$digest();
+
+        //when
+        ColumnSuggestionService.searchActionString = '...';
+
+        ColumnSuggestionService.filterTransformations();
+        $rootScope.$digest();
+
+        //then
+        var filteredTransformations = ColumnSuggestionService.filteredTransformations;
+        expect(_.values(filteredTransformations).length).toBe(1);
+        expect(filteredTransformations['SPLIT'].length).toBe(1);
+        expect(filteredTransformations['SPLIT'][0].labelHtml).toBe('l<span class="highlighted">...</span>');
+    }));
 });
