@@ -100,7 +100,6 @@ public class AnalyzerService implements DisposableBean {
         }
         final HistogramAnalyzer histogramAnalyzer = new HistogramAnalyzer(types, histogramParameter);
         final SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(categoryBuilder);
-        semanticAnalyzer.setLimit(100);
         // Configure value quality analysis
         final ValueQualityAnalyzer valueQualityAnalyzer = qualityAnalyzer(columns);
         final Analyzer<Analyzers.Result> analyzer = Analyzers.with(
