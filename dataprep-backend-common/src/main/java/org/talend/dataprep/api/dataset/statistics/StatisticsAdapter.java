@@ -91,12 +91,11 @@ public class StatisticsAdapter {
                         .max((o1, o2) -> o1.getValue().intValue() - o2.getValue().intValue());
                 if (entry.isPresent()) {
                     // TODO (TDP-734) Take into account limit of the semantic analyzer.
-                    final Long value = entry.get().getValue();
-                    final long percentage = normalize(statistics, value);
+                    final float percentage = entry.get().getKey().getFrequency();
                     if (percentage > semanticThreshold) {
                         currentColumn.setDomain(semanticType.getSuggestedCategory());
                         currentColumn.setDomainLabel(TypeUtils.getDomainLabel(semanticType));
-                        currentColumn.setDomainFrequency(value);
+                        currentColumn.setDomainFrequency(percentage);
                     } else {
                         // Ensure the domain is cleared if percentage is lower than threshold (earlier analysis - e.g.
                         // on the first 20 lines - may be over threshold, but full scan may decide otherwise.
@@ -112,8 +111,11 @@ public class StatisticsAdapter {
                     for (Map.Entry<CategoryFrequency, Long> current : altCategoryCounts.entrySet()) {
                         // Find category display name
                         final String id = current.getKey().getCategoryId();
-                        final String categoryDisplayName = TypeUtils.getDomainLabel(id);
-                        semanticDomains.add(new SemanticDomain(id, categoryDisplayName, normalize(statistics, current.getKey().getCount())));
+                        if (!StringUtils.isEmpty(id)) {
+                            // Takes only actual semantic domains (unknown = "").
+                            final String categoryDisplayName = TypeUtils.getDomainLabel(id);
+                            semanticDomains.add(new SemanticDomain(id, categoryDisplayName, current.getKey().getFrequency()));
+                        }
                     }
                     currentColumn.setSemanticDomains(semanticDomains);
                 }
