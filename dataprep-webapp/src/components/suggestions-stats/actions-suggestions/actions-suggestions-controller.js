@@ -163,31 +163,36 @@
 
         /**
          * @ngdoc method
-         * @name shouldShowFilteredActions
+         * @name shouldRenderTransformation
          * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
-         * @param {object} transformation
-         * @description checks if the action should be shown or not
+         * @param {object} transformation The transformation to test
+         * @description Determine if the transformation should be rendered.
+         * The 'filtered' category transformations are not rendered if the applyTransformationOnFilters flag is false
+         * @returns {boolean} True if the transformation should be rendered, False otherwise
          */
-        vm.shouldShowFilteredActions = function shouldShowFilteredActions(action){
-            return action.category !== 'filtered' || (state.playground.filter.applyTransformationOnFilters && action.category === 'filtered');
+        vm.shouldRenderTransformation = function shouldRenderTransformation(transformation) {
+            return state.playground.filter.applyTransformationOnFilters || (transformation.category !== 'filtered');
+        };
+
+        /**
+         * @ngdoc method
+         * @name shouldRenderCategory
+         * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
+         * @param {string} category The transformation category to test
+         * @param {array} transformations The transformations list
+         * @description Determine if the transformation should be rendered.
+         * The 'suggestion' category is rendered if it has transformations to render
+         * @returns {boolean} True if the transformation should be rendered, False otherwise
+         */
+        vm.shouldRenderCategory = function shouldRenderCategory(category, transformations) {
+
+            return state.playground.filter.applyTransformationOnFilters ||  // display 'filtered' transformations (contained into 'suggestion' category)
+                category !== 'SUGGESTION' ||                                // not 'suggestion' category
+                _.find(transformations, function(transfo) {                 // 'suggestion' category: has transformations that is not a 'filtered' transformation
+                    return transfo.category !== 'filtered';
+                });
         };
     }
-
-    /**
-     * @ngdoc property
-     * @name suggestions
-     * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
-     * @description The suggested transformations list.
-     * This is bound to {@link data-prep.services.transformation:ColumnSuggestionService ColumnSuggestionService}.transformations
-     */
-    Object.defineProperty(ActionsSuggestionsCtrl.prototype,
-        'columnSuggestions', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.columnSuggestionService.transformations;
-            }
-        });
 
     /**
      * @ngdoc property

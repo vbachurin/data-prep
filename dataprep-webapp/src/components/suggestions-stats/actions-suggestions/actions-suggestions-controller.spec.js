@@ -53,18 +53,6 @@ describe('Actions suggestions-stats controller', function () {
             expect(ctrl.column).toBe(column);
         }));
 
-        it('should bind "suggestions-stats" getter to SuggestionService.transformations', inject(function (ColumnSuggestionService) {
-            //given
-            var ctrl = createController();
-            var transformations = [{name: 'tolowercase'}, {name: 'touppercase'}];
-
-            //when
-            ColumnSuggestionService.transformations = transformations;
-
-            //then
-            expect(ctrl.columnSuggestions).toBe(transformations);
-        }));
-
         it('should bind "tab" getter to SuggestionService.tab', inject(function (SuggestionService) {
             //given
             var ctrl = createController();

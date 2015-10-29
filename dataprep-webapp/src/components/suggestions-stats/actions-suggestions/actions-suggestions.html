@@ -3,17 +3,17 @@
         <span class="title title-action" title="{{actionsSuggestionsCtrl.column.name}}">{{actionsSuggestionsCtrl.column.name}}</span>
     </div>
 
-    <div class="Description" ng-if="!actionsSuggestionsCtrl.columnSuggestions">Select a column to display its actions</div>
+    <div class="Description" ng-if="!actionsSuggestionsCtrl.columnSuggestionService.filteredTransformations">Select a column to display its actions</div>
 
-    <talend-tabs tab="actionsSuggestionsCtrl.tab" action-on-click="actionsSuggestionsCtrl.resizePanels()" ng-if="actionsSuggestionsCtrl.columnSuggestions">
+    <talend-tabs tab="actionsSuggestionsCtrl.tab" action-on-click="actionsSuggestionsCtrl.resizePanels()" ng-if="actionsSuggestionsCtrl.columnSuggestionService.filteredTransformations">
         <talend-tabs-item tab-title="Text">
-            <div class="action-suggestion-tab-items">Coming soon ...</div>
+            <div class="action-suggestion-tab-items watermark">Coming soon ...</div>
         </talend-tabs-item>
         <talend-tabs-item tab-title="Cell">
-            <div class="action-suggestion-tab-items">Coming soon ...</div>
+            <div class="action-suggestion-tab-items watermark">Coming soon ...</div>
         </talend-tabs-item>
         <talend-tabs-item tab-title="Line">
-            <div class="action-suggestion-tab-items">Coming soon ...</div>
+            <div class="action-suggestion-tab-items watermark">Coming soon ...</div>
         </talend-tabs-item>
         <talend-tabs-item tab-title="Column" default="true" action-on-init="actionsSuggestionsCtrl.resizePanels()">
             <input type="search"
@@ -26,15 +26,16 @@
                    add-reset-button-to-input>
 
             <div class="action-suggestion-tab-items">
-                <div ng-repeat="(category, transformations) in actionsSuggestionsCtrl.columnSuggestionService.filteredTransformations">
-                    <div class="action-category" ng-if="transformations.length" ng-bind-html="category"></div>
+                <div ng-repeat="(category, transformations) in actionsSuggestionsCtrl.columnSuggestionService.filteredTransformations track by $index"
+                     ng-if="actionsSuggestionsCtrl.shouldRenderCategory(category, transformations)">
+                    <div class="action-category" ng-bind-html="category"></div>
                     <div>
                         <talend-accordions class="menu">
                             <talend-accordions-item
                                     ng-repeat="transfo in transformations track by transfo.name"
+                                    ng-if="actionsSuggestionsCtrl.shouldRenderTransformation(transfo)"
                                     action="actionsSuggestionsCtrl.scrollToBottom"
-                                    ng-show="actionsSuggestionsCtrl.shouldShowFilteredActions(transfo)"
-                                    ng-switch="!!(transfo.parameters || transfo.items)">
+                                    ng-switch="!!transfo.parameters">
                                 <!--with dynamic parameters-->
                                 <a class="trigger"
                                    ng-switch-when="false"
