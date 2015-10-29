@@ -103,11 +103,6 @@
           "frequency": 60.0
         },
         {
-          "id": "",
-          "label": "",
-          "frequency": 40.0
-        },
-        {
           "id": "COUNTRY_CODE_ISO2",
           "label": "Country Code ISO2",
           "frequency": 60.0
@@ -194,6 +189,11 @@
       "domainLabel": "US State",
       "domainFrequency": 5.0,
       "semanticDomains": [
+        {
+          "id": "AIRPORT",
+          "label": "Airport",
+          "frequency": 20.0
+        },
         {
           "id": "CITY",
           "label": "City",
@@ -292,14 +292,14 @@
       "domainFrequency": 4.0,
       "semanticDomains": [
         {
-          "id": "",
-          "label": "",
-          "frequency": 20.0
-        },
-        {
           "id": "CITY",
           "label": "City",
           "frequency": 80.0
+        },
+        {
+          "id": "AIRPORT",
+          "label": "Airport",
+          "frequency": 40.0
         },
         {
           "id": "US_COUNTY",
@@ -398,14 +398,14 @@
       "domainFrequency": 4.0,
       "semanticDomains": [
         {
-          "id": "",
-          "label": "",
-          "frequency": 20.0
-        },
-        {
           "id": "CITY",
           "label": "City",
           "frequency": 80.0
+        },
+        {
+          "id": "AIRPORT",
+          "label": "Airport",
+          "frequency": 20.0
         },
         {
           "id": "US_COUNTY",

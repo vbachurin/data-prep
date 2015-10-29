@@ -112,8 +112,11 @@ public class StatisticsAdapter {
                     for (Map.Entry<CategoryFrequency, Long> current : altCategoryCounts.entrySet()) {
                         // Find category display name
                         final String id = current.getKey().getCategoryId();
-                        final String categoryDisplayName = TypeUtils.getDomainLabel(id);
-                        semanticDomains.add(new SemanticDomain(id, categoryDisplayName, normalize(statistics, current.getKey().getCount())));
+                        if (!StringUtils.isEmpty(id)) {
+                            // Takes only actual semantic domains (unknown = "").
+                            final String categoryDisplayName = TypeUtils.getDomainLabel(id);
+                            semanticDomains.add(new SemanticDomain(id, categoryDisplayName, normalize(statistics, current.getKey().getCount())));
+                        }
                     }
                     currentColumn.setSemanticDomains(semanticDomains);
                 }
