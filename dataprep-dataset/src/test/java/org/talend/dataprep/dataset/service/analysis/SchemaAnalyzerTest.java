@@ -125,9 +125,10 @@ public class SchemaAnalyzerTest {
             assertThat(column.getType(), is(expectedTypes[i].getName()));
             assertThat(column.getDomain(), is(expectedDomains[i++]));
             assertThat(column.getSemanticDomains()).isNotNull().isNotEmpty().hasSize(4).contains(
-                    new SemanticDomain("FR_POSTAL_CODE", "FR Postal Code", (float) 58.0), //
-                    new SemanticDomain("US_POSTAL_CODE", "US Postal Code", (float) 58.0));
-
+                    new SemanticDomain("FR_POSTAL_CODE", "FR Postal Code", (float) 58.33), //
+                    new SemanticDomain("FR_CODE_COMMUNE_INSEE", "FR Insee Code", (float) 58.33), //
+                    new SemanticDomain("DE_POSTAL_CODE", "DE Postal Code", (float) 58.33), //
+                    new SemanticDomain("US_POSTAL_CODE", "US Postal Code", (float) 58.33));
         }
     }
 
