@@ -180,7 +180,7 @@ public abstract class ActionMetadata {
             return this instanceof RowAction;
         case COLUMN:
             return this instanceof ColumnAction;
-        case TABLE:
+        case DATASET:
             return this instanceof DataSetAction;
         default:
             return false;
@@ -222,7 +222,7 @@ public abstract class ActionMetadata {
                     ((RowAction) this).applyOnRow(row, context, parameters, rowId);
                 }
                 break;
-            case TABLE:
+            case DATASET:
                 ((DataSetAction) this).applyOnDataSet(row, context, parameters);
                 break;
             default:

@@ -1,6 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.STRING;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,13 +15,10 @@ import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
  */
 public enum ImplicitParameters {
 
-    COLUMN_ID("column_id", ParameterType.STRING, EMPTY),
-
-    ROW_ID("row_id", ParameterType.STRING, EMPTY),
-
-    SCOPE("scope", ParameterType.STRING, EMPTY),
-
-    FILTER("filter", ParameterType.FILTER, EMPTY);
+                                COLUMN_ID(STRING, EMPTY),
+                                ROW_ID(STRING, EMPTY),
+                                SCOPE(STRING, EMPTY),
+                                FILTER(ParameterType.FILTER, EMPTY);
 
     /** The paramter. */
     private final Parameter parameter;
@@ -28,19 +26,18 @@ public enum ImplicitParameters {
     /**
      * Constructor.
      *
-     * @param key parameter key.
      * @param type type of parameter.
      * @param defaultValue the parameter default value.
      */
-    ImplicitParameters(final String key, final ParameterType type, final String defaultValue) {
-        this.parameter = new Parameter(key, type, defaultValue, true);
+    ImplicitParameters(final ParameterType type, final String defaultValue) {
+        this.parameter = new Parameter(this.name(), type, defaultValue, true);
     }
 
     /**
      * @return the parameter key.
      */
     public String getKey() {
-        return parameter.getName();
+        return parameter.getName().toLowerCase();
     }
 
     /**

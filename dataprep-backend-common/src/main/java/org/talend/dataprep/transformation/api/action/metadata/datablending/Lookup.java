@@ -1,16 +1,17 @@
 package org.talend.dataprep.transformation.api.action.metadata.datablending;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.COLUMN_ID;
+import static org.talend.dataprep.transformation.api.action.metadata.datablending.Lookup.PARAMETERS.*;
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.STRING;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.io.InputStream;
+import java.util.*;
 
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -30,18 +31,20 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.DataSetAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.parameters.ColumnParameter;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  *
  */
 @Component(Lookup.ACTION_BEAN_PREFIX + Lookup.LOOKUP_ACTION_NAME)
-public class Lookup extends AbstractActionMetadata implements DataSetAction {
+public class Lookup extends ActionMetadata implements DataSetAction {
 
     /** The action name. */
     public static final String LOOKUP_ACTION_NAME = "lookup"; //$NON-NLS-1$
@@ -51,11 +54,16 @@ public class Lookup extends AbstractActionMetadata implements DataSetAction {
 
     /** Lookup parameters */
     protected enum PARAMETERS {
-                               lookup_ds_name,
-                               lookup_ds_id,
-                               lookup_ds_url,
-                               lookup_join_on,
-                               lookup_selected_cols
+                               LOOKUP_DS_NAME,
+                               LOOKUP_DS_ID,
+                               LOOKUP_DS_URL,
+                               LOOKUP_JOIN_ON,
+                               LOOKUP_JOIN_ON_NAME, // needed to display human friendly parameters
+                               LOOKUP_SELECTED_COLS;
+
+        public String getKey() {
+            return this.name().toLowerCase();
+        }
     }
 
     /** The dataprep ready jackson builder. */
@@ -117,12 +125,14 @@ public class Lookup extends AbstractActionMetadata implements DataSetAction {
     @Override
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = ImplicitParameters.getParameters();
-        parameters.add(new Parameter(PARAMETERS.lookup_ds_name.name(), STRING, adaptedNameValue, false, false));
-        parameters.add(new Parameter(PARAMETERS.lookup_ds_id.name(), STRING, adaptedDatasetIdValue, false, false));
-        parameters.add(new Parameter(PARAMETERS.lookup_ds_url.name(), STRING, adaptedUrlValue, false, false));
-        parameters.add(new Parameter(PARAMETERS.lookup_join_on.name(), STRING, EMPTY, false, false));
+        parameters.add(new Parameter(LOOKUP_DS_NAME.getKey(), STRING, adaptedNameValue, false, false));
+        parameters.add(new Parameter(LOOKUP_DS_ID.getKey(), STRING, adaptedDatasetIdValue, false, false));
+        parameters.add(new Parameter(LOOKUP_DS_URL.getKey(), STRING, adaptedUrlValue, false, false));
+        parameters.add(new Parameter(LOOKUP_JOIN_ON.getKey(), STRING, EMPTY, false, false));
+        parameters.add(new Parameter(LOOKUP_JOIN_ON_NAME.getKey(), STRING, EMPTY, false, false));
+        // TODO see how serialize multiple column selection in a string...
         parameters.add(
-                new ColumnParameter(PARAMETERS.lookup_selected_cols.name(), EMPTY, false, false, Collections.emptyList(), true));
+new ColumnParameter(LOOKUP_SELECTED_COLS.name(), EMPTY, false, false, Collections.emptyList(), true));
         return parameters;
     }
 
@@ -155,49 +165,60 @@ public class Lookup extends AbstractActionMetadata implements DataSetAction {
     public void applyOnDataSet(DataSetRow row, TransformationContext context, Map<String, String> parameters) {
 
         // read parameters
-        final String rowId = parameters.get(ImplicitParameters.ROW_ID.getKey());
-        final String joinValue = row.get(rowId);
-        final String joinOn = parameters.get(PARAMETERS.lookup_join_on.name());
+        final String columnId = parameters.get(COLUMN_ID.getKey());
+        final String joinValue = row.get(columnId);
+        final String joinOn = parameters.get(LOOKUP_JOIN_ON.getKey());
 
         // get the matching lookup row
-        final DataSet lookup = getLookupContent(parameters);
-        DataSetRow matchingRow = getLookupRow(lookup, joinOn, joinValue);
+        final ObjectMapper mapper = builder.build();
+        try (JsonParser parser = mapper.getFactory().createParser(getLookupContent(parameters))) {
+            final DataSet lookup = mapper.reader(DataSet.class).readValue(parser);
 
-        final List<String> colsToAdd = getColsToAdd(parameters);
-        colsToAdd.forEach(toAdd -> {
-            // update metadata
-            final String newColId = row.getRowMetadata().insertAfter(rowId, matchingRow.getRowMetadata().getById(toAdd));
-            // insert new row value
-            row.set(newColId, matchingRow.get(toAdd));
-        });
+            LOGGER.debug("lookup dataset #{} - {} loaded", lookup.getMetadata().getId(), lookup.getMetadata().getName());
+            DataSetRow matchingRow = getLookupRow(lookup, joinOn, joinValue);
+
+            final List<String> colsToAdd = getColsToAdd(parameters);
+            colsToAdd.forEach(toAdd -> {
+                // update metadata
+                final ColumnMetadata colMetadata = ColumnMetadata.Builder.column()
+                        .copy(matchingRow.getRowMetadata().getById(toAdd)).computedId(null).build();
+                final String newColId = row.getRowMetadata().insertAfter(columnId, colMetadata);
+                // insert new row value
+                row.set(newColId, matchingRow.get(toAdd));
+            });
+
+        } catch (IOException e) {
+            throw new TDPException(TransformationErrorCodes.UNABLE_TO_READ_LOOKUP_DATASET, e);
+        }
 
     }
 
     private DataSetRow getLookupRow(DataSet lookup, String joinOn, String joinValue) {
-        return null;
+        final Optional<DataSetRow> found = lookup.getRecords() //
+                .filter(row -> StringUtils.equals(joinValue, row.get(joinOn))) //
+                .findFirst();
+        return found.isPresent() ? found.get() : null;
     }
 
+
     private List<String> getColsToAdd(Map<String, String> parameters) {
-        final String cols = parameters.get(PARAMETERS.lookup_selected_cols.name());
+        final String cols = parameters.get(LOOKUP_SELECTED_COLS.getKey());
         return Arrays.asList(cols.split(","));
     }
 
-    private DataSet getLookupContent(Map<String, String> parameters) {
-        final String url = parameters.get(PARAMETERS.lookup_ds_url.name());
+    private InputStream getLookupContent(Map<String, String> parameters) {
+        final String url = parameters.get(LOOKUP_DS_URL.getKey());
         HttpGet get = new HttpGet(url);
         CloseableHttpResponse response;
         try {
 
             response = httpClient.execute(get);
             if (response.getStatusLine().getStatusCode() >= 400) {
-                throw new IOException("error reading dataset lookup" + url + " -> " + response.getStatusLine());
+                throw new IOException("error reading dataset lookup " + url + " -> " + response.getStatusLine());
             }
 
-            final DataSet lookup = builder.build().reader(DataSet.class).readValue(response.getEntity().getContent());
-            LOGGER.debug("Lookup dataset #{} - {} read from {} ", lookup.getMetadata().getId(), lookup.getMetadata().getName(),
-                    url);
-            return lookup;
-
+            LOGGER.debug("Lookup dataset read from {} ", url);
+            return response.getEntity().getContent();
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_READ_LOOKUP_DATASET, e);
         }
