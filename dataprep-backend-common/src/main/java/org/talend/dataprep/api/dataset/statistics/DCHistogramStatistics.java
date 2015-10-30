@@ -17,183 +17,188 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-//import org.talend.dataquality.statistics.numeric.histogram.*;
-//import org.talend.dataprep.api.dataset.statistics.Range;
 import org.apache.commons.math3.special.Gamma;
 import org.talend.dataquality.statistics.numeric.histogram.Range;
 
 /**
- * Histogram statistics bean.
+ * This class implements the Dynamic Compressed (DC) Histogram as described in the paper:
+ * Dynamic Compressed Histograms: Capturing Evolving Data Sets of Donko et.al.
+ * We do not consider singular buckets in our implementation.
  *
- * @author bdiouf
+ * @see <a href="http://pages.cs.wisc.edu/~donjerko/hist.pdf>Donko et.al</a>
  *
  */
 public class DCHistogramStatistics {
 
-    //private Map<SingleBin, Long> bins = new TreeMap();
-
-    private TreeMap<Double, Double> bins = new TreeMap<>();
-
-    private double min, max;
-
-    private int numBins, numValues;
-
-    private static final double ALPHA_MIN = 10E-6;
-
-    public void setParameters( int numBins) {
-        this.numBins = numBins;
-    }
-
-/*    public void add(double d) {
-
-        double bin = ((d - min) / binSize);
-        if (bin < 0) { *//* this data is smaller than min *//*
-            // Omit
-        } else if (bin > numBins) { *//* this data point is bigger than max *//*
-            // omit
-        } else {
-            if (bin == numBins) {
-                result[(int) bin - 1] += 1; // Include count of the upper boundary.
-            } else {
-                result[(int) bin] += 1;
-            }
-        }
-    }*/
+    /**
+     * Internal representation of the equi-depth histogram
+     */
+    private TreeMap<Double, Long> bins = new TreeMap<>();
 
     /**
-     * Adds the specified value to this histogram
+     * Minimum value know to this histogram
+     */
+    private double min = Double.NaN;
+
+    /**
+     * Maximum value known to this histogram
+     */
+    private double max = Double.NaN;
+
+    /**
+     * The number of bins of this histogram
+     */
+    private int numberOfBins;
+
+    /**
+     * the number of values added, so far, to this histogram
+     */
+    private long numberOfValues;
+
+    /**
+     * The arithmetic mean of values contained in the histogram
+     */
+    private double sum = Double.NaN;
+
+    /**
+     * A parameter used value used in the original algorithm
+     */
+    private static final double ALPHA_MIN = 10E-6;
+
+    /**
+     *
+     */
+    private int tresholdQuotient = 100;
+
+    /**
+     *
+     * @param numberOfBins the number of bins of this histogram
+     */
+    public void setParameters( int numberOfBins) {
+        if (numberOfBins <= 0){
+            throw new IllegalArgumentException("The number of bin must be a positive integer");
+        }
+        this.numberOfBins = numberOfBins;
+    }
+
+    /**
+     * Add the specified value to this histogram
      * @param d the new value to add to this histogram
      */
     public void add(double d) {
-
-        System.out.println("adding for the  "+numValues +" times and the value added is: "+ d);
-
-        // We do not have n different values so far
-        if (bins.size() < numBins){
-            Double count = bins.get(d);
+        // So far, we have not met n different values
+        if (bins.size() < numberOfBins){
+            Long count = bins.get(d);
             if (count == null){
-                bins.put(d, 1D);
+                bins.put(d, 1L);
             } else{
-                bins.put(d, count+1);
+                bins.put(d, count + 1);
             }
             // update minimum and maximum values
-            if (d < min){
+            if (Double.isNaN(min) || d < min){
                 min = d;
             }
-            if (max < d){
+            if (Double.isNaN(max) || max < d){
                 max = d;
             }
-            // increment the number of values in this histogram
-            numValues++;
+            // increment the number of values stored in this histogram
+            numberOfValues++;
+            sum = Double.isNaN(sum)?d: sum +d;
         }
-        // We have n different values
+        // We have already met n different values
         else{
-            // if d becomes min
-            if (d < min){
-                Double count = bins.get(min);
-                bins.remove (min);
-                bins.put(d, count+1);
+            // d is the min
+            if (Double.isNaN(min) || d < min) {
+                Long count = bins.get(min);
+                bins.remove(min);
+                bins.put(d, count + 1);
                 min  = d;
             }
-            // if d becomes max
-            else if (max < d){
+            // d is the max
+            else if (Double.isNaN(max) || max < d){
                 Double lastBin = bins.lastKey();
-                Double count = bins.get(lastBin);
-                bins.put(lastBin, count+1);
+                Long count = bins.get(lastBin);
+                bins.put(lastBin, count + 1);
                 max = d;
-            } // add d to its bucket
+            } // d is not min nor max
             else{
                 Double bin = bins.lowerKey(d);
-                double binCount = bins.get(bin);
-                bins.put(bin, binCount+1);
+                Long binCount = bins.get(bin);
+                bins.put(bin, binCount + 1);
             }
-            // increment the number of values in this histogram
-            numValues++;
+            // increment the number of values stored in this histogram
+            numberOfValues++;
+            sum = Double.isNaN(sum)?d: sum +d;
             // redistribute values whether it is needed
             redistributeBucketsIfNeeded();
         }
     }
 
     /**
-     * Redistribute the buckets if needed, i.e., if the criterion defined in the paper of Donko et al.
-     * "Dynamic Histograms: Capturing Evolving Data Sets" and in "Numerical Recipe in C: P645"
+     * Redistribute the bins if needed, i.e., if the criterion defined in the paper of Donko et al.
+     * "Dynamic Histograms: Capturing Evolving Data Sets" and in "Numerical Recipe in C (page 645)"
      *
      */
     private void redistributeBucketsIfNeeded(){
-        double c = numValues/ numBins;
+        double c = numberOfValues / numberOfBins;
         double chiSquare = 0D;
-        for (double C:bins.values()){
+        for (double C: bins.values()){
             chiSquare += Math.pow(c - C, 2)/c;
         }
         // degrees of freedom
-        double degreesOfFreedom = numBins - 1;
+        double degreesOfFreedom = numberOfBins - 1;
         double probability = Gamma.regularizedGammaQ(0.5 * degreesOfFreedom, 0.5 * chiSquare);
         if (probability < ALPHA_MIN){
-            redistributeBuckets();
+            redistributeDC();
         }
-
-
     }
 
     /**
-     * Redistribute buckets when the criterion holds ...
+     * Redistribute bins when the relaxation DC histogram  becomes too much ...
      */
-    private void redistributeBuckets(){
+    private void redistributeDC(){
+        // Nothing to do if the histogram is empty
+        if (bins.isEmpty()){
+            return ;
+        }
+        final Long averageCount = numberOfValues / numberOfBins;
+        double newBinCount = 0;
+        double newBinStart = min;
+        TreeMap<Double, Long> newBins = new TreeMap<>();
+        Double currentBin = null;
+        long currentBinCount = 0L;
 
-        double averageCount = numValues / numBins;
-        double currentCount = 0;
-        double currentStart = min;
-        TreeMap<Double, Double> newBins = new TreeMap<>();
-        Iterator<Double> iterator = bins.keySet().iterator();
-        while(iterator.hasNext()){
-            Double bin = iterator.next();
-            Double binCount = bins.get(bin);
-            if ( averageCount < currentCount + binCount){
-                // find new start
-                Double nextBin = bins.lowerKey(bin);
-                if (nextBin != null){
-                    newBins.put(currentStart,  averageCount);
-                    currentStart = (nextBin - bin) * (averageCount - currentCount) / binCount;
-                    currentCount = binCount + currentCount - averageCount;
+        for(Map.Entry<Double, Long> entry :bins.entrySet()){
+            Double nextBin = entry.getKey();
+            Long nextBinCount = entry.getValue();
+            if ( currentBin != null) {
+                if (averageCount <= newBinCount + currentBinCount) {
+                    newBins.put(newBinStart,  averageCount);
+                    newBinStart = currentBin + (nextBin - currentBin) * (averageCount - newBinCount) / currentBinCount;
+                    newBinCount = currentBinCount + newBinCount - averageCount;
                 }
                 else{
-                    // break out of this loop this is the last bin
-                    break;
+                    newBinCount += currentBinCount;
                 }
             }
-            else{
-                currentCount += binCount;
-            }
+            currentBin = nextBin;
+            currentBinCount = nextBinCount;
+        }
 
+        // The last bin has not been treated yet
+        while (newBins.size() < bins.size()) {
+            newBins.put(newBinStart, averageCount);
+            newBinStart = newBinStart + (max - currentBin) * averageCount / currentBinCount;
         }
-        // we did not insert the last bucket
-        if (newBins.size() < bins.size()){
-            newBins.put(currentStart, averageCount);
-        }
+
+        // assign the good count to the last bin of the new distribution
+        long newLastBinCount = numberOfValues - (numberOfBins - 1) * averageCount;
+        Double newLastBin = newBins.lastKey();
+        newBins.put(newLastBin, newLastBinCount);
         bins = newBins;
     }
 
-    /**
-     * Get histograms as a map
-     *
-     * @return the histogram map where Key is the range and value is the freqency. <br>
-     * Note that the returned ranges are in pattern of [Min,
-     * Min+binSize),[Min+binSize,Min+binSize*2)...[Max-binSize,Max<b>]</b>
-     */
-    /*public Map<Range, Long> getHistogram() {
-        Map<Range, Long> histogramMap = new LinkedHashMap<Range, Long>();
-        double currentMin = min;
-        for (int i = 0; i < numBins; i++) {
-            double currentMax = currentMin + binSize;
-            if ((i + 1) == numBins) {
-                currentMax = max;
-            }
-            Range r = new Range(currentMin, currentMax);
-            histogramMap.put(r, result[i]);
-            currentMin = currentMin + binSize;
-        }
-        return histogramMap;
-    }*/
+
     /**
      * Get histograms as a map
      *
@@ -202,6 +207,12 @@ public class DCHistogramStatistics {
      * Min+binSize),[Min+binSize,Min+binSize*2)...[Max-binSize,Max<b>]</b>
      */
     public Map<Range, Long> getHistogram() {
+
+        TreeMap<Double, Long> bins = this.bins;
+        /*if ( numberOfValues > numberOfBins && !allmostEquiWidthHistogram()) {
+            bins = redistributeEquiWidth();
+        }*/
+
         Map<Range, Long> histogramMap = new LinkedHashMap<>();
         double currentMin = Double.NaN;
         long count = 0L;
@@ -226,89 +237,23 @@ public class DCHistogramStatistics {
         return histogramMap;
     }
 
+    public double getMin() {
+        return Double.isNaN(min)? 0: min;
+    }
+
+    public double getMax() {
+        return Double.isNaN(max)? 0: max;
+    }
+
+    public double getMean() {
+        return Double.isNaN(sum)? 0: sum/numberOfValues;
+    }
+
+    public int getNumberOfBins() {
+        return numberOfBins;
+    }
+
+    public long getNumberOfValues() {
+        return numberOfValues;
+    }
 }
-
-/*class SingleBin implements Comparable<SingleBin>{
-
-    private double start;
-
-    private double end;
-
-    private int order;
-
-    private int count;
-
-    public SingleBin(double start, double end, int order, int count) throws IllegalArgumentException{
-
-        if (start <0 || end <0 || count < 0 || order < 0){
-            throw new IllegalArgumentException("start, end, count or order must be positive");
-        }
-
-        if (start > end ){
-            throw new IllegalArgumentException("start cannot be greater than end");
-        }
-
-        this.start = start;
-        this.end = end;
-        this.order = order;
-        this.count = count;
-    }
-
-    public double getStart() {
-        return start;
-    }
-
-    public double getEnd() {
-        return end;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    @Override public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-
-        SingleBin singleBin = (SingleBin) o;
-
-        if (Double.compare(singleBin.start, start) != 0)
-            return false;
-        return Double.compare(singleBin.end, end) == 0;
-
-    }
-
-    @Override public int hashCode() {
-        int result;
-        long temp;
-        temp = Double.doubleToLongBits(start);
-        result = (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(end);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        return result;
-    }
-
-    @Override public int compareTo(SingleBin bin) {
-        if (bin == null){
-            return -1;
-        }
-
-        if (getStart() == bin.getStart() && getEnd() == bin.getEnd()){
-            return 0;
-        }
-        else if (getEnd() <= bin.getEnd() && bin.getStart() <= getStart() ){
-                return -1;
-        }
-        else{
-            return 1;
-        }
-    }
-
-
-}*/
