@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.dataprep.api.dataset.statistics;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -124,7 +123,6 @@ public class DCHistogramStatistics {
             else{
                 Double bin = bins.lowerKey(d);
 
-                System.out.println("d ="+d+ " and min ="+min +" and max="+max+ " bin = "+bin);
                 Long binCount = bins.get(bin);
                 bins.put(bin, binCount + 1);
             }
@@ -167,7 +165,6 @@ public class DCHistogramStatistics {
         long newBinCount = 0;
         double newBinStart = min;
         TreeMap<Double, Long> newBins = new TreeMap<>();
-        long newBinsSumOfCount = 0;
         Double currentBin = null;
         long currentBinCount = 0L;
 
@@ -177,7 +174,6 @@ public class DCHistogramStatistics {
             if ( currentBin != null) {
                 if (averageCount <= newBinCount + currentBinCount) {
                     newBins.put(newBinStart,  averageCount);
-                    newBinsSumOfCount += averageCount;
                     newBinStart = currentBin + (nextBin - currentBin) * (averageCount - newBinCount) / currentBinCount;
                     newBinCount = currentBinCount + newBinCount - averageCount;
                 }
@@ -197,7 +193,6 @@ public class DCHistogramStatistics {
            while (newBins.size() < bins.size()) {
                newBins.put(newBinStart, averageCount);
                newBinStart = newBinStart + (max - currentBin) * averageCount / currentBinCount;
-               System.out.println(newBinStart);
            }
 
            // assign the good count to the last bin of the new distribution

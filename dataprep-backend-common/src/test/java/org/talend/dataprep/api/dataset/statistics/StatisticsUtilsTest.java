@@ -76,8 +76,8 @@ public class StatisticsUtilsTest {
         summaryStatistics.addData(2d);
         result.add(summaryStatistics);
         // Histogram
-        HistogramStatistics histogramStatistics = new HistogramStatistics();
-        histogramStatistics.setParameters(2, 1, 2);
+        DCHistogramStatistics histogramStatistics = new DCHistogramStatistics();
+        histogramStatistics.setParameters(2);
         histogramStatistics.add(1);
         histogramStatistics.add(2);
         result.add(histogramStatistics);
@@ -157,9 +157,9 @@ public class StatisticsUtilsTest {
         assertEquals(2, integerColumn.getStatistics().getHistogram().size());
         assertEquals(1, integerColumn.getStatistics().getHistogram().get(0).getOccurrences());
         assertEquals(1, integerColumn.getStatistics().getHistogram().get(0).getRange().getMin(), 0);
-        assertEquals(1.5, integerColumn.getStatistics().getHistogram().get(0).getRange().getMax(), 0);
+        assertEquals(2, integerColumn.getStatistics().getHistogram().get(0).getRange().getMax(), 0);
         assertEquals(1, integerColumn.getStatistics().getHistogram().get(1).getOccurrences());
-        assertEquals(1.5, integerColumn.getStatistics().getHistogram().get(1).getRange().getMin(), 0);
+        assertEquals(2, integerColumn.getStatistics().getHistogram().get(1).getRange().getMin(), 0);
         assertEquals(2, integerColumn.getStatistics().getHistogram().get(1).getRange().getMax(), 0);
     }
 
