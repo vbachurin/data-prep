@@ -3,17 +3,15 @@
     {
       "action": "lookup",
       "parameters": {
-        "column_id": "city",
-        "column_name": "city name",
-        "scope": "column",
-        "lookup_ds_name": "cities",
-        "lookup_ds_id": "ds#1234",
-        "lookup_ds_url": "http://www.url.com",
-        "lookup_join_on": "0001",
-        "lookup_selected_cols": [
-          "0002",
-          "0004"
-        ]
+        "column_id": "0003",
+        "column_name": "State",
+        "scope": "dataset",
+        "lookup_ds_name": "us_states",
+        "lookup_ds_id": "us_states",
+        "lookup_ds_url": "should be updated in unit test",
+        "lookup_join_on": "0000",
+        "lookup_join_on_name": "0000",
+        "lookup_selected_cols": "0001"
       }
     }
   ]
