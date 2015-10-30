@@ -364,6 +364,39 @@ describe('Dataset list controller', function () {
             //then
             expect(dataset.renaming).toBeFalsy();
         }));
+
+        it('should not call service to rename dataset with null name', function () {
+            //given
+
+            var ctrl = createController();
+            var name = 'dataset name';
+            var dataset = {name: name};
+
+
+            //when
+            ctrl.rename(dataset);
+
+            //then
+            expect(dataset.name).toBe(name);
+
+        });
+
+        it('should not call service to rename dataset with empty name', function () {
+            //given
+
+            var ctrl = createController();
+            var name = 'dataset name';
+            var dataset = {name: name};
+
+
+            //when
+            ctrl.rename(dataset, '');
+
+            //then
+            expect(dataset.name).toBe(name);
+
+        });
+
     });
 
     describe('cloning dataset', function () {
