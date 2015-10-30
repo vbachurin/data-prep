@@ -95,7 +95,7 @@
       },
       "domain": "US_STATE_CODE",
       "domainLabel": "US State Code",
-      "domainFrequency": 3.0,
+      "domainFrequency": 60.0,
       "semanticDomains": [
         {
           "id": "US_STATE_CODE",
@@ -187,13 +187,8 @@
       },
       "domain": "US_STATE",
       "domainLabel": "US State",
-      "domainFrequency": 5.0,
+      "domainFrequency": 100.0,
       "semanticDomains": [
-        {
-          "id": "AIRPORT",
-          "label": "Airport",
-          "frequency": 20.0
-        },
         {
           "id": "CITY",
           "label": "City",
@@ -289,27 +284,22 @@
       },
       "domain": "CITY",
       "domainLabel": "City",
-      "domainFrequency": 4.0,
+      "domainFrequency": 100.0,
       "semanticDomains": [
         {
           "id": "CITY",
           "label": "City",
-          "frequency": 80.0
-        },
-        {
-          "id": "AIRPORT",
-          "label": "Airport",
-          "frequency": 40.0
+          "frequency": 100.0
         },
         {
           "id": "US_COUNTY",
           "label": "US County",
-          "frequency": 40.0
+          "frequency": 50.0
         },
         {
           "id": "FIRST_NAME",
           "label": "First Name",
-          "frequency": 40.0
+          "frequency": 50.0
         }
       ],
       "domainForced": false,
@@ -395,27 +385,22 @@
       },
       "domain": "CITY",
       "domainLabel": "City",
-      "domainFrequency": 4.0,
+      "domainFrequency": 100.0,
       "semanticDomains": [
         {
           "id": "CITY",
           "label": "City",
-          "frequency": 80.0
-        },
-        {
-          "id": "AIRPORT",
-          "label": "Airport",
-          "frequency": 20.0
+          "frequency": 100.0
         },
         {
           "id": "US_COUNTY",
           "label": "US County",
-          "frequency": 40.0
+          "frequency": 50.0
         },
         {
           "id": "FIRST_NAME",
           "label": "First Name",
-          "frequency": 40.0
+          "frequency": 50.0
         }
       ],
       "domainForced": false,
