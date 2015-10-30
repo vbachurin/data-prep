@@ -55,19 +55,20 @@
          * @description trigger backend call to update preparation name
          */
         vm.rename = function(preparation,newName){
-
-            $rootScope.$emit('talend.loading.start');
-            return PreparationService.setName(preparation.id, newName)
-                .then(function(){
-                  preparation.showChangeName = false;
-                })
-                .then(function() {
-                  MessageService.success('PREPARATION_RENAME_SUCCESS_TITLE', 'PREPARATION_RENAME_SUCCESS');
-                })
-                //hide loading screen
-                .finally(function () {
-                  $rootScope.$emit('talend.loading.stop');
-                });
+            var cleanName = newName?newName.trim():'';
+            if(cleanName) {
+                $rootScope.$emit( 'talend.loading.start' );
+                return PreparationService.setName( preparation.id, newName )
+                    .then(function () {
+                        preparation.showChangeName = false;
+                    })
+                    .then(function() {
+                        MessageService.success( 'PREPARATION_RENAME_SUCCESS_TITLE', 'PREPARATION_RENAME_SUCCESS' );
+                    } )//hide loading screen
+                    .finally(function () {
+                                  $rootScope.$emit( 'talend.loading.stop' );
+                    });
+            }
         };
 
         /**
