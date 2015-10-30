@@ -115,9 +115,7 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
         final ColumnMetadata column = rowMetadata.getById(columnId);
         final ColumnMetadata newCol = createNewColumn(column);
         final String matchingColumn = rowMetadata.insertAfter(columnId, newCol);
-
         final String value = row.get(columnId);
-
         final String newValue = toStringTrueFalse(computeNewValue(value, realPattern));
 
         row.set(matchingColumn, newValue);

@@ -108,14 +108,14 @@ public class DCHistogramStatistics {
         // We have already met n different values
         else{
             // d is the min
-            if (Double.isNaN(min) || d < min) {
+            if (Double.isNaN(min) || d <= min) {
                 Long count = bins.get(min);
                 bins.remove(min);
                 bins.put(d, count + 1);
                 min  = d;
             }
             // d is the max
-            else if (Double.isNaN(max) || max < d){
+            else if (Double.isNaN(max) || max <= d){
                 Double lastBin = bins.lastKey();
                 Long count = bins.get(lastBin);
                 bins.put(lastBin, count + 1);
@@ -123,6 +123,8 @@ public class DCHistogramStatistics {
             } // d is not min nor max
             else{
                 Double bin = bins.lowerKey(d);
+
+                System.out.println("d ="+d+ " and min ="+min +" and max="+max+ " bin = "+bin);
                 Long binCount = bins.get(bin);
                 bins.put(bin, binCount + 1);
             }
@@ -162,9 +164,10 @@ public class DCHistogramStatistics {
             return ;
         }
         final Long averageCount = numberOfValues / numberOfBins;
-        double newBinCount = 0;
+        long newBinCount = 0;
         double newBinStart = min;
         TreeMap<Double, Long> newBins = new TreeMap<>();
+        long newBinsSumOfCount = 0;
         Double currentBin = null;
         long currentBinCount = 0L;
 
@@ -174,6 +177,7 @@ public class DCHistogramStatistics {
             if ( currentBin != null) {
                 if (averageCount <= newBinCount + currentBinCount) {
                     newBins.put(newBinStart,  averageCount);
+                    newBinsSumOfCount += averageCount;
                     newBinStart = currentBin + (nextBin - currentBin) * (averageCount - newBinCount) / currentBinCount;
                     newBinCount = currentBinCount + newBinCount - averageCount;
                 }
@@ -184,17 +188,23 @@ public class DCHistogramStatistics {
             currentBin = nextBin;
             currentBinCount = nextBinCount;
         }
-
-        // The last bin has not been treated yet
-        while (newBins.size() < bins.size()) {
-            newBins.put(newBinStart, averageCount);
-            newBinStart = newBinStart + (max - currentBin) * averageCount / currentBinCount;
+        // if the last bin contains a single value
+       if (max == currentBin){
+            newBins.put(newBinStart, currentBinCount + newBinCount);
         }
+        else {
+           // The last bin has not been treated yet
+           while (newBins.size() < bins.size()) {
+               newBins.put(newBinStart, averageCount);
+               newBinStart = newBinStart + (max - currentBin) * averageCount / currentBinCount;
+               System.out.println(newBinStart);
+           }
 
-        // assign the good count to the last bin of the new distribution
-        long newLastBinCount = numberOfValues - (numberOfBins - 1) * averageCount;
-        Double newLastBin = newBins.lastKey();
-        newBins.put(newLastBin, newLastBinCount);
+           // assign the good count to the last bin of the new distribution
+           long newLastBinCount = numberOfValues - (numberOfBins - 1) * averageCount;
+           Double newLastBin = newBins.lastKey();
+           newBins.put(newLastBin, newLastBinCount);
+       }
         bins = newBins;
     }
 
