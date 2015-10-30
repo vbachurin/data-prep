@@ -18,6 +18,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -57,7 +59,8 @@ public class Lookup extends AbstractActionMetadata implements DataSetAction {
     }
 
     /** The dataprep ready jackson builder. */
-    // @Autowired(required = false)
+    @Autowired
+    @Lazy
     private Jackson2ObjectMapperBuilder builder;
 
     /** Adapted value of the name parameter. */
