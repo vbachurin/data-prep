@@ -56,7 +56,7 @@ describe('Add reset button to input directive', function() {
         scope.$digest();
 
         //when
-        var clearIcons = element.find('div.search-input-icon').eq(0);
+        var clearIcons = element.find('div.clear-icon').eq(0);
         clearIcons.click();
         scope.$digest();
 

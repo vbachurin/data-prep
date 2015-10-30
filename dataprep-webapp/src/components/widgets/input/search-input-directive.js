@@ -9,7 +9,7 @@
                 var wrapper = angular.element('<div style="position:relative;"></div>');
                 iElement.wrap(wrapper);
 
-                var clearButton = angular.element('<div class="search-input-icon"><span class="icon" data-icon="d"></span></div>');
+                var clearButton = angular.element('<div class="search-input-icon clear-icon"><span class="icon" data-icon="d"></span></div>');
                 var searchIcon = angular.element('<div class="search-input-icon"><span class="icon" data-icon="D"></span></div>');
 
                 iElement.parent().append(clearButton);
