@@ -57,7 +57,7 @@
         vm.rename = function(preparation,newName){
             var cleanName = newName?newName.trim():'';
             if(cleanName) {
-                $rootScope.$emit( 'talend.loading.start' );
+                $rootScope.$emit('talend.loading.start');
                 return PreparationService.setName( preparation.id, newName )
                     .then(function () {
                         preparation.showChangeName = false;
@@ -66,7 +66,7 @@
                         MessageService.success( 'PREPARATION_RENAME_SUCCESS_TITLE', 'PREPARATION_RENAME_SUCCESS' );
                     } )//hide loading screen
                     .finally(function () {
-                                  $rootScope.$emit( 'talend.loading.stop' );
+                        $rootScope.$emit( 'talend.loading.stop' );
                     });
             }
         };
