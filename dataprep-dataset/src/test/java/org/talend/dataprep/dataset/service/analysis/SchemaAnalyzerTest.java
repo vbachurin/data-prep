@@ -156,8 +156,9 @@ public class SchemaAnalyzerTest {
             assertThat(column.getName(), is(expectedNames[i]));
             assertThat(column.getType(), is(expectedTypes[i].getName()));
             assertThat(column.getDomain(), is(expectedDomains[i++]));
-            assertThat(column.getSemanticDomains()).isNotNull().isNotEmpty().hasSize(1).contains(
-                    new SemanticDomain("GENDER", "Gender", (float) 30));
+            assertThat(column.getSemanticDomains()).isNotNull().isNotEmpty().hasSize(2).contains(
+                    new SemanticDomain("GENDER", "Gender", (float) 30),
+                    new SemanticDomain("COMPANY", "Company", (float) 20));
         }
     }
 

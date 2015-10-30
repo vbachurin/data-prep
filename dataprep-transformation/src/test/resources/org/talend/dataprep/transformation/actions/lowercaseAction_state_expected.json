@@ -94,6 +94,11 @@
           "id": "CITY",
           "label": "City",
           "frequency": 25.0
+        },
+        {
+          "id": "COMPANY",
+          "label": "Company",
+          "frequency": 25.0
         }
       ],
       "domainForced": false,
