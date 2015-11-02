@@ -85,4 +85,15 @@ describe('Converter service', function() {
         }
     };
 
+    it('should check numbers validity', inject(function (ConverterService) {
+        //when
+        var amIaNumber = ConverterService.toNumber('dqsfds10010');
+        var amIaNumber2 = ConverterService.toNumber(' 88');
+        var amIaNumber3 = ConverterService.toNumber('');
+
+        //then
+        expect(amIaNumber).toBe('dqsfds10010');
+        expect(amIaNumber2).toBe(88);
+        expect(amIaNumber3).toBe('string');
+    }));
 });

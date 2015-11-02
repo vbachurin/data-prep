@@ -21,19 +21,25 @@
      * @param {function} onBrushEnd The callback on slider move
      * */
 
-    function RangeSlider($translate) {
+    function RangeSlider($translate, $timeout) {
         return {
             restrict: 'E',
             scope: {
                 rangeLimits: '=',
                 onBrushEnd: '&'
             },
+            transclude: true,
             controller: 'RangeSliderCtrl',
             controllerAs: 'rangeSliderCtrl',
+            bindToController: true,
+            templateUrl: 'components/widgets/charts/range-slider/range-slider.html',
+            //templateNamespace: 'svg',
+
             link: function (scope, element, attrs, ctrl) {
                 var renderTimeout;
-                var container = attrs.id;
                 var filterToApply;
+
+                ctrl.showRangeInputs = true;
 
                 //the left and right margins MUST be the same as the vertical Barchart ones
                 var margin = {top: 5, right: 20, bottom: 10, left: 15};
@@ -54,17 +60,23 @@
                  * @description Render the slider and attach the actions listeners
                  **/
                 function renderRangerSlider(){
-                    var rangeLimits = scope.rangeLimits;
+                    var rangeLimits = ctrl.rangeLimits;
                     var minBrush = typeof rangeLimits.minBrush !== 'undefined' ? rangeLimits.minBrush : rangeLimits.min;
                     var maxBrush = typeof rangeLimits.maxBrush !== 'undefined' ? rangeLimits.maxBrush : rangeLimits.max;
                     var minFilter = typeof rangeLimits.minFilterVal !== 'undefined' ? rangeLimits.minFilterVal : rangeLimits.min;
-                    var maxfilter = typeof rangeLimits.maxFilterVal !== 'undefined' ? rangeLimits.maxFilterVal : rangeLimits.max;
+                    var maxFilter = typeof rangeLimits.maxFilterVal !== 'undefined' ? rangeLimits.maxFilterVal : rangeLimits.max;
 
                     var nbDecimals = d3.max([ctrl.decimalPlaces(minBrush), ctrl.decimalPlaces(maxBrush)]);
                     lastValues.input = {
                         min: minFilter,
-                        max: maxfilter
+                        max: maxFilter
                     };
+
+                    ctrl.minMaxModel = {
+                        minModel : lastValues.input.min,
+                        maxModel : lastValues.input.max
+                    };
+
                     lastValues.brush = {
                         min: minBrush,
                         max: maxBrush
@@ -79,7 +91,7 @@
                         .domain([rangeLimits.min, rangeLimits.max])
                         .range([0, width]);
 
-                    var svg = d3.select('#' + container).append('svg')
+                    var svg = d3.select('#range-slider-id').append('svg')
                         .attr('width', width + margin.left + margin.right)
                         .attr('height', height + margin.top + margin.bottom)
                         .attr('class', 'range-slider-cls')
@@ -89,11 +101,11 @@
                     //when brush has a single value (min = max), the brush is empty
                     //an empty brush is not rendered --> we set a delta
                     function handleUniqueBrushValue() {
-                        if (scope.brush.empty()) {
-                            var min = scope.brush.extent()[0];
-                            var max = scope.brush.extent()[1];
+                        if (ctrl.brush.empty()) {
+                            var min = ctrl.brush.extent()[0];
+                            var max = ctrl.brush.extent()[1];
                             var exp = '1e-' + (nbDecimals + 2);
-                            svg.select('.brush').call(scope.brush.clear().extent([min, max + Number(exp)]));
+                            svg.select('.brush').call(ctrl.brush.clear().extent([min, max + Number(exp)]));
                         }
                     }
 
@@ -104,11 +116,11 @@
                     function triggerFilter(filterToTrigger){
                         //check if the minFilter < maxFilter
                         filterToTrigger = filterToTrigger[0] > filterToTrigger[1] ? [filterToTrigger[1], filterToTrigger[0]] : filterToTrigger;
-                        scope.onBrushEnd()(filterToTrigger);
+                        ctrl.onBrushEnd()(filterToTrigger);
                     }
 
                     function prepareBrushFilter(initialBrushValues){
-                        var brushValues = scope.brush.extent();
+                        var brushValues = ctrl.brush.extent();
                         lastValues.brush.min = +brushValues[0].toFixed(nbDecimals);
                         lastValues.brush.max = +brushValues[1].toFixed(nbDecimals);
 
@@ -151,7 +163,7 @@
                         //resize the brush to the right extent
                         nbDecimals = d3.max([ctrl.decimalPlaces(enteredMin), ctrl.decimalPlaces(enteredMax)]);
                         lastValues.brush = ctrl.adaptRangeValues(enteredMin, enteredMax, rangeLimits.min, rangeLimits.max);
-                        brushg.transition().call(scope.brush.extent([lastValues.brush.min, lastValues.brush.max]));
+                        brushg.transition().call(ctrl.brush.extent([lastValues.brush.min, lastValues.brush.max]));
                         //resize the brush with the delta
                         handleUniqueBrushValue();
 
@@ -198,18 +210,18 @@
                                 return d3.format(',')(rangeLimits.max);
                             });
 
-                        scope.brush = d3.svg.brush()
+                        ctrl.brush = d3.svg.brush()
                                 .x(scale)
                                 .extent([centerValue, centerValue]);
 
                         brushg = svg.append('g')
                             .attr('transform', 'translate(0,' + (margin.top + 10) + ')')
                             .attr('class', 'brush')
-                            .call(scope.brush);
+                            .call(ctrl.brush);
 
-                        brushg.call(scope.brush.event)
+                        brushg.call(ctrl.brush.event)
                             .transition().duration(400)
-                            .call(scope.brush.extent([minBrush, maxBrush]));
+                            .call(ctrl.brush.extent([minBrush, maxBrush]));
 
                         brushg.selectAll('.resize')
                             .append('rect')
@@ -231,20 +243,26 @@
 
                         //The case where the user interacts with the brush
                         var initialBrushValues;
-                        scope.brush
+                        ctrl.brush
 
                             .on('brushstart', function brushstart() {
                                 //Will memorize the ancient extent
-                                initialBrushValues = scope.brush.extent();
+                                initialBrushValues = ctrl.brush.extent();
                             })
 
                             //It will update the min and max inputs, and create a brush on a single value when the user clicks on the slider without making a drag( the created brush will be empty )
                             .on('brush', function brushmove() {
-                                var brushValues = scope.brush.extent();
+                                var brushValues = ctrl.brush.extent();
                                 if (initialBrushValues[0] !== brushValues[0]) {
+                                    $timeout(function(){
+                                        ctrl.minMaxModel.minModel = +brushValues[0].toFixed(nbDecimals);
+                                    });
                                     document.getElementsByName('minRange')[0].value = brushValues[0].toFixed(nbDecimals);
                                 }
                                 if (initialBrushValues[1] !== brushValues[1]) {
+                                    $timeout(function(){
+                                        ctrl.minMaxModel.maxModel = +brushValues[1].toFixed(nbDecimals);
+                                    });
                                     document.getElementsByName('maxRange')[0].value = brushValues[1].toFixed(nbDecimals);
                                 }
                             })
@@ -275,6 +293,10 @@
                     function initInputValues() {
                         hideMsgErr();
                         document.getElementsByName('minRange')[0].value = lastValues.input.min;
+                        $timeout(function(){
+                            ctrl.minMaxModel.minModel = +lastValues.input.min;
+                            ctrl.minMaxModel.maxModel = +lastValues.input.max;
+                        });
                         document.getElementsByName('maxRange')[0].value = lastValues.input.max;
                         filterToApply = [lastValues.input.min, lastValues.input.max];
                     }
@@ -356,29 +378,36 @@
                     //--------------------------------------------------------------------------------------------------
                     initInput();
                     initBrush();
+                    //$('#' + container).append($('range-inputs-id'));
                 }
 
 
                 function shouldRerender(newRangeLimits, oldRangeLimits) {
-                    return !scope.brush ||
+                    return !ctrl.brush ||
                         oldRangeLimits.min !== newRangeLimits.min ||
                         oldRangeLimits.max !== newRangeLimits.max ||
                         lastValues.brush.min !== newRangeLimits.minBrush ||
                         lastValues.brush.max !== newRangeLimits.maxBrush;
                 }
 
-                scope.$watch('rangeLimits',
+                scope.$watch(function(){
+                        return ctrl.rangeLimits;
+                    },
                     function (newRangeLimits, oldRangeLimits) {
                         if (!newRangeLimits) {
-                            element.empty();
-                            scope.brush = null;
+                            element.find('svg').remove();
+                            ctrl.brush = null;
+                            ctrl.showRangeInputs = false;
                         }
 
                         else if (shouldRerender(newRangeLimits, oldRangeLimits)) {
-                            element.empty();
+                            element.find('svg').remove();
                             if (newRangeLimits.min !== newRangeLimits.max) {
                                 clearTimeout(renderTimeout);
-                                renderTimeout = setTimeout(renderRangerSlider, 100);
+                                renderTimeout = setTimeout(function(){
+                                    renderRangerSlider();
+                                    ctrl.showRangeInputs = true;
+                                }, 100);
                             }
                         }
                     }
