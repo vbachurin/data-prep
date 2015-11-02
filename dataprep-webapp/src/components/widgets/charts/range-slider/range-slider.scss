@@ -27,10 +27,14 @@
     fill: $dark-blue;
     shape-rendering: crispEdges;
   }
-
+}
+#range-inputs-id{
+  font-size: .8em;
   input[type="text"] {
     width:85px;
     display: inline-block;
-    font-size: .9em;
+  }
+  .range-label-input{
+    margin-left: 15px;
   }
 }

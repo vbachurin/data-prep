@@ -21,19 +21,17 @@
      * @param {function} onBrushEnd The callback on slider move
      * */
 
-    function RangeSlider($translate, $timeout) {
+    function RangeSlider($timeout) {
         return {
             restrict: 'E',
             scope: {
                 rangeLimits: '=',
                 onBrushEnd: '&'
             },
-            transclude: true,
             controller: 'RangeSliderCtrl',
             controllerAs: 'rangeSliderCtrl',
             bindToController: true,
             templateUrl: 'components/widgets/charts/range-slider/range-slider.html',
-            //templateNamespace: 'svg',
 
             link: function (scope, element, attrs, ctrl) {
                 var renderTimeout;
@@ -73,8 +71,8 @@
                     };
 
                     ctrl.minMaxModel = {
-                        minModel : lastValues.input.min,
-                        maxModel : lastValues.input.max
+                        minModel : ''+lastValues.input.min,
+                        maxModel : ''+lastValues.input.max
                     };
 
                     lastValues.brush = {
@@ -146,9 +144,9 @@
                         triggerFilter(filterToApply);
                     }
 
-                    function prepareInputFilter(){
-                        var enteredMin = +document.getElementsByName('minRange')[0].value;
-                        var enteredMax = +document.getElementsByName('maxRange')[0].value;
+                    ctrl.prepareInputFilter = function prepareInputFilter(){
+                        var enteredMin = +ctrl.minMaxModel.minModel;
+                        var enteredMax = +ctrl.minMaxModel.maxModel;
 
                         //2 Cases:
                         //- ONBLUR: the user selects the input then he selects sth else
@@ -170,7 +168,7 @@
                         filterToApply = [lastValues.input.min,lastValues.input.max];
 
                         triggerFilter(filterToApply);
-                    }
+                    };
 
                     //--------------------------------------------------------------------------------------------------
                     //--------------------BRUSH WIDGET------------------------------------------------------------------
@@ -193,7 +191,7 @@
                         svg.append('g').append('text')
                             .attr('class', 'the-minimum-label')
                             .attr('x', -10)
-                            .attr('y', height / 2)
+                            .attr('y', height+10)
                             .attr('text-anchor', 'start')
                             .attr('fill', 'grey')
                             .text(function () {
@@ -203,7 +201,7 @@
                         svg.append('g').append('text')
                             .attr('class', 'the-maximum-label')
                             .attr('x', width + 10)
-                            .attr('y', height / 2)
+                            .attr('y', height+10)
                             .attr('text-anchor', 'end')
                             .attr('fill', 'grey')
                             .text(function () {
@@ -255,15 +253,13 @@
                                 var brushValues = ctrl.brush.extent();
                                 if (initialBrushValues[0] !== brushValues[0]) {
                                     $timeout(function(){
-                                        ctrl.minMaxModel.minModel = +brushValues[0].toFixed(nbDecimals);
+                                        ctrl.minMaxModel.minModel = brushValues[0].toFixed(nbDecimals);
                                     });
-                                    document.getElementsByName('minRange')[0].value = brushValues[0].toFixed(nbDecimals);
                                 }
                                 if (initialBrushValues[1] !== brushValues[1]) {
                                     $timeout(function(){
-                                        ctrl.minMaxModel.maxModel = +brushValues[1].toFixed(nbDecimals);
+                                        ctrl.minMaxModel.maxModel = brushValues[1].toFixed(nbDecimals);
                                     });
-                                    document.getElementsByName('maxRange')[0].value = brushValues[1].toFixed(nbDecimals);
                                 }
                             })
 
@@ -278,26 +274,25 @@
                     //--------------------------------------------------------------------------------------------------
                     //shows the message Error with details on comma existence
                     function showMsgErr() {
-                        var msgErr = $translate.instant('INVALID_VALUE_RANGE_SLIDER') ;
-                        var minMaxStr = document.getElementsByName('minRange')[0].value + document.getElementsByName('maxRange')[0].value;
-                        var finalMsgErr = ctrl.checkCommaExistence(minMaxStr) ? msgErr + $translate.instant('INVALID_VALUE_RANGE_SLIDER_CONTENT') : msgErr;
-                        d3.select('text.invalid-value-msg').text(finalMsgErr);
+                        ctrl.invalidNumber = true;
+                        var minMaxStr = ctrl.minMaxModel.minModel + ctrl.minMaxModel.maxModel;
+                        ctrl.invalidNumberWithComma = ctrl.invalidNumber && ctrl.checkCommaExistence(minMaxStr);
                     }
 
                     //hides the message Error
                     function hideMsgErr() {
-                        d3.select('text.invalid-value-msg').text('');
+                        ctrl.invalidNumber = false;
+                        ctrl.invalidNumberWithComma = false;
                     }
 
                     //Init min/max inputs values with existing filter values if defined, min/max otherwise
                     function initInputValues() {
                         hideMsgErr();
-                        document.getElementsByName('minRange')[0].value = lastValues.input.min;
                         $timeout(function(){
-                            ctrl.minMaxModel.minModel = +lastValues.input.min;
-                            ctrl.minMaxModel.maxModel = +lastValues.input.max;
+                            ctrl.minMaxModel.minModel = ''+lastValues.input.min;
+                            ctrl.minMaxModel.maxModel = ''+lastValues.input.max;
                         });
-                        document.getElementsByName('maxRange')[0].value = lastValues.input.max;
+
                         filterToApply = [lastValues.input.min, lastValues.input.max];
                     }
 
@@ -305,13 +300,13 @@
                         var minCorrectness, maxCorrectness;
 
                         //create a key listener closure
-                        function handleKey(rangeType) {
+                        ctrl.handleKey = function handleKey(rangeType) {
                             return function (e) {
                                 switch (e.keyCode) {
                                     case 9:
                                     case 13:
                                         if (minCorrectness !== null && maxCorrectness !== null) {
-                                            prepareInputFilter();
+                                            ctrl.prepareInputFilter();
                                         }
                                         else {
                                             initInputValues();
@@ -322,8 +317,8 @@
                                         initInputValues();
                                         break;
                                     default:
-                                        minCorrectness = rangeType === 'min' ? ctrl.toNumber(this.value) : minCorrectness;
-                                        maxCorrectness = rangeType === 'max' ? ctrl.toNumber(this.value) : maxCorrectness;
+                                        minCorrectness = rangeType === 'min' ? ctrl.toNumber(ctrl.minMaxModel.minModel) : minCorrectness;
+                                        maxCorrectness = rangeType === 'max' ? ctrl.toNumber(ctrl.minMaxModel.maxModel) : maxCorrectness;
 
                                         if (minCorrectness === null || maxCorrectness === null) {
                                             showMsgErr();
@@ -333,52 +328,20 @@
                                         }
                                 }
                             };
-                        }
+                        };
 
                         //stop event propagation
-                        function stopPropagation(e) {
+                        ctrl.stopPropagation = function stopPropagation(e) {
                             e.stopPropagation();
-                        }
-
-                        var minRange = document.getElementsByName('minRange')[0];
-                        var maxRange = document.getElementsByName('maxRange')[0];
-
-                        minRange.onblur = prepareInputFilter;
-                        minRange.onkeydown = stopPropagation;
-                        minRange.onkeyup = handleKey('min');
-
-                        maxRange.onblur = prepareInputFilter;
-                        maxRange.onkeydown = stopPropagation;
-                        maxRange.onkeyup = handleKey('max');
-                    }
-
-                    function initInput() {
-                        //create inputs
-                        svg.append('g').append('foreignObject')
-                            .attr('width', width)
-                            .attr('height', 40)
-                            .attr('transform', 'translate(0,' + (height - 45) + ')')
-                            .append('xhtml:div')
-                            .html('<span><b>Min </b><input type="text" name="minRange"></span> <span style="float:right;"><b>Max </b> <input type="text" name="maxRange"/></span>');
-
-                        svg.append('g').append('text')
-                            .attr('class', 'invalid-value-msg')
-                            .attr('x', width / 2)
-                            .attr('y', height)
-                            .attr('text-anchor', 'middle')
-                            .attr('fill', 'red');
-
-                        initInputValues();
-
-                        initRangeInputsListeners();
+                        };
                     }
 
                     //--------------------------------------------------------------------------------------------------
                     //--------------------WIDGET INITIALIZATION 1 RENDER------------------------------------------------
                     //--------------------------------------------------------------------------------------------------
-                    initInput();
+                    initInputValues();
+                    initRangeInputsListeners();
                     initBrush();
-                    //$('#' + container).append($('range-inputs-id'));
                 }
 
 
@@ -396,12 +359,13 @@
                     function (newRangeLimits, oldRangeLimits) {
                         if (!newRangeLimits) {
                             element.find('svg').remove();
-                            ctrl.brush = null;
                             ctrl.showRangeInputs = false;
+                            ctrl.brush = null;
                         }
 
                         else if (shouldRerender(newRangeLimits, oldRangeLimits)) {
                             element.find('svg').remove();
+                            ctrl.showRangeInputs = false;
                             if (newRangeLimits.min !== newRangeLimits.max) {
                                 clearTimeout(renderTimeout);
                                 renderTimeout = setTimeout(function(){

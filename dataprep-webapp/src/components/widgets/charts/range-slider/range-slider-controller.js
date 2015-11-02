@@ -17,6 +17,7 @@
          * @param {string} value The value to transform
          */
         vm.toNumber = function toNumber(value) {
+            value = value === undefined ? '' : value;
             value = value.trim();
             if (/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/.test(value)) {
                 return Number(value);

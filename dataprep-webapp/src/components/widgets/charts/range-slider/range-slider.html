@@ -1,5 +1,33 @@
 <div id="range-slider-id"></div>
-<div ng-if="rangeSliderCtrl.showRangeInputs" id="range-inputs-id">
-    Min<input type="number" ng-model="rangeSliderCtrl.minMaxModel.minModel" name="minName">
-    Max<input type="number" ng-model="rangeSliderCtrl.minMaxModel.maxModel" name="maxName">
-</div>
+<form name="rangesForm" ng-if="rangeSliderCtrl.showRangeInputs" id="range-inputs-id">
+    <span class="range-label-input">
+        <b>Min </b><input type="text"
+                  id="min-range-input"
+                  ng-model="rangeSliderCtrl.minMaxModel.minModel"
+                  ng-blur="rangeSliderCtrl.prepareInputFilter($event)"
+                  ng-keydown="rangeSliderCtrl.stopPropagation($event)"
+                  ng-keyup="rangeSliderCtrl.handleKey('min')($event)"
+            >
+    </span>
+    <span class="range-label-input">
+        <b>Max </b><input type="text"
+                  id="max-range-input"
+                  ng-model="rangeSliderCtrl.minMaxModel.maxModel"
+                  ng-blur="rangeSliderCtrl.prepareInputFilter($event)"
+                  ng-keydown="rangeSliderCtrl.stopPropagation($event)"
+                  ng-keyup="rangeSliderCtrl.handleKey('max')($event)"
+            >
+    </span>
+
+    <br/>
+
+    <span class="error"
+          ng-show="rangeSliderCtrl.invalidNumber"
+          translate-once="INVALID_VALUE_RANGE_SLIDER"
+    ><!--ng-pattern has not been used because we need to check the case where the user has type a comma ',' --></span>
+
+    <span class="error"
+          ng-show="rangeSliderCtrl.invalidNumberWithComma"
+          translate-once="INVALID_VALUE_RANGE_SLIDER_CONTENT"
+    ></span>
+</form>
