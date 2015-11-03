@@ -59,7 +59,7 @@
 
         function isAplliedToCells(type) {
             return function (item) {
-                return item.dataScope && (item.dataScope.indexOf(type) !== -1);
+                return item.actionScope && (item.actionScope.indexOf(type) !== -1);
             };
         }
 

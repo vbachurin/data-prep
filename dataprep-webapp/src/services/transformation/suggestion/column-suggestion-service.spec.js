@@ -19,9 +19,9 @@ describe('Column suggestion service', function () {
                 {name: 'split', category: 'column_metadata', label: 'c', description: 'test'},
                 {name: 'tolowercase', category: 'case', label: 'v', description: 'test'},
                 {name: 'touppercase', category: 'case', label: 'u', description: 'test'},
-                {name: 'removeempty', category: 'clear', label: 'a', description: 'test', dataScope: ['empty', 'invalid']},
-                {name: 'totitlecase', category: 'case', label: 't', description: 'test', dataScope: ['invalid']},
-                {name: 'removetrailingspaces', category: 'quickfix', label: 'm', description: 'test', dataScope: ['empty']},
+                {name: 'removeempty', category: 'clear', label: 'a', description: 'test', actionScope: ['empty', 'invalid']},
+                {name: 'totitlecase', category: 'case', label: 't', description: 'test', actionScope: ['invalid']},
+                {name: 'removetrailingspaces', category: 'quickfix', label: 'm', description: 'test', actionScope: ['empty']},
                 {name: 'split', category: 'split', label: 'l', dynamic: true, description: 'test'}
             ]
         ));
