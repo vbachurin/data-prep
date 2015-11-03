@@ -67,6 +67,7 @@
   "LOADING": "Loading...",
   "PROCESSING": "Processing",
   "COMING_SOON": "Coming soon...",
+  "PROCESSING_REMOTE_DATASET": "Processing remote dataset...",
 
   "_comment": "Confirm",
   "DELETE_PERMANENTLY": "You are going to permanently delete the {{type}} \"{{name}}\".",
@@ -77,6 +78,9 @@
   "REMOVE_LAST_STEP_FILTER_TITLE": "WARNING : impossible action",
   "REMOVE_LAST_STEP_FILTER_CONTENT": "WARNING : this action is not supported as it will remove all the lines",
   "UPDATE_EXISTING_DATASET": "Do you want to update existing \"{{dataset}}\" dataset ?",
+  "SUBMIT": "Submit",
+  "YES": "YES",
+  "NO": "NO",
 
   "_comment": "import remote dataset",
   "ENTER_HTTP_DATASET_URL": "Enter the HTTP dataset url",
@@ -134,9 +138,22 @@
   "NO_PARAMS_ACTION_MSG":"No Simple Parameters Were Found !!!",
   "COLUMN_TYPE_IS": "This column is a",
   "COLUMN_TYPE_SET": "Set as",
+  "DATE_FORMAT_ERROR": "This must be a date in the format 'DD/MM/YYYY hh:mm:ss'",
+  "FIT_TO_CONTENT": "Fit to Content",
+  "DELETE": "Delete",
+  "NOT_DEFINED": "not defined",
+  "SORT_IS": "Sort is ",
+  "FILTER_IS": "Filter is ",
 
   "_comment": "Action panel",
   "FIND_FUNCTION": "Find a Function...",
+  "REMOVE_EMPTY_LINES": "Remove Empty Lines",
+  "CREATE_EMAIL": "Create Email Addresses",
+  "CORRECT_POSTAL_ADDRESS": "Correct Postal Addresses",
+  "SELECT_COLUMN_TO_DISPLAY_ACTIONS": "Select a column to display its actions",
+  "APPLY_CHANGE_TO": "Apply changes to:",
+  "ALL_LINES": "All Lines",
+  "FILTERED_LINED": "Filtered Lines",
 
   "_comment": "Statistics",
   "COUNT": "Count",
@@ -163,6 +180,7 @@
   "STRING": "TEXT",
   "FLOAT": "DECIMAL",
   "NO_ADVANCED_CHART": "No advanced chart for the current selection",
+  "SELECT_COLUMN_TO_DISPLAY_STATS": "Select a column to display its statistics",
 
   "_comment": "Dataset actions",
   "REPLACE_FILE_CONTENT": "Update dataset with another file",
@@ -174,6 +192,13 @@
   "_comment": "Range slider",
   "INVALID_VALUE_RANGE_SLIDER": "Invalid Entered Value",
   "INVALID_VALUE_RANGE_SLIDER_CONTENT": ": Use \".\" instead of \",\"",
+
+  "_comment": "Confirm Popup",
+  "SAVE_CHANGE": "Save Your Changes ?",
+  "SAVE_CHANGE_DESCRITION_1": "You've transformed your dataset in a preparation that can be saved in order to be re-used next time.",
+  "SAVE_CHANGE_DESCRITION_2": "Do you want to save it ?",
+  "PREPARATION_NAME": "Preparation Name: ",
+  "SAVE_IT": "SAVE IT",
 
   "_comment": "Quality Bar",
   "VALID_RECORDS": "valid records",
