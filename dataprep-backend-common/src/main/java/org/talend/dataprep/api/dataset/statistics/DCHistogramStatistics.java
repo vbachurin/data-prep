@@ -130,7 +130,7 @@ public class DCHistogramStatistics {
             numberOfValues++;
             sum = Double.isNaN(sum)?d: sum +d;
             // redistribute values whether it is needed
-            redistributeBucketsIfNeeded();
+            //redistributeBucketsIfNeeded();
         }
     }
 
@@ -153,6 +153,11 @@ public class DCHistogramStatistics {
         }
     }
 
+    private long nextBinCount(long numberOfValues, int numberOfBins){
+        return numberOfValues / numberOfBins;
+    }
+
+
     /**
      * Redistribute bins when the relaxation DC histogram  becomes too much ...
      */
@@ -161,12 +166,14 @@ public class DCHistogramStatistics {
         if (bins.isEmpty()){
             return ;
         }
-        final Long averageCount = numberOfValues / numberOfBins;
-        long newBinCount = 0;
+        Long averageCount = numberOfValues / numberOfBins;
+        long newBinCount = 0L;
         double newBinStart = min;
         TreeMap<Double, Long> newBins = new TreeMap<>();
         Double currentBin = null;
         long currentBinCount = 0L;
+
+        long allBinCount = 0L;
 
         for(Map.Entry<Double, Long> entry :bins.entrySet()){
             Double nextBin = entry.getKey();
@@ -174,8 +181,10 @@ public class DCHistogramStatistics {
             if ( currentBin != null) {
                 if (averageCount <= newBinCount + currentBinCount) {
                     newBins.put(newBinStart,  averageCount);
+                    allBinCount += averageCount;
                     newBinStart = currentBin + (nextBin - currentBin) * (averageCount - newBinCount) / currentBinCount;
                     newBinCount = currentBinCount + newBinCount - averageCount;
+                    averageCount = nextBinCount(numberOfValues-allBinCount, bins.size() - newBins.size());
                 }
                 else{
                     newBinCount += currentBinCount;
@@ -187,22 +196,90 @@ public class DCHistogramStatistics {
         // if the last bin contains a single value
        if (max == currentBin){
             newBins.put(newBinStart, currentBinCount + newBinCount);
+           allBinCount += currentBinCount + newBinCount;
         }
         else {
            // The last bin has not been treated yet
            while (newBins.size() < bins.size()) {
                newBins.put(newBinStart, averageCount);
+               allBinCount += averageCount;
                newBinStart = newBinStart + (max - currentBin) * averageCount / currentBinCount;
+               if (bins.size() - newBins.size() > 0)
+                   averageCount = nextBinCount(numberOfValues-allBinCount, bins.size() - newBins.size());
            }
 
            // assign the good count to the last bin of the new distribution
-           long newLastBinCount = numberOfValues - (numberOfBins - 1) * averageCount;
+           /*long newLastBinCount = numberOfValues - allBinCount;
            Double newLastBin = newBins.lastKey();
-           newBins.put(newLastBin, newLastBinCount);
+           newBins.put(newLastBin, newLastBinCount);*/
        }
         bins = newBins;
     }
 
+    /**
+     *
+     * @param binStart
+     * @param binEnd
+     * @param binCount
+     * @param length
+     * @return
+     */
+    double approximateCount(Double binStart, Double binEnd, long binCount, double length){
+        return binCount * length / (binEnd - binStart);
+    }
+
+
+    public Map<Range, Long> getHistogram() {
+
+        if (bins.size() < numberOfBins){
+            return getHistogram2();
+        }
+        redistributeDC();
+        Map<Range, Long> result = new LinkedHashMap<>();
+        double binSize = (max - min) / numberOfBins;
+        Range currentRange = new Range(min, min+binSize);
+        double currentRangeCount = 0;
+        Double currentBin = null;
+        long currentBinCount = 0;
+
+        for(Map.Entry<Double, Long> entry :bins.entrySet()){
+            Double nextBin = entry.getKey();
+            long nextBinCount = entry.getValue();
+            if (currentBin != null) {
+                while(currentRange.getUpper() <= nextBin){
+                    double length = currentRange.getUpper() - Math.max(currentRange.getLower(), currentBin);
+                    double approximated = currentRangeCount + approximateCount(currentBin, nextBin, currentBinCount, length);
+                    long count = (long)approximated;
+                    result.put(currentRange, count);
+                    currentRangeCount = approximated - count;
+                    currentRange = new Range(currentRange.getUpper(), currentRange.getUpper()+binSize);
+                }
+                if (nextBin < currentRange.getUpper()){
+                    double length = nextBin - Math.max(currentRange.getLower(), currentBin);
+                    currentRangeCount += approximateCount(currentBin, nextBin, currentBinCount, length);
+                }
+
+            }
+            currentBin = nextBin;
+            currentBinCount = nextBinCount;
+        }
+
+        if (max == currentBin){
+            long count = (long) currentRangeCount + currentBinCount;
+            result.put(currentRange, count);
+        }else
+        while (result.size() < numberOfBins){
+            double length = currentRange.getUpper() - Math.max(currentRange.getLower(), currentBin);
+            double approximated = currentRangeCount + approximateCount(currentBin, max, currentBinCount, length);
+            long count = (long) approximated;
+            result.put(currentRange,count);
+            currentRangeCount = approximated - count;
+            currentRange = new Range(currentRange.getUpper(), currentRange.getUpper()+binSize);
+        }
+
+
+        return result;
+    }
 
     /**
      * Get histograms as a map
@@ -211,7 +288,7 @@ public class DCHistogramStatistics {
      * Note that the returned ranges are in pattern of [Min,
      * Min+binSize),[Min+binSize,Min+binSize*2)...[Max-binSize,Max<b>]</b>
      */
-    public Map<Range, Long> getHistogram() {
+    public Map<Range, Long> getHistogram2() {
 
         TreeMap<Double, Long> bins = this.bins;
         /*if ( numberOfValues > numberOfBins && !allmostEquiWidthHistogram()) {
@@ -230,11 +307,9 @@ public class DCHistogramStatistics {
                 double currentMax = d;
                 Range r = new Range(currentMin, currentMax);
                 histogramMap.put(r, count);
-                //histogramMap.put(r, 10L);
                 currentMin = currentMax;
                 count = (long) ((double)bins.get(d));
             }
-
         }
         Range r = new Range(currentMin, max);
         //Range r = new Range(currentMin, 10L);
