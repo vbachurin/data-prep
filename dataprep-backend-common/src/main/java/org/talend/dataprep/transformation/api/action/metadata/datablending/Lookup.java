@@ -2,12 +2,16 @@ package org.talend.dataprep.transformation.api.action.metadata.datablending;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.COLUMN_ID;
-import static org.talend.dataprep.transformation.api.action.metadata.datablending.Lookup.PARAMETERS.*;
+import static org.talend.dataprep.transformation.api.action.metadata.datablending.Lookup.Parameters.*;
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.STRING;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PreDestroy;
 
@@ -23,10 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSet;
-import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
@@ -41,7 +42,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- *
+ * Lookup action used to blend a (or a part of a) dataset into another one.
  */
 @Component(Lookup.ACTION_BEAN_PREFIX + Lookup.LOOKUP_ACTION_NAME)
 public class Lookup extends ActionMetadata implements DataSetAction {
@@ -53,7 +54,7 @@ public class Lookup extends ActionMetadata implements DataSetAction {
     private static final Logger LOGGER = LoggerFactory.getLogger(Lookup.class);
 
     /** Lookup parameters */
-    protected enum PARAMETERS {
+    protected enum Parameters {
                                LOOKUP_DS_NAME,
                                LOOKUP_DS_ID,
                                LOOKUP_DS_URL,
@@ -68,22 +69,28 @@ public class Lookup extends ActionMetadata implements DataSetAction {
 
     /** The dataprep ready jackson builder. */
     @Autowired
-    @Lazy
+    @Lazy // needed to prevent a circular dependency
     private Jackson2ObjectMapperBuilder builder;
 
     /** Adapted value of the name parameter. */
     private String adaptedNameValue = EMPTY;
+
     /** Adapted value of the dataset_id parameter. */
     private String adaptedDatasetIdValue = EMPTY;
+
     /** Adapted value of the url parameter. */
     private String adaptedUrlValue = EMPTY;
 
     /** Http connection manager. */
+    // TODO move this to a configuration in backend common
     private PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
     /** The http client to use. */
     private CloseableHttpClient httpClient;
 
+    /**
+     * Default public constructor.
+     */
     public Lookup() {
         connectionManager.setMaxTotal(20);
         connectionManager.setDefaultMaxPerRoute(10);
@@ -130,9 +137,8 @@ public class Lookup extends ActionMetadata implements DataSetAction {
         parameters.add(new Parameter(LOOKUP_DS_URL.getKey(), STRING, adaptedUrlValue, false, false));
         parameters.add(new Parameter(LOOKUP_JOIN_ON.getKey(), STRING, EMPTY, false, false));
         parameters.add(new Parameter(LOOKUP_JOIN_ON_NAME.getKey(), STRING, EMPTY, false, false));
-        // TODO see how serialize multiple column selection in a string...
-        parameters.add(
-new ColumnParameter(LOOKUP_SELECTED_COLS.name(), EMPTY, false, false, Collections.emptyList(), true));
+        // TODO see how serialize multiple column selection in a string... --> ListParameter
+        parameters.add(new ColumnParameter(LOOKUP_SELECTED_COLS.name(), EMPTY, false, false, Collections.emptyList(), true));
         return parameters;
     }
 
@@ -145,13 +151,13 @@ new ColumnParameter(LOOKUP_SELECTED_COLS.name(), EMPTY, false, false, Collection
         return false;
     }
 
-
     /**
      * Adapt the parameters default values according to the given dataset.
      *
      * @param dataset the dataset to adapt the parameters value from.
      * @param datasetUrl the dataset url to use in parameters.
      */
+    // TODO return ActionMetadata like in ActionMetadata#adapt
     public void adapt(DataSetMetadata dataset, String datasetUrl) {
         adaptedNameValue = dataset.getName();
         adaptedDatasetIdValue = dataset.getId();
@@ -180,8 +186,11 @@ new ColumnParameter(LOOKUP_SELECTED_COLS.name(), EMPTY, false, false, Collection
             final List<String> colsToAdd = getColsToAdd(parameters);
             colsToAdd.forEach(toAdd -> {
                 // update metadata
-                final ColumnMetadata colMetadata = ColumnMetadata.Builder.column()
-                        .copy(matchingRow.getRowMetadata().getById(toAdd)).computedId(null).build();
+                final ColumnMetadata colMetadata = ColumnMetadata.Builder //
+                        .column() //
+                        .copy(matchingRow.getRowMetadata().getById(toAdd)) //
+                        .computedId(null) // id should be set by the insertAfter method
+                        .build();
                 final String newColId = row.getRowMetadata().insertAfter(columnId, colMetadata);
                 // insert new row value
                 row.set(newColId, matchingRow.get(toAdd));
@@ -193,17 +202,39 @@ new ColumnParameter(LOOKUP_SELECTED_COLS.name(), EMPTY, false, false, Collection
 
     }
 
+    /**
+     * Return the matching row from the given lookup dataset.
+     *
+     * If the join value is not found, an empty row based on the dataset metadata is returned.
+     *
+     * @param lookup the dataset were to perform the lookup.
+     * @param joinOn the column to perform the join on.
+     * @param joinValue the value for the join.
+     * @return the matching row or an empty one based the lookup metadata if no value is found.
+     */
     private DataSetRow getLookupRow(DataSet lookup, String joinOn, String joinValue) {
-        final Optional<DataSetRow> found = lookup.getRecords() //
+        return lookup.getRecords() //
                 .filter(row -> StringUtils.equals(joinValue, row.get(joinOn))) //
-                .findFirst();
-        return found.isPresent() ? found.get() : null;
+                .findFirst().orElse(getEmptyRow(lookup.getColumns()));
     }
 
+    /**
+     * Return an empty default row based on the given dataset metadata.
+     * 
+     * @param columns the dataset to get build the row from.
+     * @return an empty default row based on the given dataset metadata.
+     */
+    private DataSetRow getEmptyRow(List<ColumnMetadata> columns) {
+        RowMetadata rowMetadata = new RowMetadata(columns);
+        DataSetRow defaultRow = new DataSetRow(rowMetadata);
+        columns.forEach(column -> defaultRow.set(column.getId(), EMPTY));
+        return defaultRow;
+    }
 
     private List<String> getColsToAdd(Map<String, String> parameters) {
         final String cols = parameters.get(LOOKUP_SELECTED_COLS.getKey());
-        return Arrays.asList(cols.split(","));
+        final String[] split = cols.split(",");
+        return Arrays.stream(split).map(String::trim).collect(Collectors.toList());
     }
 
     private InputStream getLookupContent(Map<String, String> parameters) {
