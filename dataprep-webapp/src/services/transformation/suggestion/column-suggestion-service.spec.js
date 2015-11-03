@@ -18,10 +18,10 @@ describe('Column suggestion service', function () {
                 {name: 'cluster', category: 'quickfix', label: 'f', description: 'test'},
                 {name: 'split', category: 'column_metadata', label: 'c', description: 'test'},
                 {name: 'tolowercase', category: 'case', label: 'v', description: 'test'},
-                {name: 'touppercase', category: 'case', label: 'u', description: 'test'},
+                {name: 'touppercase', category: 'case', label: 'u', description: 'test',  actionScope: ['unknown']},
                 {name: 'removeempty', category: 'clear', label: 'a', description: 'test', actionScope: ['empty', 'invalid']},
                 {name: 'totitlecase', category: 'case', label: 't', description: 'test', actionScope: ['invalid']},
-                {name: 'removetrailingspaces', category: 'quickfix', label: 'm', description: 'test', actionScope: ['empty']},
+                {name: 'removetrailingspaces', category: 'quickfix', label: 'm', description: 'test', actionScope: ['empty', 'unknown']},
                 {name: 'split', category: 'split', label: 'l', dynamic: true, description: 'test'}
             ]
         ));
