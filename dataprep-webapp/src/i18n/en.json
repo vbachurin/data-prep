@@ -173,5 +173,17 @@
 
   "_comment": "Range slider",
   "INVALID_VALUE_RANGE_SLIDER": "Invalid Entered Value",
-  "INVALID_VALUE_RANGE_SLIDER_CONTENT": ": Use \".\" instead of \",\""
+  "INVALID_VALUE_RANGE_SLIDER_CONTENT": ": Use \".\" instead of \",\"",
+
+  "_comment": "Quality Bar",
+  "VALID_RECORDS": "valid records",
+  "INVALID_RECORDS": "invalid records",
+  "EMPTY_RECORDS": "empty records",
+  "SELECT_VALID_RECORDS": "Select Valid Records for ",
+  "SELECT_INVALID_RECORDS": "Select Invalid Records for ",
+  "SELECT_EMPTY_RECORDS": "Select Empty Records for ",
+  "FILL_EMPTY_WITH_TOP_VALUE": "Fill Empty records with Top adjacent value",
+  "FILL_EMPTY_WITH_BOTTOM_VALUE": "Fill Empty records with Bottom adjacent value",
+  "REPLACE_INVALID_WITH_TOP_VALUE": "Replace Invalid Records with Top adjacent value",
+  "REPLACE_INVALID_WITH_BOTTOM_VALUE": "Replace Invalid Records with Bottom adjacent value"
 }
