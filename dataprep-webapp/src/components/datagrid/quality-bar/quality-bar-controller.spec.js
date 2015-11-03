@@ -205,12 +205,10 @@ describe('Quality bar controller', function () {
         //given
         var ctrl = createController();
         var transfo = {name:'delete_empty', parameters:null};
-        ColumnSuggestionService.allTransformations = [];
-        ColumnSuggestionService.allTransformations.push(transfo);
         spyOn(TransformationApplicationService,'append').and.returnValue(function(){});
 
         //when
-        ctrl.applyActionOnColumn('delete_empty');
+        ctrl.applyActionOnColumn(transfo);
 
         //then
         expect(TransformationApplicationService.append).toHaveBeenCalledWith(transfo, 'column');
