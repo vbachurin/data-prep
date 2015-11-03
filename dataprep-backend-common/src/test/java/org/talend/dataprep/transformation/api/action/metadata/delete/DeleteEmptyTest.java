@@ -1,5 +1,6 @@
 package org.talend.dataprep.transformation.api.action.metadata.delete;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
@@ -17,6 +18,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionScope;
 
 /**
  * Test class for DeleteEmpty action. Creates one consumer, and test it.
@@ -37,6 +39,11 @@ public class DeleteEmptyTest {
         parameters = ActionMetadataTestUtils.parseParameters( //
                 //
                 DeleteEmptyTest.class.getResourceAsStream("deleteEmptyAction.json"));
+    }
+
+    @Test
+    public void testActionScope() throws Exception {
+        assertThat(action.getActionScope(), hasItem(ActionScope.EMPTY.getDisplayName()));
     }
 
     @Test
