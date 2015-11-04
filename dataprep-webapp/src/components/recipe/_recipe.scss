@@ -67,9 +67,11 @@
 
   /*******************************Step Filters List******************************/
   #step-filters-list {
+    cursor: initial;
     color: $dark-gray;
     max-height: 160px;
     overflow-y: auto;
+    padding-left: 10px;
     @include display(flex);
     @include flex-direction(row);
     .list {
@@ -88,13 +90,18 @@
       padding: 2px 0 2px 15px;
     }
 
+    .list-content li:hover{
+      background-color: transparent;
+    }
+
     .list-title {
       display: inline-block;
-      width: calc(100% - 55px);
+      width: calc(100% - 60px);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       text-indent: 2px;
+      cursor: pointer;
       &:hover {
         text-decoration: underline;
       }
@@ -103,9 +110,9 @@
     .list-content-close {
       font-size: 0.5em;
       float: right;
-      display: inline-block;
-      width: 20px;
+      width: 25px;
       padding: 5px;
+      cursor: pointer;
     }
   }
 
