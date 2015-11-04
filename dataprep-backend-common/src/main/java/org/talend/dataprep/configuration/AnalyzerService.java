@@ -38,7 +38,7 @@ import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.ValueQualityStatistics;
 import org.talend.datascience.common.inference.type.DataType;
 import org.talend.datascience.common.inference.type.DataTypeAnalyzer;
-import org.talend.dataprep.api.dataset.statistics.DCHistogramAnalyzer;
+import org.talend.dataprep.api.dataset.statistics.StreamHistogramAnalyzer;
 
 @Service
 public class AnalyzerService implements DisposableBean {
@@ -100,7 +100,7 @@ public class AnalyzerService implements DisposableBean {
             }
 
         }
-        final DCHistogramAnalyzer histogramAnalyzer = new DCHistogramAnalyzer(types, histogramParameter);
+        final StreamHistogramAnalyzer histogramAnalyzer = new StreamHistogramAnalyzer(types, histogramParameter);
         final SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(categoryBuilder);
         // Configure value quality analysis
         final ValueQualityAnalyzer valueQualityAnalyzer = qualityAnalyzer(columns);

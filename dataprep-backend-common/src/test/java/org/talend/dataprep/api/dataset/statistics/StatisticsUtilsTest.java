@@ -76,7 +76,7 @@ public class StatisticsUtilsTest {
         summaryStatistics.addData(2d);
         result.add(summaryStatistics);
         // Histogram
-        DCHistogramStatistics histogramStatistics = new DCHistogramStatistics();
+        StreamHistogramStatistics histogramStatistics = new StreamHistogramStatistics();
         histogramStatistics.setParameters(2);
         histogramStatistics.add(1);
         histogramStatistics.add(2);

@@ -26,11 +26,11 @@ import org.talend.datascience.common.inference.type.TypeInferenceUtils;
 /**
  * Created by bdiouf on 27/10/15.
  */
-public class DCHistogramAnalyzer extends NumericalStatisticsAnalyzer<DCHistogramStatistics> {
+public class StreamHistogramAnalyzer extends NumericalStatisticsAnalyzer<StreamHistogramStatistics> {
 
     private static final long serialVersionUID = -3756520692420812485L;
 
-    private ResizableList<DCHistogramStatistics> stats = new ResizableList<>(DCHistogramStatistics.class);
+    private ResizableList<StreamHistogramStatistics> stats = new ResizableList<>(StreamHistogramStatistics.class);
 
     private HistogramParameter histogramParameter = null;
 
@@ -39,7 +39,7 @@ public class DCHistogramAnalyzer extends NumericalStatisticsAnalyzer<DCHistogram
      * @param types data types
      * @param histogramParameter Histogram analzyer's parameter
      */
-    public DCHistogramAnalyzer(Type[] types, HistogramParameter histogramParameter) {
+    public StreamHistogramAnalyzer(Type[] types, HistogramParameter histogramParameter) {
         super(types);
         if (histogramParameter == null) {
             throw new IllegalArgumentException("Histogram analyzer's parameter should is null.");
@@ -68,7 +68,7 @@ public class DCHistogramAnalyzer extends NumericalStatisticsAnalyzer<DCHistogram
 
         if (stats.resize(record.length)) {
             int colIdx = 0;
-            for (DCHistogramStatistics stat : stats) {
+            for (StreamHistogramStatistics stat : stats) {
                 HistogramColumnParameter columnParameter = histogramParameter.getColumnParameter(colIdx);
                 // Set column parameters to histogram statistics.
                 double max = histogramParameter.getDefaultMax();
@@ -80,7 +80,7 @@ public class DCHistogramAnalyzer extends NumericalStatisticsAnalyzer<DCHistogram
                     numBins = columnParameter.getNumBins();
                 }
                 //stat.setParameters(max, min, numBins);
-                stat.setParameters(numBins);
+                stat.setParameters(32);
                 colIdx++;
             }
         }
@@ -95,12 +95,12 @@ public class DCHistogramAnalyzer extends NumericalStatisticsAnalyzer<DCHistogram
     }
 
     private void analyzerHistogram(int index, String... record) {
-        DCHistogramStatistics histStats = stats.get(index);
+        StreamHistogramStatistics histStats = stats.get(index);
         histStats.add(Double.valueOf(record[index]));
     }
 
     @Override
-    public Analyzer<DCHistogramStatistics> merge(Analyzer<DCHistogramStatistics> another) {
+    public Analyzer<StreamHistogramStatistics> merge(Analyzer<StreamHistogramStatistics> another) {
         throw new NotImplementedException();
     }
 
@@ -109,7 +109,7 @@ public class DCHistogramAnalyzer extends NumericalStatisticsAnalyzer<DCHistogram
     }
 
     @Override
-    public List<DCHistogramStatistics> getResult() {
+    public List<StreamHistogramStatistics> getResult() {
         return stats;
     }
 
