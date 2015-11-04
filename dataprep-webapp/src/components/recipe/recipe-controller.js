@@ -178,20 +178,6 @@
 
         /**
          * @ngdoc method
-         * @name getFiltersNames
-         * @methodOf data-prep.recipe.controller:RecipeCtrl
-         * @param {array} stepFilters The step filters
-         * @description Get filters names based on the numbers of filters
-         */
-        vm.getFiltersNames = function getFiltersNames(stepFilters) {
-            if (stepFilters.length === 1){
-                return '(' + stepFilters[0].colName.toUpperCase() + ')';
-            }
-            return '(' + stepFilters[0].colName.toUpperCase() + ', '  + (stepFilters.length -1) + $translate.instant('OTHERS') + ')';
-        };
-
-        /**
-         * @ngdoc method
          * @name getAllFiltersNames
          * @methodOf data-prep.recipe.controller:RecipeCtrl
          * @param {array} stepFilters The step filters

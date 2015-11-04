@@ -16,6 +16,10 @@
       background-color: $light-gray;
       text-decoration: line-through;
     }
+
+    .content {
+      background-color: transparent;
+    }
   }
 
   > .content > .content-container {
@@ -35,9 +39,13 @@
     .step-description {
       padding-right: 30px;
 
+      .filter-icon {
+        color: $dark-gray;
+        font-size: 0.65em;
+        padding: 0 0 0 5px;
+      }
+
       .recipe-description {
-
-
         &.recipe-column-name {
           font-weight: bold;
           text-transform: uppercase;
@@ -66,56 +74,29 @@
   }
 
   /*******************************Step Filters List******************************/
-  #step-filters-list {
+  .step-filters-list {
     cursor: initial;
+    background-color: $shadow-gray;
     color: $dark-gray;
     max-height: 160px;
     overflow-y: auto;
-    padding-left: 10px;
+    padding: 0 0  0 10px;
     @include display(flex);
     @include flex-direction(row);
     .list {
       @include flex-grow(1);
       @include flex-shrink(1);
-    }
 
-    .list-header {
-      width: 100%;
-    }
-    .list-icon {
-      font-size: 0.6em;
-      float: left;
-      display: inline-block;
-      width: 35px;
-      padding: 2px 0 2px 15px;
-    }
-
-    .list-content li:hover{
-      background-color: transparent;
-    }
-
-    .list-title {
-      display: inline-block;
-      width: calc(100% - 60px);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      text-indent: 2px;
-      cursor: pointer;
-      &:hover {
-        text-decoration: underline;
+      li:hover{
+        background-color: transparent;
       }
-    }
-
-    .list-content-close {
-      font-size: 0.5em;
-      float: right;
-      width: 25px;
-      padding: 5px;
-      cursor: pointer;
     }
   }
 
+  .step-parameters-list {
+    background-color: $shadow-gray;
+    margin-top: 10px;
+  }
   /***********************************Panel hide/show*******************************/
   .action {
     &:hover {
