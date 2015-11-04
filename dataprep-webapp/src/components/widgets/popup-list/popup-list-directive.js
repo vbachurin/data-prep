@@ -18,6 +18,7 @@
                 var listTitle = iElement.find('.list-title');
                 var list = iElement.find('.list-content');
                 var listCloseButton =  iElement.find('.list-content-close');
+                var listWrapper =  angular.element('.list-wrapper');
 
                 list.removeClass('visible');
                 listCloseButton.css('display', 'none');
@@ -26,12 +27,15 @@
                     if(list.css('display') === 'none') {
                         list.addClass('visible');
                         listCloseButton.css('display', 'inline-block');
+                        listWrapper.css('background-color', '#DDDDDD');
+
                     }
                 });
                 listCloseButton.on('click', function() {
                     if(list.css('display') === 'block') {
                         list.removeClass('visible');
                         listCloseButton.css('display', 'none');
+                        listWrapper.css('background-color', 'transparent');
                     }
                 });
             }

@@ -67,9 +67,8 @@
 
   /*******************************Step Filters List******************************/
   #step-filters-list {
-    background-color: $shadow-gray;
     color: $dark-gray;
-    max-height: 85px;
+    max-height: 160px;
     overflow-y: auto;
     @include display(flex);
     @include flex-direction(row);
@@ -96,6 +95,9 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       text-indent: 2px;
+      &:hover {
+        text-decoration: underline;
+      }
     }
 
     .list-content-close {
