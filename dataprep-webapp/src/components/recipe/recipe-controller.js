@@ -10,7 +10,7 @@
      * @requires data-prep.services.playground.service:PreviewService
      * @requires data-prep.services.preparation.service:PreparationService
      */
-    function RecipeCtrl(state, RecipeService, PlaygroundService, PreparationService, PreviewService, MessageService, FilterService) {
+    function RecipeCtrl($translate, state, RecipeService, PlaygroundService, PreparationService, PreviewService, MessageService, FilterService) {
         var vm = this;
         vm.recipeService = RecipeService;
 
@@ -174,6 +174,22 @@
             return function(params) {
                 updatePreview(step, params);
             };
+        };
+
+        /**
+         * @ngdoc method
+         * @name getFiltersNames
+         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @param {array} step The step filters
+         * @description Get all filters names
+         */
+        vm.getFiltersNames = function getFiltersNames(stepFilters) {
+            if (stepFilters.length === 1){
+                return '(' + stepFilters[0].colName.toUpperCase() + ')';
+            } else if (stepFilters.length === 2) {
+                return '(' + stepFilters[0].colName.toUpperCase() + ', ' + stepFilters[1].colName.toUpperCase() + ')';
+            }
+            return '(' + stepFilters[0].colName.toUpperCase() + ', '  + (stepFilters.length -1) + $translate.instant('OTHERS') + ')';
         };
 
         /**

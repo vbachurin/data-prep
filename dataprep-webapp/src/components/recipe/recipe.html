@@ -27,9 +27,21 @@
             <recipe-bullet class="step-trigger" step="step" ></recipe-bullet>
 
             <div id="step-filters-list" ng-show="step.filters.length">
-                <filter-list class="list"
-                         filters="step.filters"
-                         on-filter-remove="recipeCtrl.removeStepFilter(step, filter)"></filter-list>
+                <talend-pop-up-list>
+                    <div class="list-header">
+                        <div class="list-icon" data-icon="q"></div>
+                        <div class="list-title" title="{{'FILTERS_APPLIED' | translate}} {{recipeCtrl.getFiltersNames(step.filters)}}">
+                            <span translate-once="FILTERS_APPLIED"></span> {{recipeCtrl.getFiltersNames(step.filters)}}
+                        </div>
+                        <div class="list-content-close" data-icon="d"></div>
+                    </div>
+
+                    <div class="list-content">
+                        <filter-list class="list"
+                                     filters="step.filters"
+                                     on-filter-remove="recipeCtrl.removeStepFilter(step, filter)"></filter-list>
+                    </div>
+                </talend-pop-up-list>
             </div>
         </div>
 

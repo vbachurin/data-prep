@@ -142,6 +142,10 @@
   "_comment": "Action panel",
   "FIND_FUNCTION": "Find a Function...",
 
+  "_comment": "Recipe",
+  "FILTERS_APPLIED": "Filters applied",
+  "OTHERS": " others",
+
   "_comment": "Statistics",
   "COUNT": "Count",
   "DISTINCT_COUNT": "Distinct",

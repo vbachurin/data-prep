@@ -77,6 +77,34 @@
       @include flex-grow(1);
       @include flex-shrink(1);
     }
+
+    .list-header {
+      width: 100%;
+    }
+    .list-icon {
+      font-size: 0.6em;
+      float: left;
+      display: inline-block;
+      width: 35px;
+      padding: 2px 0 2px 15px;
+    }
+
+    .list-title {
+      display: inline-block;
+      width: calc(100% - 55px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-indent: 2px;
+    }
+
+    .list-content-close {
+      font-size: 0.5em;
+      float: right;
+      display: inline-block;
+      width: 20px;
+      padding: 5px;
+    }
   }
 
   /***********************************Panel hide/show*******************************/
