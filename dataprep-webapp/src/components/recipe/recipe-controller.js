@@ -184,11 +184,7 @@
          * @description Get all filters names
          */
         vm.getAllFiltersNames = function getAllFiltersNames(stepFilters) {
-            var str = '(';
-            for (var i = 0; i < stepFilters.length -1; i++) {
-                str = str + stepFilters[i].colName.toUpperCase() + ', ';
-            }
-            return str + stepFilters[stepFilters.length-1].colName.toUpperCase() + ')';
+            return '(' + _.pluck(stepFilters,'colName').join(', ').toUpperCase() + ')';
         };
 
         /**
