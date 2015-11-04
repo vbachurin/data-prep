@@ -21,13 +21,15 @@
 
     <br/>
 
-    <span class="error"
-          ng-show="rangeSliderCtrl.invalidNumber"
-          translate-once="INVALID_VALUE_RANGE_SLIDER"
-    ><!--ng-pattern has not been used because we need to check the case where the user has type a comma ',' --></span>
-
-    <span class="error"
-          ng-show="rangeSliderCtrl.invalidNumberWithComma"
-          translate-once="INVALID_VALUE_RANGE_SLIDER_CONTENT"
-    ></span>
 </form>
+<div class="error-message">
+        <span class="error"
+              ng-show="rangeSliderCtrl.invalidNumber"
+              translate-once="INVALID_VALUE_RANGE_SLIDER"
+                ><!--ng-pattern has not been used because we need to check the case where the user has type a comma ',' --></span>
+
+        <span class="error"
+              ng-show="rangeSliderCtrl.invalidNumberWithComma"
+              translate-once="INVALID_VALUE_RANGE_SLIDER_CONTENT"
+                ></span>
+</div>

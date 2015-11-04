@@ -28,6 +28,7 @@
     shape-rendering: crispEdges;
   }
 }
+
 #range-inputs-id{
   font-size: .8em;
   input[type="text"] {
@@ -35,6 +36,11 @@
     display: inline-block;
   }
   .range-label-input{
-    margin-left: 15px;
+    margin-left: 25px;
   }
+}
+
+.error-message{
+  font-size: .8em;
+  text-align: center;
 }

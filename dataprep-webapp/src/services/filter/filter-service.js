@@ -228,7 +228,7 @@
         function createRangeFilterFn(colId, values) {
             return function () {
                 return function (item) {
-                        if(! ConverterService.isNumber(item[colId])){
+                        if(!ConverterService.isNumber(item[colId])){
                             return false;
                         }
                         else{

@@ -87,13 +87,13 @@ describe('Converter service', function() {
 
     it('should check numbers validity', inject(function (ConverterService) {
         //when
-        var amIaNumber = ConverterService.toNumber('dqsfds10010');
-        var amIaNumber2 = ConverterService.toNumber(' 88');
-        var amIaNumber3 = ConverterService.toNumber('');
+        var amIaNumber = ConverterService.isNumber('dqsfds10010');
+        var amIaNumber2 = ConverterService.isNumber(' 88');
+        var amIaNumber3 = ConverterService.isNumber('');
 
         //then
-        expect(amIaNumber).toBe('dqsfds10010');
-        expect(amIaNumber2).toBe(88);
-        expect(amIaNumber3).toBe('string');
+        expect(amIaNumber).toBe(false);
+        expect(amIaNumber2).toBe(true);
+        expect(amIaNumber3).toBe(false);
     }));
 });

@@ -40,7 +40,7 @@
                 ctrl.showRangeInputs = true;
 
                 //the left and right margins MUST be the same as the vertical Barchart ones
-                var margin = {top: 5, right: 20, bottom: 10, left: 15};
+                var margin = {top: 5, right: 20, bottom: 0, left: 15};
                 var width = attrs.width - margin.left - margin.right;
                 var height = attrs.height - margin.top - margin.bottom;
 
@@ -145,29 +145,35 @@
                     }
 
                     ctrl.prepareInputFilter = function prepareInputFilter(){
-                        var enteredMin = +ctrl.minMaxModel.minModel;
-                        var enteredMax = +ctrl.minMaxModel.maxModel;
-
-                        //2 Cases:
-                        //- ONBLUR: the user selects the input then he selects sth else
-                        //- ONENTER without changing anything
-                        if(lastValues.input.min === enteredMin &&
-                            lastValues.input.max === enteredMax){
-                            return;
+                        if(!ctrl.areMinMaxNumbers()){
+                            initInputValues();
+                            hideMsgErr();
                         }
-                        lastValues.input.min = enteredMin;
-                        lastValues.input.max = enteredMax;
+                        else {
+                            var enteredMin = +ctrl.minMaxModel.minModel;
+                            var enteredMax = +ctrl.minMaxModel.maxModel;
 
-                        //resize the brush to the right extent
-                        nbDecimals = d3.max([ctrl.decimalPlaces(enteredMin), ctrl.decimalPlaces(enteredMax)]);
-                        lastValues.brush = ctrl.adaptRangeValues(enteredMin, enteredMax, rangeLimits.min, rangeLimits.max);
-                        brushg.transition().call(ctrl.brush.extent([lastValues.brush.min, lastValues.brush.max]));
-                        //resize the brush with the delta
-                        handleUniqueBrushValue();
+                            //2 Cases:
+                            //- ONBLUR: the user selects the input then he selects sth else
+                            //- ONENTER without changing anything
+                            if(lastValues.input.min === enteredMin &&
+                                lastValues.input.max === enteredMax){
+                                return;
+                            }
+                            lastValues.input.min = enteredMin;
+                            lastValues.input.max = enteredMax;
 
-                        filterToApply = [lastValues.input.min,lastValues.input.max];
+                            //resize the brush to the right extent
+                            nbDecimals = d3.max([ctrl.decimalPlaces(enteredMin), ctrl.decimalPlaces(enteredMax)]);
+                            lastValues.brush = ctrl.adaptRangeValues(enteredMin, enteredMax, rangeLimits.min, rangeLimits.max);
+                            brushg.transition().call(ctrl.brush.extent([lastValues.brush.min, lastValues.brush.max]));
+                            //resize the brush with the delta
+                            handleUniqueBrushValue();
 
-                        triggerFilter(filterToApply);
+                            filterToApply = [lastValues.input.min,lastValues.input.max];
+
+                            triggerFilter(filterToApply);
+                        }
                     };
 
                     //--------------------------------------------------------------------------------------------------
@@ -191,7 +197,7 @@
                         svg.append('g').append('text')
                             .attr('class', 'the-minimum-label')
                             .attr('x', -10)
-                            .attr('y', height+10)
+                            .attr('y', height)
                             .attr('text-anchor', 'start')
                             .attr('fill', 'grey')
                             .text(function () {
@@ -201,7 +207,7 @@
                         svg.append('g').append('text')
                             .attr('class', 'the-maximum-label')
                             .attr('x', width + 10)
-                            .attr('y', height+10)
+                            .attr('y', height)
                             .attr('text-anchor', 'end')
                             .attr('fill', 'grey')
                             .text(function () {
@@ -298,7 +304,6 @@
 
                     function initRangeInputsListeners() {
                         var minCorrectness, maxCorrectness;
-
                         //create a key listener closure
                         ctrl.handleKey = function handleKey(rangeType) {
                             return function (e) {
