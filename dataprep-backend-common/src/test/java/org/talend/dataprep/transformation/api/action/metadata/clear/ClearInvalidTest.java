@@ -16,12 +16,10 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionScope;
 import org.talend.dataprep.transformation.api.action.metadata.delete.DeleteInvalid;
 
 /**
@@ -56,7 +54,7 @@ public class ClearInvalidTest {
 
     @Test
     public void testActionScope() throws Exception {
-        assertThat(action.getActionScope(), hasItem(ActionScope.INVALID.getDisplayName()));
+        assertThat(action.getActionScope(), hasItem("invalid"));
     }
 
     @Test
