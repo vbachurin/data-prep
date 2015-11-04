@@ -269,7 +269,7 @@ public class ActionMetadataTest {
     public void create_result_should_call_execute_on_table() throws Exception {
         // given
         final Map<String, String> parameters = new HashMap<>();
-        parameters.put("scope", "table");
+        parameters.put("scope", "dataset");
 
         final Map<String, String> rowValues = new HashMap<>();
         rowValues.put("0001", "toto");
