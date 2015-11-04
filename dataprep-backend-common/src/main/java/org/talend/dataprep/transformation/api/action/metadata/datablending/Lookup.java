@@ -13,14 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.PreDestroy;
-
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,34 +77,9 @@ public class Lookup extends ActionMetadata implements DataSetAction {
     /** Adapted value of the url parameter. */
     private String adaptedUrlValue = EMPTY;
 
-    /** Http connection manager. */
-    // TODO move this to a configuration in backend common
-    private PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-
     /** The http client to use. */
+    @Autowired
     private CloseableHttpClient httpClient;
-
-    /**
-     * Default public constructor.
-     */
-    public Lookup() {
-        connectionManager.setMaxTotal(20);
-        connectionManager.setDefaultMaxPerRoute(10);
-        httpClient = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
-    }
-
-    /**
-     * Clean the connection manager before shutting down.
-     */
-    @PreDestroy
-    private void shutdown() {
-        try {
-            httpClient.close();
-        } catch (IOException e) {
-            LOGGER.error("Unable to close HTTP client on shutdown.", e);
-        }
-        this.connectionManager.shutdown();
-    }
 
     /**
      * @return A unique name used to identify action.
@@ -138,7 +109,7 @@ public class Lookup extends ActionMetadata implements DataSetAction {
         parameters.add(new Parameter(LOOKUP_JOIN_ON.getKey(), STRING, EMPTY, false, false));
         parameters.add(new Parameter(LOOKUP_JOIN_ON_NAME.getKey(), STRING, EMPTY, false, false));
         // TODO see how serialize multiple column selection in a string... --> ListParameter
-        parameters.add(new ColumnParameter(LOOKUP_SELECTED_COLS.name(), EMPTY, false, false, Collections.emptyList(), true));
+        parameters.add(new ColumnParameter(LOOKUP_SELECTED_COLS.getKey(), EMPTY, false, false, Collections.emptyList(), true));
         return parameters;
     }
 

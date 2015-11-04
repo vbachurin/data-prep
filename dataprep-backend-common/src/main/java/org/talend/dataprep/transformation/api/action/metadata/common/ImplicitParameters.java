@@ -30,7 +30,7 @@ public enum ImplicitParameters {
      * @param defaultValue the parameter default value.
      */
     ImplicitParameters(final ParameterType type, final String defaultValue) {
-        this.parameter = new Parameter(this.name(), type, defaultValue, true);
+        this.parameter = new Parameter(this.name().toLowerCase(), type, defaultValue, true);
     }
 
     /**
