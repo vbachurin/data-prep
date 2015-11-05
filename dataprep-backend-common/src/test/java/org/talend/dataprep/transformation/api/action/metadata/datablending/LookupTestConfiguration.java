@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- *
+ * Configuration for the test application so that an embedded Jetty server can run.
  */
 @Configuration
 public class LookupTestConfiguration {
