@@ -112,21 +112,22 @@ public class PreparationAPI extends APIService {
         return preparationId;
     }
 
-    @RequestMapping(value = "/api/preparations/clone/{id}", method = GET)
+    @RequestMapping(value = "/api/preparations/clone/{id}", method = PUT)
     @ApiOperation(value = "Clone a preparation by id", notes = "Clone a preparation content based on provided id.")
     @Timed
-    public void clonePreparation(
-            @ApiParam(name = "id", value = "The id of the preparation to clone.") @PathVariable("id") String id, //
-            @ApiParam(value = "Optional new name") @RequestParam(required = false) String name) {
+    public String clonePreparation(
+            @ApiParam(name = "id", value = "The id of the preparation to clone.") @PathVariable("id") String id) {
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("Cloning preparation (pool: {} )...", getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
-        PreparationClone preparationClone = getCommand(PreparationClone.class, client, id, name);
-        preparationClone.execute();
+        PreparationClone preparationClone = getCommand(PreparationClone.class, client, id);
+        String preparationId = preparationClone.execute();
         if (LOG.isDebugEnabled()) {
             LOG.debug("Cloned preparation (pool: {} )...", getConnectionManager().getTotalStats());
         }
+        return preparationId;
     }
 
     @RequestMapping(value = "/api/preparations/{id}/details", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)

@@ -155,15 +155,18 @@ public class PreparationServiceTest {
         Assertions.assertThat(result).isEqualToComparingOnlyGivenFields(preparation, //
                 "name", "lastModificationDate", "creationDate");
 
-        preparationDetails = when().get("/preparations/clone/{id}", preparation.id()).asString();
+        Response cloneResponse =  when().put("/preparations/clone/{id}", preparation.id());
 
-        System.out.println( "preparation clone string" + preparationDetails );
+        String cloneId = cloneResponse.asString();
 
-        Preparation clone = objectMapper.reader( Preparation.class ).readValue(preparationDetails);
+        String preparationDetailsClone = when().get("/preparations/{id}", cloneId).asString();
+
+        Preparation clone = objectMapper.reader( Preparation.class ).readValue(preparationDetailsClone);
 
         Assertions.assertThat( clone.getCreationDate() ).isGreaterThan( result.getCreationDate() );
         Assertions.assertThat( clone.getName() ).isEqualTo( result.getName() + " Copy" );
         Assertions.assertThat( clone.getId() ).isNotEqualTo( result.getId() );
+        Assertions.assertThat( clone.getDataSetId() ).isEqualTo( result.getDataSetId() );
 
     }
 

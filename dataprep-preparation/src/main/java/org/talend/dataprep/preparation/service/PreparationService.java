@@ -101,9 +101,7 @@ public class PreparationService {
     @RequestMapping(value = "/preparations", method = PUT, produces = TEXT_PLAIN_VALUE, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Create a preparation", notes = "Returns the id of the created preparation.")
     @Timed
-    public String create(@ApiParam("preparation")
-    @RequestBody
-    final Preparation preparation) {
+    public String create(@ApiParam("preparation") @RequestBody final Preparation preparation) {
         LOGGER.debug("Create new preparation for data set {}", preparation.getDataSetId());
         preparation.setStep(ROOT_STEP);
         preparation.setAuthor(security.getUserId());
@@ -146,23 +144,17 @@ public class PreparationService {
         return preparationRepository.get(id, Preparation.class);
     }
 
-    @RequestMapping(value = "/preparations/clone/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Clone preparation", notes = "Clone of the preparation with provided id. If no name provided the new name will the previous one concat with ' Copy' ")
+    @RequestMapping(value = "/preparations/clone/{id}", method = PUT, produces = TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Clone preparation", notes = "Clone of the preparation with provided id. The new name will the previous one concat with ' Copy', "
+            + "Return the id of the new preparation ")
     @Timed
-    public Preparation clone(@ApiParam("id") @PathVariable("id") String id, //
-            @ApiParam(value = "Optional new name") @RequestParam(required = false) String name) {
-        LOGGER.debug("Get content of preparation details for #{}.", id);
+    public String clone(@ApiParam("id") @PathVariable("id") String id) {
+        LOGGER.debug("Clone preparation  #{}.", id);
         Preparation preparation = preparationRepository.get(id, Preparation.class);
-        if ( StringUtils.isEmpty( name )) {
-            preparation.setName( preparation.getName() + " Copy" );
-        } else {
-            preparation.setName( name );
-        }
-
+        preparation.setName( preparation.getName() + " Copy" );
         preparation.setCreationDate(System.currentTimeMillis());
-
         preparationRepository.add(preparation);
-        return preparation;
+        return preparation.getId();
     }
 
     @RequestMapping(value = "/preparations/{id}/steps", method = GET, produces = APPLICATION_JSON_VALUE)
