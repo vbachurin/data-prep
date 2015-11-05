@@ -2,6 +2,7 @@ package org.talend.dataprep.transformation.api.action.metadata.text;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -48,6 +49,12 @@ public class RemoveNonNumChars extends ActionMetadata implements ColumnAction {
      */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+        final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
+        if (columnMetadata != null) {
+            columnMetadata.setTypeForced(false);
+            columnMetadata.setDomainForced(false);
+        }
+
         final String toCut = row.get(columnId);
         row.set(columnId, apply(toCut));
     }
