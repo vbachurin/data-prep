@@ -192,7 +192,7 @@ describe('Filter service', function() {
             expect(filterInfo.editable).toBe(false);
             expect(filterInfo.args).toEqual({interval: [0, 22]});
             expect(filterInfo.filterFn()({col1:'5'})).toBeTruthy();
-            expect(filterInfo.filterFn()({col1:'-5'})).toBeFalsy()
+            expect(filterInfo.filterFn()({col1:'-5'})).toBeFalsy();
             expect(filterInfo.filterFn()({col1: ''})).toBeFalsy();
 
             var filterInfo2 = StateService.addGridFilter.calls.argsFor(1)[0];
