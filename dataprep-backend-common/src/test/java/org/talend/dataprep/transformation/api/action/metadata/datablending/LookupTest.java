@@ -7,7 +7,6 @@ import static org.talend.dataprep.transformation.api.action.metadata.datablendin
 import static org.talend.dataprep.transformation.api.action.metadata.datablending.Lookup.Parameters.LOOKUP_JOIN_ON;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -23,15 +22,11 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Unit test for the Lookup action.
@@ -61,16 +56,26 @@ public class LookupTest {
     }
 
     @Test
+    public void testName() {
+        assertEquals("lookup", action.getName());
+    }
+
+    @Test
+    public void testCategory() {
+        assertEquals("data_blending", action.getCategory());
+    }
+
+    @Test
     public void shouldAdapt() {
         // given
         final DataSetMetadata ds = DataSetMetadata.Builder.metadata().name("great dataset").id("ds#123").build();
         String dsUrl = "http://estcequecestbientotleweekend.fr";
 
         // when
-        action.adapt(ds, dsUrl);
+        final Lookup actual = action.adapt(ds, dsUrl);
 
         // when
-        final List<Parameter> parameters = action.getParameters();
+        final List<Parameter> parameters = actual.getParameters();
         assertEquals("great dataset", getParamValue(parameters, "lookup_ds_name"));
         assertEquals("ds#123", getParamValue(parameters, "lookup_ds_id"));
         assertEquals(dsUrl, getParamValue(parameters, "lookup_ds_url"));
@@ -90,11 +95,8 @@ public class LookupTest {
         Assert.assertEquals(expected, row);
 
         // and (check metadata)
-        // TODO assertEquals(row.getRowMetadata().getById("0003").getDomain())
-        // TODO assertEquals(row.getRowMetadata().getById("0003").getName())
-        // TODO assertEquals(row.getRowMetadata().getById("0003").getType())
-        checkMergedMetadata(row.getRowMetadata().getById("0003"), "us_states.json#1"); // (state) row#3 == us_states#1
-        checkMergedMetadata(row.getRowMetadata().getById("0004"), "us_states.json#2"); // (capital) row#4 == us_states#2
+        checkMergedMetadata(row.getRowMetadata().getById("0003"), "State", "string", "US_STATE");
+        checkMergedMetadata(row.getRowMetadata().getById("0004"), "Capital", "string", "CITY");
     }
 
     @Test
@@ -111,8 +113,8 @@ public class LookupTest {
         Assert.assertEquals(expected, row);
 
         // and (metadata)
-        checkMergedMetadata(row.getRowMetadata().getById("0003"), "us_states.json#1"); // (state) row#3 == us_states#1
-        checkMergedMetadata(row.getRowMetadata().getById("0004"), "us_states.json#2"); // (capital) row#4 == us_states#2
+        checkMergedMetadata(row.getRowMetadata().getById("0003"), "State", "string", "US_STATE");
+        checkMergedMetadata(row.getRowMetadata().getById("0004"), "Capital", "string", "CITY");
     }
 
     @Test
@@ -129,25 +131,54 @@ public class LookupTest {
         Assert.assertEquals(expected, row);
 
         // and (metadata)
-        checkMergedMetadata(row.getRowMetadata().getById("0003"), "us_states.json#1"); // (state) row#3 == us_states#1
-        checkMergedMetadata(row.getRowMetadata().getById("0004"), "us_states.json#2"); // (capital) row#4 == us_states#2
+        checkMergedMetadata(row.getRowMetadata().getById("0003"), "State", "string", "US_STATE");
+        checkMergedMetadata(row.getRowMetadata().getById("0004"), "Capital", "string", "CITY");
+    }
+
+    @Test
+    public void shouldMergeSeveralRows() throws IOException {
+        // given
+        Map<String, String> parameters = getUsStatesLookupParameters();
+        DataSetRow[] rows = new DataSetRow[] { ActionMetadataTestUtils.getRow("Atlanta", "GA", "Philips Arena"),
+                ActionMetadataTestUtils.getRow("Miami", "FL", "American Airlines Arena"),
+                ActionMetadataTestUtils.getRow("Chicago", "IL", "United Center"),
+                ActionMetadataTestUtils.getRow("San Antonio", "TX", "AT&T Center"),
+                ActionMetadataTestUtils.getRow("Oakland", "CA", "Oracle Arena") };
+
+        // when
+        final TransformationContext transformationContext = new TransformationContext();
+        for (DataSetRow row : rows) {
+            action.applyOnDataSet(row, transformationContext, parameters);
+        }
+
+        // then (check values)
+        DataSetRow[] expectedRows = new DataSetRow[] {
+                ActionMetadataTestUtils.getRow("Atlanta", "GA", "Philips Arena", "Georgia", "Atlanta"),
+                ActionMetadataTestUtils.getRow("Miami", "FL", "American Airlines Arena", "Florida", "Tallahassee"),
+                ActionMetadataTestUtils.getRow("Chicago", "IL", "United Center", "Illinois", "Springfield"),
+                ActionMetadataTestUtils.getRow("San Antonio", "TX", "AT&T Center", "Texas", "Austin"),
+                ActionMetadataTestUtils.getRow("Oakland", "CA", "Oracle Arena", "California", "Sacramento") };
+        for (int i = 0; i < rows.length; i++) {
+            Assert.assertEquals(expectedRows[i], rows[i]);
+            checkMergedMetadata(rows[i].getRowMetadata().getById("0003"), "State", "string", "US_STATE");
+            checkMergedMetadata(rows[i].getRowMetadata().getById("0004"), "Capital", "string", "CITY");
+        }
     }
 
     /**
-     * Check that the given column equals the one extracted from the source.
+     * Check that the given merged column match the given parameters.
      *
      * @param mergedColumn the column merged by the lookup action
-     * @param rawSource where to load the expected result (filename#colId)
+     * @param name the expected column name.
+     * @param type the expected column type.
+     * @param domain the expected column domain.
      */
-    private void checkMergedMetadata(ColumnMetadata mergedColumn, String rawSource) throws IOException {
-        // split source and col id
-        final int separatorIndex = rawSource.indexOf('#');
-        String fileName = rawSource.substring(0, separatorIndex);
-        int id = Integer.valueOf(rawSource.substring(separatorIndex + 1));
-
-        final ColumnMetadata expectedState = getColumnMetadata(fileName, id, mergedColumn.getId());
-        Assert.assertEquals(expectedState, mergedColumn);
+    private void checkMergedMetadata(ColumnMetadata mergedColumn, String name, String type, String domain) {
+        assertEquals(name, mergedColumn.getName());
+        assertEquals(type, mergedColumn.getType());
+        assertEquals(domain, mergedColumn.getDomain());
     }
+
 
     /**
      * @return the wanted parameter value or null.
@@ -170,19 +201,5 @@ public class LookupTest {
         parameters.put(LOOKUP_JOIN_ON.getKey(), "0000");
         parameters.put(COLUMN_ID.getKey(), "0001");
         return parameters;
-    }
-
-    /**
-     * @return the wanted column with the given id
-     */
-    private ColumnMetadata getColumnMetadata(String inputName, int id, String idToSet) throws IOException {
-        final ObjectMapper mapper = builder.build();
-        final InputStream input = this.getClass().getResourceAsStream(inputName);
-        try (JsonParser parser = mapper.getFactory().createParser(input)) {
-            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
-            final ColumnMetadata columnMetadata = dataSet.getColumns().get(id);
-            columnMetadata.setId(idToSet); // reset column id (which is different in the merged dataset)
-            return columnMetadata;
-        }
     }
 }

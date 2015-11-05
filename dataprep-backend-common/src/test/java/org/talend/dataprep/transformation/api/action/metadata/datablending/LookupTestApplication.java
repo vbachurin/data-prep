@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
- *
+ * Sadly needed application to be able to run unit tests.
  */
 @SpringBootApplication
 @ComponentScan(basePackages = "org.talend.dataprep")

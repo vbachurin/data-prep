@@ -11,7 +11,10 @@
         "lookup_ds_url": "should be updated in unit test",
         "lookup_join_on": "0000",
         "lookup_join_on_name": "0000",
-        "lookup_selected_cols": "0001, 0002"
+        "lookup_selected_cols": [
+          "0001",
+          "0002"
+        ]
       }
     }
   ]
