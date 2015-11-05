@@ -106,16 +106,15 @@
          * @name clone
          * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @param {string} preparationId The preparation id
-         * @param {string} name The optional preparation name
          * @description Clone the preparation
-         * @returns {promise} The GET promise
+         * @returns {promise} The PUT promise
          */
-        function clone(preparationId, name) {
-            var url = RestURLs.preparationUrl + '/clone/' + preparationId;
-            if (name){
-                url += '?name='+encodeURIComponent(name);
-            }
-            return $http.get(url);
+        function clone(preparationId) {
+            var request = {
+                method: 'PUT',
+                url: RestURLs.preparationUrl + '/clone/' + preparationId
+            };
+            return $http(request);
         }
 
         /**

@@ -112,7 +112,7 @@ public class PreparationAPI extends APIService {
         return preparationId;
     }
 
-    @RequestMapping(value = "/api/preparations/clone/{id}", method = PUT)
+    @RequestMapping(value = "/api/preparations/clone/{id}", method = PUT, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Clone a preparation by id", notes = "Clone a preparation content based on provided id.")
     @Timed
     public String clonePreparation(

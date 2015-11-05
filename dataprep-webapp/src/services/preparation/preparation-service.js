@@ -119,12 +119,11 @@
          * @name clone
          * @methodOf data-prep.services.preparation.service:PreparationService
          * @param {string} preparationId The preparation id
-         * @param {string} name The optional cloned preparation name
          * @description Create a new preparation, and keep the current preparation id
          * @returns {promise} The POST promise
          */
-        function clone(preparationId, name) {
-            return PreparationListService.clone(preparationId, name)
+        function clone(preparationId) {
+            return PreparationListService.clone(preparationId)
                 .then(consolidatePreparationsAndDatasets);
         }
 

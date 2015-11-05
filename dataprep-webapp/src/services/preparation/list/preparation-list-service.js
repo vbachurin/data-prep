@@ -90,12 +90,11 @@
          * @name create
          * @methodOf data-prep.services.preparation.service:PreparationListService
          * @param {string} preparationId The preparation id
-         * @param {string} name The optionnal cloned preparation name
          * @description Clone the preparation
          * @returns {promise} The GET promise
          */
-        function clone(preparationId, name) {
-            return PreparationRestService.clone(preparationId, name)
+        function clone(preparationId) {
+            return PreparationRestService.clone(preparationId)
                 .then(function(){
                     return refreshPreparations();
                 });
