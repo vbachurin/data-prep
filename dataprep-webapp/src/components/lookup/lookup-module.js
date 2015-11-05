@@ -7,5 +7,8 @@
      * @description This module contains the dataset lookup
      * @requires talend.widget
      */
-    angular.module('data-prep.lookup', ['talend.widget']);
+    angular.module('data-prep.lookup', [
+        'talend.widget',
+        'data-prep.services.dataset'
+    ]);
 })();

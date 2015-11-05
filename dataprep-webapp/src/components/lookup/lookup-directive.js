@@ -9,8 +9,8 @@
                 visible: '='
             },
             bindToController: true,
-            controllerAs: 'lookupCtrl',
-            controller: function() {}
+            controllerAs: 'LookupCtrl',
+            controller: 'lookupCtrl'
         };
     }
 

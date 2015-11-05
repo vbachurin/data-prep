@@ -1,8 +1,10 @@
-<talend-slidable
+<!--<talend-slidable
         class="lookup"
         visible="lookupCtrl.visible"
         side="bottom"
-        control-bar="false">
-    <img id="lookup-left" src="assets/images/lookup/lookup-left.png">
-    <img id="lookup-right" src="assets/images/lookup/lookup-right.png">
-</talend-slidable>
+        control-bar="false">-->
+<ul id="datasets-list-lookup-id">
+    <li ng-repeat="dataset in LookupCtrl.datasets track by $index"><a>{{dataset.name}}</a></li>
+</ul>
+<!--
+</talend-slidable>-->
