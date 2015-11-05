@@ -157,8 +157,8 @@ describe('rangeSlider directive', function () {
             scope.$digest();
 
             //then
-            expect(element.find('#min-range-input').eq(0)[0].value).toBe('-50000');
-            expect(element.find('#max-range-input').eq(0)[0].value).toBe('20000');
+            expect(element.find('input').eq(0)[0].value).toBe('-50000');
+            expect(element.find('input').eq(1)[0].value).toBe('20000');
         });
 
         it('should init inputs with the provided filter values', function () {
@@ -180,8 +180,8 @@ describe('rangeSlider directive', function () {
             scope.$digest();
 
             //then
-            expect(document.getElementById('min-range-input').value).toBe('25');
-            expect(document.getElementById('max-range-input').value).toBe('35');
+            expect(element.find('input').eq(0)[0].value).toBe('25');
+            expect(element.find('input').eq(1)[0].value).toBe('35');
         });
 
         describe('events', function() {
@@ -200,7 +200,7 @@ describe('rangeSlider directive', function () {
                     };
                     scope.$digest();
 
-                    var minInput = element.find('#min-range-input').eq(0);
+                    var minInput = element.find('input').eq(0);
 
                     //when
                     var enterKeyUpEvent = new angular.element.Event('keyup');
@@ -227,7 +227,7 @@ describe('rangeSlider directive', function () {
                     };
                     scope.$digest();
 
-                    var minInput = element.find('#min-range-input').eq(0);
+                    var minInput = element.find('input').eq(0);
 
                     //when
                     var enterKeyUpEvent = new angular.element.Event('keyup');
@@ -251,7 +251,7 @@ describe('rangeSlider directive', function () {
                     };
                     scope.$digest();
 
-                    var minInput = element.find('#min-range-input').eq(0);
+                    var minInput = element.find('input').eq(0);
 
                     //when
                     var enterKeyUp = new angular.element.Event('keyup');
@@ -271,9 +271,10 @@ describe('rangeSlider directive', function () {
                     jasmine.clock().tick(100);
                     flushAllD3Transitions();
 
-                    var minInput = element.find('#min-range-input').eq(0);
+                    var minInput = element.find('input').eq(0);
                     ctrl.minMaxModel = {
-                        minModel:'kjhfkjfkl'
+                        minModel:'kjhfkjfkl',
+                        maxModel:'15'
                     };
 
                     //when
@@ -300,7 +301,7 @@ describe('rangeSlider directive', function () {
                     };
                     scope.$digest();
 
-                    var maxInput = element.find('#max-range-input').eq(0);
+                    var maxInput = element.find('input').eq(1);
 
                     //when
                     var tabKeyUpEvent = new angular.element.Event('keyup');
@@ -323,7 +324,7 @@ describe('rangeSlider directive', function () {
                         maxModel:'10'
                     };
                     scope.$digest();
-                    var maxInput = element.find('#max-range-input').eq(0);
+                    var maxInput = element.find('input').eq(1);
 
                     //when
                     var tabKeyUpEvent = new angular.element.Event('keyup');
@@ -346,7 +347,7 @@ describe('rangeSlider directive', function () {
                         maxModel:'8'
                     };
                     scope.$digest();
-                    var maxInput = element.find('#max-range-input').eq(0);
+                    var maxInput = element.find('input').eq(1);
 
                     //when
                     var tabKeyUpEvent = new angular.element.Event('keyup');
@@ -370,7 +371,7 @@ describe('rangeSlider directive', function () {
                     };
                     scope.$digest();
 
-                    var maxInput = element.find('#max-range-input').eq(0);
+                    var maxInput = element.find('input').eq(1);
 
                     //when
                     var tabKeyUpEvent = new angular.element.Event('keyup');
@@ -390,9 +391,10 @@ describe('rangeSlider directive', function () {
                     jasmine.clock().tick(100);
                     flushAllD3Transitions();
 
-                    var minInput = element.find('#min-range-input').eq(0);
+                    var minInput = element.find('input').eq(0);
                     ctrl.minMaxModel = {
-                        minModel:'kjhfkjfkl'
+                        minModel:'kjhfkjfkl',
+                        maxModel:'15'
                     };
 
                     //when
@@ -419,7 +421,7 @@ describe('rangeSlider directive', function () {
                     };
                     scope.$digest();
 
-                    var maxInput = element.find('#max-range-input').eq(0);
+                    var maxInput = element.find('input').eq(1);
 
                     //when
                     var blurEvent = new angular.element.Event('blur');
@@ -443,7 +445,7 @@ describe('rangeSlider directive', function () {
                     };
                     scope.$digest();
 
-                    var maxInput = element.find('#max-range-input').eq(0);
+                    var maxInput = element.find('input').eq(1);
 
                     //when
                     var blurEvent = new angular.element.Event('blur');
@@ -466,7 +468,7 @@ describe('rangeSlider directive', function () {
                         maxModel: '17'
                     };
                     scope.$digest();
-                    var maxInput = element.find('#max-range-input').eq(0);
+                    var maxInput = element.find('input').eq(1);
 
                     //when
                     var blurEvent = new angular.element.Event('blur');
@@ -491,8 +493,8 @@ describe('rangeSlider directive', function () {
                     };
                     scope.$digest();
 
-                    var maxInput = element.find('#max-range-input').eq(0);
-                    var minInput = element.find('#min-range-input').eq(0);
+                    var maxInput = element.find('input').eq(1);
+                    var minInput = element.find('input').eq(0);
 
                     //when
                     var tabKeyUpEvent = new angular.element.Event('keyup');
@@ -522,7 +524,7 @@ describe('rangeSlider directive', function () {
                     };
                     scope.$digest();
 
-                    var maxInput = element.find('#max-range-input').eq(0);
+                    var maxInput = element.find('input').eq(1);
 
                     //when
                     var tabKeyUpEvent = new angular.element.Event('keyup');
@@ -548,7 +550,7 @@ describe('rangeSlider directive', function () {
                     };
                     scope.$digest();
 
-                    var maxInput = element.find('#max-range-input').eq(0);
+                    var maxInput = element.find('input').eq(1);
 
                     //when
                     var tabKeyUpEvent = new angular.element.Event('keyup');
@@ -576,7 +578,7 @@ describe('rangeSlider directive', function () {
                 };
                 scope.$digest();
 
-                var minInput = element.find('#min-range-input').eq(0);
+                var minInput = element.find('input').eq(0);
 
                 //when
                 var keyUp = new angular.element.Event('keyup');
@@ -601,7 +603,7 @@ describe('rangeSlider directive', function () {
                 };
                 scope.$digest();
 
-                var minInput = element.find('#min-range-input').eq(0);
+                var minInput = element.find('input').eq(0);
                 var keyUp = new angular.element.Event('keyup');
                 minInput.trigger(keyUp);
                 scope.$digest();
@@ -634,7 +636,7 @@ describe('rangeSlider directive', function () {
                 };
                 scope.$digest();
 
-                var minInput = element.find('#min-range-input').eq(0);
+                var minInput = element.find('input').eq(0);
                 var keyUp = new angular.element.Event('keyup');
                 minInput.trigger(keyUp);
                 scope.$digest();

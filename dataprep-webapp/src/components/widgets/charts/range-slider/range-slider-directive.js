@@ -89,7 +89,7 @@
                         .domain([rangeLimits.min, rangeLimits.max])
                         .range([0, width]);
 
-                    var svg = d3.select('#range-slider-id').append('svg')
+                    var svg = d3.select('.range-slider-id').append('svg')
                         .attr('width', width + margin.left + margin.right)
                         .attr('height', height + margin.top + margin.bottom)
                         .attr('class', 'range-slider-cls')
@@ -147,7 +147,6 @@
                     ctrl.prepareInputFilter = function prepareInputFilter(){
                         if(!ctrl.areMinMaxNumbers()){
                             initInputValues();
-                            hideMsgErr();
                         }
                         else {
                             var enteredMin = +ctrl.minMaxModel.minModel;
@@ -282,7 +281,7 @@
                     function showMsgErr() {
                         ctrl.invalidNumber = true;
                         var minMaxStr = ctrl.minMaxModel.minModel + ctrl.minMaxModel.maxModel;
-                        ctrl.invalidNumberWithComma = ctrl.invalidNumber && ctrl.checkCommaExistence(minMaxStr);
+                        ctrl.invalidNumberWithComma = ctrl.checkCommaExistence(minMaxStr);
                     }
 
                     //hides the message Error
@@ -294,10 +293,8 @@
                     //Init min/max inputs values with existing filter values if defined, min/max otherwise
                     function initInputValues() {
                         hideMsgErr();
-                        $timeout(function(){
-                            ctrl.minMaxModel.minModel = ''+lastValues.input.min;
-                            ctrl.minMaxModel.maxModel = ''+lastValues.input.max;
-                        });
+                        ctrl.minMaxModel.minModel = ''+lastValues.input.min;
+                        ctrl.minMaxModel.maxModel = ''+lastValues.input.max;
 
                         filterToApply = [lastValues.input.min, lastValues.input.max];
                     }
@@ -315,7 +312,6 @@
                                         }
                                         else {
                                             initInputValues();
-                                            hideMsgErr();
                                         }
                                         break;
                                     case 27:
@@ -373,9 +369,9 @@
                             ctrl.showRangeInputs = false;
                             if (newRangeLimits.min !== newRangeLimits.max) {
                                 clearTimeout(renderTimeout);
+                                ctrl.showRangeInputs = true;
                                 renderTimeout = setTimeout(function(){
                                     renderRangerSlider();
-                                    ctrl.showRangeInputs = true;
                                 }, 100);
                             }
                         }

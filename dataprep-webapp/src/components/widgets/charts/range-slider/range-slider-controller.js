@@ -19,10 +19,7 @@
         vm.areMinMaxNumbers = function areMinMaxNumbers(){
             var isMinNumber = vm.toNumber(vm.minMaxModel.minModel);
             var isMaxNumber = vm.toNumber(vm.minMaxModel.maxModel);
-            if(isMinNumber === null || isMaxNumber === null){
-                return false;
-            }
-            return true;
+            return !(isMinNumber === null || isMaxNumber === null);
         };
 
         /**
@@ -33,7 +30,6 @@
          * @param {string} value The value to transform
          */
         vm.toNumber = function toNumber(value) {
-            value = value === undefined ? '' : value;
             value = value.trim();
             if (/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/.test(value)) {
                 return Number(value);
