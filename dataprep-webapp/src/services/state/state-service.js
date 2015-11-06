@@ -18,6 +18,7 @@
             setLookupVisibility: PlaygroundStateService.setLookupVisibility,
             setNameEditionMode: PlaygroundStateService.setNameEditionMode,
             updateColumnsStatistics: PlaygroundStateService.updateColumnsStatistics,
+            updateSelectedColumnsStatistics: PlaygroundStateService.updateSelectedColumnsStatistics,
 
             //playground - recipe
             hideRecipe: PlaygroundStateService.hideRecipe,

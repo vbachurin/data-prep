@@ -63,7 +63,7 @@
 						.attr('class', 'horizontal-barchart-cls d3-tip')
 						.offset([-10, 0])
 						.html(function(d) {
-							return 	'<strong>'+ scope.keyLabel +':</strong> <span style="color:yellow">' + d[xField] + '</span>'+
+							return 	'<strong>'+ scope.keyLabel +':</strong> <span style="color:yellow">' + d.filteredValue + ' / ' + d[xField] + '</span>'+
 									'<br/>'+
 									'<br/>'+
 									'<strong>Record:</strong> <span style="color:yellow">'+ d[yField] + '</span>';
@@ -100,10 +100,24 @@
                         });
 
 					bar.append('rect')
-						.attr('width', x(0))
 						.attr('height', y.rangeBand())
 						.transition().delay(function (d,i){ return i * 30;})
 						.attr('width', function(d) { return x(d[xField]);});
+
+                    var filterBar = svg.selectAll('g.filterBar')
+                        .data(statData)
+                        .enter().append('g')
+                        .attr('class', 'filterBar')
+                        .attr('transform', function (d) {
+                            return 'translate(0,' + y(d[yField]) +')';
+                        });
+
+                    filterBar.append('rect')
+                        .attr('height', y.rangeBand())
+                        .transition().delay(function (d,i){ return i * 30;})
+                        .attr('width', function(d) {
+                            return x(d.filteredValue);
+                        });
 
                     svg.append('g')
                         .attr('class', 'x axis')
@@ -115,7 +129,7 @@
                         .attr('class', 'y axis')
                         .call(yAxis);
 
-					bar.append('foreignObject')
+                    filterBar.append('foreignObject')
 						.attr('width', w)
 						.attr('height', y.rangeBand())
 						.append('xhtml:div')

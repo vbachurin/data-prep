@@ -10,7 +10,7 @@
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.playground.service:PreviewService
      */
-    function DatagridExternalService($timeout, StatisticsService, SuggestionService, PreviewService) {
+    function DatagridExternalService($timeout, state, StatisticsService, SuggestionService, PreviewService, StateService) {
         var grid;
         var suggestionTimeout;
         var scrollTimeout;
@@ -58,6 +58,12 @@
                         SuggestionService.selectTab(lastSelectedTab);
                     }
                     if (columnHasChanged) {
+
+                        var dataGridFilteredRecords = [];
+                        for(var i=0; i <state.playground.grid.dataView.getLength(); i++) {
+                            dataGridFilteredRecords.push(state.playground.grid.dataView.getItem(i));
+                        }
+                        StateService.updateSelectedColumnsStatistics(dataGridFilteredRecords);
                         StatisticsService.updateStatistics();
                         SuggestionService.setColumn(lastSelectedColumn);
                     }

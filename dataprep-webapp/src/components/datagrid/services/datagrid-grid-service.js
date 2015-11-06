@@ -14,7 +14,7 @@
      * @requires data-prep.datagrid.service:DatagridTooltipService
      */
     function DatagridGridService(StateService, state, DatagridService, DatagridStyleService, DatagridColumnService,
-                                 DatagridSizeService, DatagridExternalService, DatagridTooltipService) {
+                                 DatagridSizeService, DatagridExternalService, DatagridTooltipService, StatisticsService) {
         var grid = null;
         var gridServices = [
             DatagridColumnService,
@@ -125,6 +125,15 @@
 
             //init other services
             initGridServices();
+
+            state.playground.grid.dataView.onRowCountChanged.subscribe(function () {
+                var dataGridFilteredRecords = [];
+                for(var i=0; i <state.playground.grid.dataView.getLength(); i++) {
+                    dataGridFilteredRecords.push(state.playground.grid.dataView.getItem(i));
+                }
+                StateService.updateSelectedColumnsStatistics(dataGridFilteredRecords);
+                StatisticsService.updateStatistics();
+            });
 
             return grid;
         }
