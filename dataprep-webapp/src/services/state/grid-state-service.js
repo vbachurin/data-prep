@@ -15,7 +15,9 @@
             setColumnFocus: setColumnFocus,
             setData: setData,
             setFilter: setFilter,
-            setGridSelection: setGridSelection
+            setGridSelection: setGridSelection,
+            updateSelectedColumnsStatistics: updateSelectedColumnsStatistics
+
         };
 
         /**
@@ -29,6 +31,16 @@
             gridState.nbLines = gridState.dataView.getLength();
             gridState.nbTotalLines = data.records.length;
             gridState.displayLinesPercentage = (gridState.nbLines * 100 / gridState.nbTotalLines).toFixed(0);
+        }
+
+
+        function updateSelectedColumnsStatistics(filteredRecords) {
+            if(gridState.selectedColumn) {
+                var filteredRecordsValues = _.pluck(filteredRecords, gridState.selectedColumn.id);
+                _.forEach(gridState.selectedColumn.statistics.frequencyTable, function(frequency) {
+                    frequency.filteredValue = _.filter(filteredRecordsValues, function(value){ return value === frequency.data; }).length;
+                });
+            }
         }
 
         /**
@@ -96,6 +108,11 @@
 
             updateLinesCount(data);
             updateSelectedColumn(data);
+            var dataGridFilteredRecords = [];
+            for(var i=0; i <gridState.dataView.getLength(); i++) {
+                dataGridFilteredRecords.push(gridState.dataView.getItem(i));
+            }
+            updateSelectedColumnsStatistics(dataGridFilteredRecords);
         }
 
         /**

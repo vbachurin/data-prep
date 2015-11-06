@@ -31,6 +31,7 @@
             //datagrid
             setColumnFocus: GridStateService.setColumnFocus,
             setGridSelection: GridStateService.setGridSelection,
+            updateSelectedColumnsStatistics: GridStateService.updateSelectedColumnsStatistics,
 
             //filters
             addGridFilter: addGridFilter,
