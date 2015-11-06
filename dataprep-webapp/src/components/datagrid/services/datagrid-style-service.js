@@ -9,7 +9,7 @@
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.utils.service:TextFormatService
      */
-    function DatagridStyleService(DatagridService, ConverterService, TextFormatService) {
+    function DatagridStyleService(DatagridService, state, ConverterService, TextFormatService) {
         var grid;
         var highlightCellTimeout;
         var columnClassTimeout;
@@ -19,7 +19,8 @@
             resetCellStyles: resetCellStyles,
             updateColumnClass: updateColumnClass,
             columnFormatter: columnFormatter,
-            getColumnPreviewStyle: getColumnPreviewStyle
+            getColumnPreviewStyle: getColumnPreviewStyle,
+            scheduleHighlightCellsContaining: scheduleHighlightCellsContaining
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -134,7 +135,7 @@
                     }
                 }
 
-                return returnStr + (isInvalid(returnStr) ? '<div title="Invalid Value" class="red-rect"></div>' : '<div class="invisible-rect"></div>');
+                return returnStr + (isInvalid(value) ? '<div title="Invalid Value" class="red-rect"></div>' : '<div class="invisible-rect"></div>');
             };
         }
 
@@ -191,13 +192,20 @@
          */
         function scheduleHighlightCellsContaining(rowIndex, colIndex) {
             clearTimeout(highlightCellTimeout);
-            highlightCellTimeout = setTimeout(function() {
-                var column = grid.getColumns()[colIndex];
-                var content = DatagridService.dataView.getItem(rowIndex)[column.id];
 
-                var sameContentConfig = DatagridService.getSameContentConfig(column.id, content, 'highlight');
-                grid.setCellCssStyles('highlight', sameContentConfig);
-            }, 200);
+            var row = state.playground.grid.dataView.getItem(rowIndex);
+            if(row) {
+                highlightCellTimeout = setTimeout(function() {
+                    var column = grid.getColumns()[colIndex];
+                    var content = row[column.id];
+
+                    var sameContentConfig = DatagridService.getSameContentConfig(column.id, content, 'highlight');
+                    grid.setCellCssStyles('highlight', sameContentConfig);
+                }, 200);
+            }
+            else {
+                grid.setCellCssStyles('highlight', {});
+            }
         }
 
         /**

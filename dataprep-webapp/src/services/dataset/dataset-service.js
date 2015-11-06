@@ -8,34 +8,41 @@
      * @requires data-prep.services.dataset.service:DatasetListService
      * @requires data-prep.services.dataset.service:DatasetRestService
      * @requires data-prep.services.preparation.service:PreparationListService
+     * @requires data-prep.services.utils.service:StorageService
      */
-    function DatasetService(DatasetListService, DatasetRestService, PreparationListService) {
+    function DatasetService(DatasetListService, DatasetRestService, PreparationListService, StorageService) {
         return {
+            //lifecycle
             import: importRemoteDataset,
             create: create,
             update: update,
             delete: deleteDataset,
+            clone: cloneDataset,
 
-            createDatasetInfo: createDatasetInfo,
+            //metadata actions
             updateColumn: DatasetRestService.updateColumn,
-
-            datasetsList: datasetsList,
-            getDatasets: getDatasets,
-            refreshDatasets: refreshDatasets,
-            getDatasetByName: getDatasetByName,
-            getDatasetById: getDatasetById,
-            getContent: DatasetRestService.getContent,
-            getUniqueName: getUniqueName,
-
             processCertification: processCertification,
             toggleFavorite: toggleFavorite,
 
+            //content
+            getContent: DatasetRestService.getContent,
+
+            //metadata getters
+            datasetsList: datasetsList,         //cached datasets list
+            getDatasets: getDatasets,           //promise that resolves datasets list
+            refreshDatasets: refreshDatasets,   //force refresh datasets list
+            getDatasetById: getDatasetById,     //retrieve dataset by id
+            getDatasetByName: getDatasetByName, //retrieve dataset by name
             getSheetPreview: getSheetPreview,
-            setDatasetSheet: setDatasetSheet
+            setDatasetSheet: setDatasetSheet,
+
+            //utils
+            getUniqueName: getUniqueName,
+            createDatasetInfo: createDatasetInfo
         };
 
         //--------------------------------------------------------------------------------------------------------------
-        //---------------------------------------------------Dataset----------------------------------------------------
+        //---------------------------------------------------Lifecycle--------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
@@ -47,7 +54,11 @@
          */
         function deleteDataset (dataset) {
             return DatasetListService.delete(dataset)
-                .then(consolidatePreparationsAndDatasets);
+                .then(consolidatePreparationsAndDatasets)
+                .then(function(response) {
+                    StorageService.removeAllAggregations(dataset.id);
+                    return response;
+                });
         }
 
         /**
@@ -88,6 +99,21 @@
          */
         function update(dataset) {
             var promise = DatasetListService.update(dataset);
+            promise.then(consolidatePreparationsAndDatasets);
+            return promise;
+        }
+
+        /**
+         * @ngdoc method
+         * @name clone
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {object} dataset The dataset to clone
+         * @param {String} the new name otherwise null as using default name
+         * @description Clone a dataset. It just call {@link data-prep.services.dataset.service:DatasetListService DatasetListService} create function
+         * @returns {promise} The pending CREATE promise
+         */
+        function cloneDataset(dataset,name) {
+            var promise = DatasetListService.clone(dataset,name);
             promise.then(consolidatePreparationsAndDatasets);
             return promise;
         }

@@ -5,7 +5,10 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -13,6 +16,7 @@ import org.talend.dataprep.api.dataset.Quality;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;
+import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 import org.talend.dataquality.semantic.recognizer.CategoryFrequency;
 import org.talend.dataquality.semantic.statistics.SemanticType;
 import org.talend.dataquality.statistics.cardinality.CardinalityStatistics;
@@ -21,14 +25,15 @@ import org.talend.dataquality.statistics.frequency.PatternFrequencyStatistics;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramStatistics;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileStatistics;
 import org.talend.dataquality.statistics.numeric.summary.SummaryStatistics;
-import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.dataquality.statistics.text.TextLengthStatistics;
 import org.talend.datascience.common.inference.Analyzers;
+import org.talend.datascience.common.inference.ValueQualityStatistics;
 import org.talend.datascience.common.inference.type.DataType;
 
 @Component
 public class StatisticsAdapter {
 
+    public static final Logger LOGGER = LoggerFactory.getLogger(StatisticsAdapter.class);
     /**
      * Defines the minimum threshold for a semantic type suggestion. Defaults to 40% if not defined.
      */
@@ -36,10 +41,6 @@ public class StatisticsAdapter {
     private int semanticThreshold;
 
     public void adapt(List<ColumnMetadata> columns, List<Analyzers.Result> results) {
-        adapt(columns, results, Collections.<String> emptySet());
-    }
-
-    public void adapt(List<ColumnMetadata> columns, List<Analyzers.Result> results, Set<String> readOnlyColumns) {
         final Iterator<ColumnMetadata> columnIterator = columns.iterator();
         for (Analyzers.Result result : results) {
             final ColumnMetadata currentColumn = columnIterator.next();
@@ -47,8 +48,7 @@ public class StatisticsAdapter {
             final boolean isString = Type.STRING.isAssignableFrom(Type.get(currentColumn.getType()));
             final Statistics statistics = currentColumn.getStatistics();
             // Data type
-            if (result.exist(DataType.class) && !currentColumn.isTypeForced()
-                    && !readOnlyColumns.contains(currentColumn.getId())) {
+            if (result.exist(DataType.class) && !currentColumn.isTypeForced()) {
                 final DataType dataType = result.get(DataType.class);
                 final Map<DataType.Type, Long> frequencies = dataType.getTypeFrequencies();
                 frequencies.remove(DataType.Type.EMPTY); // TDP-226: Don't take into account EMPTY values.
@@ -73,32 +73,46 @@ public class StatisticsAdapter {
             if (result.exist(ValueQualityStatistics.class)) {
                 final Quality quality = currentColumn.getQuality();
                 final ValueQualityStatistics valueQualityStatistics = result.get(ValueQualityStatistics.class);
+                final int valid = (int) valueQualityStatistics.getValidCount() + (int) valueQualityStatistics.getUnknownCount();
                 // Set in column quality...
                 quality.setEmpty((int) valueQualityStatistics.getEmptyCount());
-                quality.setValid((int) valueQualityStatistics.getValidCount());
+                quality.setValid(valid);
                 quality.setInvalid((int) valueQualityStatistics.getInvalidCount());
                 quality.setInvalidValues(valueQualityStatistics.getInvalidValues());
                 // ... and statistics
                 statistics.setCount(valueQualityStatistics.getCount());
                 statistics.setEmpty(valueQualityStatistics.getEmptyCount());
                 statistics.setInvalid(valueQualityStatistics.getInvalidCount());
-                statistics.setValid(valueQualityStatistics.getValidCount());
+                statistics.setValid(valid);
             }
             // Semantic types
-            if (result.exist(SemanticType.class) && !currentColumn.isDomainForced()
-                    && !readOnlyColumns.contains(currentColumn.getId())) {
+            if (result.exist(SemanticType.class) && !currentColumn.isDomainForced()) {
                 final SemanticType semanticType = result.get(SemanticType.class);
                 final Map<CategoryFrequency, Long> foundSemanticTypes = semanticType.getCategoryToCount();
                 // TDP-471: Don't pick semantic type if lower than a threshold.
                 final Optional<Map.Entry<CategoryFrequency, Long>> entry = foundSemanticTypes.entrySet().stream()
                         .filter(e -> !e.getKey().getCategoryName().isEmpty())
-                        .max((o1, o2) -> o1.getValue().intValue() - o2.getValue().intValue());
+                        .max((o1, o2) -> ((int) (o1.getKey().getFrequency() - o2.getKey().getFrequency())));
                 if (entry.isPresent()) {
-                    final long percentage = (entry.get().getValue() * 100) / statistics.getCount();
+                    // TODO (TDP-734) Take into account limit of the semantic analyzer.
+                    final float percentage = entry.get().getKey().getFrequency();
                     if (percentage > semanticThreshold) {
-                        currentColumn.setDomain(semanticType.getSuggestedCategory());
-                        currentColumn.setDomainLabel(TypeUtils.getDomainLabel(semanticType));
-                        currentColumn.setDomainFrequency(entry.get().getValue());
+                        final CategoryFrequency key = entry.get().getKey();
+                        final String categoryId = key.getCategoryId();
+                        try {
+                            final SemanticCategoryEnum category = SemanticCategoryEnum.valueOf(categoryId);
+                            currentColumn.setDomain(category.getId());
+                            currentColumn.setDomainLabel(category.getDisplayName());
+                            currentColumn.setDomainFrequency(percentage);
+                        } catch (IllegalArgumentException e) {
+                            LOGGER.error("Could not find {} in known categories.", categoryId);
+                        }
+                    } else {
+                        // Ensure the domain is cleared if percentage is lower than threshold (earlier analysis - e.g.
+                        // on the first 20 lines - may be over threshold, but full scan may decide otherwise.
+                        currentColumn.setDomain(StringUtils.EMPTY);
+                        currentColumn.setDomainLabel(StringUtils.EMPTY);
+                        currentColumn.setDomainFrequency(0);
                     }
                 }
                 // Remembers all suggested semantic categories
@@ -108,8 +122,11 @@ public class StatisticsAdapter {
                     for (Map.Entry<CategoryFrequency, Long> current : altCategoryCounts.entrySet()) {
                         // Find category display name
                         final String id = current.getKey().getCategoryId();
-                        final String categoryDisplayName = TypeUtils.getDomainLabel(id);
-                        semanticDomains.add(new SemanticDomain(id, categoryDisplayName, current.getKey().getFrequency()));
+                        if (!StringUtils.isEmpty(id)) {
+                            // Takes only actual semantic domains (unknown = "").
+                            final String categoryDisplayName = TypeUtils.getDomainLabel(id);
+                            semanticDomains.add(new SemanticDomain(id, categoryDisplayName, current.getKey().getFrequency()));
+                        }
                     }
                     currentColumn.setSemanticDomains(semanticDomains);
                 }
@@ -195,5 +212,16 @@ public class StatisticsAdapter {
                 textLengthSummary.setMaximalLength(textLengthStatistics.getMaxTextLength());
             }
         }
+    }
+
+    private static long normalize(Statistics statistics, Number value) {
+        long percentage;
+        final long count = statistics.getCount();
+        if (count > 0) {
+            percentage = (value.longValue() * 100) / count;
+        } else {
+            percentage = value.longValue();
+        }
+        return percentage;
     }
 }

@@ -3,7 +3,7 @@
     <parent>
         <artifactId>dataprep-backend</artifactId>
         <groupId>org.talend.dataprep</groupId>
-        <version>1.0.m9-SNAPSHOT</version>
+        <version>1.0.m10-SNAPSHOT</version>
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -11,6 +11,10 @@
     <packaging>jar</packaging>
     <name>dataprep-api</name>
     <dependencies>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jetty</artifactId>
@@ -23,10 +27,6 @@
         <dependency>
             <groupId>io.reactivex</groupId>
             <artifactId>rxjava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.talend.dataprep</groupId>
-            <artifactId>dataprep-metrics</artifactId>
         </dependency>
         <dependency>
             <groupId>org.talend.dataprep</groupId>
@@ -70,15 +70,7 @@
         <!-- SPRING DEPENDENCIES-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-rest</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <!-- UNIT TEST DEPENDENCIES -->
         <dependency>

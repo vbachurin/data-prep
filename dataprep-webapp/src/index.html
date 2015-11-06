@@ -69,6 +69,7 @@
         <script src="../bower_components/x-slickgrid/slick.editors.js"></script>
         <script src="../bower_components/x-slickgrid/slick.grid.js"></script>
         <script src="../bower_components/bg-splitter/js/splitter.js"></script>
+        <script src="../bower_components/angular-translate-once/src/translate-once.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
 
@@ -76,14 +77,13 @@
         <!-- inject:js -->
         <script src="services/utils/utils-module.js"></script>
         <script src="services/utils/text-format/text-format-service.js"></script>
+        <script src="services/utils/storage/storage-service.js"></script>
         <script src="services/utils/numbers-validity/numbers-validity-service.js"></script>
         <script src="services/utils/moment/moment-filter.js"></script>
         <script src="services/utils/message/message-service.js"></script>
         <script src="services/utils/converter/converter-service.js"></script>
         <script src="services/utils/config/utils-rest-urls-service.js"></script>
         <script src="services/utils/click/disable-right-click-directive.js"></script>
-        <script src="services/upload-workflow/upload-workflow-module.js"></script>
-        <script src="services/upload-workflow/upload-workflow-service.js"></script>
         <script src="services/transformation/transformation-module.js"></script>
         <script src="services/transformation/transformation-service.js"></script>
         <script src="services/transformation/suggestion/suggestion-service.js"></script>
@@ -98,6 +98,9 @@
         <script src="services/state/state-service.js"></script>
         <script src="services/state/recipe-state-service.js"></script>
         <script src="services/state/playground-state-service.js"></script>
+        <script src="services/state/grid-state-service.js"></script>
+        <script src="services/state/filter-state-service.js"></script>
+        <script src="services/state/dataset-state-service.js"></script>
         <script src="services/rest/rest-module.js"></script>
         <script src="services/rest/rest-error-message-interceptor-factory.js"></script>
         <script src="services/recipe/recipe-module.js"></script>
@@ -124,6 +127,9 @@
         <script src="services/export/export-module.js"></script>
         <script src="services/export/export-service.js"></script>
         <script src="services/export/export-rest-service.js"></script>
+        <script src="services/dataset-workflow/dataset-workflow-module.js"></script>
+        <script src="services/dataset-workflow/upload-workflow-service.js"></script>
+        <script src="services/dataset-workflow/update-workflow-service.js"></script>
         <script src="services/dataset/dataset-module.js"></script>
         <script src="services/dataset/rest/dataset-rest-service.js"></script>
         <script src="services/dataset/preview/dataset-sheet-preview-service.js"></script>
@@ -141,6 +147,10 @@
         <script src="components/widgets/navbar/widget-navbar-directive.js"></script>
         <script src="components/widgets/modal/widget-modal-directive.js"></script>
         <script src="components/widgets/loading/widget-loading-directive.js"></script>
+        <script src="components/widgets/input/search-input-directive.js"></script>
+        <script src="components/widgets/file-selector/file-selector-directive.js"></script>
+        <script src="components/widgets/editable-text/widget-editable-text-directive.js"></script>
+        <script src="components/widgets/editable-text/widget-editable-text-controller.js"></script>
         <script src="components/widgets/editable-select/widget-editable-select-directive.js"></script>
         <script src="components/widgets/dropdown/widget-dropdown-directive.js"></script>
         <script src="components/widgets/datetimepicker/widget-datetimepicker-directive.js"></script>
@@ -163,25 +173,27 @@
         <script src="components/validation/is-type-validation-directive.js"></script>
         <script src="components/validation/is-datetime-validation-directive.js"></script>
         <script src="components/validation/can-be-blank-validation-directive.js"></script>
-        <script src="components/transformation/params/transformation-params-module.js"></script>
-        <script src="components/transformation/params/transformation-params-directive.js"></script>
-        <script src="components/transformation/params/transformation-params-controller.js"></script>
-        <script src="components/transformation/params/simple/transformation-simple-param-directive.js"></script>
-        <script src="components/transformation/params/simple/transformation-simple-param-controller.js"></script>
-        <script src="components/transformation/params/date/transformation-date-param-directive.js"></script>
-        <script src="components/transformation/params/date/transformation-date-param-controller.js"></script>
-        <script src="components/transformation/params/column/transformation-column-param-directive.js"></script>
-        <script src="components/transformation/params/column/transformation-column-param-controller.js"></script>
-        <script src="components/transformation/params/cluster/transformation-cluster-params-directive.js"></script>
-        <script src="components/transformation/params/cluster/transformation-cluster-params-controller.js"></script>
-        <script src="components/transformation/params/choice/transformation-choice-param-directive.js"></script>
-        <script src="components/transformation/params/choice/transformation-choice-param-controller.js"></script>
         <script src="components/transformation/menu/type/type-transformation-menu-module.js"></script>
         <script src="components/transformation/menu/type/type-transformation-menu-directive.js"></script>
         <script src="components/transformation/menu/type/type-transformation-menu-controller.js"></script>
         <script src="components/transformation/menu/transformation-menu-module.js"></script>
         <script src="components/transformation/menu/transformation-menu-directive.js"></script>
         <script src="components/transformation/menu/transformation-menu-controller.js"></script>
+        <script src="components/transformation/form/transformation-form-module.js"></script>
+        <script src="components/transformation/form/transformation-form-directive.js"></script>
+        <script src="components/transformation/form/transformation-form-controller.js"></script>
+        <script src="components/transformation/form/simple/transformation-simple-param-directive.js"></script>
+        <script src="components/transformation/form/simple/transformation-simple-param-controller.js"></script>
+        <script src="components/transformation/form/params/transformation-params-directive.js"></script>
+        <script src="components/transformation/form/params/transformation-params-controller.js"></script>
+        <script src="components/transformation/form/date/transformation-date-param-directive.js"></script>
+        <script src="components/transformation/form/date/transformation-date-param-controller.js"></script>
+        <script src="components/transformation/form/column/transformation-column-param-directive.js"></script>
+        <script src="components/transformation/form/column/transformation-column-param-controller.js"></script>
+        <script src="components/transformation/form/cluster/transformation-cluster-params-directive.js"></script>
+        <script src="components/transformation/form/cluster/transformation-cluster-params-controller.js"></script>
+        <script src="components/transformation/form/choice/transformation-choice-param-directive.js"></script>
+        <script src="components/transformation/form/choice/transformation-choice-param-controller.js"></script>
         <script src="components/suggestions-stats/suggestions-stats-module.js"></script>
         <script src="components/suggestions-stats/suggestions-stats-directive.js"></script>
         <script src="components/suggestions-stats/suggestions-stats-controller.js"></script>
@@ -219,8 +231,13 @@
         <script src="components/filter/search/filter-search-module.js"></script>
         <script src="components/filter/search/filter-search-directive.js"></script>
         <script src="components/filter/search/filter-search-controller.js"></script>
+        <script src="components/filter/monitor/filter-monitor-module.js"></script>
+        <script src="components/filter/monitor/filter-monitor-directive.js"></script>
         <script src="components/filter/list/filter-list-module.js"></script>
         <script src="components/filter/list/filter-list-directive.js"></script>
+        <script src="components/filter/list/filter-list-controller.js"></script>
+        <script src="components/filter/bar/filter-bar-module.js"></script>
+        <script src="components/filter/bar/filter-bar-directive.js"></script>
         <script src="components/export/export-module.js"></script>
         <script src="components/export/export-directive.js"></script>
         <script src="components/export/export-controller.js"></script>

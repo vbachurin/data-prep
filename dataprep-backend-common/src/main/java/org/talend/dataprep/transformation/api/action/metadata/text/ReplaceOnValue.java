@@ -5,6 +5,7 @@ import static org.talend.dataprep.api.type.Type.STRING;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -14,7 +15,6 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.CellAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
@@ -22,7 +22,7 @@ import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 
 @Component(ReplaceOnValue.ACTION_BEAN_PREFIX + ReplaceOnValue.REPLACE_ON_VALUE_ACTION_NAME)
-public class ReplaceOnValue extends AbstractActionMetadata implements ColumnAction, CellAction {
+public class ReplaceOnValue extends ActionMetadata implements ColumnAction, CellAction {
 
     /**
      * The action name.
@@ -38,6 +38,11 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
      * Replace Value
      */
     public static final String REPLACE_VALUE_PARAMETER = "replace_value"; //$NON-NLS-1$
+
+    /**
+     * Scope Value
+     */
+    public static final String REPLACE_ENTIRE_CELL_PARAMETER = "replace_entire_cell"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getName()
@@ -63,6 +68,7 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
         final List<Parameter> parameters = super.getParameters();
         parameters.add(new Parameter(CELL_VALUE_PARAMETER, ParameterType.STRING, EMPTY));
         parameters.add(new Parameter(REPLACE_VALUE_PARAMETER, ParameterType.STRING, EMPTY));
+        parameters.add(new Parameter(REPLACE_ENTIRE_CELL_PARAMETER, ParameterType.BOOLEAN, "false"));
         return parameters;
     }
 
@@ -82,17 +88,38 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
             return;
         }
 
-        final String toMatch = parameters.get(CELL_VALUE_PARAMETER);
+        final String newValue = computeNewValue(value, //
+                parameters.get(CELL_VALUE_PARAMETER), //
+                parameters.get(REPLACE_VALUE_PARAMETER), //
+                new Boolean(parameters.get(REPLACE_ENTIRE_CELL_PARAMETER)));
+        row.set(columnId, newValue);
+    }
+
+    protected String computeNewValue(String originalValue, String regexp, String replacement, boolean replaceEntireCell) {
+        if (originalValue == null) {
+            return originalValue;
+        }
 
         try {
-            Pattern p = Pattern.compile(toMatch);
+            if (replaceEntireCell) {
+                regexp = ".*" + regexp + ".*";
+            }
 
-            if (value != null && p.matcher(value.trim()).matches()) {
-                final String toReplace = parameters.get(REPLACE_VALUE_PARAMETER);
-                row.set(columnId, toReplace);
+            Pattern p = Pattern.compile(regexp);
+            final Matcher matcher = p.matcher(originalValue);
+
+            if (replaceEntireCell) {
+                if (matcher.matches()) {
+                    return replacement;
+                } else {
+                    return originalValue;
+                }
+            } else {
+                return matcher.replaceAll(replacement);
             }
         } catch (PatternSyntaxException e) {
             // In case the pattern is not valid, consider that the value does not match: nothing to do.
+            return originalValue;
         }
     }
 

@@ -41,14 +41,17 @@
 
         return service;
 
+
+
         /**
          * @ngdoc method
          * @name setColumn
          * @methodOf data-prep.services.transformation.service:SuggestionService
          * @param {object} column The new selected column
-         * @description Set the selected column and init its suggested transformations
+         * @description Set the selected column and init its suggested transformations and reset action search
          */
         function setColumn(column) {
+
             if (column === service.currentColumn) {
                 return;
             }

@@ -1,17 +1,11 @@
-<div class="filter-list">
-    <ul>
-        <li>{{::'FILTER' | translate}}{{:: 'COLON' | translate}}</li>
-        <li>
-            <filter-search></filter-search>
-        </li>
-        <li ng-repeat="filter in filterCtrl.filterService.filters">
-            <talend-badge text="{{filter.colName}}"
-                          obj="filter"
-                          on-change="filterCtrl.filterService.updateFilter(obj, newValue)"
-                          on-close="filterCtrl.filterService.removeFilter(obj)"
-                          editable="filter.editable"
-                          type="filter.type">
-            </talend-badge>
-        </li>
-    </ul>
-</div>
+<ul id="filter-list">
+    <li ng-repeat="filter in filterCtrl.filters track by $index">
+        <talend-badge text="{{filter.colName}}"
+                      obj="filter"
+                      on-change="filterCtrl.changeFilter(obj, newValue)"
+                      on-close="filterCtrl.removeFilter(obj)"
+                      editable="filter.editable"
+                      type="filter.type">
+        </talend-badge>
+    </li>
+</ul>

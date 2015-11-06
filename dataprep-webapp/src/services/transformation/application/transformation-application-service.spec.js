@@ -5,12 +5,24 @@ describe('Transformation Application Service', function () {
     var stateMock;
 
     beforeEach(module('data-prep.services.transformation', function ($provide) {
-        stateMock = {playground: {}};
+        stateMock = {playground: {grid: {}}};
+        stateMock.playground.filter = {
+            applyTransformationOnFilters: true,
+            gridFilters: [88]
+        };
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function ($q, PlaygroundService) {
+    beforeEach(inject(function ($q, PlaygroundService, FilterService) {
         spyOn(PlaygroundService, 'appendStep').and.returnValue();
+        spyOn(FilterService, 'convertFiltersArrayToTreeFormat').and.returnValue({
+            filter:{
+                eq:{
+                    field:'0001',
+                    value:'john'
+                }
+            }
+        });
     }));
 
     describe('Append Step', function () {
@@ -19,7 +31,8 @@ describe('Transformation Application Service', function () {
             var transformation = {name: 'tolowercase'};
             var scope = 'column';
             var params = {param: 'value'};
-            stateMock.playground.column = {id: '0001', name: 'firstname'};
+            stateMock.playground.grid.selectedColumn = {id: '0001', name: 'firstname'};
+            stateMock.playground.filter.applyTransformationOnFilters = false;
 
             //when
             TransformationApplicationService.append(transformation, scope, params);
@@ -34,12 +47,36 @@ describe('Transformation Application Service', function () {
             expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
         }));
 
-        it('should create an appen closure', inject(function (TransformationApplicationService, PlaygroundService) {
+        it('should call appendStep without param', inject(function (TransformationApplicationService, PlaygroundService) {
+            //given
+            var transformation = {name: 'tolowercase'};
+            var scope = 'column';
+            stateMock.playground.grid.selectedColumn = {id: '0001', name: 'firstname'};
+
+            //when
+            TransformationApplicationService.append(transformation, scope);
+
+            //then
+            var expectedParams = {
+                scope: 'column',
+                column_id: '0001',
+                column_name: 'firstname',
+                filter: {
+                    eq:{
+                        field:'0001',
+                        value:'john'
+                    }
+                }
+            };
+            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
+        }));
+
+        it('should create an append closure', inject(function (TransformationApplicationService, PlaygroundService) {
             //given
             var transformation = {name: 'tolowercase'};
             var scope = 'column';
             var params = {param: 'value'};
-            stateMock.playground.column = {id: '0001', name: 'firstname'};
+            stateMock.playground.grid.selectedColumn = {id: '0001', name: 'firstname'};
 
             //when
             var closure = TransformationApplicationService.appendClosure(transformation, scope);
@@ -50,7 +87,13 @@ describe('Transformation Application Service', function () {
                 param: 'value',
                 scope: 'column',
                 column_id: '0001',
-                column_name: 'firstname'
+                column_name: 'firstname',
+                filter: {
+                    eq:{
+                        field:'0001',
+                        value:'john'
+                    }
+                }
             };
             expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
         }));

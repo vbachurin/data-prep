@@ -16,6 +16,7 @@ import org.talend.dataprep.api.type.Type;
  * A DataSetRow is a row of a dataset. Values in data set row are <b>alphabetically</b> ordered by name.
  */
 public class DataSetRow implements Cloneable {
+
     public static final String TDP_ID = "tdpId";
 
     /**
@@ -71,9 +72,13 @@ public class DataSetRow implements Cloneable {
         return rowMetadata;
     }
 
+    public void setRowMetadata(RowMetadata rowMetadata) {
+        this.rowMetadata = rowMetadata;
+    }
+
     /**
      * Set an entry in the dataset row
-     * 
+     *
      * @param name - the key
      * @param value - the value
      */
@@ -84,7 +89,7 @@ public class DataSetRow implements Cloneable {
 
     /**
      * Get the value associated with the provided key
-     * 
+     *
      * @param id the column id.
      * @return - the value as string
      */
@@ -186,7 +191,7 @@ public class DataSetRow implements Cloneable {
 
     public Map<String, Object> valuesWithId() {
         final Map<String, Object> temp = values();
-        if(getTdpId() != null) {
+        if (getTdpId() != null) {
             temp.put(TDP_ID, getTdpId());
         }
         return temp;
@@ -252,8 +257,9 @@ public class DataSetRow implements Cloneable {
     }
 
     /**
-     * Order values of this data set row according to <code>columns</code>. This method clones the current record, so
-     * no need to call {@link #clone()}.
+     * Order values of this data set row according to <code>columns</code>. This method clones the current record, so no
+     * need to call {@link #clone()}.
+     *
      * @param columns The columns to be used to order values.
      * @return A new data set row for method with values ordered following <code>columns</code>.
      */
@@ -264,7 +270,7 @@ public class DataSetRow implements Cloneable {
         if (columns.isEmpty()) {
             return clone();
         }
-        if (columns.size() != values.size()) {
+        if (columns.size() < values.size()) {
             throw new IllegalArgumentException("Expected " + values.size() + " columns but got " + columns.size());
         }
 
@@ -278,7 +284,9 @@ public class DataSetRow implements Cloneable {
 
     /**
      * Returns the current row as an array of Strings.
-     * @param filters An optional set of {@link Predicate filters} to be used to filter values. See {@link #SKIP_TDP_ID} for example.
+     *
+     * @param filters An optional set of {@link Predicate filters} to be used to filter values. See {@link #SKIP_TDP_ID}
+     * for example.
      * @return The current row as array of String eventually with filtered out columns depending on filter.
      */
     @SafeVarargs
@@ -303,7 +311,148 @@ public class DataSetRow implements Cloneable {
         this.tdpId = tdpId;
     }
 
-    public void setRowMetadata(RowMetadata rowMetadata) {
-        this.rowMetadata = rowMetadata;
+    /**
+     * @return <code>true</code> if row has no value / or / only contains empty strings / or / null strings.
+     * <code>false</code> otherwise.
+     */
+    public boolean isEmpty() {
+        return values.isEmpty() || values.values().stream().filter(s -> !StringUtils.isEmpty(s)).count() == 0;
+    }
+
+    /**
+     * @return A {@link DataSetRow} as 'unmodifiable': all previously set values cannot change (changes would be
+     * silently ignored), setting a new column will set empty string (value will be discarded).
+     */
+    public DataSetRow unmodifiable() {
+        return new UnmodifiableDataSetRow(this);
+    }
+
+    public DataSetRow modifiable() {
+        return this;
+    }
+
+    /**
+     * A wrapper implementation of {@link DataSetRow} that prevents changes on previous values and set empty string for
+     * all new columns. This implementation allows modification on {@link RowMetadata}.
+     * 
+     * @see #set(String, String)
+     */
+    private static class UnmodifiableDataSetRow extends DataSetRow {
+
+        private final DataSetRow delegate;
+
+        private final boolean deleted;
+
+        public UnmodifiableDataSetRow(DataSetRow delegate) {
+            super(delegate.rowMetadata);
+            this.delegate = delegate;
+            deleted = delegate.isDeleted();
+        }
+
+        @Override
+        public RowMetadata getRowMetadata() {
+            return delegate.getRowMetadata();
+        }
+
+        @Override
+        public void setRowMetadata(RowMetadata rowMetadata) {
+        }
+
+        /**
+         * This method prevents changes on previous values and set empty string for all new columns.
+         * 
+         * @param name - the key A column name.
+         * @param value - the value The value to be set for column name.
+         * @return This data set row for chaining calls.
+         */
+        @Override
+        public DataSetRow set(String name, String value) {
+            if (delegate.get(name) == null) {
+                return delegate.set(name, StringUtils.EMPTY);
+            }
+            return this;
+        }
+
+        @Override
+        public String get(String id) {
+            return delegate.get(id);
+        }
+
+        @Override
+        public boolean isDeleted() {
+            return deleted;
+        }
+
+        @Override
+        public void setDeleted(boolean deleted) {
+        }
+
+        @Override
+        public void diff(DataSetRow oldRow) {
+            delegate.diff(oldRow);
+        }
+
+        @Override
+        public Map<String, Object> values() {
+            return Collections.unmodifiableMap(delegate.values());
+        }
+
+        @Override
+        public Map<String, Object> valuesWithId() {
+            return Collections.unmodifiableMap(delegate.valuesWithId());
+        }
+
+        @Override
+        public void clear() {
+        }
+
+        @Override
+        public DataSetRow clone() {
+            return this;
+        }
+
+        @Override
+        public boolean shouldWrite() {
+            return delegate.shouldWrite();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return delegate.equals(o);
+        }
+
+        @Override
+        public int hashCode() {
+            return delegate.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return delegate.toString();
+        }
+
+        @Override
+        public DataSetRow order(List<ColumnMetadata> columns) {
+            return delegate.order(columns);
+        }
+
+        @Override
+        public Long getTdpId() {
+            return delegate.getTdpId();
+        }
+
+        @Override
+        public void setTdpId(Long tdpId) {
+        }
+
+        @Override
+        public DataSetRow unmodifiable() {
+            return this;
+        }
+
+        @Override
+        public DataSetRow modifiable() {
+            return delegate;
+        }
     }
 }

@@ -4,7 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,18 +20,19 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTest
 /**
  * Unit test for the FillWithBooleanIfEmpty action.
  *
- * @see FillWithBooleanIfEmpty
+ * @see FillIfEmpty
  */
 public class FillWithBooleanIfEmptyTest {
 
     /** The action to test. */
-    private FillWithBooleanIfEmpty action;
+    private FillIfEmpty action;
 
     /**
      * Default empty constructor.
      */
     public FillWithBooleanIfEmptyTest() {
-        action = new FillWithBooleanIfEmpty();
+        action = new FillIfEmpty();
+        action = (FillIfEmpty) action.adapt(ColumnMetadata.Builder.column().type(Type.BOOLEAN).build());
     }
 
     @Test
@@ -43,7 +44,7 @@ public class FillWithBooleanIfEmptyTest {
         values.put("0003", "100");
 
         final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Arrays.asList(ColumnMetadata.Builder.column() //
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
                 .type(Type.BOOLEAN) //
                 .computedId("0002") //
                 .build()));
@@ -51,7 +52,7 @@ public class FillWithBooleanIfEmptyTest {
         final DataSetRow row = new DataSetRow(values);
         row.setRowMetadata(rowMetadata);
 
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters(action, //
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 this.getClass().getResourceAsStream("fillEmptyBooleanAction.json"));
 
         // when
@@ -69,12 +70,7 @@ public class FillWithBooleanIfEmptyTest {
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(action.acceptColumn(getColumn(Type.STRING)));
         assertFalse(action.acceptColumn(getColumn(Type.NUMERIC)));
-        assertFalse(action.acceptColumn(getColumn(Type.DOUBLE)));
-        assertFalse(action.acceptColumn(getColumn(Type.FLOAT)));
-        assertFalse(action.acceptColumn(getColumn(Type.DATE)));
-        assertFalse(action.acceptColumn(getColumn(Type.INTEGER)));
         assertFalse(action.acceptColumn(getColumn(Type.ANY)));
     }
 

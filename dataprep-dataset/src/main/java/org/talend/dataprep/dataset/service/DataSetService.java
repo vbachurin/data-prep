@@ -1,8 +1,7 @@
 package org.talend.dataprep.dataset.service;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 
 import java.io.IOException;
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.*;
@@ -48,6 +46,7 @@ import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.schema.DraftValidator;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.SchemaParserResult;
+import org.talend.dataprep.security.Security;
 import org.talend.dataprep.user.store.UserDataRepository;
 
 import com.wordnik.swagger.annotations.*;
@@ -109,6 +108,10 @@ public class DataSetService {
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
+    /** DataPrep abstraction to the underlying security (whether it's enabled or not). */
+    @Autowired
+    private Security security;
+
     /**
      * Sort the synchronous analyzers.
      */
@@ -149,21 +152,6 @@ public class DataSetService {
                 return message;
             });
         }
-    }
-
-    /**
-     * @return Get user id based on the user name from Spring Security context, return "anonymous" if no user is
-     * currently logged in.
-     */
-    private static String getUserId() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String author;
-        if (principal != null) {
-            author = principal.toString();
-        } else {
-            author = "anonymous"; //$NON-NLS-1
-        }
-        return author;
     }
 
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -243,7 +231,7 @@ public class DataSetService {
         DataSetMetadata dataSetMetadata = metadata() //
                 .id(id) //
                 .name(name) //
-                .author(getUserId()) //
+                .author(security.getUserId()) //
                 .location(location) //
                 .created(System.currentTimeMillis()) //
                 .build();
@@ -330,6 +318,69 @@ public class DataSetService {
         }
     }
 
+
+    /**
+     * Creates a new data set and returns the new data set id as text in the response.
+     *
+     * @param name An optional name for the new data set (might be <code>null</code>).
+     * @param response The HTTP response to interact with caller.
+     * @return The new data id.
+     */
+    @RequestMapping(value = "/datasets/clone/{id}", method = GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Clone a data set", produces = MediaType.TEXT_PLAIN_VALUE,
+        notes = "Clone a new data set based on the given id. Returns the id of the newly created data set.")
+    @Timed
+    @VolumeMetered
+    public String clone(
+        @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
+        @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015'.  if none the current name concat with ' Copy' will be used. Returns the id of the newly created data set.")
+        @RequestParam(defaultValue = "", required = false) String name,
+        HttpServletResponse response) throws IOException {
+
+        response.setHeader( "Content-Type", MediaType.TEXT_PLAIN_VALUE ); //$NON-NLS-1$
+
+
+        DataSet dataSet = get( true, true, null, dataSetId, response);
+
+        // if no metadata it's an empty one the get method has already set NO CONTENT http return code
+        // so simply return!!
+        if (dataSet.getMetadata() == null){
+            return StringUtils.EMPTY;
+        }
+
+        final String newId = UUID.randomUUID().toString();
+
+        if (StringUtils.isEmpty( name )){
+            name = dataSet.getMetadata().getName() + " Copy";
+        }
+
+        dataSet.getMetadata().setName( name );
+
+        final Marker marker = Markers.dataset( newId );
+        LOG.debug( marker, "Cloning..." );
+
+         DataSetMetadata dataSetMetadata = metadata() //
+            .id(newId) //
+            .name(name) //
+            .author(security.getUserId()) //
+            .location(dataSet.getMetadata().getLocation()) //
+            .created(System.currentTimeMillis()) //
+            .build();
+
+        // Create the new data set
+        dataSetMetadataRepository.add( dataSetMetadata );
+
+        // Save data set content
+        LOG.debug( marker, "Storing content..." );
+        contentStore.storeAsRaw( dataSetMetadata, contentStore.getAsRaw( dataSet.getMetadata() ) );
+        LOG.debug( marker, "Content stored." );
+
+        queueEvents(newId);
+        LOG.debug(marker, "Cloned!");
+
+        return newId;
+    }
+
     /**
      * Deletes a data set with provided id.
      *
@@ -339,7 +390,7 @@ public class DataSetService {
     @ApiOperation(value = "Delete a data set by id", notes = "Delete a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
     public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to delete") String dataSetId) {
-        DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
+        DataSetMetadata metadata = dataSetMetadataRepository.get( dataSetId );
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         try {
             lock.lock();
@@ -402,7 +453,7 @@ public class DataSetService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId, //
             @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name, //
             @ApiParam(value = "content") InputStream dataSetContent) {
-        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock( dataSetId );
         try {
             lock.lock();
             DataSetMetadata.Builder datasetBuilder = metadata().id(dataSetId);
@@ -450,9 +501,9 @@ public class DataSetService {
             return DataSet.empty();
         }
         DataSet dataSet = new DataSet();
-        completeWithUserData(metadata);
-        dataSet.setMetadata(metadata);
-        dataSet.setColumns(metadata.getRow().getColumns());
+        completeWithUserData( metadata );
+        dataSet.setMetadata( metadata );
+        dataSet.setColumns( metadata.getRow().getColumns() );
         return dataSet;
     }
 
@@ -469,7 +520,7 @@ public class DataSetService {
             for (DataSetErrorCodes code : DataSetErrorCodes.values()) {
                 errors.add(new JsonErrorCodeDescription(code));
             }
-            builder.build().writer().writeValue(response.getOutputStream(), errors);
+            builder.build().writer().writeValue( response.getOutputStream(), errors );
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
@@ -561,7 +612,7 @@ public class DataSetService {
      * @param dataSetMetadata, the metadata to be updated
      */
     void completeWithUserData(DataSetMetadata dataSetMetadata) {
-        String userId = getUserId();
+        String userId = security.getUserId();
         UserData userData = userDataRepository.get(userId);
         if (userData != null) {
             dataSetMetadata.setFavorite(userData.getFavoritesDatasets().contains(dataSetMetadata.getId()));
@@ -642,7 +693,7 @@ public class DataSetService {
     @ApiOperation(value = "return all favorites datasets of the current user", notes = "Returns the list of favorites datasets.")
     @Timed
     public Iterable<String> favorites() {
-        String userId = getUserId();
+        String userId = security.getUserId();
         UserData userData = userDataRepository.get(userId);
         return userData != null ? userData.getFavoritesDatasets() : Collections.emptyList();
     }
@@ -662,7 +713,7 @@ public class DataSetService {
     public void setFavorites(
             @RequestParam(defaultValue = "false") @ApiParam(name = "unset", value = "if true then unset the dataset as favorite, if false (default value) set the favorite flag") boolean unset, //
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the favorite data set, do nothing is the id does not exist.") String dataSetId) {
-        String userId = getUserId();
+        String userId = security.getUserId();
         // check that dataset exists
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         if (dataSetMetadata != null) {

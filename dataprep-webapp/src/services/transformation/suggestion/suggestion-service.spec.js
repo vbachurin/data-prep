@@ -29,7 +29,7 @@ describe('Suggestion Service', function() {
         SuggestionService.setColumn(column);
 
         //then
-        expect(ColumnSuggestionService.initTransformations).toHaveBeenCalled();
+        expect(ColumnSuggestionService.initTransformations).toHaveBeenCalledWith(column);
     }));
 
     it('should NOT init column suggestions when column is already selected', inject(function(SuggestionService, ColumnSuggestionService) {

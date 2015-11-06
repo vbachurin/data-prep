@@ -10,7 +10,6 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
@@ -18,7 +17,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ColumnActio
  * duplicate a column
  */
 @Component(CopyColumnMetadata.ACTION_BEAN_PREFIX + CopyColumnMetadata.COPY_ACTION_NAME)
-public class CopyColumnMetadata extends AbstractActionMetadata implements ColumnAction {
+public class CopyColumnMetadata extends ActionMetadata implements ColumnAction {
 
     /**
      * The action name.

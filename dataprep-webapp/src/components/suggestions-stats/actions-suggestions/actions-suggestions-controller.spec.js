@@ -7,7 +7,7 @@ describe('Actions suggestions-stats controller', function () {
     var stateMock;
 
     beforeEach(module('data-prep.actions-suggestions', function($provide) {
-        stateMock = {playground: {}};
+        stateMock = {playground: {filter: {}}};
         $provide.constant('state', stateMock);
     }));
 
@@ -51,18 +51,6 @@ describe('Actions suggestions-stats controller', function () {
 
             //then
             expect(ctrl.column).toBe(column);
-        }));
-
-        it('should bind "suggestions-stats" getter to SuggestionService.transformations', inject(function (ColumnSuggestionService) {
-            //given
-            var ctrl = createController();
-            var transformations = [{name: 'tolowercase'}, {name: 'touppercase'}];
-
-            //when
-            ColumnSuggestionService.transformations = transformations;
-
-            //then
-            expect(ctrl.columnSuggestions).toBe(transformations);
         }));
 
         it('should bind "tab" getter to SuggestionService.tab', inject(function (SuggestionService) {
@@ -174,129 +162,258 @@ describe('Actions suggestions-stats controller', function () {
             }));
         });
 
-        it('should set current dynamic transformation and scope on dynamic transformation selection', function () {
-            //given
-            var transformation = {name: 'cluster', dynamic: true};
-            var ctrl = createController();
-            ctrl.dynamicTransformation = null;
+        describe('dynamic parameters', function() {
+            it('should set current dynamic transformation and scope on dynamic transformation selection', function () {
+                //given
+                var transformation = {name: 'cluster', dynamic: true};
+                var ctrl = createController();
+                ctrl.dynamicTransformation = null;
 
-            //when
-            ctrl.select(transformation, 'column');
+                //when
+                ctrl.select(transformation, 'column');
 
-            //then
-            expect(ctrl.dynamicTransformation).toBe(transformation);
-            expect(ctrl.dynamicScope).toBe('column');
-        });
-
-        it('should init dynamic params on dynamic transformation selection', inject(function (TransformationService) {
-            //given
-            var transformation = {name: 'cluster', dynamic: true};
-
-            var ctrl = createController();
-
-            //when
-            ctrl.select(transformation, 'column');
-
-            //then
-            expect(TransformationService.initDynamicParameters).toHaveBeenCalledWith(transformation, {
-                columnId: '0001',
-                datasetId: 'dataset_id',
-                preparationId: 'preparation_id'
+                //then
+                expect(ctrl.dynamicTransformation).toBe(transformation);
+                expect(ctrl.dynamicScope).toBe('column');
             });
-        }));
 
-        it('should update fetch progress flag during dynamic parameters init', inject(function ($rootScope) {
-            //given
-            var transformation = {name: 'cluster', dynamic: true};
-            var ctrl = createController();
-            ctrl.dynamicFetchInProgress = false;
+            it('should init dynamic params on dynamic transformation selection for current dataset', inject(function (TransformationService) {
+                //given
+                stateMock.playground.preparation = null;
+                var transformation = {name: 'cluster', dynamic: true};
 
-            //when
-            ctrl.select(transformation, 'column');
-            expect(ctrl.dynamicFetchInProgress).toBe(true);
-            $rootScope.$digest();
+                var ctrl = createController();
 
-            //then
-            expect(ctrl.dynamicFetchInProgress).toBe(false);
-        }));
+                //when
+                ctrl.select(transformation, 'column');
 
-        it('should show NO CLUSTERS WERE FOUND message', function () {
-            //given
-            var ctrl = createController();
-            ctrl.dynamicTransformation = {name: 'cluster', dynamic: true, cluster: {clusters: []}};
+                //then
+                expect(TransformationService.initDynamicParameters).toHaveBeenCalledWith(transformation, {
+                    columnId: '0001',
+                    datasetId: 'dataset_id',
+                    preparationId: null
+                });
+            }));
 
-            //when
-            ctrl.checkDynamicResponse();
+            it('should init dynamic params on dynamic transformation selection for current preparation', inject(function (TransformationService) {
+                //given
+                var transformation = {name: 'cluster', dynamic: true};
 
-            //then
-            expect(ctrl.showModalContent).toBe(false);
-            expect(ctrl.emptyParamsMsg).toEqual('NO_CLUSTERS_ACTION_MSG');
+                var ctrl = createController();
+
+                //when
+                ctrl.select(transformation, 'column');
+
+                //then
+                expect(TransformationService.initDynamicParameters).toHaveBeenCalledWith(transformation, {
+                    columnId: '0001',
+                    datasetId: 'dataset_id',
+                    preparationId: 'preparation_id'
+                });
+            }));
+
+            it('should update fetch progress flag during dynamic parameters init', inject(function ($rootScope) {
+                //given
+                var transformation = {name: 'cluster', dynamic: true};
+                var ctrl = createController();
+                ctrl.dynamicFetchInProgress = false;
+
+                //when
+                ctrl.select(transformation, 'column');
+                expect(ctrl.dynamicFetchInProgress).toBe(true);
+                $rootScope.$digest();
+
+                //then
+                expect(ctrl.dynamicFetchInProgress).toBe(false);
+            }));
+
+            it('should show NO CLUSTERS WERE FOUND message', function () {
+                //given
+                var ctrl = createController();
+                ctrl.dynamicTransformation = {name: 'cluster', dynamic: true, cluster: {clusters: []}};
+
+                //when
+                ctrl.checkDynamicResponse();
+
+                //then
+                expect(ctrl.showModalContent).toBe(false);
+                expect(ctrl.emptyParamsMsg).toEqual('NO_CLUSTERS_ACTION_MSG');
+            });
+
+            it('should show NO CHOICES WERE FOUND message', function () {
+                //given
+                var ctrl = createController();
+                ctrl.dynamicTransformation = {name: 'choices', dynamic: true, parameters: []};
+
+                //when
+                ctrl.checkDynamicResponse();
+
+                //then
+                expect(ctrl.showModalContent).toBe(false);
+                expect(ctrl.emptyParamsMsg).toEqual('NO_CHOICES_ACTION_MSG');
+            });
+
+            it('should show NO SIMPLE PARAMS WERE FOUND message', function () {
+                //given
+                var ctrl = createController();
+                ctrl.dynamicTransformation = {name: 'items', dynamic: true, items: []};
+
+                //when
+                ctrl.checkDynamicResponse();
+
+                //then
+                expect(ctrl.showModalContent).toBe(false);
+                expect(ctrl.emptyParamsMsg).toEqual('NO_PARAMS_ACTION_MSG');
+            });
+
+            it('should show dynamic cluster transformation in a modal', function () {
+                //given
+                var ctrl = createController();
+                ctrl.dynamicTransformation = {
+                    name: 'cluster',
+                    dynamic: true,
+                    cluster: {clusters: [{parameters: [], replace: {}}]}
+                };
+
+                //when
+                ctrl.checkDynamicResponse();
+
+                //then
+                expect(ctrl.showModalContent).toBe(true);
+            });
+
+            it('should show dynamic parameters transformation in a modal', function () {
+                //given
+                var ctrl = createController();
+                ctrl.dynamicTransformation = {name: 'items', dynamic: true, items: [1, 2]};
+
+                //when
+                ctrl.checkDynamicResponse();
+
+                //then
+                expect(ctrl.showModalContent).toBe(true);
+            });
+
+            it('should show dynamic choices transformation in a modal', function () {
+                //given
+                var ctrl = createController();
+                ctrl.dynamicTransformation = {name: 'items', dynamic: true, parameters: [1, 2]};
+
+                //when
+                ctrl.checkDynamicResponse();
+
+                //then
+                expect(ctrl.showModalContent).toBe(true);
+            });
+        });
+    });
+
+    describe('render predicates', function() {
+        describe('transformation', function() {
+            it('should render all transformations when applyTransformationOnFilters flag is true', function() {
+                //given
+                stateMock.playground.filter.applyTransformationOnFilters = true;
+                var transformation = {category: 'filtered'};
+                var ctrl = createController();
+
+                //when
+                var result = ctrl.shouldRenderTransformation(transformation);
+
+                //then
+                expect(result).toBe(true);
+            });
+
+            it('should render transformations when category is not "filtered"', function() {
+                //given
+                stateMock.playground.filter.applyTransformationOnFilters = false;
+                var transformation = {category: 'quickfix'};
+                var ctrl = createController();
+
+                //when
+                var result = ctrl.shouldRenderTransformation(transformation);
+
+                //then
+                expect(result).toBe(true);
+            });
+
+            it('should NOT render transformations when category is "filtered" and applyTransformationOnFilters flag is false', function() {
+                //given
+                stateMock.playground.filter.applyTransformationOnFilters = false;
+                var transformation = {category: 'filtered'};
+                var ctrl = createController();
+
+                //when
+                var result = ctrl.shouldRenderTransformation(transformation);
+
+                //then
+                expect(result).toBe(false);
+            });
         });
 
-        it('should show NO CHOICES WERE FOUND message', function () {
-            //given
-            var ctrl = createController();
-            ctrl.dynamicTransformation = {name: 'choices', dynamic: true, parameters: []};
+        describe('category', function() {
+            it('should render all categories when applyTransformationOnFilters flag is true', function() {
+                //given
+                stateMock.playground.filter.applyTransformationOnFilters = true;
+                var categoryTransformations = {
+                    category: 'suggestion',
+                    transformations: [{category: 'filtered'}]
+                };
+                var ctrl = createController();
 
-            //when
-            ctrl.checkDynamicResponse();
+                //when
+                var result = ctrl.shouldRenderCategory(categoryTransformations);
 
-            //then
-            expect(ctrl.showModalContent).toBe(false);
-            expect(ctrl.emptyParamsMsg).toEqual('NO_CHOICES_ACTION_MSG');
-        });
+                //then
+                expect(result).toBeTruthy();
+            });
 
-        it('should show NO SIMPLE PARAMS WERE FOUND message', function () {
-            //given
-            var ctrl = createController();
-            ctrl.dynamicTransformation = {name: 'items', dynamic: true, items: []};
+            it('should render category when category is not "suggestion"', function() {
+                //given
+                stateMock.playground.filter.applyTransformationOnFilters = false;
+                var categoryTransformations = {
+                    category: 'quickfix',
+                    transformations: [{category: 'filtered'}]
+                };
+                var ctrl = createController();
 
-            //when
-            ctrl.checkDynamicResponse();
+                //when
+                var result = ctrl.shouldRenderCategory(categoryTransformations);
 
-            //then
-            expect(ctrl.showModalContent).toBe(false);
-            expect(ctrl.emptyParamsMsg).toEqual('NO_PARAMS_ACTION_MSG');
-        });
+                //then
+                expect(result).toBeTruthy();
+            });
 
-        it('should show dynamic cluster transformation in a modal', function () {
-            //given
-            var ctrl = createController();
-            ctrl.dynamicTransformation = {
-                name: 'cluster',
-                dynamic: true,
-                cluster: {clusters: [{parameters: [], replace: {}}]}
-            };
+            it('should render category when it has non "filtered" transformations', function() {
+                //given
+                stateMock.playground.filter.applyTransformationOnFilters = false;
+                var categoryTransformations = {
+                    category: 'suggestion',
+                    transformations: [{category: 'suggestion'}]
+                };
+                var ctrl = createController();
 
-            //when
-            ctrl.checkDynamicResponse();
+                //when
+                var result = ctrl.shouldRenderCategory(categoryTransformations);
 
-            //then
-            expect(ctrl.showModalContent).toBe(true);
-        });
+                //then
+                expect(result).toBeTruthy();
+            });
 
-        it('should show dynamic parameters transformation in a modal', function () {
-            //given
-            var ctrl = createController();
-            ctrl.dynamicTransformation = {name: 'items', dynamic: true, items: [1, 2]};
+            it('should NOT render category when category is "suggestion" that only have "filtered" transformations', function() {
+                //given
+                stateMock.playground.filter.applyTransformationOnFilters = false;
+                var categoryTransformations = {
+                    category: 'suggestion',
+                    transformations: [{category: 'filtered'}]
+                };
+                var ctrl = createController();
 
-            //when
-            ctrl.checkDynamicResponse();
+                //when
+                var result = ctrl.shouldRenderCategory(categoryTransformations);
 
-            //then
-            expect(ctrl.showModalContent).toBe(true);
-        });
-
-        it('should show dynamic choices transformation in a modal', function () {
-            //given
-            var ctrl = createController();
-            ctrl.dynamicTransformation = {name: 'items', dynamic: true, parameters: [1, 2]};
-
-            //when
-            ctrl.checkDynamicResponse();
-
-            //then
-            expect(ctrl.showModalContent).toBe(true);
+                //then
+                expect(result).toBeFalsy();
+            });
         });
     });
 });

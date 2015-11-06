@@ -2,26 +2,32 @@
 
 @import "../../components/widgets/accordions/accordions";
 @import "../../components/widgets/badge/badge";
-@import "../../components/widgets/dropdown/dropdown";
 @import "../../components/widgets/button-dropdown/button-dropdown";
+@import "../../components/widgets/charts/boxplot-chart/boxplot-chart";
+@import "../../components/widgets/charts/horizontal-barchart/horizontal-barchart";
+@import "../../components/widgets/charts/range-slider/range-slider";
+@import "../../components/widgets/charts/vertical-barchart/vertical-barchart";
+@import "../../components/widgets/dropdown/dropdown";
 @import "../../components/widgets/editable-select/editable-select";
+@import "../../components/widgets/editable-text/editable-text";
+@import "../../components/widgets/file-selector/file-selector";
+@import "../../components/widgets/input/search-input";
 @import "../../components/widgets/loading/loading";
 @import "../../components/widgets/modal/modal";
 @import "../../components/widgets/navbar/navigation";
 @import "../../components/widgets/slidable/slidable";
 @import "../../components/widgets/tabs/tabs";
 @import "../../components/widgets/tooltip/tooltip";
-@import "../../components/widgets/charts/horizontal-barchart/horizontal-barchart";
-@import "../../components/widgets/charts/boxplot-chart/boxplot-chart";
-@import "../../components/widgets/charts/range-slider/range-slider";
-@import "../../components/widgets/charts/vertical-barchart/vertical-barchart";
 
 @import "../../components/dataset/list/dataset-list";
 @import "../../components/datagrid/datagrid";
 @import "../../components/datagrid/header/datagrid-header";
 @import "../../components/datagrid/quality-bar/quality-bar";
 @import "../../components/dataset/preview/dataset-xls-preview";
+@import "../../components/filter/bar/filter-bar";
 @import "../../components/filter/list/filter-list";
+@import "../../components/filter/monitor/filter-monitor";
+@import "../../components/filter/search/filter-search";
 @import "../../components/history-control/history";
 @import "../../components/home/home";
 @import "../../components/lookup/lookup";
@@ -32,7 +38,7 @@
 @import "../../components/recipe/recipe";
 @import "../../components/suggestions-stats/suggestions-stats";
 @import "../../components/suggestions-stats/column-profile/column-profile";
-@import "../../components/transformation/params/transformation-params";
+@import "../../components/transformation/form/transformation-form";
 @import "../../components/export/export";
 
 @import "button";

@@ -1,7 +1,7 @@
 describe('Datagrid style service', function () {
     'use strict';
 
-    var gridMock, gridColumns;
+    var gridMock, gridColumns, stateMock;
 
     function assertColumnsHasNoStyles() {
         gridColumns.forEach(function(column) {
@@ -9,7 +9,10 @@ describe('Datagrid style service', function () {
         });
     }
 
-    beforeEach(module('data-prep.datagrid'));
+    beforeEach(module('data-prep.datagrid', function ($provide) {
+        stateMock = {playground: {grid: {}}};
+        $provide.constant('state', stateMock);
+    }));
 
     beforeEach(inject(function () {
         jasmine.clock().install();
@@ -167,8 +170,15 @@ describe('Datagrid style service', function () {
     });
 
     describe('on active cell changed event', function () {
+        var dataViewMock;
+
+        beforeEach(function () {
+            dataViewMock = new DataViewMock();
+            stateMock.playground.grid.dataView = dataViewMock;
+        });
+
         beforeEach(inject(function(DatagridService) {
-            spyOn(DatagridService.dataView, 'getItem').and.returnValue({'0001': 'cell 1 content'});
+            //spyOn(stateMock.playground.grid.dataView, 'getItem').and.returnValue({'0001': 'cell 1 content'});
             spyOn(DatagridService, 'getSameContentConfig').and.returnValue({
                 5: { '0001': 'highlight' },
                 18: { '0001': 'highlight' },
@@ -180,9 +190,10 @@ describe('Datagrid style service', function () {
 
         it('should configure cells highlight class', inject(function (DatagridStyleService) {
             //given
+            dataViewMock.setItems([{'0001': 'cell 1 content'}]);
             DatagridStyleService.init(gridMock);
             var cell = 1;
-            var row = 28;
+            var row = 0;
             var args = {cell: cell, row: row};
 
             //when
@@ -198,6 +209,22 @@ describe('Datagrid style service', function () {
                 42: { '0001': 'highlight' },
                 43: { '0001': 'highlight' }
             });
+        }));
+
+        it('should remove cells highlight class when there is no row that match index', inject(function (DatagridStyleService) {
+            //given
+            DatagridStyleService.init(gridMock);
+            var cell = 1;
+            var row = 56;
+            var args = {cell: cell, row: row};
+
+            //when
+            var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
+            onActiveCellChanged(null, args);
+            jasmine.clock().tick(200);
+
+            //then
+            expect(gridMock.cssStyleConfig.highlight).toEqual({});
         }));
 
         it('should set "selected" column class', inject(function (DatagridStyleService) {
@@ -390,6 +417,22 @@ describe('Datagrid style service', function () {
 
             //then
             expect(result.indexOf('<div title="Invalid Value" class="red-rect"></div>') > 0).toBe(true);
+        }));
+
+        it('should add red rectangle on invalid value case of non TEXT domains (ieemail address)', inject(function (DatagridStyleService) {
+            //given
+            DatagridStyleService.init(gridMock);
+            var col = {quality: {invalidValues: ['m&a>al<ej@talend']}};
+            var value = 'm&a>al<ej@talend';
+            var columnDef = gridColumns[1];
+            var dataContext = {};
+
+            //when
+            var formatter = DatagridStyleService.columnFormatter(col);
+            var result = formatter(null, null, value, columnDef, dataContext);
+
+            //then
+            expect(result).toBe('m&amp;a&gt;al&lt;ej@talend<div title="Invalid Value" class="red-rect"></div>');
         }));
 
         it('should add "deleted" class on deleted row', inject(function (DatagridStyleService) {

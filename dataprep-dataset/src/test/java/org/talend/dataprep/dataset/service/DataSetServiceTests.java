@@ -215,7 +215,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         String id1 = UUID.randomUUID().toString();
         final DataSetMetadata metadata1 = metadata().id(id1).name("AAAA").author("anonymous").created(20)
                 .formatGuessId(new CSVFormatGuess().getBeanId()).build();
-        dataSetMetadataRepository.add(metadata1);
+        dataSetMetadataRepository.add( metadata1 );
         String id2 = UUID.randomUUID().toString();
         final DataSetMetadata metadata2 = metadata().id(id2).name("CCCC").author("anonymous").created(0)
                 .formatGuessId(new CSVFormatGuess().getBeanId()).build();
@@ -269,7 +269,43 @@ public class DataSetServiceTests extends DataSetBaseTest {
         int after = dataSetMetadataRepository.size();
         assertThat(after - before, is(1));
         // the next call may fail due to timing issues : TODO // make this synchronized somehow
-        assertQueueMessages(dataSetId);
+        assertQueueMessages( dataSetId );
+    }
+
+    @Test
+    public void clone_dataset() throws Exception {
+        int before = dataSetMetadataRepository.size();
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
+            .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        int after = dataSetMetadataRepository.size();
+        assertThat( after - before, is( 1 ) );
+        // the next call may fail due to timing issues : TODO // make this synchronized somehow
+        assertQueueMessages( dataSetId );
+
+        before = dataSetMetadataRepository.size();
+
+        Response response = given().get( "/datasets/clone/" + dataSetId );
+
+        Assertions.assertThat( response.getStatusCode() ).isEqualTo( 200 );
+
+        String clonedDataSetId = response.asString();
+
+        after = dataSetMetadataRepository.size();
+        assertThat( after - before, is( 1 ) );
+
+        assertQueueMessages( clonedDataSetId );
+
+        Assertions.assertThat( clonedDataSetId ).isNotNull().isNotEmpty().isNotEqualTo( dataSetId );
+
+        response = when().get( "/datasets/{id}/content", clonedDataSetId);
+
+        String content = response.asString();
+
+        ObjectMapper objectMapper = new ObjectMapper(  );
+        DataSet dataSet = objectMapper.reader( DataSet.class ).readValue(content.getBytes() );
+
+        Assertions.assertThat( dataSet.getMetadata().getName() ).isNotEmpty().contains( "Copy" );
+
     }
 
     @Test
@@ -902,7 +938,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         assertThat(column.getDomain(), is("FIRST_NAME"));
         assertThat(column.getDomainLabel(), is("First Name"));
-        assertThat(column.getDomainFrequency(), is(2.0F));
+        assertThat(column.getDomainFrequency(), is(100.0F));
 
         //when
         final Response res = given() //
@@ -941,7 +977,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         assertThat(column.getDomain(), is("FIRST_NAME"));
         assertThat(column.getDomainLabel(), is("First Name"));
-        assertThat(column.getDomainFrequency(), is(2.0F));
+        assertThat(column.getDomainFrequency(), is(100.0F));
         assertThat(column.getType(), is("string"));
 
         //when
@@ -960,7 +996,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         final ColumnMetadata actual = row.getById("0002");
         assertThat(actual.getDomain(), is("FIRST_NAME"));
         assertThat(actual.getDomainLabel(), is("First Name"));
-        assertThat(actual.getDomainFrequency(), is(2.0F));
+        assertThat(actual.getDomainFrequency(), is(100.0F));
         assertThat(actual.getType(), is("integer"));
     }
 
@@ -982,7 +1018,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         assertThat(column.getDomain(), is("FIRST_NAME"));
         assertThat(column.getDomainLabel(), is("First Name"));
-        assertThat(column.getDomainFrequency(), is(2.0F));
+        assertThat(column.getDomainFrequency(), is(100.0F));
 
         //when
         final Response res = given() //
@@ -1034,6 +1070,18 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         // then
         assertThat(content, not(containsString("\\u0000")));
+    }
+
+    @Test
+    public void invalid_us_states() throws Exception {
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../invalid_us_states.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        assertQueueMessages(dataSetId);
+        InputStream content = when().get("/datasets/{id}/content?metadata=true&columns=true", dataSetId).asInputStream();
+        String contentAsString = IOUtils.toString(content);
+
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("../invalid_us_states_expected.json");
+        assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     private String insertEmptyDataSet() {

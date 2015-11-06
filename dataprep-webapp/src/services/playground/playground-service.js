@@ -8,30 +8,24 @@
      * @requires data-prep.services.dataset.service:DatasetService
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.playground.service:PreviewService
-     * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.transformation.service:TransformationCacheService
      * @requires data-prep.services.transformation.service:SuggestionService
      * @requires data-prep.services.preparation.service:PreparationService
-     * @requires data-prep.services.utils.service:MessageService
      * @requires data-prep.services.statistics.service:StatisticsService
      * @requires data-prep.services.history.service:HistoryService
      * @requires data-prep.services.state.service:StateService
      * @requires data-prep.services.onboarding:OnboardingService
+     * @requires data-prep.services.utils.service:MessageService
+     * @requires data-prep.services.utils:TextFormatService
      */
-    function PlaygroundService($rootScope, $q, state, DatasetService, DatagridService, PreviewService, FilterService,
+    function PlaygroundService($rootScope, $q, state, DatasetService, DatagridService, PreviewService,
                                RecipeService, TransformationCacheService, SuggestionService, PreparationService,
-                               MessageService, StatisticsService, HistoryService, StateService, OnboardingService) {
+                               StatisticsService, HistoryService, StateService,
+                               OnboardingService, MessageService, TextFormatService) {
         var DEFAULT_NAME = 'Preparation draft';
 
         var service = {
-            /**
-             * @ngdoc property
-             * @name originalPreparationName
-             * @propertyOf data-prep.services.playground.service:PlaygroundService
-             * @description the original preparation name - used to check if the name has changed
-             */
-            originalPreparationName: '',
             /**
              * @ngdoc property
              * @name preparationName
@@ -44,6 +38,7 @@
             initPlayground: initPlayground,     // load dataset
             load: load,                         // load preparation
             loadStep: loadStep,                 // load preparation step
+            updateStatistics: updateStatistics, // load column statistics and trigger statistics update
 
             //preparation
             createOrUpdatePreparation: createOrUpdatePreparation,
@@ -60,21 +55,16 @@
         function reset(dataset, data, preparation) {
             StateService.resetPlayground();
             StateService.setCurrentDataset(dataset);
+            StateService.setCurrentData(data);
             StateService.setCurrentPreparation(preparation);
+            StateService.removeAllGridFilters();
 
-            FilterService.removeAllFilters();
             RecipeService.refresh();
-            StatisticsService.resetCharts();
-            DatagridService.setDataset(dataset, data);
+            StatisticsService.reset(true, true, true);
             TransformationCacheService.invalidateCache();
             SuggestionService.reset();
             HistoryService.clear();
             PreviewService.reset(false);
-        }
-
-        function setName(name) {
-            service.preparationName = name;
-            service.originalPreparationName = name;
         }
 
         /**
@@ -101,11 +91,10 @@
                             throw Error('Empty data');
                         }
 
-                        setName('');
+                        service.preparationName = '';
                         reset(dataset, data);
                         StateService.hideRecipe();
                         StateService.setNameEditionMode(true);
-                        StateService.setGridSelection(data.columns[0]);
                     })
                     .then(function() {
                         if(OnboardingService.shouldStartTour('playground')) {
@@ -141,11 +130,10 @@
                 $rootScope.$emit('talend.loading.start');
                 return PreparationService.getContent(preparation.id, 'head')
                     .then(function(response) {
-                        setName(preparation.name);
+                        service.preparationName = preparation.name;
                         reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response, preparation);
                         StateService.showRecipe();
                         StateService.setNameEditionMode(false);
-                        StateService.setGridSelection(response.columns[0]);
                     })
                     .finally(function() {
                         $rootScope.$emit('talend.loading.stop');
@@ -182,6 +170,32 @@
                 });
         }
 
+        /**
+         * @ngdoc method
+         * @name updateStatistics
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @description Get fresh statistics, set them in current columns metadata, then trigger a new statistics computation
+         * @returns {Promise} The process promise
+         */
+        function updateStatistics() {
+            var getContent;
+            if (state.playground.preparation) {
+                var lastActiveStep = RecipeService.getLastActiveStep();
+                var preparationId = state.playground.preparation.id;
+                var stepId = lastActiveStep ? lastActiveStep.transformation.stepId : 'head';
+                getContent = PreparationService.getContent.bind(null, preparationId, stepId);
+            }
+            else {
+                getContent = DatasetService.getContent.bind(null, state.playground.dataset.id, false);
+            }
+
+            return getContent()
+                .then(function (content) {
+                    StateService.updateColumnsStatistics(content.columns);
+                })
+                .then(StatisticsService.updateStatistics);
+        }
+
         //------------------------------------------------------------------------------------------------------
         //------------------------------------------------PREPARATION-------------------------------------------
         //------------------------------------------------------------------------------------------------------
@@ -194,21 +208,15 @@
          * @returns {Promise} The process promise
          */
         function createOrUpdatePreparation(name) {
-            if(service.originalPreparationName !== name) {
-                var promise = state.playground.preparation ?
-                    PreparationService.setName(state.playground.preparation.id, name) :
-                    PreparationService.create(state.playground.dataset.id, name);
+            var promise = state.playground.preparation ?
+                PreparationService.setName(state.playground.preparation.id, name) :
+                PreparationService.create(state.playground.dataset.id, name);
 
-                return promise.then(function(preparation) {
-                    StateService.setCurrentPreparation(preparation);
-                    service.originalPreparationName = name;
-                    service.preparationName = name;
-                    return preparation;
-                });
-            }
-            else {
-                return $q.reject('name unchanged');
-            }
+            return promise.then(function(preparation) {
+                StateService.setCurrentPreparation(preparation);
+                service.preparationName = name;
+                return preparation;
+            });
         }
 
         /**
@@ -268,7 +276,7 @@
                 createOrUpdatePreparation(DEFAULT_NAME)
                     .then(function(preparation) {
                         preparation.draft = true;
-                        setName('');
+                        service.preparationName = '';
                         return preparation;
                     });
 
@@ -385,7 +393,7 @@
                 column_id: column.id,
                 column_name: column.name,
                 row_id: rowItem.tdpId,
-                cell_value: rowItem[column.id],
+                cell_value: TextFormatService.escapeRegex(rowItem[column.id]),
                 replace_value: newValue
             };
             var action = 'replace_on_value';
@@ -396,7 +404,6 @@
         //------------------------------------------------------------------------------------------------------
         //---------------------------------------------------UTILS----------------------------------------------
         //------------------------------------------------------------------------------------------------------
-
         /**
          * @ngdoc method
          * @name updatePreparationDatagrid

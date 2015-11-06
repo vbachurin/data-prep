@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
 /**
@@ -20,9 +19,6 @@ public final class TransformationContext {
 
     private final Map<ActionMetadata, ActionContext> contexts = new HashMap<>();
 
-    /** The row metadata. */
-    private RowMetadata transformedRowMetadata;
-
     /** The context itself. */
     private Map<String, Object> context;
 
@@ -31,23 +27,6 @@ public final class TransformationContext {
      */
     public TransformationContext() {
         context = new HashMap<>();
-    }
-
-    /**
-     * @return immutable row metadata.
-     */
-    public RowMetadata getTransformedRowMetadata() {
-        if (transformedRowMetadata == null) {
-            throw new IllegalStateException("transformed row metadata was not set. Did ColumnsTypeTransformer set it ?");
-        }
-        return transformedRowMetadata;
-    }
-
-    /**
-     * @param transformedRowMetadata the row metadata to build this context from.
-     */
-    public void setTransformedRowMetadata(RowMetadata transformedRowMetadata) {
-        this.transformedRowMetadata = transformedRowMetadata;
     }
 
     /**
@@ -73,7 +52,7 @@ public final class TransformationContext {
     /**
      * Returns a transformation context specific to the current action. Use this to create columns (see
      * {@link ActionContext#column(String, Supplier, Consumer)} for more details).
-     * 
+     *
      * @param actionMetadata An instance of action used as key for finding context
      * @return An {@link ActionContext context} ready to be used.
      */

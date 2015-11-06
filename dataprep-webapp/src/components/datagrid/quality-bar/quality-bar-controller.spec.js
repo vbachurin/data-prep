@@ -9,10 +9,9 @@ describe('Quality bar controller', function () {
         scope = $rootScope.$new();
 
         createController = function () {
-            var ctrl = $controller('QualityBarCtrl', {
+            return $controller('QualityBarCtrl', {
                 $scope: scope
             });
-            return ctrl;
         };
     }));
 
@@ -202,16 +201,14 @@ describe('Quality bar controller', function () {
         expect(ctrl.width.valid).toBe(10);
     });
 
-    it('should apply selected transformation on the column scope', inject(function(TransformationApplicationService, ColumnSuggestionService) {
+    it('should apply selected transformation on the column scope', inject(function(TransformationApplicationService) {
         //given
         var ctrl = createController();
         var transfo = {name:'delete_empty', parameters:null};
-        ColumnSuggestionService.transformations = [];
-        ColumnSuggestionService.transformations.push(transfo);
         spyOn(TransformationApplicationService,'append').and.returnValue(function(){});
 
         //when
-        ctrl.applyActionOnColumn('delete_empty');
+        ctrl.applyActionOnColumn(transfo);
 
         //then
         expect(TransformationApplicationService.append).toHaveBeenCalledWith(transfo, 'column');

@@ -17,19 +17,16 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
-import org.talend.dataprep.api.type.TypeUtils;
+import org.talend.dataprep.configuration.AnalyzerService;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.lock.DistributedLock;
-import org.talend.dataquality.statistics.numeric.summary.SummaryAnalyzer;
-import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
-import org.talend.dataquality.statistics.quality.ValueQualityStatistics;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
-import org.talend.datascience.common.inference.type.DataType;
+import org.talend.datascience.common.inference.ValueQualityStatistics;
 
 @Component
 public class QualityAnalysis implements SynchronousDataSetAnalyzer, AsynchronousDataSetAnalyzer {
@@ -47,6 +44,9 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer, Asynchronous
 
     @Autowired
     StatisticsAdapter adapter;
+
+    @Autowired
+    AnalyzerService analyzerService;
 
     @JmsListener(destination = Destinations.QUALITY_ANALYSIS)
     public void analyzeQuality(Message message) {
@@ -89,7 +89,7 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer, Asynchronous
                     LOGGER.debug("Schema information must be computed before quality analysis can be performed, ignoring message");
                     return; // no acknowledge to allow re-poll.
                 }
-                LOGGER.info("Analyzing quality of dataset #{}...", metadata.getId());
+                LOGGER.debug("Analyzing quality of dataset #{}...", metadata.getId());
                 // New data set, or reached the max limit of records for synchronous analysis, trigger a full scan (but
                 // async).
                 final int dataSetSize = metadata.getContent().getNbRecords();
@@ -108,7 +108,7 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer, Asynchronous
                 // ... all quality is now analyzed, mark it so.
                 metadata.getLifecycle().qualityAnalyzed(true);
                 repository.add(metadata);
-                LOGGER.info("Analyzed quality of dataset #{}.", dataSetId);
+                LOGGER.debug("Analyzed quality of dataset #{}.", dataSetId);
             } catch (Exception e) {
                 LOGGER.warn("dataset '{}' generate an error, message: {} ", dataSetId, e.getMessage());
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
@@ -140,11 +140,7 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer, Asynchronous
             LOGGER.debug("Skip analysis of {} (no column information).", dataset.getId());
             return;
         }
-        DataType.Type[] types = TypeUtils.convert(columns);
-        // Run analysis
-        final ValueQualityAnalyzer valueQualityAnalyzer = new ValueQualityAnalyzer(types);
-        valueQualityAnalyzer.setStoreInvalidValues(true);
-        final Analyzer<Analyzers.Result> analyzer = Analyzers.with(valueQualityAnalyzer, new SummaryAnalyzer(types));
+        final Analyzer<Analyzers.Result> analyzer = analyzerService.qualityAnalysis(columns);
         if (limit > 0) { // Only limit number of rows if limit > 0 (use limit to speed up sync analysis.
             LOGGER.debug("Limit analysis to the first {}.", limit);
             records = records.limit(limit);
