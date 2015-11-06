@@ -33,7 +33,6 @@ public class LineBasedFormatGuesser implements FormatGuesser {
 
     /** A list of supported separators for a CSV content */
     private Set<Character> validSeparators = new HashSet<Character>() {
-
         {
             add(' ');
             add('\t');
@@ -48,15 +47,16 @@ public class LineBasedFormatGuesser implements FormatGuesser {
     @Override
     public FormatGuesser.Result guess(InputStream stream, String encoding) {
         Separator sep = guessSeparator(stream, encoding);
-        if (sep != null) {
-            final char separator = sep.getSeparator();
-            if (validSeparators.contains(separator)) {
-                Map<String, String> parameters = new HashMap<>();
-                parameters.put(CSVFormatGuess.SEPARATOR_PARAMETER, String.valueOf(separator));
-                return new FormatGuesser.Result(csvFormatGuess, encoding, parameters);
-            }
+
+        // Fallback
+        if (sep == null) {
+            return new FormatGuesser.Result(fallbackGuess, "UTF-8", Collections.emptyMap());
         }
-        return new FormatGuesser.Result(fallbackGuess, "UTF-8", Collections.emptyMap()); // Fallback
+
+        final char separator = sep.getSeparator();
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put(CSVFormatGuess.SEPARATOR_PARAMETER, String.valueOf(separator));
+        return new FormatGuesser.Result(csvFormatGuess, encoding, parameters);
     }
 
     /**
@@ -143,17 +143,19 @@ public class LineBasedFormatGuesser implements FormatGuesser {
         }
 
         // compute the average per line for separators
-        for (Separator separator : separators) {
-            double averagePerLine = separator.getTotalCount() / lineCount;
-            separator.setAveragePerLine(averagePerLine);
-        }
+        separators.forEach(s -> {
+            double averagePerLine = s.getTotalCount() / lineCount;
+            s.setAveragePerLine(averagePerLine);
+        });
 
         // remove irrelevant separators (0 as average per line that can happen when you read binary files)
         return separators.stream()
                 .filter(separator -> separator.getAveragePerLine() > 0) //
                 .sorted((sep0, sep1) -> Double.compare(sep1.getAveragePerLine(), sep0.getAveragePerLine())) //
+                .filter(sep -> validSeparators.contains(sep.getSeparator())) // filter out invalid separators
                 .findFirst() //
                 .get();
+
     }
 
 
