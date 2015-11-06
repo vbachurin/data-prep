@@ -16,10 +16,11 @@ describe('Tabs directive', function () {
 
         createElement = function () {
 
-            scope.resizePanels = jasmine.createSpy('resizePanels');
+            scope.onTabChange = jasmine.createSpy('onTabChange');
+            scope.onTabInit = jasmine.createSpy('onTabInit');
 
-            var template = '<talend-tabs tab="selectedTab" action-on-click="resizePanels()">' +
-                '   <talend-tabs-item tab-title="tab 1 title" action-on-init="resizePanels()">' +
+            var template = '<talend-tabs tab="selectedTab" on-tab-change="onTabChange()">' +
+                '   <talend-tabs-item tab-title="tab 1 title" on-init="onTabInit()">' +
                 '       <div id="tab1Content">Content tab 1</div>' +
                 '   </talend-tabs-item>' +
                 '   <talend-tabs-item tab-title="tab 2 title" default="true">' +
@@ -114,27 +115,25 @@ describe('Tabs directive', function () {
         expect(ctrl.setSelectedTab).not.toHaveBeenCalled();
     }));
 
-
-    it('should resize panel when changing tabs', inject(function () {
+    it('should execute callback when changing tabs', inject(function () {
         //given
         createElement();
+        expect(scope.onTabChange).not.toHaveBeenCalled();
 
         //when
-        var event = angular.element.Event('click');
-        element.find('.tabs-item').eq(0).trigger(event);
+        scope.selectedTab = 2;
+        scope.$apply();
 
         //then
-        expect(scope.resizePanels).toHaveBeenCalled();
-        expect(scope.resizePanels.calls.count()).toBe(2);
+        expect(scope.onTabChange).toHaveBeenCalled();
     }));
 
-
-    it('should resize panel when initializing the tabs', inject(function () {
-        //given
+    it('should execute callback when initializing the tabs', inject(function () {
+        //when
         createElement();
 
         //then
-        expect(scope.resizePanels).toHaveBeenCalled();
-        expect(scope.resizePanels.calls.count()).toBe(1);
+        expect(scope.onTabInit).toHaveBeenCalled();
+        expect(scope.onTabInit.calls.count()).toBe(1);
     }));
 });
