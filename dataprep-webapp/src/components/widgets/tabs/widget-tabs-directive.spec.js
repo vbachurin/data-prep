@@ -87,18 +87,35 @@ describe('Tabs directive', function () {
         expect(element.controller('talendTabs').tabs.length).toBe(0);
     });
 
-    it('should call setSelectedTab when tab changes', inject(function ($rootScope) {
+    it('should set new selected tab', inject(function ($rootScope) {
         //given
         createElement();
         var ctrl = element.controller('talendTabs');
-        spyOn(ctrl, 'setSelectedTab');
+        expect(ctrl.tabs[0].active).toBeFalsy();
+        expect(ctrl.tabs[1].active).toBeTruthy();
+        expect(ctrl.tabs[2].active).toBeFalsy();
 
         //when
-        scope.selectedTab = 1;
+        scope.selectedTab = 0;
         $rootScope.$digest();
 
         //then
-        expect(ctrl.setSelectedTab).toHaveBeenCalled();
+        expect(ctrl.tabs[0].active).toBeTruthy();
+        expect(ctrl.tabs[1].active).toBeFalsy();
+        expect(ctrl.tabs[2].active).toBeFalsy();
+    }));
+
+    it('should call tab change callback', inject(function ($rootScope) {
+        //given
+        createElement();
+        expect(scope.onTabChange.calls.count()).toBe(1);
+
+        //when
+        scope.selectedTab = 0;
+        $rootScope.$digest();
+
+        //then
+        expect(scope.onTabChange.calls.count()).toBe(2);
     }));
 
     it('should NOT call setSelectedTab if tab is not defined', inject(function ($rootScope) {
@@ -113,19 +130,6 @@ describe('Tabs directive', function () {
 
         //then
         expect(ctrl.setSelectedTab).not.toHaveBeenCalled();
-    }));
-
-    it('should execute callback when changing tabs', inject(function () {
-        //given
-        createElement();
-        expect(scope.onTabChange).not.toHaveBeenCalled();
-
-        //when
-        scope.selectedTab = 2;
-        scope.$apply();
-
-        //then
-        expect(scope.onTabChange).toHaveBeenCalled();
     }));
 
     it('should execute callback when initializing the tabs', inject(function () {

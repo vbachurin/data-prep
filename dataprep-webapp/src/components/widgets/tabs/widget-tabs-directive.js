@@ -39,12 +39,7 @@
                     function () {
                         return ctrl.tab;
                     },
-                    function (value) {
-                        if (angular.isDefined(value)) {
-                            ctrl.setSelectedTab(value);
-                            ctrl.onTabChange();
-                        }
-                    }
+                    ctrl.setSelectedTab
                 );
             }
         };

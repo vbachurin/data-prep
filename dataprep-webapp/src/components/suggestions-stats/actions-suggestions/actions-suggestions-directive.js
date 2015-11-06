@@ -45,13 +45,8 @@
                     $timeout(function () {
                         //Force to resize tabs containers
                         var panel1 = angular.element('.split-pane1').eq(0);
-                        var panel2 = angular.element('.split-pane2').eq(0);
                         var actionHeaderPanelsSizeMargin = 160;
-                        var statHeaderPanelsSizeMargin = 35;
-
-
-                        angular.element('.action-suggestion-tab-items').eq(0).css('height', panel1.height() - actionHeaderPanelsSizeMargin + 'px');
-                        angular.element('.stat-detail-tab-items').eq(0).css('height', panel2.height() - statHeaderPanelsSizeMargin + 'px');
+                        iElement.find('.action-suggestion-tab-items').css('height', panel1.height() - actionHeaderPanelsSizeMargin + 'px');
                     }, 200, false);
                 };
             }
