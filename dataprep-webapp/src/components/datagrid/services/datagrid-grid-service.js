@@ -41,6 +41,10 @@
             state.playground.grid.dataView.onRowCountChanged.subscribe(function () {
                 grid.updateRowCount();
                 grid.render();
+                //Update Statistics after filters changes
+                StateService.updateSelectedColumnsStatistics();
+                StatisticsService.updateStatistics();
+
             });
             state.playground.grid.dataView.onRowsChanged.subscribe(function (e, args) {
                 grid.invalidateRows(args.rows);
@@ -125,16 +129,6 @@
 
             //init other services
             initGridServices();
-
-            state.playground.grid.dataView.onRowCountChanged.subscribe(function () {
-                var dataGridFilteredRecords = [];
-                for(var i=0; i <state.playground.grid.dataView.getLength(); i++) {
-                    dataGridFilteredRecords.push(state.playground.grid.dataView.getItem(i));
-                }
-                StateService.updateSelectedColumnsStatistics(dataGridFilteredRecords);
-                StatisticsService.updateStatistics();
-            });
-
             return grid;
         }
     }

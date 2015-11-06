@@ -33,9 +33,19 @@
             gridState.displayLinesPercentage = (gridState.nbLines * 100 / gridState.nbTotalLines).toFixed(0);
         }
 
-
-        function updateSelectedColumnsStatistics(filteredRecords) {
+        /**
+         * @ngdoc method
+         * @name updateSelectedColumnsStatistics
+         * @methodOf data-prep.services.state.service:GridStateService
+         * @description Count and update the number of filtered lines statistics for the selected column
+         */
+        function updateSelectedColumnsStatistics() {
             if(gridState.selectedColumn) {
+                var filteredRecords = [];
+                for(var i=0; i <gridState.dataView.getLength(); i++) {
+                    filteredRecords.push(gridState.dataView.getItem(i));
+                }
+
                 var filteredRecordsValues = _.pluck(filteredRecords, gridState.selectedColumn.id);
                 _.forEach(gridState.selectedColumn.statistics.frequencyTable, function(frequency) {
                     frequency.filteredValue = _.filter(filteredRecordsValues, function(value){ return value === frequency.data; }).length;
@@ -108,11 +118,7 @@
 
             updateLinesCount(data);
             updateSelectedColumn(data);
-            var dataGridFilteredRecords = [];
-            for(var i=0; i <gridState.dataView.getLength(); i++) {
-                dataGridFilteredRecords.push(gridState.dataView.getItem(i));
-            }
-            updateSelectedColumnsStatistics(dataGridFilteredRecords);
+            updateSelectedColumnsStatistics();
         }
 
         /**
