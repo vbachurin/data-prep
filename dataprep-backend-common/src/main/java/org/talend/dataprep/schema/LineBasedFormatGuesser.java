@@ -17,11 +17,11 @@ public class LineBasedFormatGuesser implements FormatGuesser {
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(LineBasedFormatGuesser.class);
 
-    /** Replacement char used to replace a char that cannot be displayed, typical when you read binary files. */
-    private static final int REPLACEMENT_CHAR = 65533;
-
-    /** Threshold to detect binary stream in percentage. */
-    private static final int BINARY_DETECTION_THRESHOLD = 10;
+    /** Detectors used to check the encoding. */
+    private List<WrongEncodingDetector> detectors = Arrays.asList( //
+            new WrongEncodingDetector(65533), //
+            new WrongEncodingDetector(0000) //
+    );
 
     /** The csv format guesser. */
     @Autowired
@@ -72,8 +72,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
             try (LineNumberReader lineNumberReader = new LineNumberReader(reader)) {
                 List<Separator> separators = new ArrayList<>();
                 Map<Character, Separator> separatorMap = new HashMap<>();
-                int replacementCharsCount = 0;
-                int totalChars = 0;
+                long totalChars = 0;
                 int lineCount = 0;
                 boolean inQuote = false;
                 String s;
@@ -87,11 +86,12 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                     }
                     for (int i = 0; i < s.length(); i++) {
                         char c = s.charAt(i);
-                        if (REPLACEMENT_CHAR == (int) c) {
-                            replacementCharsCount++;
-                            int replacementCharPercentage = replacementCharsCount * 100 / totalChars;
-                            if (replacementCharPercentage > BINARY_DETECTION_THRESHOLD) {
-                                LOGGER.debug("binary stream detected, hence cannot be a CSV");
+                        // check the encoding
+                        for (WrongEncodingDetector detector : detectors) {
+                            try {
+                                detector.checkChar(c, totalChars);
+                            } catch (IOException e) {
+                                LOGGER.debug(encoding + " is assumed wrong" + e);
                                 return null;
                             }
                         }
@@ -158,5 +158,52 @@ public class LineBasedFormatGuesser implements FormatGuesser {
 
     }
 
+    /**
+     * Count the number of 'informant char' found in the file. If this number exceeds the threshold (10 %) the encoding
+     * is assumed false.
+     */
+    private class WrongEncodingDetector {
+
+        /** Threshold to detect binary stream in percentage. */
+        private static final int WRONG_ENCODING_THRESHOLD = 10;
+
+        /** Char informing that the encoding is supposed to be wrong. */
+        private int informantChar;
+
+        /** How many time was the informant char found. */
+        private long count = 0;
+
+        /**
+         * Default constructor.
+         * 
+         * @param informantChar the char to use to detect wrong encoding.
+         */
+        public WrongEncodingDetector(int informantChar) {
+            this.informantChar = informantChar;
+        }
+
+        /**
+         * Check the given char.
+         * 
+         * @param read the char that was read.
+         * @param totalChars the total number of chars.
+         * @throws IOException if encoding is assumed false.
+         */
+        public void checkChar(char read, long totalChars) throws IOException {
+
+            if (informantChar != (int) read) {
+                return;
+            }
+
+            count++;
+            long percentage = count * 100 / totalChars;
+            if (percentage > WRONG_ENCODING_THRESHOLD) {
+                LOGGER.debug("wrong encoding detected, hence cannot be a CSV");
+                throw new IOException(
+                        "'" + (char) informantChar + "' is found more than " + WRONG_ENCODING_THRESHOLD + " % in file.");
+            }
+        }
+
+    }
 
 }
