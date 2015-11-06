@@ -101,6 +101,7 @@
 
 					bar.append('rect')
 						.attr('height', y.rangeBand())
+                        .attr('width', 0)
 						.transition().delay(function (d,i){ return i * 30;})
 						.attr('width', function(d) { return x(d[xField]);});
 
@@ -114,6 +115,7 @@
 
                     filterBar.append('rect')
                         .attr('height', y.rangeBand())
+                        .attr('width', 0)
                         .transition().delay(function (d,i){ return i * 30;})
                         .attr('width', function(d) {
                             return x(d.filteredValue);
