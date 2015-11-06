@@ -41,15 +41,10 @@
          */
         function updateSelectedColumnsStatistics() {
             if(gridState.selectedColumn) {
-                var filteredRecords = [];
+                gridState.filteredRecordsOfSelectedColumn = [];
                 for(var i=0; i <gridState.dataView.getLength(); i++) {
-                    filteredRecords.push(gridState.dataView.getItem(i));
+                    gridState.filteredRecordsOfSelectedColumn.push(gridState.dataView.getItem(i));
                 }
-
-                var filteredRecordsValues = _.pluck(filteredRecords, gridState.selectedColumn.id);
-                _.forEach(gridState.selectedColumn.statistics.frequencyTable, function(frequency) {
-                    frequency.filteredValue = _.filter(filteredRecordsValues, function(value){ return value === frequency.data; }).length;
-                });
             }
         }
 
@@ -167,6 +162,7 @@
             gridState.columnFocus = null;
             gridState.selectedColumn = null;
             gridState.selectedLine = null;
+            gridState.filteredRecordsOfSelectedColumn = [];
         }
     }
 

@@ -67,7 +67,7 @@
                         .offset([0, -11])
                         .direction('w')
                         .html(function (d) {
-                            return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + d[yField] + '</span>' +
+                            return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + d.filteredValue + ' / ' + d[yField] + '</span>' +
                                 '<br/>' +
                                 '<br/>' +
                                 '<strong>Range:</strong> <span style="color:yellow">[' + d[xField] + ']</span>';
@@ -116,6 +116,29 @@
                         .attr('y', function (d) {
                             return y(d[yField]);
                         });
+
+                    svg.append('g').selectAll('.filterBar')
+                        .data(statData)
+                        .enter().append('rect')
+                        .attr('class', 'filterBar')
+                        .attr('x', function (d) {
+                            return x(d[xField]);
+                        })
+                        .attr('width', x.rangeBand())
+                        .attr('y', function () {
+                            return y(0);
+                        })
+                        .attr('height', 0)
+                        .transition().ease('cubic').delay(function (d, i) {
+                            return i * 10;
+                        })
+                        .attr('height', function (d) {
+                            return h - y(d.filteredValue);
+                        })
+                        .attr('y', function (d) {
+                            return y(d.filteredValue);
+                        });
+
 
                     scope.buckets = d3.selectAll('rect.bar');
                     /****************** Horizontal grid **********************/

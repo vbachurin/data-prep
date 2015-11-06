@@ -103,10 +103,17 @@
          * @description Adapt the numeric range data to fit histogram format
          */
         function initRangeHistogram(histoData) {
+            var filteredRecordsValues = _.pluck(state.playground.grid.filteredRecordsOfSelectedColumn, state.playground.grid.selectedColumn.id);
+
             var rangeData = _.map(histoData, function (histDatum) {
                 return {
                     'data': [histDatum.range.min, histDatum.range.max],
-                    'occurrences': histDatum.occurrences
+                    'occurrences': histDatum.occurrences,
+                    'filteredValue' : _.filter(filteredRecordsValues, function(value){
+                        return  _.isNumber(+value) &&
+                                ((Number(value) >= histDatum.range.min &&
+                                Number(value) < histDatum.range.max) ||
+                                Number(value) === state.playground.grid.selectedColumn.statistics.max);}).length //Deal with the max value of the last range
                 };
             });
 
@@ -123,9 +130,13 @@
          * @description Set the frequency table that fit the histogram format
          */
         function initClassicHistogram(key, label, dataTable) {
+
+            var filteredRecordsValues = _.pluck(state.playground.grid.filteredRecordsOfSelectedColumn, state.playground.grid.selectedColumn.id);
+
             service.histogram = {
                 data: _.map(dataTable, function (rec) {
                     rec.formattedValue = TextFormatService.adaptToGridConstraints(rec.data);
+                    rec.filteredValue = _.filter(filteredRecordsValues, function(value){ return value === rec.data; }).length;
                     return rec;
                 }),
                 key: key,
