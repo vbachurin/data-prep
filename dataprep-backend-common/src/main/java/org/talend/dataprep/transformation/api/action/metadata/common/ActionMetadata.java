@@ -57,11 +57,10 @@ public abstract class ActionMetadata {
      * @param column A {@link ColumnMetadata column} information.
      * @return <code>this</code> if any of the following is true:
      * <ul>
-     *     <li>no change is required.</li>
-     *     <li>column type is not {@link #acceptColumn(ColumnMetadata) accepted} for current action.</li>
+     * <li>no change is required.</li>
+     * <li>column type is not {@link #acceptColumn(ColumnMetadata) accepted} for current action.</li>
      * </ul>
-     * OR a new action metadata with information extracted from
-     * <code>column</code>.
+     * OR a new action metadata with information extracted from <code>column</code>.
      */
     public ActionMetadata adapt(ColumnMetadata column) {
         return this;
@@ -85,6 +84,10 @@ public abstract class ActionMetadata {
      * @return true if the action can be applied to the given column metadata.
      */
     public abstract boolean acceptColumn(final ColumnMetadata column);
+
+    public boolean isChangingRadicallyColumnContent() {
+        return false;
+    }
 
     /**
      * @return The label of the parameter, translated in the user locale.
@@ -110,7 +113,7 @@ public abstract class ActionMetadata {
      * @return list of scopes of this action
      * @see ActionScope
      */
-    public List<String> getActionScope(){
+    public List<String> getActionScope() {
         return new ArrayList<>();
     }
 
@@ -207,6 +210,15 @@ public abstract class ActionMetadata {
                 // Return non-modifiable row since it didn't pass the filter (but metadata might be modified).
                 row = row.unmodifiable();
             }
+
+            if (this.isChangingRadicallyColumnContent() && scope == ScopeCategory.COLUMN) {
+                final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
+                if (columnMetadata != null) {
+                    columnMetadata.setTypeForced(false);
+                    columnMetadata.setDomainForced(false);
+                }
+            }
+
             // Select the correct method to call depending on scope.
             switch (scope) {
             case CELL:

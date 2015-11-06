@@ -44,17 +44,16 @@ public class RemoveNonNumChars extends ActionMetadata implements ColumnAction {
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
+    @Override
+    public boolean isChangingRadicallyColumnContent() {
+        return true;
+    }
+
     /**
      * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
      */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
-        final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
-        if (columnMetadata != null) {
-            columnMetadata.setTypeForced(false);
-            columnMetadata.setDomainForced(false);
-        }
-
         final String toCut = row.get(columnId);
         row.set(columnId, apply(toCut));
     }

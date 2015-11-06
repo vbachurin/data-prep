@@ -7,10 +7,12 @@ import static org.junit.Assert.fail;
 import static org.talend.dataprep.exception.error.CommonErrorCodes.MISSING_ACTION_SCOPE;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -254,8 +258,18 @@ public class ActionMetadataTest {
         final DataSetRow row = new DataSetRow(rowValues);
         row.setTdpId(58L);
 
+        final RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.setColumns(Arrays.asList(ColumnMetadata.Builder.column() //
+                .type(Type.STRING) //
+                .computedId("entity") //
+                .typeForce(true) //
+                .semanticDomainForce(true) //
+                .build()));
+        row.setRowMetadata(rowMetadata);
+
         final TransformationContext context = new TransformationContext();
         final Action action = columnTransformation.create(parameters);
+        columnTransformation.setChangingRadicallyColumnContent(false);
 
         // when
         action.getRowAction().apply(row, context);
@@ -263,6 +277,51 @@ public class ActionMetadataTest {
         // then
         assertThat(row.get("0001"), is("TOTO"));
         assertThat(row.get("0002"), is("tata"));
+
+        Assertions.assertThat(row.getRowMetadata().getColumns().get(0).getType()).isEqualTo(Type.STRING.toString());
+        Assertions.assertThat(row.getRowMetadata().getColumns().get(0).isTypeForced()).isTrue();
+        Assertions.assertThat(row.getRowMetadata().getColumns().get(0).isDomainForced()).isTrue();
+    }
+
+    /**
+     * This is a copy/paste of the previous test, th only difference is the set & check on type/domain force.
+     */
+    @Test
+    public void test_TDP_864() throws Exception {
+        // given
+        final Map<String, String> parameters = new HashMap<>();
+        parameters.put("scope", "column");
+        parameters.put("column_id", "0001");
+
+        final Map<String, String> rowValues = new HashMap<>();
+        rowValues.put("0001", "toto");
+        rowValues.put("0002", "tata");
+        final DataSetRow row = new DataSetRow(rowValues);
+        row.setTdpId(58L);
+
+        final RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.setColumns(Arrays.asList(ColumnMetadata.Builder.column() //
+                .type(Type.STRING) //
+                .computedId("0001") //
+                .typeForce(true) //
+                .semanticDomainForce(true) //
+                .build()));
+        row.setRowMetadata(rowMetadata);
+
+        final TransformationContext context = new TransformationContext();
+        final Action action = columnTransformation.create(parameters);
+        columnTransformation.setChangingRadicallyColumnContent(true);
+
+        // when
+        action.getRowAction().apply(row, context);
+
+        // then
+        assertThat(row.get("0001"), is("TOTO"));
+        assertThat(row.get("0002"), is("tata"));
+
+        Assertions.assertThat(row.getRowMetadata().getColumns().get(0).getType()).isEqualTo(Type.STRING.toString());
+        Assertions.assertThat(row.getRowMetadata().getColumns().get(0).isTypeForced()).isFalse();
+        Assertions.assertThat(row.getRowMetadata().getColumns().get(0).isDomainForced()).isFalse();
     }
 
     @Test
@@ -349,6 +408,17 @@ class LineTransformation extends ActionMetadata implements RowAction {
 @Component
 @Profile("test")
 class ColumnTransformation extends ActionMetadata implements ColumnAction {
+
+    private boolean changingRadicallyColumnContent = false;
+
+    public void setChangingRadicallyColumnContent(boolean changingRadicallyColumnContent) {
+        this.changingRadicallyColumnContent = changingRadicallyColumnContent;
+    }
+
+    @Override
+    public boolean isChangingRadicallyColumnContent() {
+        return changingRadicallyColumnContent;
+    }
 
     @Override
     public String getName() {

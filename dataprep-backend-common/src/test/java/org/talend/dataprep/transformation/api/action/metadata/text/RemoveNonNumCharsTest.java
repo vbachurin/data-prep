@@ -90,43 +90,6 @@ public class RemoveNonNumCharsTest {
         assertEquals(expectedValues, row.values());
     }
 
-    /**
-     * This test is here to assure that when performs this action, type forced and domain forced are false, even if they
-     * were true before.
-     */
-    @Test
-    public void test_reset_force() {
-        // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("name", "Vincent");
-        values.put("entity", "€10k");
-        values.put("joined", "May 20th 2015");
-
-        final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Arrays.asList(ColumnMetadata.Builder.column() //
-                .type(Type.STRING) //
-                .computedId("entity") //
-                .typeForce(true) //
-                .build()));
-
-        final DataSetRow row = new DataSetRow(values);
-        row.setRowMetadata(rowMetadata);
-
-        final Map<String, Object> expectedValues = new HashMap<>();
-        expectedValues.put("name", "Vincent");
-        expectedValues.put("entity", "10");
-        expectedValues.put("joined", "May 20th 2015");
-
-        // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "entity");
-
-        // then
-        assertEquals(expectedValues, row.values());
-        Assertions.assertThat(row.getRowMetadata().getColumns().get(0).getType()).isEqualTo(Type.STRING.toString());
-        Assertions.assertThat(row.getRowMetadata().getColumns().get(0).isTypeForced()).isFalse();
-        Assertions.assertThat(row.getRowMetadata().getColumns().get(0).isDomainForced()).isFalse();
-    }
-
     @Test
     public void test_some_values(){
         assertEquals("10",action.apply("€10k"));

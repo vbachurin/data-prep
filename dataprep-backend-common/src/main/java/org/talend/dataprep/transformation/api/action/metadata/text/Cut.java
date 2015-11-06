@@ -64,6 +64,11 @@ public class Cut extends ActionMetadata implements ColumnAction {
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
+    @Override
+    public boolean isChangingRadicallyColumnContent() {
+        return true;
+    }
+
     /**
      * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
      */
