@@ -170,7 +170,7 @@ public class Split extends ActionMetadata implements ColumnAction {
         return ColumnMetadata.Builder //
                 .column() //
                 .name(column.getName() + SPLIT_APPENDIX) //
-                .type(Type.get(column.getType())) //
+                .type(Type.STRING) //
                 .empty(column.getQuality().getEmpty()) //
                 .invalid(column.getQuality().getInvalid()) //
                 .valid(column.getQuality().getValid()) //
