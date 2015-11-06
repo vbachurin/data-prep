@@ -157,7 +157,7 @@ public class StatisticsUtilsTest {
         assertEquals(2, integerColumn.getStatistics().getHistogram().size());
         assertEquals(1, integerColumn.getStatistics().getHistogram().get(0).getOccurrences());
         assertEquals(1, integerColumn.getStatistics().getHistogram().get(0).getRange().getMin(), 0);
-        assertEquals(2, integerColumn.getStatistics().getHistogram().get(0).getRange().getMax(), 0);
+        assertEquals(1, integerColumn.getStatistics().getHistogram().get(0).getRange().getMax(), 0);
         assertEquals(1, integerColumn.getStatistics().getHistogram().get(1).getOccurrences());
         assertEquals(2, integerColumn.getStatistics().getHistogram().get(1).getRange().getMin(), 0);
         assertEquals(2, integerColumn.getStatistics().getHistogram().get(1).getRange().getMax(), 0);

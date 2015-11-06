@@ -21,8 +21,8 @@ public class StreamHistogramStatisticsTest {
         // given
         final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
         histogram.setParameters(32);
-        //expected
-        assertEquals(0,histogram.getNumberOfValues());
+        // expected
+        assertEquals(0, histogram.getNumberOfValues());
         assertEquals(0, histogram.getMean(), 0);
         assertEquals(0, histogram.getMin(), 0);
         assertEquals(0, histogram.getMax(), 0);
@@ -35,9 +35,9 @@ public class StreamHistogramStatisticsTest {
         final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
         histogram.setParameters(16);
 
-        //when
+        // when
         histogram.add(1);
-        //expected
+        // expected
         assertEquals(1, histogram.getNumberOfValues());
         assertEquals(1, histogram.getMean(), 0);
         assertEquals(1, histogram.getMin(), 0);
@@ -50,24 +50,24 @@ public class StreamHistogramStatisticsTest {
         // given
         final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
         histogram.setParameters(16);
-        //when
-        for (int i = 1; i <=100; i++){
+        // when
+        for (int i = 1; i <= 100; i++) {
             histogram.add(i);
         }
-        //expected
-        assertEquals(histogram.getNumberOfValues(),100);
-        assertEquals(histogram.getMean(),50.5,0);
-        assertEquals(histogram.getMin(), 1, 0);
-        assertEquals(histogram.getMax(), 100, 0);
-        assertEquals(histogram.getNumberOfBins(), 16);
-        //assertEquals(histogram.getHistogram().size(), 16);
+        // expected
+        assertEquals(100, histogram.getNumberOfValues());
+        assertEquals(50.5, histogram.getMean(), 0);
+        assertEquals(1, histogram.getMin(), 0);
+        assertEquals(100, histogram.getMax(), 0);
+        assertEquals(16, histogram.getNumberOfBins());
+        // assertEquals(histogram.getHistogram().size(), 16);
 
         Collection<Long> counts = histogram.getHistogram().values();
         long sum = 0;
-        for (Long l: counts){
+        for (Long l : counts) {
             sum += l;
         }
-        assertEquals(sum, histogram.getNumberOfValues() );
+        assertEquals(sum, histogram.getNumberOfValues());
     }
 
     @Test
@@ -75,23 +75,50 @@ public class StreamHistogramStatisticsTest {
         // given
         final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
         histogram.setParameters(32);
-        for (int i = 100; i >=1; i--){
+        for (int i = 100; i >= 1; i--) {
             histogram.add(i);
         }
-        //expected
-        assertEquals(histogram.getNumberOfValues(),100);
-        assertEquals(histogram.getMean(),50.5,0);
-        assertEquals(histogram.getMin(), 1, 0);
-        assertEquals(histogram.getMax(), 100, 0);
-        assertEquals(histogram.getNumberOfBins(), 32);
-        //assertEquals(histogram.getHistogram().size(), 32);
+        // expected
+        assertEquals(100, histogram.getNumberOfValues());
+        assertEquals(50.5, histogram.getMean(), 0);
+        assertEquals(1, histogram.getMin(), 0);
+        assertEquals(100, histogram.getMax(), 0);
+        assertEquals(32, histogram.getNumberOfBins());
+        // assertEquals(histogram.getHistogram().size(), 32);
 
         Collection<Long> counts = histogram.getHistogram().values();
         long sum = 0;
-        for (Long l: counts){
+        for (Long l : counts) {
             sum += l;
         }
-        assertEquals(sum, histogram.getNumberOfValues() );
+        assertEquals(sum, histogram.getNumberOfValues());
+    }
+
+    @Test
+    public void shouldBeConsistentWhenAHundredValuesUnorderedFromOneHundredToOneAreAdded() throws Exception {
+        // given
+        final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
+        histogram.setParameters(4);
+        int[] array = { 48, 49, 50, 51, 32, 33, 34, 35, 96, 97, 98, 100, 15, 16, 17, 18, 91, 90, 92, 93, 94, 95, 1, 2, 3, 4, 5, 6,
+                7, 8, 9, 10, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 11, 12, 13, 14, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 20,
+                21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 36, 37, 38, 39, 40, 41, 42,
+                43, 44, 45, 46, 47, 52, 53, 54, 55, 56, 57, 58, 59, 19, 99 };
+        for (int i : array) {
+            histogram.add(i);
+        }
+        // expected
+        assertEquals(100, histogram.getNumberOfValues());
+        assertEquals(50.5, histogram.getMean(), 0);
+        assertEquals(1, histogram.getMin(), 0);
+        assertEquals(100, histogram.getMax(), 0);
+        assertEquals(4, histogram.getNumberOfBins());
+
+        Collection<Long> counts = histogram.getHistogram().values();
+        long sum = 0;
+        for (Long l : counts) {
+            sum += l;
+        }
+        assertEquals(sum, histogram.getNumberOfValues());
     }
 
     @Test
@@ -99,13 +126,13 @@ public class StreamHistogramStatisticsTest {
         // given
         final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
         histogram.setParameters(32);
-        for (int i = 1000; i >=1; i--){
+        for (int i = 1000; i >= 1; i--) {
             histogram.add(i);
         }
-        //expected
+        // expected
         Range previousRange = null;
-        for ( Range range: histogram.getHistogram().keySet()){
-            if (previousRange != null){
+        for (Range range : histogram.getHistogram().keySet()) {
+            if (previousRange != null) {
                 assertEquals(previousRange.getUpper(), range.getLower(), 0);
             }
             previousRange = range;
@@ -119,10 +146,10 @@ public class StreamHistogramStatisticsTest {
         histogram.setParameters(4);
         histogram.add(1);
         double min = histogram.getMin();
-        //when
+        // when
         histogram.add(1);
 
-        //expected
+        // expected
         assertEquals(min, histogram.getMin(), 0);
     }
 
@@ -133,10 +160,10 @@ public class StreamHistogramStatisticsTest {
         histogram.setParameters(4);
         histogram.add(1);
         double max = histogram.getMin();
-        //when
+        // when
         histogram.add(1);
 
-        //expected
+        // expected
         assertEquals(max, histogram.getMin(), 0);
     }
 
@@ -147,7 +174,7 @@ public class StreamHistogramStatisticsTest {
         histogram.setParameters(4);
         histogram.add(10);
 
-        //expected
+        // expected
         assertEquals(10, histogram.getMin(), 0);
         assertEquals(10, histogram.getMax(), 0);
         assertEquals(10, histogram.getMean(), 0);
