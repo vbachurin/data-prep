@@ -62,8 +62,12 @@ public class CopyColumnMetadata extends ActionMetadata implements ColumnAction {
         final ColumnMetadata column = rowMetadata.getById(columnId);
         final String copyColumn = context.in(this).column(
                 column.getName() + COPY_APPENDIX,
-                () -> column().copy(column).name(column.getName() + COPY_APPENDIX).build(),
-                (c) -> rowMetadata.insertAfter(columnId, c)
+                rowMetadata,
+                (r) -> {
+                    final ColumnMetadata newColumn = column().copy(column).name(column.getName() + COPY_APPENDIX).build();
+                    rowMetadata.insertAfter(columnId, newColumn);
+                    return newColumn;
+                }
         );
         row.set(copyColumn, row.get(columnId));
     }

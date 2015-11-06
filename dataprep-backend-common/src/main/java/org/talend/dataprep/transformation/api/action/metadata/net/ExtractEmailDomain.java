@@ -78,13 +78,21 @@ public class ExtractEmailDomain extends ActionMetadata implements ColumnAction {
         // Perform metadata level actions (add local + domain columns).
         final String local = context.in(this).column(
                 column.getName() + LOCAL,
-                () -> column().name(column.getName() + LOCAL).type(Type.STRING).build(),
-                (c) -> rowMetadata.insertAfter(columnId, c)
+                rowMetadata,
+                (r) -> {
+                    final ColumnMetadata newColumn = column().name(column.getName() + LOCAL).type(Type.STRING).build();
+                    rowMetadata.insertAfter(columnId, newColumn);
+                    return newColumn;
+                }
         );
         final String domain = context.in(this).column(
                 column.getName() + DOMAIN,
-                () -> column().name(column.getName() + DOMAIN).type(Type.STRING).build(),
-                (c) -> rowMetadata.insertAfter(local, c)
+                rowMetadata,
+                (r) -> {
+                    final ColumnMetadata newColumn = column().name(column.getName() + DOMAIN).type(Type.STRING).build();
+                    rowMetadata.insertAfter(local, newColumn);
+                    return newColumn;
+                }
         );
         // Set the values in newly created columns
         if (originalValue == null) {

@@ -82,8 +82,12 @@ public class ExtractUrlTokens extends ActionMetadata implements ColumnAction {
             String columnToInsertAfter = lastId;
             final String id = context.in(this).column(
                     columnName,
-                    () -> column().name(columnName).type(urlTokenExtractor.getType()).build(),
-                    (c) -> rowMetadata.insertAfter(columnToInsertAfter, c)
+                    rowMetadata,
+                    (r) -> {
+                        final ColumnMetadata newColumn = column().name(columnName).type(urlTokenExtractor.getType()).build();
+                        rowMetadata.insertAfter(columnToInsertAfter, newColumn);
+                        return newColumn;
+                    }
             );
             final String tokenValue = (url == null ? StringUtils.EMPTY : urlTokenExtractor.extractToken(url));
             row.set(id, (tokenValue == null ? StringUtils.EMPTY : tokenValue));
