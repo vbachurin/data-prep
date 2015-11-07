@@ -4,6 +4,7 @@ import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -64,7 +65,11 @@ public class CopyColumnMetadata extends ActionMetadata implements ColumnAction {
                 column.getName() + COPY_APPENDIX,
                 rowMetadata,
                 (r) -> {
-                    final ColumnMetadata newColumn = column().copy(column).name(column.getName() + COPY_APPENDIX).build();
+                    final ColumnMetadata newColumn = column() //
+                            .copy(column) //
+                            .computedId(StringUtils.EMPTY) //
+                            .name(column.getName() + COPY_APPENDIX) //
+                            .build();
                     rowMetadata.insertAfter(columnId, newColumn);
                     return newColumn;
                 }
