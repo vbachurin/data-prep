@@ -116,13 +116,13 @@ class SimpleTransformer implements Transformer {
         final List<ColumnMetadata> columns = row.getRowMetadata().getColumns();
         final Analyzer<Analyzers.Result> schema = analyzerService.schemaAnalysis(columns);
         for (DataSetRow dataSetRow : initialAnalysisBuffer) {
-            schema.analyze(dataSetRow.toArray(DataSetRow.SKIP_TDP_ID));
+            schema.analyze(dataSetRow.order(columns).toArray(DataSetRow.SKIP_TDP_ID));
         }
         adapter.adapt(columns, schema.getResult());
         // Now configure the actual (full) analysis and don't forget to process stored records
         Analyzer<Analyzers.Result> analyzer = configureFullAnalyzer(context, columns);
         for (DataSetRow dataSetRow : initialAnalysisBuffer) {
-            analyzer.analyze(dataSetRow.toArray(DataSetRow.SKIP_TDP_ID));
+            analyzer.analyze(dataSetRow.order(columns).toArray(DataSetRow.SKIP_TDP_ID));
         }
         // Clear all stored records and set current status to FULL_ANALYSIS for further records.
         initialAnalysisBuffer.clear();
