@@ -99,10 +99,12 @@
                         return d[yField];
                     }));
 
+                    var bar;
+                    var frontBar;
                     //If multi columns
                     if (statData.length > 0 && typeof statData[0].filteredValue !== 'undefined') {
 
-                        var bar = svg.selectAll('g.bar')
+                        bar = svg.selectAll('g.bar')
                             .data(statData)
                             .enter().append('g')
                             .attr('class', 'bar')
@@ -116,7 +118,7 @@
                             .transition().delay(function (d,i){ return i * 30;})
                             .attr('width', function(d) { return x(d[xField]);});
 
-                        var frontBar = svg.selectAll('g.frontBar')
+                        frontBar = svg.selectAll('g.frontBar')
                             .data(statData)
                             .enter().append('g')
                             .attr('class', 'frontBar')
@@ -133,7 +135,7 @@
                             });
                     } else {
 
-                        var frontBar = svg.selectAll('g.frontBar')
+                        frontBar = svg.selectAll('g.frontBar')
                             .data(statData)
                             .enter().append('g')
                             .attr('class', 'frontBar')
