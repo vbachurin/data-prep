@@ -40,11 +40,9 @@
          * @description Count and update the number of filtered lines statistics for the selected column
          */
         function updateSelectedColumnsStatistics() {
-            if(gridState.selectedColumn) {
-                gridState.filteredRecordsOfSelectedColumn = [];
-                for(var i=0; i <gridState.dataView.getLength(); i++) {
-                    gridState.filteredRecordsOfSelectedColumn.push(gridState.dataView.getItem(i));
-                }
+            gridState.filteredRecordsOfSelectedColumn = [];
+            for(var i=0; i <gridState.dataView.getLength(); i++) {
+                gridState.filteredRecordsOfSelectedColumn.push(gridState.dataView.getItem(i));
             }
         }
 

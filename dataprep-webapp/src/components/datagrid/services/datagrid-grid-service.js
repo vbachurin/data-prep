@@ -42,9 +42,10 @@
                 grid.updateRowCount();
                 grid.render();
                 //Update Statistics after filters changes
-                StateService.updateSelectedColumnsStatistics();
-                StatisticsService.updateStatistics();
-
+                if(state.playground.grid.selectedColumn) {
+                    StateService.updateSelectedColumnsStatistics();
+                    StatisticsService.updateStatistics();
+                }
             });
             state.playground.grid.dataView.onRowsChanged.subscribe(function (e, args) {
                 grid.invalidateRows(args.rows);
