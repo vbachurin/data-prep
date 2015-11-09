@@ -99,38 +99,54 @@
                         return d[yField];
                     }));
 
-                    var bar = svg.selectAll('g.bar')
-                        .data(statData)
-                        .enter().append('g')
-                        .attr('class', 'bar')
-                        .attr('transform', function (d) {
-                            return 'translate(0,' + y(d[yField]) + ')';
-                        });
+                    //If multi columns
+                    if (statData.length > 0 && typeof statData[0].filteredValue !== 'undefined') {
 
-					bar.append('rect')
-						.attr('height', y.rangeBand())
-                        .attr('width', 0)
-						.transition().delay(function (d,i){ return i * 30;})
-						.attr('width', function(d) { return x(d[xField]);});
+                        var bar = svg.selectAll('g.bar')
+                            .data(statData)
+                            .enter().append('g')
+                            .attr('class', 'bar')
+                            .attr('transform', function (d) {
+                                return 'translate(0,' + y(d[yField]) + ')';
+                            });
 
-                    var filterBar = svg.selectAll('g.filterBar')
-                        .data(statData)
-                        .enter().append('g')
-                        .attr('class', 'filterBar')
-                        .attr('transform', function (d) {
-                            return 'translate(0,' + y(d[yField]) +')';
-                        });
+                        bar.append('rect')
+                            .attr('height', y.rangeBand())
+                            .attr('width', 0)
+                            .transition().delay(function (d,i){ return i * 30;})
+                            .attr('width', function(d) { return x(d[xField]);});
 
-                    filterBar.append('rect')
-                        .attr('height', y.rangeBand())
-                        .attr('width', 0)
-                        .transition().delay(function (d,i){ return i * 30;})
-                        .attr('width', function(d) {
-                            if (typeof d.filteredValue !== 'undefined') {
+                        var frontBar = svg.selectAll('g.frontBar')
+                            .data(statData)
+                            .enter().append('g')
+                            .attr('class', 'frontBar')
+                            .attr('transform', function (d) {
+                                return 'translate(0,' + y(d[yField]) +')';
+                            });
+
+                        frontBar.append('rect')
+                            .attr('height', y.rangeBand())
+                            .attr('width', 0)
+                            .transition().delay(function (d,i){ return i * 30;})
+                            .attr('width', function(d) {
                                 return x(d.filteredValue);
-                            }
-                            return x(0);
-                        });
+                            });
+                    } else {
+
+                        var frontBar = svg.selectAll('g.frontBar')
+                            .data(statData)
+                            .enter().append('g')
+                            .attr('class', 'frontBar')
+                            .attr('transform', function (d) {
+                                return 'translate(0,' + y(d[yField]) + ')';
+                            });
+
+                        frontBar.append('rect')
+                            .attr('height', y.rangeBand())
+                            .attr('width', 0)
+                            .transition().delay(function (d,i){ return i * 30;})
+                            .attr('width', function(d) { return x(d[xField]);});
+                    }
 
                     svg.append('g')
                         .attr('class', 'x axis')
@@ -142,7 +158,7 @@
                         .attr('class', 'y axis')
                         .call(yAxis);
 
-                    filterBar.append('foreignObject')
+                    frontBar.append('foreignObject')
 						.attr('width', w)
 						.attr('height', y.rangeBand())
 						.append('xhtml:div')
