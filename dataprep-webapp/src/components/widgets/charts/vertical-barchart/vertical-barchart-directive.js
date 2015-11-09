@@ -67,7 +67,7 @@
                         .offset([0, -11])
                         .direction('w')
                         .html(function (d) {
-                            if (d.filteredValue) {
+                            if (typeof d.filteredValue !== 'undefined') {
                                 return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + d.filteredValue + ' / ' + d[yField] + '</span>' +
                                     '<br/>' +
                                     '<br/>' +
@@ -139,13 +139,13 @@
                             return i * 10;
                         })
                         .attr('height', function (d) {
-                            if (d.filteredValue) {
+                            if (typeof d.filteredValue !== 'undefined') {
                                 return h - y(d.filteredValue);
                             }
                             return h - y(0);
                         })
                         .attr('y', function (d) {
-                            if (d.filteredValue) {
+                            if (typeof d.filteredValue !== 'undefined') {
                                 return y(d.filteredValue);
                             }
                             return y(0);
