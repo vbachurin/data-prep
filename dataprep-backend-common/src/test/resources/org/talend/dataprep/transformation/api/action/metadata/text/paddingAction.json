@@ -1,0 +1,13 @@
+{
+  "actions": [
+    {
+      "action": "padding",
+      "parameters": {
+        "column_id": "0001",
+        "size": "4",
+        "padding_char": "0",
+        "scope": "column"
+      }
+    }
+  ]
+}
