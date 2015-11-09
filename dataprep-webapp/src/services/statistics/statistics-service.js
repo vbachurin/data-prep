@@ -454,9 +454,11 @@
                     operator: aggregation,
                     columnId: column.id
                 }],
-                groupBy: [selectedColumn.id],
-                filter: FilterService.convertFiltersArrayToTreeFormat(state.playground.filter.gridFilters)
+                groupBy: [selectedColumn.id]
             };
+
+            //add filter in parameters
+            aggregationParameters = _.extend(aggregationParameters, FilterService.convertFiltersArrayToTreeFormat(state.playground.filter.gridFilters));
 
             StatisticsRestService.getAggregations(aggregationParameters)
                 .then(function (response) {
