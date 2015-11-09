@@ -223,7 +223,7 @@ public class StreamHistogramStatistics {
     private void extendToRight(double d) {
         double histogramWidth = numberOfBins * binSize;
         int factor = 2;
-        while (lowerBound + histogramWidth * (factor) < d) {
+        while (lowerBound + histogramWidth * (factor) <= d) {
             factor <<= 1;
         }
         binSize = binSize * factor;
@@ -285,7 +285,9 @@ public class StreamHistogramStatistics {
             result.put(r, regulars[i]);
         }
 
+
         return result;
+
     }
 
     /**

@@ -2,10 +2,12 @@ package org.talend.dataprep.api.dataset.statistics;
 
 import org.junit.Test;
 import java.lang.IllegalArgumentException;
+import java.util.ArrayList;
 import java.util.Collection;
 import org.talend.dataquality.statistics.numeric.histogram.Range;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class StreamHistogramStatisticsTest {
 
@@ -178,6 +180,26 @@ public class StreamHistogramStatisticsTest {
         assertEquals(10, histogram.getMin(), 0);
         assertEquals(10, histogram.getMax(), 0);
         assertEquals(10, histogram.getMean(), 0);
+    }
+
+    @Test
+    public void shouldHaveRightBoundaries() throws Exception {
+        // given
+        final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
+        histogram.setParameters(2);
+        histogram.add(2);
+        histogram.add(3);
+        histogram.add(0);
+        histogram.add(4);
+
+
+        // expected
+        ArrayList<Range> ranges = new ArrayList<>(histogram.getHistogram().keySet());
+        Range min = ranges.get(0);
+        Range max = ranges.get(ranges.size()-1);
+
+        assertTrue(min.compareTo(new Range(0,4)) == 0);
+        assertTrue(max.compareTo(new Range(4, 8)) == 0);
     }
 
 }
