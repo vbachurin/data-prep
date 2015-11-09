@@ -145,6 +145,20 @@
             };
         }
 
+
+        function initAggregationHistogram(key, label, dataTable) {
+
+            service.histogram = {
+                data: _.map(dataTable, function (rec) {
+                    rec.formattedValue = TextFormatService.adaptToGridConstraints(rec.data);
+                    return rec;
+                }),
+                key: key,
+                label: label,
+                column: state.playground.grid.selectedColumn
+            };
+        }
+
         /**
          * @ngdoc method
          * @name initVerticalHistogram
@@ -432,7 +446,6 @@
             var preparationId = state.playground.preparation && state.playground.preparation.id;
             var stepId = preparationId && RecipeService.getLastActiveStep() && RecipeService.getLastActiveStep().transformation.stepId;
             var selectedColumn = state.playground.grid.selectedColumn;
-
             var aggregationParameters = {
                 datasetId: preparationId ? null : datasetId,
                 preparationId: preparationId,
@@ -441,12 +454,13 @@
                     operator: aggregation,
                     columnId: column.id
                 }],
-                groupBy: [selectedColumn.id]
+                groupBy: [selectedColumn.id],
+                filter: FilterService.convertFiltersArrayToTreeFormat(state.playground.filter.gridFilters)
             };
 
             StatisticsRestService.getAggregations(aggregationParameters)
                 .then(function (response) {
-                    initClassicHistogram(aggregation, $filter('translate')(aggregation), response);
+                    initAggregationHistogram(aggregation, $filter('translate')(aggregation), response);
                     service.histogram.aggregationColumn = column;
                     service.histogram.aggregation = aggregation;
 

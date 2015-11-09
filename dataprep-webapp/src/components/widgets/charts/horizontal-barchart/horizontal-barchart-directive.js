@@ -64,7 +64,7 @@
 						.offset([-10, 0])
 						.html(function(d) {
 
-                            if (d.filteredValue) {
+                            if (typeof d.filteredValue !== 'undefined') {
                                 return 	'<strong>'+ scope.keyLabel +':</strong> <span style="color:yellow">' + d.filteredValue + ' / ' + d[xField] + '</span>'+
                                     '<br/>'+
                                     '<br/>'+
@@ -126,7 +126,7 @@
                         .attr('width', 0)
                         .transition().delay(function (d,i){ return i * 30;})
                         .attr('width', function(d) {
-                            if (d.filteredValue) {
+                            if (typeof d.filteredValue !== 'undefined') {
                                 return x(d.filteredValue);
                             }
                             return x(0);
