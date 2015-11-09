@@ -190,7 +190,7 @@ class SimpleTransformer implements Transformer {
                 writer.fieldName("columns");
                 final DataSetRow row = postProcessQueue.pop();
                 // End analysis and set the statistics
-                emptyInitialAnalysisBuffer(context, row);
+                emptyInitialAnalysisBuffer(context, row); // Call in case row number < ANALYSIS_BUFFER_SIZE
                 final Analyzer<Analyzers.Result> analyzer = (Analyzer<Analyzers.Result>) context.get(CONTEXT_ANALYZER);
                 if (analyzer != null) {
                     // Analyzer may not be initialized when all rows were deleted.
