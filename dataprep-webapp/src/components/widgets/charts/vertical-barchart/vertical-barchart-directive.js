@@ -67,7 +67,13 @@
                         .offset([0, -11])
                         .direction('w')
                         .html(function (d) {
-                            return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + d.filteredValue + ' / ' + d[yField] + '</span>' +
+                            if (d.filteredValue) {
+                                return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + d.filteredValue + ' / ' + d[yField] + '</span>' +
+                                    '<br/>' +
+                                    '<br/>' +
+                                    '<strong>Range:</strong> <span style="color:yellow">[' + d[xField] + '[</span>';
+                            }
+                            return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + d[yField] + '</span>' +
                                 '<br/>' +
                                 '<br/>' +
                                 '<strong>Range:</strong> <span style="color:yellow">[' + d[xField] + '[</span>';
@@ -133,10 +139,18 @@
                             return i * 10;
                         })
                         .attr('height', function (d) {
-                            return h - y(d.filteredValue);
+                            if (d.filteredValue) {
+                                return h - y(d.filteredValue);
+                            }
+                            return h - y(0);
                         })
                         .attr('y', function (d) {
-                            return y(d.filteredValue);
+                            if (d.filteredValue) {
+                                return y(d.filteredValue);
+                            }
+                            return y(0);
+
+
                         });
 
 

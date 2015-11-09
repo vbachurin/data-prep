@@ -63,10 +63,18 @@
 						.attr('class', 'horizontal-barchart-cls d3-tip')
 						.offset([-10, 0])
 						.html(function(d) {
-							return 	'<strong>'+ scope.keyLabel +':</strong> <span style="color:yellow">' + d.filteredValue + ' / ' + d[xField] + '</span>'+
-									'<br/>'+
-									'<br/>'+
-									'<strong>Record:</strong> <span style="color:yellow">'+ d[yField] + '</span>';
+
+                            if (d.filteredValue) {
+                                return 	'<strong>'+ scope.keyLabel +':</strong> <span style="color:yellow">' + d.filteredValue + ' / ' + d[xField] + '</span>'+
+                                    '<br/>'+
+                                    '<br/>'+
+                                    '<strong>Record:</strong> <span style="color:yellow">'+ d[yField] + '</span>';
+                            }
+                            return 	'<strong>'+ scope.keyLabel +':</strong> <span style="color:yellow">' + d[xField] + '</span>'+
+                                '<br/>'+
+                                '<br/>'+
+                                '<strong>Record:</strong> <span style="color:yellow">'+ d[yField] + '</span>';
+
 						});
 
                     var svg = d3.select('#' + container).append('svg')
@@ -118,7 +126,10 @@
                         .attr('width', 0)
                         .transition().delay(function (d,i){ return i * 30;})
                         .attr('width', function(d) {
-                            return x(d.filteredValue);
+                            if (d.filteredValue) {
+                                return x(d.filteredValue);
+                            }
+                            return x(0);
                         });
 
                     svg.append('g')
