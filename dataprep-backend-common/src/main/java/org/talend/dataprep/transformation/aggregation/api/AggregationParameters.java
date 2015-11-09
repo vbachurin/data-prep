@@ -127,7 +127,11 @@ public class AggregationParameters {
      * @see org.talend.dataprep.api.filter.FilterService
      */
     public void setFilter(JsonNode filter) {
-        this.filter = filter;
+        if (filter == null || filter.isNull()) {
+            this.filter = null;
+        } else {
+            this.filter = filter;
+        }
     }
 
     /**
