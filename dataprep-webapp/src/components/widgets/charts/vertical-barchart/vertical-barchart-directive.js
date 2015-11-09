@@ -70,7 +70,7 @@
                             return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + d.filteredValue + ' / ' + d[yField] + '</span>' +
                                 '<br/>' +
                                 '<br/>' +
-                                '<strong>Range:</strong> <span style="color:yellow">[' + d[xField] + ']</span>';
+                                '<strong>Range:</strong> <span style="color:yellow">[' + d[xField] + '[</span>';
                         });
 
                     var svg = d3.select('#' + container).append('svg')
