@@ -88,24 +88,26 @@ public class PaddingTest {
 
     @Test
     public void testApplyOnNumerics() {
-        assertEquals("0000", action.apply("", 4, "0"));
-        assertEquals("0010", action.apply("10", 4, "0"));
-        assertEquals("0-10", action.apply("-10",4 ,"0"));
-        assertEquals("12345", action.apply("12345", 4, "0"));
-        assertEquals("123456789", action.apply("0123456789", 4, "0"));
-        assertEquals("123456789", action.apply("123456789", 4, "0"));
-        assertEquals("0011", action.apply("00011", 4, "0"));
+        assertEquals("0000", action.apply("", 4, '0', Padding.LEFT_POSITION));
+        assertEquals("0010", action.apply("10", 4, '0', Padding.LEFT_POSITION));
+        assertEquals("0-10", action.apply("-10", 4, '0', Padding.LEFT_POSITION));
+        assertEquals("12345", action.apply("12345", 4, '0', Padding.LEFT_POSITION));
+        assertEquals("123456789", action.apply("123456789", 4, '0', Padding.LEFT_POSITION));
     }
 
     @Test
     public void testApplyOnStrings() {
-        assertEquals("Tagada", action.apply("agada", 6, "T"));
-        assertEquals("tagada", action.apply("tagada", 4, "T"));
+        assertEquals("Tagada", action.apply("agada", 6, 'T', Padding.LEFT_POSITION));
+        assertEquals("tagada", action.apply("tagada", 4, 'T', Padding.LEFT_POSITION));
+
+
+        assertEquals("agadaT", action.apply("agada", 6, 'T', Padding.RIGHT_POSITION));
+        assertEquals("tagada", action.apply("tagada", 4, 'T', Padding.RIGHT_POSITION));
     }
 
     @Test
     public void test_some_special_values() {
-        assertEquals("", action.apply(null, 5, "0"));
+        assertEquals("", action.apply(null, 5, '0', "Left"));
     }
 
     @Test

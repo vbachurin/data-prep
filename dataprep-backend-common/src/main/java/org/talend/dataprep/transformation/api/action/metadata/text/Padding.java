@@ -14,6 +14,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
+import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 @Component(Padding.ACTION_BEAN_PREFIX + Padding.ACTION_NAME)
 public class Padding extends ActionMetadata implements ColumnAction {
@@ -32,6 +33,15 @@ public class Padding extends ActionMetadata implements ColumnAction {
      * The the char to repeat to complete size.
      */
     public static final String PADDING_CHAR_PARAMETER = "padding_char"; //$NON-NLS-1$
+
+    /**
+     * The position of the char to repeat.
+     */
+    public static final String PADDING_POSITION_PARAMETER = "padding_position"; //$NON-NLS-1$
+
+    public static final String LEFT_POSITION = "Left";
+
+    public static final String RIGHT_POSITION = "Right";
 
     /**
      * @see ActionMetadata#getName()
@@ -66,6 +76,17 @@ public class Padding extends ActionMetadata implements ColumnAction {
         final List<Parameter> parameters = super.getParameters();
         parameters.add(new Parameter(SIZE_PARAMETER, ParameterType.INTEGER, "5"));
         parameters.add(new Parameter(PADDING_CHAR_PARAMETER, ParameterType.STRING, "0"));
+
+        //@formatter:off
+        parameters.add(SelectParameter.Builder.builder()
+                        .name(PADDING_POSITION_PARAMETER)
+                        .item(LEFT_POSITION)
+                        .item(RIGHT_POSITION)
+                        .defaultValue(LEFT_POSITION)
+                        .build()
+        );
+        //@formatter:on
+
         return parameters;
     }
 
@@ -77,22 +98,21 @@ public class Padding extends ActionMetadata implements ColumnAction {
         final String original = row.get(columnId);
 
         final int size = Integer.parseInt(parameters.get(SIZE_PARAMETER));
-        final String padding_char = parameters.get(PADDING_CHAR_PARAMETER);
+        final char padding_char = parameters.get(PADDING_CHAR_PARAMETER).charAt(0);
+        final String padding_position = parameters.get(PADDING_POSITION_PARAMETER);
 
-        row.set(columnId, apply(original, size, padding_char));
+        row.set(columnId, apply(original, size, padding_char, padding_position));
     }
 
-    protected String apply(String from, int size, String padding_char) {
+    protected String apply(String from, int size, char padding_char, String position) {
         if (from == null) {
             return "";
         }
 
-        if (from.length() < size) {
-            return Strings.repeat(padding_char, size - from.length()) + from;
-        } else if (from.length() > size && from.startsWith(padding_char)) {
-            return from.substring(1);
+        if (position.equals(LEFT_POSITION)) {
+            return Strings.padStart(from, size, padding_char);
         } else {
-            return from;
+            return Strings.padEnd(from, size, padding_char);
         }
     }
 

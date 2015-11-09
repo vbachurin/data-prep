@@ -2532,6 +2532,24 @@
         "description": "The character to add",
         "label": "Padding char",
         "default": "0"
+      },
+      {
+        "name": "padding_position",
+        "type": "select",
+        "implicit": false,
+        "canBeBlank": false,
+        "default": "Left",
+        "configuration": {
+          "values": [
+            {
+              "value": "Left"
+            },
+            {
+              "value": "Right"
+            }
+          ],
+          "multiple": false
+        }
       }
     ]
   }
