@@ -85,6 +85,42 @@ describe('Datagrid grid service', function () {
             expect(grid.render).toHaveBeenCalled();
         }));
 
+
+        it('should update row count and render grid on row count change if no column selected', inject(function (DatagridGridService, StateService, StatisticsService) {
+            //given
+            DatagridGridService.initGrid();
+
+            spyOn(StateService, 'updateSelectedColumnsStatistics').and.returnValue();
+            spyOn(StatisticsService, 'updateStatistics').and.returnValue();
+
+            //when
+            var onRowCountChanged = stateMock.playground.grid.dataView.onRowCountChanged.subscribe.calls.argsFor(0)[0];
+            onRowCountChanged();
+
+            //then
+            expect(StateService.updateSelectedColumnsStatistics).not.toHaveBeenCalled();
+            expect(StatisticsService.updateStatistics).not.toHaveBeenCalled();
+
+        }));
+
+        it('should update row count and render grid on row count change if a column selected', inject(function (DatagridGridService, StateService, StatisticsService) {
+            //given
+            DatagridGridService.initGrid();
+            stateMock.playground.grid.selectedColumn = {id : '0000'};
+
+            spyOn(StateService, 'updateSelectedColumnsStatistics').and.returnValue();
+            spyOn(StatisticsService, 'updateStatistics').and.returnValue();
+
+            //when
+            var onRowCountChanged = stateMock.playground.grid.dataView.onRowCountChanged.subscribe.calls.argsFor(0)[0];
+            onRowCountChanged();
+
+            //then
+            expect(StateService.updateSelectedColumnsStatistics).toHaveBeenCalled();
+            expect(StatisticsService.updateStatistics).toHaveBeenCalled();
+
+        }));
+
         it('should invalidate rows and render grid on rows changed', inject(function (DatagridGridService) {
             //given
             var grid = DatagridGridService.initGrid();

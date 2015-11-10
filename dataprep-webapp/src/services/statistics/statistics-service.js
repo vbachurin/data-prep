@@ -104,7 +104,6 @@
          */
         function initRangeHistogram(histoData) {
             var filteredRecordsValues = _.pluck(state.playground.grid.filteredRecordsOfSelectedColumn, state.playground.grid.selectedColumn.id);
-
             var rangeData = _.map(histoData, function (histDatum) {
                 return {
                     'data': [histDatum.range.min, histDatum.range.max],
@@ -118,6 +117,7 @@
                                         ).length //Deal with the max value of the last range
                 };
             });
+
 
             initVerticalHistogram('occurrences', 'Occurrences', rangeData);
         }
