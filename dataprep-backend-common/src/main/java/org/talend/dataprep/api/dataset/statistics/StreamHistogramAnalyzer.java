@@ -24,7 +24,6 @@ import org.talend.datascience.common.inference.type.DataType.Type;
 import org.talend.datascience.common.inference.type.TypeInferenceUtils;
 
 /**
- * Created by bdiouf on 27/10/15.
  */
 public class StreamHistogramAnalyzer extends NumericalStatisticsAnalyzer<StreamHistogramStatistics> {
 
@@ -79,7 +78,6 @@ public class StreamHistogramAnalyzer extends NumericalStatisticsAnalyzer<StreamH
                     max = columnParameter.getMax();
                     numBins = columnParameter.getNumBins();
                 }
-                //stat.setParameters(max, min, numBins);
                 stat.setParameters(32);
                 colIdx++;
             }

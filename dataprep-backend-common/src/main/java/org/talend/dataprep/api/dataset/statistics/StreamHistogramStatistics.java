@@ -99,7 +99,6 @@ public class StreamHistogramStatistics {
             throw new IllegalArgumentException("The number of bin which is " + numberOfBins + " must be a power of 2");
         }
         this.numberOfBins = numberOfBins;
-        // this.numberOfBins = 32;
     }
 
     /**
