@@ -130,7 +130,7 @@
   "SERVER_ERROR_TITLE": "Server error",
   "SERVICE_UNAVAILABLE": "Service unavailable",
   "UNSUPPORTED_CONTENT_TITLE": "Unsupported content",
-  "UNSUPPORTED_CONTENT": "Unable to create data set, content is not supported.",
+  "UNSUPPORTED_CONTENT": "Unable to create data set, content is not supported. Try with a csv or xls file!",
 
   "_comment": "Transformation",
   "NO_CLUSTERS_ACTION_MSG":"No Clusters Were Found !!!",
