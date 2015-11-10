@@ -420,9 +420,10 @@ describe('Statistics service', function () {
                 });
             }));
 
-            it('should set the range data frequency when column type is "number"', inject(function (StatisticsService) {
+            it('should set the range data frequency when column type is "number" with filters', inject(function (StatisticsService) {
                 //given
                 stateMock.playground.grid.selectedColumn = barChartNumCol;
+                stateMock.playground.grid.filteredRecordsOfSelectedColumn = [{'0000' : 1}];
                 StatisticsService.statistics = {
                     common: {
                         COUNT: 4,
@@ -437,8 +438,10 @@ describe('Statistics service', function () {
 
                 //when
                 StatisticsService.processData();
-
                 //then
+                expect(StatisticsService.histogram.data[0].filteredOccurrences).toBe(1);
+                expect(StatisticsService.histogram.data[0].data).toEqual([barChartNumCol.statistics.histogram[0].range.min, barChartNumCol.statistics.histogram[0].range.max]);
+                expect(StatisticsService.histogram.data[1].filteredOccurrences).toBe(0);
                 expect(StatisticsService.histogram.data[1].data).toEqual([barChartNumCol.statistics.histogram[1].range.min, barChartNumCol.statistics.histogram[1].range.max]);
             }));
 
