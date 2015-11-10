@@ -50,6 +50,7 @@
                              on-click="columnProfileCtrl.addBarchartFilter"
                              visu-data="columnProfileCtrl.histogram.data"
                              value-field="formattedValue"
+                             value-field-2="filteredOccurrences"
                              key-field="{{columnProfileCtrl.histogram.key}}"
                              key-label="{{columnProfileCtrl.histogram.label}}"></horizontal-barchart>
 
@@ -60,6 +61,7 @@
                            on-click="columnProfileCtrl.addRangeFilter"
                            visu-data="columnProfileCtrl.histogram.data"
                            value-field="{{columnProfileCtrl.histogram.key}}"
+                           value-field-2="filteredOccurrences"
                            key-field="data"
                            active-limits="columnProfileCtrl.histogram.activeLimits"
                            key-label="{{columnProfileCtrl.histogram.label}}"></vertical-barchart>
