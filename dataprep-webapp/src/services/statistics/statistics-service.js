@@ -109,11 +109,11 @@
                 return {
                     'data': [histDatum.range.min, histDatum.range.max],
                     'occurrences': histDatum.occurrences,
-                    'filteredValue' : _.filter(filteredRecordsValues,
+                    'filteredOccurrences' : _.filter(filteredRecordsValues,
                                                 function(value){
                                                         return  _.isNumber(+value) &&
                                                             Number(value) >= histDatum.range.min &&
-                                                            Number(value) <= histDatum.range.max
+                                                            Number(value) <= histDatum.range.max;
                                                 }
                                         ).length //Deal with the max value of the last range
                 };
@@ -129,7 +129,7 @@
          * @param {string} key The value key
          * @param {string} label The value label
          * @param {Array} dataTable The table to display
-         * @description Set the frequency table that fit the histogram format
+         * @description Set the frequency table that fit the histogram format (filter is managed in frontend)
          */
         function initClassicHistogram(key, label, dataTable) {
 
@@ -138,7 +138,7 @@
             service.histogram = {
                 data: _.map(dataTable, function (rec) {
                     rec.formattedValue = TextFormatService.adaptToGridConstraints(rec.data);
-                    rec.filteredValue = _.filter(filteredRecordsValues, function(value){ return value === rec.data; }).length;
+                    rec.filteredOccurrences = _.filter(filteredRecordsValues, function(value){ return value === rec.data; }).length;
                     return rec;
                 }),
                 key: key,
@@ -148,6 +148,15 @@
         }
 
 
+        /**
+         * @ngdoc method
+         * @name initAggregationHistogram
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {string} key The value key
+         * @param {string} label The value label
+         * @param {Array} dataTable The table to display
+         * @description Set the frequency table that fit the histogram format for aggregation (filter is managed in backend)
+         */
         function initAggregationHistogram(key, label, dataTable) {
 
             service.histogram = {

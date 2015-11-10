@@ -26,11 +26,13 @@
                 visuData: '=',
                 keyField: '@',
                 valueField: '@',
+                valueField2: '@',
                 keyLabel:'@'
             },
             link: function (scope, element, attrs) {
                 var xField = scope.keyField;//occurences
                 var yField = scope.valueField;
+                var yField2 = scope.valueField2;
                 var renderTimeout;
 				var tip;
 
@@ -64,8 +66,8 @@
 						.offset([-10, 0])
 						.html(function(d) {
 
-                            if (typeof d.filteredValue !== 'undefined') {
-                                return 	'<strong>'+ scope.keyLabel +':</strong> <span style="color:yellow">' + d.filteredValue + ' / ' + d[xField] + '</span>'+
+                            if (typeof d[yField2] !== 'undefined') {
+                                return 	'<strong>'+ scope.keyLabel +':</strong> <span style="color:yellow">' + d[yField2] + ' / ' + d[xField] + '</span>'+
                                     '<br/>'+
                                     '<br/>'+
                                     '<strong>Record:</strong> <span style="color:yellow">'+ d[yField] + '</span>';
@@ -102,7 +104,7 @@
                     var bar;
                     var frontBar;
                     //If multi columns
-                    if (statData.length > 0 && typeof statData[0].filteredValue !== 'undefined') {
+                    if (statData.length > 0 && typeof statData[0][yField2] !== 'undefined') {
 
                         bar = svg.selectAll('g.bar')
                             .data(statData)
@@ -131,7 +133,7 @@
                             .attr('width', 0)
                             .transition().delay(function (d,i){ return i * 30;})
                             .attr('width', function(d) {
-                                return x(d.filteredValue);
+                                return x(d[yField2]);
                             });
                     } else {
 
