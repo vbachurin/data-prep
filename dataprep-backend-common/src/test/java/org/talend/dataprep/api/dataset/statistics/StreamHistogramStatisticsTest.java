@@ -18,6 +18,12 @@ public class StreamHistogramStatisticsTest {
         histogram.setParameters(0);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIllegalArgumentExceptionWhenNumberOfBinsNotPowerOfTwo() {
+        // given
+        final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
+        histogram.setParameters(3);
+    }
     @Test
     public void shouldBConsistentWhenNoValueAdded() throws Exception {
         // given
@@ -45,6 +51,13 @@ public class StreamHistogramStatisticsTest {
         assertEquals(1, histogram.getMin(), 0);
         assertEquals(1, histogram.getMax(), 0);
         assertEquals(16, histogram.getNumberOfBins());
+        assertEquals(1, histogram.getHistogram().size());
+
+        ArrayList<Range> ranges = new ArrayList<>(histogram.getHistogram().keySet());
+        Range min = ranges.get(0);
+        assertEquals(1, min.getLower(), 0);
+        assertEquals(1, min.getUpper(), 0);
+
     }
 
     @Test
@@ -100,7 +113,7 @@ public class StreamHistogramStatisticsTest {
     public void shouldBeConsistentWhenAHundredValuesUnorderedFromOneHundredToOneAreAdded() throws Exception {
         // given
         final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
-        histogram.setParameters(4);
+        histogram.setParameters(2);
         int[] array = { 48, 49, 50, 51, 32, 33, 34, 35, 96, 97, 98, 100, 15, 16, 17, 18, 91, 90, 92, 93, 94, 95, 1, 2, 3, 4, 5, 6,
                 7, 8, 9, 10, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 11, 12, 13, 14, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 20,
                 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 36, 37, 38, 39, 40, 41, 42,
@@ -113,7 +126,7 @@ public class StreamHistogramStatisticsTest {
         assertEquals(50.5, histogram.getMean(), 0);
         assertEquals(1, histogram.getMin(), 0);
         assertEquals(100, histogram.getMax(), 0);
-        assertEquals(4, histogram.getNumberOfBins());
+        assertEquals(2, histogram.getNumberOfBins());
 
         Collection<Long> counts = histogram.getHistogram().values();
         long sum = 0;
