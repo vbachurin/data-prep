@@ -109,11 +109,13 @@
                 return {
                     'data': [histDatum.range.min, histDatum.range.max],
                     'occurrences': histDatum.occurrences,
-                    'filteredValue' : _.filter(filteredRecordsValues, function(value){
-                        return  _.isNumber(+value) &&
-                                ((Number(value) >= histDatum.range.min &&
-                                Number(value) < histDatum.range.max) ||
-                                Number(value) === state.playground.grid.selectedColumn.statistics.max);}).length //Deal with the max value of the last range
+                    'filteredValue' : _.filter(filteredRecordsValues,
+                                                function(value){
+                                                        return  _.isNumber(+value) &&
+                                                            Number(value) >= histDatum.range.min &&
+                                                            Number(value) <= histDatum.range.max
+                                                }
+                                        ).length //Deal with the max value of the last range
                 };
             });
 
