@@ -83,6 +83,50 @@ describe('Statistics service', function () {
         }
     };
 
+    var barChartStrCol2 = {
+        id: '0010',
+        'domain': 'barchartAndString',
+        'type': 'string',
+        'statistics': {
+            'frequencyTable': [
+                {
+                    'data': '   toto',
+                    'occurences': 1
+                },
+                {
+                    'data': 'titi',
+                    'occurences': 1
+                },
+                {
+                    'data': 'coucou',
+                    'occurences': 1
+                },
+                {
+                    'data': 'cici',
+                    'occurences': 1
+                }
+            ],
+            textLengthSummary: {
+                averageLength: 10.13248646854654,
+                minimalLength: 12,
+                maximalLength: 14
+            },
+            count: 4,
+            distinctCount: 5,
+            duplicateCount: 6,
+            empty: 7,
+            invalid: 8,
+            valid: 9,
+            min: 10,
+            max: 11,
+            mean: 12,
+            variance: 13,
+            quantiles: {
+                lowerQuantile: 'NaN'
+            }
+        }
+    };
+
     var mapCol = {
         'domain': 'US_STATE_CODE',
         'type': '',
@@ -299,9 +343,10 @@ describe('Statistics service', function () {
                 expect(StatisticsService.stateDistribution).toBeFalsy();
             }));
 
-            it('should set the frequency data with formatted value when column type is "string"', inject(function (StatisticsService) {
+            it('should set the frequency data with formatted value when column type is "string" with filter', inject(function (StatisticsService) {
                 //given
                 stateMock.playground.grid.selectedColumn = barChartStrCol;
+                stateMock.playground.grid.filteredRecordsOfSelectedColumn = [{'0010' : '   toto'}, {'0010' : '   toto'}, {'0010' : '   toto'}, {'0010' : 'titi'}, {'0010' : 'titi'}];
                 expect(StatisticsService.histogram).toBeFalsy();
 
                 //when
@@ -310,14 +355,37 @@ describe('Statistics service', function () {
                 //then
                 expect(StatisticsService.histogram).toEqual({
                     data: [
-                        {data: '   toto', occurences: 202, formattedValue: '<span class="hiddenChars">   </span>toto'},
-                        {data: 'titi', occurences: 2, formattedValue: 'titi'},
-                        {data: 'coucou', occurences: 102, formattedValue: 'coucou'},
-                        {data: 'cici', occurences: 22, formattedValue: 'cici'}
+                        {data: '   toto', occurences: 202, formattedValue: '<span class="hiddenChars">   </span>toto', filteredOccurrences: 3},
+                        {data: 'titi', occurences: 2, formattedValue: 'titi', filteredOccurrences: 2},
+                        {data: 'coucou', occurences: 102, formattedValue: 'coucou', filteredOccurrences: 0},
+                        {data: 'cici', occurences: 22, formattedValue: 'cici', filteredOccurrences: 0}
                     ],
                     key: 'occurrences',
                     label: 'Occurrences',
                     column: barChartStrCol
+                });
+            }));
+
+            it('should set the frequency data with formatted value when column type is "string" without filter', inject(function (StatisticsService) {
+                //given
+                stateMock.playground.grid.selectedColumn = barChartStrCol2;
+                stateMock.playground.grid.filteredRecordsOfSelectedColumn = [{'0010' : '   toto'}, {'0010' :'coucou'}, {'0010' :'cici'}, {'0010' :'titi'}];
+                expect(StatisticsService.histogram).toBeFalsy();
+
+                //when
+                StatisticsService.processData();
+
+                //then
+                expect(StatisticsService.histogram).toEqual({
+                    data: [
+                        {data: '   toto', occurences: 1, formattedValue: '<span class="hiddenChars">   </span>toto', filteredOccurrences: 1},
+                        {data: 'titi', occurences: 1, formattedValue: 'titi', filteredOccurrences: 1},
+                        {data: 'coucou', occurences: 1, formattedValue: 'coucou', filteredOccurrences: 1},
+                        {data: 'cici', occurences: 1, formattedValue: 'cici', filteredOccurrences: 1}
+                    ],
+                    key: 'occurrences',
+                    label: 'Occurrences',
+                    column: barChartStrCol2
                 });
             }));
 
@@ -707,7 +775,7 @@ describe('Statistics service', function () {
         }));
 
         describe('with NO provided aggregation', function () {
-            it('should update histogram data with classical occurrence histogram', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+            it('should update histogram data with classical occurrence histogram with filter', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
                 //given
                 stateMock.playground.grid.selectedColumn = barChartStrCol;
                 spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when());
@@ -719,10 +787,10 @@ describe('Statistics service', function () {
                 expect(StatisticsRestService.getAggregations).not.toHaveBeenCalled();
                 expect(StatisticsService.histogram).toEqual({
                     data: [
-                        {data: '   toto', occurences: 202, formattedValue: '<span class="hiddenChars">   </span>toto'},
-                        {data: 'titi', occurences: 2, formattedValue: 'titi'},
-                        {data: 'coucou', occurences: 102, formattedValue: 'coucou'},
-                        {data: 'cici', occurences: 22, formattedValue: 'cici'}
+                        {data: '   toto', occurences: 202, formattedValue: '<span class="hiddenChars">   </span>toto', filteredOccurrences: 0 },
+                        {data: 'titi', occurences: 2, formattedValue: 'titi', filteredOccurrences: 0},
+                        {data: 'coucou', occurences: 102, formattedValue: 'coucou', filteredOccurrences: 0},
+                        {data: 'cici', occurences: 22, formattedValue: 'cici', filteredOccurrences: 0}
                     ],
                     key: 'occurrences',
                     label: 'Occurrences',
@@ -1034,9 +1102,10 @@ describe('Statistics service', function () {
             spyOn(StorageService, 'removeAggregation').and.returnValue();
         }));
 
-        it('should update histogram data with classical occurrence when there is no saved aggregation on the current preparation/dataset/column', inject(function ($rootScope, StatisticsService, StorageService) {
+        it('should update histogram data with classical occurrence when there is no saved aggregation on the current preparation/dataset/column with filter', inject(function ($rootScope, StatisticsService, StorageService) {
             //given
             stateMock.playground.grid.selectedColumn = barChartStrCol;
+            stateMock.playground.grid.filteredRecordsOfSelectedColumn = [{'0010' : '   toto'}];
             spyOn(StorageService, 'getAggregation').and.returnValue();
 
             //when
@@ -1047,10 +1116,10 @@ describe('Statistics service', function () {
             expect(StorageService.getAggregation).toHaveBeenCalledWith(datasetId, preparationId, barChartStrCol.id);
             expect(StatisticsService.histogram).toEqual({
                 data: [
-                    {data: '   toto', occurences: 202, formattedValue: '<span class="hiddenChars">   </span>toto'},
-                    {data: 'titi', occurences: 2, formattedValue: 'titi'},
-                    {data: 'coucou', occurences: 102, formattedValue: 'coucou'},
-                    {data: 'cici', occurences: 22, formattedValue: 'cici'}
+                    {data: '   toto', occurences: 202, formattedValue: '<span class="hiddenChars">   </span>toto', filteredOccurrences: 1},
+                    {data: 'titi', occurences: 2, formattedValue: 'titi', filteredOccurrences: 0},
+                    {data: 'coucou', occurences: 102, formattedValue: 'coucou', filteredOccurrences: 0},
+                    {data: 'cici', occurences: 22, formattedValue: 'cici', filteredOccurrences: 0}
                 ],
                 key: 'occurrences',
                 label: 'Occurrences',

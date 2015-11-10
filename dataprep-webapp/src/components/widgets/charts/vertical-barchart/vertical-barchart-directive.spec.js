@@ -63,7 +63,7 @@ describe('verticalBarchart directive', function () {
         jasmine.clock().tick(100);
 
         //then
-        expect(element.find('rect').length).toBe(statsData.length * 2);
+        expect(element.find('rect').length).toBe(statsData.length * 3); // 3 chart columns
         expect(element.find('.bg-rect').length).toBe(statsData.length);
         expect(element.find('.bar').length).toBe(statsData.length);
         expect(element.find('.grid').length).toBe(1);
