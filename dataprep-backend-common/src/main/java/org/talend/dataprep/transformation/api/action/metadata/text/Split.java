@@ -134,6 +134,7 @@ public class Split extends ActionMetadata implements ColumnAction {
                     final ColumnMetadata c = ColumnMetadata.Builder //
                             .column() //
                             .copy(column) //
+                            .type(Type.STRING) //
                             .computedId(StringUtils.EMPTY) //
                             .name(column.getName() + SPLIT_APPENDIX) //
                             .build();
