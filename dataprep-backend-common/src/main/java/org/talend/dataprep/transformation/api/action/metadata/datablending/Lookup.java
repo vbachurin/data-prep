@@ -7,6 +7,7 @@ import static org.talend.dataprep.transformation.api.action.parameters.Parameter
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.STRING;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -92,9 +93,9 @@ public class Lookup extends ActionMetadata implements DataSetAction {
      */
     @Override
     public List<Parameter> getParameters() {
-        // filters implicit parameters to remove the unnecessary row id
-        final List<Parameter> parameters = ImplicitParameters.getParameters();
-        parameters.remove(ImplicitParameters.ROW_ID.getParameter());
+        final List<Parameter> parameters = new ArrayList<>();
+        parameters.add(ImplicitParameters.COLUMN_ID.getParameter());
+        parameters.add(ImplicitParameters.FILTER.getParameter());
         parameters.add(new Parameter(LOOKUP_DS_NAME.getKey(), STRING, adaptedNameValue, false, false));
         parameters.add(new Parameter(LOOKUP_DS_ID.getKey(), STRING, adaptedDatasetIdValue, false, false));
         parameters.add(new Parameter(LOOKUP_DS_URL.getKey(), STRING, adaptedUrlValue, false, false));
