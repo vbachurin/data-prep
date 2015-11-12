@@ -2297,15 +2297,6 @@
         "default": ""
       },
       {
-        "name": "selected_column",
-        "type": "column",
-        "implicit": false,
-        "canBeBlank": false,
-        "description": "Combine the current column with this one",
-        "label": "Column",
-        "default": ""
-      },
-      {
         "name": "prefix",
         "type": "string",
         "implicit": false,
@@ -2315,13 +2306,40 @@
         "default": ""
       },
       {
-        "name": "concat_separator",
-        "type": "string",
-        "implicit": false,
-        "canBeBlank": true,
-        "description": "Optional new column separator",
-        "label": "Separator",
-        "default": ""
+        "name": "other_column?",
+        "type": "select",
+        "default": "Another column",
+        "configuration": {
+          "values": [
+            {
+              "value": "Another column",
+              "parameters": [
+                {
+                  "name": "selected_column",
+                  "type": "column",
+                  "implicit": false,
+                  "canBeBlank": false,
+                  "description": "Combine the current column with this one",
+                  "label": "Column",
+                  "default": ""
+                },
+                {
+                  "name": "concat_separator",
+                  "type": "string",
+                  "implicit": false,
+                  "canBeBlank": true,
+                  "description": "Optional new column separator",
+                  "label": "Separator",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "value": "No other column"
+            }
+          ],
+          "multiple": false
+        }
       },
       {
         "name": "suffix",
