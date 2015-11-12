@@ -11,6 +11,15 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
+/**
+ * CSV FormatGuesser.
+ *
+ * Read the first 100 lines or 64k chars to check if given dataset is a CSV as well as its potential separator.
+ *
+ * Separator are chosen out of
+ *
+ * @see FormatGuesser
+ */
 @Component
 public class LineBasedFormatGuesser implements FormatGuesser {
 
@@ -20,7 +29,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
     /** Detectors used to check the encoding. */
     private List<WrongEncodingDetector> detectors = Arrays.asList( //
             new WrongEncodingDetector(65533), //
-            new WrongEncodingDetector(0000) //
+            new WrongEncodingDetector(0) //
     );
 
     /** The csv format guesser. */
@@ -74,7 +83,6 @@ public class LineBasedFormatGuesser implements FormatGuesser {
         try {
             Reader reader = encoding != null ? new InputStreamReader(is, encoding) : new InputStreamReader(is);
             try (LineNumberReader lineNumberReader = new LineNumberReader(reader)) {
-                List<Separator> separators = new ArrayList<>();
                 Map<Character, Separator> separatorMap = new HashMap<>();
                 long totalChars = 0;
                 int lineCount = 0;
@@ -89,31 +97,28 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                         lineCount++;
                     }
                     for (int i = 0; i < s.length(); i++) {
+
                         char c = s.charAt(i);
+
                         // check the encoding
-                        for (WrongEncodingDetector detector : detectors) {
-                            try {
-                                detector.checkChar(c, totalChars);
-                            } catch (IOException e) {
-                                LOGGER.debug(encoding + " is assumed wrong" + e);
-                                return null;
-                            }
+                        try {
+                            checkEncoding(c, totalChars);
+                        } catch (IOException e) {
+                            LOGGER.debug(encoding + " is assumed wrong" + e);
+                            return null;
                         }
+
                         if ('"' == c) {
                             inQuote = !inQuote;
                         }
-                        if (!Character.isLetterOrDigit(c) && !"\"' .-".contains(s.subSequence(i, i + 1)) && (!inQuote)) {
-                            Separator separator = separatorMap.get(c);
-                            if (separator == null) {
-                                separator = new Separator(c);
-                                separatorMap.put(c, separator);
-                                separators.add(separator);
-                            }
-                            separator.totalCountPlusOne();
+
+                        if (!inQuote) {
+                            processCharAsSeparatorCandidate(c, separatorMap, lineCount);
                         }
+
                     }
                 }
-                return chooseSeparator(separators, lineCount);
+                return chooseSeparator(new ArrayList<>(separatorMap.values()), lineCount);
             }
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_CONTENT, e);
@@ -124,7 +129,38 @@ public class LineBasedFormatGuesser implements FormatGuesser {
     }
 
     /**
-     * Choose the best separator out of the ones.
+     * Check the encoding with every WrongEncodingDetector.
+     *
+     * @param c the current char to check.
+     * @param totalChars the total number of chars so far.
+     * @throws IOException if the encoding is assumed wrong.
+     */
+    private void checkEncoding(char c, long totalChars) throws IOException {
+        for (WrongEncodingDetector detector : detectors) {
+            detector.checkChar(c, totalChars);
+        }
+    }
+
+    /**
+     * Detects if the given char is a separator candidate. If true, the separator is added within the separators map.
+     *
+     * @param candidate the candidate to analyse.
+     * @param separatorMap the map of current candidates.
+     * @param lineNumber the current line number.
+     */
+    protected void processCharAsSeparatorCandidate(char candidate, Map<Character, Separator> separatorMap, int lineNumber) {
+        if (!Character.isLetterOrDigit(candidate)) {
+            Separator separator = separatorMap.get(candidate);
+            if (separator == null) {
+                separator = new Separator(candidate);
+                separatorMap.put(candidate, separator);
+            }
+            separator.incrementCount(lineNumber);
+        }
+    }
+
+    /**
+     * Choose the best separator out of the given ones.
      *
      * @param separators the list of separators found in the CSV (may be empty but not null.
      * @param lineCount number of lines in the CSV.
@@ -146,16 +182,30 @@ public class LineBasedFormatGuesser implements FormatGuesser {
             return separators.get(0);
         }
 
-        // compute the average per line for separators
+        // compute the score for each separator
         separators.forEach(s -> {
+
+            // compute average per line
             double averagePerLine = s.getTotalCount() / lineCount;
             s.setAveragePerLine(averagePerLine);
+
+            // compute the standard deviation
+            double sum = 0;
+            for (int currentLine = 0; currentLine < lineCount; currentLine++) {
+                final double currentLineCount = s.getCount(lineCount);
+                sum += currentLineCount * Math.pow(currentLine - averagePerLine, 2);
+            }
+            s.setStandardDeviation(sum / s.getTotalCount());
+
         });
 
-        // remove irrelevant separators (0 as average per line that can happen when you read binary files)
+        // filter and sort separators
         return separators.stream()
-                .filter(separator -> separator.getAveragePerLine() > 0) //
-                .sorted((sep0, sep1) -> Double.compare(sep1.getAveragePerLine(), sep0.getAveragePerLine())) //
+.filter(separator -> separator.getAveragePerLine() > 0) // remove irrelevant
+                                                                                          // separators
+                .sorted((s0, s1) -> Double.compare(s1.getAveragePerLine(), s0.getAveragePerLine())) // sort by average
+                .sorted((s0, s1) -> Double.compare(s0.getStandardDeviation(), s1.getStandardDeviation())) // sort by
+                                                                                                          // sddev
                 .filter(sep -> validSeparators.contains(sep.getSeparator())) // filter out invalid separators
                 .findFirst() //
                 .get();

@@ -1,8 +1,12 @@
 package org.talend.dataprep.schema;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,7 +42,7 @@ public class LineBasedFormatGuesserTest {
     public void should_not_guess() throws IOException {
         FormatGuesser.Result actual = guesser.guess(new ByteArrayInputStream(new byte[0]), "UTF-8");
         Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getFormatGuess() instanceof UnsupportedFormatGuess);
+        assertTrue(actual.getFormatGuess() instanceof UnsupportedFormatGuess);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -55,7 +59,7 @@ public class LineBasedFormatGuesserTest {
             FormatGuesser.Result actual = guesser.guess(inputStream, "UTF-8");
 
             Assert.assertNotNull(actual);
-            Assert.assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
+            assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
         }
     }
 
@@ -68,7 +72,7 @@ public class LineBasedFormatGuesserTest {
             FormatGuesser.Result actual = guesser.guess(inputStream, "UTF-8");
 
             Assert.assertNotNull(actual);
-            Assert.assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
+            assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
             char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
             Assert.assertEquals(separator, ';');
         }
@@ -83,7 +87,7 @@ public class LineBasedFormatGuesserTest {
             FormatGuesser.Result actual = guesser.guess(inputStream, "UTF-8");
 
             Assert.assertNotNull(actual);
-            Assert.assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
+            assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
             char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
             Assert.assertEquals(separator, ';');
         }
@@ -98,7 +102,7 @@ public class LineBasedFormatGuesserTest {
             FormatGuesser.Result actual = guesser.guess(inputStream, "UTF-8");
 
             Assert.assertNotNull(actual);
-            Assert.assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
+            assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
             char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
             Assert.assertEquals(separator, ';');
         }
@@ -113,10 +117,35 @@ public class LineBasedFormatGuesserTest {
             FormatGuesser.Result actual = guesser.guess(inputStream, "UTF-8");
 
             Assert.assertNotNull(actual);
-            Assert.assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
+            assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
             char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
-            Assert.assertEquals(separator, ';');
+            Assert.assertEquals(';', separator);
         }
-
     }
+
+    /**
+     * Have a look at https://jira.talendforge.org/browse/TDP-832
+     */
+    @Test
+    public void should_guess_valid_separator_from_access_log_file() throws IOException {
+        try (InputStream inputStream = this.getClass().getResourceAsStream("tdp-832.csv")) {
+            FormatGuesser.Result actual = guesser.guess(inputStream, "UTF-8");
+
+            Assert.assertNotNull(actual);
+            assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
+            char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
+            Assert.assertEquals(' ', separator);
+        }
+    }
+
+    @Test
+    public void should_not_detect_char_or_digit_separator_candidate() {
+        Map<Character, Separator> separatorMap = new HashMap<>();
+        char[] cases = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
+        for (char candidate : cases) {
+            guesser.processCharAsSeparatorCandidate(candidate, separatorMap, 0);
+        }
+        assertTrue(separatorMap.isEmpty());
+    }
+
 }
