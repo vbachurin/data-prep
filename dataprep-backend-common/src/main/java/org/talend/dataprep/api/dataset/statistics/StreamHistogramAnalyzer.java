@@ -16,9 +16,8 @@ import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.talend.dataquality.statistics.numeric.NumericalStatisticsAnalyzer;
-import org.talend.datascience.common.inference.Analyzer;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramParameter;
-import org.talend.dataquality.statistics.numeric.histogram.HistogramColumnParameter;
+import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.ResizableList;
 import org.talend.datascience.common.inference.type.DataType.Type;
 import org.talend.datascience.common.inference.type.TypeInferenceUtils;
@@ -31,28 +30,16 @@ public class StreamHistogramAnalyzer extends NumericalStatisticsAnalyzer<StreamH
 
     private ResizableList<StreamHistogramStatistics> stats = new ResizableList<>(StreamHistogramStatistics.class);
 
-    private HistogramParameter histogramParameter = null;
-
     /**
      *
      * @param types data types
-     * @param histogramParameter Histogram analzyer's parameter
+     * @param histogramParameter Histogram analyzer's parameter
      */
     public StreamHistogramAnalyzer(Type[] types, HistogramParameter histogramParameter) {
         super(types);
         if (histogramParameter == null) {
             throw new IllegalArgumentException("Histogram analyzer's parameter should is null.");
         }
-        setParameters(histogramParameter);
-    }
-
-    /**
-     * Set histogram analyzer's parameters
-     *
-     * @param histogramParameter Histogram analzyer's parameter
-     */
-    private void setParameters(HistogramParameter histogramParameter) {
-        this.histogramParameter = histogramParameter;
     }
 
     @Override
@@ -66,20 +53,9 @@ public class StreamHistogramAnalyzer extends NumericalStatisticsAnalyzer<StreamH
                     + "Using method: setTypes(DataType.Type[] types) to set the types. ");
 
         if (stats.resize(record.length)) {
-            int colIdx = 0;
             for (StreamHistogramStatistics stat : stats) {
-                HistogramColumnParameter columnParameter = histogramParameter.getColumnParameter(colIdx);
                 // Set column parameters to histogram statistics.
-                double max = histogramParameter.getDefaultMax();
-                double min = histogramParameter.getDefaultMin();
-                int numBins = histogramParameter.getDefaultNumBins();
-                if (columnParameter != null) {
-                    min = columnParameter.getMin();
-                    max = columnParameter.getMax();
-                    numBins = columnParameter.getNumBins();
-                }
-                stat.setParameters(32);
-                colIdx++;
+                stat.setNumberOfBins(32);
             }
         }
 

@@ -14,7 +14,6 @@ import org.talend.dataquality.semantic.statistics.SemanticType;
 import org.talend.dataquality.statistics.cardinality.CardinalityStatistics;
 import org.talend.dataquality.statistics.frequency.DataFrequencyStatistics;
 import org.talend.dataquality.statistics.frequency.PatternFrequencyStatistics;
-import org.talend.dataquality.statistics.numeric.histogram.HistogramStatistics;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileStatistics;
 import org.talend.dataquality.statistics.numeric.summary.SummaryStatistics;
 import org.talend.dataquality.statistics.text.TextLengthStatistics;
@@ -77,7 +76,7 @@ public class StatisticsUtilsTest {
         result.add(summaryStatistics);
         // Histogram
         StreamHistogramStatistics histogramStatistics = new StreamHistogramStatistics();
-        histogramStatistics.setParameters(2);
+        histogramStatistics.setNumberOfBins(2);
         histogramStatistics.add(1);
         histogramStatistics.add(2);
         result.add(histogramStatistics);

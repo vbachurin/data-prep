@@ -1,7 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.BooleanUtils.toStringTrueFalse;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.STRING;
 
 import java.util.List;
@@ -36,6 +36,15 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
      * The column appendix.
      */
     public static final String APPENDIX = "_matching"; //$NON-NLS-1$
+    /**
+     * The pattern shown to the user as a list. An item in this list is the value 'other', which allow the user to
+     * manually enter his pattern.
+     */
+    private static final String PATTERN_PARAMETER = "proposed_pattern"; //$NON-NLS-1$
+    /**
+     * The pattern manually specified by the user. Should be used only if PATTERN_PARAMETER value is 'other'.
+     */
+    private static final String MANUAL_PATTERN_PARAMETER = "manual_pattern"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getName()
@@ -44,17 +53,6 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
     public String getName() {
         return MATCHES_PATTERN_ACTION_NAME;
     }
-
-    /**
-     * The pattern shown to the user as a list. An item in this list is the value 'other', which allow the user to
-     * manually enter his pattern.
-     */
-    private static final String PATTERN_PARAMETER = "proposed_pattern"; //$NON-NLS-1$
-
-    /**
-     * The pattern manually specified by the user. Should be used only if PATTERN_PARAMETER value is 'other'.
-     */
-    private static final String MANUAL_PATTERN_PARAMETER = "manual_pattern"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#acceptColumn(ColumnMetadata)
@@ -98,8 +96,8 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
      * @return the pattern to use according to the given parameters.
      */
     private String getPattern(Map<String, String> parameters) {
-        return ("other").equals(parameters.get(PATTERN_PARAMETER)) ? parameters.get(MANUAL_PATTERN_PARAMETER) : parameters
-                .get(PATTERN_PARAMETER);
+        return ("other").equals(parameters.get(PATTERN_PARAMETER)) ? parameters.get(MANUAL_PATTERN_PARAMETER)
+                : parameters.get(PATTERN_PARAMETER);
     }
 
     /**

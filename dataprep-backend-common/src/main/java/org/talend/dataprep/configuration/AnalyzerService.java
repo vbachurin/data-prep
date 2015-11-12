@@ -12,6 +12,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
+import org.talend.dataprep.api.dataset.statistics.StreamHistogramAnalyzer;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.exception.TDPException;
@@ -37,7 +38,6 @@ import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.ValueQualityStatistics;
 import org.talend.datascience.common.inference.type.DataType;
 import org.talend.datascience.common.inference.type.DataTypeAnalyzer;
-import org.talend.dataprep.api.dataset.statistics.StreamHistogramAnalyzer;
 
 @Service
 public class AnalyzerService implements DisposableBean {

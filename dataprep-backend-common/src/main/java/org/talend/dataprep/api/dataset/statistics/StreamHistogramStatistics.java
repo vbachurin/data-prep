@@ -20,14 +20,24 @@ import java.util.TreeMap;
 import org.talend.dataquality.statistics.numeric.histogram.Range;
 
 /**
- * This class implements implements a new kind of histogram suitable for evolving data sets like streams.
- * This histogram has to kind of internal representations: its singular representation and regular representation.
- * When starting, the histogram maintains singular bins: it has at most numberOfBins different values, each of them
- * corresponds to a singular bin. A bin is singular if it contains one or many occurrences of a unique value.
- * When the numberOfBins + 1 value appears we switch to a regular representation: each bin may contains many values.
+ * This class implements implements a new kind of histogram suitable for evolving data sets like streams. This histogram
+ * has to kind of internal representations: its singular representation and regular representation. When starting, the
+ * histogram maintains singular bins: it has at most numberOfBins different values, each of them corresponds to a
+ * singular bin. A bin is singular if it contains one or many occurrences of a unique value. When the numberOfBins + 1
+ * value appears we switch to a regular representation: each bin may contains many values.
  *
  */
 public class StreamHistogramStatistics {
+
+    /**
+     * The default bin number which is 32.
+     */
+    private static final int DEFAULT_BIN_NUMBER = 32;
+
+    /**
+     * The number of regulars of this histogram which must be power of 2.
+     */
+    public int numberOfBins = DEFAULT_BIN_NUMBER;
 
     /**
      * Internal representation of the histogram in its regular version.
@@ -37,7 +47,7 @@ public class StreamHistogramStatistics {
     /**
      * Internal representation of histogram in its singular version.
      */
-    private HashMap<Double, Long> singulars = new HashMap<>();
+    private Map<Double, Long> singulars = new HashMap<>();
 
     /**
      * The minimum value know to this histogram.
@@ -60,24 +70,13 @@ public class StreamHistogramStatistics {
     private double binSize = Double.NaN;
 
     /**
-     * The default bin number which is 32.
-     *
-     */
-    private static final int DEFAULT_BIN_NUMBER = 32;
-
-    /**
-     * The number of regulars of this histogram which must be power of 2.
-     */
-    public int numberOfBins = DEFAULT_BIN_NUMBER;
-
-    /**
      * The number of values added, so far, to this histogram.
      */
     private long numberOfValues;
 
     /**
-     * A flag to know whether or not all regulars of this histogram are singular. A bin is singular if it contains one or
-     * many occurrences of a unique value.
+     * A flag to know whether or not all regulars of this histogram are singular. A bin is singular if it contains one
+     * or many occurrences of a unique value.
      *
      */
     private boolean singular = true;
@@ -88,27 +87,13 @@ public class StreamHistogramStatistics {
     private double sum = Double.NaN;
 
     /**
-     *
-     * @param numberOfBins the number of regulars of this histogram.
-     */
-    public void setParameters(int numberOfBins) {
-        if (numberOfBins <= 0) {
-            throw new IllegalArgumentException("The number of bin must be a positive integer and a power of ");
-        }
-        if ((numberOfBins & (numberOfBins - 1)) != 0) {
-            throw new IllegalArgumentException("The number of bin which is " + numberOfBins + " must be a power of 2");
-        }
-        this.numberOfBins = numberOfBins;
-    }
-
-    /**
      * Add the specified value to this histogram.
-     * 
+     *
      * @param d the value to add to this histogram
      */
     public void add(double d) {
         // So far, we have not met n different values
-        if ( (singulars != null) && (singulars.size() < numberOfBins || singulars.containsKey(d))) {
+        if ((singulars != null) && (singulars.size() < numberOfBins || singulars.containsKey(d))) {
             singularAdd(d);
         }
         // We have already met n different values
@@ -119,9 +104,10 @@ public class StreamHistogramStatistics {
 
     /**
      * Add the specified value to this histogram as a singular value
+     *
      * @param d the value to add to this histogram
      */
-    private void singularAdd(double d){
+    private void singularAdd(double d) {
         Long count = singulars.get(d);
         if (count == null) {
             singulars.put(d, 1L);
@@ -143,9 +129,10 @@ public class StreamHistogramStatistics {
 
     /**
      * Add the specified value to this histogram as as regular value ,i.e., in a bucket.
+     *
      * @param d the value to add to this histogram
      */
-    private void regularAdd(double d){
+    private void regularAdd(double d) {
         // We now have in the histogram more than numberOfBins different values and
         // we have to transform it to an histogram of equal size
         if (singular) {
@@ -156,10 +143,9 @@ public class StreamHistogramStatistics {
         }
         if (d < lowerBound) {
             extendToLeft(d);
-        } else // if d is higher than the upper bound
-            if (lowerBound + (numberOfBins * binSize) <= d) {
-                extendToRight(d);
-            }
+        } else if (lowerBound + (numberOfBins * binSize) <= d) { // if d is higher than the upper bound
+            extendToRight(d);
+        }
         // d is the min
         if (d < min) {
             min = d;
@@ -180,15 +166,15 @@ public class StreamHistogramStatistics {
      * all the singular bins become regular (each bin may contains many different values).
      */
     private void turnSingularsToRegulars() {
-        regulars = new long [numberOfBins];
+        regulars = new long[numberOfBins];
         binSize = (max - min) * 2 / numberOfBins;
         lowerBound = min;
-        for ( int i = 0; i < numberOfBins; i++) {
+        for (int i = 0; i < numberOfBins; i++) {
             regulars[i] = 0L;
         }
 
         for (Map.Entry<Double, Long> entry : singulars.entrySet()) {
-            int bin = (int) ((entry.getKey() - min ) /binSize);
+            int bin = (int) ((entry.getKey() - min) / binSize);
             regulars[bin] += entry.getValue();
         }
     }
@@ -196,7 +182,7 @@ public class StreamHistogramStatistics {
     /**
      * This method first merges previously existing regulars up to the factor determined and set the new bin size to a
      * multiple of the previous one. It then place freshly merged bins at the right position in the array.
-     * 
+     *
      * @param d the new value to add to this histogram
      */
     private void extendToLeft(double d) {
@@ -206,7 +192,7 @@ public class StreamHistogramStatistics {
             factor <<= 1;
         }
         binSize = binSize * factor;
-        int offset = (int) (histogramWidth * (factor >>> 1) /binSize);
+        int offset = (int) (histogramWidth * (factor >>> 1) / binSize);
         lowerBound = this.lowerBound - histogramWidth * (factor >>> 1);
 
         // merge previously existing regulars
@@ -216,7 +202,7 @@ public class StreamHistogramStatistics {
     /**
      * This method first merges previously existing regulars up to the factor determined and set the new bin size to a
      * multiple of the previous one. It then place freshly merged bins at the right position in the array.
-     * 
+     *
      * @param d the new value to add to this histogram
      */
     private void extendToRight(double d) {
@@ -228,28 +214,26 @@ public class StreamHistogramStatistics {
         binSize = binSize * factor;
         // merge previously existing regulars
         merge(factor, 0);
-
     }
 
     /**
      * Merge previously existing regulars to have new regulars of width binSize * factor.
+     *
      * @param factor the factor by which the binSize is multiplied
      * @param offset the position of the older lower bound in the new array
      */
-
-
     private void merge(int factor, int offset) {
         // merge previous regulars to form new regulars of newBinSize width
         int k = 0;
-        for(int i = 0; i < numberOfBins; i+= factor) {
+        for (int i = 0; i < numberOfBins; i += factor) {
             long count = 0L;
-            for (int j = i; j < i +factor && j < numberOfBins; j++) {
+            for (int j = i; j < i + factor && j < numberOfBins; j++) {
                 count += regulars[j];
                 regulars[j] = 0;
             }
             regulars[k++] = count;
         }
-        if ( 0 < offset) {
+        if (0 < offset) {
             // move bins according to the offset
             // to avoid overwriting some bins that must not we start from "numberOfBins - 1 - offset"
             for (int i = numberOfBins - 1 - offset; 0 <= i; i--) {
@@ -284,7 +268,6 @@ public class StreamHistogramStatistics {
             result.put(r, regulars[i]);
         }
 
-
         return result;
 
     }
@@ -292,13 +275,14 @@ public class StreamHistogramStatistics {
     /**
      * Return the histogram map where Key is the range and value is the frequency.<br>
      * Key will be of form [d, d]
+     *
      * @return
      */
     private Map<Range, Long> getSingularHistogram() {
         Map<Range, Long> result = new LinkedHashMap<>();
         TreeMap<Number, Long> bins = new TreeMap<>(this.singulars);
         for (Number n : bins.keySet()) {
-            double d = (double)n;
+            double d = (double) n;
             Range r = new Range(d, d);
             result.put(r, bins.get(d));
         }
@@ -307,15 +291,15 @@ public class StreamHistogramStatistics {
 
     /**
      * Return the first non empty bin (a bin with a strictly positive count ).
+     *
      * @return Return the first non empty bin
      */
-    private int firstNonEmptyBin(){
+    private int firstNonEmptyBin() {
         int start = 0;
-        for (int i = 0; i < numberOfBins; i++){
-            if ( regulars[i] == 0){
+        for (int i = 0; i < numberOfBins; i++) {
+            if (regulars[i] == 0) {
                 start++;
-            }
-            else{
+            } else {
                 break;
             }
         }
@@ -324,16 +308,16 @@ public class StreamHistogramStatistics {
 
     /**
      * Return the last non empty bin (a bin with a strictly positive count ).
+     *
      * @return the last non empty bin
      */
-    private int lastNonEmptyBin(){
-        int end = numberOfBins-1;
+    private int lastNonEmptyBin() {
+        int end = numberOfBins - 1;
 
-        for (int i = numberOfBins - 1; i >= 0; i--){
-            if (regulars[i] == 0){
+        for (int i = numberOfBins - 1; i >= 0; i--) {
+            if (regulars[i] == 0) {
                 end--;
-            }
-            else{
+            } else {
                 break;
             }
         }
@@ -342,6 +326,7 @@ public class StreamHistogramStatistics {
 
     /**
      * Return the minimum value added to this histogram.
+     *
      * @return the minimum value added to this histogram
      */
     public double getMin() {
@@ -350,6 +335,7 @@ public class StreamHistogramStatistics {
 
     /**
      * Return the maximum value added to this histogram.
+     *
      * @return the maximum value added to this histogram
      */
     public double getMax() {
@@ -358,6 +344,7 @@ public class StreamHistogramStatistics {
 
     /**
      * Return the arithmetic mean of values added to this histogram.
+     *
      * @return the arithmetic mean of values added to this histogram
      */
     public double getMean() {
@@ -366,6 +353,7 @@ public class StreamHistogramStatistics {
 
     /**
      * Return the maximum number of bins of this histogram.
+     *
      * @return
      */
     public int getNumberOfBins() {
@@ -373,7 +361,23 @@ public class StreamHistogramStatistics {
     }
 
     /**
+     * Set number of bins in histogram. Number must be a positive integer and a power of 2.
+     *
+     * @param numberOfBins the number of regulars of this histogram. Value must be a positive integer and a power of 2.
+     */
+    public void setNumberOfBins(int numberOfBins) {
+        if (numberOfBins <= 0) {
+            throw new IllegalArgumentException("The number of bin must be a positive integer and a power of 2");
+        }
+        if ((numberOfBins & (numberOfBins - 1)) != 0) {
+            throw new IllegalArgumentException("The number of bin which is " + numberOfBins + " must be a power of 2");
+        }
+        this.numberOfBins = numberOfBins;
+    }
+
+    /**
      * Return the number of values added to this histogram.
+     * 
      * @return the number of values added to this histogram
      */
     public long getNumberOfValues() {
