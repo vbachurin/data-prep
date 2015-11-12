@@ -156,7 +156,6 @@ public class DataSetImportTest {
      * real life situation, this kind of event is rather unlikely since the UUID of the data set is only returned once
      * the creation completes (no access before this).
      */
-    @Test
     public void testCannotOpenDataSetBeingImported() throws Exception {
         // Create a data set (asynchronously)
         Runnable creation = () -> {
