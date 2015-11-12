@@ -72,6 +72,10 @@ public class DataSetImportTest {
         dataSetMetadataRepository.clear();
     }
 
+    @Test
+    public void testNothing(){
+    }
+
     /**
      * Test 'importing' status: the data set should remain in 'importing' state as long as create operation isn't
      * completed.
