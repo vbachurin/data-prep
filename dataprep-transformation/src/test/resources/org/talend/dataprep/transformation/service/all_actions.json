@@ -1333,7 +1333,6 @@
         "implicit": false,
         "canBeBlank": true,
         "description": "Number of token to split the value in",
-        "label": "Limit",
         "default": "2"
       },
       {
