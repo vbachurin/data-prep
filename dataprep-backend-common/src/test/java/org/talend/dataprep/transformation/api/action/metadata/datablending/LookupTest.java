@@ -1,12 +1,12 @@
 package org.talend.dataprep.transformation.api.action.metadata.datablending;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.COLUMN_ID;
 import static org.talend.dataprep.transformation.api.action.metadata.datablending.Lookup.Parameters.LOOKUP_DS_URL;
 import static org.talend.dataprep.transformation.api.action.metadata.datablending.Lookup.Parameters.LOOKUP_JOIN_ON;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -63,6 +63,29 @@ public class LookupTest {
     @Test
     public void testCategory() {
         assertEquals("data_blending", action.getCategory());
+    }
+
+    @Test
+    public void testParameters() {
+
+        // given
+        final List<String> expectedParametersName = Arrays.asList( //
+                "column_id", //
+                "filter", //
+                "lookup_ds_name", //
+                "lookup_ds_id", //
+                "lookup_ds_url", //
+                "lookup_join_on", //
+                "lookup_join_on_name", //
+                "lookup_selected_cols");
+
+        // when
+        final List<Parameter> parameters = action.getParameters();
+
+        // then
+        assertEquals(expectedParametersName.size(), parameters.size());
+        parameters.forEach(p -> assertTrue(expectedParametersName.contains(p.getName())));
+
     }
 
     @Test

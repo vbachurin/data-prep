@@ -94,7 +94,7 @@ public class LookupRowMatcher {
     }
 
     /**
-     *
+     * Gently close the input stream as well as the http client.
      */
     @PreDestroy
     private void destroy() {
