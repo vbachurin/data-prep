@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,7 +141,7 @@ public abstract class ActionMetadata {
      */
     private Long getRowId(final Map<String, String> parameters) {
         final String rowIdAsString = parameters.get(ROW_ID.getKey());
-        if (rowIdAsString != null) {
+        if (StringUtils.isNotBlank(rowIdAsString)) {
             return Long.parseLong(rowIdAsString);
         }
         return null;
