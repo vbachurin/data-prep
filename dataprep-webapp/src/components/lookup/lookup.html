@@ -18,14 +18,14 @@
        </div>
 
        <div id="lookup-right">
-           join on column id: <input type="text" ng-model="LookupCtrl.joinOnId">
-           join on column name: <input type="text" ng-model="LookupCtrl.joinOnName">
-           lookup columns: <input type="text" ng-model="LookupCtrl.lookupColumns">
+           join on column id ex:0000 <input type="text" ng-model="LookupCtrl.joinOnId">
+           join on column name ex: id <input type="text" ng-model="LookupCtrl.joinOnName">
+           lookup columns ex:0000,0001 <input type="text" ng-model="LookupCtrl.lookupColumns">
 
-           <transform-form transformation="LookupCtrl.potentialTransformations[0]"
+           <transform-form transformation="LookupCtrl.lookupAction"
                            on-submit="LookupCtrl.submitLookup(LookupCtrl.lookupAction, 'dataset')(params)"
                            on-submit-hover-on="LookupCtrl.hoverSubmitBtn()(params)"
-                           on-submit-hover-off="LookupCtrl.leaveSubmitLookup()"> </transform-form>
+                           on-submit-hover-off="LookupCtrl.cancelEarlyPreview()"> </transform-form>
        </div>
    </div>
 
