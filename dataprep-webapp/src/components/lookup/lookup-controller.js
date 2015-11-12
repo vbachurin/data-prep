@@ -24,13 +24,9 @@
 		vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
 
 		vm.hoverSubmitBtn = function hoverSubmitBtn(){
-			//vm.setLookupParams();
 			var previewClosure = vm.earlyPreview(vm.lookupAction, 'dataset');
 			return function(params){
-				params.column_id = vm.state.playground.grid.selectedColumn.id;
-				params.lookup_join_on = vm.joinOnId;
-				params.lookup_join_on_name = vm.joinOnName;
-				params.lookup_selected_cols = vm.lookupColumns.split(',');
+				params = populateParams(params);
 				previewClosure(params);
 			};
 		};
@@ -42,18 +38,24 @@
 		};
 
 		vm.joinOnId = '0000';
-		vm.joinOnName = 'identif';
-		vm.lookupColumns = '0001';
+		vm.joinOnName = 'id';
+		vm.lookupColumns = '0001,0002';
+
+		function populateParams (params) {
+			/*jshint camelcase: false */
+			params.column_id = vm.state.playground.grid.selectedColumn.id;
+			params.lookup_join_on = vm.joinOnId;
+			params.lookup_join_on_name = vm.joinOnName;
+			params.lookup_selected_cols = vm.lookupColumns.split(',');
+			return params;
+		}
 
 		vm.submitLookup = function submitLookup(action, scope) {
 			return function(params) {
 				EarlyPreviewService.deactivatePreview();
 				EarlyPreviewService.cancelPendingPreview();
+				params = populateParams(params);
 
-				params.column_id = vm.state.playground.grid.selectedColumn.id;
-				params.lookup_join_on = vm.joinOnId;
-				params.lookup_join_on_name = vm.joinOnName;
-				params.lookup_selected_cols = vm.lookupColumns.split(',');
 
 				TransformationApplicationService.append(action, scope, params)
 					.finally(function() {
@@ -62,13 +64,6 @@
 			};
 		};
 
-		//vm.hoverSubmitLookup = function hoverSubmitLookup () {
-		//	console.log('lookup submit hovered');
-		//};
-
-		//vm.leaveSubmitLookup = function leaveSubmitLookup (){
-		//	console.log('lookup submit left');
-		//};
 
 		//the lookup directive and the
 		$scope.$watch(function(){
