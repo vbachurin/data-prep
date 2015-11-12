@@ -126,7 +126,7 @@
                             .orient('right')
                             .tickSize(w, 0, 0)
                             .tickFormat(d3.format(',d'))
-                            .ticks(9)
+                            .ticks(Math.ceil(h/18))
                     );
 
                     hGrid.selectAll('.tick text')

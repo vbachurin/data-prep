@@ -1,10 +1,41 @@
-<!--<talend-slidable
+<talend-slidable
         class="lookup"
-        visible="lookupCtrl.visible"
+        visible="LookupCtrl.visible"
         side="bottom"
-        control-bar="false">-->
-<ul id="datasets-list-lookup-id">
-    <li ng-repeat="dataset in LookupCtrl.datasets track by $index"><a>{{dataset.name}}</a></li>
-</ul>
-<!--
-</talend-slidable>-->
+        control-bar="false">
+
+   <div class="lookup-header">
+       <hr>
+       line svg goes here : d3.svg.diagonal().source({x:selected_dataset_col_posX,y:0}).target({x:selected_lookup_col_posX,y:30})
+       <hr>
+   </div>
+
+   <div class="lookup-container">
+       <div id="lookup-left">
+        <span ng-repeat = "col in LookupCtrl.datasetLookupService.currentLookupCols">{{col.name}}, </span>
+           <br>
+        <span>{{LookupCtrl.datasetLookupService.currentLookupRecs | json}}</span>
+       </div>
+
+       <div id="lookup-right">
+           join on column id: <input type="text" ng-model="LookupCtrl.joinOnId">
+           join on column name: <input type="text" ng-model="LookupCtrl.joinOnName">
+           lookup columns: <input type="text" ng-model="LookupCtrl.lookupColumns">
+
+           <transform-form transformation="LookupCtrl.potentialTransformations[0]"
+                           on-submit="LookupCtrl.submitLookup(LookupCtrl.lookupAction, 'dataset')(params)"
+                           on-submit-hover-on="LookupCtrl.hoverSubmitBtn()(params)"
+                           on-submit-hover-off="LookupCtrl.leaveSubmitLookup()"> </transform-form>
+       </div>
+   </div>
+
+    <div class="lookup-footer">
+        <hr>
+       <ul>
+           <li ng-repeat="lookupDs in LookupCtrl.potentialTransformations track by $index"
+               ng-click="LookupCtrl.loadSelectedLookupContent(LookupCtrl.potentialTransformations[$index])">
+               <a>{{lookupDs.parameters[4].default}}</a>
+           </li>
+       </ul>
+   </div>
+</talend-slidable>

@@ -2,7 +2,7 @@
     <form ng-submit="formCtrl.paramForm.$valid && formCtrl.transformWithParam()"
           name="formCtrl.paramForm">
         
-        <transform-params parameters="formCtrl.transformation.parameters"></transform-params>
+        <transform-params ng-if="formCtrl.transformation.name !== 'lookup'" parameters="formCtrl.transformation.parameters"></transform-params>
 
         <transform-cluster-params
                 ng-if="formCtrl.transformation.cluster"

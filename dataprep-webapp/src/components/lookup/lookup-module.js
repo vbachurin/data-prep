@@ -9,6 +9,8 @@
      */
     angular.module('data-prep.lookup', [
         'talend.widget',
-        'data-prep.services.dataset'
+        'data-prep.services.state',
+        'data-prep.services.dataset',
+        'data-prep.services.transformation'
     ]);
 })();
