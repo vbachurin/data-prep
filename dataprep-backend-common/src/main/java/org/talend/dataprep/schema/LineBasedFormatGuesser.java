@@ -12,11 +12,20 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 /**
- * CSV FormatGuesser.
+ * <h3>CSV implementation of the formatGuesser</h3>
  *
+ * <p>
  * Read the first 100 lines or 64k chars to check if given dataset is a CSV as well as its potential separator.
+ * </p>
  *
- * Separator are chosen out of
+ * <p>
+ * Separator are chosen out of these rules :
+ * <ul>
+ * <li>highest average occurrence per line</li>
+ * <li>lowest standard deviation (all the lines should have the same number of separators)</li>
+ * <li>is known to be an allowed separator (see LineBasedFormatGuesser#validSeparators)</li>
+ * </ul>
+ * </p>
  *
  * @see FormatGuesser
  */
@@ -183,33 +192,37 @@ public class LineBasedFormatGuesser implements FormatGuesser {
         }
 
         // compute the score for each separator
-        separators.forEach(s -> {
-
-            // compute average per line
-            double averagePerLine = s.getTotalCount() / lineCount;
-            s.setAveragePerLine(averagePerLine);
-
-            // compute the standard deviation
-            double sum = 0;
-            for (int currentLine = 0; currentLine < lineCount; currentLine++) {
-                final double currentLineCount = s.getCount(lineCount);
-                sum += currentLineCount * Math.pow(currentLine - averagePerLine, 2);
-            }
-            s.setStandardDeviation(sum / s.getTotalCount());
-
-        });
+        separators.forEach(s -> computeScore(s, lineCount));
 
         // filter and sort separators
-        return separators.stream()
-.filter(separator -> separator.getAveragePerLine() > 0) // remove irrelevant
-                                                                                          // separators
-                .sorted((s0, s1) -> Double.compare(s1.getAveragePerLine(), s0.getAveragePerLine())) // sort by average
-                .sorted((s0, s1) -> Double.compare(s0.getStandardDeviation(), s1.getStandardDeviation())) // sort by
-                                                                                                          // sddev
+        // @formatter:off
+        return separators.stream().filter(separator -> separator.getAveragePerLine() > 0) // remove irrelevant separators
+                .sorted((s0, s1) -> Double.compare(s1.getAveragePerLine(), s0.getAveragePerLine())) // sort by average (the highest the better)
+                .sorted((s0, s1) -> Double.compare(s0.getStandardDeviation(), s1.getStandardDeviation())) // sort by sddev (the lowest the better)
                 .filter(sep -> validSeparators.contains(sep.getSeparator())) // filter out invalid separators
                 .findFirst() //
                 .get();
+        // @formatter:on
+    }
 
+    /**
+     * Compute the score (average per line and standard deviation) for each separator.
+     *
+     * @param separator the separator to compute the score for.
+     * @param lineCount how many lines have been read.
+     */
+    protected void computeScore(Separator separator, double lineCount) {
+        // compute average per line
+        double averagePerLine = separator.getTotalCount() / lineCount;
+        separator.setAveragePerLine(averagePerLine);
+
+        // compute the standard deviation
+        double sum = 0;
+        for (int currentLine = 1; currentLine <= lineCount; currentLine++) {
+            final double currentLineCount = separator.getCount(currentLine);
+            sum += currentLineCount * Math.pow(currentLine - averagePerLine, 2);
+        }
+        separator.setStandardDeviation(Math.sqrt(sum / separator.getTotalCount()));
     }
 
     /**

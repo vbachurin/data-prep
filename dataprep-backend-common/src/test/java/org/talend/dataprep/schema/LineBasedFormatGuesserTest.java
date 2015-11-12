@@ -1,5 +1,6 @@
 package org.talend.dataprep.schema;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -29,7 +30,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ComponentScan(basePackages = "org.talend.dataprep")
 @EnableAutoConfiguration
 public class LineBasedFormatGuesserTest {
-
 
     /** The format guesser to test. */
     @Autowired
@@ -74,7 +74,7 @@ public class LineBasedFormatGuesserTest {
             Assert.assertNotNull(actual);
             assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
             char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
-            Assert.assertEquals(separator, ';');
+            assertEquals(separator, ';');
         }
     }
 
@@ -89,7 +89,7 @@ public class LineBasedFormatGuesserTest {
             Assert.assertNotNull(actual);
             assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
             char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
-            Assert.assertEquals(separator, ';');
+            assertEquals(separator, ';');
         }
     }
 
@@ -104,7 +104,7 @@ public class LineBasedFormatGuesserTest {
             Assert.assertNotNull(actual);
             assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
             char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
-            Assert.assertEquals(separator, ';');
+            assertEquals(separator, ';');
         }
     }
 
@@ -119,7 +119,7 @@ public class LineBasedFormatGuesserTest {
             Assert.assertNotNull(actual);
             assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
             char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
-            Assert.assertEquals(';', separator);
+            assertEquals(';', separator);
         }
     }
 
@@ -134,7 +134,7 @@ public class LineBasedFormatGuesserTest {
             Assert.assertNotNull(actual);
             assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
             char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
-            Assert.assertEquals(' ', separator);
+            assertEquals(' ', separator);
         }
     }
 
@@ -146,6 +146,31 @@ public class LineBasedFormatGuesserTest {
             guesser.processCharAsSeparatorCandidate(candidate, separatorMap, 0);
         }
         assertTrue(separatorMap.isEmpty());
+    }
+
+    @Test
+    public void shouldComputeScore() {
+        // given
+        Separator sep = new Separator('s');
+        incrementCount(12, 1, sep);
+        incrementCount(10, 2, sep);
+        // nothing on the third line
+        incrementCount(11, 4, sep);
+        incrementCount(13, 5, sep);
+        incrementCount(12, 6, sep);
+
+        // when
+        guesser.computeScore(sep, 6);
+
+        // then
+        assertEquals(9.66, sep.getAveragePerLine(), 0.01);
+        assertEquals(6.27, sep.getStandardDeviation(), 0.01);
+    }
+
+    private void incrementCount(int count, int lineNumber, Separator separator) {
+        for (int i = 0; i < count; i++) {
+            separator.incrementCount(lineNumber);
+        }
     }
 
 }
