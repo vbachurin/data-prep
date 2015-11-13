@@ -2,9 +2,6 @@
     <div class="talend-dropdown-div">
         <talend-dropdown on-open="lookupDatagridHeaderCtrl.initTransformations()">
             <div class="dropdown-container">
-                <div class="dropdown-action">
-                    <div class="dropdown-button" title="{{ lookupDatagridHeaderCtrl.column.name }}"></div>
-                </div>
                 <ul class="dropdown-menu grid-header-menu">
                     <li ng-if="lookupDatagridHeaderCtrl.initTransformationsInProgress" translate-once="LOADING"></li>
                     <li ng-if="lookupDatagridHeaderCtrl.transformations && !lookupDatagridHeaderCtrl.transformations.length" translate-once="NO_TRANSFORMATION"></li>

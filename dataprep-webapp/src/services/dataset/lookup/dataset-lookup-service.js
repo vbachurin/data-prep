@@ -6,7 +6,7 @@
 	 * @name data-prep.services.dataset.service:DatasetLookupService
 	 * @description Column types service
 	 */
-	function DatasetLookupService(DatasetRestService) {
+	function DatasetLookupService(DatasetRestService, GridLookupService) {
 		var service = {
 			loadLookupContent: loadLookupContent,
 			getLookupPossibleActions: getLookupPossibleActions,
@@ -21,6 +21,11 @@
 				.then(function(lookupDsContent){
 					service.currentLookupCols = lookupDsContent.data.columns;
 					service.currentLookupRecs = lookupDsContent.data.records;
+					service.currentLookupMeta = lookupDsContent.data.metadata;
+					service.lookupDsContent = lookupDsContent.data;
+
+					GridLookupService.setData(lookupDsContent.data);
+					GridLookupService.setDataset(lookupDsContent.data.metadata);
 				});
 		}
 
@@ -33,26 +38,14 @@
 		 * @returns {string} ???????????????
 		 */
 		function getLookupPossibleActions(datasetId){
-			return DatasetRestService.getLookupActions(datasetId)
-				.then(extractLookupFiles);
-		}
-
-		function extractLookupFiles (resp){
-			var actionsFormat = _.pluck(resp.data, 'parameters').map(function(paramsTab){
-				return _.reduce(paramsTab, function(res, param){
-					res[param.name] = param.default;
-					return res;
-				},{});
-			});
-			return {
-				transformationFormat : resp.data,
-				actionsFormat : actionsFormat
-			};
+			return DatasetRestService.getLookupActions(datasetId);
 		}
 
 		function resetLookup(){
 			service.currentLookupCols = null;
 			service.currentLookupRecs = null;
+			service.currentLookupMeta = null;
+			service.lookupDsContent = null;
 		}
 	}
 

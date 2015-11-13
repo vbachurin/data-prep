@@ -5,15 +5,6 @@
          ng-class="{'no-transition' : lookupQualityBarCtrl.blockTransition}"
          ng-if="lookupQualityBarCtrl.quality.valid > 0"
          title="{{ lookupQualityBarCtrl.quality.valid }} valid records ({{ lookupQualityBarCtrl.percent.valid }}%)">
-
-        <div class="dropdown-container">
-            <div class="dropdown-action quality-bar-action"></div>
-            <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu">
-                <li ng-click="lookupQualityBarCtrl.filterValidRecords(lookupQualityBarCtrl.column)">
-                    <a>Select Valid Records for {{ lookupQualityBarCtrl.column.name | uppercase }}</a>
-                </li>
-            </ul>
-        </div>
     </div>
 
     <div talend-dropdown
@@ -22,23 +13,6 @@
          ng-class="{'no-transition' : lookupQualityBarCtrl.blockTransition}"
          ng-if="lookupQualityBarCtrl.quality.empty > 0"
          title="{{ lookupQualityBarCtrl.quality.empty }} empty records ({{ lookupQualityBarCtrl.percent.empty }}%)">
-
-        <div class="dropdown-container">
-            <div class="dropdown-action quality-bar-action"></div>
-            <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu" >
-                <li ng-click="lookupQualityBarCtrl.filterEmptyRecords(lookupQualityBarCtrl.column)">
-                    <a>Select Empty Records for {{ lookupQualityBarCtrl.column.name | uppercase
-                        }}</a>
-                </li>
-                <li class="divider"></li>
-                <li><a>Fill Empty records with Top adjacent value</a></li>
-                <li><a>Fill Empty records with Bottom adjacent value</a></li>
-
-                <li ng-repeat="transfo in lookupQualityBarCtrl.transformationsForEmptyCells" ng-click="lookupQualityBarCtrl.applyActionOnColumn(transfo)">
-                    <a>{{transfo.label}}</a>
-                </li>
-            </ul>
-        </div>
     </div>
 
     <div class="record-nok" talend-dropdown
@@ -46,22 +20,5 @@
          ng-class="{'no-transition' : lookupQualityBarCtrl.blockTransition}"
          ng-if="lookupQualityBarCtrl.quality.invalid > 0"
          title="{{ lookupQualityBarCtrl.quality.invalid }} invalid records ({{ lookupQualityBarCtrl.percent.invalid }}%)">
-
-        <div class="dropdown-container">
-            <div class="dropdown-action quality-bar-action"></div>
-            <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu" >
-                <li ng-click="lookupQualityBarCtrl.filterInvalidRecords(lookupQualityBarCtrl.column)">
-                    <a>Select Invalid Records for {{ lookupQualityBarCtrl.column.name | uppercase
-                        }}</a>
-                </li>
-                <li class="divider"></li>
-                <li><a>Replace Invalid Records with Top adjacent value</a></li>
-                <li><a>Replace Invalid Records with Bottom adjacent value</a></li>
-
-                <li ng-repeat="transfo in lookupQualityBarCtrl.transformationsForInvalidCells" ng-click="lookupQualityBarCtrl.applyActionOnColumn(transfo)">
-                    <a>{{transfo.label}}</a>
-                </li>
-            </ul>
-        </div>
     </div>
 </div>

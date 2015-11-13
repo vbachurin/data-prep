@@ -17,11 +17,12 @@
         var lastSelectedTab;
         var lastSelectedColumn;
 
-        return {
+        var service = {
             init: init,
             updateSuggestionPanel: updateSuggestionPanel
         };
 
+        return service;
         /**
          * @ngdoc method
          * @name updateSuggestionPanel
@@ -47,21 +48,21 @@
                 if (!tabHasChanged && !columnHasChanged) {
                     return;
                 }
+                service.lookupSelectedCol = column;
+                //$timeout.cancel(suggestionTimeout);
 
-                $timeout.cancel(suggestionTimeout);
+                //suggestionTimeout = $timeout(function () {
+                //    lastSelectedColumn = column.tdpColMetadata;
+                //    lastSelectedTab = tab;
 
-                suggestionTimeout = $timeout(function () {
-                    lastSelectedColumn = column.tdpColMetadata;
-                    lastSelectedTab = tab;
-
-                    if (tabHasChanged) {
-                        SuggestionService.selectTab(lastSelectedTab);
-                    }
-                    if (columnHasChanged) {
-                        StatisticsService.updateStatistics();
-                        SuggestionService.setColumn(lastSelectedColumn);
-                    }
-                }, 200);
+                //    if (tabHasChanged) {
+                //        SuggestionService.selectTab(lastSelectedTab);
+                //    }
+                //    if (columnHasChanged) {
+                //        StatisticsService.updateStatistics();
+                //        SuggestionService.setColumn(lastSelectedColumn);
+                //    }
+                //}, 200);
             }
         }
 

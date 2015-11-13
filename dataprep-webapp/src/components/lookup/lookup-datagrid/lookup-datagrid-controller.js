@@ -8,8 +8,9 @@
      * @requires data-prep.services.state.constant:state
      * @requires data-prep.lookup-datagrid.service:DatagridTooltipService
      */
-    function LookupDatagridCtrl(state, LookupDatagridTooltipService) {
+    function LookupDatagridCtrl(state, LookupDatagridTooltipService, GridLookupService) {
         this.datagridTooltipService = LookupDatagridTooltipService;
+        this.gridLookupService = GridLookupService;
         this.state = state;
     }
 

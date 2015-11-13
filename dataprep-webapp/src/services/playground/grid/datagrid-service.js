@@ -71,7 +71,7 @@
          * @name execute
          * @methodOf data-prep.services.playground.service:DatagridService
          * @param {Object} executor The infos to apply on the dataset
-         * @description Update the data in the lookup-datagrid with a set of instructions and the column list to apply.
+         * @description Update the data in the datagrid with a set of instructions and the column list to apply.
          * This allows to update the dataset, with limited SlickGrid computation, for more performant operations than
          * setItems which compute everything on the whole dataset.
          */

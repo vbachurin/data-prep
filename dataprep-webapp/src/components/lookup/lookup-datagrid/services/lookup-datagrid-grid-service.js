@@ -13,7 +13,7 @@
      * @requires data-prep.lookup-datagrid.service:DatagridExternalService
      * @requires data-prep.lookup-datagrid.service:DatagridTooltipService
      */
-    function LookupDatagridGridService(StateService, state, DatagridService, LookupDatagridStyleService, LookupDatagridColumnService,
+    function LookupDatagridGridService(GridLookupService, state, DatagridService, LookupDatagridStyleService, LookupDatagridColumnService,
                                        LookupDatagridSizeService, LookupDatagridExternalService, LookupDatagridTooltipService) {
         var grid = null;
         var gridServices = [
@@ -25,8 +25,8 @@
         ];
 
         return {
-            initGrid : initGrid,
-            navigateToFocusedColumn: navigateToFocusedColumn
+            initGrid : initGrid
+            //navigateToFocusedColumn: navigateToFocusedColumn
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -38,11 +38,11 @@
          * @description Attach listeners for big table row management
          */
         function attachLongTableListeners() {
-            state.playground.grid.dataView.onRowCountChanged.subscribe(function () {
+            GridLookupService.lookupGrid.dataView.onRowCountChanged.subscribe(function () {
                 grid.updateRowCount();
                 grid.render();
             });
-            state.playground.grid.dataView.onRowsChanged.subscribe(function (e, args) {
+            GridLookupService.lookupGrid.dataView.onRowsChanged.subscribe(function (e, args) {
                 grid.invalidateRows(args.rows);
                 grid.render();
             });
@@ -58,16 +58,16 @@
             grid.onActiveCellChanged.subscribe(function (e, args) {
                 if (angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
-                    StateService.setGridSelection(column.tdpColMetadata, args.row);
+                    GridLookupService.setGridSelection(column.tdpColMetadata, args.row);
                 }
             });
 
             grid.onHeaderContextMenu.subscribe(function (e, args) {
-                StateService.setGridSelection(args.column.tdpColMetadata);
+                GridLookupService.setGridSelection(args.column.tdpColMetadata);
             });
 
             grid.onHeaderClick.subscribe(function (e, args) {
-                StateService.setGridSelection(args.column.tdpColMetadata);
+                GridLookupService.setGridSelection(args.column.tdpColMetadata);
             });
         }
 
@@ -77,14 +77,14 @@
          * @methodOf data-prep.lookup-datagrid.service:DatagridGridService
          * @description navigates between columns
          */
-        function navigateToFocusedColumn(){
-            if(DatagridService.focusedColumn) {
-                var columnIndex = _.findIndex(grid.getColumns(), {id: DatagridService.focusedColumn});
-                var renderedRows = grid.getRenderedRange();
-                var centerRow   = +((renderedRows.bottom - renderedRows.top) / 2).toFixed(0);
-                grid.scrollCellIntoView(renderedRows.top + centerRow, columnIndex, false);
-            }
-        }
+        //function navigateToFocusedColumn(){
+        //    if(DatagridService.focusedColumn) {
+        //        var columnIndex = _.findIndex(grid.getColumns(), {id: DatagridService.focusedColumn});
+        //        var renderedRows = grid.getRenderedRange();
+        //        var centerRow   = +((renderedRows.bottom - renderedRows.top) / 2).toFixed(0);
+        //        grid.scrollCellIntoView(renderedRows.top + centerRow, columnIndex, false);
+        //    }
+        //}
 
         /**
          * @ngdoc method
@@ -110,14 +110,14 @@
             //create grid
             var options = {
                 autoEdit: false,
-                editable: true,
+                editable: false,
                 enableAddRow: false,
                 enableCellNavigation: true,
                 enableTextSelectionOnCells: false,
                 syncColumnCellResize: false,
                 frozenColumn: 0
             };
-            grid = new Slick.Grid(elementId, state.playground.grid.dataView, [{id: 'tdpId'}], options);
+            grid = new Slick.Grid(elementId, GridLookupService.lookupGrid.dataView, [{id: 'tdpId'}], options);
 
             //listeners
             attachLongTableListeners();

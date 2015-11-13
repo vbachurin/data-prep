@@ -1,3 +1,4 @@
+/*
 (function() {
     'use strict';
 
@@ -66,7 +67,7 @@
                 $checkbox = $checkboxContainer.find('input[type="checkbox"]');
             }
 
-            /*********** REQUIRED METHODS ***********/
+            /!*********** REQUIRED METHODS ***********!/
 
             this.destroy = function() {
                 // remove all data, events & dom elements created in the constructor
@@ -113,7 +114,7 @@
                 return { valid: true, msg: null };
             };
 
-            /*********** OPTIONAL METHODS ***********/
+            /!*********** OPTIONAL METHODS ***********!/
 
                 //this.hide = function() {
                 //    // if implemented, this will be called if the cell being edited is scrolled out of the view
@@ -140,10 +141,10 @@
                 }
             };
 
-            /*********** Initialization ***********/
+            /!*********** Initialization ***********!/
 
             init();
         };
     }
 
-})();
+})();*/

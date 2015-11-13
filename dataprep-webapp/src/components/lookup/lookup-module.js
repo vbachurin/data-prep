@@ -18,6 +18,7 @@
         'data-prep.services.transformation',
         'data-prep.lookup-datagrid-header',
         'data-prep.services.statistics',
-        'data-prep.services.utils'
+        'data-prep.services.utils',
+        'data-prep.lookup-diagonal-curve'
     ]);
 })();

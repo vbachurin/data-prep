@@ -15,13 +15,18 @@
 	 * @requires data-?????????????services.state.service:StateService
 	 * @requires data-?????????????services.datasetWorkflowService:UpdateWorkflowService
 	 */
-	function LookupCtrl($scope, state, DatasetLookupService, EarlyPreviewService, TransformationApplicationService) {
+	function LookupCtrl($scope, state, DatasetLookupService, EarlyPreviewService, TransformationApplicationService, LookupDatagridExternalService) {
 		var vm = this;
 		vm.state = state;
 
 		vm.datasetLookupService = DatasetLookupService;
 		vm.earlyPreview = EarlyPreviewService.earlyPreview;
 		vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
+
+		vm.positions = {
+			from : 100,
+			to:650
+		};
 
 		vm.hoverSubmitBtn = function hoverSubmitBtn(){
 			var previewClosure = vm.earlyPreview(vm.lookupAction, 'dataset');
@@ -34,6 +39,7 @@
 		vm.loadSelectedLookupContent = function(lookupDs){
 			vm.lookupAction = lookupDs;
 			var lookupDsUrl = lookupDs.parameters[4].default;
+			vm.datasetLookupService.resetLookup();
 			vm.datasetLookupService.loadLookupContent(lookupDsUrl);
 		};
 
@@ -44,9 +50,9 @@
 		function populateParams (params) {
 			/*jshint camelcase: false */
 			params.column_id = vm.state.playground.grid.selectedColumn.id;
-			//params.lookup_join_on = vm.joinOnId;
-			//params.lookup_join_on_name = vm.joinOnName;
-			//params.lookup_selected_cols = vm.lookupColumns.split(',');
+			params.lookup_join_on = LookupDatagridExternalService.lookupSelectedCol.id;
+			params.lookup_join_on_name = LookupDatagridExternalService.lookupSelectedCol.tdpColMetadata.name;
+			params.lookup_selected_cols = ['0001'];//vm.lookupColumns.split(',');
 			return params;
 		}
 
@@ -56,7 +62,6 @@
 				EarlyPreviewService.cancelPendingPreview();
 				params = populateParams(params);
 
-
 				TransformationApplicationService.append(action, scope, params)
 					.finally(function() {
 						setTimeout(EarlyPreviewService.activatePreview, 500);
@@ -65,6 +70,7 @@
 		};
 
 		//the lookup directive is created before the playground
+		//get ALL the possible lookup actions on the current dataset
 		$scope.$watch(function(){
 			return vm.state.playground.dataset;
 		},
@@ -72,8 +78,7 @@
 			if(newDataset){
 				DatasetLookupService.getLookupPossibleActions(vm.state.playground.dataset.id)
 					.then(function(dsLookup){
-						vm.potentialLookups = dsLookup.actionsFormat;
-						vm.potentialTransformations = dsLookup.transformationFormat;
+						vm.potentialTransformations = dsLookup.data;
 					})
 					.then(function(){
 						if(vm.potentialTransformations.length){

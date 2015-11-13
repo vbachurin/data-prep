@@ -22,7 +22,7 @@
      * @requires data-prep.lookup-datagrid.service:DatagridExternalService
      * @restrict E
      */
-    function LookupDatagrid(state, LookupDatagridGridService, LookupDatagridColumnService, LookupDatagridStyleService, LookupDatagridSizeService,
+    function LookupDatagrid(state, DatasetLookupService, LookupDatagridGridService, LookupDatagridColumnService, LookupDatagridStyleService, LookupDatagridSizeService,
                             LookupDatagridTooltipService, LookupDatagridExternalService) {
         return {
             restrict: 'E',
@@ -32,7 +32,7 @@
             controller: 'LookupDatagridCtrl',
             link: function (scope, iElement, iAttrs, ctrl) {
                 var grid;
-                var columnTimeout, externalTimeout, focusTimeout;
+                var columnTimeout, externalTimeout;
 
                 //------------------------------------------------------------------------------------------------------
                 //--------------------------------------------------GETTERS---------------------------------------------
@@ -43,9 +43,9 @@
                  * @methodOf data-prep.lookup-datagrid.directive:Datagrid
                  * @description [PRIVATE] Get the loaded metadata
                  */
-                var getMetadata = function getMetadata() {
-                    return state.playground.dataset;
-                };
+                //var getMetadata = function getMetadata() {
+                //    return DatasetLookupService.currentLookupCols;
+                //};
 
                 /**
                  * @ngdoc method
@@ -54,18 +54,18 @@
                  * @description [PRIVATE] Get the loaded data
                  */
                 var getData = function getData() {
-                    return state.playground.data;
+                    return DatasetLookupService.lookupDsContent;
                 };
 
-                /**
-                 * @ngdoc method
-                 * @name getFilters
-                 * @methodOf data-prep.lookup-datagrid.directive:Datagrid
-                 * @description [PRIVATE] Get the filter list
-                 */
-                var getFilters = function getFilters() {
-                    return state.playground.filter.gridFilters;
-                };
+                ///**
+                // * @ngdoc method
+                // * @name getFilters
+                // * @methodOf data-prep.lookup-datagrid.directive:Datagrid
+                // * @description [PRIVATE] Get the filter list
+                // */
+                //var getFilters = function getFilters() {
+                //    return state.playground.filter.gridFilters;
+                //};
 
                 //------------------------------------------------------------------------------------------------------
                 //---------------------------------------------------UTILS----------------------------------------------
@@ -92,11 +92,13 @@
                  */
                 var onDataChange = function onDataChange(data) {
                     if (data) {
+                        onMetadataChange();
+
                         initGridIfNeeded();
                         var columns;
                         var selectedColumn;
-                        var stateSelectedColumn = ctrl.state.playground.grid.selectedColumn; //column metadata
-                        var stateSelectedLine = ctrl.state.playground.grid.selectedLine; //column metadata
+                        var stateSelectedColumn = ctrl.gridLookupService.lookupGrid.selectedColumn; //column metadata
+                        //var stateSelectedLine = ctrl.gridLookupService.lookupGrid.selectedLine; //column metadata
 
                         //create columns, manage style and size, set columns in grid
                         clearTimeout(columnTimeout);
@@ -105,10 +107,10 @@
 
                             if(!data.preview) {
                                 selectedColumn = stateSelectedColumn ? _.find(columns, {id: stateSelectedColumn.id}) : null;
-                                if(stateSelectedLine) {
-                                    var stateSelectedColumnIndex = columns.indexOf(selectedColumn);
-                                    LookupDatagridStyleService.scheduleHighlightCellsContaining(stateSelectedLine, stateSelectedColumnIndex);
-                                }
+                                //if(stateSelectedLine) {
+                                //    var stateSelectedColumnIndex = columns.indexOf(selectedColumn);
+                                //    //LookupDatagridStyleService.scheduleHighlightCellsContaining(stateSelectedLine, stateSelectedColumnIndex);
+                                //}
                             }
 
                             LookupDatagridStyleService.updateColumnClass(columns, selectedColumn);
@@ -125,23 +127,23 @@
                         }
 
                         //focus specific column
-                        clearTimeout(focusTimeout);
-                        focusTimeout = setTimeout(LookupDatagridGridService.navigateToFocusedColumn, 300);
+                        //clearTimeout(focusTimeout);
+                        //focusTimeout = setTimeout(LookupDatagridGridService.navigateToFocusedColumn, 300);
                     }
                 };
 
-                /**
-                 * @ngdoc method
-                 * @name onFiltersChange
-                 * @methodOf data-prep.lookup-datagrid.directive:Datagrid
-                 * @description [PRIVATE] Refresh cell styles and scroll to top
-                 */
-                var onFiltersChange = function onFiltersChange() {
-                    if (grid) {
-                        LookupDatagridStyleService.resetCellStyles();
-                        grid.scrollRowToTop(0);
-                    }
-                };
+                ///**
+                // * @ngdoc method
+                // * @name onFiltersChange
+                // * @methodOf data-prep.lookup-datagrid.directive:Datagrid
+                // * @description [PRIVATE] Refresh cell styles and scroll to top
+                // */
+                //var onFiltersChange = function onFiltersChange() {
+                //    if (grid) {
+                //        LookupDatagridStyleService.resetCellStyles();
+                //        grid.scrollRowToTop(0);
+                //    }
+                //};
 
                 //------------------------------------------------------------------------------------------------------
                 //---------------------------------------------------INIT-----------------------------------------------
@@ -158,7 +160,7 @@
 
                         // the tooltip ruler is used compute a cell text regardless of the font and zoom used.
                         // To do so, the text is put into an invisible span so that the span can be measured.
-                        LookupDatagridTooltipService.tooltipRuler = iElement.find('#tooltip-ruler').eq(0);
+                        LookupDatagridTooltipService.tooltipRuler = iElement.find('#lookup-tooltip-ruler').eq(0);
                     }
                 };
 
@@ -169,7 +171,7 @@
                 /**
                  * Scroll to top when loaded dataset change
                  */
-                scope.$watch(getMetadata, onMetadataChange);
+                //scope.$watch(getMetadata, onMetadataChange);
 
                 /**
                  * Update grid columns and invalidate grid on data change
@@ -179,7 +181,7 @@
                 /**
                  * When filter change, displayed values change, so we reset active cell and cell styles
                  */
-                scope.$watch(getFilters, onFiltersChange);
+                //scope.$watch(getFilters, onFiltersChange);
             }
         };
     }

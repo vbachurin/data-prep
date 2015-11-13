@@ -9,9 +9,9 @@
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.utils.service:TextFormatService
      */
-    function LookupDatagridStyleService(DatagridService, state, ConverterService, TextFormatService) {
+    function LookupDatagridStyleService(DatagridService, GridLookupService, ConverterService, TextFormatService) {
         var grid;
-        var highlightCellTimeout;
+        //var highlightCellTimeout;
         var columnClassTimeout;
 
         return {
@@ -19,8 +19,8 @@
             resetCellStyles: resetCellStyles,
             updateColumnClass: updateColumnClass,
             columnFormatter: columnFormatter,
-            getColumnPreviewStyle: getColumnPreviewStyle,
-            scheduleHighlightCellsContaining: scheduleHighlightCellsContaining
+            getColumnPreviewStyle: getColumnPreviewStyle
+            //scheduleHighlightCellsContaining: scheduleHighlightCellsContaining
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -190,23 +190,23 @@
          * @param {number} colIndex The column index
          * @description Cancel the previous scheduled task and schedule a new one to highlight the cells that contains the same value as the (rowIndex, colIndex) cell
          */
-        function scheduleHighlightCellsContaining(rowIndex, colIndex) {
-            clearTimeout(highlightCellTimeout);
+        //function scheduleHighlightCellsContaining(rowIndex, colIndex) {
+        //    clearTimeout(highlightCellTimeout);
 
-            var row = state.playground.grid.dataView.getItem(rowIndex);
-            if(row) {
-                highlightCellTimeout = setTimeout(function() {
-                    var column = grid.getColumns()[colIndex];
-                    var content = row[column.id];
+        //    var row = GridLookupService.lookupGrid.dataView.getItem(rowIndex);
+        //    if(row) {
+        //        highlightCellTimeout = setTimeout(function() {
+        //            var column = grid.getColumns()[colIndex];
+        //            var content = row[column.id];
 
-                    var sameContentConfig = DatagridService.getSameContentConfig(column.id, content, 'highlight');
-                    grid.setCellCssStyles('highlight', sameContentConfig);
-                }, 200);
-            }
-            else {
-                grid.setCellCssStyles('highlight', {});
-            }
-        }
+        //            var sameContentConfig = DatagridService.getSameContentConfig(column.id, content, 'highlight');
+        //            grid.setCellCssStyles('highlight', sameContentConfig);
+        //        }, 200);
+        //    }
+        //    else {
+        //        grid.setCellCssStyles('highlight', {});
+        //    }
+        //}
 
         /**
          * @ngdoc method
@@ -235,7 +235,7 @@
         function attachCellListeners() {
             grid.onActiveCellChanged.subscribe(function (e, args) {
                 if (angular.isDefined(args.cell)) {
-                    scheduleHighlightCellsContaining(args.row, args.cell);
+                    //scheduleHighlightCellsContaining(args.row, args.cell);
                     scheduleUpdateColumnClass(args.cell);
                 }
             });

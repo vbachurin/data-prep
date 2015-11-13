@@ -9,7 +9,7 @@
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.utils.service:TextFormatService
      */
-    function LookupDatagridTooltipService($timeout, state, TextFormatService) {
+    function LookupDatagridTooltipService($timeout, GridLookupService, TextFormatService) {
         var grid;
         var tooltipTimeout, tooltipShowPromise;
         var tooltipDelay = 300;
@@ -56,7 +56,7 @@
                 }
 
                 var row = cell.row;
-                var item = state.playground.grid.dataView.getItem(row);
+                var item = GridLookupService.lookupGrid.dataView.getItem(row);
 
                 var column = grid.getColumns()[cell.cell];
                 var value = item[column.id] + '';
