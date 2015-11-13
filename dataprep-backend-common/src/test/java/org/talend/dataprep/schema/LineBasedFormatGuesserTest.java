@@ -164,7 +164,7 @@ public class LineBasedFormatGuesserTest {
 
         // then
         assertEquals(9.66, sep.getAveragePerLine(), 0.01);
-        assertEquals(6.27, sep.getStandardDeviation(), 0.01);
+        assertEquals(6.27, sep.getStandardDeviation(), 0.01); // https://www.mathsisfun.com/data/standard-deviation-calculator.html
     }
 
     private void incrementCount(int count, int lineNumber, Separator separator) {
