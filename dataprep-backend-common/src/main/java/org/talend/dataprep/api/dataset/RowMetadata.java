@@ -62,7 +62,7 @@ public class RowMetadata implements Serializable {
      * Removes the column metadata corresponding to the specified id from the columns of this row metadata, and returns
      * <tt>the deleted column metadata</tt> if it is present. If the specified id does not correspond to a column
      * metadata or if this row metadata does not contain the specified column metadata, the row metadata remains
-     * unchanged and returns <tt>false</tt>.
+     * unchanged and returns <tt>null</tt>.
      *
      * @param id the specified id corresponding to a column metadata to be deleted
      * @return <tt>the deleted column metadata</tt> if the column metadata corresponding to the specified id is in this

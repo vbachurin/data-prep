@@ -4,18 +4,22 @@ import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 public class DeleteColumnTest {
 
-    private DeleteColumn DeleteColumn;
+    private DeleteColumn deleteColumn;
 
     private TransformationContext transformationContext;
 
@@ -23,7 +27,7 @@ public class DeleteColumnTest {
 
     @Before
     public void init() {
-        DeleteColumn = new DeleteColumn();
+        deleteColumn = new DeleteColumn();
         transformationContext = new TransformationContext();
         List columns = new ArrayList<>();
         ColumnMetadata columnMetadata = ColumnMetadata.Builder.column() //
@@ -56,7 +60,7 @@ public class DeleteColumnTest {
         final Map<String, String> parameters = new HashMap<>();
 
         // when
-        DeleteColumn.applyOnColumn(row, transformationContext, parameters, "0002");
+        deleteColumn.applyOnColumn(row, transformationContext, parameters, "0002");
 
         // then
         final ColumnMetadata column = row.getRowMetadata().getColumns().get(0);
@@ -81,8 +85,8 @@ public class DeleteColumnTest {
         final Map<String, String> parameters = new HashMap<>();
 
         // when
-        DeleteColumn.applyOnColumn(row, transformationContext, parameters, "0002");
-        DeleteColumn.applyOnColumn(row2, transformationContext, parameters, "0002");
+        deleteColumn.applyOnColumn(row, transformationContext, parameters, "0002");
+        deleteColumn.applyOnColumn(row2, transformationContext, parameters, "0002");
 
         // then
         final int rowSize = row.getRowMetadata().getColumns().size();
@@ -110,10 +114,10 @@ public class DeleteColumnTest {
         final Map<String, String> parameters = new HashMap<>();
 
         // when
-        DeleteColumn.applyOnColumn(row, transformationContext, parameters, "0001");
-        DeleteColumn.applyOnColumn(row2, transformationContext, parameters, "0001");
-        DeleteColumn.applyOnColumn(row, transformationContext, parameters, "0002");
-        DeleteColumn.applyOnColumn(row2, transformationContext, parameters, "0002");
+        deleteColumn.applyOnColumn(row, transformationContext, parameters, "0001");
+        deleteColumn.applyOnColumn(row2, transformationContext, parameters, "0001");
+        deleteColumn.applyOnColumn(row, transformationContext, parameters, "0002");
+        deleteColumn.applyOnColumn(row2, transformationContext, parameters, "0002");
 
         // then
         final int rowSize = row.getRowMetadata().getColumns().size();
@@ -124,6 +128,29 @@ public class DeleteColumnTest {
         assertFalse(row2.values().containsKey("0002"));
         assertEquals(0, row.values().size());
         assertEquals(0, row2.values().size());
+    }
+
+    @Test
+    public void testCategory() throws Exception {
+        // We test the real value of the category here (not based on the enum), because the frontent use this label for
+        // display purpose:
+        assertThat(deleteColumn.getCategory(), is("column_metadata"));
+    }
+
+    @Test
+    public void should_accept_column() {
+        assertTrue(deleteColumn.acceptColumn(getColumn(Type.STRING)));
+        assertTrue(deleteColumn.acceptColumn(getColumn(Type.NUMERIC)));
+        assertTrue(deleteColumn.acceptColumn(getColumn(Type.FLOAT)));
+        assertTrue(deleteColumn.acceptColumn(getColumn(Type.DATE)));
+        assertTrue(deleteColumn.acceptColumn(getColumn(Type.BOOLEAN)));
+    }
+
+    @Test
+    public void testAdapt() throws Exception {
+        assertThat(deleteColumn.adapt(null), is(deleteColumn));
+        ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
+        assertThat(deleteColumn.adapt(column), is(deleteColumn));
     }
 
 }

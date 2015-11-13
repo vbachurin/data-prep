@@ -58,8 +58,4 @@ public class DeleteColumn extends ActionMetadata implements ColumnAction {
         row.deleteColumnById(columnId);
     }
 
-    @Override
-    public ActionMetadata adapt(ColumnMetadata column) {
-        return this;
-    }
 }
