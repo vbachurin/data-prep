@@ -4,7 +4,7 @@
     /**
      * @ngdoc service
      * @name data-prep.services.playground.service:PreviewService
-     * @description Preview service. This service holds the preview datagrid (SlickGrid) view
+     * @description Preview service. This service holds the preview lookup-datagrid (SlickGrid) view
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.state.service:StateService
@@ -14,7 +14,7 @@
          * @ngdoc property
          * @name reverter
          * @propertyOf data-prep.services.playground.service:PreviewService
-         * @description [PRIVATE] The revert executor to apply on datagrid to go from current preview to original data
+         * @description [PRIVATE] The revert executor to apply on lookup-datagrid to go from current preview to original data
          */
         var reverter;
 
@@ -71,7 +71,7 @@
              * @name gridRangeIndex
              * @propertyOf data-prep.services.playground.service:PreviewService
              * @description The grid displayed rows id. It take filters into account.
-             * This is updated by the {@link data-prep.datagrid.directive:Datagrid Datagrid} directive on scroll
+             * This is updated by the {@link data-prep.lookup-datagrid.directive:Datagrid Datagrid} directive on scroll
              */
             gridRangeIndex: null,
 
@@ -281,7 +281,7 @@
          * @param {string} focusedColId The column id where to set the grid focus
          * @methodOf data-prep.services.playground.service:PreviewService
          * @description Cancel the current preview or the pending preview (resolving the cancel promise).
-         * The original records is set back into the datagrid
+         * The original records is set back into the lookup-datagrid
          */
         function cancelPreview(focusedColId) {
             stopPendingPreview();

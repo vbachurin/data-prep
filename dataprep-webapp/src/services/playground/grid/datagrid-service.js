@@ -4,9 +4,9 @@
     /**
      * @ngdoc service
      * @name data-prep.services.playground.service:DatagridService
-     * @description Datagrid service. This service holds the datagrid (SlickGrid) view and the (SlickGrid) filters<br/>
+     * @description Datagrid service. This service holds the lookup-datagrid (SlickGrid) view and the (SlickGrid) filters<br/>
      * <b style="color: red;">WARNING : do NOT use this service directly for FILTERS.
-     * {@link data-prep.services.filter.service:FilterService FilterService} must be the only entry point for datagrid filters</b>
+     * {@link data-prep.services.filter.service:FilterService FilterService} must be the only entry point for lookup-datagrid filters</b>
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.state.service:StateService
      */
@@ -54,7 +54,7 @@
          * @name updateData
          * @methodOf data-prep.services.playground.service:DatagridService
          * @param {Object} data - the new data (columns and records)
-         * @description Update the data in the datagrid
+         * @description Update the data in the lookup-datagrid
          */
         function updateData(data) {
             if (state.playground.data.columns.length < data.columns.length) {
@@ -71,7 +71,7 @@
          * @name execute
          * @methodOf data-prep.services.playground.service:DatagridService
          * @param {Object} executor The infos to apply on the dataset
-         * @description Update the data in the datagrid with a set of instructions and the column list to apply.
+         * @description Update the data in the lookup-datagrid with a set of instructions and the column list to apply.
          * This allows to update the dataset, with limited SlickGrid computation, for more performant operations than
          * setItems which compute everything on the whole dataset.
          */

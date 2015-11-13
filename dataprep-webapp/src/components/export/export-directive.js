@@ -3,7 +3,7 @@
 
     /**
      * @ngdoc directive
-     * @name data-prep.datagrid.directive:Export
+     * @name data-prep.lookup-datagrid.directive:Export
      * @description This directive create the Export<br/>
      * @restrict E
      */

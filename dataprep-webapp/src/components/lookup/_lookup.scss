@@ -13,7 +13,8 @@
     #lookup-left {
       float: left;
       height: inherit;
-      overflow: auto;
+      overflow-x: auto;
+      overflow-y: hidden;
       width: 70%;
     }
 

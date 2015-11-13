@@ -33,20 +33,20 @@
 
 		vm.loadSelectedLookupContent = function(lookupDs){
 			vm.lookupAction = lookupDs;
-			var lookupDsUrl = lookupDs.parameters[6].default;
+			var lookupDsUrl = lookupDs.parameters[4].default;
 			vm.datasetLookupService.loadLookupContent(lookupDsUrl);
 		};
 
 		vm.joinOnId = '0000';
-		vm.joinOnName = 'id';
-		vm.lookupColumns = '0001,0002';
+		vm.joinOnName = 'identif';
+		vm.lookupColumns = '0002';
 
 		function populateParams (params) {
 			/*jshint camelcase: false */
 			params.column_id = vm.state.playground.grid.selectedColumn.id;
-			params.lookup_join_on = vm.joinOnId;
-			params.lookup_join_on_name = vm.joinOnName;
-			params.lookup_selected_cols = vm.lookupColumns.split(',');
+			//params.lookup_join_on = vm.joinOnId;
+			//params.lookup_join_on_name = vm.joinOnName;
+			//params.lookup_selected_cols = vm.lookupColumns.split(',');
 			return params;
 		}
 
@@ -64,8 +64,7 @@
 			};
 		};
 
-
-		//the lookup directive and the
+		//the lookup directive is created before the playground
 		$scope.$watch(function(){
 			return vm.state.playground.dataset;
 		},
@@ -77,7 +76,9 @@
 						vm.potentialTransformations = dsLookup.transformationFormat;
 					})
 					.then(function(){
-						vm.loadSelectedLookupContent(vm.potentialTransformations[0]);
+						if(vm.potentialTransformations.length){
+							vm.loadSelectedLookupContent(vm.potentialTransformations[0]);
+						}
 					});
 			}
 		});

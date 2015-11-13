@@ -30,7 +30,7 @@
             showRecipe: RecipeStateService.show,
             hideRecipe: RecipeStateService.hide,
 
-            //datagrid
+            //lookup-datagrid
             setColumnFocus: GridStateService.setColumnFocus,
             setGridSelection: GridStateService.setGridSelection,
 

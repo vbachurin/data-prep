@@ -286,7 +286,7 @@
                 .then(function(preparation) {
                     return PreparationService.appendStep(preparation.id, {action: action, parameters: parameters});
                 })
-                //update recipe and datagrid
+                //update recipe and lookup-datagrid
                 .then(function(){
                     var columnToFocus = parameters.column_id;
                     return $q.all([updateRecipe(), updatePreparationDatagrid(columnToFocus)]);
@@ -326,7 +326,7 @@
 
             return PreparationService.updateStep(state.playground.preparation.id, step, newParams)
                 .then(updateRecipe)
-                //get step id to load and update datagrid with it
+                //get step id to load and update lookup-datagrid with it
                 .then(function() {
                     var activeStep = RecipeService.getStep(lastActiveStepIndex, true);
                     return loadStep(activeStep);
@@ -360,7 +360,7 @@
             var previousHead = RecipeService.getLastStep().transformation.stepId;
 
             return PreparationService.removeStep(state.playground.preparation.id, step.transformation.stepId)
-                //update recipe and datagrid
+                //update recipe and lookup-datagrid
                 .then(function() {
                     return $q.all([updateRecipe(), updatePreparationDatagrid()]);
                 })
@@ -409,7 +409,7 @@
          * @ngdoc method
          * @name updatePreparationDatagrid
          * @methodOf data-prep.services.playground.service:PlaygroundService
-         * @description Perform an datagrid refresh with the preparation head
+         * @description Perform an lookup-datagrid refresh with the preparation head
          */
         function updatePreparationDatagrid() {
             return PreparationService.getContent(state.playground.preparation.id, 'head')

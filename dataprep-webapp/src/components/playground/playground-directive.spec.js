@@ -211,14 +211,14 @@ describe('Playground directive', function () {
     });
 
     describe('datagrid', function() {
-        it('should render datagrid with filters', function () {
+        it('should render lookup-datagrid with filters', function () {
             //given
             stateMock.playground.dataset = metadata;
 
             //when
             createElement();
 
-            //then : check datagrid and filters are present
+            //then : check lookup-datagrid and filters are present
             var playground = angular.element('body').find('.playground').eq(0);
             expect(playground.eq(0).find('filter-bar').length).toBe(1);
             expect(playground.eq(0).find('filter-bar').find('#filter-search').length).toBe(1);

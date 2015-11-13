@@ -12,16 +12,10 @@
 
    <div class="lookup-container">
        <div id="lookup-left">
-        <span ng-repeat = "col in LookupCtrl.datasetLookupService.currentLookupCols">{{col.name}}, </span>
-           <br>
-        <span>{{LookupCtrl.datasetLookupService.currentLookupRecs | json}}</span>
+           <lookup-datagrid></lookup-datagrid>
        </div>
 
        <div id="lookup-right">
-           join on column id ex:0000 <input type="text" ng-model="LookupCtrl.joinOnId">
-           join on column name ex: id <input type="text" ng-model="LookupCtrl.joinOnName">
-           lookup columns ex:0000,0001 <input type="text" ng-model="LookupCtrl.lookupColumns">
-
            <transform-form transformation="LookupCtrl.lookupAction"
                            on-submit="LookupCtrl.submitLookup(LookupCtrl.lookupAction, 'dataset')(params)"
                            on-submit-hover-on="LookupCtrl.hoverSubmitBtn()(params)"
@@ -34,7 +28,7 @@
        <ul>
            <li ng-repeat="lookupDs in LookupCtrl.potentialTransformations track by $index"
                ng-click="LookupCtrl.loadSelectedLookupContent(LookupCtrl.potentialTransformations[$index])">
-               <a>{{lookupDs.parameters[4].default}}</a>
+               <a>{{lookupDs.parameters[2].default}}</a>
            </li>
        </ul>
    </div>

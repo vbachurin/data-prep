@@ -6,7 +6,7 @@
      * @name data-prep.playground
      * @description This module contains the controller and directives to manage the playground
      * @requires talend.widget
-     * @requires data-prep.datagrid
+     * @requires data-prep.lookup-datagrid
      * @requires data-prep.export
      * @requires data-prep.filter-bar
      * @requires data-prep.history-control
