@@ -196,7 +196,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
 
         // filter and sort separators
         // @formatter:off
-        return separators.stream().filter(separator -> separator.getAveragePerLine() > 0) // remove irrelevant separators
+        return separators.stream().filter(separator -> separator.getAveragePerLine() >= 1) // remove irrelevant separators
                 .sorted((s0, s1) -> Double.compare(s1.getAveragePerLine(), s0.getAveragePerLine())) // sort by average (the highest the better)
                 .sorted((s0, s1) -> Double.compare(s0.getStandardDeviation(), s1.getStandardDeviation())) // sort by sddev (the lowest the better)
                 .filter(sep -> validSeparators.contains(sep.getSeparator())) // filter out invalid separators
