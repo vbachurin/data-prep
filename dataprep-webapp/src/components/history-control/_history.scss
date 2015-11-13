@@ -14,11 +14,11 @@
     }
 
     &.redo {
-      @include transform(rotate(90deg));
+      //@include transform(rotate(90deg));
       margin-left: 10px;
     }
     &.undo {
-      @include transform(rotate(-90deg));
+      //@include transform(rotate(-90deg));
       margin-right: 10px;
     }
   }
