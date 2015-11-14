@@ -45,12 +45,11 @@
                 editable: editable,
                 args: args,
                 filterFn: filterFn,
-                removeFilterFn: removeFilterFn,
-                toTree: getFilterTree.bind(this)
+                removeFilterFn: removeFilterFn
             };
 
             filter.__defineGetter__('value', getFilterValue.bind(filter));
-
+            filter.toTree = getFilterTree.bind(filter);
             return filter;
         }
 
@@ -164,12 +163,12 @@
             if(accu.filter) {
                 nextAccuFilter = {
                     and: [accu.filter, nextAccuFilter]
-                }
+                };
             }
 
             return {
                 filter: nextAccuFilter
-            }
+            };
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -185,6 +184,11 @@
          * @returns {Array} The filters definition array
          */
         function fromTree(tree) {
+            //no tree, no filter
+            if(!tree) {
+                return;
+            }
+
             //it is a leaf
             if(!tree.and) {
                 return [leafToFilter(tree)];

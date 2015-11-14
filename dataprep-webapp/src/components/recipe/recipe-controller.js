@@ -81,8 +81,9 @@
                 var removedFilter = step.filters.splice(filterPos, 1);
                 var stepFiltersTree = FilterAdapterService.toTree(step.filters);
 
-                //_.omit for the case where all the step filters have been removed because in that case stepFiltersTree === {}
-                vm.updateStep(step, _.extend({}, _.omit(step.actionParameters.parameters, 'filter'), stepFiltersTree))
+                //get step parameters and replace filter field (it is removed when there is no filter anymore)
+                var updatedParameters = _.extend({}, _.omit(step.actionParameters.parameters, 'filter'), stepFiltersTree);
+                vm.updateStep(step, updatedParameters)
                     .catch(function(){
                         step.filters.push(removedFilter[0]);
                     });

@@ -13,11 +13,7 @@
             //types
             toInputType: toInputType,
             simplifyType: simplifyType,
-            adaptValue: adaptValue,
-
-            //filters
-            filtersToTree: filtersToTree,
-            treeToFilters: treeToFilters
+            adaptValue: adaptValue
         };
 
         /**
