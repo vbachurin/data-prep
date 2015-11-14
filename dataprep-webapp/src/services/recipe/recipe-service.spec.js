@@ -592,7 +592,7 @@ describe('Recipe service', function () {
             expect(TransformationService.initParamsValues).toHaveBeenCalledWith(recipe[4].transformation, recipe[4].actionParameters.parameters);
         }));
 
-        it('should init step filters from backend tree', inject(function(FilterAdapterService, $rootScope, RecipeService, TransformationService) {
+        it('should init step filters from backend tree', inject(function(FilterAdapterService, $rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
 
