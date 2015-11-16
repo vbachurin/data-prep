@@ -74,12 +74,12 @@
                                 return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + d[yField2] + ' / ' + d[yField] + '</span>' +
                                     '<br/>' +
                                     '<br/>' +
-                                    '<strong>Range:</strong> <span style="color:yellow">[' + d[xField] + '[</span>';
+                                    '<strong>Range:</strong> <span style="color:yellow">[' + d[xField] + ']</span>';
                             }
                             return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + d[yField] + '</span>' +
                                 '<br/>' +
                                 '<br/>' +
-                                '<strong>Range:</strong> <span style="color:yellow">[' + d[xField] + '[</span>';
+                                '<strong>Range:</strong> <span style="color:yellow">[' + d[xField] + ']</span>';
                         });
 
                     var svg = d3.select('#' + container).append('svg')
