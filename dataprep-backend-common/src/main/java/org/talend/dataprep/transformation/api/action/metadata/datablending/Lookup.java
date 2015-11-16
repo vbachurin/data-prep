@@ -11,15 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
@@ -35,6 +36,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
  * Lookup action used to blend a (or a part of a) dataset into another one.
  */
 @Component(Lookup.ACTION_BEAN_PREFIX + Lookup.LOOKUP_ACTION_NAME)
+@Scope("prototype")
 public class Lookup extends ActionMetadata implements DataSetAction {
 
     /** The action name. */
@@ -140,12 +142,8 @@ public class Lookup extends ActionMetadata implements DataSetAction {
         String joinOn = parameters.get(LOOKUP_JOIN_ON.getKey());
 
         // get the rowMatcher from context
-        String rowMatcherKey = ObjectUtils.identityToString(this) + "#rowMatcher";
-        LookupRowMatcher rowMatcher = (LookupRowMatcher) context.get(rowMatcherKey);
-        if (rowMatcher == null) {
-            rowMatcher = applicationContext.getBean(LookupRowMatcher.class, parameters.get(LOOKUP_DS_URL.getKey()));
-            context.put(rowMatcherKey, rowMatcher);
-        }
+        LookupRowMatcher rowMatcher = (LookupRowMatcher) context.in(this).get("rowMatcher", parameters,
+                (p) -> applicationContext.getBean(LookupRowMatcher.class, p.get(LOOKUP_DS_URL.getKey())));
 
         // get the matching lookup row
         DataSetRow matchingRow = rowMatcher.getMatchingRow(joinOn, joinValue);
@@ -158,14 +156,19 @@ public class Lookup extends ActionMetadata implements DataSetAction {
             throw new TDPException(TransformationErrorCodes.BAD_LOOKUP_PARAMETER, e);
         }
 
+        final RowMetadata rowMetadata = row.getRowMetadata();
         colsToAdd.forEach(toAdd -> {
-            // update metadata
-            ColumnMetadata colMetadata = ColumnMetadata.Builder //
-                    .column() //
-                    .copy(matchingRow.getRowMetadata().getById(toAdd)) //
-                    .computedId(null) // id should be set by the insertAfter method
-                    .build();
-            String newColId = row.getRowMetadata().insertAfter(columnId, colMetadata);
+
+            // create the new column
+            String newColId = context.in(this).column(rowMetadata.getById(toAdd).getName(), rowMetadata, (r) -> {
+                final ColumnMetadata colMetadata = ColumnMetadata.Builder //
+                        .column() //
+                        .copy(matchingRow.getRowMetadata().getById(toAdd)) //
+                        .computedId(null) // id should be set by the insertAfter method
+                        .build();
+                rowMetadata.insertAfter(columnId, colMetadata);
+                return colMetadata;
+            });
 
             // insert new row value
             row.set(newColId, matchingRow.get(toAdd));

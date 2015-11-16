@@ -183,8 +183,6 @@ public class LookupTest {
                 ActionMetadataTestUtils.getRow("Oakland", "CA", "Oracle Arena", "California", "Sacramento") };
         for (int i = 0; i < rows.length; i++) {
             Assert.assertEquals(expectedRows[i], rows[i]);
-            checkMergedMetadata(rows[i].getRowMetadata().getById("0003"), "State", "string", "US_STATE");
-            checkMergedMetadata(rows[i].getRowMetadata().getById("0004"), "Capital", "string", "CITY");
         }
     }
 
