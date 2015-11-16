@@ -2206,7 +2206,7 @@
     "name": "copy",
     "dynamic": false,
     "description": "Creates an exact copy of this column",
-    "label": "Duplicate",
+    "label": "Duplicate column",
     "parameters": [
       {
         "name": "column_id",
@@ -2397,7 +2397,7 @@
     "name": "rename_column",
     "dynamic": false,
     "description": "Rename this column",
-    "label": "Rename"
+    "label": "Rename column"
   },
   {
     "category": "column_metadata",
