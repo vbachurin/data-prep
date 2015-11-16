@@ -9,12 +9,13 @@
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.statistics.service:StatisticsRestService
      * @requires data-prep.services.utils.service:ConverterService
+     * @requires data-prep.services.utils.service:FilterAdapterService
      * @requires data-prep.services.utils.service:TextFormatService
      * @requires data-prep.services.utils.service:StorageService
      */
     function StatisticsService($timeout, $filter, state,
                                DatagridService, FilterService, RecipeService, StatisticsRestService,
-                               ConverterService, TextFormatService, StorageService) {
+                               ConverterService, FilterAdapterService, TextFormatService, StorageService) {
 
         var service = {
             boxPlot: null,
@@ -469,7 +470,7 @@
             };
 
             //add filter in parameters
-            aggregationParameters = _.extend(aggregationParameters, FilterService.convertFiltersArrayToTreeFormat(state.playground.filter.gridFilters));
+            aggregationParameters = _.extend(aggregationParameters, FilterAdapterService.toTree(state.playground.filter.gridFilters));
 
             StatisticsRestService.getAggregations(aggregationParameters)
                 .then(function (response) {

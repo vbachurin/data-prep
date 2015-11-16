@@ -116,7 +116,7 @@
 
                         bar.append('rect')
                             .attr('height', y.rangeBand())
-                            .attr('width', 0)
+                            .attr('width', x(0))
                             .transition().delay(function (d,i){ return i * 30;})
                             .attr('width', function(d) { return x(d[xField]);});
 
@@ -130,7 +130,7 @@
 
                         frontBar.append('rect')
                             .attr('height', y.rangeBand())
-                            .attr('width', 0)
+                            .attr('width', x(0))
                             .transition().delay(function (d,i){ return i * 30;})
                             .attr('width', function(d) {
                                 return x(d[yField2]);
@@ -147,7 +147,7 @@
 
                         frontBar.append('rect')
                             .attr('height', y.rangeBand())
-                            .attr('width', 0)
+                            .attr('width', x(0))
                             .transition().delay(function (d,i){ return i * 30;})
                             .attr('width', function(d) { return x(d[xField]);});
                     }
