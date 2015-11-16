@@ -19,6 +19,7 @@ describe('Datagrid header controller', function () {
             {
                 'name': 'rename',
                 'category': 'column_metadata',
+                'actionScope': ['column_metadata'],
                 'items': null,
                 'parameters': null
             },
@@ -44,6 +45,7 @@ describe('Datagrid header controller', function () {
             {
                 'name': 'split',
                 'category': 'column_metadata',
+                'actionScope': ['column_metadata'],
                 'parameters': null,
                 'items': [
                     {
