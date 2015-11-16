@@ -81,6 +81,9 @@ public class LookupRowMatcher {
      */
     @PostConstruct
     private void init() {
+
+        LOGGER.debug("opening {}", url);
+
         this.input = getLookupContent(url);
         final ObjectMapper mapper = builder.build();
         try {
@@ -104,6 +107,7 @@ public class LookupRowMatcher {
         } catch (IOException e) {
             LOGGER.warn("Error cleaning LookupRowMatcher", e);
         }
+        LOGGER.debug("{} closed", url);
     }
 
     /**
@@ -115,6 +119,11 @@ public class LookupRowMatcher {
      */
     public DataSetRow getMatchingRow(String joinOn, String joinValue) {
 
+        if (joinValue == null) {
+            LOGGER.debug("join value is null, returning empty row");
+            return emptyRow;
+        }
+
         // first, let's look in the cache
         if (cache.containsKey(joinValue)) {
             return cache.get(joinValue);
@@ -123,20 +132,23 @@ public class LookupRowMatcher {
         // if the value is not cached, let's update the cache
         while (lookupIterator.hasNext()) {
             DataSetRow nextRow = lookupIterator.next();
+            final String nextRowJoinValue = nextRow.get(joinOn);
 
             // update the cache no matter what so that the next joinValue may be already cached !
-            if (!cache.containsKey(nextRow.get(joinOn))) {
-                cache.put(nextRow.get(joinOn), nextRow.clone());
+            if (!cache.containsKey(nextRowJoinValue)) {
+                cache.put(nextRowJoinValue, nextRow.clone());
+                LOGGER.debug("row found and cached for {} -> {}", nextRowJoinValue, nextRow.values());
             }
 
             // if matching row is found, let's stop here
-            if (StringUtils.equals(joinValue, nextRow.get(joinOn))) {
+            if (StringUtils.equals(joinValue, nextRowJoinValue)) {
                 return nextRow;
             }
         }
 
         // the join value was not found and the cache is fully updated, so let's cache an empty row and return it
         cache.put(joinValue, this.emptyRow);
+        LOGGER.debug("no row found for {}, returning an empty row", joinValue);
         return this.emptyRow;
     }
 
@@ -157,7 +169,7 @@ public class LookupRowMatcher {
      * Return the lookup dataset content from the given url.
      *
      * @param url where to load the dataset lookup content.
-     * @return the lookup dataset content as inputstream.
+     * @return the lookup dataset content as input stream.
      */
     private InputStream getLookupContent(String url) {
         HttpGet get = new HttpGet(url);

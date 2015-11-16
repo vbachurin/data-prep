@@ -135,9 +135,9 @@ public class Lookup extends ActionMetadata implements DataSetAction {
     public void applyOnDataSet(DataSetRow row, TransformationContext context, Map<String, String> parameters) {
 
         // read parameters
-        final String columnId = parameters.get(COLUMN_ID.getKey());
-        final String joinValue = row.get(columnId);
-        final String joinOn = parameters.get(LOOKUP_JOIN_ON.getKey());
+        String columnId = parameters.get(COLUMN_ID.getKey());
+        String joinValue = row.get(columnId);
+        String joinOn = parameters.get(LOOKUP_JOIN_ON.getKey());
 
         // get the rowMatcher from context
         String rowMatcherKey = ObjectUtils.identityToString(this) + "#rowMatcher";
@@ -151,7 +151,7 @@ public class Lookup extends ActionMetadata implements DataSetAction {
         DataSetRow matchingRow = rowMatcher.getMatchingRow(joinOn, joinValue);
 
         // get the columns to add
-        final List<String> colsToAdd;
+        List<String> colsToAdd;
         try {
             colsToAdd = getColsToAdd(parameters);
         } catch (IOException e) {
@@ -160,12 +160,12 @@ public class Lookup extends ActionMetadata implements DataSetAction {
 
         colsToAdd.forEach(toAdd -> {
             // update metadata
-            final ColumnMetadata colMetadata = ColumnMetadata.Builder //
+            ColumnMetadata colMetadata = ColumnMetadata.Builder //
                     .column() //
                     .copy(matchingRow.getRowMetadata().getById(toAdd)) //
                     .computedId(null) // id should be set by the insertAfter method
                     .build();
-            final String newColId = row.getRowMetadata().insertAfter(columnId, colMetadata);
+            String newColId = row.getRowMetadata().insertAfter(columnId, colMetadata);
 
             // insert new row value
             row.set(newColId, matchingRow.get(toAdd));
