@@ -8,12 +8,10 @@
      * @requires data-prep.services.statistics.service:StatisticsService
      * @requires data-prep.services.transformation.service:SuggestionService
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
-     * @requires data-prep.services.playground.service:PreviewService
      */
-    function LookupDatagridExternalService($timeout, StatisticsService, SuggestionService, PreviewService) {
+    function LookupDatagridExternalService($timeout, StatisticsService, SuggestionService) {
         var grid;
         var suggestionTimeout;
-        var scrollTimeout;
         var lastSelectedTab;
         var lastSelectedColumn;
 
@@ -110,14 +108,14 @@
          * @methodOf data-prep.lookup-datagrid.service:DatagridExternalService
          * @description Attach grid scroll listener. It will update the displayed range for preview
          */
-        function attachGridScrollListener() {
-            grid.onScroll.subscribe(function () {
-                clearTimeout(scrollTimeout);
-                scrollTimeout = setTimeout(function () {
-                    PreviewService.gridRangeIndex = grid.getRenderedRange();
-                }, 200);
-            });
-        }
+        //function attachGridScrollListener() {
+        //    grid.onScroll.subscribe(function () {
+        //        clearTimeout(scrollTimeout);
+        //        scrollTimeout = setTimeout(function () {
+        //            PreviewService.gridRangeIndex = grid.getRenderedRange();
+        //        }, 200);
+        //    });
+        //}
 
         /**
          * @ngdoc method
@@ -130,7 +128,6 @@
             grid = newGrid;
             attachCellListeners();
             attachColumnListeners();
-            attachGridScrollListener();
         }
     }
 

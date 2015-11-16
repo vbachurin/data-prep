@@ -5,9 +5,6 @@
                 <ul class="dropdown-menu grid-header-menu">
                     <li ng-if="lookupDatagridHeaderCtrl.initTransformationsInProgress" translate-once="LOADING"></li>
                     <li ng-if="lookupDatagridHeaderCtrl.transformations && !lookupDatagridHeaderCtrl.transformations.length" translate-once="NO_TRANSFORMATION"></li>
-                    <transform-menu column="lookupDatagridHeaderCtrl.column"
-                                    menu-items="lookupDatagridHeaderCtrl.transformations"
-                                    ng-if="lookupDatagridHeaderCtrl.transformations.length"></transform-menu>
                 </ul>
             </div>
         </talend-dropdown>
@@ -15,13 +12,13 @@
 
     <div class="talend-dropdown-text-div">
         <div class="grid-header-title" ng-show="!lookupDatagridHeaderCtrl.isEditMode" title="{{ lookupDatagridHeaderCtrl.column.name }}">{{ lookupDatagridHeaderCtrl.column.name }}</div>
-        <input class="grid-header-title-input" type="text" ng-show="lookupDatagridHeaderCtrl.isEditMode" ng-model="lookupDatagridHeaderCtrl.newName"/>
     </div>
 
     <div class="grid-header-type" ng-if="lookupDatagridHeaderCtrl.column.domain">{{ lookupDatagridHeaderCtrl.column.domain }}</div>
     <div class="grid-header-type" ng-if="(!lookupDatagridHeaderCtrl.column.domain)">{{ lookupDatagridHeaderCtrl.converterService.simplifyType(lookupDatagridHeaderCtrl.column.type) }}</div>
-
+    <div><input type="checkbox"></div>
 </div>
+
 
 <lookup-quality-bar
         quality="lookupDatagridHeaderCtrl.column.quality"

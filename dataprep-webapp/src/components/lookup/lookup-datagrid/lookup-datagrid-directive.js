@@ -32,7 +32,7 @@
             controller: 'LookupDatagridCtrl',
             link: function (scope, iElement, iAttrs, ctrl) {
                 var grid;
-                var columnTimeout, externalTimeout;
+                var columnTimeout, externalTimeout, focusTimeout;
 
                 //------------------------------------------------------------------------------------------------------
                 //--------------------------------------------------GETTERS---------------------------------------------
@@ -98,7 +98,7 @@
                         var columns;
                         var selectedColumn;
                         var stateSelectedColumn = ctrl.gridLookupService.lookupGrid.selectedColumn; //column metadata
-                        //var stateSelectedLine = ctrl.gridLookupService.lookupGrid.selectedLine; //column metadata
+                        var stateSelectedLine = ctrl.gridLookupService.lookupGrid.selectedLine; //column metadata
 
                         //create columns, manage style and size, set columns in grid
                         clearTimeout(columnTimeout);
@@ -127,8 +127,8 @@
                         }
 
                         //focus specific column
-                        //clearTimeout(focusTimeout);
-                        //focusTimeout = setTimeout(LookupDatagridGridService.navigateToFocusedColumn, 300);
+                        clearTimeout(focusTimeout);
+                        focusTimeout = setTimeout(LookupDatagridGridService.navigateToFocusedColumn, 300);
                     }
                 };
 
