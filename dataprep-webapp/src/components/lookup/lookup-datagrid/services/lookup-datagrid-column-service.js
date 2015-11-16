@@ -90,7 +90,7 @@
         function createColumns(columnsMetadata, preview) {
             //create new SlickGrid columns
             var colIndexArray = [];
-            var colIndexNameTemplate = '<div class="slick-header-column-index">#</div>';
+            var colIndexNameTemplate = '<div class="lookup-slick-header-column-index">#</div>';
 
             //Add index column
             colIndexArray.push({
