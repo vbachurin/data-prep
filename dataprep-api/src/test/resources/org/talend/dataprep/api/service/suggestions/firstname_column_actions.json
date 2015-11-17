@@ -310,7 +310,7 @@
       },
       {
         "name": "value",
-        "type": "string",
+        "type": "regex",
         "implicit": false,
         "canBeBlank": true,
         "description": "The value to search",
@@ -978,7 +978,7 @@
       },
       {
         "name": "pattern",
-        "type": "string",
+        "type": "regex",
         "implicit": false,
         "canBeBlank": true,
         "description": "The pattern to cut in this column",
@@ -1352,7 +1352,7 @@
               "parameters": [
                 {
                   "name": "manual_separator",
-                  "type": "string",
+                  "type": "regex",
                   "implicit": false,
                   "canBeBlank": true,
                   "description": "Choose your own separator",
@@ -1415,7 +1415,7 @@
       },
       {
         "name": "cell_value",
-        "type": "string",
+        "type": "regex",
         "implicit": false,
         "canBeBlank": true,
         "description": "The current cell value",
@@ -1518,7 +1518,7 @@
               "parameters": [
                 {
                   "name": "manual_pattern",
-                  "type": "string",
+                  "type": "regex",
                   "implicit": false,
                   "canBeBlank": true,
                   "description": "Set your own pattern",
