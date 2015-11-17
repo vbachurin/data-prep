@@ -231,6 +231,7 @@ describe('Preparation list controller', function() {
 
             //when
             ctrl.rename(preparation, name);
+            scope.$digest();
 
             //then
             expect(PreparationService.setName).not.toHaveBeenCalledWith(preparation.id,name);
