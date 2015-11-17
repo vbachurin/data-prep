@@ -21,6 +21,7 @@
 
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
+        vm.state=state;
 
         /**
          * @ngdoc property
@@ -234,6 +235,22 @@
             configurable: false,
             get: function () {
                 return this.datasetService.datasetsList();
+            }
+        });
+
+    /**
+     * @ngdoc property
+     * @name currentChilds
+     * @propertyOf data-prep.folder.controller:FolderCtrl
+     * @description The childs list.
+     * This list is bound to {@link data-prep.services.state.service:FolderStateService}.folderState.currentChilds
+     */
+    Object.defineProperty(DatasetListCtrl.prototype,
+        'currentChildsFolders', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.state.folder.currentChilds;
             }
         });
 

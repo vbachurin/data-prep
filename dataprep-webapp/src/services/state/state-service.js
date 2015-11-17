@@ -50,7 +50,8 @@
             finishUploadingDataset: DatasetStateService.finishUploadingDataset,
 
             //folder
-            setCurrentFolder: FolderStateService.setCurrentFolder
+            setCurrentFolder: FolderStateService.setCurrentFolder,
+            setCurrentChilds: FolderStateService.setCurrentChilds
         };
     }
 
