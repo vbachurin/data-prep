@@ -42,6 +42,8 @@ import com.jayway.restassured.RestAssured;
 @IntegrationTest
 public class DataSetImportTest {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataSetImportTest.class);
+
     @Value("${local.server.port}")
     public int port;
 
@@ -167,17 +169,21 @@ public class DataSetImportTest {
                 throw new RuntimeException(e);
             }
         };
+
+        LOGGER.info("testCannotOpenDataSetBeingImported started");
+
         Thread creationThread = new Thread(creation);
         creationThread.start();
         // Wait for creation of data set object
         while (dataSetMetadataRepository.size() == 0) {
-            TimeUnit.MILLISECONDS.sleep(50);
+            TimeUnit.MILLISECONDS.sleep(10);
         }
         // Find data set being imported...
         final Iterable<DataSetMetadata> list = dataSetMetadataRepository.list();
         final Iterator<DataSetMetadata> iterator = list.iterator();
         assertThat(iterator.hasNext(), is(true));
         final DataSetMetadata next = iterator.next();
+        LOGGER.info("found {}", next);
         assertThat(next.getLifecycle().importing(), is(true));
         // ... get operation should *not* return data set being imported but report an error ...
         int statusCode = when().get("/datasets/{id}/content", next.getId()).getStatusCode();
