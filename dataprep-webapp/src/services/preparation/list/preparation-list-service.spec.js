@@ -353,7 +353,6 @@ describe('Preparation list service', function() {
     it('should clone a preparation', inject(function($q, $rootScope, PreparationListService, PreparationRestService) {
         //given
         PreparationListService.preparations = preparations.slice(0);
-        var initialListSize = PreparationListService.preparations.length;
 
         //when
         PreparationListService.clone(preparations[0].id);

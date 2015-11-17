@@ -88,29 +88,6 @@
 
         /**
          * @ngdoc method
-         * @name overPreparationEntry
-         * @methodOf data-prep.preparation-list.controller:PreparationListCtrl
-         * @param {object} preparation - the preparation
-         * @description show edit and clone buttons when over a preparation
-         */
-        vm.overPreparationEntry = function ( preparation ) {
-            angular.element('#edit_btn_'+preparation.id).show();
-            angular.element('#clone_btn_'+preparation.id).show();
-        };
-
-        /**
-         * @ngdoc method
-         * @name leavePreparationEntry
-         * @methodOf data-prep.preparation-list.controller:PreparationListCtrl
-         * @param {object} preparation - the preparation
-         * @description hide edit and clone buttons when out of a preparation
-         */
-        vm.leavePreparationEntry = function ( preparation ) {
-            angular.element('#clone_btn_'+preparation.id).hide();
-        };
-
-        /**
-         * @ngdoc method
          * @name loadUrlSelectedPreparation
          * @methodOf data-prep.preparation-list.controller:PreparationListCtrl
          * @param {object} preparations - list of all user's preparation

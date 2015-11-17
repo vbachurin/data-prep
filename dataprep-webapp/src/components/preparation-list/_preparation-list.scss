@@ -59,6 +59,9 @@
         &.trash {
           display: block;
         }
+        &.clone-btn {
+          display: block;
+        }
       }
     }
 
@@ -118,7 +121,7 @@
       }
 
       &.clone-btn {
-        font-size: .8em;
+        font-size: 0.8em;
         display: none;
       }
 

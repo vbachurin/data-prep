@@ -250,7 +250,7 @@ describe('Preparation list controller', function() {
             scope.$digest();
 
             //then
-            expect(PreparationService.setName).not.toHaveBeenCalledWith(preparation.id,name);
+            expect(PreparationService.setName).not.toHaveBeenCalledWith(preparation.id);
             expect(MessageService.success).not.toHaveBeenCalledWith('PREPARATION_RENAME_SUCCESS_TITLE', 'PREPARATION_RENAME_SUCCESS');
 
         }));
