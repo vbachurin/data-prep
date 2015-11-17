@@ -30,10 +30,12 @@
     </properties>
     <modules>
         <module>../dataprep-backend-common</module>
-        <module>../dataprep-transformation</module>
         <module>../dataprep-dataset</module>
+        <!--
+        <module>../dataprep-transformation</module>
         <module>../dataprep-preparation</module>
         <module>../dataprep-api</module>
+        -->
     </modules>
     <dependencyManagement>
         <dependencies>
