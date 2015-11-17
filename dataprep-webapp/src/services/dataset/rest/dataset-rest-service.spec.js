@@ -343,4 +343,39 @@ describe('Dataset Rest Service', function () {
         //expect POST not to throw any exception;
     }));
 
+    it('should call clone w/o new name', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        //given
+        var dataset = { id: 'foobar'};
+
+        $httpBackend
+            .expectGET(RestURLs.datasetUrl + '/clone/foobar')
+            .respond(200);
+
+        //when
+        DatasetRestService.clone(dataset);
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        //expect GET not to throw any exception;
+    }));
+
+    it('should call clone with a new name', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        //given
+        var dataset = { id: 'foobar'};
+        var newName = 'wine';
+
+        $httpBackend
+            .expectGET(RestURLs.datasetUrl + '/clone/foobar?name='+encodeURIComponent(newName))
+            .respond(200);
+
+        //when
+        DatasetRestService.clone(dataset,newName);
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        //expect GET not to throw any exception;
+    }));
+
 });

@@ -151,7 +151,6 @@
          * @param {object} dataset - the dataset to clone
          */
         vm.clone = function(dataset){
-            // TODO ask a new name?
             DatasetService.clone(dataset)
                 .then(function() {
                           MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');

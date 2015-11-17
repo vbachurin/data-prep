@@ -163,6 +163,7 @@ describe('Dataset List Service', function () {
         spyOn(DatasetRestService, 'import').and.returnValue($q.when(true));
         spyOn(DatasetRestService, 'update').and.returnValue($q.when(true));
         spyOn(DatasetRestService, 'delete').and.returnValue($q.when(true));
+        spyOn(DatasetRestService, 'clone').and.returnValue($q.when(true));
         spyOn(DatasetRestService, 'processCertification').and.returnValue($q.when(true));
 
         spyOn(DatasetListSortService, 'getSort').and.returnValue('name');
@@ -392,6 +393,22 @@ describe('Dataset List Service', function () {
 
         //then
         expect(datasetsPromise).toBeFalsy();
+    }));
+
+    it('should call rest servive clone', inject(function ($q, DatasetRestService, DatasetListService) {
+        //when
+        DatasetListService.clone(datasets[0]);
+
+        //then
+        expect(DatasetRestService.clone).toHaveBeenCalledWith(datasets[0], undefined);
+    }));
+
+    it('should call rest servive clone with a new name', inject(function ($q, DatasetRestService, DatasetListService) {
+        //when
+        DatasetListService.clone(datasets[0],'beer');
+
+        //then
+        expect(DatasetRestService.clone).toHaveBeenCalledWith(datasets[0], 'beer');
     }));
 
 });
