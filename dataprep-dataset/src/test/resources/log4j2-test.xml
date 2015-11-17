@@ -6,7 +6,7 @@
         </Console>
     </appenders>
     <loggers>
-        <!--logger name="org.talend.dataprep.dataset" level="debug"/-->
+        <logger name="org.talend.dataprep.dataset" level="debug"/>
         <root level="error" includeLocation="true">
             <appender-ref ref="console"/>
         </root>
