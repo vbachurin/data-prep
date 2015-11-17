@@ -1,6 +1,6 @@
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +59,7 @@ public class DeleteColumn extends ActionMetadata implements ColumnAction {
      */
     @Override
     public List<String> getActionScope() {
-        return Arrays.asList(new String[]{COLUMN_METADATA.getDisplayName()});
+        return Collections.singletonList(COLUMN_METADATA.getDisplayName());
     }
 
     /**

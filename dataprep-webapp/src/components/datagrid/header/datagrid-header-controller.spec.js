@@ -13,6 +13,7 @@ describe('Datagrid header controller', function () {
             {
                 'name': 'uppercase',
                 'category': 'case',
+                'actionScope': [],
                 'items': null,
                 'parameters': null
             },
@@ -26,12 +27,14 @@ describe('Datagrid header controller', function () {
             {
                 'name': 'lowercase',
                 'category': 'case',
+                'actionScope': [],
                 'items': null,
                 'parameters': null
             },
             {
                 'name': 'withParam',
                 'category': 'case',
+                'actionScope': [],
                 'items': null,
                 'parameters': [
                     {

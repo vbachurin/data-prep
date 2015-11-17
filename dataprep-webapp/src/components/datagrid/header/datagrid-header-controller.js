@@ -58,7 +58,7 @@
                 TransformationCacheService.getTransformations(vm.column, true)
                     .then(function(menus) {
                         vm.transformations = _.filter(menus, function(menu) {
-                            return menu.actionScope && (menu.actionScope.indexOf(ACTION_SCOPE) !== -1)
+                            return (menu.actionScope.indexOf(ACTION_SCOPE) !== -1);
                         });
                     })
                     .catch(function() {

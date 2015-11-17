@@ -3,7 +3,7 @@ package org.talend.dataprep.transformation.api.action.metadata.column;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionScope.COLUMN_METADATA;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +63,7 @@ public class CopyColumnMetadata extends ActionMetadata implements ColumnAction {
      */
     @Override
     public List<String> getActionScope() {
-        return Arrays.asList(new String[]{COLUMN_METADATA.getDisplayName()});
+        return Collections.singletonList(COLUMN_METADATA.getDisplayName());
     }
 
     /**
