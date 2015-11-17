@@ -8,9 +8,11 @@ describe('Editable regex widget controller', function() {
     beforeEach(inject(function($rootScope, $controller) {
         scope = $rootScope.$new();
         createController = function() {
-            return $controller('TalendEditableRegexCtrl', {
+            var ctrlFn = $controller('TalendEditableRegexCtrl', {
                 $scope: scope
-            });
+            }, true);
+            ctrlFn.instance.value = scope.value;
+            return ctrlFn();
         };
     }));
 
@@ -20,28 +22,150 @@ describe('Editable regex widget controller', function() {
             var ctrl = createController();
 
             //then
-            expect(ctrl.types.length).toBe(4);
-            expect(ctrl.types[0].label).toBe('Contains');
-            expect(ctrl.types[1].label).toBe('Starts With');
-            expect(ctrl.types[2].label).toBe('Ends With');
-            expect(ctrl.types[3].label).toBe('RegEx');
+            expect(ctrl.types.length).toBe(5);
+            expect(ctrl.types[0].label).toBe('Equals');
+            expect(ctrl.types[1].label).toBe('Contains');
+            expect(ctrl.types[2].label).toBe('Starts With');
+            expect(ctrl.types[3].label).toBe('Ends With');
+            expect(ctrl.types[4].label).toBe('RegEx');
         });
 
-        it('should init selected type with "contains" type', function() {
+        it('should init selected type with "equals" type by default', function() {
             //when
             var ctrl = createController();
 
             //then
-            expect(ctrl.selectedType.label).toBe('Contains');
+            expect(ctrl.selectedType.label).toBe('Equals');
         });
 
-
-        it('should init entered text with empty string', function() {
+        it('should init entered text with empty string by default', function() {
             //when
             var ctrl = createController();
 
             //then
             expect(ctrl.regex).toBe('');
+        });
+
+        describe('with existing model value', function() {
+            describe('and "equals" type', function() {
+                it('should init selected type by matching current model pattern', function() {
+                    //given
+                    scope.value = '^aze[?]rty$';
+
+                    //when
+                    var ctrl = createController();
+
+                    //then
+                    expect(ctrl.selectedType.label).toBe('Equals');
+                });
+
+                it('should init entered text with unescaped value', function() {
+                    //given
+                    scope.value = '^aze[?]rty$';
+
+                    //when
+                    var ctrl = createController();
+
+                    //then
+                    expect(ctrl.regex).toBe('aze?rty');
+                });
+            });
+
+            describe('and "contains" type', function() {
+                it('should init selected type by matching current model pattern', function() {
+                    //given
+                    scope.value = '.*aze[?]rty.*';
+
+                    //when
+                    var ctrl = createController();
+
+                    //then
+                    expect(ctrl.selectedType.label).toBe('Contains');
+                });
+
+                it('should init entered text with unescaped value', function() {
+                    //given
+                    scope.value = '.*aze[?]rty.*';
+
+                    //when
+                    var ctrl = createController();
+
+                    //then
+                    expect(ctrl.regex).toBe('aze?rty');
+                });
+            });
+
+            describe('and "Starts With" type', function() {
+                it('should init selected type by matching current model pattern', function() {
+                    //given
+                    scope.value = '^aze[?]rty.*';
+
+                    //when
+                    var ctrl = createController();
+
+                    //then
+                    expect(ctrl.selectedType.label).toBe('Starts With');
+                });
+
+                it('should init entered text with unescaped value', function() {
+                    //given
+                    scope.value = '^aze[?]rty.*';
+
+                    //when
+                    var ctrl = createController();
+
+                    //then
+                    expect(ctrl.regex).toBe('aze?rty');
+                });
+            });
+
+            describe('and "Ends With" type', function() {
+                it('should init selected type by matching current model pattern', function() {
+                    //given
+                    scope.value = '.*aze[?]rty$';
+
+                    //when
+                    var ctrl = createController();
+
+                    //then
+                    expect(ctrl.selectedType.label).toBe('Ends With');
+                });
+
+                it('should init entered text with unescaped value', function() {
+                    //given
+                    scope.value = '.*aze[?]rty$';
+
+                    //when
+                    var ctrl = createController();
+
+                    //then
+                    expect(ctrl.regex).toBe('aze?rty');
+                });
+            });
+
+            describe('and "RegEx" type', function() {
+                it('should init selected type by matching current model pattern', function() {
+                    //given
+                    scope.value = 'Fr.*ce$';
+
+                    //when
+                    var ctrl = createController();
+
+                    //then
+                    expect(ctrl.selectedType.label).toBe('RegEx');
+                });
+
+                it('should init entered text with value (without escape)', function() {
+                    //given
+                    scope.value = 'Fr.*ce$';
+
+                    //when
+                    var ctrl = createController();
+
+                    //then
+                    expect(ctrl.regex).toBe('Fr.*ce$');
+                });
+            });
         });
     });
 
@@ -59,6 +183,21 @@ describe('Editable regex widget controller', function() {
 
             //then
             expect(ctrl.value).toBe(''); // not .*(empty).*
+        });
+
+        it('should escape and adapt "equals" regex', function() {
+            //given
+            var ctrl = createController();
+            ctrl.selectedType = _.find(ctrl.types, {label: 'Equals'});
+            ctrl.regex = 'aze?rty';
+
+            expect(ctrl.value).toBeFalsy();
+
+            //when
+            ctrl.updateModel();
+
+            //then
+            expect(ctrl.value).toBe('^aze[?]rty$');
         });
 
         it('should escape and adapt "contains" regex', function() {

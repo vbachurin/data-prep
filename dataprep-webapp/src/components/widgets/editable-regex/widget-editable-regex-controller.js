@@ -2,24 +2,97 @@
     'use strict';
 
     function escape(value) {
-        return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '[$&]');
+        return value.replace(/[[\]{}()*+?.\\^$|/]/g, '[$&]');
     }
 
-    var contains = {key: '≅', label: 'Contains', adapt: function adapt(value) {
-        return '.*' + escape(value) + '.*';
-    }};
+    function unescape(value) {
+        return value
+            .replace('[[]', '[')
+            .replace('[]]', ']')
+            .replace('[{]', '{')
+            .replace('[}]', '}')
+            .replace('[(]', '(')
+            .replace('[)]', ')')
+            .replace('[*]', '*')
+            .replace('[+]', '+')
+            .replace('[?]', '?')
+            .replace('[.]', '.')
+            .replace('[\\]', '\\')
+            .replace('[^]', '^')
+            .replace('[$]', '$')
+            .replace('[|]', '|')
+            .replace('[/]', '/');
+    }
 
-    var startsWith = {key: '>', label: 'Starts With', adapt: function adapt(value) {
-        return '^' + escape(value) + '.*';
-    }};
+    var equals = {
+        key: '=',
+        label: 'Equals',
+        adapt: function adapt(value) {
+            return '^' + escape(value) + '$';
+        },
+        match: function match(value) {
+            return value.match(/^[\^].*[$]$/);
+        },
+        clean: function clean(value) {
+            return unescape(value.substring(1, value.length - 1));
+        }
+    };
 
-    var endsWith = {key: '<', label: 'Ends With', adapt: function adapt(value) {
-        return '.*' + escape(value) + '$';
-    }};
+    var contains = {
+        key: '≅',
+        label: 'Contains',
+        adapt: function adapt(value) {
+            return '.*' + escape(value) + '.*';
+        },
+        match: function match(value) {
+            return value.match(/^[.][*].*[.][*]$/);
+        },
+        clean: function clean(value) {
+            return unescape(value.substring(2, value.length - 2));
+        }
+    };
 
-    var regex = {key: '^\\', label: 'RegEx', adapt: function adapt(value) {
-        return value;
-    }};
+    var startsWith = {
+        key: '>',
+        label: 'Starts With',
+        adapt: function adapt(value) {
+            return '^' + escape(value) + '.*';
+        },
+        match: function match(value) {
+            return value.match(/^[^].*[.][*]$/);
+        },
+        clean: function clean(value) {
+            return unescape(value.substring(1, value.length - 2));
+        }
+    };
+
+    var endsWith = {
+        key: '<',
+        label: 'Ends With',
+        adapt: function adapt(value) {
+            return '.*' + escape(value) + '$';
+        },
+        match: function match(value) {
+            return value.match(/^[.][*].*[$]$/);
+        },
+        clean: function clean(value) {
+            return unescape(value.substring(2, value.length - 1));
+        }
+    };
+
+    var regex = {
+        key: '^\\',
+        label: 'RegEx',
+        adapt: function adapt(value) {
+            return value;
+        },
+        match: function match() {
+            return true;
+        },
+        clean: function clean(value) {
+            return value;
+        }
+    };
 
     /**
      * @ngdoc controller
@@ -35,7 +108,7 @@
          * @propertyOf talend.widget.controller:EditableRegexCtrl
          * @description The array of regex type
          */
-        vm.types = [contains, startsWith, endsWith, regex];
+        vm.types = [equals, contains, startsWith, endsWith, regex];
 
         /**
          * @ngdoc property
@@ -43,7 +116,7 @@
          * @propertyOf talend.widget.controller:EditableRegexCtrl
          * @description The selected regex type. This is initialized with 'contains' type
          */
-        vm.selectedType = contains;
+        vm.selectedType = vm.value ? getRegexType(vm.value) : equals;
 
         /**
          * @ngdoc property
@@ -51,7 +124,10 @@
          * @propertyOf talend.widget.controller:EditableRegexCtrl
          * @description The entered text. This is initialized with empty string
          */
-        vm.regex = '';
+        vm.regex = vm.value ? vm.selectedType.clean(vm.value) : '';
+
+        vm.updateModel = updateModel;
+        vm.setSelectedType = setSelectedType;
 
         /**
          * @ngdoc method
@@ -59,9 +135,9 @@
          * @methodOf talend.widget.controller:EditableRegexCtrl
          * @description Update the model bound with ngModel, depending on selected type and entered text
          */
-        vm.updateModel = function updateModel() {
+        function updateModel() {
             vm.value = vm.regex ? vm.selectedType.adapt(vm.regex) : vm.regex;
-        };
+        }
 
         /**
          * @ngdoc method
@@ -69,10 +145,22 @@
          * @methodOf talend.widget.controller:EditableRegexCtrl
          * @description Change selected type and trigger model update
          */
-        vm.setSelectedType = function setSelectedType(type) {
+        function setSelectedType(type) {
             vm.selectedType = type;
-            vm.updateModel();
-        };
+            updateModel();
+        }
+
+        /**
+         * @ngdoc method
+         * @name setSelectedType
+         * @methodOf talend.widget.controller:EditableRegexCtrl
+         * @description Change selected type and trigger model update
+         */
+        function getRegexType(value) {
+            return _.find(vm.types, function(type) {
+                return type.match(value);
+            });
+        }
     }
 
     angular.module('talend.widget')

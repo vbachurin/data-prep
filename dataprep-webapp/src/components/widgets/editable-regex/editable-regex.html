@@ -1,6 +1,6 @@
 <div class="editable-regex">
     <talend-dropdown force-side="left">
-        <button class="dropdown-action">{{editableRegexCtrl.selectedType.key}}</button>
+        <button class="dropdown-action" type="button">{{editableRegexCtrl.selectedType.key}}</button>
         <ul class="dropdown-menu">
             <li ng-repeat="type in ::editableRegexCtrl.types track by $index"
                 ng-click="editableRegexCtrl.setSelectedType(type)"
