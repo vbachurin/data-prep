@@ -59,12 +59,9 @@
             if(cleanName) {
                 $rootScope.$emit('talend.loading.start');
                 return PreparationService.setName( preparation.id, newName )
-                    .then(function () {
-                        preparation.showChangeName = false;
-                    })
                     .then(function() {
                         MessageService.success( 'PREPARATION_RENAME_SUCCESS_TITLE', 'PREPARATION_RENAME_SUCCESS' );
-                    } )//hide loading screen
+                    })
                     .finally(function () {
                         $rootScope.$emit( 'talend.loading.stop' );
                     });
@@ -84,7 +81,6 @@
                 .then(function() {
                     MessageService.success('PREPARATION_CLONING_SUCCESS_TITLE', 'PREPARATION_CLONING_SUCCESS');
                 })
-                //hide loading screen
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');
                 });

@@ -89,6 +89,7 @@ describe('Preparation list controller', function() {
             return $q.when(allPreparations);
         });
         spyOn(PreparationService, 'preparationsList').and.returnValue(allPreparations);
+        spyOn(PreparationService, 'setName').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'load').and.returnValue($q.when(true));
         spyOn(StateService, 'showPlayground').and.returnValue();
         spyOn(MessageService, 'success').and.returnValue(null);
@@ -205,9 +206,8 @@ describe('Preparation list controller', function() {
     describe('rename', function () {
 
 
-        it('should call preparation service to rename the preparation', inject(function ($q, PreparationService) {
+        it('should call preparation service to rename the preparation', inject(function ($q, PreparationService, MessageService) {
             //given
-            spyOn(PreparationService, 'setName').and.returnValue($q.when(true));
 
             var ctrl = createController();
             var preparation = {id: 'foo_beer', name: 'my old name'};
@@ -215,12 +215,14 @@ describe('Preparation list controller', function() {
 
             //when
             ctrl.rename(preparation, name);
+            scope.$digest();
 
             //then
             expect(PreparationService.setName).toHaveBeenCalledWith(preparation.id,name);
+            expect(MessageService.success).toHaveBeenCalledWith('PREPARATION_RENAME_SUCCESS_TITLE', 'PREPARATION_RENAME_SUCCESS');
         }));
 
-        it('should not call preparation service to rename the preparation with empty name', function () {
+        it('should not call preparation service to rename the preparation with empty name', inject(function ($q, PreparationService, MessageService) {
             //given
 
             var ctrl = createController();
@@ -230,9 +232,13 @@ describe('Preparation list controller', function() {
             //when
             ctrl.rename(preparation, name);
 
-        });
+            //then
+            expect(PreparationService.setName).not.toHaveBeenCalledWith(preparation.id,name);
+            expect(MessageService.success).not.toHaveBeenCalledWith('PREPARATION_RENAME_SUCCESS_TITLE', 'PREPARATION_RENAME_SUCCESS');
 
-        it('should not call preparation service to rename the preparation with null name', function () {
+        }));
+
+        it('should not call preparation service to rename the preparation with null name', inject(function ($q, PreparationService, MessageService)  {
             //given
 
             var ctrl = createController();
@@ -240,15 +246,20 @@ describe('Preparation list controller', function() {
 
             //when
             ctrl.rename(preparation);
+            scope.$digest();
 
-        });
+            //then
+            expect(PreparationService.setName).not.toHaveBeenCalledWith(preparation.id,name);
+            expect(MessageService.success).not.toHaveBeenCalledWith('PREPARATION_RENAME_SUCCESS_TITLE', 'PREPARATION_RENAME_SUCCESS');
+
+        }));
 
     });
 
     describe('clone', function () {
 
 
-        it('should call preparation service to clone the preparation', inject(function ($q, PreparationService) {
+        it('should call preparation service to clone the preparation', inject(function ($q, PreparationService, MessageService) {
             //given
             spyOn(PreparationService, 'clone').and.returnValue($q.when(true));
 
@@ -257,9 +268,11 @@ describe('Preparation list controller', function() {
 
             //when
             ctrl.clone(preparation);
+            scope.$digest();
 
             //then
             expect(PreparationService.clone).toHaveBeenCalledWith(preparation.id);
+            expect(MessageService.success).toHaveBeenCalledWith('PREPARATION_CLONING_SUCCESS_TITLE', 'PREPARATION_CLONING_SUCCESS');
         }));
 
 
