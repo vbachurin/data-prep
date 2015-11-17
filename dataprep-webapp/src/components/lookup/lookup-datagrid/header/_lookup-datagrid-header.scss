@@ -1,6 +1,7 @@
+$datagrid-header-bkg: $dark-gray;
+
 .grid-header {
   $datagrid-header: #266092;
-  $datagrid-header-bkg: $dark-gray;
   $datagrid-header-bkg-active: darken($datagrid-header-bkg, 10%);
 
   $datagrid-headercell-font-size: .95em;
@@ -73,5 +74,10 @@
     overflow: hidden;
     max-width: 90%;
   }
+}
 
+.add-to-lookup{
+  background-color: $datagrid-header-bkg;
+  color: $white;
+  padding-left: 5px;
 }

@@ -1,25 +1,32 @@
 (function() {
 	'use strict';
 
+	var lookupGridState = {
+		dataView: new Slick.Data.DataView({inlineFilters: false}),
+		addedToLookup : {},
+		lookupColumnsToAdd : []
+	};
+
 	/**
 	 * @ngdoc service
 	 * @name data-prep.services.state.service:GridStateService
 	 * @description Grid state service. Manage the grid part state
 	 */
-	function GridLookupService() {
-		var service =  {
+	function LookupGridStateService() {
+		return {
 			reset: reset,
 
 			setColumnFocus: setColumnFocus,
 			setData: setData,
 			setFilter: setFilter,
 			setGridSelection: setGridSelection,
-			setDataset: setDataset
+			setDataset: setDataset,
+			setLookupColumnsToAdd: setLookupColumnsToAdd
 		};
 
-		service.lookupGrid = {dataView: new Slick.Data.DataView({inlineFilters: false})};
-
-		return service;
+		function setLookupColumnsToAdd(colsIds){
+			lookupGridState.lookupColumnsToAdd = colsIds;
+		}
 
 		/**
 		 * @ngdoc method
@@ -29,15 +36,15 @@
 		 * @description Update the number of lines statistics
 		 */
 		function updateLinesCount(data) {
-			service.lookupGrid.nbLines = service.lookupGrid.dataView.getLength();
-			service.lookupGrid.nbTotalLines = data.records.length;
-			service.lookupGrid.displayLinesPercentage = (service.lookupGrid.nbLines * 100 / service.lookupGrid.nbTotalLines).toFixed(0);
+			lookupGridState.nbLines = lookupGridState.dataView.getLength();
+			lookupGridState.nbTotalLines = data.records.length;
+			lookupGridState.displayLinesPercentage = (lookupGridState.nbLines * 100 / lookupGridState.nbTotalLines).toFixed(0);
 		}
 
 		/**
 		 * @ngdoc method
 		 * @name setFilter
-		 * @methodOf data-prep.services.state.service:service.lookupGridService
+		 * @methodOf data-prep.services.state.service:GridStateService
 		 * @param {array} filters The filters
 		 * @param {object} data The grid data
 		 * @description Update the grid filters
@@ -66,10 +73,10 @@
 				return true;
 			};
 
-			service.lookupGrid.dataView.beginUpdate();
-			service.lookupGrid.dataView.setFilterArgs({filters: _.map(filters, 'filterFn')});
-			service.lookupGrid.dataView.setFilter(allFilterFn);
-			service.lookupGrid.dataView.endUpdate();
+			lookupGridState.dataView.beginUpdate();
+			lookupGridState.dataView.setFilterArgs({filters: _.map(filters, 'filterFn')});
+			lookupGridState.dataView.setFilter(allFilterFn);
+			lookupGridState.dataView.endUpdate();
 
 			updateLinesCount(data);
 		}
@@ -77,38 +84,45 @@
 		/**
 		 * @ngdoc method
 		 * @name setColumnFocus
-		 * @methodOf data-prep.services.state.service:service.lookupGridService
+		 * @methodOf data-prep.services.state.service:GridStateService
 		 * @param {string} columnId The column id to focus on
 		 * @description Set the column id to focus on
 		 */
 		function setColumnFocus(columnId) {
-			service.lookupGrid.columnFocus = columnId;
+			lookupGridState.columnFocus = columnId;
 		}
 
 		/**
 		 * @ngdoc method
 		 * @name setData
-		 * @methodOf data-prep.services.state.service:service.lookupGridService
+		 * @methodOf data-prep.services.state.service:GridStateService
 		 * @param {object} data The data
 		 * @description Set new data in the grid
 		 */
 		function setData(data) {
-			service.lookupGrid.dataView.beginUpdate();
-			service.lookupGrid.dataView.setItems(data.records, 'tdpId');
-			service.lookupGrid.dataView.endUpdate();
+			lookupGridState.dataView.beginUpdate();
+			lookupGridState.dataView.setItems(data.records, 'tdpId');
+			lookupGridState.dataView.endUpdate();
 
 			updateLinesCount(data);
 			updateSelectedColumn(data);
+
+			lookupGridState.addedToLookup = {};
+			_.each(data.columns, function(col){
+				lookupGridState.addedToLookup[col.id]  = {
+					isAdded : false
+				};
+			});
 		}
 
 		function setDataset(metadata) {
-			service.dataset = metadata;
+			lookupGridState.dataset = metadata;
 		}
 
 		/**
 		 * @ngdoc method
 		 * @name updateSelectedColumn
-		 * @methodOf data-prep.services.state.service:service.lookupGridService
+		 * @methodOf data-prep.services.state.service:GridStateService
 		 * @param {object} data The data
 		 * @description Determine the selected column from the new data
 		 */
@@ -119,41 +133,42 @@
 			}
 
 			//if there is already a selected column, we update the column metadata to reference one of the new columns
-			if(service.lookupGrid.selectedColumn && data.columns) {
-				service.lookupGrid.selectedColumn = _.find(data.columns, {id: service.lookupGrid.selectedColumn.id}) || data.columns[0];
+			if(lookupGridState.selectedColumn && data.columns) {
+				lookupGridState.selectedColumn = _.find(data.columns, {id: lookupGridState.selectedColumn.id}) || data.columns[0];
 			}
 			//the first column is selected by default
 			else {
-				service.lookupGrid.selectedColumn = data.columns[0];
+				lookupGridState.selectedColumn = data.columns[0];
 			}
 		}
 
 		/**
 		 * @ngdoc method
 		 * @name setGridSelection
-		 * @methodOf data-prep.services.state.service:service.lookupGridService
+		 * @methodOf data-prep.services.state.service:GridStateService
 		 * @param {object} column The column metadata
 		 * @param {number} line The line number
 		 * @description Set the actual selected column and line
 		 */
 		function setGridSelection(column, line) {
-			service.lookupGrid.selectedColumn = column;
-			service.lookupGrid.selectedLine = line;
+			lookupGridState.selectedColumn = column;
+			lookupGridState.selectedLine = line;
 		}
 
 		/**
 		 * @ngdoc method
 		 * @name reset
-		 * @methodOf data-prep.services.state.service:service.lookupGridService
+		 * @methodOf data-prep.services.state.service:GridStateService
 		 * @description Reset the grid internal values
 		 */
 		function reset() {
-			service.lookupGrid.columnFocus = null;
-			service.lookupGrid.selectedColumn = null;
-			service.lookupGrid.selectedLine = null;
+			lookupGridState.columnFocus = null;
+			lookupGridState.selectedColumn = null;
+			lookupGridState.selectedLine = null;
 		}
 	}
 
-	angular.module('data-prep.services.dataset')
-		.service('GridLookupService', GridLookupService);
+	angular.module('data-prep.services.state')
+		.service('LookupGridStateService', LookupGridStateService)
+		.constant('lookupGridState', lookupGridState);
 })();

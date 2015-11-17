@@ -9,13 +9,14 @@
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function LookupDatagridHeaderCtrl(TransformationCacheService, ConverterService, PlaygroundService) {
+    function LookupDatagridHeaderCtrl(TransformationCacheService, ConverterService, PlaygroundService, state, StateService) {
         var COLUMN_CATEGORY = 'column_metadata';
         var RENAME_ACTION = 'rename_column';
         var originalName;
 
         var vm = this;
         vm.converterService = ConverterService;
+        vm.state = state;
 
         /**
          * @ngdoc property
@@ -44,6 +45,19 @@
          */
         vm.rawTransformations = [];
 
+        vm.showHideCheckbox = function(){
+          return vm.column.id !== vm.state.playground.lookupGrid.selectedColumn.id;
+        };
+
+        //stop event propagation
+        vm.updateColsToAdd = function updateColsToAdd(e) {
+            e.stopPropagation();
+            var columnsToAdd = _.keys(_.pick(vm.state.playground.lookupGrid.addedToLookup, function(col){
+                return col.isAdded;
+            }));
+            //omit the current selected column from the params
+            StateService.setLookupColumnsToAdd(_.without(columnsToAdd, vm.state.playground.lookupGrid.selectedColumn.id));
+        };
         /**
          * @ngdoc method
          * @name initTransformations

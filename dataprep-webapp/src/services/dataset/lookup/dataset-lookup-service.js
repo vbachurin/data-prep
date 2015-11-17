@@ -6,7 +6,7 @@
 	 * @name data-prep.services.dataset.service:DatasetLookupService
 	 * @description Column types service
 	 */
-	function DatasetLookupService(DatasetRestService, GridLookupService) {
+	function DatasetLookupService(DatasetRestService, StateService) {
 		var service = {
 			loadLookupContent: loadLookupContent,
 			getLookupPossibleActions: getLookupPossibleActions,
@@ -24,8 +24,8 @@
 					service.currentLookupMeta = lookupDsContent.data.metadata;
 					service.lookupDsContent = lookupDsContent.data;
 
-					GridLookupService.setData(lookupDsContent.data);
-					GridLookupService.setDataset(lookupDsContent.data.metadata);
+					StateService.setCurrentLookupData(lookupDsContent.data);
+					StateService.setLookupDataset(lookupDsContent.data.metadata);
 				});
 		}
 
@@ -33,7 +33,7 @@
 		 * @ngdoc method
 		 * @name getLookupPossibleActions
 		 * @methodOf data-prep.services.dataset.service:DatasetService
-		 * @param {string} name ???????????????
+		 * @param {string} datasetId ???????????????
 		 * @description Get a ??????????????? base namr)"
 		 * @returns {string} ???????????????
 		 */

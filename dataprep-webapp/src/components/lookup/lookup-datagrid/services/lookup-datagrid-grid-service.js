@@ -13,8 +13,9 @@
      * @requires data-prep.lookup-datagrid.service:DatagridExternalService
      * @requires data-prep.lookup-datagrid.service:DatagridTooltipService
      */
-    function LookupDatagridGridService(GridLookupService, state, DatagridService, LookupDatagridStyleService, LookupDatagridColumnService,
-                                       LookupDatagridSizeService, LookupDatagridExternalService, LookupDatagridTooltipService) {
+    function LookupDatagridGridService(state, StateService, LookupDatagridStyleService, LookupDatagridColumnService,
+                                       LookupDatagridSizeService, LookupDatagridExternalService,
+                                       LookupDatagridTooltipService, $timeout) {
         var grid = null;
         var gridServices = [
             LookupDatagridColumnService,
@@ -38,11 +39,11 @@
          * @description Attach listeners for big table row management
          */
         function attachLongTableListeners() {
-            GridLookupService.lookupGrid.dataView.onRowCountChanged.subscribe(function () {
+            state.playground.lookupGrid.dataView.onRowCountChanged.subscribe(function () {
                 grid.updateRowCount();
                 grid.render();
             });
-            GridLookupService.lookupGrid.dataView.onRowsChanged.subscribe(function (e, args) {
+            state.playground.lookupGrid.dataView.onRowsChanged.subscribe(function (e, args) {
                 grid.invalidateRows(args.rows);
                 grid.render();
             });
@@ -58,16 +59,22 @@
             grid.onActiveCellChanged.subscribe(function (e, args) {
                 if (angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
-                    GridLookupService.setGridSelection(column.tdpColMetadata, args.row);
+                    $timeout(function(){
+                        StateService.setLookupGridSelection(column.tdpColMetadata, args.row);
+                    });
                 }
             });
 
             grid.onHeaderContextMenu.subscribe(function (e, args) {
-                GridLookupService.setGridSelection(args.column.tdpColMetadata);
+                $timeout(function(){
+                    StateService.setLookupGridSelection(args.column.tdpColMetadata);
+                });
             });
 
             grid.onHeaderClick.subscribe(function (e, args) {
-                GridLookupService.setGridSelection(args.column.tdpColMetadata);
+                $timeout(function(){
+                    StateService.setLookupGridSelection(args.column.tdpColMetadata);
+                });
             });
         }
 
@@ -117,7 +124,7 @@
                 syncColumnCellResize: false,
                 frozenColumn: 0
             };
-            grid = new Slick.Grid(elementId, GridLookupService.lookupGrid.dataView, [{id: 'tdpId'}], options);
+            grid = new Slick.Grid(elementId, state.playground.lookupGrid.dataView, [{id: 'tdpId'}], options);
 
             //listeners
             attachLongTableListeners();

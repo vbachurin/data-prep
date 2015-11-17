@@ -7,10 +7,12 @@
         RecipeStateService, recipeState,
         GridStateService, gridState,
         FilterStateService, filterState,
-        SuggestionsState, suggestionsState) {
+        SuggestionsState, suggestionsState,
+        LookupGridStateService, lookupGridState) {
 
         playgroundState.recipe = recipeState;
         playgroundState.grid = gridState;
+        playgroundState.lookupGrid = lookupGridState;
         playgroundState.filter = filterState;
         playgroundState.suggestions = suggestionsState;
 
@@ -23,6 +25,7 @@
             setNameEditionMode: setNameEditionMode,
             reset: reset,
             setData: setData,
+            setLookupData: setLookupData,
             setLookupVisibility: setLookupVisibility,
             updateColumnsStatistics: updateColumnsStatistics,
 
@@ -30,9 +33,15 @@
             showRecipe: RecipeStateService.show,
             hideRecipe: RecipeStateService.hide,
 
-            //lookup-datagrid
+            //datagrid
             setColumnFocus: GridStateService.setColumnFocus,
             setGridSelection: GridStateService.setGridSelection,
+
+            //lookup-datagrid
+            setLookupColumnFocus: LookupGridStateService.setColumnFocus,
+            setLookupGridSelection: LookupGridStateService.setGridSelection,
+            setLookupDataset: LookupGridStateService.setDataset,
+            setLookupColumnsToAdd: LookupGridStateService.setLookupColumnsToAdd,
 
             //filters
             addGridFilter: addGridFilter,
@@ -54,6 +63,11 @@
         function setData(data) {
             playgroundState.data = data;
             GridStateService.setData(data);
+        }
+
+        function setLookupData(data) {
+            playgroundState.lookupData = data;
+            LookupGridStateService.setData(data);
         }
 
         function setPreparation(preparation) {
@@ -112,8 +126,10 @@
             playgroundState.preparation = null;
             playgroundState.nameEditionMode = false;
             playgroundState.lookupVisibility = false;
+            playgroundState.lookupData = null;
 
             GridStateService.reset();
+            LookupGridStateService.reset();
             FilterStateService.reset();
             SuggestionsState.reset();
         }

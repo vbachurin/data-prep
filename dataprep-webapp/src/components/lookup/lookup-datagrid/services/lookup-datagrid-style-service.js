@@ -9,7 +9,7 @@
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.utils.service:TextFormatService
      */
-    function LookupDatagridStyleService(DatagridService, GridLookupService, ConverterService, TextFormatService) {
+    function LookupDatagridStyleService(ConverterService, TextFormatService) {
         var grid;
         //var highlightCellTimeout;
         var columnClassTimeout;
@@ -193,7 +193,7 @@
         //function scheduleHighlightCellsContaining(rowIndex, colIndex) {
         //    clearTimeout(highlightCellTimeout);
 
-        //    var row = GridLookupService.lookupGrid.dataView.getItem(rowIndex);
+        //    var row = state.playground.lookupGrid.dataView.getItem(rowIndex);
         //    if(row) {
         //        highlightCellTimeout = setTimeout(function() {
         //            var column = grid.getColumns()[colIndex];

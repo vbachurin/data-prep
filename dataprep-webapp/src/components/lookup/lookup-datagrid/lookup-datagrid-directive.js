@@ -97,8 +97,8 @@
                         initGridIfNeeded();
                         var columns;
                         var selectedColumn;
-                        var stateSelectedColumn = ctrl.gridLookupService.lookupGrid.selectedColumn; //column metadata
-                        //var stateSelectedLine = ctrl.gridLookupService.lookupGrid.selectedLine; //column metadata
+                        var stateSelectedColumn = ctrl.state.playground.lookupGrid.selectedColumn; //column metadata
+                        //var stateSelectedLine = ctrl.state.playground.lookupGrid.selectedLine; //column metadata
 
                         //create columns, manage style and size, set columns in grid
                         clearTimeout(columnTimeout);

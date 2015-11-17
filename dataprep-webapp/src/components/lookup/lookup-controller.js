@@ -15,7 +15,7 @@
 	 * @requires data-?????????????services.state.service:StateService
 	 * @requires data-?????????????services.datasetWorkflowService:UpdateWorkflowService
 	 */
-	function LookupCtrl($scope, state, DatasetLookupService, EarlyPreviewService, TransformationApplicationService, LookupDatagridExternalService) {
+	function LookupCtrl($scope, state, DatasetLookupService, EarlyPreviewService, TransformationApplicationService) {
 		var vm = this;
 		vm.state = state;
 
@@ -43,16 +43,17 @@
 			vm.datasetLookupService.loadLookupContent(lookupDsUrl);
 		};
 
-		vm.joinOnId = '0000';
-		vm.joinOnName = 'identif';
-		vm.lookupColumns = '0002';
-
 		function populateParams (params) {
 			/*jshint camelcase: false */
 			params.column_id = vm.state.playground.grid.selectedColumn.id;
-			params.lookup_join_on = LookupDatagridExternalService.lookupSelectedCol.id;
-			params.lookup_join_on_name = LookupDatagridExternalService.lookupSelectedCol.tdpColMetadata.name;
-			params.lookup_selected_cols = ['0001'];//vm.lookupColumns.split(',');
+			params.lookup_join_on = vm.state.playground.lookupGrid.selectedColumn.id;
+			params.lookup_join_on_name = vm.state.playground.lookupGrid.selectedColumn.name || vm.state.playground.lookupGrid.selectedColumn.tdpColMetadata.name;
+			//var columnsToAdd = _.keys(_.pick(vm.state.playground.lookupGrid.addedToLookup, function(col){
+			//	return col.isAdded;
+			//}));
+			////omit the current selected column from the params
+			//params.lookup_selected_cols = _.without(columnsToAdd, vm.state.playground.lookupGrid.selectedColumn.id);
+			params.lookup_selected_cols = vm.state.playground.lookupGrid.lookupColumnsToAdd;
 			return params;
 		}
 

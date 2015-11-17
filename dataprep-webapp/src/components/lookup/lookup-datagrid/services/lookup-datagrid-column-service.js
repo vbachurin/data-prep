@@ -15,7 +15,7 @@
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function LookupDatagridColumnService($rootScope, $compile, LookupDatagridStyleService, ConverterService, PlaygroundService, $translate) {
+    function LookupDatagridColumnService(state, $rootScope, $compile, LookupDatagridStyleService, ConverterService, PlaygroundService, $translate) {
         var grid;
         var availableHeaders = [];
         var renewAllFlag;
@@ -157,7 +157,8 @@
         function createHeader(col) {
             var headerScope = $rootScope.$new(true);
             headerScope.column = col;
-            var headerElement = angular.element('<lookup-datagrid-header column="column"></lookup-datagrid-header>');
+            headerScope.added = state.playground.lookupGrid.addedToLookup[col.id];
+            var headerElement = angular.element('<lookup-datagrid-header column="column" added="added"></lookup-datagrid-header>');
             $compile(headerElement)(headerScope);
 
             return {

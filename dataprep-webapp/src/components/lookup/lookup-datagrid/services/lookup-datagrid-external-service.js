@@ -9,7 +9,7 @@
      * @requires data-prep.services.transformation.service:SuggestionService
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      */
-    function LookupDatagridExternalService($timeout, StatisticsService, SuggestionService) {
+    function LookupDatagridExternalService($timeout, StatisticsService, SuggestionService, StateService) {
         var grid;
         var suggestionTimeout;
         var lastSelectedTab;
@@ -46,7 +46,7 @@
                 if (!tabHasChanged && !columnHasChanged) {
                     return;
                 }
-                service.lookupSelectedCol = column;
+                StateService.setLookupGridSelection(column);
                 //$timeout.cancel(suggestionTimeout);
 
                 //suggestionTimeout = $timeout(function () {

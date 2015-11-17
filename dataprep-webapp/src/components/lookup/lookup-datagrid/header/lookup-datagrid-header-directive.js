@@ -25,7 +25,8 @@
             restrict: 'E',
             templateUrl: 'components/lookup/lookup-datagrid/header/lookup-datagrid-header.html',
             scope: {
-                column: '='
+                column: '=',
+                added: '='
             },
             bindToController: true,
             controllerAs: 'lookupDatagridHeaderCtrl',

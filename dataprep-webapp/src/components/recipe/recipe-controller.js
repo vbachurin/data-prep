@@ -25,6 +25,18 @@
          */
         vm.resetParams = RecipeService.resetParams;
 
+
+        vm.getAddedColumnsInLookup = function getAddedColumnsInLookup(step){
+            var lookupColsNames = [];
+            /*jshint camelcase: false */
+            _.each(step.actionParameters.parameters.lookup_selected_cols, function(lookupColId){
+                var addedCol =_.filter(state.playground.lookupData.columns, function(col){
+                    return lookupColId === col.id;
+                });
+                lookupColsNames.push(addedCol[0].name);
+            });
+            return lookupColsNames;
+        };
         //---------------------------------------------------------------------------------------------
         //------------------------------------------UPDATE STEP----------------------------------------
         //---------------------------------------------------------------------------------------------

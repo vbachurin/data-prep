@@ -6,7 +6,7 @@
      * @name data-prep.lookup-datagrid.service:DatagridSizeService
      * @description Datagrid private service that manage the grid sizes
      */
-    function LookupDatagridSizeService($window, GridLookupService) {
+    function LookupDatagridSizeService($window, state) {
         var grid;
         
         return {
@@ -23,7 +23,7 @@
          * @description Get the actual dataset column sizes key. This key is used in localStorage 
          */
         function getLocalStorageKey() {
-            return 'org.talend.dataprep.col_size_' + GridLookupService.dataset.id;
+            return 'org.talend.dataprep.col_size_' + state.playground.lookupGrid.dataset.id;
         }
 
         /**

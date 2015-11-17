@@ -35,7 +35,7 @@
                 <span class="recipe-description recipe-column-name">{{::step.actionParameters.parameters.lookup_ds_name}}.</span>
 
                 <span translate-once="">The following columns were added</span>
-                <span class="recipe-description recipe-column-name">{{::step.actionParameters.parameters.lookup_selected_cols}}</span>
+                <span class="recipe-description recipe-column-name">{{recipeCtrl.getAddedColumnsInLookup(step)}}</span>
             </span>
 
             <span class="filter-icon"
