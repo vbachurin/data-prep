@@ -24,6 +24,7 @@ describe('Preparation Service', function () {
         spyOn(PreparationListService, 'create').and.returnValue($q.when({id: newPreparationId}));
         spyOn(PreparationListService, 'update').and.returnValue($q.when({id: updatedPreparationId, dataSetId: updatedDatasetId}));
         spyOn(PreparationListService, 'delete').and.returnValue($q.when(true));
+        spyOn(PreparationListService, 'clone').and.returnValue($q.when(true));
 
         spyOn(PreparationRestService, 'updateStep').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getContent').and.returnValue($q.when(true));
@@ -461,6 +462,22 @@ describe('Preparation Service', function () {
             //then
             expect(PreparationRestService.getPreviewAdd).toHaveBeenCalledWith(params, canceler);
         }));
+    });
+
+    describe('clone', function() {
+        it('should call service to clone a preparation', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService) {
+            //when
+            PreparationListService.preparations = preparations;
+            PreparationService.clone(preparations[0].id);
+            $rootScope.$digest();
+
+            //then
+            expect(PreparationListService.clone).toHaveBeenCalledWith(preparations[0].id);
+            expect(DatasetListService.refreshDefaultPreparation).toHaveBeenCalledWith(preparations);
+            expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
+
+        }));
+
     });
 
 });
