@@ -24,59 +24,76 @@
             .replace('[/]', '/');
     }
 
+    function removeEscapedSpecialChar(value) {
+        return value.replace(/[[][[\]{}()*+?.\\^$|/][\]]/g, '');
+    }
+
+    function hasSpecialChar(value) {
+        return removeEscapedSpecialChar(value).match(/.*[[\]{}()*+?.\\^$|/].*/);
+    }
+
     var equals = {
         key: '=',
         label: 'Equals',
         adapt: function adapt(value) {
-            return '^' + escape(value) + '$';
+            return escape(value);
         },
         match: function match(value) {
-            return value.match(/^[\^].*[$]$/);
+            return !hasSpecialChar(value);
         },
         clean: function clean(value) {
-            return unescape(value.substring(1, value.length - 1));
+            return unescape(value);
         }
     };
 
     var contains = {
         key: '≅',
         label: 'Contains',
+        extract: function extract(value) {
+            return value.substring(2, value.length - 2);
+        },
         adapt: function adapt(value) {
             return '.*' + escape(value) + '.*';
         },
         match: function match(value) {
-            return value.match(/^[.][*].*[.][*]$/);
+            return value.match(/^[.][*].*[.][*]$/) && !hasSpecialChar(this.extract(value));
         },
         clean: function clean(value) {
-            return unescape(value.substring(2, value.length - 2));
+            return unescape(this.extract(value));
         }
     };
 
     var startsWith = {
         key: '>',
         label: 'Starts With',
+        extract: function extract(value) {
+            return value.substring(1, value.length - 2);
+        },
         adapt: function adapt(value) {
             return '^' + escape(value) + '.*';
         },
         match: function match(value) {
-            return value.match(/^[^].*[.][*]$/);
+            return value.match(/^[^].*[.][*]$/) && !hasSpecialChar(this.extract(value));
         },
         clean: function clean(value) {
-            return unescape(value.substring(1, value.length - 2));
+            return unescape(this.extract(value));
         }
     };
 
     var endsWith = {
         key: '<',
         label: 'Ends With',
+        extract: function extract(value) {
+            return value.substring(2, value.length - 1);
+        },
         adapt: function adapt(value) {
             return '.*' + escape(value) + '$';
         },
         match: function match(value) {
-            return value.match(/^[.][*].*[$]$/);
+            return value.match(/^[.][*].*[$]$/) && !hasSpecialChar(this.extract(value));
         },
         clean: function clean(value) {
-            return unescape(value.substring(2, value.length - 1));
+            return unescape(this.extract(value));
         }
     };
 

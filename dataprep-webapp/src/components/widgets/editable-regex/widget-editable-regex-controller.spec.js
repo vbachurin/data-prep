@@ -50,7 +50,7 @@ describe('Editable regex widget controller', function() {
             describe('and "equals" type', function() {
                 it('should init selected type by matching current model pattern', function() {
                     //given
-                    scope.value = '^aze[?]rty$';
+                    scope.value = 'aze[?]rty';
 
                     //when
                     var ctrl = createController();
@@ -61,7 +61,7 @@ describe('Editable regex widget controller', function() {
 
                 it('should init entered text with unescaped value', function() {
                     //given
-                    scope.value = '^aze[?]rty$';
+                    scope.value = 'aze[?]rty';
 
                     //when
                     var ctrl = createController();
@@ -197,7 +197,7 @@ describe('Editable regex widget controller', function() {
             ctrl.updateModel();
 
             //then
-            expect(ctrl.value).toBe('^aze[?]rty$');
+            expect(ctrl.value).toBe('aze[?]rty');
         });
 
         it('should escape and adapt "contains" regex', function() {
