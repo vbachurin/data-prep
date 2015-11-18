@@ -7,21 +7,21 @@
 
     function unescape(value) {
         return value
-            .replace('[[]', '[')
-            .replace('[]]', ']')
-            .replace('[{]', '{')
-            .replace('[}]', '}')
-            .replace('[(]', '(')
-            .replace('[)]', ')')
-            .replace('[*]', '*')
-            .replace('[+]', '+')
-            .replace('[?]', '?')
-            .replace('[.]', '.')
-            .replace('[\\]', '\\')
-            .replace('[^]', '^')
-            .replace('[$]', '$')
-            .replace('[|]', '|')
-            .replace('[/]', '/');
+            .replace(/\[\{]/g, '{')
+            .replace(/\[}]/g, '}')
+            .replace(/\[\(]/g, '(')
+            .replace(/\[\)]/g, ')')
+            .replace(/\[\*]/g, '*')
+            .replace(/\[\+]/g, '+')
+            .replace(/\[\?]/g, '?')
+            .replace(/\[\.]/g, '.')
+            .replace(/\[\\]/g, '\\')
+            .replace(/\[\^]/g, '^')
+            .replace(/\[\$]/g, '$')
+            .replace(/\[\|]/g, '|')
+            .replace(/\[\/]/g, '/')
+            .replace(/\[]]/g, ']')
+            .replace(/\[\[]/g, '[');
     }
 
     function removeEscapedSpecialChar(value) {
