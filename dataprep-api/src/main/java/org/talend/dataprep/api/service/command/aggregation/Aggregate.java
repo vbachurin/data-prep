@@ -115,7 +115,7 @@ public class Aggregate extends GenericCommand<InputStream> {
                 client, //
                 datasetId, //
                 false, // metadata
-                true, // columns (allow metadata-based filters to work)r
+                true, // columns (allow metadata-based filters to work)
                 sampleSize);
         return retrieveDataSet.execute();
     }
