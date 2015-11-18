@@ -194,7 +194,21 @@
                     </execution>
                 </executions>
             </plugin>
-
+            <!-- temporary fix to disable all unit tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!--
+                    <excludes>
+                        <exclude>**/*.java</exclude>
+                    </excludes>
+                    -->
+                    <includes>
+                        <include>**/DataSetImportTest.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
