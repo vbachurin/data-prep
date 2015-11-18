@@ -46,17 +46,18 @@
         vm.rawTransformations = [];
 
         vm.showHideCheckbox = function(){
-          return vm.column.id !== vm.state.playground.lookupGrid.selectedColumn.id;
+            if(vm.state.playground.lookupGrid.selectedColumn){
+                return vm.column.id !== vm.state.playground.lookupGrid.selectedColumn.id;
+            }
+            else {
+                return false;
+            }
         };
 
         //stop event propagation
         vm.updateColsToAdd = function updateColsToAdd(e) {
             e.stopPropagation();
-            var columnsToAdd = _.keys(_.pick(vm.state.playground.lookupGrid.addedToLookup, function(col){
-                return col.isAdded;
-            }));
-            //omit the current selected column from the params
-            StateService.setLookupColumnsToAdd(_.without(columnsToAdd, vm.state.playground.lookupGrid.selectedColumn.id));
+            StateService.setLookupColumnsToAdd();
         };
         /**
          * @ngdoc method

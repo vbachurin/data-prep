@@ -24,8 +24,11 @@
 			setLookupColumnsToAdd: setLookupColumnsToAdd
 		};
 
-		function setLookupColumnsToAdd(colsIds){
-			lookupGridState.lookupColumnsToAdd = colsIds;
+		function setLookupColumnsToAdd(){
+			var columnsToAdd = _.keys(_.pick(lookupGridState.addedToLookup, function(col){
+				return col.isAdded;
+			}));
+			lookupGridState.lookupColumnsToAdd = _.without(columnsToAdd, lookupGridState.selectedColumn.id);
 		}
 
 		/**
@@ -153,6 +156,7 @@
 		function setGridSelection(column, line) {
 			lookupGridState.selectedColumn = column;
 			lookupGridState.selectedLine = line;
+			setLookupColumnsToAdd();
 		}
 
 		/**
