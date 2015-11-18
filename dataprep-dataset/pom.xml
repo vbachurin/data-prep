@@ -210,7 +210,8 @@
                         <include>org/talend/dataprep/dataset/service/analysis/**/*.java</include>
                         <include>org/talend/dataprep/dataset/service/locator/**/*.java</include>
                         <include>org/talend/dataprep/dataset/service/*.java</include>
-                        <include>**/DataSetImportTest.java</include>
+                        <include>org/talend/dataprep/dataset/MetadataRepositoryLockTest.java</include>
+                        <include>org/talend/dataprep/dataset/DataSetImportTest.java</include>
                     </includes>
                 </configuration>
             </plugin>
