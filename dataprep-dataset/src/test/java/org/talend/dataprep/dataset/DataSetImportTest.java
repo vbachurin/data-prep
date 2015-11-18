@@ -14,7 +14,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,10 +70,6 @@ public class DataSetImportTest {
     @Before
     public void setUp() {
         RestAssured.port = port;
-    }
-
-    @After
-    public void tearDown() throws Exception {
         dataSetMetadataRepository.clear();
     }
 
@@ -80,11 +79,13 @@ public class DataSetImportTest {
      */
     @Test
     public void testImportStatus() throws Exception {
+
         // Create a data set (asynchronously)
         Runnable creation = () -> {
             try {
                 dataSetId = given().body(IOUtils.toString(DataSetImportTest.class.getResourceAsStream("tagada.csv")))
                         .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+                LOGGER.debug("testImportStatus dataset created #{}", dataSetId);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -131,7 +132,7 @@ public class DataSetImportTest {
         Thread creationThread = new Thread(creation);
         creationThread.start();
         // Wait for creation of data set object
-        while (!dataSetMetadataRepository.list().iterator().hasNext()) {
+        while (dataSetMetadataRepository.size() == 0) {
             TimeUnit.MILLISECONDS.sleep(20);
         }
         // Find data set being imported...
@@ -160,27 +161,31 @@ public class DataSetImportTest {
      */
     @Test
     public void testCannotOpenDataSetBeingImported() throws Exception {
+
+        LOGGER.info("testCannotOpenDataSetBeingImported started");
+
+        assertThat(dataSetMetadataRepository.size(), is(0));
+        LOGGER.debug("dataSetMetadata repository is empty");
+
         // Create a data set (asynchronously)
         Runnable creation = () -> {
             try {
                 dataSetId = given().body(IOUtils.toString(DataSetImportTest.class.getResourceAsStream("tagada.csv")))
                         .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+                LOGGER.debug("testCannotOpenDataSetBeingImported dataset created #{}", dataSetId);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         };
 
-        LOGGER.info("testCannotOpenDataSetBeingImported started");
-
         Thread creationThread = new Thread(creation);
         creationThread.start();
         // Wait for creation of data set object
         while (dataSetMetadataRepository.size() == 0) {
-            TimeUnit.MILLISECONDS.sleep(10);
+            TimeUnit.MILLISECONDS.sleep(20);
         }
         // Find data set being imported...
-        final Iterable<DataSetMetadata> list = dataSetMetadataRepository.list();
-        final Iterator<DataSetMetadata> iterator = list.iterator();
+        final Iterator<DataSetMetadata> iterator = dataSetMetadataRepository.list().iterator();
         assertThat(iterator.hasNext(), is(true));
         final DataSetMetadata next = iterator.next();
         LOGGER.info("found {}", next);
