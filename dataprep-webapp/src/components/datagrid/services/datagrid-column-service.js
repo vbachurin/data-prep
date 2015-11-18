@@ -105,11 +105,10 @@
                 selectable: false
             });
 
-            var resultColumn =  _.union(colIndexArray, _.map(columnsMetadata, function (col) {
+            return _.union(colIndexArray, _.map(columnsMetadata, function (col) {
                 return createColumnDefinition(col, preview);
             }));
 
-            return resultColumn;
         }
 
         //------------------------------------------------------------------------------------------------------

@@ -53,7 +53,7 @@ describe('Preview Service', function () {
         stateMock.playground.grid.dataView = dataViewMock;
         PreviewService.gridRangeIndex = gridRangeIndex;
 
-        //simulate lookup-datagrid get item to have displayedTdpIds = [1,3,6,7,8]
+        //simulate datagrid get item to have displayedTdpIds = [1,3,6,7,8]
         spyOn(stateMock.playground.grid.dataView, 'getItem').and.callFake(function(id) {
             switch(id) {
                 case 1:
@@ -70,7 +70,7 @@ describe('Preview Service', function () {
             return null;
         });
 
-        //simulate lookup-datagrid get array index by (tdp) id
+        //simulate datagrid get array index by (tdp) id
         spyOn(stateMock.playground.grid.dataView, 'getIdxById').and.callFake(function(id) {
             switch(id) {
                 case 1:

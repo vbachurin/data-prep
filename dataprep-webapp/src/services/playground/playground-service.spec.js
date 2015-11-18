@@ -581,7 +581,7 @@ describe('Playground Service', function () {
                 expect(RecipeService.refresh).toHaveBeenCalled();
             }));
 
-            it('should refresh lookup-datagrid with head content', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService, PreviewService) {
+            it('should refresh datagrid with head content', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService, PreviewService) {
                 //given
                 stateMock.playground.preparation = {id: '15de46846f8a46'};
                 var action = 'uppercase';
@@ -660,7 +660,7 @@ describe('Playground Service', function () {
                     expect(RecipeService.refresh.calls.count()).toBe(2);
                 }));
 
-                it('should refresh lookup-datagrid content on UNDO', inject(function ($rootScope, PreparationService, DatagridService) {
+                it('should refresh datagrid content on UNDO', inject(function ($rootScope, PreparationService, DatagridService) {
                     //given
                     expect(PreparationService.getContent.calls.count()).toBe(1);
                     expect(DatagridService.updateData.calls.count()).toBe(1);
@@ -812,7 +812,7 @@ describe('Playground Service', function () {
                     expect(RecipeService.refresh.calls.count()).toBe(2);
                 }));
 
-                it('should refresh lookup-datagrid content at the last active step on UNDO', inject(function ($rootScope, PreparationService, DatagridService, RecipeService) {
+                it('should refresh datagrid content at the last active step on UNDO', inject(function ($rootScope, PreparationService, DatagridService, RecipeService) {
                     //given
                     expect(PreparationService.getContent.calls.count()).toBe(1);
                     expect(DatagridService.updateData.calls.count()).toBe(1);
@@ -890,7 +890,7 @@ describe('Playground Service', function () {
                 expect(RecipeService.refresh).toHaveBeenCalled();
             }));
 
-            it('should update lookup-datagrid', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService, PreviewService) {
+            it('should update datagrid', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService, PreviewService) {
                 //given
                 stateMock.playground.preparation = {id: preparationId};
 
@@ -953,7 +953,7 @@ describe('Playground Service', function () {
                     expect(RecipeService.refresh.calls.count()).toBe(2);
                 }));
 
-                it('should refresh lookup-datagrid content on UNDO', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService, PreviewService) {
+                it('should refresh datagrid content on UNDO', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService, PreviewService) {
                     //when
                     undo();
                     $rootScope.$digest();
