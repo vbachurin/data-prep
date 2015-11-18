@@ -15,43 +15,23 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.service.analysis.SynchronousDataSetAnalyzer;
-import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
-
-import com.jayway.restassured.RestAssured;
 
 /**
  * This test ensures the data set service behaves as stated in <a
  * href="https://jira.talendforge.org/browse/TDP-157">https://jira.talendforge.org/browse/TDP-157</a>.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@WebAppConfiguration
-@IntegrationTest
-public class DataSetImportTest {
+
+public class DataSetImportTest extends DataSetBaseTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSetImportTest.class);
-
-    @Value("${local.server.port}")
-    public int port;
-
-    @Autowired
-    DataSetMetadataRepository dataSetMetadataRepository;
 
     private String dataSetId;
 
@@ -65,12 +45,6 @@ public class DataSetImportTest {
     public static void leave() {
         // Set pause in analysis
         System.setProperty("DataSetImportTest.PausedAnalyzer", "0"); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-
-    @Before
-    public void setUp() {
-        RestAssured.port = port;
-        dataSetMetadataRepository.clear();
     }
 
     /**
