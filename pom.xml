@@ -10,7 +10,7 @@
     <description>dataprep parent pom</description>
     <modules>
         <module>dataprep-backend</module>
-        <!-- <module>dataprep-webapp</module> -->
+        <module>dataprep-webapp</module>
     </modules>
     <build>
         <pluginManagement>
