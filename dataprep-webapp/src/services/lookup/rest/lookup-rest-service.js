@@ -23,7 +23,7 @@
 		 * @returns {Promise} The GET promise
 		 */
 		function getLookupActions (datasetId){
-			var url = RestURLs.datasetUrl+ '/' + datasetId + '/actions';
+			var url = RestURLs.datasetActionsUrl+ '/' + datasetId + '/actions';
 			return $http.get(url);
 		}
 
