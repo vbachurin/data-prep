@@ -160,7 +160,7 @@ public class Lookup extends ActionMetadata implements DataSetAction {
         colsToAdd.forEach(toAdd -> {
 
             // create the new column
-            String newColId = context.in(this).column(rowMetadata.getById(toAdd).getName(), rowMetadata, (r) -> {
+            String newColId = context.in(this).column(matchingRow.getRowMetadata().getById(toAdd).getName(), rowMetadata, (r) -> {
                 final ColumnMetadata colMetadata = ColumnMetadata.Builder //
                         .column() //
                         .copy(matchingRow.getRowMetadata().getById(toAdd)) //

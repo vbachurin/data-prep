@@ -2,8 +2,7 @@ package org.talend.dataprep.transformation.api.action.metadata.datablending;
 
 import static org.junit.Assert.*;
 import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.COLUMN_ID;
-import static org.talend.dataprep.transformation.api.action.metadata.datablending.Lookup.Parameters.LOOKUP_DS_URL;
-import static org.talend.dataprep.transformation.api.action.metadata.datablending.Lookup.Parameters.LOOKUP_JOIN_ON;
+import static org.talend.dataprep.transformation.api.action.metadata.datablending.Lookup.Parameters.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -107,7 +106,7 @@ public class LookupTest {
     @Test
     public void shouldMerge() throws IOException {
         // given
-        Map<String, String> parameters = getUsStatesLookupParameters();
+        Map<String, String> parameters = getUsStatesLookupParameters("us_states");
         DataSetRow row = ActionMetadataTestUtils.getRow("Atlanta", "GA", "Philips Arena");
 
         // when
@@ -123,9 +122,31 @@ public class LookupTest {
     }
 
     @Test
+    public void shouldMergeMultipleColumns() throws IOException {
+        // given
+        Map<String, String> parameters = getUsStatesLookupParameters("nba");
+        parameters.put(LOOKUP_SELECTED_COLS.getKey(), "[\"0001\", \"0004\", \"0006\"]");
+        parameters.put(LOOKUP_JOIN_ON.getKey(), "0003");
+        DataSetRow row = ActionMetadataTestUtils.getRow("Dallas", "TX");
+
+        // when
+        action.applyOnDataSet(row, new TransformationContext(), parameters);
+
+        // then (check values)
+        DataSetRow expected = ActionMetadataTestUtils.getRow("Dallas", "TX", "Dallas Mavericks", "American Airlines Center",
+                "32.790556°N 96.810278°W");
+        Assert.assertEquals(expected, row);
+
+        // and (check metadata)
+        checkMergedMetadata(row.getRowMetadata().getById("0002"), "Team", "string", "");
+        checkMergedMetadata(row.getRowMetadata().getById("0003"), "Arena", "string", "");
+        checkMergedMetadata(row.getRowMetadata().getById("0004"), "Coordinates", "string", "");
+    }
+
+    @Test
     public void shouldMergeEmptyCellsOnMissingLookupData() throws IOException {
         // given
-        Map<String, String> parameters = getUsStatesLookupParameters();
+        Map<String, String> parameters = getUsStatesLookupParameters("us_states");
         DataSetRow row = ActionMetadataTestUtils.getRow("Toronto", "ON", "Air Canada Centre");
 
         // when
@@ -143,7 +164,7 @@ public class LookupTest {
     @Test
     public void shouldMergeEmptyCellsOnMissingSourceData() throws IOException {
         // given
-        Map<String, String> parameters = getUsStatesLookupParameters();
+        Map<String, String> parameters = getUsStatesLookupParameters("us_states");
         DataSetRow row = ActionMetadataTestUtils.getRow("Huntington", "", "");
 
         // when
@@ -161,7 +182,7 @@ public class LookupTest {
     @Test
     public void shouldMergeSeveralRows() throws IOException {
         // given
-        Map<String, String> parameters = getUsStatesLookupParameters();
+        Map<String, String> parameters = getUsStatesLookupParameters("us_states");
         DataSetRow[] rows = new DataSetRow[] { ActionMetadataTestUtils.getRow("Atlanta", "GA", "Philips Arena"),
                 ActionMetadataTestUtils.getRow("Miami", "FL", "American Airlines Arena"),
                 ActionMetadataTestUtils.getRow("Chicago", "IL", "United Center"),
@@ -215,10 +236,10 @@ public class LookupTest {
     /**
      * @return US States specific looup parameters.
      */
-    private Map<String, String> getUsStatesLookupParameters() throws IOException {
+    private Map<String, String> getUsStatesLookupParameters(String lookup) throws IOException {
         Map<String, String> parameters = ActionMetadataTestUtils
                 .parseParameters(this.getClass().getResourceAsStream("lookupAction.json"));
-        parameters.put(LOOKUP_DS_URL.getKey(), "http://localhost:" + port + "/test/lookup/us_states");
+        parameters.put(LOOKUP_DS_URL.getKey(), "http://localhost:" + port + "/test/lookup/" + lookup);
         parameters.put(LOOKUP_JOIN_ON.getKey(), "0000");
         parameters.put(COLUMN_ID.getKey(), "0001");
         return parameters;
