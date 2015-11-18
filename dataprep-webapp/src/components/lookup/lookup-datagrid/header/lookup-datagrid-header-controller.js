@@ -133,7 +133,6 @@
             }
         };
 
-
         /**
          * @ngdoc method
          * @name resetColumnName
@@ -143,7 +142,6 @@
         vm.resetColumnName = function resetColumnName() {
             vm.newName = originalName;
         };
-
 
     }
 

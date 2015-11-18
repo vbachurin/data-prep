@@ -15,8 +15,6 @@
             update: update,
             delete: deleteDataset,
             clone: cloneDataset,
-            getLookupActions: getLookupActions,
-            getLookupContent: getLookupContent,
 
             updateColumn: updateColumn,
 
@@ -112,23 +110,6 @@
                 url += '?name=' + encodeURIComponent(name);
             }
             return $http.get(url);
-        }
-
-
-        /**
-         * @ngdoc method
-         * @name getLookupActions
-         * @methodOf data-prep.services.dataset.service:DatasetRestService
-         * @description get the possible actions of the current dataset
-         * @returns {Promise} The GET promise
-         */
-        function getLookupActions (datasetId){
-            var url = RestURLs.datasetUrl+ '/' + datasetId + '/actions';
-            return $http.get(url);
-        }
-
-        function getLookupContent(lookupDsUrl){
-            return $http.get(lookupDsUrl);
         }
 
         //--------------------------------------------------------------------------------------------------------------

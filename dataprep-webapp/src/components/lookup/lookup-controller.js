@@ -15,59 +15,53 @@
 	 * @requires data-?????????????services.state.service:StateService
 	 * @requires data-?????????????services.datasetWorkflowService:UpdateWorkflowService
 	 */
-	function LookupCtrl($scope, state, DatasetLookupService, EarlyPreviewService, TransformationApplicationService) {
+	function LookupCtrl($scope, state, StateService, LookupService, EarlyPreviewService, TransformationApplicationService) {
 		var vm = this;
 		vm.state = state;
 
-		vm.datasetLookupService = DatasetLookupService;
+		vm.lookupService = LookupService;
 		vm.earlyPreview = EarlyPreviewService.earlyPreview;
 		vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
 
-		vm.positions = {
-			from : 100,
-			to:650
-		};
-
 		vm.hoverSubmitBtn = function hoverSubmitBtn(){
 			var previewClosure = vm.earlyPreview(vm.lookupAction, 'dataset');
-			return function(params){
-				params = populateParams(params);
-				previewClosure(params);
-			};
+			populateParams();
+			previewClosure(vm.lookupParams);
 		};
 
-		vm.loadSelectedLookupContent = function(lookupDs){
-			vm.lookupAction = lookupDs;
-			var lookupDsUrl = lookupDs.parameters[4].default;
-			vm.datasetLookupService.resetLookup();
-			vm.datasetLookupService.loadLookupContent(lookupDsUrl);
-		};
-
-		function populateParams (params) {
-			/*jshint camelcase: false */
-			params.column_id = vm.state.playground.grid.selectedColumn.id;
-			params.lookup_join_on = vm.state.playground.lookupGrid.selectedColumn.id;
-			params.lookup_join_on_name = vm.state.playground.lookupGrid.selectedColumn.name || vm.state.playground.lookupGrid.selectedColumn.tdpColMetadata.name;
-			//var columnsToAdd = _.keys(_.pick(vm.state.playground.lookupGrid.addedToLookup, function(col){
-			//	return col.isAdded;
-			//}));
-			////omit the current selected column from the params
-			//params.lookup_selected_cols = _.without(columnsToAdd, vm.state.playground.lookupGrid.selectedColumn.id);
-			params.lookup_selected_cols = vm.state.playground.lookupGrid.lookupColumnsToAdd;
-			return params;
+		function extractLookupParams (dsLookup){
+			return _.reduce(dsLookup.parameters, function(res, param){
+				res[param.name] = param.default;
+				return res;
+			},{});
 		}
 
-		vm.submitLookup = function submitLookup(action, scope) {
-			return function(params) {
-				EarlyPreviewService.deactivatePreview();
-				EarlyPreviewService.cancelPendingPreview();
-				params = populateParams(params);
+		vm.loadSelectedLookupContent = function(lookupDs){
+			StateService.resetLookup();
+			vm.lookupParams = extractLookupParams(lookupDs);
+			vm.lookupAction = lookupDs;
+			/*jshint camelcase: false */
+			vm.lookupService.loadLookupContent(vm.lookupParams.lookup_ds_url);
+		};
 
-				TransformationApplicationService.append(action, scope, params)
-					.finally(function() {
-						setTimeout(EarlyPreviewService.activatePreview, 500);
-					});
-			};
+		function populateParams () {
+			/*jshint camelcase: false */
+			vm.lookupParams.column_id = vm.state.playground.grid.selectedColumn.id;
+			vm.lookupParams.column_name = vm.state.playground.grid.selectedColumn.name;
+			vm.lookupParams.lookup_join_on = vm.state.playground.lookupGrid.selectedColumn.id;
+			vm.lookupParams.lookup_join_on_name = vm.state.playground.lookupGrid.selectedColumn.name;
+			vm.lookupParams.lookup_selected_cols = vm.state.playground.lookupGrid.lookupColumnsToAdd;
+		}
+
+		vm.submitLookup = function submitLookup(action) {
+			EarlyPreviewService.deactivatePreview();
+			EarlyPreviewService.cancelPendingPreview();
+			populateParams();
+
+			TransformationApplicationService.append(action, 'dataset', vm.lookupParams)
+				.finally(function() {
+					setTimeout(EarlyPreviewService.activatePreview, 500);
+				});
 		};
 
 		//the lookup directive is created before the playground
@@ -77,7 +71,7 @@
 		},
 		function(newDataset){
 			if(newDataset){
-				DatasetLookupService.getLookupPossibleActions(vm.state.playground.dataset.id)
+				LookupService.getLookupPossibleActions(vm.state.playground.dataset.id)
 					.then(function(dsLookup){
 						vm.potentialTransformations = dsLookup.data;
 					})

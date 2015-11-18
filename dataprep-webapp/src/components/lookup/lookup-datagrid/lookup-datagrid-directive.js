@@ -22,8 +22,8 @@
      * @requires data-prep.lookup-datagrid.service:DatagridExternalService
      * @restrict E
      */
-    function LookupDatagrid(state, DatasetLookupService, LookupDatagridGridService, LookupDatagridColumnService, LookupDatagridStyleService, LookupDatagridSizeService,
-                            LookupDatagridTooltipService, LookupDatagridExternalService) {
+    function LookupDatagrid(state, LookupDatagridGridService, LookupDatagridColumnService, LookupDatagridStyleService,
+                            LookupDatagridSizeService, LookupDatagridTooltipService) {
         return {
             restrict: 'E',
             templateUrl: 'components/lookup/lookup-datagrid/lookup-datagrid.html',
@@ -32,20 +32,11 @@
             controller: 'LookupDatagridCtrl',
             link: function (scope, iElement, iAttrs, ctrl) {
                 var grid;
-                var columnTimeout, externalTimeout, focusTimeout;
+                var columnTimeout, focusTimeout;
 
                 //------------------------------------------------------------------------------------------------------
                 //--------------------------------------------------GETTERS---------------------------------------------
                 //------------------------------------------------------------------------------------------------------
-                /**
-                 * @ngdoc method
-                 * @name getMetadata
-                 * @methodOf data-prep.lookup-datagrid.directive:Datagrid
-                 * @description [PRIVATE] Get the loaded metadata
-                 */
-                //var getMetadata = function getMetadata() {
-                //    return DatasetLookupService.currentLookupCols;
-                //};
 
                 /**
                  * @ngdoc method
@@ -54,18 +45,8 @@
                  * @description [PRIVATE] Get the loaded data
                  */
                 var getData = function getData() {
-                    return DatasetLookupService.lookupDsContent;
+                    return state.playground.lookupData;
                 };
-
-                ///**
-                // * @ngdoc method
-                // * @name getFilters
-                // * @methodOf data-prep.lookup-datagrid.directive:Datagrid
-                // * @description [PRIVATE] Get the filter list
-                // */
-                //var getFilters = function getFilters() {
-                //    return state.playground.filter.gridFilters;
-                //};
 
                 //------------------------------------------------------------------------------------------------------
                 //---------------------------------------------------UTILS----------------------------------------------
@@ -107,10 +88,6 @@
 
                             if(!data.preview) {
                                 selectedColumn = stateSelectedColumn ? _.find(columns, {id: stateSelectedColumn.id}) : null;
-                                //if(stateSelectedLine) {
-                                //    var stateSelectedColumnIndex = columns.indexOf(selectedColumn);
-                                //    //LookupDatagridStyleService.scheduleHighlightCellsContaining(stateSelectedLine, stateSelectedColumnIndex);
-                                //}
                             }
 
                             LookupDatagridStyleService.updateColumnClass(columns, selectedColumn);
@@ -118,32 +95,11 @@
                             LookupDatagridColumnService.renewAllColumns(false);
                         }, 0);
 
-                        //manage column selection (external)
-                        clearTimeout(externalTimeout);
-                        if(!data.preview) {
-                            externalTimeout = setTimeout(function () {
-                                 LookupDatagridExternalService.updateSuggestionPanel(selectedColumn);
-                            }, 0);
-                        }
-
                         //focus specific column
                         clearTimeout(focusTimeout);
                         focusTimeout = setTimeout(LookupDatagridGridService.navigateToFocusedColumn, 300);
                     }
                 };
-
-                ///**
-                // * @ngdoc method
-                // * @name onFiltersChange
-                // * @methodOf data-prep.lookup-datagrid.directive:Datagrid
-                // * @description [PRIVATE] Refresh cell styles and scroll to top
-                // */
-                //var onFiltersChange = function onFiltersChange() {
-                //    if (grid) {
-                //        LookupDatagridStyleService.resetCellStyles();
-                //        grid.scrollRowToTop(0);
-                //    }
-                //};
 
                 //------------------------------------------------------------------------------------------------------
                 //---------------------------------------------------INIT-----------------------------------------------
@@ -167,21 +123,10 @@
                 //------------------------------------------------------------------------------------------------------
                 //-------------------------------------------------WATCHERS---------------------------------------------
                 //------------------------------------------------------------------------------------------------------
-
-                /**
-                 * Scroll to top when loaded dataset change
-                 */
-                //scope.$watch(getMetadata, onMetadataChange);
-
                 /**
                  * Update grid columns and invalidate grid on data change
                  */
                 scope.$watch(getData, onDataChange);
-
-                /**
-                 * When filter change, displayed values change, so we reset active cell and cell styles
-                 */
-                //scope.$watch(getFilters, onFiltersChange);
             }
         };
     }

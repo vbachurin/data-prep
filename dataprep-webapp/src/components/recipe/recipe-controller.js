@@ -25,7 +25,6 @@
          */
         vm.resetParams = RecipeService.resetParams;
 
-
         vm.getAddedColumnsInLookup = function getAddedColumnsInLookup(step){
             var lookupColsNames = [];
             /*jshint camelcase: false */
@@ -35,7 +34,7 @@
                 });
                 lookupColsNames.push(addedCol[0].name);
             });
-            return lookupColsNames;
+            return lookupColsNames.join(', ');
         };
         //---------------------------------------------------------------------------------------------
         //------------------------------------------UPDATE STEP----------------------------------------

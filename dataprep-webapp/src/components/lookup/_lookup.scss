@@ -1,14 +1,14 @@
 .lookup {
   overflow: hidden;
   .lookup-header {
-    max-height: 40px;
+    height: 15px;
     hr{
       margin:0px;
     }
   }
 
   .lookup-container {
-    height: 260px;
+    height: 280px;
 
     #lookup-left {
       float: left;
@@ -20,6 +20,24 @@
 
     #lookup-right {
       float: right;
+      width: 29.5%;
+      height: 280px;
+      background-color: #DDDDDD;
+      .lookup-descripton{
+        margin-left: 10px;
+        width: 60%;
+        p{
+          margin-left:15px;
+          color:#505E98;
+        }
+      }
+      button{
+        float:right;
+        margin: 10px;
+        position: absolute;
+        right: 0;
+        bottom: 30px;
+      }
     }
   }
 

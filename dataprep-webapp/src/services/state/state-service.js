@@ -33,6 +33,7 @@
             setLookupGridSelection: PlaygroundStateService.setLookupGridSelection,
             setLookupDataset: PlaygroundStateService.setLookupDataset,
             setLookupColumnsToAdd: PlaygroundStateService.setLookupColumnsToAdd,
+            resetLookup: PlaygroundStateService.resetLookup,
 
             //playground - filters
             addGridFilter: PlaygroundStateService.addGridFilter,

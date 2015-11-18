@@ -22,7 +22,7 @@
     function PlaygroundService($rootScope, $q, state, DatasetService, DatagridService, PreviewService,
                                RecipeService, TransformationCacheService, SuggestionService, PreparationService,
                                StatisticsService, HistoryService, StateService,
-                               OnboardingService, MessageService, TextFormatService, DatasetLookupService) {
+                               OnboardingService, MessageService, TextFormatService) {
         var DEFAULT_NAME = 'Preparation draft';
 
         var service = {
@@ -65,7 +65,6 @@
             SuggestionService.reset();
             HistoryService.clear();
             PreviewService.reset(false);
-            DatasetLookupService.resetLookup();
         }
 
         /**

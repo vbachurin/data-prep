@@ -6,7 +6,6 @@
 
    <div class="lookup-header">
        <hr>
-       <diagonal-curve id="diagonal-curve" positions="LookupCtrl.positions"></diagonal-curve>
        <hr>
    </div>
 
@@ -16,10 +15,26 @@
        </div>
 
        <div id="lookup-right">
-           <transform-form transformation="LookupCtrl.lookupAction"
-                           on-submit="LookupCtrl.submitLookup(LookupCtrl.lookupAction, 'dataset')(params)"
-                           on-submit-hover-on="LookupCtrl.hoverSubmitBtn()(params)"
-                           on-submit-hover-off="LookupCtrl.cancelEarlyPreview()"> </transform-form>
+           <div class="lookup-descripton">
+               <strong>ADD DATA FROM LOOKUP</strong>
+               <br><br>
+               <p>
+                   1. Select the columns from each dataset you want to use for join.
+                   <br><br>
+                   2. In the Lookup, check the columns you want to add into your main dataset
+                   <br><br>
+                   3. Click Confirm
+               </p>
+           </div>
+
+           <button ng-disabled="!LookupCtrl.state.playground.lookupGrid.lookupColumnsToAdd.length ||
+                                !LookupCtrl.state.playground.lookupGrid.selectedColumn ||
+                                !LookupCtrl.state.playground.grid.selectedColumn"
+                   class="param-primary-button btn-primary"
+                   ng-click="LookupCtrl.submitLookup(LookupCtrl.lookupAction)"
+                   ng-mouseenter="LookupCtrl.hoverSubmitBtn()"
+                   ng-mouseleave="LookupCtrl.cancelEarlyPreview()">Confirm
+           </button>
        </div>
    </div>
 

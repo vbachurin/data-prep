@@ -27,7 +27,6 @@
 
         return {
             initGrid : initGrid
-            //navigateToFocusedColumn: navigateToFocusedColumn
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -65,33 +64,12 @@
                 }
             });
 
-            grid.onHeaderContextMenu.subscribe(function (e, args) {
-                $timeout(function(){
-                    StateService.setLookupGridSelection(args.column.tdpColMetadata);
-                });
-            });
-
             grid.onHeaderClick.subscribe(function (e, args) {
                 $timeout(function(){
                     StateService.setLookupGridSelection(args.column.tdpColMetadata);
                 });
             });
         }
-
-        /**
-         * @ngdoc method
-         * @name navigateToFocusedColumn
-         * @methodOf data-prep.lookup-datagrid.service:DatagridGridService
-         * @description navigates between columns
-         */
-        //function navigateToFocusedColumn(){
-        //    if(DatagridService.focusedColumn) {
-        //        var columnIndex = _.findIndex(grid.getColumns(), {id: DatagridService.focusedColumn});
-        //        var renderedRows = grid.getRenderedRange();
-        //        var centerRow   = +((renderedRows.bottom - renderedRows.top) / 2).toFixed(0);
-        //        grid.scrollCellIntoView(renderedRows.top + centerRow, columnIndex, false);
-        //    }
-        //}
 
         /**
          * @ngdoc method

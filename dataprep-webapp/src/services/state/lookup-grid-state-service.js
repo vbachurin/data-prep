@@ -18,7 +18,6 @@
 
 			setColumnFocus: setColumnFocus,
 			setData: setData,
-			setFilter: setFilter,
 			setGridSelection: setGridSelection,
 			setDataset: setDataset,
 			setLookupColumnsToAdd: setLookupColumnsToAdd
@@ -42,46 +41,6 @@
 			lookupGridState.nbLines = lookupGridState.dataView.getLength();
 			lookupGridState.nbTotalLines = data.records.length;
 			lookupGridState.displayLinesPercentage = (lookupGridState.nbLines * 100 / lookupGridState.nbTotalLines).toFixed(0);
-		}
-
-		/**
-		 * @ngdoc method
-		 * @name setFilter
-		 * @methodOf data-prep.services.state.service:GridStateService
-		 * @param {array} filters The filters
-		 * @param {object} data The grid data
-		 * @description Update the grid filters
-		 */
-		function setFilter(filters, data) {
-			/**
-			 * @ngdoc method
-			 * @name allFilterFn
-			 * @param {object} item The item to test
-			 * @param {object} args Object containing the filters predicates
-			 * @description Filter function. It iterates over all filters and return if the provided item fit the predicates
-			 * @returns {boolean} True if the item pass all the filters
-			 */
-			var allFilterFn = function allFilterFn(item, args) {
-				//init filters with actual data
-				var initializedFilters = _.map(args.filters, function (filter) {
-					return filter(data);
-				});
-				//execute each filter on the value
-				for (var i = 0; i < initializedFilters.length; i++) {
-					var filter = initializedFilters[i];
-					if (!filter(item)) {
-						return false;
-					}
-				}
-				return true;
-			};
-
-			lookupGridState.dataView.beginUpdate();
-			lookupGridState.dataView.setFilterArgs({filters: _.map(filters, 'filterFn')});
-			lookupGridState.dataView.setFilter(allFilterFn);
-			lookupGridState.dataView.endUpdate();
-
-			updateLinesCount(data);
 		}
 
 		/**
@@ -110,7 +69,6 @@
 			updateLinesCount(data);
 			updateSelectedColumn(data);
 
-			lookupGridState.addedToLookup = {};
 			_.each(data.columns, function(col){
 				lookupGridState.addedToLookup[col.id]  = {
 					isAdded : false
@@ -156,7 +114,9 @@
 		function setGridSelection(column, line) {
 			lookupGridState.selectedColumn = column;
 			lookupGridState.selectedLine = line;
-			setLookupColumnsToAdd();
+			if(column){
+				setLookupColumnsToAdd();
+			}
 		}
 
 		/**
@@ -169,6 +129,8 @@
 			lookupGridState.columnFocus = null;
 			lookupGridState.selectedColumn = null;
 			lookupGridState.selectedLine = null;
+			lookupGridState.lookupColumnsToAdd = [];
+			lookupGridState.addedToLookup = {};
 		}
 	}
 

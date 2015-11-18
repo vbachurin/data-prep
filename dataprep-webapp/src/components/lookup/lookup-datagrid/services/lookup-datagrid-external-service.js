@@ -9,21 +9,19 @@
      * @requires data-prep.services.transformation.service:SuggestionService
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      */
-    function LookupDatagridExternalService($timeout, StatisticsService, SuggestionService, StateService) {
+    function LookupDatagridExternalService(StateService) {
         var grid;
-        var suggestionTimeout;
-        var lastSelectedTab;
         var lastSelectedColumn;
 
         var service = {
             init: init,
-            updateSuggestionPanel: updateSuggestionPanel
+            updateSelectedLookupColumn: updateSelectedLookupColumn
         };
 
         return service;
         /**
          * @ngdoc method
-         * @name updateSuggestionPanel
+         * @name updateSelectedLookupColumn
          * @methodOf data-prep.lookup-datagrid.service:DatagridExternalService
          * @param {string} column The selected column
          * @param {string} tab The suggestion tab to select
@@ -31,37 +29,13 @@
          * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
          */
 
-        function updateSuggestionPanel(column, tab) {
-            if (column.id === 'tdpId') {
-                $timeout.cancel(suggestionTimeout);
-                $timeout(function () {
-                    SuggestionService.reset();
-                    StatisticsService.reset(true, true, true);
-                });
+        function updateSelectedLookupColumn(column) {
+            var columnHasChanged = column.tdpColMetadata !== lastSelectedColumn;
+            if (!columnHasChanged) {
+                return;
             }
-            else {
-                var tabHasChanged = tab !== lastSelectedTab;
-                var columnHasChanged = column.tdpColMetadata !== lastSelectedColumn;
-
-                if (!tabHasChanged && !columnHasChanged) {
-                    return;
-                }
-                StateService.setLookupGridSelection(column);
-                //$timeout.cancel(suggestionTimeout);
-
-                //suggestionTimeout = $timeout(function () {
-                //    lastSelectedColumn = column.tdpColMetadata;
-                //    lastSelectedTab = tab;
-
-                //    if (tabHasChanged) {
-                //        SuggestionService.selectTab(lastSelectedTab);
-                //    }
-                //    if (columnHasChanged) {
-                //        StatisticsService.updateStatistics();
-                //        SuggestionService.setColumn(lastSelectedColumn);
-                //    }
-                //}, 200);
-            }
+            lastSelectedColumn = column.tdpColMetadata;
+            StateService.setLookupGridSelection(column);
         }
 
         /**
@@ -75,7 +49,7 @@
             grid.onActiveCellChanged.subscribe(function (e, args) {
                 if (angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
-                    updateSuggestionPanel(column, 'COLUMN'); //TODO : change this to CELL when cell actions are supported
+                    updateSelectedLookupColumn(column); //TODO : change this to CELL when cell actions are supported
                 }
             });
         }
@@ -90,7 +64,7 @@
             function attachColumnCallback(args) {
                 var columnId = args.column.id;
                 var column = _.find(grid.getColumns(), {id: columnId});
-                updateSuggestionPanel(column, 'COLUMN');
+                updateSelectedLookupColumn(column);
             }
 
             grid.onHeaderContextMenu.subscribe(function (e, args) {
@@ -101,21 +75,6 @@
                 attachColumnCallback(args);
             });
         }
-
-        /**
-         * @ngdoc method
-         * @name attachGridScroll
-         * @methodOf data-prep.lookup-datagrid.service:DatagridExternalService
-         * @description Attach grid scroll listener. It will update the displayed range for preview
-         */
-        //function attachGridScrollListener() {
-        //    grid.onScroll.subscribe(function () {
-        //        clearTimeout(scrollTimeout);
-        //        scrollTimeout = setTimeout(function () {
-        //            PreviewService.gridRangeIndex = grid.getRenderedRange();
-        //        }, 200);
-        //    });
-        //}
 
         /**
          * @ngdoc method
