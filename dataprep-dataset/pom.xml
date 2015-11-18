@@ -194,23 +194,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- temporary fix to filter unit tests
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <includes>
-                        <include>org/talend/dataprep/dataset/objects/**/*.java</include>
-                        <include>org/talend/dataprep/dataset/store/**/*.java</include>
-                        <include>org/talend/dataprep/dataset/service/analysis/**/*.java</include>
-                        <include>org/talend/dataprep/dataset/service/locator/**/*.java</include>
-                        <include>org/talend/dataprep/dataset/service/*.java</include>
-                        <include>org/talend/dataprep/dataset/MetadataRepositoryLockTest.java</include>
-                        <include>org/talend/dataprep/dataset/DataSetImportTest.java</include>
-                    </includes>
-                </configuration>
-            </plugin>
-            -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
