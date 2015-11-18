@@ -3,7 +3,7 @@
 
     /**
      * @ngdoc directive
-     * @name data-prep.quality-bar.directive:QualityBar
+     * @name data-prep.quality-bar.directive:lookupQualityBar
      * @description Quality bar tooltip
      * @restrict E
      * @usage
