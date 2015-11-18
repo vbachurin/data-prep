@@ -207,6 +207,7 @@
                     <includes>
                         <include>org/talend/dataprep/dataset/objects/**/*.java</include>
                         <include>org/talend/dataprep/dataset/store/**/*.java</include>
+                        <include>org/talend/dataprep/dataset/service/analysis/**/*.java</include>
                         <include>**/DataSetImportTest.java</include>
                     </includes>
                 </configuration>
