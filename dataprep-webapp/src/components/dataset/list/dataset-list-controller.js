@@ -236,6 +236,10 @@
 
         };
 
+        vm.goToFolder = function(folder){
+            FolderService.goToFolder(folder);
+        };
+
         // load the datasets
         DatasetService
             .getDatasets()
