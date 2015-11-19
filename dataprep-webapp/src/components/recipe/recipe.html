@@ -28,13 +28,13 @@
                 <span translate-once="RECIPE_ITEM_ON_COL"></span>
                 <span class="recipe-description recipe-column-name">{{::step.column.name}}</span>
 
-                <span translate-once="">made on the column</span>
+                <span translate-once="RECIPE_LOOKUP_MADE_ON_COL"></span>
                 <span class="recipe-description recipe-column-name">{{::step.actionParameters.parameters.lookup_join_on_name}}</span>
 
-                <span translate-once="">of the dataset</span>
+                <span translate-once="RECIPE_LOOKUP_OF_DS"></span>
                 <span class="recipe-description recipe-column-name">{{::step.actionParameters.parameters.lookup_ds_name}}.</span>
 
-                <span translate-once="">The following columns were added</span>
+                <span translate-once="RECIPE_LOOKUP_FOLLOWING_COLS_ADDED"></span>
                 <span class="recipe-description recipe-column-name">{{recipeCtrl.getAddedColumnsInLookup(step)}}</span>
             </span>
 

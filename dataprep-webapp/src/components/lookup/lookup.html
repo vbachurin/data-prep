@@ -16,14 +16,12 @@
 
        <div id="lookup-right">
            <div class="lookup-descripton">
-               <strong>ADD DATA FROM LOOKUP</strong>
+               <strong translate-once="LOOKUP_DESC_TITLE"></strong>
                <br><br>
                <p>
-                   1. Select the columns from each dataset you want to use for join.
-                   <br><br>
-                   2. In the Lookup, check the columns you want to add into your main dataset
-                   <br><br>
-                   3. Click Confirm
+                   <p translate-once="LOOKUP_STEPS_1"></p>
+                   <p translate-once="LOOKUP_STEPS_2"></p>
+                   <p translate-once="LOOKUP_STEPS_3"></p>
                </p>
            </div>
 
@@ -33,7 +31,8 @@
                    class="param-primary-button btn-primary"
                    ng-click="lookupCtrl.submitLookup()"
                    ng-mouseenter="lookupCtrl.hoverSubmitBtn()"
-                   ng-mouseleave="lookupCtrl.cancelEarlyPreview()">Confirm
+                   ng-mouseleave="lookupCtrl.cancelEarlyPreview()"
+                   translate-once="CONFIRM_LOOKUP">
            </button>
        </div>
    </div>
