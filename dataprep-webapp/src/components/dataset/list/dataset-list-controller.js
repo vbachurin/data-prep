@@ -236,6 +236,13 @@
 
         };
 
+        /**
+         * @ngdoc method
+         * @name goToFolder
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @param {object} folder - the folder to go
+         * @description Go to the folder given as parameter
+         */
         vm.goToFolder = function(folder){
             FolderService.goToFolder(folder);
         };
