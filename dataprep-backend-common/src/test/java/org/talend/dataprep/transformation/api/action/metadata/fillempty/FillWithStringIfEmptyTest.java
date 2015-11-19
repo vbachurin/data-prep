@@ -119,6 +119,33 @@ public class FillWithStringIfEmptyTest {
     }
 
     @Test
+    public void should_fill_empty_string_other_column() throws Exception {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0001", "David Bowie");
+        values.put("0002", "");
+        values.put("0003", "Something");
+
+        final RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.addColumn(ColumnMetadata.Builder.column().type(Type.STRING).computedId("0002").build());
+        rowMetadata.addColumn(ColumnMetadata.Builder.column().type(Type.STRING).computedId("0003").build());
+
+        final DataSetRow row = new DataSetRow(rowMetadata, values);
+
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                this.getClass().getResourceAsStream("fillEmptyIntegerAction.json"));
+
+        // when
+        parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.COLUMN_MODE);
+        parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0003");
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+
+        // then
+        Assert.assertEquals("Something", row.get("0002"));
+        Assert.assertEquals("David Bowie", row.get("0001"));
+    }
+
+    @Test
     public void should_accept_column() {
         assertTrue(action.acceptColumn(getColumn(Type.STRING)));
     }

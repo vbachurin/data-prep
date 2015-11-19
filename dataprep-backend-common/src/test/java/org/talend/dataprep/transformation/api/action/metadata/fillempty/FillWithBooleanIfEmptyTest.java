@@ -63,6 +63,60 @@ public class FillWithBooleanIfEmptyTest {
     }
 
     @Test
+    public void should_not_fill_empty_boolean() throws Exception {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0001", "David Bowie");
+        values.put("0002", "false");
+        values.put("0003", "100");
+
+        final RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
+                .type(Type.BOOLEAN) //
+                .computedId("0002") //
+                .build()));
+
+        final DataSetRow row = new DataSetRow(rowMetadata, values);
+
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                this.getClass().getResourceAsStream("fillEmptyBooleanAction.json"));
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+
+        // then
+        Assert.assertEquals("false", row.get("0002"));
+        Assert.assertEquals("David Bowie", row.get("0001"));
+    }
+
+    @Test
+    public void should_fill_empty_string_other_column() throws Exception {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0001", "David Bowie");
+        values.put("0002", "");
+        values.put("0003", "True");
+
+        final RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.addColumn(ColumnMetadata.Builder.column().type(Type.BOOLEAN).computedId("0002").build());
+        rowMetadata.addColumn(ColumnMetadata.Builder.column().type(Type.BOOLEAN).computedId("0003").build());
+
+        final DataSetRow row = new DataSetRow(rowMetadata, values);
+
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                this.getClass().getResourceAsStream("fillEmptyIntegerAction.json"));
+
+        // when
+        parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.COLUMN_MODE);
+        parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0003");
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+
+        // then
+        Assert.assertEquals("True", row.get("0002"));
+        Assert.assertEquals("David Bowie", row.get("0001"));
+    }
+
+    @Test
     public void should_accept_column() {
         assertTrue(action.acceptColumn(getColumn(Type.BOOLEAN)));
     }
