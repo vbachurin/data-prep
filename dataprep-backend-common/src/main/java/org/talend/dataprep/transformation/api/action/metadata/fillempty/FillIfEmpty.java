@@ -2,6 +2,7 @@ package org.talend.dataprep.transformation.api.action.metadata.fillempty;
 
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
 
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
@@ -193,25 +194,33 @@ public class FillIfEmpty extends ActionMetadata implements ColumnAction {
         if (value == null || value.trim().length() == 0) {
 
             String newValue = "";
-            if (parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE)) { 
-                if (type.equals(Type.DATE)) {
-                    final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
-                    final LocalDateTime date = dateParser.parse(parameters.get(DEFAULT_VALUE_PARAMETER), columnMetadata);
-                    final DatePattern mostFrequentPattern = dateParser.getMostFrequentPattern(columnMetadata);
-                    DateTimeFormatter ourNiceFormatter = (mostFrequentPattern == null ? DEFAULT_FORMATTER : mostFrequentPattern
-                            .getFormatter());
-                    newValue = ourNiceFormatter.format(date);
-                } else {
-                    newValue = parameters.get(DEFAULT_VALUE_PARAMETER);
-                }
+            final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
+
+            // First, get raw new value regarding mode (constant or other column):
+            if (parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE)) {
+                newValue = parameters.get(DEFAULT_VALUE_PARAMETER);
             } else {
                 final RowMetadata rowMetadata = row.getRowMetadata();
                 final ColumnMetadata selectedColumn = rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER));
                 newValue = row.get(selectedColumn.getId());
             }
 
-            row.set(columnId, newValue);
+            // Second: if we're on a date column, format new value with the most frequent pattenr of the column:
+            Type type = (columnMetadata == null ? Type.ANY : Type.get(columnMetadata.getType()));
+            if (type.equals(Type.DATE)) {
+                try {
+                    final LocalDateTime date = dateParser.parse(newValue, columnMetadata);
+                    final DatePattern mostFrequentPattern = dateParser.getMostFrequentPattern(columnMetadata);
+                    DateTimeFormatter ourNiceFormatter = (mostFrequentPattern == null ? DEFAULT_FORMATTER : mostFrequentPattern
+                            .getFormatter());
+                    newValue = ourNiceFormatter.format(date);
+                } catch (DateTimeException e) {
+                    // Nothing to do, if we can't get a valid pattern, keep the raw value
+                }
+            }
 
+            // At the end, set the new value:
+            row.set(columnId, newValue);
         }
     }
 
