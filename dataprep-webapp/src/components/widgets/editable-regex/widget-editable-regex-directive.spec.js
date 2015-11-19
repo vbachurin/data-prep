@@ -6,6 +6,17 @@ describe('Editable regex widget directive', function() {
     beforeEach(module('talend.widget'));
     beforeEach(module('htmlTemplates'));
 
+    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+        $translateProvider.translations('en', {
+            "EQUALS": "Equals",
+            "CONTAINS": "Contains",
+            "STARTS_WITH": "Starts With",
+            "ENDS_WITH": "Ends With",
+            "REGEX": "RegEx"
+        });
+        $translateProvider.preferredLanguage('en');
+    }));
+
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function() {

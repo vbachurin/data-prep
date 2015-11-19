@@ -5,6 +5,17 @@ describe('Editable regex widget controller', function() {
 
     beforeEach(module('talend.widget'));
 
+    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+        $translateProvider.translations('en', {
+            "EQUALS": "Equals",
+            "CONTAINS": "Contains",
+            "STARTS_WITH": "Starts With",
+            "ENDS_WITH": "Ends With",
+            "REGEX": "RegEx"
+        });
+        $translateProvider.preferredLanguage('en');
+    }));
+
     beforeEach(inject(function($rootScope, $controller) {
         scope = $rootScope.$new();
         createController = function() {

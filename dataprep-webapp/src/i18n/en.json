@@ -149,6 +149,11 @@
   "NOT_DEFINED": "not defined",
   "SORT_IS": "Sort is ",
   "FILTER_IS": "Filter is ",
+  "EQUALS": "Equals",
+  "CONTAINS": "Contains",
+  "STARTS_WITH": "Starts With",
+  "ENDS_WITH": "Ends With",
+  "REGEX": "RegEx",
 
   "_comment": "Action panel",
   "FIND_FUNCTION": "Find a Function...",

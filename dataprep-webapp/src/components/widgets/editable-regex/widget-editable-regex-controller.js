@@ -32,92 +32,93 @@
         return removeEscapedSpecialChar(value).match(/.*[[\]{}()*+?.\\^$|/].*/);
     }
 
-    var equals = {
-        key: '=',
-        label: 'Equals',
-        adapt: function adapt(value) {
-            return escape(value);
-        },
-        match: function match(value) {
-            return !hasSpecialChar(value);
-        },
-        clean: function clean(value) {
-            return unescape(value);
-        }
-    };
-
-    var contains = {
-        key: '≅',
-        label: 'Contains',
-        extract: function extract(value) {
-            return value.substring(2, value.length - 2);
-        },
-        adapt: function adapt(value) {
-            return '.*' + escape(value) + '.*';
-        },
-        match: function match(value) {
-            return value.match(/^[.][*].*[.][*]$/) && !hasSpecialChar(this.extract(value));
-        },
-        clean: function clean(value) {
-            return unescape(this.extract(value));
-        }
-    };
-
-    var startsWith = {
-        key: '>',
-        label: 'Starts With',
-        extract: function extract(value) {
-            return value.substring(1, value.length - 2);
-        },
-        adapt: function adapt(value) {
-            return '^' + escape(value) + '.*';
-        },
-        match: function match(value) {
-            return value.match(/^[^].*[.][*]$/) && !hasSpecialChar(this.extract(value));
-        },
-        clean: function clean(value) {
-            return unescape(this.extract(value));
-        }
-    };
-
-    var endsWith = {
-        key: '<',
-        label: 'Ends With',
-        extract: function extract(value) {
-            return value.substring(2, value.length - 1);
-        },
-        adapt: function adapt(value) {
-            return '.*' + escape(value) + '$';
-        },
-        match: function match(value) {
-            return value.match(/^[.][*].*[$]$/) && !hasSpecialChar(this.extract(value));
-        },
-        clean: function clean(value) {
-            return unescape(this.extract(value));
-        }
-    };
-
-    var regex = {
-        key: '^\\',
-        label: 'RegEx',
-        adapt: function adapt(value) {
-            return value;
-        },
-        match: function match() {
-            return true;
-        },
-        clean: function clean(value) {
-            return value;
-        }
-    };
 
     /**
      * @ngdoc controller
      * @name talend.widget.controller:EditableRegexCtrl
      * @description Editable regex controller. It manage the entered value adaptation to match the wanted regex type
      */
-    function TalendEditableRegexCtrl() {
+    function TalendEditableRegexCtrl($translate) {
         var vm = this;
+
+        var equals = {
+            key: '=',
+            label: $translate.instant('EQUALS'),
+            adapt: function adapt(value) {
+                return escape(value);
+            },
+            match: function match(value) {
+                return !hasSpecialChar(value);
+            },
+            clean: function clean(value) {
+                return unescape(value);
+            }
+        };
+
+        var contains = {
+            key: '≅',
+            label: $translate.instant('CONTAINS'),
+            extract: function extract(value) {
+                return value.substring(2, value.length - 2);
+            },
+            adapt: function adapt(value) {
+                return '.*' + escape(value) + '.*';
+            },
+            match: function match(value) {
+                return value.match(/^[.][*].*[.][*]$/) && !hasSpecialChar(this.extract(value));
+            },
+            clean: function clean(value) {
+                return unescape(this.extract(value));
+            }
+        };
+
+        var startsWith = {
+            key: '>',
+            label: $translate.instant('STARTS_WITH'),
+            extract: function extract(value) {
+                return value.substring(1, value.length - 2);
+            },
+            adapt: function adapt(value) {
+                return '^' + escape(value) + '.*';
+            },
+            match: function match(value) {
+                return value.match(/^[^].*[.][*]$/) && !hasSpecialChar(this.extract(value));
+            },
+            clean: function clean(value) {
+                return unescape(this.extract(value));
+            }
+        };
+
+        var endsWith = {
+            key: '<',
+            label: $translate.instant('ENDS_WITH'),
+            extract: function extract(value) {
+                return value.substring(2, value.length - 1);
+            },
+            adapt: function adapt(value) {
+                return '.*' + escape(value) + '$';
+            },
+            match: function match(value) {
+                return value.match(/^[.][*].*[$]$/) && !hasSpecialChar(this.extract(value));
+            },
+            clean: function clean(value) {
+                return unescape(this.extract(value));
+            }
+        };
+
+        var regex = {
+            key: '^\\',
+            label: $translate.instant('REGEX'),
+            adapt: function adapt(value) {
+                return value;
+            },
+            match: function match() {
+                return true;
+            },
+            clean: function clean(value) {
+                return value;
+            }
+        };
 
         /**
          * @ngdoc property
@@ -131,7 +132,7 @@
          * @ngdoc property
          * @name selectedType
          * @propertyOf talend.widget.controller:EditableRegexCtrl
-         * @description The selected regex type. This is initialized with 'contains' type
+         * @description The selected regex type. This is initialized with 'equals' type
          */
         vm.selectedType = vm.value ? getRegexType(vm.value) : equals;
 
