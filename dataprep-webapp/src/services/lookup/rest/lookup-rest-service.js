@@ -3,34 +3,40 @@
 
 	/**
 	 * @ngdoc service
-	 * @name data-prep.services.dataset.service:DatasetRestService
-	 * @description Dataset service. This service provide the entry point to the backend dataset REST api.<br/>
-	 * <b style="color: red;">WARNING : do NOT use this service directly.
-	 * {@link data-prep.services.dataset.service:DatasetService DatasetService} must be the only entry point for datasets</b>
+	 * @name data-prep.services.lookup:LookupRestService
+	 * @description .
+	 * {@link data-prep.services.lookup.service:LookupService LookupService} must be the only entry point for lookup</b>
 	 */
 	function LookupRestService($http, RestURLs) {
 		return {
 			getLookupActions: getLookupActions,
-			getLookupContent: getLookupContent,
+			getLookupContent: getLookupContent
 		};
-
 
 		/**
 		 * @ngdoc method
 		 * @name getLookupActions
-		 * @methodOf data-prep.services.dataset.service:DatasetRestService
-		 * @description get the possible actions of the current dataset
-		 * @returns {Promise} The GET promise
+		 * @methodOf data-prep.services.lookup.service:LookupRestService
+		 * @description Import the list of possible actions
+		 * @param {string} datasetId the dataset id
+		 * @returns {Promise} the $get promise
 		 */
 		function getLookupActions (datasetId){
 			var url = RestURLs.datasetActionsUrl+ '/' + datasetId + '/actions';
 			return $http.get(url);
 		}
 
+		/**
+		 * @ngdoc method
+		 * @name getLookupContent
+		 * @methodOf data-prep.services.lookup.service:LookupRestService
+		 * @description Import the remote dataset content
+		 * @param {string} lookupDsUrl dataset url
+		 * @returns {Promise} the $get promise
+		 */
 		function getLookupContent(lookupDsUrl){
 			return $http.get(lookupDsUrl);
 		}
-
 	}
 
 	angular.module('data-prep.services.lookup')

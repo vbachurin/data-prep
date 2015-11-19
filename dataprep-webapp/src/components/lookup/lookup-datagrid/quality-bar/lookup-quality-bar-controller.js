@@ -9,7 +9,7 @@
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.transformation.service:TransformationApplicationService
      */
-    function LookupQualityBarCtrl(FilterService, TransformationApplicationService, ColumnSuggestionService) {
+    function LookupQualityBarCtrl(ColumnSuggestionService) {
         var MIN_QUALITY_WIDTH = 10;
         var vm = this;
 
@@ -130,50 +130,6 @@
          */
         vm.hashQuality = function hashQuality() {
             return vm.quality.empty + '' + vm.quality.invalid + '' + vm.quality.valid;
-        };
-
-        /**
-         * @ngdoc method
-         * @name filterValidRecords
-         * @methodOf data-prep.lookup-datagrid-header.controller:DatagridHeaderCtrl
-         * @description Create a filter for all valid records on the given column.
-         * @param {object} column - the column to filter
-         */
-        vm.filterValidRecords = function (column) {
-            FilterService.addFilter('valid_records', column.id, column.name);
-        };
-
-        /**
-         * @ngdoc method
-         * @name filterInvalidRecords
-         * @methodOf data-prep.lookup-datagrid-header.controller:DatagridHeaderCtrl
-         * @description Create a filter for invalid records on the given column.
-         * @param {object} column - the column to filter
-         */
-        vm.filterInvalidRecords = function (column) {
-            FilterService.addFilter('invalid_records', column.id, column.name);
-        };
-
-        /**
-         * @ngdoc method
-         * @name filterEmptyRecords
-         * @methodOf data-prep.lookup-datagrid-header.controller:DatagridHeaderCtrl
-         * @description Create a filter for empty records on the given column.
-         * @param {object} column - the column to filter
-         */
-        vm.filterEmptyRecords = function (column) {
-            FilterService.addFilter('empty_records', column.id, column.name);
-        };
-
-        /**
-         * @ngdoc method
-         * @name applyActionOnColumn
-         * @methodOf data-prep.lookup-datagrid-header.controller:DatagridHeaderCtrl
-         * @description Apply a given transformation on the current column
-         * @param {Object} action The action to apply
-         */
-        vm.applyActionOnColumn = function applyActionOnColumn(action) {
-            TransformationApplicationService.append(action, 'column');
         };
     }
 

@@ -3,32 +3,39 @@
 
 	/**
 	 * @ngdoc controller
-	 * @name data-?????????????dataset-list.controller:DatasetListCtrl
-	 * @description Dataset list ?????????????
-	 On creation, it fetch ?????????????from backend and load playground if 'datasetid' query param is provided
-	 * @requires data-?????????????services.dataset.service:DatasetService
-	 * @requires data-?????????????services.dataset.service:DatasetListSortService
-	 * @requires data-?????????????services.playground.service:PlaygroundService
-	 * @requires talend.?????????????service:TalendConfirmService
-	 * @requires data-?????????????services.utils.service:MessageService
-	 * @requires data-?????????????services.uploadWorkflowService.service:UploadWorkflowService
-	 * @requires data-?????????????services.state.service:StateService
-	 * @requires data-?????????????services.datasetWorkflowService:UpdateWorkflowService
+	 * @name data-prep.lookup
+	 * @description Lookup controller.
+	 * @requires data-prep.services.state.constant:state
+	 * @requires data-prep.services.state.service:StateService
+	 * @requires data-prep.services.lookup.service:LookupService
+	 * @requires data-prep.services.playground.service:EarlyPreviewService
+	 * @requires data-prep.services.transformation.service:TransformationApplicationService
 	 */
 	function LookupCtrl($scope, state, StateService, LookupService, EarlyPreviewService, TransformationApplicationService) {
 		var vm = this;
 		vm.state = state;
-
-		vm.lookupService = LookupService;
-		vm.earlyPreview = EarlyPreviewService.earlyPreview;
 		vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
 
+		/**
+		 * @ngdoc method
+		 * @name hoverSubmitBtn
+		 * @methodOf data-prep.lookup.controller:LookupCtrl
+		 * @description trigger a preview mode on the main dataset to show the lookup action effet
+		 */
 		vm.hoverSubmitBtn = function hoverSubmitBtn(){
-			var previewClosure = vm.earlyPreview(vm.lookupAction, 'dataset');
+			var previewClosure = EarlyPreviewService.earlyPreview(vm.lookupAction, 'dataset');
 			populateParams();
 			previewClosure(vm.lookupParams);
 		};
 
+		/**
+		 * @ngdoc method
+		 * @name extractLookupParams
+		 * @methodOf data-prep.lookup.controller:LookupCtrl
+		 * @param {object} dsLookup dataset lookup action
+		 * @returns {object} the params object
+		 * @description loops over the dataset lookup action parameters to collect the params
+		 */
 		function extractLookupParams (dsLookup){
 			return _.reduce(dsLookup.parameters, function(res, param){
 				res[param.name] = param.default;
@@ -36,14 +43,27 @@
 			},{});
 		}
 
+		/**
+		 * @ngdoc method
+		 * @name loadSelectedLookupContent
+		 * @methodOf data-prep.lookup.controller:LookupCtrl
+		 * @param {object} dsLookup dataset lookup action
+		 * @description loads the content of the selected lookup dataset
+		 */
 		vm.loadSelectedLookupContent = function(lookupDs){
 			StateService.resetLookup();
 			vm.lookupParams = extractLookupParams(lookupDs);
 			vm.lookupAction = lookupDs;
 			/*jshint camelcase: false */
-			vm.lookupService.loadLookupContent(vm.lookupParams.lookup_ds_url);
+			LookupService.loadLookupContent(vm.lookupParams.lookup_ds_url);
 		};
 
+		/**
+		 * @ngdoc method
+		 * @name populateParams
+		 * @methodOf data-prep.lookup.controller:LookupCtrl
+		 * @description populates the params object by collection the needed parameters
+		 */
 		function populateParams () {
 			/*jshint camelcase: false */
 			vm.lookupParams.column_id = vm.state.playground.grid.selectedColumn.id;
@@ -53,6 +73,12 @@
 			vm.lookupParams.lookup_selected_cols = vm.state.playground.lookupGrid.lookupColumnsToAdd;
 		}
 
+		/**
+		 * @ngdoc method
+		 * @name submitLookup
+		 * @methodOf data-prep.lookup.controller:LookupCtrl
+		 * @description submits the lookup action
+		 */
 		vm.submitLookup = function submitLookup(action) {
 			EarlyPreviewService.deactivatePreview();
 			EarlyPreviewService.cancelPendingPreview();
@@ -64,8 +90,9 @@
 				});
 		};
 
-		//the lookup directive is created before the playground
-		//get ALL the possible lookup actions on the current dataset
+		//*****************************************************************************************//
+		//**************************** Watcher on the current dataset *****************************//
+		//*****************************************************************************************//
 		$scope.$watch(function(){
 			return vm.state.playground.dataset;
 		},
@@ -74,8 +101,6 @@
 				LookupService.getLookupPossibleActions(vm.state.playground.dataset.id)
 					.then(function(dsLookup){
 						vm.potentialTransformations = dsLookup.data;
-					})
-					.then(function(){
 						if(vm.potentialTransformations.length){
 							vm.loadSelectedLookupContent(vm.potentialTransformations[0]);
 						}
@@ -85,5 +110,5 @@
 	}
 
 	angular.module('data-prep.lookup')
-		.controller('lookupCtrl', LookupCtrl);
+		.controller('LookupCtrl', LookupCtrl);
 })();

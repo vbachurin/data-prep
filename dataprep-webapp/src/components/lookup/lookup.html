@@ -1,6 +1,6 @@
 <talend-slidable
         class="lookup"
-        visible="LookupCtrl.visible"
+        visible="lookupCtrl.visible"
         side="bottom"
         control-bar="false">
 
@@ -27,13 +27,13 @@
                </p>
            </div>
 
-           <button ng-disabled="!LookupCtrl.state.playground.lookupGrid.lookupColumnsToAdd.length ||
-                                !LookupCtrl.state.playground.lookupGrid.selectedColumn ||
-                                !LookupCtrl.state.playground.grid.selectedColumn"
+           <button ng-disabled="!lookupCtrl.state.playground.lookupGrid.lookupColumnsToAdd.length ||
+                                !lookupCtrl.state.playground.lookupGrid.selectedColumn ||
+                                !lookupCtrl.state.playground.grid.selectedColumn"
                    class="param-primary-button btn-primary"
-                   ng-click="LookupCtrl.submitLookup(LookupCtrl.lookupAction)"
-                   ng-mouseenter="LookupCtrl.hoverSubmitBtn()"
-                   ng-mouseleave="LookupCtrl.cancelEarlyPreview()">Confirm
+                   ng-click="lookupCtrl.submitLookup(lookupCtrl.lookupAction)"
+                   ng-mouseenter="lookupCtrl.hoverSubmitBtn()"
+                   ng-mouseleave="lookupCtrl.cancelEarlyPreview()">Confirm
            </button>
        </div>
    </div>
@@ -41,8 +41,8 @@
     <div class="lookup-footer">
         <hr>
        <ul>
-           <li ng-repeat="lookupDs in LookupCtrl.potentialTransformations track by $index"
-               ng-click="LookupCtrl.loadSelectedLookupContent(LookupCtrl.potentialTransformations[$index])">
+           <li ng-repeat="lookupDs in lookupCtrl.potentialTransformations track by $index"
+               ng-click="lookupCtrl.loadSelectedLookupContent(lookupCtrl.potentialTransformations[$index])">
                <a>{{lookupDs.parameters[2].default}}</a>
            </li>
        </ul>

@@ -25,17 +25,6 @@
          */
         vm.resetParams = RecipeService.resetParams;
 
-        vm.getAddedColumnsInLookup = function getAddedColumnsInLookup(step){
-            var lookupColsNames = [];
-            /*jshint camelcase: false */
-            _.each(step.actionParameters.parameters.lookup_selected_cols, function(lookupColId){
-                var addedCol =_.filter(state.playground.lookupData.columns, function(col){
-                    return lookupColId === col.id;
-                });
-                lookupColsNames.push(addedCol[0].name);
-            });
-            return lookupColsNames.join(', ');
-        };
         //---------------------------------------------------------------------------------------------
         //------------------------------------------UPDATE STEP----------------------------------------
         //---------------------------------------------------------------------------------------------
@@ -116,6 +105,26 @@
         //---------------------------------------------------------------------------------------------
         //------------------------------------------PARAMETERS-----------------------------------------
         //---------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name getAddedColumnsInLookup
+         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @param {object} step The current step
+         * @description having the Ids od the added columns, it collects the responding names
+         * @returns {String} array of the added columns names
+         */
+        vm.getAddedColumnsInLookup = function getAddedColumnsInLookup(step){
+            var lookupColsNames = [];
+            /*jshint camelcase: false */
+            _.each(step.actionParameters.parameters.lookup_selected_cols, function(lookupColId){
+                var addedCol =_.filter(state.playground.lookupData.columns, function(col){
+                    return lookupColId === col.id;
+                });
+                lookupColsNames.push(addedCol[0].name);
+            });
+            return lookupColsNames.join(', ');
+        };
+
         /**
          * @ngdoc method
          * @name hasParameters
