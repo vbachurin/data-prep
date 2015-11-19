@@ -2,7 +2,9 @@ package org.talend.dataprep.schema.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,6 +41,25 @@ public class XlsSchemaParserTest {
             List<ColumnMetadata> actual = result.getSheetContents().get(0).getColumnMetadatas();
 
             Assert.assertEquals(datasetMetadata.getRow().getColumns(), actual);
+        }
+    }
+
+    /**
+     * see https://jira.talendforge.org/browse/TDP-827
+     */
+    @Test
+    public void shouldParseFileWithHeader() throws Exception {
+        String fileName = "org/talend/dataprep/schema/file_with_header.xlsx";
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
+
+            DataSetMetadata datasetMetadata = IoTestUtils.getSimpleDataSetMetadata();
+
+            SchemaParserResult result = parser.parse(new SchemaParser.Request(inputStream, datasetMetadata));
+            List<ColumnMetadata> columns = result.getSheetContents().get(0).getColumnMetadatas();
+            final List<String> actual = columns.stream().map(c -> c.getName()).collect(Collectors.toList());
+
+            final List<String> expected = Arrays.asList("col0", "col1", "col2", "col3", "col4");
+            Assert.assertEquals(expected, actual);
         }
     }
 
