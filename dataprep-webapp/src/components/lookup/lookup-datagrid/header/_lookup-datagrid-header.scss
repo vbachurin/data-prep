@@ -22,19 +22,6 @@ $datagrid-header-bkg: $dark-gray;
     cursor: default;
   }
 
-  &.newColumn {
-    background-color: rgba(193, 217, 6, 0.5 );
-  }
-
-  &.updatedColumn {
-    background-color: rgba(79, 193, 222, 0.5);
-  }
-
-  &.deletedColumn {
-    background-color: rgba(255, 0, 0, 0.5);
-    text-decoration: line-through;
-  }
-
   .grid-header-type {
     height: 100%;
     text-transform: lowercase;
@@ -43,31 +30,6 @@ $datagrid-header-bkg: $dark-gray;
     text-align: right;
     text-overflow: ellipsis;
     display: block;
-  }
-
-  .grid-header-menu {
-    @include menu-list;
-    font-family: $base-font-family;
-    li {
-      height: 18px;
-    }
-  }
-
-  .dropdown-menu,
-  .dropdown-action {
-    outline: none;
-  }
-
-  .grid-header-title-input {
-    color: #555964;
-    display: table-cell;
-    margin-bottom: 0;
-    padding: 0 0 0 0.5em;
-  }
-
-  .talend-dropdown-div {
-    width: 20px;
-    float: right;
   }
 
   .talend-dropdown-text-div {

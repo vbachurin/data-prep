@@ -4,23 +4,17 @@
     /**
      * @ngdoc directive
      * @name data-prep.lookup-datagrid-header.directive:DatagridHeader
-     * @description This directive takes care of a lookup-datagrid header item. It creates the header dropdown menu.
-     * On creation, it calculate the quality bar values.
-     * On double-click, it allows to rename the column name.
-     *
-     * Watchers:
-     * <ul>
-     *    <li>Close transformation menu on retrieve error, base on {@link data-prep.lookup-datagrid-header.controller:DatagridHeaderCtrl controller}.transformationsRetrieveError flag</li>
-     * </ul>
-     *
+     * @description This directive creates the lookup datagrid column header
      * @restrict E
      * @usage
      <lookup-datagrid-header
+     added="added"
      column="column">
      </lookup-datagrid-header>
      * @param {object} column The column metadata
+     * @param {object} added checkbox ng-model
      */
-    function LookupDatagridHeader($timeout) {
+    function LookupDatagridHeader() {
         return {
             restrict: 'E',
             templateUrl: 'components/lookup/lookup-datagrid/header/lookup-datagrid-header.html',
@@ -32,56 +26,24 @@
             controllerAs: 'lookupDatagridHeaderCtrl',
             controller: 'LookupDatagridHeaderCtrl',
             link: {
-                post: function (scope, iElement, iAttrs, ctrl) {
-                    var gridHeader, gridHeaderTitle;
+                post: function (scope, iElement) {
+                    var gridHeader = iElement.find('.whole-grid-header').eq(0);
 
+                    attachClickListener();
                     /**
                      * @ngdoc method
                      * @name attachClickListener
-                     * @methodOf data-prep.lookup-datagrid-header.directive:DatagridHeader
+                     * @methodOf data-prep.lookup-datagrid-header.directive:LookupDatagridHeader
                      * @description Attach a 'Click' event listener on grid header
                      */
                     function attachClickListener() {
                         gridHeader.mousedown(function(event) {
                             if (event.which === 3) { //Right click
-                                //stop propagation not to hide dropdown and hide/show menu on right click
                                 event.stopPropagation();
-                                gridHeader.find('.dropdown-action').click();
+                                gridHeader.click();
                             }
                         });
                     }
-
-                    /**
-                     * Get the title and input elements, attach their listeners
-                     */
-                    $timeout(function () {
-                        gridHeader= iElement.find('.grid-header').eq(0);
-                        gridHeaderTitle = gridHeader.find('.grid-header-title').eq(0);
-
-                        //attachKeyListener();
-                        //attachDblClickListener();
-                        //attachBlurListener();
-                        //attachDisableInputClick();
-                        attachClickListener();
-                    });
-
-                    /**
-                     * Close transformation menu on retrieve error
-                     */
-                    scope.$watch(
-                        function () {
-                            return ctrl.transformationsRetrieveError;
-                        },
-                        function (newValue) {
-                            if (newValue) {
-                                var headerDropdownAction = iElement.find('.dropdown-action').eq(0);
-                                headerDropdownAction.click();
-                            }
-                        });
-
-                    iElement.on('$destroy', function () {
-                        scope.$destroy();
-                    });
                 }
             }
         };

@@ -18,7 +18,6 @@
     function LookupDatagridColumnService(state, $rootScope, $compile, LookupDatagridStyleService, ConverterService, PlaygroundService, $translate) {
         var grid;
         var availableHeaders = [];
-        var renewAllFlag;
         var colIndexName = 'tdpId';
 
         var gridHeaderPreviewTemplate =
@@ -134,13 +133,9 @@
          * @param {boolean} value The new flag value
          * @description Set the 'renewAllFlag' with provided value to control whether the headers should be reused or recreated
          */
-        function renewAllColumns(value) {
-            renewAllFlag = value;
-
-            if (value) {
-                _.forEach(availableHeaders, destroyHeader);
-                availableHeaders = [];
-            }
+        function renewAllColumns() {
+            _.forEach(availableHeaders, destroyHeader);
+            availableHeaders = [];
         }
 
         /**
@@ -166,41 +161,6 @@
                 scope: headerScope,
                 header: headerElement
             };
-        }
-
-        /**
-         * @ngdoc method
-         * @name detachAndSaveHeader
-         * @methodOf data-prep.lookup-datagrid.service:DatagridColumnService
-         * @param {object} event The Slickgrid header destroy event
-         * @param {object} columnsArgs The column header arguments passed by SlickGrid
-         * @description This is part of the process to avoid recreation od the lookup-datagrid header when it is not necessary.
-         * It detach the element and save it with its scope, so it can be reused.
-         * If the 'renewAllFlag' is set to true, the headers are destroyed. So they are forced to be recreated.
-         */
-        function detachAndSaveHeader(event, columnsArgs) {
-            //No header to detach on preview
-            var columnDef = columnsArgs.column;
-            if (columnDef.preview || columnDef.id === colIndexName) {
-                return;
-            }
-
-            //Destroy the header if explicitly requested
-            if (renewAllFlag) {
-                destroyHeader(columnDef);
-            }
-            //Detach and save it otherwise
-            else {
-                var scope = columnDef.scope;
-                var header = columnDef.header;
-
-                header.detach();
-                availableHeaders.push({
-                    id: columnDef.id,
-                    scope: scope,
-                    header: header
-                });
-            }
         }
 
         /**
@@ -256,7 +216,6 @@
          * attach (create them if necessary) and update them on render
          */
         function attachColumnHeaderEvents() {
-            grid.onBeforeHeaderCellDestroy.subscribe(detachAndSaveHeader);
             grid.onHeaderCellRendered.subscribe(createAndAttachHeader);
         }
 

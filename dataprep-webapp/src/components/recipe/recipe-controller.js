@@ -117,9 +117,7 @@
             var lookupColsNames = [];
             /*jshint camelcase: false */
             _.each(step.actionParameters.parameters.lookup_selected_cols, function(lookupColId){
-                var addedCol =_.filter(state.playground.lookupData.columns, function(col){
-                    return lookupColId === col.id;
-                });
+                var addedCol =_.filter(state.playground.lookupData.columns, {id: lookupColId});
                 lookupColsNames.push(addedCol[0].name);
             });
             return lookupColsNames.join(', ');

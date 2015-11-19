@@ -18,7 +18,7 @@
      * @name tooltip
      * @propertyOf data-prep.lookup-datagrid.controller:LookupDatagridCtrl
      * @description The tooltip infos
-     * This is bound to {@link data-prep.lookup-datagrid.service:DatagridTooltipServicee DatagridTooltipServicee}.tooltip
+     * This is bound to {@link data-prep.lookup-datagrid.service:LookupDatagridTooltipServicee LookupDatagridTooltipServicee}.tooltip
      */
     Object.defineProperty(LookupDatagridCtrl.prototype,
         'tooltip', {
@@ -34,7 +34,7 @@
      * @name showTooltip
      * @propertyOf data-prep.lookup-datagrid.controller:LookupDatagridCtrl
      * @description The tooltip display flag
-     * This is bound to {@link data-prep.lookup-datagrid.service:DatagridTooltipServicee DatagridTooltipServicee}.showTooltip
+     * This is bound to {@link data-prep.lookup-datagrid.service:LookupDatagridTooltipServicee LookupDatagridTooltipServicee}.showTooltip
      */
     Object.defineProperty(LookupDatagridCtrl.prototype,
         'showTooltip', {

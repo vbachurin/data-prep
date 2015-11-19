@@ -79,12 +79,12 @@
 		 * @methodOf data-prep.lookup.controller:LookupCtrl
 		 * @description submits the lookup action
 		 */
-		vm.submitLookup = function submitLookup(action) {
+		vm.submitLookup = function submitLookup() {
 			EarlyPreviewService.deactivatePreview();
 			EarlyPreviewService.cancelPendingPreview();
 			populateParams();
 
-			TransformationApplicationService.append(action, 'dataset', vm.lookupParams)
+			TransformationApplicationService.append(vm.lookupAction, 'dataset', vm.lookupParams)
 				.finally(function() {
 					setTimeout(EarlyPreviewService.activatePreview, 500);
 				});

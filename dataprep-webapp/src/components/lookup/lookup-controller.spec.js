@@ -176,7 +176,7 @@ describe('Lookup controller', function () {
 			ctrl.lookupParams = lookupParams;
 
 			//when
-			ctrl.submitLookup(ctrl.lookupAction);
+			ctrl.submitLookup();
 			expect(EarlyPreviewService.activatePreview).not.toHaveBeenCalled();
 			scope.$digest();
 			jasmine.clock().tick(500);
