@@ -3,7 +3,7 @@
     {
       "action": "fillemptywithdefault",
       "parameters": {
-        "empty_default_value": "True",
+        "default_value": "True",
         "scope": "column",
         "column_id": "0002",
         "mode": "Constant",

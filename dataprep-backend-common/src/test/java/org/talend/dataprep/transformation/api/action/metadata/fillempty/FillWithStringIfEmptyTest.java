@@ -16,6 +16,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.fillinvalid.AbstractFillWith;
 
 /**
  * Unit test for the FillWithStringIfEmpty action.
@@ -80,7 +81,7 @@ public class FillWithStringIfEmptyTest {
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 this.getClass().getResourceAsStream("fillEmptyStringAction.json"));
-        parameters.put(FillIfEmpty.DEFAULT_VALUE_PARAMETER,"12.5");
+        parameters.put(AbstractFillWith.DEFAULT_VALUE_PARAMETER,"12.5");
 
         // when
         action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
@@ -108,7 +109,7 @@ public class FillWithStringIfEmptyTest {
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 this.getClass().getResourceAsStream("fillEmptyStringAction.json"));
-        parameters.put(FillIfEmpty.DEFAULT_VALUE_PARAMETER,"12.5");
+        parameters.put(AbstractFillWith.DEFAULT_VALUE_PARAMETER, "12.5");
 
         // when
         action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
