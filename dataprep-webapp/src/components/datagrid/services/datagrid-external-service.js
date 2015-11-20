@@ -9,10 +9,9 @@
      * @requires data-prep.services.transformation.service:SuggestionService
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.playground.service:PreviewService
-     * @requires data-prep.services.state.service:StateService
      *
      */
-    function DatagridExternalService($timeout, StatisticsService, SuggestionService, PreviewService, StateService) {
+    function DatagridExternalService($timeout, StatisticsService, SuggestionService, PreviewService) {
         var grid;
         var suggestionTimeout;
         var scrollTimeout;
@@ -38,6 +37,7 @@
             if (column.id === 'tdpId') {
                 $timeout.cancel(suggestionTimeout);
                 $timeout(function () {
+                    lastSelectedColumn = null;
                     SuggestionService.reset();
                     StatisticsService.reset(true, true, true);
                 });
@@ -60,7 +60,6 @@
                         SuggestionService.selectTab(lastSelectedTab);
                     }
                     if (columnHasChanged) {
-                        StateService.updateSelectedColumnsStatistics();
                         StatisticsService.updateStatistics();
                         SuggestionService.setColumn(lastSelectedColumn);
                     }

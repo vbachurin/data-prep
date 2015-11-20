@@ -75,7 +75,7 @@
                 case INSIDE_RANGE:
                     var min = d3.format(',')(this.args.interval[0]);
                     var max = d3.format(',')(this.args.interval[1]);
-                    return '[' + min + ' .. ' + max + ']';
+                    return '[' + min + ' .. ' + max + '[';
             }
         }
 

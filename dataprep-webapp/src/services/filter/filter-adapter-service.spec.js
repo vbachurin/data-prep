@@ -107,7 +107,7 @@ describe('Filter Adapter Service', function () {
                 var filter = FilterAdapterService.createFilter(type, null, null, null, args, null, null);
 
                 //then
-                expect(filter.value).toBe('[1,000 .. 2,000]');
+                expect(filter.value).toBe('[1,000 .. 2,000[');
             }));
         });
 

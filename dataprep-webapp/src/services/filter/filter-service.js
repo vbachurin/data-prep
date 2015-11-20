@@ -7,7 +7,7 @@
      * @description Filter service. This service provide the entry point to datagrid filters
      * @requires data-prep.services.playground.service:DatagridService
      */
-    function FilterService($timeout, state, StateService, FilterAdapterService, DatagridService, ConverterService) {
+    function FilterService($timeout, state, StateService, FilterAdapterService, DatagridService, ConverterService, StatisticsService) {
         var service = {
             //utils
             getColumnsContaining: getColumnsContaining,
@@ -192,7 +192,9 @@
                     }
 
                     var numberValue = ConverterService.adaptValue('numeric', item[colId]);
-                    return numberValue >= values[0] && numberValue <= values[1];
+                    var min = values[0];
+                    var max = values[1];
+                    return (numberValue === min) || (numberValue > min && numberValue < max);
                 };
             };
         }
@@ -251,6 +253,7 @@
                     break;
             }
             StateService.addGridFilter(filterInfo);
+            StatisticsService.updateStatistics();
         }
 
         /**
@@ -301,6 +304,7 @@
             newFilter = FilterAdapterService.createFilter(oldFilter.type, oldFilter.colId, oldFilter.colName, editableFilter, newArgs, newFilterFn, oldFilter.removeFilterFn);
 
             StateService.updateGridFilter(oldFilter, newFilter);
+            StatisticsService.updateStatistics();
         }
 
         /**
@@ -321,6 +325,7 @@
                     filter.removeFilterFn(filter);
                 })
                 .value();
+            StatisticsService.updateStatistics();
         }
 
         /**
@@ -332,10 +337,10 @@
          */
         function removeFilter(filter) {
             StateService.removeGridFilter(filter);
-
             if (filter.removeFilterFn) {
                 filter.removeFilterFn(filter);
             }
+            StatisticsService.updateStatistics();
         }
     }
 

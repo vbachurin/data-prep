@@ -41,14 +41,15 @@
         };
 
         /**
-         * @ngdoc property
+         * @ngdoc method
          * @name addRangeFilter
-         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
-         * @description Add an "range" value filter
-         * @type {array}
+         * @methodOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @description Add an "range" filter
          */
-        vm.addRangeFilter = function addRangeFilter(item) {
-            return StatisticsService.addRangeFilter(item.data);
+        vm.addRangeFilter = function addRangeFilter(interval) {
+            var selectedColumn = state.playground.grid.selectedColumn;
+            var removeFilterFn = StatisticsService.getRangeFilterRemoveFn();
+            FilterService.addFilterAndDigest('inside_range', selectedColumn.id, selectedColumn.name, {interval: interval}, removeFilterFn);
         };
 
         //------------------------------------------------------------------------------------------------------

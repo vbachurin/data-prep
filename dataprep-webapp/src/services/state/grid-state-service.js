@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     var gridState = {dataView: new Slick.Data.DataView({inlineFilters: false})};
@@ -15,9 +15,7 @@
             setColumnFocus: setColumnFocus,
             setData: setData,
             setFilter: setFilter,
-            setGridSelection: setGridSelection,
-            updateSelectedColumnsStatistics: updateSelectedColumnsStatistics
-
+            setGridSelection: setGridSelection
         };
 
         /**
@@ -35,15 +33,34 @@
 
         /**
          * @ngdoc method
-         * @name updateSelectedColumnsStatistics
+         * @name updateFilteredRecords
          * @methodOf data-prep.services.state.service:GridStateService
-         * @description Count and update the number of filtered lines statistics for the selected column
+         * @description Save the dataview filtered lines
          */
-        function updateSelectedColumnsStatistics() {
-            gridState.filteredRecordsOfSelectedColumn = [];
-            for(var i=0; i <gridState.dataView.getLength(); i++) {
-                gridState.filteredRecordsOfSelectedColumn.push(gridState.dataView.getItem(i));
+        function updateFilteredRecords() {
+            gridState.filteredRecords = [];
+            for (var i = 0; i < gridState.dataView.getLength(); i++) {
+                gridState.filteredRecords.push(gridState.dataView.getItem(i));
             }
+            updateFilteredOccurrencesOnSelectedColumn();
+        }
+
+        /**
+         * @ngdoc method
+         * @name updateFilteredOccurrencesOnSelectedColumn
+         * @methodOf data-prep.services.state.service:GridStateService
+         * @description Update the occurrences of the filtered records
+         */
+        function updateFilteredOccurrencesOnSelectedColumn() {
+            gridState.filteredOccurences = !gridState.selectedColumn ?
+                {} :
+                _.chain(gridState.filteredRecords)
+                    .pluck(gridState.selectedColumn.id)
+                    .groupBy(function(value) {
+                        return value;
+                    })
+                    .mapValues('length')
+                    .value();
         }
 
         /**
@@ -84,6 +101,7 @@
             gridState.dataView.endUpdate();
 
             updateLinesCount(data);
+            updateFilteredRecords();
         }
 
         /**
@@ -111,7 +129,7 @@
 
             updateLinesCount(data);
             updateSelectedColumn(data);
-            updateSelectedColumnsStatistics();
+            updateFilteredRecords();
         }
 
         /**
@@ -123,18 +141,19 @@
          */
         function updateSelectedColumn(data) {
             //in preview we do not change anything
-            if(data.preview) {
+            if (data.preview) {
                 return;
             }
 
             //if there is already a selected column, we update the column metadata to reference one of the new columns
-            if(gridState.selectedColumn && data.columns) {
+            if (gridState.selectedColumn && data.columns) {
                 gridState.selectedColumn = _.find(data.columns, {id: gridState.selectedColumn.id}) || data.columns[0];
             }
             //the first column is selected by default
             else {
                 gridState.selectedColumn = data.columns[0];
             }
+            updateFilteredOccurrencesOnSelectedColumn();
         }
 
         /**
@@ -148,6 +167,7 @@
         function setGridSelection(column, line) {
             gridState.selectedColumn = column;
             gridState.selectedLine = line;
+            updateFilteredOccurrencesOnSelectedColumn();
         }
 
         /**
@@ -160,7 +180,8 @@
             gridState.columnFocus = null;
             gridState.selectedColumn = null;
             gridState.selectedLine = null;
-            gridState.filteredRecordsOfSelectedColumn = [];
+            gridState.filteredRecords = [];
+            gridState.filteredOccurences = {};
         }
     }
 

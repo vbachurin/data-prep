@@ -70,16 +70,13 @@
                         .offset([0, -11])
                         .direction('w')
                         .html(function (d) {
-                            if (typeof d[yField2] !== 'undefined') {
-                                return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + d[yField2] + ' / ' + d[yField] + '</span>' +
-                                    '<br/>' +
-                                    '<br/>' +
-                                    '<strong>Range:</strong> <span style="color:yellow">[' + d[xField] + ']</span>';
-                            }
-                            return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + d[yField] + '</span>' +
+                            var interval =  d[xField];
+                            var uniqueValue = interval[0] === interval[1];
+                            return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + d[yField2] + ' / ' + d[yField] + '</span>' +
                                 '<br/>' +
                                 '<br/>' +
-                                '<strong>Range:</strong> <span style="color:yellow">[' + d[xField] + ']</span>';
+                                '<strong>' + (uniqueValue ? 'Value:' : 'Range:') + '</strong> ' +
+                                '<span style="color:yellow">' + (uniqueValue ? interval[0] : '[' + interval + '[') + '</span>';
                         });
 
                     var svg = d3.select('#' + container).append('svg')
@@ -205,7 +202,7 @@
                             tip.hide(d);
                         })
                         .on('click', function (d) {
-                            scope.onClick()(d);
+                            scope.onClick({interval: d.data});
                         });
                     finishedRendering = true;
                 }
