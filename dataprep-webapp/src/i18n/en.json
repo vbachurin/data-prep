@@ -220,11 +220,11 @@
   "VALID_RECORDS": "valid records",
   "INVALID_RECORDS": "invalid records",
   "EMPTY_RECORDS": "empty records",
-  "SELECT_VALID_RECORDS": "Select valid vecords for ",
-  "SELECT_INVALID_RECORDS": "Select invalid records for ",
-  "SELECT_EMPTY_RECORDS": "Select empty records for ",
-  "FILL_EMPTY_WITH_TOP_VALUE": "Fill empty records with top adjacent value",
-  "FILL_EMPTY_WITH_BOTTOM_VALUE": "Fill empty records with bottom adjacent value",
-  "REPLACE_INVALID_WITH_TOP_VALUE": "Replace invalid Records with top adjacent value",
-  "REPLACE_INVALID_WITH_BOTTOM_VALUE": "Replace invalid Records with bottom adjacent value"
+  "SELECT_VALID_RECORDS": "Select Valid Records for ",
+  "SELECT_INVALID_RECORDS": "Select Invalid Records for ",
+  "SELECT_EMPTY_RECORDS": "Select Empty Records for ",
+  "FILL_EMPTY_WITH_TOP_VALUE": "Fill Empty Records with Top adjacent value",
+  "FILL_EMPTY_WITH_BOTTOM_VALUE": "Fill Empty Records with Bottom adjacent value",
+  "REPLACE_INVALID_WITH_TOP_VALUE": "Replace Invalid Records with Top adjacent value",
+  "REPLACE_INVALID_WITH_BOTTOM_VALUE": "Replace Invalid Records with Bottom adjacent value"
 }
