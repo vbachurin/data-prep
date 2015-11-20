@@ -472,7 +472,7 @@
          * @name processAggregation
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @param {object} column The column to visualize
-         * @param {object} aggregation The column to visualize
+         * @param {string} aggregation The aggregation to perform
          * @description Processes the statistics aggregation for visualization
          */
         function processAggregation(column, aggregation) {

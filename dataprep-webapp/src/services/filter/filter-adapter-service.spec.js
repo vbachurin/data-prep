@@ -109,6 +109,20 @@ describe('Filter Adapter Service', function () {
                 //then
                 expect(filter.value).toBe('[1,000 .. 2,000[');
             }));
+            
+            it('should return value on a single value INSIDE_RANGE filter', inject(function (FilterAdapterService) {
+                //given
+                var type = 'inside_range';
+                var args = {
+                    interval: [5, 5]
+                };
+
+                //when
+                var filter = FilterAdapterService.createFilter(type, null, null, null, args, null, null);
+
+                //then
+                expect(filter.value).toBe('[5]');
+            }));
         });
 
         describe('to tree', function() {
