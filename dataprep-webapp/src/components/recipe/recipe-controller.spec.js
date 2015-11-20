@@ -272,7 +272,7 @@ describe('Recipe controller', function () {
             var step = {
                 actionParameters: {
                     parameters: {
-                        lookup_selected_cols : ['0001','0002']
+                        lookup_selected_cols : [{id:'0001', name:'firstname'},{id:'0002', name:'lastname'}]
                     }
                 }
             };
@@ -281,7 +281,7 @@ describe('Recipe controller', function () {
             var namesString = ctrl.getAddedColumnsInLookup(step);
 
             //then
-            expect(namesString).toBe('firstName, lastName');
+            expect(namesString).toBe('firstname, lastname');
         });
 
         it('should return that step has dynamic parameters when it has cluster', function () {

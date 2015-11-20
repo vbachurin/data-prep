@@ -114,13 +114,8 @@
          * @returns {String} array of the added columns names
          */
         vm.getAddedColumnsInLookup = function getAddedColumnsInLookup(step){
-            var lookupColsNames = [];
             /*jshint camelcase: false */
-            _.each(step.actionParameters.parameters.lookup_selected_cols, function(lookupColId){
-                var addedCol =_.filter(state.playground.lookupData.columns, {id: lookupColId});
-                lookupColsNames.push(addedCol[0].name);
-            });
-            return lookupColsNames.join(', ');
+            return _.pluck(step.actionParameters.parameters.lookup_selected_cols, 'name').join(', ');
         };
 
         /**

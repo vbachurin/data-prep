@@ -3,10 +3,10 @@ describe('Lookup Grid state service', function () {
 
 	var data = {
 		columns: [
-			{id: '0000'},
-			{id: '0001'},
-			{id: '0002'},
-			{id: '0003'}
+			{ id: '0000', 'name':'identif'},
+			{ id: '0001', 'name':'code'},
+			{ id: '0002', 'name':'firstname'},
+			{ id: '0003', 'name':'lastname'}
 		],
 		records: [
 			{tdpId: 0, firstname: 'Tata'},
@@ -24,19 +24,19 @@ describe('Lookup Grid state service', function () {
 		]
 	};
 
-	var addedToLookup = {
-		'0000': {isAdded: false},
-		'0001': {isAdded: false},
-		'0002': {isAdded: false},
-		'0003': {isAdded: false}
-	};
+	var addedToLookup = [
+		{'id':'0000' , 'name':'identif' , isAdded: false},
+		{'id':'0001' , 'name':'code' , isAdded: false},
+		{'id':'0002' , 'name':'firstname' , isAdded: false},
+		{'id':'0003' , 'name':'lastname' , isAdded: false}
+	];
 
-	var addedToLookupWithSelected = {
-		'0000': {isAdded: false},
-		'0001': {isAdded: false},
-		'0002': {isAdded: true},
-		'0003': {isAdded: true}
-	};
+	var addedToLookupWithSelected = [
+		{'id':'0000','name':'identif',isAdded: false},
+		{'id':'0001','name':'code',isAdded: false},
+		{'id':'0002','name':'firstname',isAdded: true},
+		{'id':'0003','name':'lastname',isAdded: true}
+	];
 
 	var metadata = {
 		'id': '8f215b5b-b678-41f1-8a17-dccced6d40fe',
@@ -74,6 +74,7 @@ describe('Lookup Grid state service', function () {
 		it('should create and set to false all the columns that will be added to the lookup', inject(function (lookupGridState, LookupGridStateService) {
 			//given
 			expect(lookupGridState.dataView.getItems()).toBe(data.records);
+			lookupGridState.addedToLookup = [];
 
 			//when
 			LookupGridStateService.setData(data);
@@ -154,7 +155,7 @@ describe('Lookup Grid state service', function () {
 			LookupGridStateService.setLookupColumnsToAdd();
 
 			//then
-			expect(lookupGridState.lookupColumnsToAdd).toEqual(['0002', '0003']);
+			expect(lookupGridState.lookupColumnsToAdd).toEqual([ { id: '0002', name: 'firstname' }, { id: '0003', name: 'lastname' } ] );
 		}));
 
 		it('should collect the columns Ids to be added ', inject(function (lookupGridState, LookupGridStateService) {
@@ -165,7 +166,7 @@ describe('Lookup Grid state service', function () {
 			LookupGridStateService.setGridSelection('0001');
 
 			//then
-			expect(lookupGridState.lookupColumnsToAdd).toEqual(['0002', '0003']);
+			expect(lookupGridState.lookupColumnsToAdd).toEqual([ { id: '0002', name: 'firstname' }, { id: '0003', name: 'lastname' } ]);
 		}));
 
 		it('should not collect the columns Ids to be added ', inject(function (lookupGridState, LookupGridStateService) {
@@ -189,7 +190,7 @@ describe('Lookup Grid state service', function () {
 			lookupGridState.selectedColumn = '0001';
 			lookupGridState.selectedLine = 2;
 			lookupGridState.lookupColumnsToAdd = ['0000'];
-			lookupGridState.addedToLookup = {'0001':{isAdded: true}};
+			lookupGridState.addedToLookup = [{id:'0001', isAdded: true, name:'vfvf'}];
 
 			//when
 			LookupGridStateService.reset();
@@ -199,7 +200,7 @@ describe('Lookup Grid state service', function () {
 			expect(lookupGridState.selectedColumn).toBe(null);
 			expect(lookupGridState.selectedLine).toBe(null);
 			expect(lookupGridState.lookupColumnsToAdd).toEqual([]);
-			expect(lookupGridState.addedToLookup).toEqual({});
+			expect(lookupGridState.addedToLookup).toEqual([]);
 		}));
 	});
 

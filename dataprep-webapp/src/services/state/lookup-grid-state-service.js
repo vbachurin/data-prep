@@ -3,7 +3,7 @@
 
 	var lookupGridState = {
 		dataView: new Slick.Data.DataView({inlineFilters: false}),
-		addedToLookup : {},
+		addedToLookup : [],
 		lookupColumnsToAdd : []
 	};
 
@@ -30,10 +30,18 @@
 		 * @description sets the lookupColumnsToAdd array of the columns to add to the
 		 */
 		function setLookupColumnsToAdd(){
-			var columnsToAdd = _.keys(_.pick(lookupGridState.addedToLookup, function(col){
-				return col.isAdded;
-			}));
-			lookupGridState.lookupColumnsToAdd = _.without(columnsToAdd, lookupGridState.selectedColumn.id);
+			function getRidIsAddedFlag(obj){
+				return _.omit(obj, 'isAdded');
+			}
+			lookupGridState.lookupColumnsToAdd = _.chain(lookupGridState.addedToLookup)
+														.filter(function(col) {
+															return col.isAdded === true;
+														})
+														.filter(function(col) {
+															return col.id !== lookupGridState.selectedColumn.id;
+														})
+														.map(getRidIsAddedFlag)
+														.value();
 		}
 
 		/**
@@ -62,9 +70,11 @@
 			updateSelectedColumn(data);
 
 			_.each(data.columns, function(col){
-				lookupGridState.addedToLookup[col.id]  = {
-					isAdded : false
-				};
+				lookupGridState.addedToLookup.push({
+					isAdded : false,
+					name : col.name,
+					id: col.id
+				});
 			});
 		}
 
@@ -115,7 +125,7 @@
 			lookupGridState.selectedColumn = null;
 			lookupGridState.selectedLine = null;
 			lookupGridState.lookupColumnsToAdd = [];
-			lookupGridState.addedToLookup = {};
+			lookupGridState.addedToLookup = [];
 		}
 	}
 
