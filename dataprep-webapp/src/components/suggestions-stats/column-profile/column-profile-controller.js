@@ -45,11 +45,12 @@
          * @name addRangeFilter
          * @methodOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
          * @description Add an "range" filter
+         * @param {array} interval The interval [min, max] to filter
          */
         vm.addRangeFilter = function addRangeFilter(interval) {
             var selectedColumn = state.playground.grid.selectedColumn;
             var removeFilterFn = StatisticsService.getRangeFilterRemoveFn();
-            FilterService.addFilterAndDigest('inside_range', selectedColumn.id, selectedColumn.name, {interval: interval}, removeFilterFn);
+            FilterService.addFilterAndDigest('inside_range', selectedColumn.id, selectedColumn.name, {interval: interval.slice(0)}, removeFilterFn);
         };
 
         //------------------------------------------------------------------------------------------------------

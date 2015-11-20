@@ -1,17 +1,19 @@
-describe('Filter service', function() {
+describe('Filter service', function () {
     'use strict';
 
     var stateMock;
     beforeEach(module('data-prep.services.filter', function ($provide) {
-        var columns =  [
+        var columns = [
             {id: '0000', name: 'id'},
             {id: '0001', name: 'name'}
         ];
 
-        stateMock = {playground: {
-            filter: {gridFilters: []},
-            data:{columns:columns}
-        }};
+        stateMock = {
+            playground: {
+                filter: {gridFilters: []},
+                data: {columns: columns}
+            }
+        };
         $provide.constant('state', stateMock);
     }));
 
@@ -20,166 +22,281 @@ describe('Filter service', function() {
         spyOn(StatisticsService, 'updateStatistics').and.returnValue();
     }));
 
-    describe('add filter', function() {
-        it('should add "contains" filter', inject(function(FilterService, StateService) {
-            //given
-            var removeFnCallback = function() {};
-            expect(StateService.addGridFilter).not.toHaveBeenCalled();
+    describe('add filter', function () {
+        describe('with "contains" type', function() {
+            it('should create filter', inject(function (FilterService, StateService) {
+                //given
+                var removeFnCallback = function () {
+                };
+                expect(StateService.addGridFilter).not.toHaveBeenCalled();
 
-            //when
-            FilterService.addFilter('contains', 'col1', 'column name', {phrase: 'toto'}, removeFnCallback);
+                //when
+                FilterService.addFilter('contains', 'col1', 'column name', {phrase: 'toto'}, removeFnCallback);
 
-            //then
-            expect(StateService.addGridFilter).toHaveBeenCalled();
+                //then
+                expect(StateService.addGridFilter).toHaveBeenCalled();
 
-            var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
-            expect(filterInfo.type).toBe('contains');
-            expect(filterInfo.colId).toBe('col1');
-            expect(filterInfo.colName).toBe('column name');
-            expect(filterInfo.editable).toBe(true);
-            expect(filterInfo.args).toEqual({phrase: 'toto'});
-            expect(filterInfo.filterFn()({col1: ' toto est ici'})).toBeTruthy();
-            expect(filterInfo.filterFn()({col1: ' tata est ici'})).toBeFalsy();
-            expect(filterInfo.removeFilterFn).toBe(removeFnCallback);
-        }));
+                var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
+                expect(filterInfo.type).toBe('contains');
+                expect(filterInfo.colId).toBe('col1');
+                expect(filterInfo.colName).toBe('column name');
+                expect(filterInfo.editable).toBe(true);
+                expect(filterInfo.args).toEqual({phrase: 'toto'});
+                expect(filterInfo.filterFn()({col1: ' toto est ici'})).toBeTruthy();
+                expect(filterInfo.filterFn()({col1: ' tata est ici'})).toBeFalsy();
+                expect(filterInfo.removeFilterFn).toBe(removeFnCallback);
+            }));
 
-        it('should add "contains" filter with wildcard', inject(function(FilterService, StateService) {
-            //given
-            expect(StateService.addGridFilter).not.toHaveBeenCalled();
+            it('should create filter with wildcard', inject(function (FilterService, StateService) {
+                //given
+                expect(StateService.addGridFilter).not.toHaveBeenCalled();
 
-            //when
-            FilterService.addFilter('contains', 'col1', 'column name', {phrase: 'to*ici'});
+                //when
+                FilterService.addFilter('contains', 'col1', 'column name', {phrase: 'to*ici'});
 
-            //then
-            expect(StateService.addGridFilter).toHaveBeenCalled();
+                //then
+                expect(StateService.addGridFilter).toHaveBeenCalled();
 
-            var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
-            expect(filterInfo.filterFn()({col1: ' toto est ici'})).toBeTruthy();
-            expect(filterInfo.filterFn()({col1: ' tata est ici'})).toBeFalsy();
-        }));
+                var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
+                expect(filterInfo.filterFn()({col1: ' toto est ici'})).toBeTruthy();
+                expect(filterInfo.filterFn()({col1: ' tata est ici'})).toBeFalsy();
+            }));
 
-        it('should add "exact" filter with caseSensitive', inject(function(FilterService, StateService) {
-            //given
-            expect(StateService.addGridFilter).not.toHaveBeenCalled();
+            it('should remove filter when it already exists', inject(function (FilterService, StateService) {
+                //given
+                var oldFilter = {colId: 'col1', args: {phrase: 'toto'}, type: 'contains'};
+                stateMock.playground.filter.gridFilters = [oldFilter];
+                spyOn(StateService, 'removeGridFilter').and.returnValue();
 
-            //when
-            FilterService.addFilter('exact', 'col1', 'column name', {phrase: 'toici', caseSensitive: true});
+                //when
+                FilterService.addFilter('contains', 'col1', 'column name', {phrase: 'toto'}, null);
 
-            //then
-            expect(StateService.addGridFilter).toHaveBeenCalled();
+                //then
+                expect(StateService.removeGridFilter).toHaveBeenCalledWith(oldFilter);
+            }));
 
-            var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
-            expect(filterInfo.filterFn()({col1: 'toici'})).toBeTruthy();
-            expect(filterInfo.filterFn()({col1: 'Toici'})).toBeFalsy();
-            expect(filterInfo.filterFn()({col1: ' toici'})).toBeFalsy();
-            expect(filterInfo.filterFn()({col1: 'toici '})).toBeFalsy();
-        }));
+            it('should update filter when on already exists with a different value', inject(function (FilterService, StateService) {
+                //given
+                var oldFilter = {colId: 'col1', args: {phrase: 'tata'}, type: 'contains'};
+                stateMock.playground.filter.gridFilters = [oldFilter];
+                spyOn(StateService, 'updateGridFilter').and.returnValue();
 
-        it('should add "exact" filter without caseSensitive', inject(function(FilterService, StateService) {
-            //given
-            expect(StateService.addGridFilter).not.toHaveBeenCalled();
+                //when
+                FilterService.addFilter('contains', 'col1', 'column name', {phrase: 'toto'}, null);
 
-            //when
-            FilterService.addFilter('exact', 'col1', 'column name', {phrase: 'toici', caseSensitive: false});
+                //then
+                expect(StateService.updateGridFilter).toHaveBeenCalled();
+                expect(StateService.updateGridFilter.calls.argsFor(0)[0]).toBe(oldFilter);
+                var newFilter = StateService.updateGridFilter.calls.argsFor(0)[1];
+                expect(newFilter.type).toBe('contains');
+                expect(newFilter.colId).toBe('col1');
+                expect(newFilter.args.phrase).toBe('toto');
 
-            //then
-            expect(StateService.addGridFilter).toHaveBeenCalled();
+            }));
+        });
 
-            var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
-            expect(filterInfo.filterFn()({col1: 'Toici'})).toBeTruthy();
-            expect(filterInfo.filterFn()({col1: ' toici'})).toBeFalsy();
-            expect(filterInfo.filterFn()({col1: 'toici '})).toBeFalsy();
-        }));
+        describe('with "exact" type', function() {
+            it('should create filter with caseSensitive', inject(function (FilterService, StateService) {
+                //given
+                expect(StateService.addGridFilter).not.toHaveBeenCalled();
 
-        it('should add "invalid records" filter', inject(function(FilterService, StateService) {
-            //given
-            expect(StateService.addGridFilter).not.toHaveBeenCalled();
-            var invalidValues = ['NA', 'N/A', 'N.A'];
-            var data = {
-                columns: [
-                    {id: 'col0', quality: {invalidValues: []}},
-                    {id: 'col1', quality: {invalidValues: invalidValues}}
-                ]
-            };
+                //when
+                FilterService.addFilter('exact', 'col1', 'column name', {phrase: 'toici', caseSensitive: true});
 
-            //when
-            FilterService.addFilter('invalid_records', 'col1', 'column name');
+                //then
+                expect(StateService.addGridFilter).toHaveBeenCalled();
 
-            //then
-            expect(StateService.addGridFilter).toHaveBeenCalled();
+                var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
+                expect(filterInfo.filterFn()({col1: 'toici'})).toBeTruthy();
+                expect(filterInfo.filterFn()({col1: 'Toici'})).toBeFalsy();
+                expect(filterInfo.filterFn()({col1: ' toici'})).toBeFalsy();
+                expect(filterInfo.filterFn()({col1: 'toici '})).toBeFalsy();
+            }));
 
-            var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
-            expect(filterInfo.type).toBe('invalid_records');
-            expect(filterInfo.colId).toBe('col1');
-            expect(filterInfo.colName).toBe('column name');
-            expect(filterInfo.value).toBe('invalid records');
-            expect(filterInfo.editable).toBe(false);
-            expect(filterInfo.args).toBeFalsy();
-            expect(filterInfo.filterFn(data)({col1: 'NA'})).toBeTruthy();
-            expect(filterInfo.filterFn(data)({col1: ' tata est ici'})).toBeFalsy();
-        }));
+            it('should create filter without caseSensitive', inject(function (FilterService, StateService) {
+                //given
+                expect(StateService.addGridFilter).not.toHaveBeenCalled();
 
-        it('should add "empty records" filter', inject(function(FilterService, StateService) {
-            //given
-            expect(StateService.addGridFilter).not.toHaveBeenCalled();
+                //when
+                FilterService.addFilter('exact', 'col1', 'column name', {phrase: 'toici', caseSensitive: false});
 
-            //when
-            FilterService.addFilter('empty_records', 'col1', 'column name');
+                //then
+                expect(StateService.addGridFilter).toHaveBeenCalled();
 
-            //then
-            expect(StateService.addGridFilter).toHaveBeenCalled();
+                var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
+                expect(filterInfo.filterFn()({col1: 'Toici'})).toBeTruthy();
+                expect(filterInfo.filterFn()({col1: ' toici'})).toBeFalsy();
+                expect(filterInfo.filterFn()({col1: 'toici '})).toBeFalsy();
+            }));
 
-            var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
-            expect(filterInfo.type).toBe('empty_records');
-            expect(filterInfo.colId).toBe('col1');
-            expect(filterInfo.colName).toBe('column name');
-            expect(filterInfo.value).toBe('empty records');
-            expect(filterInfo.editable).toBe(false);
-            expect(filterInfo.args).toBeFalsy();
-            expect(filterInfo.filterFn()({col1: ''})).toBeTruthy();
-            expect(filterInfo.filterFn()({col1: ' tata est ici'})).toBeFalsy();
-        }));
+            it('should remove filter when it already exists', inject(function (FilterService, StateService) {
+                //given
+                var oldFilter = {colId: 'col1', args: {phrase: 'toto'}, type: 'exact'};
+                stateMock.playground.filter.gridFilters = [oldFilter];
+                spyOn(StateService, 'removeGridFilter').and.returnValue();
 
-        it('should add "valid records" filter', inject(function(FilterService, StateService) {
-            //given
-            expect(StateService.addGridFilter).not.toHaveBeenCalled();
-            var invalidValues = ['m', 'p'];
-            var data = {
-                columns: [
-                    {id: 'col0', quality: {invalidValues: []}},
-                    {id: 'col1', quality: {invalidValues: invalidValues}}
-                ]
-            };
+                //when
+                FilterService.addFilter('exact', 'col1', 'column name', {phrase: 'toto'}, null);
 
-            //when
-            FilterService.addFilter('valid_records', 'col1', 'column name');
+                //then
+                expect(StateService.removeGridFilter).toHaveBeenCalledWith(oldFilter);
+            }));
 
-            //then
-            expect(StateService.addGridFilter).toHaveBeenCalled();
+            it('should update filter when on already exists with a different value', inject(function (FilterService, StateService) {
+                //given
+                var oldFilter = {colId: 'col1', args: {phrase: 'tata'}, type: 'exact'};
+                stateMock.playground.filter.gridFilters = [oldFilter];
+                spyOn(StateService, 'updateGridFilter').and.returnValue();
 
-            var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
-            expect(filterInfo.type).toBe('valid_records');
-            expect(filterInfo.colId).toBe('col1');
-            expect(filterInfo.colName).toBe('column name');
-            expect(filterInfo.value).toBe('valid records');
-            expect(filterInfo.editable).toBe(false);
-            expect(filterInfo.args).toBeFalsy();
-            expect(filterInfo.filterFn(data)({col1: 'a'})).toBeTruthy();
-            expect(filterInfo.filterFn(data)({col1: 'm'})).toBeFalsy();
-            expect(filterInfo.filterFn(data)({col1: ''})).toBeFalsy();
-        }));
+                //when
+                FilterService.addFilter('exact', 'col1', 'column name', {phrase: 'toto'}, null);
 
-        it('should add "inside range" filter', inject(function(FilterService, StateService) {
-            //given
-            expect(StateService.addGridFilter).not.toHaveBeenCalled();
+                //then
+                expect(StateService.updateGridFilter).toHaveBeenCalled();
+                expect(StateService.updateGridFilter.calls.argsFor(0)[0]).toBe(oldFilter);
+                var newFilter = StateService.updateGridFilter.calls.argsFor(0)[1];
+                expect(newFilter.type).toBe('exact');
+                expect(newFilter.colId).toBe('col1');
+                expect(newFilter.args.phrase).toBe('toto');
 
-            //when
-            FilterService.addFilter('inside_range', 'col1', 'column name', {interval: [0, 22]});
-            FilterService.addFilter('inside_range', 'col2', 'column name2', {interval: [0, 1000000]});
+            }));
+        });
 
-            //then
-            expect(StateService.addGridFilter).toHaveBeenCalled();
-            expect(StateService.addGridFilter.calls.count()).toBe(2);
+        describe('with "invalid records" type', function() {
+            it('should create filter', inject(function (FilterService, StateService) {
+                //given
+                expect(StateService.addGridFilter).not.toHaveBeenCalled();
+                var invalidValues = ['NA', 'N/A', 'N.A'];
+                var data = {
+                    columns: [
+                        {id: 'col0', quality: {invalidValues: []}},
+                        {id: 'col1', quality: {invalidValues: invalidValues}}
+                    ]
+                };
+
+                //when
+                FilterService.addFilter('invalid_records', 'col1', 'column name');
+
+                //then
+                expect(StateService.addGridFilter).toHaveBeenCalled();
+
+                var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
+                expect(filterInfo.type).toBe('invalid_records');
+                expect(filterInfo.colId).toBe('col1');
+                expect(filterInfo.colName).toBe('column name');
+                expect(filterInfo.value).toBe('invalid records');
+                expect(filterInfo.editable).toBe(false);
+                expect(filterInfo.args).toBeFalsy();
+                expect(filterInfo.filterFn(data)({col1: 'NA'})).toBeTruthy();
+                expect(filterInfo.filterFn(data)({col1: ' tata est ici'})).toBeFalsy();
+            }));
+
+            it('should remove filter when it already exists', inject(function (FilterService, StateService) {
+                //given
+                var oldFilter = {colId: 'col1', type: 'invalid_records'};
+                stateMock.playground.filter.gridFilters = [oldFilter];
+                spyOn(StateService, 'removeGridFilter').and.returnValue();
+
+                //when
+                FilterService.addFilter('invalid_records', 'col1', 'column name');
+
+                //then
+                expect(StateService.removeGridFilter).toHaveBeenCalledWith(oldFilter);
+            }));
+        });
+
+        describe('with "empty records" type', function() {
+            it('should create filter', inject(function (FilterService, StateService) {
+                //given
+                expect(StateService.addGridFilter).not.toHaveBeenCalled();
+
+                //when
+                FilterService.addFilter('empty_records', 'col1', 'column name');
+
+                //then
+                expect(StateService.addGridFilter).toHaveBeenCalled();
+
+                var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
+                expect(filterInfo.type).toBe('empty_records');
+                expect(filterInfo.colId).toBe('col1');
+                expect(filterInfo.colName).toBe('column name');
+                expect(filterInfo.value).toBe('empty records');
+                expect(filterInfo.editable).toBe(false);
+                expect(filterInfo.args).toBeFalsy();
+                expect(filterInfo.filterFn()({col1: ''})).toBeTruthy();
+                expect(filterInfo.filterFn()({col1: ' tata est ici'})).toBeFalsy();
+            }));
+
+            it('should remove filter', inject(function (FilterService, StateService) {
+                //given
+                var oldFilter = {colId: 'col1', type: 'empty_records'};
+                stateMock.playground.filter.gridFilters = [oldFilter];
+                spyOn(StateService, 'removeGridFilter').and.returnValue();
+
+                //when
+                FilterService.addFilter('empty_records', 'col1', 'column name');
+
+                //then
+                expect(StateService.removeGridFilter).toHaveBeenCalledWith(oldFilter);
+            }));
+        });
+
+        describe('with "valid records" type', function() {
+            it('should create filter', inject(function (FilterService, StateService) {
+                //given
+                expect(StateService.addGridFilter).not.toHaveBeenCalled();
+                var invalidValues = ['m', 'p'];
+                var data = {
+                    columns: [
+                        {id: 'col0', quality: {invalidValues: []}},
+                        {id: 'col1', quality: {invalidValues: invalidValues}}
+                    ]
+                };
+
+                //when
+                FilterService.addFilter('valid_records', 'col1', 'column name');
+
+                //then
+                expect(StateService.addGridFilter).toHaveBeenCalled();
+
+                var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
+                expect(filterInfo.type).toBe('valid_records');
+                expect(filterInfo.colId).toBe('col1');
+                expect(filterInfo.colName).toBe('column name');
+                expect(filterInfo.value).toBe('valid records');
+                expect(filterInfo.editable).toBe(false);
+                expect(filterInfo.args).toBeFalsy();
+                expect(filterInfo.filterFn(data)({col1: 'a'})).toBeTruthy();
+                expect(filterInfo.filterFn(data)({col1: 'm'})).toBeFalsy();
+                expect(filterInfo.filterFn(data)({col1: ''})).toBeFalsy();
+            }));
+
+            it('should remove filter', inject(function (FilterService, StateService) {
+                //given
+                var oldFilter = {colId: 'col1', type: 'valid_records'};
+                stateMock.playground.filter.gridFilters = [oldFilter];
+                spyOn(StateService, 'removeGridFilter').and.returnValue();
+
+                //when
+                FilterService.addFilter('valid_records', 'col1', 'column name');
+
+                //then
+                expect(StateService.removeGridFilter).toHaveBeenCalledWith(oldFilter);
+            }));
+        });
+
+        describe('with "inside range" type', function() {
+            it('should create filter', inject(function (FilterService, StateService) {
+                //given
+                expect(StateService.addGridFilter).not.toHaveBeenCalled();
+
+                //when
+                FilterService.addFilter('inside_range', 'col1', 'column name', {interval: [0, 22]});
+                FilterService.addFilter('inside_range', 'col2', 'column name2', {interval: [0, 1000000]});
+
+                //then
+                expect(StateService.addGridFilter).toHaveBeenCalled();
+                expect(StateService.addGridFilter.calls.count()).toBe(2);
 
             var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
             expect(filterInfo.type).toBe('inside_range');
@@ -204,7 +321,25 @@ describe('Filter service', function() {
             expect(filterInfo2.filterFn()({col2: ''})).toBeFalsy();
         }));
 
-        it('should not throw exception on non existing column (that could be removed by a step) in contains filter', inject(function(FilterService, StateService) {
+            it('should remove filter', inject(function (FilterService, StateService) {
+                //given
+                var oldFilter = {
+                    colId: 'col1',
+                    type: 'inside_range',
+                    args: {interval: [0, 22]}
+                };
+                stateMock.playground.filter.gridFilters = [oldFilter];
+                spyOn(StateService, 'removeGridFilter').and.returnValue();
+
+                //when
+                FilterService.addFilter('inside_range', 'col1', 'column name', {interval: [0, 22]});
+
+                //then
+                expect(StateService.removeGridFilter).toHaveBeenCalledWith(oldFilter);
+            }));
+        });
+
+        it('should not throw exception on non existing column (that could be removed by a step) in contains filter', inject(function (FilterService, StateService) {
             //given
             expect(StateService.addGridFilter).not.toHaveBeenCalled();
 
@@ -219,7 +354,7 @@ describe('Filter service', function() {
             expect(filterInfo.filterFn()({col1: ' toto est ici'})).toBeFalsy();
         }));
 
-        it('should not throw exception on non existing column (that could be removed by a step) in exact filter', inject(function(FilterService, StateService) {
+        it('should not throw exception on non existing column (that could be removed by a step) in exact filter', inject(function (FilterService, StateService) {
             //given
             expect(StateService.addGridFilter).not.toHaveBeenCalled();
 
@@ -232,18 +367,6 @@ describe('Filter service', function() {
             var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
             expect(filterInfo.type).toBe('exact');
             expect(filterInfo.filterFn()({col1: ' toto est ici'})).toBeFalsy();
-        }));
-
-        it('should return filter value info for "contains" filter', inject(function(FilterService, StateService) {
-            //given
-            FilterService.addFilter('contains', 'col1', 'column 1', {phrase: 'Toto'});
-            var filter = StateService.addGridFilter.calls.argsFor(0)[0];
-
-            //when
-            var value = filter.value;
-
-            //then
-            expect(value).toBe('Toto');
         }));
 
         it('should trigger statistics update', inject(function(FilterService, StatisticsService) {
@@ -259,10 +382,11 @@ describe('Filter service', function() {
         }));
     });
 
-    describe('add filter and digest', function() {
-        it('should add a filter wrapped in $timeout to trigger a digest', inject(function($timeout, FilterService, StateService) {
+    describe('add filter and digest', function () {
+        it('should add a filter wrapped in $timeout to trigger a digest', inject(function ($timeout, FilterService, StateService) {
             //given
-            var removeFnCallback = function() {};
+            var removeFnCallback = function () {
+            };
             expect(StateService.addGridFilter).not.toHaveBeenCalled();
 
             //when
@@ -285,13 +409,13 @@ describe('Filter service', function() {
         }));
     });
 
-    describe('remove filter', function() {
-        beforeEach(inject(function(StateService) {
+    describe('remove filter', function () {
+        beforeEach(inject(function (StateService) {
             spyOn(StateService, 'removeGridFilter').and.returnValue();
             spyOn(StateService, 'removeAllGridFilters').and.returnValue();
         }));
 
-        it('should remove all filters', inject(function(FilterService, StateService) {
+        it('should remove all filters', inject(function (FilterService, StateService) {
             //when
             FilterService.removeAllFilters();
 
@@ -299,7 +423,7 @@ describe('Filter service', function() {
             expect(StateService.removeAllGridFilters).toHaveBeenCalled();
         }));
 
-        it('should call each filter remove callback', inject(function(FilterService) {
+        it('should call each filter remove callback', inject(function (FilterService) {
             //given
             var removeFn1 = jasmine.createSpy('removeFilterCallback');
             var removeFn2 = jasmine.createSpy('removeFilterCallback');
@@ -317,7 +441,7 @@ describe('Filter service', function() {
             expect(removeFn2).toHaveBeenCalled();
         }));
 
-        it('should remove filter', inject(function(FilterService, StateService) {
+        it('should remove filter', inject(function (FilterService, StateService) {
             //given
             var filter = {};
 
@@ -328,7 +452,7 @@ describe('Filter service', function() {
             expect(StateService.removeGridFilter).toHaveBeenCalledWith(filter);
         }));
 
-        it('should call filter remove callback', inject(function(FilterService) {
+        it('should call filter remove callback', inject(function (FilterService) {
             //given
             var removeFn = jasmine.createSpy('removeFilterCallback');
             var filter = {removeFilterFn: removeFn};
@@ -364,12 +488,12 @@ describe('Filter service', function() {
         }));
     });
 
-    describe('update filter', function() {
-        beforeEach(inject(function(StateService) {
+    describe('update filter', function () {
+        beforeEach(inject(function (StateService) {
             spyOn(StateService, 'updateGridFilter').and.returnValue();
         }));
 
-        it('should update "contains" filter', inject(function(FilterService, StateService) {
+        it('should update "contains" filter', inject(function (FilterService, StateService) {
             //given
             var oldFilter = {
                 type: 'contains',
@@ -378,7 +502,8 @@ describe('Filter service', function() {
                 args: {
                     phrase: 'Tata'
                 },
-                filterFn: function() {}
+                filterFn: function () {
+                }
             };
             expect(StateService.updateGridFilter).not.toHaveBeenCalled();
 
@@ -397,7 +522,7 @@ describe('Filter service', function() {
             expect(newFilter.args.phrase).toBe('Tata');
         }));
 
-        it('should update "exact" filter', inject(function(FilterService, StateService) {
+        it('should update "exact" filter', inject(function (FilterService, StateService) {
             //given
             var oldFilter = {
                 type: 'exact',
@@ -406,7 +531,8 @@ describe('Filter service', function() {
                 args: {
                     phrase: 'Toto'
                 },
-                filterFn: function() {}
+                filterFn: function () {
+                }
             };
 
             expect(StateService.updateGridFilter).not.toHaveBeenCalled();
@@ -427,22 +553,23 @@ describe('Filter service', function() {
             expect(newFilter.value).toBe('Tata');
         }));
 
-        it('should update "inside_range" filter after a brush', inject(function(FilterService, StateService) {
+        it('should update "inside_range" filter after a brush', inject(function (FilterService, StateService) {
             //given
             var oldFilter = {
                 type: 'inside_range',
                 colId: 'col1',
                 colName: 'column 1',
                 args: {
-                    interval: [5,10]
+                    interval: [5, 10]
                 },
-                filterFn: function() {}
+                filterFn: function () {
+                }
             };
 
             expect(StateService.updateGridFilter).not.toHaveBeenCalled();
 
             //when
-            FilterService.updateFilter(oldFilter, [0,22]);
+            FilterService.updateFilter(oldFilter, [0, 22]);
 
             //then
             var argsOldFilter = StateService.updateGridFilter.calls.argsFor(0)[0];
@@ -457,9 +584,10 @@ describe('Filter service', function() {
             expect(newFilter.value).toBe('[0 .. 22[');
         }));
 
-        it('should update "inside range" filter when adding an existing range filter', inject(function(FilterService, StateService) {
+        it('should update "inside range" filter when adding an existing range filter', inject(function (FilterService, StateService) {
             //given
-            var removeCallback = function() {};
+            var removeCallback = function () {
+            };
             FilterService.addFilter('inside_range', 'col1', 'column name', {interval: [0, 22]}, removeCallback);
 
             expect(StateService.updateGridFilter).not.toHaveBeenCalled();
@@ -485,7 +613,7 @@ describe('Filter service', function() {
             expect(newFilterInfos.colName).toBe('column name');
             expect(newFilterInfos.value).toBe('[5 .. 10[');
             expect(newFilterInfos.editable).toBe(false);
-            expect(newFilterInfos.args).toEqual({interval:  [5, 10]});
+            expect(newFilterInfos.args).toEqual({interval: [5, 10]});
             expect(newFilterInfos.filterFn()({col1: '8'})).toBeTruthy();
             //the 4 is no more inside the brush range
             expect(newFilterInfos.filterFn()({col1: '4'})).toBeFalsy();

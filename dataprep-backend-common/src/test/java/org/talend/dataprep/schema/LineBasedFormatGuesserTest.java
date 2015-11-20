@@ -11,25 +11,14 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Unit test for the LineBasedFormatGuesser.
  * 
  * @see LineBasedFormatGuesser
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = LineBasedFormatGuesserTest.class)
-@Configuration
-@ComponentScan(basePackages = "org.talend.dataprep")
-@EnableAutoConfiguration
-public class LineBasedFormatGuesserTest {
+public class LineBasedFormatGuesserTest extends AbstractSchemaTestUtils {
 
     /** The format guesser to test. */
     @Autowired
@@ -40,10 +29,11 @@ public class LineBasedFormatGuesserTest {
      */
     @Test
     public void should_not_guess() throws IOException {
-        FormatGuesser.Result actual = guesser.guess(new ByteArrayInputStream(new byte[0]), "UTF-8");
+        FormatGuesser.Result actual = guesser.guess(getRequest(new ByteArrayInputStream(new byte[0]), "#1"), "UTF-8");
         Assert.assertNotNull(actual);
         assertTrue(actual.getFormatGuess() instanceof UnsupportedFormatGuess);
     }
+
 
     @Test(expected = IllegalArgumentException.class)
     public void read_null_csv_file() throws Exception {
@@ -56,7 +46,7 @@ public class LineBasedFormatGuesserTest {
     @Test
     public void should_guess_CSV() throws IOException {
         try (InputStream inputStream = this.getClass().getResourceAsStream("standard.csv")) {
-            FormatGuesser.Result actual = guesser.guess(inputStream, "UTF-8");
+            FormatGuesser.Result actual = guesser.guess(getRequest(inputStream, "#2"), "UTF-8");
 
             Assert.assertNotNull(actual);
             assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
@@ -69,7 +59,7 @@ public class LineBasedFormatGuesserTest {
     @Test
     public void should_guess_best_separator() throws IOException {
         try (InputStream inputStream = this.getClass().getResourceAsStream("mixed_separators.csv")) {
-            FormatGuesser.Result actual = guesser.guess(inputStream, "UTF-8");
+            FormatGuesser.Result actual = guesser.guess(getRequest(inputStream, "#3"), "UTF-8");
 
             Assert.assertNotNull(actual);
             assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
@@ -84,7 +74,7 @@ public class LineBasedFormatGuesserTest {
     @Test
     public void should_guess_best_separator_out_of_two() throws IOException {
         try (InputStream inputStream = this.getClass().getResourceAsStream("tdp-181.csv")) {
-            FormatGuesser.Result actual = guesser.guess(inputStream, "UTF-8");
+            FormatGuesser.Result actual = guesser.guess(getRequest(inputStream, "#4"), "UTF-8");
 
             Assert.assertNotNull(actual);
             assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
@@ -99,7 +89,7 @@ public class LineBasedFormatGuesserTest {
     @Test
     public void should_guess_separator_with_ISO_8859_1_encoded_file() throws IOException {
         try (InputStream inputStream = this.getClass().getResourceAsStream("iso-8859-1.csv")) {
-            FormatGuesser.Result actual = guesser.guess(inputStream, "UTF-8");
+            FormatGuesser.Result actual = guesser.guess(getRequest(inputStream, "#5"), "UTF-8");
 
             Assert.assertNotNull(actual);
             assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
@@ -114,7 +104,7 @@ public class LineBasedFormatGuesserTest {
     @Test
     public void should_guess_valid_separator_when_most_likely_separator_is_not_valid() throws IOException {
         try (InputStream inputStream = this.getClass().getResourceAsStream("tdp-863.csv")) {
-            FormatGuesser.Result actual = guesser.guess(inputStream, "UTF-8");
+            FormatGuesser.Result actual = guesser.guess(getRequest(inputStream, "#6"), "UTF-8");
 
             Assert.assertNotNull(actual);
             assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
@@ -129,7 +119,7 @@ public class LineBasedFormatGuesserTest {
     @Test
     public void should_guess_valid_separator_from_access_log_file() throws IOException {
         try (InputStream inputStream = this.getClass().getResourceAsStream("tdp-832.csv")) {
-            FormatGuesser.Result actual = guesser.guess(inputStream, "UTF-8");
+            FormatGuesser.Result actual = guesser.guess(getRequest(inputStream, "#7"), "UTF-8");
 
             Assert.assertNotNull(actual);
             assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);

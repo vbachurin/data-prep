@@ -320,7 +320,7 @@
       },
       {
         "name": "value",
-        "type": "string",
+        "type": "regex",
         "implicit": false,
         "canBeBlank": true,
         "description": "The value to search",
@@ -988,7 +988,7 @@
       },
       {
         "name": "pattern",
-        "type": "string",
+        "type": "regex",
         "implicit": false,
         "canBeBlank": true,
         "description": "The pattern to cut in this column",
@@ -1362,7 +1362,7 @@
               "parameters": [
                 {
                   "name": "manual_separator",
-                  "type": "string",
+                  "type": "regex",
                   "implicit": false,
                   "canBeBlank": true,
                   "description": "Choose your own separator",
@@ -1425,7 +1425,7 @@
       },
       {
         "name": "cell_value",
-        "type": "string",
+        "type": "regex",
         "implicit": false,
         "canBeBlank": true,
         "description": "The current cell value",
@@ -1528,7 +1528,7 @@
               "parameters": [
                 {
                   "name": "manual_pattern",
-                  "type": "string",
+                  "type": "regex",
                   "implicit": false,
                   "canBeBlank": true,
                   "description": "Set your own pattern",
@@ -2216,7 +2216,7 @@
     "name": "copy",
     "dynamic": false,
     "description": "Creates an exact copy of this column",
-    "label": "Duplicate",
+    "label": "Duplicate column",
     "parameters": [
       {
         "name": "column_id",
@@ -2407,7 +2407,7 @@
     "name": "rename_column",
     "dynamic": false,
     "description": "Rename this column",
-    "label": "Rename"
+    "label": "Rename column"
   },
   {
     "category": "column_metadata",

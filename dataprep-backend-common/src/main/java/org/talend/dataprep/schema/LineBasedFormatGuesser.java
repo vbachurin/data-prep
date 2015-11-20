@@ -60,15 +60,15 @@ public class LineBasedFormatGuesser implements FormatGuesser {
     };
 
     /**
-     * @see FormatGuesser#guess(InputStream, String)
+     * @see FormatGuesser#guess(SchemaParser.Request, String)
      */
     @Override
-    public FormatGuesser.Result guess(InputStream stream, String encoding) {
-        if (stream == null) {
+    public FormatGuesser.Result guess(SchemaParser.Request request, String encoding) {
+        if (request == null || request.getContent() == null) {
             throw new IllegalArgumentException("Content cannot be null.");
         }
 
-        Separator sep = guessSeparator(stream, encoding);
+        Separator sep = guessSeparator(request.getContent(), encoding);
 
         // Fallback
         if (sep == null) {
