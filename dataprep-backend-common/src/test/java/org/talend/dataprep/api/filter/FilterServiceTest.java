@@ -156,6 +156,13 @@ public class FilterServiceTest {
     }
 
     @Test
+    public void testRangeMinEqualsMax() throws Exception {
+        // Test non match on "10.5 <= 0004 < 10.5" -> should be equivalent to "0004 = 10.5"
+        final Predicate<DataSetRow> nonMatchPredicate = service.build("{\"range\": {\"field\": \"0004\",\"start\": \"10.5\",\"end\": \"10.5\"}}");
+        assertThat(nonMatchPredicate.test(row), is(true));
+    }
+
+    @Test
     public void testRangeOnString() throws Exception {
         // Test match on "0 <= 0001 <= 2"
         final Predicate<DataSetRow> matchPredicate = service.build("{\"range\": {\"field\": \"0001\",\"start\": \"0\",\"end\": \"2\"}}");
