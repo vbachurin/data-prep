@@ -1,5 +1,7 @@
 package org.talend.dataprep.schema.io;
 
+import static org.talend.dataprep.api.type.Type.*;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,6 +32,9 @@ public class XlsSchemaParser implements SchemaParser {
 
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(XlsSchemaParser.class);
+
+    /** Constant used to record blank cell. */
+    private static final String BLANK = "blank";
 
     /**
      * @see SchemaParser#parse(Request)
@@ -78,16 +83,17 @@ public class XlsSchemaParser implements SchemaParser {
 
         try {
             Workbook hssfWorkbook = XlsUtils.getWorkbook(request);
+            if (hssfWorkbook == null) {
+                throw new IOException("could not open " + request.getMetadata().getId() + " as an excel file");
+            }
 
             int sheetNumber = hssfWorkbook.getNumberOfSheets();
-
             if (sheetNumber < 1) {
                 LOGGER.debug(marker, "has not sheet to read");
                 return Collections.emptyList();
             }
 
             List<SchemaParserResult.SheetContent> schemas = new ArrayList<>();
-
             for (int i = 0; i < sheetNumber; i++) {
                 Sheet sheet = hssfWorkbook.getSheetAt(i);
 
@@ -124,7 +130,8 @@ public class XlsSchemaParser implements SchemaParser {
 
         LOGGER.debug(Markers.dataset(datasetId), "parsing sheet '{}'", sheet.getSheetName());
 
-        SortedMap<Integer, SortedMap<Integer, Type>> cellsTypeMatrix = collectSheetTypeMatrix(sheet);
+        SortedMap<Integer, SortedMap<Integer, String>> cellsTypeMatrix = collectSheetTypeMatrix(sheet);
+        removeEmptyColumns(cellsTypeMatrix);
 
         int averageHeaderSize = guessHeaderSize(cellsTypeMatrix);
 
@@ -163,6 +170,32 @@ public class XlsSchemaParser implements SchemaParser {
     }
 
     /**
+     * Remove empty columns so that the dataset is not "polluted" with irrelevant data.
+     * 
+     * @param cellsTypeMatrix the cell type matrix Map&lt;colId, Map&lt;rowId, Type&gt;&gt;
+     */
+    private void removeEmptyColumns(SortedMap<Integer, SortedMap<Integer, String>> cellsTypeMatrix) {
+
+        final Iterator<Integer> colIterator = cellsTypeMatrix.keySet().iterator();
+        while (colIterator.hasNext()) {
+            final Integer colId = colIterator.next();
+            // if there's only "blank" type in the column, it's removed
+            final long distinctBlankCount = cellsTypeMatrix.get(colId) //
+                    .values() //
+                    .stream() //
+                    .distinct() //
+                    .filter(t -> !StringUtils.equals(BLANK, t)) // keep only blank values
+                    .count();
+
+            if (distinctBlankCount == 0) {
+                LOGGER.debug("col #{} removed because it contains only blank rows", colId);
+                colIterator.remove();
+            }
+        }
+
+    }
+
+    /**
      * 
      *
      * @param colId the column id.
@@ -170,21 +203,21 @@ public class XlsSchemaParser implements SchemaParser {
      * @param averageHeaderSize
      * @return
      */
-    protected Type guessColumnType(Integer colId, SortedMap<Integer, Type> columnRows, int averageHeaderSize) {
+    protected Type guessColumnType(Integer colId, SortedMap<Integer, String> columnRows, int averageHeaderSize) {
 
         // calculate number per type
 
-        Map<Type, Long> perTypeNumber = columnRows.tailMap(averageHeaderSize).values() //
+        Map<String, Long> perTypeNumber = columnRows.tailMap(averageHeaderSize).values() //
                 .stream() //
                 .collect(Collectors.groupingBy(w -> w, Collectors.counting()));
 
         OptionalLong maxOccurrence = perTypeNumber.values().stream().mapToLong(Long::longValue).max();
 
         if (!maxOccurrence.isPresent()) {
-            return Type.ANY;
+            return ANY;
         }
 
-        List<Type> duplicatedMax = new ArrayList<>();
+        List<String> duplicatedMax = new ArrayList<>();
 
         perTypeNumber.forEach((type1, aLong) -> {
             if (aLong >= maxOccurrence.getAsLong()) {
@@ -192,17 +225,17 @@ public class XlsSchemaParser implements SchemaParser {
             }
         });
 
-        Type guessedType;
+        String guessedType;
         if (duplicatedMax.size() == 1) {
             guessedType = duplicatedMax.get(0);
         }
  else {
             // as we have more than one type we guess ANY
-            guessedType = Type.ANY;
+            guessedType = ANY.getName();
         }
 
         LOGGER.debug("guessed type for column #{} is {}", colId, guessedType);
-        return guessedType;
+        return Type.get(guessedType);
     }
 
     /**
@@ -211,14 +244,14 @@ public class XlsSchemaParser implements SchemaParser {
      * @param sheet key is the column number, value is a Map with key row number and value Type
      * @return A Map&lt;colId, Map&lt;rowId, type&gt;&gt;
      */
-    protected SortedMap<Integer, SortedMap<Integer, Type>> collectSheetTypeMatrix(Sheet sheet) {
+    protected SortedMap<Integer, SortedMap<Integer, String>> collectSheetTypeMatrix(Sheet sheet) {
 
         int firstRowNum = sheet.getFirstRowNum();
         int lastRowNum = sheet.getLastRowNum();
 
         LOGGER.debug("firstRowNum: {}, lastRowNum: {}", firstRowNum, lastRowNum);
 
-        SortedMap<Integer, SortedMap<Integer, Type>> cellsTypeMatrix = new TreeMap<>();
+        SortedMap<Integer, SortedMap<Integer, String>> cellsTypeMatrix = new TreeMap<>();
 
         // we start analysing rows
         for (int rowCounter = firstRowNum; rowCounter <= lastRowNum; rowCounter++) {
@@ -232,31 +265,31 @@ public class XlsSchemaParser implements SchemaParser {
 
             Iterator<Cell> cellIterator = row.cellIterator();
 
-            Type currentType;
+            String currentType;
 
             while (cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
 
                 switch (cell.getCellType()) {
                 case Cell.CELL_TYPE_BOOLEAN:
-                    currentType = Type.BOOLEAN;
+                    currentType = BOOLEAN.getName();
                     break;
                 case Cell.CELL_TYPE_NUMERIC:
-                    currentType = HSSFDateUtil.isCellDateFormatted(cell) ? Type.DATE : Type.NUMERIC;
+                    currentType = HSSFDateUtil.isCellDateFormatted(cell) ? DATE.getName() : NUMERIC.getName();
                     break;
                 case Cell.CELL_TYPE_BLANK:
-                    continue;
+                    currentType = BLANK;
+                    break;
                 case Cell.CELL_TYPE_STRING:
-                    currentType = Type.STRING;
+                    currentType = STRING.getName();
                     break;
                 case Cell.CELL_TYPE_ERROR | Cell.CELL_TYPE_FORMULA:
                     // we cannot really do anything with a formula
                 default:
-                    currentType = Type.ANY;
-
+                    currentType = ANY.getName();
                 }
 
-                SortedMap<Integer, Type> cellInfo = cellsTypeMatrix.get(cellCounter);
+                SortedMap<Integer, String> cellInfo = cellsTypeMatrix.get(cellCounter);
 
                 if (cellInfo == null) {
                     cellInfo = new TreeMap<>();
@@ -285,19 +318,19 @@ public class XlsSchemaParser implements SchemaParser {
      * @param cellsTypeMatrix key: column number value: row where the type change from String to something else
      * @return The guessed header size.
      */
-    protected int guessHeaderSize(Map<Integer, SortedMap<Integer, Type>> cellsTypeMatrix) {
+    protected int guessHeaderSize(Map<Integer, SortedMap<Integer, String>> cellsTypeMatrix) {
         SortedMap<Integer, Integer> cellTypeChange = new TreeMap<>();
 
         cellsTypeMatrix.forEach((colId, typePerRow) -> {
 
-            Type firstType = null;
+            String firstType = null;
             int rowChange = 0;
 
-            for (Map.Entry<Integer, Type> typePerRowEntry : typePerRow.entrySet()) {
+            for (Map.Entry<Integer, String> typePerRowEntry : typePerRow.entrySet()) {
                 if (firstType == null) {
                     firstType = typePerRowEntry.getValue();
                 } else {
-                    if (typePerRowEntry.getValue() != firstType && typePerRowEntry.getValue() != Type.STRING) {
+                    if (!typePerRowEntry.getValue().equals(firstType) && !typePerRowEntry.getValue().equals(STRING.getName())) {
                         rowChange = typePerRowEntry.getKey();
                         break;
                     }
@@ -320,7 +353,7 @@ public class XlsSchemaParser implements SchemaParser {
         // currently can fail so force an header of size 1
         int averageHeaderSize = 1;
 
-        LOGGER.debug("averageHeaderSize: {}, cellTypeChange: {}", averageHeaderSize, cellTypeChange);
+        LOGGER.debug("averageHeaderSize (forced to): {}, cellTypeChange: {}", averageHeaderSize, cellTypeChange);
 
         return averageHeaderSize;
     }

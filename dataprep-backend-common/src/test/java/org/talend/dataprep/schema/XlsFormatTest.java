@@ -311,7 +311,6 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         XlsSchemaParser xlsSchemaParser = new XlsSchemaParser();
 
-        DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").sheetName("sheet-1").build();
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
             formatGuess = formatGuesser.guess(getRequest(inputStream, "#7"), "UTF-8").getFormatGuess();
@@ -320,25 +319,24 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
             Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
         }
 
+        DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").sheetName("sheet-1").build();
+
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
             List<SchemaParserResult.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(getRequest(inputStream, "#8"));
 
             List<ColumnMetadata> columnMetadatas = sheetContents.stream()
                     .filter(sheetContent -> "Leads".equals(sheetContent.getName())).findFirst().get().getColumnMetadatas();
+
             logger.debug("columnMetadatas: {}", columnMetadatas);
+
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(14);
 
             ColumnMetadata columnMetadata = columnMetadatas.get(7);
-
             Assertions.assertThat(columnMetadata.getHeaderSize()).isEqualTo(1);
-
             Assertions.assertThat(columnMetadata.getName()).isEqualTo("telephone");
-
             Assertions.assertThat(columnMetadata.getType()).isEqualTo(Type.NUMERIC.getName());
-
             dataSetMetadata.getRow().setColumns(columnMetadatas);
-
         }
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {

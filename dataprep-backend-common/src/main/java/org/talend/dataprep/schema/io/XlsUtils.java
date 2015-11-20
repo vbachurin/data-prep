@@ -101,13 +101,13 @@ public class XlsUtils {
             LOGGER.debug(marker, "opened as XSSFWorkbook (.xlsx)");
             return workbook;
         } catch (Exception e) {
-            LOGGER.debug(marker, "does not seem to be a XSSFWorkbook (.xlsx)", e);
+            LOGGER.debug(marker, "does not seem to be a XSSFWorkbook (.xlsx) : {}", e.getMessage());
             try {
                 final HSSFWorkbook workbook = new HSSFWorkbook(new ByteArrayInputStream(bytes));
                 LOGGER.debug(marker, "opened as HSSFWorkbook (.xls)");
                 return workbook;
             } catch (Exception e1) {
-                LOGGER.debug(marker, "does not seem to be a HSSFWorkbook (.xls) neither", e1);
+                LOGGER.debug(marker, "does not seem to be a HSSFWorkbook (.xls) neither : {}", e1.getMessage());
                 return null;
             }
         }
