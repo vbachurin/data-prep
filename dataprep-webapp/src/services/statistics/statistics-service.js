@@ -191,12 +191,13 @@
          * @description Set the frequency table that fit the histogram format for aggregation (filter is managed in backend)
          */
         function initAggregationHistogram(key, label, dataTable) {
+            var adaptedData = _.map(dataTable, function (rec) {
+                rec.formattedValue = TextFormatService.adaptToGridConstraints(rec.data);
+                return rec;
+            });
 
             service.histogram = {
-                data: _.map(dataTable, function (rec) {
-                    rec.formattedValue = TextFormatService.adaptToGridConstraints(rec.data);
-                    return rec;
-                }),
+                data: adaptedData,
                 key: key,
                 label: label,
                 column: state.playground.grid.selectedColumn
@@ -486,6 +487,7 @@
             var preparationId = state.playground.preparation && state.playground.preparation.id;
             var stepId = preparationId && RecipeService.getLastActiveStep() && RecipeService.getLastActiveStep().transformation.stepId;
             var selectedColumn = state.playground.grid.selectedColumn;
+
             var aggregationParameters = {
                 datasetId: preparationId ? null : datasetId,
                 preparationId: preparationId,
@@ -497,7 +499,7 @@
                 groupBy: [selectedColumn.id]
             };
 
-            //add filter in parameters
+            //add filter in parameters only if there are filters
             aggregationParameters = _.extend(aggregationParameters, FilterAdapterService.toTree(state.playground.filter.gridFilters));
 
             StatisticsRestService.getAggregations(aggregationParameters)
