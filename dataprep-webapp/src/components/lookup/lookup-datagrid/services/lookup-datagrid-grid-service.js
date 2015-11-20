@@ -6,7 +6,7 @@
      * @name data-prep.lookup.service:DatagridGridService
      * @description Datagrid private service that init the grid
      * @requires data-prep.state.service:StateService
-     * @requires data-prep.lookup.service:LookupDatagridService
+     * @requires data-prep.state.constant:state
      * @requires data-prep.lookup.service:LookupDatagridStyleService
      * @requires data-prep.lookup.service:LookupDatagridColumnService
      * @requires data-prep.lookup.service:LookupDatagridSizeService
@@ -28,6 +28,8 @@
         return {
             initGrid : initGrid
         };
+
+        //--------------------------------------------------------------------------------------------------------------
 
         /**
          * @ngdoc method
@@ -57,7 +59,7 @@
                 if (angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
                     $timeout(function(){
-                        StateService.setLookupGridSelection(column.tdpColMetadata);
+                        StateService.setLookupGridSelection(column.tdpColMetadata, args.row);
                     });
                 }
             });
