@@ -185,7 +185,6 @@ describe('Preparation REST Service', function () {
             //then
             expect(cloned).toBe(true);
         }));
-
     });
 
     describe('preparation getters', function() {

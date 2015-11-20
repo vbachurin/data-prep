@@ -465,19 +465,30 @@ describe('Preparation Service', function () {
     });
 
     describe('clone', function() {
-        it('should call service to clone a preparation', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService) {
-            //when
+        it('should call service to clone a preparation', inject(function ($rootScope, PreparationService, PreparationListService) {
+            //given
             PreparationListService.preparations = preparations;
+
+            //when
             PreparationService.clone(preparations[0].id);
             $rootScope.$digest();
 
             //then
             expect(PreparationListService.clone).toHaveBeenCalledWith(preparations[0].id);
-            expect(DatasetListService.refreshDefaultPreparation).toHaveBeenCalledWith(preparations);
-            expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-
         }));
 
+        it('should consolidate preparations and datasets after clone', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService) {
+            //given
+            PreparationListService.preparations = preparations;
+
+            //when
+            PreparationService.clone(preparations[0].id);
+            $rootScope.$digest();
+
+            //then
+            expect(DatasetListService.refreshDefaultPreparation).toHaveBeenCalledWith(preparations);
+            expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
+        }));
     });
 
 });
