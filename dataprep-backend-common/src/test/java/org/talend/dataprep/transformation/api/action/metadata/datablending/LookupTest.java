@@ -125,7 +125,8 @@ public class LookupTest {
     public void shouldMergeMultipleColumns() throws IOException {
         // given
         Map<String, String> parameters = getUsStatesLookupParameters("nba");
-        parameters.put(LOOKUP_SELECTED_COLS.getKey(), "[\"0001\", \"0004\", \"0006\"]");
+        parameters.put(LOOKUP_SELECTED_COLS.getKey(),
+                "[{\"id\":\"0001\", \"name\":\"Team\"}, {\"id\":\"0004\", \"Stadium\":\"toto\"}, {\"id\":\"0006\", \"name\":\"Coordinates\"}]");
         parameters.put(LOOKUP_JOIN_ON.getKey(), "0003");
         DataSetRow row = ActionMetadataTestUtils.getRow("Dallas", "TX");
 

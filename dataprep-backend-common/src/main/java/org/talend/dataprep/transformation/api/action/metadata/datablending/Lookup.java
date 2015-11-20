@@ -149,7 +149,7 @@ public class Lookup extends ActionMetadata implements DataSetAction {
         DataSetRow matchingRow = rowMatcher.getMatchingRow(joinOn, joinValue);
 
         // get the columns to add
-        List<String> colsToAdd;
+        List<LookupSelectedColumnParameter> colsToAdd;
         try {
             colsToAdd = getColsToAdd(parameters);
         } catch (IOException e) {
@@ -160,10 +160,11 @@ public class Lookup extends ActionMetadata implements DataSetAction {
         colsToAdd.forEach(toAdd -> {
 
             // create the new column
-            String newColId = context.in(this).column(matchingRow.getRowMetadata().getById(toAdd).getName(), rowMetadata, (r) -> {
+            String newColId = context.in(this).column(matchingRow.getRowMetadata().getById(toAdd.getId()).getName(), rowMetadata,
+                    (r) -> {
                 final ColumnMetadata colMetadata = ColumnMetadata.Builder //
                         .column() //
-                        .copy(matchingRow.getRowMetadata().getById(toAdd)) //
+                        .copy(matchingRow.getRowMetadata().getById(toAdd.getId())) //
                         .computedId(null) // id should be set by the insertAfter method
                         .build();
                 rowMetadata.insertAfter(columnId, colMetadata);
@@ -171,7 +172,7 @@ public class Lookup extends ActionMetadata implements DataSetAction {
             });
 
             // insert new row value
-            row.set(newColId, matchingRow.get(toAdd));
+            row.set(newColId, matchingRow.get(toAdd.getId()));
         });
 
     }
@@ -183,9 +184,9 @@ public class Lookup extends ActionMetadata implements DataSetAction {
      * @return the list of columns to merge.
      * @throws IOException if an error occurs while parsing the json array.
      */
-    private List<String> getColsToAdd(Map<String, String> parameters) throws IOException {
+    private List<LookupSelectedColumnParameter> getColsToAdd(Map<String, String> parameters) throws IOException {
         final String cols = parameters.get(LOOKUP_SELECTED_COLS.getKey());
-        return builder.build().readValue(cols, new TypeReference<List<String>>() {
+        return builder.build().readValue(cols, new TypeReference<List<LookupSelectedColumnParameter>>() {
         });
     }
 

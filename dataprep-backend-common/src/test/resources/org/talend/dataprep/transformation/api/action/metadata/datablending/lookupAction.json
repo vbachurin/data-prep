@@ -12,8 +12,14 @@
         "lookup_join_on": "0000",
         "lookup_join_on_name": "0000",
         "lookup_selected_cols": [
-          "0001",
-          "0002"
+          {
+            "id": "0001",
+            "name": "state"
+          },
+          {
+            "id": "0002",
+            "name": "capital"
+          }
         ]
       }
     }
