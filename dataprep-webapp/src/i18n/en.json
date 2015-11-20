@@ -229,7 +229,6 @@
   "REPLACE_INVALID_WITH_BOTTOM_VALUE": "Replace Invalid Records with Bottom adjacent value",
 
   "CONFIRM_LOOKUP": "Confirm",
-
   "LOOKUP_STEPS_1": "1. Select the columns from each dataset you want to use for join.",
   "LOOKUP_STEPS_2": "2. In the Lookup, check the columns you want to add into your main dataset",
   "LOOKUP_STEPS_3": "3. Click Confirm",

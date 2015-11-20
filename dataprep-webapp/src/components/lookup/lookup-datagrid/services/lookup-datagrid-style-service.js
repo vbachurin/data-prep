@@ -3,9 +3,8 @@
 
     /**
      * @ngdoc service
-     * @name data-prep.lookup-datagrid.service:DatagridStyleService
+     * @name data-prep.lookup.service:LookupDatagridStyleService
      * @description Datagrid private service that manage the grid style
-     * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.utils.service:TextFormatService
      */
@@ -17,8 +16,7 @@
             init: init,
             resetCellStyles: resetCellStyles,
             updateColumnClass: updateColumnClass,
-            columnFormatter: columnFormatter,
-            getColumnPreviewStyle: getColumnPreviewStyle
+            columnFormatter: columnFormatter
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -26,7 +24,7 @@
         /**
          * @ngdoc method
          * @name resetCellStyles
-         * @methodOf data-prep.lookup-datagrid.service:DatagridStyleService
+         * @methodOf data-prep.lookup.service:LookupDatagridStyleService
          * @description Reset the cells css
          */
         function resetCellStyles() {
@@ -37,7 +35,7 @@
         /**
          * @ngdoc method
          * @name addClass
-         * @methodOf data-prep.lookup-datagrid.service:DatagridStyleService
+         * @methodOf data-prep.lookup.service:LookupDatagridStyleService
          * @description Add a css class to a column
          * @param {object} column The target column
          * @param {string} newClass The class to add
@@ -49,7 +47,7 @@
         /**
          * @ngdoc method
          * @name updateSelectionClass
-         * @methodOf data-prep.lookup-datagrid.service:DatagridStyleService
+         * @methodOf data-prep.lookup.service:LookupDatagridStyleService
          * @description Add 'selected' class if the column is the selected one
          * @param {object} column The target column
          * @param {object} selectedCol The selected column
@@ -63,7 +61,7 @@
         /**
          * @ngdoc method
          * @name updateNumbersClass
-         * @methodOf data-prep.lookup-datagrid.service:DatagridStyleService
+         * @methodOf data-prep.lookup.service:LookupDatagridStyleService
          * @description Add the 'number' class to the column if its type is a number type
          * @param {object} column the target column
          */
@@ -77,7 +75,7 @@
         /**
          * @ngdoc method
          * @name updateColumnClass
-         * @methodOf data-prep.lookup-datagrid.service:DatagridStyleService
+         * @methodOf data-prep.lookup.service:LookupDatagridStyleService
          * @description Set style classes on columns depending on its state (type, selection, ...)
          * @param {object} columns The columns array
          * @param {object} selectedCol The grid selected column
@@ -98,7 +96,7 @@
         /**
          * @ngdoc method
          * @name columnFormatter
-         * @methodOf data-prep.lookup-datagrid.service:DatagridStyleService
+         * @methodOf data-prep.lookup.service:LookupDatagridStyleService
          * @description Value formatter used in SlickGrid column definition. This is called to get a cell formatted value
          * @param {object} col The column to format
          */
@@ -139,28 +137,8 @@
 
         /**
          * @ngdoc method
-         * @name getColumnPreviewStyle
-         * @methodOf data-prep.lookup-datagrid.service:DatagridStyleService
-         * @description Get the column header preview style
-         * @param {object} col The column metadata
-         */
-        function getColumnPreviewStyle(col) {
-            switch (col.__tdpColumnDiff) {
-                case 'new':
-                    return 'newColumn';
-                case 'delete':
-                    return 'deletedColumn';
-                case 'update':
-                    return 'updatedColumn';
-                default:
-                    return '';
-            }
-        }
-
-        /**
-         * @ngdoc method
          * @name attachColumnHeaderCallback
-         * @methodOf data-prep.lookup-datagrid.service:DatagridStyleService
+         * @methodOf data-prep.lookup.service:LookupDatagridStyleService
          * @description attachColumnHeaderListeners callback
          */
         function attachColumnHeaderCallback(event, args) {
@@ -172,7 +150,7 @@
         /**
          * @ngdoc method
          * @name attachColumnHeaderListeners
-         * @methodOf data-prep.lookup-datagrid.service:DatagridStyleService
+         * @methodOf data-prep.lookup.service:LookupDatagridStyleService
          * @description Attach style listener on headers. On header selection (on right click or left click) we update the column cells style
          */
         function attachColumnHeaderListeners() {
@@ -183,7 +161,7 @@
         /**
          * @ngdoc method
          * @name scheduleUpdateColumnClass
-         * @methodOf data-prep.lookup-datagrid.service:DatagridStyleService
+         * @methodOf data-prep.lookup.service:LookupDatagridStyleService
          * @param {number} colIndex The selected column index
          * @description Cancel the previous scheduled task and schedule a new one to update columns classes.
          */
@@ -201,7 +179,7 @@
         /**
          * @ngdoc method
          * @name attachCellListeners
-         * @methodOf data-prep.lookup-datagrid.service:DatagridStyleService
+         * @methodOf data-prep.lookup.service:LookupDatagridStyleService
          * @description Attach cell action listeners : update columns classes and highlight cells
          */
         function attachCellListeners() {
@@ -215,7 +193,7 @@
         /**
          * @ngdoc method
          * @name init
-         * @methodOf data-prep.lookup-datagrid.service:DatagridStyleService
+         * @methodOf data-prep.lookup.service:LookupDatagridStyleService
          * @param {object} newGrid The new grid
          * @description Initialize the grid and attach the style listeners
          */

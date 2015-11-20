@@ -3,10 +3,9 @@
 
     /**
      * @ngdoc service
-     * @name data-prep.lookup-datagrid.service:DatagridTooltipService
-     * @description Datagrid private service that manage the grid tooltip
-     * @requires data-prep.lookup-datagrid.service:DatagridStyleService
-     * @requires data-prep.services.playground.service:DatagridService
+     * @name data-prep.lookup.service:LookupDatagridTooltipService
+     * @description Datagrid private service that manages the grid tooltip
+     * @requires data-prep.services.state.constant:state
      * @requires data-prep.services.utils.service:TextFormatService
      */
     function LookupDatagridTooltipService($timeout, state, TextFormatService) {
@@ -27,8 +26,8 @@
         /**
          * @ngdoc method
          * @name cancelTooltip
-         * @methodOf data-prep.lookup-datagrid.service:DatagridTooltipService
-         * @description Cancel the current tooltip promise
+         * @methodOf data-prep.lookup.service:LookupDatagridTooltipService
+         * @description Cancels the current tooltip promise
          */
         function cancelTooltip() {
             if (tooltipTimeout) {
@@ -44,7 +43,7 @@
         /**
          * @ngdoc method
          * @name createTooltip
-         * @methodOf data-prep.lookup-datagrid.service:DatagridTooltipService
+         * @methodOf data-prep.lookup.service:LookupDatagridTooltipService
          * @param {object} event The Slickgrid cell enter event
          * @description Update the tooltip component and display with a delay
          */
@@ -79,7 +78,7 @@
         /**
          * @ngdoc method
          * @name updateTooltip
-         * @methodOf data-prep.lookup-datagrid.service:DatagridTooltipService
+         * @methodOf data-prep.lookup.service:LookupDatagridTooltipService
          * @param {object} event The Slickgrid cell enter event
          * @description Cancel the old tooltip promise if necessary and create a new one
          */
@@ -91,7 +90,7 @@
         /**
          * @ngdoc method
          * @name hideTooltip
-         * @methodOf data-prep.lookup-datagrid.service:DatagridTooltipService
+         * @methodOf data-prep.lookup.service:LookupDatagridTooltipService
          * @description Cancel the old tooltip promise if necessary and hide the tooltip
          */
         function hideTooltip() {
@@ -106,7 +105,7 @@
         /**
          * @ngdoc method
          * @name shouldShowTooltip
-         * @methodOf data-prep.lookup-datagrid.service:DatagridTooltipService
+         * @methodOf data-prep.lookup.service:LookupDatagridTooltipService
          * @description Check if the text should be shown in a tooltip (content too long)
          * @param {string} text the text to display
          * @param {object} cell The cell containing the text
@@ -136,7 +135,7 @@
         /**
          * @ngdoc method
          * @name attachTooltipListener
-         * @methodOf data-prep.lookup-datagrid.service:DatagridTooltipService
+         * @methodOf data-prep.lookup.service:LookupDatagridTooltipService
          * @description Attach cell hover for tooltips listeners
          */
         function attachTooltipListener() {
@@ -150,7 +149,7 @@
         /**
          * @ngdoc method
          * @name init
-         * @methodOf data-prep.lookup-datagrid.service:DatagridTooltipService
+         * @methodOf data-prep.lookup.service:LookupDatagridTooltipService
          * @param {object} newGrid The new grid
          * @description Initialize the grid and attach the tooltips listeners
          */

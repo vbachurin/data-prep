@@ -3,15 +3,15 @@
 
     /**
      * @ngdoc service
-     * @name data-prep.lookup-datagrid.service:DatagridGridService
+     * @name data-prep.lookup.service:DatagridGridService
      * @description Datagrid private service that init the grid
      * @requires data-prep.state.service:StateService
-     * @requires data-prep.lookup-datagrid.service:DatagridService
-     * @requires data-prep.lookup-datagrid.service:DatagridStyleService
-     * @requires data-prep.lookup-datagrid.service:DatagridColumnService
-     * @requires data-prep.lookup-datagrid.service:DatagridSizeService
-     * @requires data-prep.lookup-datagrid.service:DatagridExternalService
-     * @requires data-prep.lookup-datagrid.service:DatagridTooltipService
+     * @requires data-prep.lookup.service:LookupDatagridService
+     * @requires data-prep.lookup.service:LookupDatagridStyleService
+     * @requires data-prep.lookup.service:LookupDatagridColumnService
+     * @requires data-prep.lookup.service:LookupDatagridSizeService
+     * @requires data-prep.lookup.service:LookupDatagridExternalService
+     * @requires data-prep.lookup.service:LookupDatagridTooltipService
      */
     function LookupDatagridGridService(state, StateService, LookupDatagridStyleService, LookupDatagridColumnService,
                                        LookupDatagridSizeService, LookupDatagridExternalService,
@@ -29,12 +29,10 @@
             initGrid : initGrid
         };
 
-        //--------------------------------------------------------------------------------------------------------------
-
         /**
          * @ngdoc method
          * @name attachLongTableListeners
-         * @methodOf data-prep.lookup-datagrid.service:DatagridGridService
+         * @methodOf data-prep.lookup.service:LookupDatagridGridService
          * @description Attach listeners for big table row management
          */
         function attachLongTableListeners() {
@@ -51,7 +49,7 @@
         /**
          * @ngdoc method
          * @name attachGridStateListeners
-         * @methodOf data-prep.lookup-datagrid.service:DatagridGridService
+         * @methodOf data-prep.lookup.service:LookupDatagridGridService
          * @description Attach listeners for saving the state of column id and line selection number
          */
         function attachGridStateListeners() {
@@ -59,7 +57,7 @@
                 if (angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
                     $timeout(function(){
-                        StateService.setLookupGridSelection(column.tdpColMetadata, args.row);
+                        StateService.setLookupGridSelection(column.tdpColMetadata);
                     });
                 }
             });
@@ -74,7 +72,7 @@
         /**
          * @ngdoc method
          * @name initGridServices
-         * @methodOf data-prep.lookup-datagrid.service:DatagridGridService
+         * @methodOf data-prep.lookup.service:LookupDatagridGridService
          * @description Init other grid services with the new created grid
          */
         function initGridServices() {
@@ -86,9 +84,8 @@
         /**
          * @ngdoc method
          * @name initGrid
-         * @methodOf data-prep.lookup-datagrid.service:DatagridGridService
+         * @methodOf data-prep.lookup.service:LookupDatagridGridService
          * @description Create Slick grid and initiate other lookup-datagrid services
-         The dataview is initiated and held by {@link data-prep.services.playground.service:DatagridService DatagridService}
          * @param {string} elementId The element where the grid will be inserted in the DOM. The element must exists
          */
         function initGrid (elementId) {

@@ -53,13 +53,12 @@ describe('Lookup Datagrid column service', function () {
 				spyOn(header.element, 'detach').and.returnValue();
 			});
 
-			spyOn(LookupDatagridStyleService, 'getColumnPreviewStyle').and.returnValue('');
 			spyOn(LookupDatagridStyleService, 'columnFormatter').and.returnValue(formatter);
 		}));
 
 		it('should create new preview grid columns', inject(function(LookupDatagridColumnService) {
 			//when
-			var createdColumns = LookupDatagridColumnService.createColumns(columnsMetadata, true, false);
+			var createdColumns = LookupDatagridColumnService.createColumns(columnsMetadata);
 
 			//then
 			expect(createdColumns[0].id).toEqual('tdpId');
@@ -72,21 +71,21 @@ describe('Lookup Datagrid column service', function () {
 
 			expect(createdColumns[1].id).toEqual('0000');
 			expect(createdColumns[1].field).toEqual('0000');
-			expect(createdColumns[1].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col0</div>       <div class="grid-header-type ng-binding">text</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
+			expect(createdColumns[1].name).toEqual('');
 			expect(createdColumns[1].formatter).toEqual(formatter);
 			expect(createdColumns[1].minWidth).toEqual(120);
 			expect(createdColumns[1].tdpColMetadata).toEqual({ id: '0000', name: 'col0', type: 'string' } );
 
 			expect(createdColumns[2].id).toEqual('0001');
 			expect(createdColumns[2].field).toEqual('0001');
-			expect(createdColumns[2].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col1</div>       <div class="grid-header-type ng-binding">integer</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
+			expect(createdColumns[2].name).toEqual('');
 			expect(createdColumns[2].formatter).toEqual(formatter);
 			expect(createdColumns[2].minWidth).toEqual(120);
 			expect(createdColumns[2].tdpColMetadata).toEqual({ id: '0001', name: 'col1', type: 'integer' } );
 
 			expect(createdColumns[3].id).toEqual('0002');
 			expect(createdColumns[3].field).toEqual('0002');
-			expect(createdColumns[3].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col2</div>       <div class="grid-header-type ng-binding">salary</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
+			expect(createdColumns[3].name).toEqual('');
 			expect(createdColumns[3].formatter).toEqual(formatter);
 			expect(createdColumns[3].minWidth).toEqual(120);
 			expect(createdColumns[3].tdpColMetadata).toEqual({ id: '0002', name: 'col2', type: 'string', domain: 'salary' } );
@@ -94,7 +93,7 @@ describe('Lookup Datagrid column service', function () {
 
 		it('should create new grid columns', inject(function(LookupDatagridColumnService) {
 			//when
-			var createdColumns = LookupDatagridColumnService.createColumns(columnsMetadata, false, false);
+			var createdColumns = LookupDatagridColumnService.createColumns(columnsMetadata);
 
 			//then
 			expect(createdColumns[0].id).toEqual('tdpId');
@@ -307,28 +306,6 @@ describe('Lookup Datagrid column service', function () {
 			expect(angular.element(columnsArgs.node).find('lookup-datagrid-header').length).toBe(1);
 		}));
 
-		it('should do nothing if column is from preview', inject(function() {
-			//given
-			var columnsArgs = {
-				column:  {
-					id: '0002',
-					tdpColMetadata: {},
-					preview: true
-				},
-				node: angular.element('<div></div>')[0]
-			};
-
-			//when
-			var onHeaderCellRendered = gridMock.onHeaderCellRendered.subscribe.calls.argsFor(0)[0];
-			onHeaderCellRendered(null, columnsArgs);
-
-			//then
-			expect(columnsArgs.column.scope).not.toBeDefined();
-			expect(columnsArgs.column.header).not.toBeDefined();
-
-			expect(angular.element(columnsArgs.node).find('datagrid-header').length).toBe(0);
-		}));
-
 		it('should do nothing if column is index column', inject(function() {
 			//given
 			var columnsArgs = {
@@ -346,7 +323,7 @@ describe('Lookup Datagrid column service', function () {
 			expect(columnsArgs.column.scope).not.toBeDefined();
 			expect(columnsArgs.column.header).not.toBeDefined();
 
-			expect(angular.element(columnsArgs.node).find('datagrid-header').length).toBe(0);
+			expect(angular.element(columnsArgs.node).find('lookup-datagrid-header').length).toBe(0);
 		}));
 	});
 });

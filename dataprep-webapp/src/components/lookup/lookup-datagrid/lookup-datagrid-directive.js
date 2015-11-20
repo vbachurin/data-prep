@@ -3,7 +3,7 @@
 
     /**
      * @ngdoc directive
-     * @name data-prep.lookup-datagrid.directive:LookupDatagrid
+     * @name data-prep.lookup.directive:LookupDatagrid
      * @description This directive create the SlickGrid lookup-datagrid<br/>
      * Watchers :
      * <ul>
@@ -37,7 +37,7 @@
                 /**
                  * @ngdoc method
                  * @name getData
-                 * @methodOf data-prep.lookup-datagrid.directive:LookupDatagrid
+                 * @methodOf data-prep.lookup.directive:LookupDatagrid
                  * @description [PRIVATE] Get the lookup loaded data
                  */
                 var getData = function getData() {
@@ -51,7 +51,7 @@
                 /**
                  * @ngdoc method
                  * @name onDataChange
-                 * @methodOf data-prep.lookup-datagrid.directive:LookupDatagrid
+                 * @methodOf data-prep.lookup.directive:LookupDatagrid
                  * @description [PRIVATE] Update and resize the columns with its headers, set grid styles
                  */
                 var onDataChange = function onDataChange(data) {
@@ -68,7 +68,7 @@
                         //create columns, manage style and size, set columns in grid
                         clearTimeout(columnTimeout);
                         columnTimeout = setTimeout(function () {
-                            columns = LookupDatagridColumnService.createColumns(data.columns, data.preview);
+                            columns = LookupDatagridColumnService.createColumns(data.columns);
 
                             selectedColumn = stateSelectedColumn ? _.find(columns, {id: stateSelectedColumn.id}) : null;
 
@@ -85,7 +85,7 @@
                 /**
                  * @ngdoc method
                  * @name initGridIfNeeded
-                 * @methodOf data-prep.lookup-datagrid.directive:LookupDatagrid
+                 * @methodOf data-prep.lookup.directive:LookupDatagrid
                  * @description [PRIVATE] Init Slick grid and init lookup-datagrid private services.
                  */
                 var initGridIfNeeded = function () {

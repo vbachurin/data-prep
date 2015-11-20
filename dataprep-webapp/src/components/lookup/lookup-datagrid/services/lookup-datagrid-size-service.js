@@ -3,8 +3,9 @@
 
     /**
      * @ngdoc service
-     * @name data-prep.lookup-datagrid.service:DatagridSizeService
+     * @name data-prep.lookup.service:LookupDatagridSizeService
      * @description Datagrid private service that manage the grid sizes
+     * @requires data-prep.services.state.constant:state
      */
     function LookupDatagridSizeService($window, state) {
         var grid;
@@ -19,7 +20,7 @@
         /**
          * @ngdoc method
          * @name getLocalStorageKey
-         * @methodOf data-prep.lookup-datagrid.service:DatagridSizeService
+         * @methodOf data-prep.lookup.service:LookupDatagridSizeService
          * @description Get the actual dataset column sizes key. This key is used in localStorage 
          */
         function getLocalStorageKey() {
@@ -29,7 +30,7 @@
         /**
          * @ngdoc method
          * @name autosizeColumns
-         * @methodOf data-prep.lookup-datagrid.service:DatagridSizeService
+         * @methodOf data-prep.lookup.service:LookupDatagridSizeService
          * @description Compute columns sizes and update them in the grid. The sizes are saved in
          * localstorage if not already saved. They are then used to set the last saved sized.
          * WARNING : this set columns in the grid, which trigger a repaint
@@ -55,7 +56,7 @@
         /**
          * @ngdoc method
          * @name saveColumnSizes
-         * @methodOf data-prep.lookup-datagrid.service:DatagridSizeService
+         * @methodOf data-prep.lookup.service:LookupDatagridSizeService
          * @description Save the columns sizes of the dataset in localstorage
          */
         function saveColumnSizes() {
@@ -72,7 +73,7 @@
         /**
          * @ngdoc method
          * @name attachGridResizeListener
-         * @methodOf data-prep.lookup-datagrid.service:DatagridSizeService
+         * @methodOf data-prep.lookup.service:LookupDatagridSizeService
          * @description Attach listeners on window resize
          */
         function attachGridResizeListener() {
@@ -84,7 +85,7 @@
         /**
          * @ngdoc method
          * @name attachColumnResizeListener
-         * @methodOf data-prep.lookup-datagrid.service:DatagridSizeService
+         * @methodOf data-prep.lookup.service:LookupDatagridSizeService
          * @description Attach listeners for column resize
          */
         function attachColumnResizeListener() {
@@ -94,7 +95,7 @@
         /**
          * @ngdoc method
          * @name init
-         * @methodOf data-prep.lookup-datagrid.service:DatagridSizeService
+         * @methodOf data-prep.lookup.service:LookupDatagridSizeService
          * @param {object} newGrid The new grid
          * @description Initialize the grid and attach the column listeners
          */

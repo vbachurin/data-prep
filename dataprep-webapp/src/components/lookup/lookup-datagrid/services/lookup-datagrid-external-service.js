@@ -3,32 +3,26 @@
 
     /**
      * @ngdoc service
-     * @name data-prep.lookup-datagrid.service:DatagridExternalService
-     * @description Datagrid private service that manage the selected column action to the outer world (non dratagrid)
-     * @requires data-prep.services.statistics.service:StatisticsService
-     * @requires data-prep.services.transformation.service:SuggestionService
-     * @requires data-prep.services.transformation.service:ColumnSuggestionService
+     * @name data-prep.lookup.service:LookupDatagridExternalService
+     * @description Datagrid private service that manages the selected column action to the outer world (non dratagrid)
+     * @requires data-prep.services.state.service:StateService
      */
     function LookupDatagridExternalService(StateService) {
         var grid;
         var lastSelectedColumn;
 
-        var service = {
+        return {
             init: init,
             updateSelectedLookupColumn: updateSelectedLookupColumn
         };
 
-        return service;
         /**
          * @ngdoc method
          * @name updateSelectedLookupColumn
-         * @methodOf data-prep.lookup-datagrid.service:DatagridExternalService
-         * @param {string} column The selected column
-         * @param {string} tab The suggestion tab to select
-         * @description Set the selected column into external services except the index column. This will trigger actions that use this property
-         * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
+         * @methodOf data-prep.lookup.service:LookupDatagridExternalService
+         * @param {Object} column The selected column
+         * @description Set the selected column into state services
          */
-
         function updateSelectedLookupColumn(column) {
             var columnHasChanged = column.tdpColMetadata !== lastSelectedColumn;
             if (!columnHasChanged) {
@@ -41,7 +35,7 @@
         /**
          * @ngdoc method
          * @name attachCellListeners
-         * @methodOf data-prep.lookup-datagrid.service:DatagridExternalService
+         * @methodOf data-prep.lookup.service:LookupDatagridExternalService
          * @description Attach cell selection listeners
          */
         function attachCellListeners() {
@@ -49,7 +43,7 @@
             grid.onActiveCellChanged.subscribe(function (e, args) {
                 if (angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
-                    updateSelectedLookupColumn(column); //TODO : change this to CELL when cell actions are supported
+                    updateSelectedLookupColumn(column);
                 }
             });
         }
@@ -57,7 +51,7 @@
         /**
          * @ngdoc method
          * @name attachColumnListeners
-         * @methodOf data-prep.lookup-datagrid.service:DatagridExternalService
+         * @methodOf data-prep.lookup.service:LookupDatagridExternalService
          * @description Attach header selection listeners on right click or left click
          */
         function attachColumnListeners() {
@@ -79,7 +73,7 @@
         /**
          * @ngdoc method
          * @name init
-         * @methodOf data-prep.lookup-datagrid.service:DatagridExternalService
+         * @methodOf data-prep.lookup.service:LookupDatagridExternalService
          * @param {object} newGrid The new grid
          * @description Initialize the grid
          */

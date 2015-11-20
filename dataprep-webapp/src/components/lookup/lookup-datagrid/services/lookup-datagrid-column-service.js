@@ -3,29 +3,21 @@
 
     /**
      * @ngdoc service
-     * @name data-prep.lookup-datagrid.service:DatagridColumnService
-     * @description Datagrid private service that manage the grid columns and columns headers
+     * @name data-prep.lookup.service:LookupDatagridColumnService
+     * @description Datagrid private service that manages the grid columns and columns headers
      * LEXICON :
      * <ul>
      *     <li>Column : the slick grid column</li>
      *     <li>Header : the lookup-datagrid header directive. The header created by SlickGrid will be called by 'SlickGird Header'</li>
      * </ul>
-     * @requires data-prep.lookup-datagrid.service:DatagridStyleService
-     * @requires data-prep.services.playground.service:DatagridService
+     * @requires data-prep.lookup.service:LookupDatagridStyleService
      * @requires data-prep.services.utils.service:ConverterService
-     * @requires data-prep.services.playground.service:PlaygroundService
+     * @requires data-prep.services.state.constant:state
      */
-    function LookupDatagridColumnService(state, $rootScope, $compile, LookupDatagridStyleService, ConverterService, PlaygroundService, $translate) {
+    function LookupDatagridColumnService(state, $rootScope, $compile, LookupDatagridStyleService) {
         var grid;
         var availableHeaders = [];
         var colIndexName = 'tdpId';
-
-        var gridHeaderPreviewTemplate =
-            '<div class="grid-header <%= diffClass %>">' +
-            '   <div class="grid-header-title dropdown-button ng-binding"><%= name %></div>' +
-            '       <div class="grid-header-type ng-binding"><%= simpleType %></div>' +
-            '   </div>' +
-            '<div class="quality-bar"><div class="record-unknown"></div></div>';
 
         return {
             init: init,
@@ -36,57 +28,38 @@
         //------------------------------------------------------------------------------------------------------
         //-----------------------------------------------GRID COLUMNS-------------------------------------------
         //------------------------------------------------------------------------------------------------------
-
         /**
          * @ngdoc method
          * @name createColumnDefinition
-         * @methodOf data-prep.lookup-datagrid.service:DatagridColumnService
+         * @methodOf data-prep.lookup.service:LookupDatagridColumnService
          * @param {object} col The column metadata to adapt
-         * @param {boolean} preview Flag that indicates if we are in the preview mode
          * @description Adapt column metadata to slick column.
-         * <ul>
-         *     <li>Non preview mode : The div id depending on index is important. It is used as insertion point for the header directive.</li>
-         *     <li>Preview mode : we inject directly a fake header</li>
-         * </ul>
          * @returns {object} The adapted column item
          */
-        function createColumnDefinition(col, preview) {
-            var template = preview ?
-                _.template(gridHeaderPreviewTemplate)({
-                    name: col.name,
-                    diffClass: LookupDatagridStyleService.getColumnPreviewStyle(col),
-                    simpleType: col.domain ? col.domain : ConverterService.simplifyType(col.type)
-                }) :
-                '';
-            var translatedMsg = $translate.instant('APPLY_TO_ALL_CELLS');
-
+        function createColumnDefinition(col) {
             return {
                 id: col.id,
                 field: col.id,
-                name: template,
+                name: '',
                 formatter: LookupDatagridStyleService.columnFormatter(col),
                 minWidth: 120,
-                tdpColMetadata: col,
-                editor: preview ? null : Slick.Editors.TalendEditor(PlaygroundService.editCell, translatedMsg),
-                preview: preview
+                tdpColMetadata: col
             };
         }
 
         /**
          * @ngdoc method
          * @name createColumns
-         * @methodOf data-prep.lookup-datagrid.service:DatagridColumnService
+         * @methodOf data-prep.lookup.service:LookupDatagridColumnService
          * @param {object[]} columnsMetadata Columns details
-         * @param {boolean} preview Flag that indicates if we are in preview mode
          * @description Two modes :
          * <ul>
-         *     <li>Preview : we save actual headers and simulate fake headers with the new preview columns</li>
          *     <li>Classic : we map each column to a header. This header can be a reused header if the column was
          * the same as before, or a new created one otherwise.</li>
          * </ul>
          */
 
-        function createColumns(columnsMetadata, preview) {
+        function createColumns(columnsMetadata) {
             //create new SlickGrid columns
             var colIndexArray = [];
             var colIndexNameTemplate = '<div class="lookup-slick-header-column-index">#</div>';
@@ -104,11 +77,9 @@
                 selectable: false
             });
 
-            var resultColumn =  _.union(colIndexArray, _.map(columnsMetadata, function (col) {
-                return createColumnDefinition(col, preview);
+            return _.union(colIndexArray, _.map(columnsMetadata, function (col) {
+                return createColumnDefinition(col);
             }));
-
-            return resultColumn;
         }
 
         //------------------------------------------------------------------------------------------------------
@@ -117,7 +88,7 @@
         /**
          * @ngdoc method
          * @name destroyHeader
-         * @methodOf data-prep.lookup-datagrid.service:DatagridColumnService
+         * @methodOf data-prep.lookup.service:LookupDatagridColumnService
          * @param {object} headerDefinition The header definition that contains scope (the angular scope) and header (the element)
          * @description Destroy the angular scope and header element
          */
@@ -129,8 +100,7 @@
         /**
          * @ngdoc method
          * @name renewAllColumns
-         * @methodOf data-prep.lookup-datagrid.service:DatagridColumnService
-         * @param {boolean} value The new flag value
+         * @methodOf data-prep.lookup.service:LookupDatagridColumnService
          * @description Set the 'renewAllFlag' with provided value to control whether the headers should be reused or recreated
          */
         function renewAllColumns() {
@@ -141,7 +111,7 @@
         /**
          * @ngdoc method
          * @name createHeader
-         * @methodOf data-prep.lookup-datagrid.service:DatagridColumnService
+         * @methodOf data-prep.lookup.service:LookupDatagridColumnService
          * @description [PRIVATE] Create a column header object containing
          * <ul>
          *     <li>the element directive</li>
@@ -166,7 +136,7 @@
         /**
          * @ngdoc method
          * @name createAndAttachHeader
-         * @methodOf data-prep.lookup-datagrid.service:DatagridColumnService
+         * @methodOf data-prep.lookup.service:LookupDatagridColumnService
          * @param {object} event The Slickgrid header creation event
          * @param {object} columnsArgs The column header arguments passed by SlickGrid
          * @description This is part of the process to avoid recreation od the lookup-datagrid header when it is not necessary.
@@ -174,9 +144,8 @@
          * The existing header is then updated with the new column metadata.
          */
         function createAndAttachHeader(event, columnsArgs) {
-            //No header to append on preview
             var columnDef = columnsArgs.column;
-            if (columnDef.preview || columnDef.id === colIndexName) {
+            if (columnDef.id === colIndexName) {
                 return;
             }
 
@@ -211,8 +180,8 @@
         /**
          * @ngdoc method
          * @name attachColumnHeaderEvents
-         * @methodOf data-prep.lookup-datagrid.service:DatagridColumnService
-         * @description Attach listeners for header creation/destroy. The handler detach and save headers on destroy,
+         * @methodOf data-prep.lookup.service:LookupDatagridColumnService
+         * @description Attach listeners for header creation/destroy. The handler detachs and save headers on destroy,
          * attach (create them if necessary) and update them on render
          */
         function attachColumnHeaderEvents() {
@@ -222,9 +191,9 @@
         /**
          * @ngdoc method
          * @name init
-         * @methodOf data-prep.lookup-datagrid.service:DatagridColumnService
+         * @methodOf data-prep.lookup.service:LookupDatagridColumnService
          * @param {object} newGrid The new grid
-         * @description Initialize the grid and attach the column listeners
+         * @description Initializes the grid and attach the column listeners
          */
         function init(newGrid) {
             grid = newGrid;

@@ -3,10 +3,10 @@
 
     /**
      * @ngdoc controller
-     * @name data-prep.lookup-datagrid.controller:LookupDatagridCtrl
+     * @name data-prep.lookup.controller:LookupDatagridCtrl
      * @description Dataset grid controller.
      * @requires data-prep.services.state.constant:state
-     * @requires data-prep.lookup-datagrid.service:DatagridTooltipService
+     * @requires data-prep.lookup.service:DatagridTooltipService
      */
     function LookupDatagridCtrl(state, LookupDatagridTooltipService) {
         this.datagridTooltipService = LookupDatagridTooltipService;
@@ -16,9 +16,9 @@
     /**
      * @ngdoc property
      * @name tooltip
-     * @propertyOf data-prep.lookup-datagrid.controller:LookupDatagridCtrl
+     * @propertyOf data-prep.lookup.controller:LookupDatagridCtrl
      * @description The tooltip infos
-     * This is bound to {@link data-prep.lookup-datagrid.service:LookupDatagridTooltipServicee LookupDatagridTooltipServicee}.tooltip
+     * This is bound to {@link data-prep.lookup.service:LookupDatagridTooltipServicee LookupDatagridTooltipServicee}.tooltip
      */
     Object.defineProperty(LookupDatagridCtrl.prototype,
         'tooltip', {
@@ -32,9 +32,9 @@
     /**
      * @ngdoc property
      * @name showTooltip
-     * @propertyOf data-prep.lookup-datagrid.controller:LookupDatagridCtrl
+     * @propertyOf data-prep.lookup.controller:LookupDatagridCtrl
      * @description The tooltip display flag
-     * This is bound to {@link data-prep.lookup-datagrid.service:LookupDatagridTooltipServicee LookupDatagridTooltipServicee}.showTooltip
+     * This is bound to {@link data-prep.lookup.service:LookupDatagridTooltipServicee LookupDatagridTooltipServicee}.showTooltip
      */
     Object.defineProperty(LookupDatagridCtrl.prototype,
         'showTooltip', {

@@ -16,8 +16,9 @@
 
        <div id="lookup-right">
            <div class="lookup-descripton">
-               <strong translate-once="LOOKUP_DESC_TITLE"></strong>
-               <br><br>
+               <br>
+               <strong><span translate-once="LOOKUP_DESC_TITLE"></span></strong>
+               <br>
                <p>
                    <p translate-once="LOOKUP_STEPS_1"></p>
                    <p translate-once="LOOKUP_STEPS_2"></p>
@@ -39,11 +40,11 @@
 
     <div class="lookup-footer">
         <hr>
-       <ul>
+        <ul>
            <li ng-repeat="lookupDs in lookupCtrl.potentialTransformations track by $index"
                ng-click="lookupCtrl.loadSelectedLookupContent(lookupCtrl.potentialTransformations[$index])">
                <a>{{lookupDs.parameters[2].default}}</a>
            </li>
-       </ul>
+        </ul>
    </div>
 </talend-slidable>
