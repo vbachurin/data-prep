@@ -29,8 +29,6 @@
             initGrid : initGrid
         };
 
-        //--------------------------------------------------------------------------------------------------------------
-
         /**
          * @ngdoc method
          * @name attachLongTableListeners
@@ -52,14 +50,14 @@
          * @ngdoc method
          * @name attachGridStateListeners
          * @methodOf data-prep.lookup.service:LookupDatagridGridService
-         * @description Attach listeners for saving the state of column id and line selection number
+         * @description Attach listeners for saving the state of column id
          */
         function attachGridStateListeners() {
             grid.onActiveCellChanged.subscribe(function (e, args) {
                 if (angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
                     $timeout(function(){
-                        StateService.setLookupGridSelection(column.tdpColMetadata, args.row);
+                        StateService.setLookupGridSelection(column.tdpColMetadata);
                     });
                 }
             });

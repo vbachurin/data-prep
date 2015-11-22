@@ -12,8 +12,7 @@
         var lastSelectedColumn;
 
         return {
-            init: init,
-            updateSelectedLookupColumn: updateSelectedLookupColumn
+            init: init
         };
 
         /**
