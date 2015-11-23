@@ -220,7 +220,7 @@
   "VALID_RECORDS": "valid records",
   "INVALID_RECORDS": "invalid records",
   "EMPTY_RECORDS": "empty records",
-  "SELECT_VALID_RECORDS": "Select valid vecords for ",
+  "SELECT_VALID_RECORDS": "Select valid records for ",
   "SELECT_INVALID_RECORDS": "Select invalid records for ",
   "SELECT_EMPTY_RECORDS": "Select empty records for ",
   "FILL_EMPTY_WITH_TOP_VALUE": "Fill empty records with top adjacent value",
