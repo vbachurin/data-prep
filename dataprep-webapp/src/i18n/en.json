@@ -47,7 +47,7 @@
   "NO_TRANSFORMATION": "No transformation available.",
 
   "_comment": "Datagrid",
-  "ENTER_PREPARATION_NAME": "Enter a name for your preparation.",
+  "ENTER_PREPARATION_NAME": "Enter a name for your preparation",
   "FILE_DETAILS": "File: {{name}} ({{records}} lines)",
   "FILTER": "Search and Filter",
   "NB_LINES_MATCHING_FILTERS": "{{percentage}}% of lines are matching your filter(s)",
