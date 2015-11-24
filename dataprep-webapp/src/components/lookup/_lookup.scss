@@ -45,14 +45,20 @@
     width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
-    border-top: 1px solid #5B558E;
+    //border-top: 1px solid #5B558E;
     .lookup-datasets-list{
       .lookup-dataset-name{
+        pointer: cursor;
+        text-transform: uppercase;
         display: inline;
-        padding-right: 15px;
-        color:blue;
+        padding: 0px 15px 2px 3px;
+        border-top: 1px solid gray;
         &.selected-lookup-dataset-name{
-          color:red;
+          font-weight: 700;
+          border-top: 1px solid transparent;
+          border-right: 1px solid gray;
+          border-bottom: 1px solid gray;
+          border-left: 10px solid #4fc1de;
         }
       }
     }
