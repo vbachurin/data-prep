@@ -106,10 +106,10 @@
          * @param {string) the optional clone name
          * @returns {Promise} The GET promise
          */
-        function cloneDataset(dataset, name){
+        function cloneDataset(dataset, name) {
             var url = RestURLs.datasetUrl + '/clone/' + dataset.id;
-            if(name){
-                url += '?name='+encodeURIComponent(name);
+            if (name) {
+                url += '?name=' + encodeURIComponent(name);
             }
             return $http.get(url);
         }
@@ -147,10 +147,10 @@
         function getDatasets(sortType, sortOrder, deferredAbort) {
             var url = RestURLs.datasetUrl;
 
-            if(sortType) {
+            if (sortType) {
                 url += '?sort=' + sortType;
             }
-            if(sortOrder) {
+            if (sortOrder) {
                 url += (sortType ? '&' : '?') + 'order=' + sortOrder;
             }
 
@@ -212,10 +212,10 @@
          * @param {boolean} metadata If false, the metadata will not be returned
          * @returns {Promise} The GET promise
          */
-        function getContent (datasetId, metadata) {
+        function getContent(datasetId, metadata) {
             var url = RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata;
             return $http.get(url)
-                .then(function(res) {
+                .then(function (res) {
                     return res.data;
                 });
         }

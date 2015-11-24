@@ -34,10 +34,21 @@
       height: 12px;
       background-color: #f1f1f1 !important;
       background: url("/assets/images/dataprep-panel-splitter.png")  no-repeat center;
+      z-index: 10;
     }
   }
 
+  .suggestions-loading-div {
+    height: 100%;
+    width: 100%;
+    text-align: center;
 
+    .suggestions-loading {
+      color: $dark-gray;
+      position: absolute;
+      top: 50%;
+    }
+  }
 }
 
 @import "actions-suggestions/action-suggestions";

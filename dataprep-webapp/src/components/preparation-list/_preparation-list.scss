@@ -56,7 +56,8 @@
       box-shadow: 5px 4px 6px -4px $dark-gray;
 
       .actions a {
-        &.trash {
+        &.trash,
+        &.clone-btn {
           display: block;
         }
       }
@@ -83,8 +84,8 @@
         margin: 0;
         max-height: 25px;
 
-        a {
-          color: $standard-color;
+        &:hover {
+          cursor: pointer;
         }
       }
 
@@ -112,10 +113,21 @@
         }
       }
 
-      &.trash {
+      &.trash,
+      &.clone-btn {
         font-size: 0.8em;
         display: none;
       }
+
+      &.check-btn {
+        margin-left: 5px;
+        color: $white;
+        background-color: $dark-green;
+        font-size: .5em;
+        &:hover
+        { background-color: darken($dark-green, 10%); }
+      }
+
     }
   }
 }

@@ -9,6 +9,7 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.formula.functions.Column;
 import org.talend.dataprep.api.dataset.diff.Flag;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -57,6 +58,24 @@ public class RowMetadata implements Serializable {
         return addColumn(columnMetadata, columns.size());
     }
 
+    /**
+     * Removes the column metadata corresponding to the specified id from the columns of this row metadata, and returns
+     * <tt>the deleted column metadata</tt> if it is present. If the specified id does not correspond to a column
+     * metadata or if this row metadata does not contain the specified column metadata, the row metadata remains
+     * unchanged and returns <tt>null</tt>.
+     *
+     * @param id the specified id corresponding to a column metadata to be deleted
+     * @return <tt>the deleted column metadata</tt> if the column metadata corresponding to the specified id is in this
+     * row metadata and <tt>null</tt> otherwise
+     */
+    public ColumnMetadata deleteColumnById(String id) {
+        ColumnMetadata column = getById(id);
+        if (column != null && columns.remove(column)) {
+            return column;
+        }
+        return null;
+    }
+
     private ColumnMetadata addColumn(ColumnMetadata columnMetadata, int index) {
         DecimalFormat format = new DecimalFormat("0000"); //$NON-NLS-1$
         if (StringUtils.isEmpty(columnMetadata.getId())) {
@@ -65,7 +84,6 @@ public class RowMetadata implements Serializable {
         columns.add(index, columnMetadata);
         return columnMetadata;
     }
-
 
     /**
      * @return the row size.
@@ -165,8 +183,10 @@ public class RowMetadata implements Serializable {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         RowMetadata that = (RowMetadata) o;
         return Objects.equals(columns, that.columns);
     }
@@ -183,7 +203,8 @@ public class RowMetadata implements Serializable {
      * Insert a new column in this metadata right after the existing <code>columnId</code>. If no column with
      * <code>columnId</code> is to be found, append new column at the end of this row's columns.
      * 
-     * @param columnId A non null column id. Empty string is allowed.
+     * @param columnId A non null column id. Empty string is allowed, in this case, column will be appended at the end
+     * of existing columns.
      * @param column A non null column to insert in this row's metadata.
      * @return The column id of the newly inserted column.
      */

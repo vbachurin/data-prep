@@ -13,8 +13,6 @@ describe('Dataset list controller', function () {
     ];
 
     beforeEach(module('data-prep.dataset-list'));
-    beforeEach(module('data-prep.services.onboarding'));
-    beforeEach(module('data-prep.datagrid'));
 
     beforeEach(inject(function ($rootScope, $controller, $q, $state, DatasetService, PlaygroundService, MessageService, DatasetListSortService, StateService) {
         var datasetsValues = [datasets, refreshedDatasets];
@@ -364,34 +362,76 @@ describe('Dataset list controller', function () {
             //then
             expect(dataset.renaming).toBeFalsy();
         }));
-    });
 
-    describe('cloning dataset', function () {
+        it('should not call service to rename dataset with null name', inject(function ($q, DatasetService) {
+            //given
+            spyOn(DatasetService, 'update').and.returnValue($q.when(true));
+            var ctrl = createController();
+            var name = 'dataset name';
+            var dataset = {name: name};
 
-        var ctrl;
 
-        beforeEach(inject(function ($rootScope, $q, DatasetService, MessageService) {
-            ctrl = createController();
+            //when
+            ctrl.rename(dataset);
             scope.$digest();
 
+            //then
+            expect(dataset.name).toBe(name);
+            expect(DatasetService.update).not.toHaveBeenCalled();
+            expect(DatasetService.update).not.toHaveBeenCalledWith(dataset);
+        }));
+
+        it('should not call service to rename dataset with empty name', inject(function ($q, DatasetService) {
+            //given
+            spyOn(DatasetService, 'update').and.returnValue($q.when(true));
+            var ctrl = createController();
+            var name = 'dataset name';
+            var dataset = {name: name};
+
+
+            //when
+            ctrl.rename(dataset, '');
+            scope.$digest();
+
+            //then
+            expect(dataset.name).toBe(name);
+            expect(DatasetService.update).not.toHaveBeenCalled();
+            expect(DatasetService.update).not.toHaveBeenCalledWith(dataset);
+        }));
+
+    });
+
+    describe('clone', function () {
+
+        beforeEach(inject(function ($q, DatasetService, MessageService) {
             spyOn(DatasetService, 'clone').and.returnValue($q.when(true));
             spyOn(MessageService, 'success').and.returnValue();
         }));
 
-        it('clone must call clone service', inject(function ($q, DatasetService, MessageService) {
+        it('should call clone service', inject(function (DatasetService) {
             //given
             var dataset = datasets[0];
+            var ctrl = createController();
 
+            //when
+            ctrl.clone(dataset);
+
+            //then
+            expect(DatasetService.clone).toHaveBeenCalledWith(dataset);
+        }));
+
+        it('should display message on success', inject(function (MessageService) {
+            //given
+            var dataset = datasets[0];
+            var ctrl = createController();
 
             //when
             ctrl.clone(dataset);
             scope.$digest();
 
             //then
-            expect(DatasetService.clone).toHaveBeenCalledWith(dataset);
             expect(MessageService.success).toHaveBeenCalledWith('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
         }));
-
     });
 
     describe('Replace an existing dataset with a new one', function() {

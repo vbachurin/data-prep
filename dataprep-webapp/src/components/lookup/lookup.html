@@ -1,41 +1,50 @@
 <talend-slidable
         class="lookup"
-        visible="LookupCtrl.visible"
+        visible="lookupCtrl.visible"
         side="bottom"
         control-bar="false">
 
    <div class="lookup-header">
-       <hr>
-       line svg goes here : d3.svg.diagonal().source({x:selected_dataset_col_posX,y:0}).target({x:selected_lookup_col_posX,y:30})
-       <hr>
+
    </div>
 
    <div class="lookup-container">
        <div id="lookup-left">
-        <span ng-repeat = "col in LookupCtrl.datasetLookupService.currentLookupCols">{{col.name}}, </span>
-           <br>
-        <span>{{LookupCtrl.datasetLookupService.currentLookupRecs | json}}</span>
+           <lookup-datagrid></lookup-datagrid>
        </div>
 
        <div id="lookup-right">
-           join on column id ex:0000 <input type="text" ng-model="LookupCtrl.joinOnId">
-           join on column name ex: id <input type="text" ng-model="LookupCtrl.joinOnName">
-           lookup columns ex:0000,0001 <input type="text" ng-model="LookupCtrl.lookupColumns">
+           <div class="lookup-descripton">
+               <br>
+               <strong><span translate-once="LOOKUP_DESC_TITLE"></span></strong>
+               <br>
+               <p>
+                   <p translate-once="LOOKUP_STEPS_1"></p>
+                   <p translate-once="LOOKUP_STEPS_2"></p>
+                   <p translate-once="LOOKUP_STEPS_3"></p>
+               </p>
+           </div>
 
-           <transform-form transformation="LookupCtrl.lookupAction"
-                           on-submit="LookupCtrl.submitLookup(LookupCtrl.lookupAction, 'dataset')(params)"
-                           on-submit-hover-on="LookupCtrl.hoverSubmitBtn()(params)"
-                           on-submit-hover-off="LookupCtrl.cancelEarlyPreview()"> </transform-form>
+           <button ng-disabled="!lookupCtrl.state.playground.lookupGrid.lookupColumnsToAdd.length ||
+                                !lookupCtrl.state.playground.lookupGrid.selectedColumn ||
+                                !lookupCtrl.state.playground.grid.selectedColumn"
+                   class="param-primary-button btn-primary"
+                   ng-click="lookupCtrl.submitLookup()"
+                   ng-mouseenter="lookupCtrl.hoverSubmitBtn()"
+                   ng-mouseleave="lookupCtrl.cancelEarlyPreview()"
+                   translate-once="CONFIRM_LOOKUP"
+                   id="lookup-submit-btn-id">
+           </button>
        </div>
    </div>
 
     <div class="lookup-footer">
-        <hr>
-       <ul>
-           <li ng-repeat="lookupDs in LookupCtrl.potentialTransformations track by $index"
-               ng-click="LookupCtrl.loadSelectedLookupContent(LookupCtrl.potentialTransformations[$index])">
-               <a>{{lookupDs.parameters[4].default}}</a>
+        <ul class="lookup-datasets-list">
+           <li ng-repeat="lookupDs in lookupCtrl.potentialTransformations track by $index"
+               ng-click="lookupCtrl.loadSelectedLookupContent(lookupDs)"
+               class="lookup-dataset-name">
+               {{lookupDs.parameters[2].default}}
            </li>
-       </ul>
+        </ul>
    </div>
 </talend-slidable>

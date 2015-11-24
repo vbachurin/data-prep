@@ -1,7 +1,13 @@
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionScope.COLUMN_METADATA;
+
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -51,6 +57,15 @@ public class CopyColumnMetadata extends ActionMetadata implements ColumnAction {
         return true;
     }
 
+
+    /**
+     * @see ActionMetadata#getActionScope()
+     */
+    @Override
+    public List<String> getActionScope() {
+        return Collections.singletonList(COLUMN_METADATA.getDisplayName());
+    }
+
     /**
      * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
      */
@@ -58,25 +73,20 @@ public class CopyColumnMetadata extends ActionMetadata implements ColumnAction {
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
-        final ColumnMetadata newColumnMetadata = createNewColumn(column);
-        final String copyColumn = rowMetadata.insertAfter(columnId, newColumnMetadata);
-
+        final String copyColumn = context.in(this).column(
+                column.getName() + COPY_APPENDIX,
+                rowMetadata,
+                (r) -> {
+                    final ColumnMetadata newColumn = column() //
+                            .copy(column) //
+                            .computedId(StringUtils.EMPTY) //
+                            .name(column.getName() + COPY_APPENDIX) //
+                            .build();
+                    rowMetadata.insertAfter(columnId, newColumn);
+                    return newColumn;
+                }
+        );
         row.set(copyColumn, row.get(columnId));
-    }
-
-    /**
-     * Copy the current column
-     *
-     * @param column the current column
-     * @return the copied column
-     */
-    private ColumnMetadata createNewColumn(final ColumnMetadata column) {
-        return ColumnMetadata.Builder //
-                .column() //
-                .copy(column) //
-                .computedId(null) //
-                .name(column.getName() + COPY_APPENDIX) //
-                .build();
     }
 
 }

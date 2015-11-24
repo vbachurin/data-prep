@@ -1,16 +1,20 @@
-<div style="position: relative;" class="suggestions-stats-details">
-            <bg-splitter orientation="vertical">
-                <bg-pane min-size="310">
-                    <div class="pane-container">
-                        <actions-suggestions id="help-suggestions" class="suggestions-part"></actions-suggestions>
-                    </div>
-                </bg-pane>
-                <bg-pane min-size="100">
-                    <div class="pane-container">
-                        <stats-details id="help-stats" class="stats-part"></stats-details>
-                    </div>
-                </bg-pane>
-            </bg-splitter>
+<div style="position: relative;"
+     class="suggestions-stats-details">
+
+    <div class="suggestions-loading-div" ng-if="suggestionsStatsCtrl.state.playground.suggestions.isLoading">
+        <span class="suggestions-loading continuous-rotate" ><i data-icon="c" class="icon"></i></span>
+    </div>
+
+    <bg-splitter orientation="vertical" ng-show="!suggestionsStatsCtrl.state.playground.suggestions.isLoading">
+        <bg-pane min-size="310">
+            <div class="pane-container">
+                <actions-suggestions id="help-suggestions" class="suggestions-part"></actions-suggestions>
+            </div>
+        </bg-pane>
+        <bg-pane min-size="100">
+            <div class="pane-container">
+                <stats-details id="help-stats" class="stats-part"></stats-details>
+            </div>
         </bg-pane>
     </bg-splitter>
 </div>

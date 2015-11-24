@@ -32,8 +32,7 @@ public class ChangeTypeTest {
                 .domainLabel("French Beer") //
                 .build()));
 
-        final DataSetRow row = new DataSetRow(values);
-        row.setRowMetadata(rowMetadata);
+        final DataSetRow row = new DataSetRow(rowMetadata, values);
 
         TypeChange typeChange = new TypeChange();
 
@@ -51,6 +50,9 @@ public class ChangeTypeTest {
         Assertions.assertThat(row.getRowMetadata().getColumns().get(0).getDomainFrequency()).isEqualTo(0);
 
         Assertions.assertThat(row.getRowMetadata().getColumns().get(0).isTypeForced()).isTrue();
+
+        // Check for TDP-838:
+        Assertions.assertThat(row.getRowMetadata().getColumns().get(0).isDomainForced()).isTrue();
     }
 
     @Test
