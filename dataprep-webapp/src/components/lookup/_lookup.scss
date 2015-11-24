@@ -46,10 +46,14 @@
     overflow-x: auto;
     overflow-y: hidden;
     border-top: 1px solid #5B558E;
-    ul{
-      li{
+    .lookup-datasets-list{
+      .lookup-dataset-name{
         display: inline;
         padding-right: 15px;
+        color:blue;
+        &.selected-lookup-dataset-name{
+          color:red;
+        }
       }
     }
   }
