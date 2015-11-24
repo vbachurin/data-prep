@@ -1,10 +1,9 @@
-package org.talend.dataprep.transformation.api.action.metadata.fillempty;
+package org.talend.dataprep.transformation.api.action.metadata.fill;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +16,6 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
-import org.talend.dataprep.transformation.api.action.metadata.math.NumericOperations;
 
 /**
  * Unit test for the FillWithIntegerIfEmpty action.

@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.action.metadata.fillempty;
+package org.talend.dataprep.transformation.api.action.metadata.fill;
 
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
 
@@ -8,7 +8,6 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.metadata.fillinvalid.AbstractFillWith;
 
 @Component(ActionMetadata.ACTION_BEAN_PREFIX + FillIfEmpty.FILL_EMPTY_ACTION_NAME)
 public class FillIfEmpty extends AbstractFillWith implements ColumnAction {

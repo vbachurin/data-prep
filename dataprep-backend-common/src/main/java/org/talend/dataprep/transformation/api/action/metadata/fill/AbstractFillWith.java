@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.action.metadata.fillinvalid;
+package org.talend.dataprep.transformation.api.action.metadata.fill;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.daikon.exception.ExceptionContext;
@@ -23,9 +23,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by stef on 19/11/15.
- */
 public abstract class AbstractFillWith extends ActionMetadata {
 
     public static final String DEFAULT_VALUE_PARAMETER = "default_value"; //$NON-NLS-1$

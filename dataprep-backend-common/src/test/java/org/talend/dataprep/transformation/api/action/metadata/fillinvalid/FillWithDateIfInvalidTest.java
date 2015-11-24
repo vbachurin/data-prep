@@ -23,7 +23,8 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTest
 import org.talend.dataprep.transformation.api.action.metadata.date.ChangeDatePatternTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.talend.dataprep.transformation.api.action.metadata.fillempty.FillIfEmpty;
+import org.talend.dataprep.transformation.api.action.metadata.fill.FillIfEmpty;
+import org.talend.dataprep.transformation.api.action.metadata.fill.FillInvalid;
 
 /**
  * Unit test for FillWithDateIfInvalid action.

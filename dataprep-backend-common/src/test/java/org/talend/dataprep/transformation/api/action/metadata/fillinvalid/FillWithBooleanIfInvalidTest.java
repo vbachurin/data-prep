@@ -15,6 +15,8 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.fill.AbstractFillWith;
+import org.talend.dataprep.transformation.api.action.metadata.fill.FillInvalid;
 
 /**
  * Unit test for FillWithBooleanIfInvalid action.

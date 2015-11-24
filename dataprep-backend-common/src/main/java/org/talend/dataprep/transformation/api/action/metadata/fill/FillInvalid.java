@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.action.metadata.fillinvalid;
+package org.talend.dataprep.transformation.api.action.metadata.fill;
 
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
 
