@@ -39,10 +39,18 @@
    </div>
 
     <div class="lookup-footer">
+        <div class="back-forth-btn">
+            <button ng-disabled="lookupCtrl.firstShown < 0"
+                    ng-click="lookupCtrl.showBack()">&lt;</button>
+            <button ng-disabled="lookupCtrl.thirdShown > lookupCtrl.potentialTransformations.length"
+                    ng-click="lookupCtrl.showForth()">&gt;</button>
+        </div>
+
         <ul class="lookup-datasets-list">
            <li ng-repeat="lookupDs in lookupCtrl.potentialTransformations track by $index"
                ng-click="lookupCtrl.loadSelectedLookupContent(lookupDs)"
                class="lookup-dataset-name"
+               ng-show="$index === lookupCtrl.firstShown|| $index === lookupCtrl.secondShown || $index === lookupCtrl.thirdShown"
                ng-class="{'selected-lookup-dataset-name': $index === lookupCtrl.selectedIndex }">
                {{lookupDs.parameters[2].default}}
            </li>

@@ -46,7 +46,22 @@
     overflow-x: auto;
     overflow-y: hidden;
     //border-top: 1px solid #5B558E;
+    .back-forth-btn{
+      display: inline;
+      margin-left: 20px;
+      margin-right: 20px;
+      button{
+        font-weight: 700;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        padding-right: 6px;
+        padding-left: 6px;
+        margin-right: 10px;
+        background-color: #D4D4D4;
+      }
+    }
     .lookup-datasets-list{
+      display: inline;
       .lookup-dataset-name{
         pointer: cursor;
         text-transform: uppercase;

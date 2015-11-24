@@ -17,6 +17,21 @@
 		vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
 		vm.selectedIndex = 0;
 
+		vm.firstShown = 0;
+		vm.secondShown = 1;
+		vm.thirdShown = 2;
+
+		vm.showBack = function showBack(){
+			vm.firstShown--;
+			vm.secondShown--;
+			vm.thirdShown--;
+		};
+
+		vm.showForth = function showforth(){
+			vm.firstShown++;
+			vm.secondShown++;
+			vm.thirdShown++;
+		};
 		/**
 		 * @ngdoc method
 		 * @name hoverSubmitBtn
