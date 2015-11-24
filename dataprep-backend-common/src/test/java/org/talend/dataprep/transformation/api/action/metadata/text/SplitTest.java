@@ -144,6 +144,10 @@ public class SplitTest {
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         // then
+        assertTrue(originalStats == row.getRowMetadata().getById("0001").getStatistics());
+        assertTrue(originalQuality == row.getRowMetadata().getById("0001").getQuality());
+        assertTrue(originalDomains == row.getRowMetadata().getById("0001").getSemanticDomains());
+
         assertTrue(originalStats != row.getRowMetadata().getById("0003").getStatistics());
         assertTrue(originalQuality != row.getRowMetadata().getById("0003").getQuality());
         assertTrue(originalDomains == Collections.<SemanticDomain>emptyList() || originalDomains != row.getRowMetadata().getById("0003").getSemanticDomains());
