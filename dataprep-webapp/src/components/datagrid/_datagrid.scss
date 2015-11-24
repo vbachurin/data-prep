@@ -100,7 +100,10 @@ $datagrid-cell-font-size: .80em;
   height: 100%;
   min-height: 300px;
   border: 1px solid $shadow-gray;
-
+  #datagrid{
+    width: 100%;
+    height: 62%;
+  }
   //-------------------------------------------------Slickgrid hack-----------------------------------------------------
   //not frozen columns width to fit resizable container
   .slick-pane-right {

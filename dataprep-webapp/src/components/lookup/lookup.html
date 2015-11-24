@@ -42,7 +42,8 @@
         <ul class="lookup-datasets-list">
            <li ng-repeat="lookupDs in lookupCtrl.potentialTransformations track by $index"
                ng-click="lookupCtrl.loadSelectedLookupContent(lookupDs)"
-               class="lookup-dataset-name">
+               class="lookup-dataset-name"
+               ng-class="{'selected-lookup-dataset-name': $index === lookupCtrl.selectedIndex }">
                {{lookupDs.parameters[2].default}}
            </li>
         </ul>
