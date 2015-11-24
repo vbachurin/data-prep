@@ -111,8 +111,7 @@
         </div>
     </talend-modal>
 
-    <div class="filters-actions-form animate-show" ng-show="actionsSuggestionsCtrl.state.playground.filter.gridFilters.length">
-        <hr class="hr-style">
+    <div class="filters-actions-form" ng-if="actionsSuggestionsCtrl.state.playground.filter.gridFilters.length">
         <form name="myForm">
             <span translate-once="APPLY_CHANGE_TO"></span>
             <input type="radio" ng-model="actionsSuggestionsCtrl.state.playground.filter.applyTransformationOnFilters" ng-value="false" />
@@ -120,7 +119,6 @@
             <input type="radio" ng-model="actionsSuggestionsCtrl.state.playground.filter.applyTransformationOnFilters" ng-value="true" />
             <span translate-once="FILTERED_LINED"></span>
         </form>
-        <hr class="hr-style">
     </div>
 
 
