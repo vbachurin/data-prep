@@ -39,10 +39,11 @@
    </div>
 
     <div class="lookup-footer">
-        <ul>
+        <ul class="lookup-datasets-list">
            <li ng-repeat="lookupDs in lookupCtrl.potentialTransformations track by $index"
-               ng-click="lookupCtrl.loadSelectedLookupContent(lookupDs)">
-               <a>{{lookupDs.parameters[2].default}}</a>
+               ng-click="lookupCtrl.loadSelectedLookupContent(lookupDs)"
+               class="lookup-dataset-name">
+               {{lookupDs.parameters[2].default}}
            </li>
         </ul>
    </div>
