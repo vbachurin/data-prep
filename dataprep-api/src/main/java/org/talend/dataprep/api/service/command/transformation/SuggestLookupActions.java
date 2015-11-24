@@ -109,8 +109,7 @@ public class SuggestLookupActions extends ChainedCommand<InputStream, String> {
      * @return the url to load the dataset.
      */
     private String getDatasetUrl(DataSetMetadata dataset) {
-        // return apiServiceUrl + "/api/datasets/" + dataset.getId();
-        return datasetServiceUrl + "/datasets/" + dataset.getId() + "/content?metadata=true";
+        return apiServiceUrl + "/api/datasets/" + dataset.getId();
     }
 
 }
