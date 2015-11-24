@@ -180,6 +180,19 @@
                  * When filter change, displayed values change, so we reset active cell and cell styles
                  */
                 scope.$watch(getFilters, onFiltersChange);
+
+                /**
+                 * When lookupVisibility changes, the grid should be resized to show (Vertical/horizontal) scroll-bars
+                 */
+                scope.$watch(function(){
+                    return state.playground.lookupVisibility;
+                }, function(){
+                    if(grid) {
+                        setTimeout(function(){
+                            grid.resizeCanvas();
+                        },200);
+                    }
+                });
             }
         };
     }

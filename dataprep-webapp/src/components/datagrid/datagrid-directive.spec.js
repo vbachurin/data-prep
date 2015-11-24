@@ -13,7 +13,8 @@ describe('Datagrid directive', function() {
     beforeEach(module('data-prep.datagrid', function ($provide) {
         stateMock = {playground: {
             filter: {gridFilters: []},
-            grid: {dataView: dataViewMock}
+            grid: {dataView: dataViewMock},
+            lookupVisibility: false
         }};
         $provide.constant('state', stateMock);
     }));
@@ -251,6 +252,22 @@ describe('Datagrid directive', function() {
         it('should force column recreation (no reuse)', inject(function(DatagridColumnService) {
             //then
             expect(DatagridColumnService.renewAllColumns).toHaveBeenCalledWith(true);
+        }));
+    });
+
+    describe('on lookup visibility change', function() {
+
+
+        it('should reset cell styles', inject(function() {
+            //given
+            spyOn(grid, 'resizeCanvas').and.returnValue();
+
+            //when
+            stateMock.playground.lookupVisibility = true;
+            scope.$digest();
+
+            //then
+            expect(grid.resizeCanvas);
         }));
     });
 
