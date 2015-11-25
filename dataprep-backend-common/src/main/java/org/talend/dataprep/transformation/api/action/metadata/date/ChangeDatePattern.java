@@ -58,19 +58,23 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
         if (column == null) {
             return;
         }
+
         // parse and checks the new date pattern
         // register the new pattern in column stats, to be able to process date action later
         final Statistics statistics = column.getStatistics();
         boolean isNewPatternRegistered = false;
-        // loop on the existing pattern to see if the new one is already present or not:
+        // loop on the existing patterns to see if the new one is already present or not:
         for (PatternFrequency patternFrequency : statistics.getPatternFrequencies()) {
             if (patternFrequency.getPattern().equals(newPattern)) {
                 isNewPatternRegistered = true;
+                break;
             }
         }
         // if the new pattern is not yet present (ie: we're probably working on the first line)
         if (!isNewPatternRegistered) {
-            statistics.getPatternFrequencies().add(new PatternFrequency(newPattern.getPattern(), 1));
+            long mostUsedPatternCount = getMostUsedPatternCount(column);
+            mostUsedPatternCount += 1; // make sure the new pattern is the most important one
+            statistics.getPatternFrequencies().add(new PatternFrequency(newPattern.getPattern(), mostUsedPatternCount));
             column.setStatistics(statistics);
         }
         // Change the date pattern
@@ -84,6 +88,20 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
         } catch (DateTimeException e) {
             // cannot parse the date, let's leave it as is
         }
+    }
+
+    /**
+     * Return the count of the most used pattern.
+     *
+     * @param column the column to work on.
+     * @return the count of the most used pattern.
+     */
+    private long getMostUsedPatternCount(ColumnMetadata column) {
+        final List<PatternFrequency> patternFrequencies = column.getStatistics().getPatternFrequencies();
+        if (patternFrequencies.isEmpty()) {
+            return 1;
+        }
+        return patternFrequencies.get(0).getOccurrences();
     }
 
 }
