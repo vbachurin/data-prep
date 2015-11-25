@@ -24,17 +24,17 @@ import org.talend.dataprep.transformation.api.action.metadata.date.ChangeDatePat
  *
  * @see FillIfEmpty
  */
-public class FillWithDateIfEmptyTest {
+public class FillWithDateTest {
 
     /** The action to test. */
-    private FillIfEmpty action;
+    private FillWithValue action;
 
     /**
      * Default empty constructor.
      */
-    public FillWithDateIfEmptyTest() {
-        action = new FillIfEmpty();
-        action = (FillIfEmpty) action.adapt(ColumnMetadata.Builder.column().type(Type.DATE).build());
+    public FillWithDateTest() {
+        action = new FillWithValue();
+        action = (FillWithValue) action.adapt(ColumnMetadata.Builder.column().type(Type.DATE).build());
     }
 
     @Test
@@ -87,7 +87,7 @@ public class FillWithDateIfEmptyTest {
         action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
 
         // then
-        Assert.assertEquals("not empty", row.get("0002"));
+        Assert.assertEquals("1/1/1970 10:0:0", row.get("0002"));
         Assert.assertEquals("David Bowie", row.get("0001"));
     }
 

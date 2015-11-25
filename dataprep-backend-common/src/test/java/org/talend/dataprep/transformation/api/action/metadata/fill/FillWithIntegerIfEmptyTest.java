@@ -63,6 +63,33 @@ public class FillWithIntegerIfEmptyTest {
     }
 
     @Test
+    public void should_not_fill_empty_integer() throws Exception {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0001", "David Bowie");
+        values.put("0002", "not empty");
+        values.put("0003", "Something");
+
+        final RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
+                .type(Type.INTEGER) //
+                .computedId("0002") //
+                .build()));
+
+        final DataSetRow row = new DataSetRow(rowMetadata, values);
+
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                this.getClass().getResourceAsStream("fillEmptyIntegerAction.json"));
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+
+        // then
+        Assert.assertEquals("not empty", row.get("0002"));
+        Assert.assertEquals("David Bowie", row.get("0001"));
+    }
+
+    @Test
     public void should_fill_empty_integer_other_column() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();

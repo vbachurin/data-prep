@@ -18,25 +18,25 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 
 /**
- * Unit test for the FillWithBooleanIfEmpty action.
+ * Unit test for the FillWithStringIfEmpty action.
  *
  * @see FillIfEmpty
  */
-public class FillWithBooleanIfEmptyTest {
+public class FillWithStringTest {
 
     /** The action to test. */
-    private FillIfEmpty action;
+    private FillWithValue action;
 
     /**
      * Default empty constructor.
      */
-    public FillWithBooleanIfEmptyTest() {
-        action = new FillIfEmpty();
-        action = (FillIfEmpty) action.adapt(ColumnMetadata.Builder.column().type(Type.BOOLEAN).build());
+    public FillWithStringTest() {
+        action = new FillWithValue();
+        action = (FillWithValue) action.adapt(ColumnMetadata.Builder.column().type(Type.STRING).build());
     }
 
     @Test
-    public void should_fill_empty_boolean() throws Exception {
+    public void should_fill_empty_string() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
         values.put("0001", "David Bowie");
@@ -45,25 +45,25 @@ public class FillWithBooleanIfEmptyTest {
 
         final RowMetadata rowMetadata = new RowMetadata();
         rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.BOOLEAN) //
+                .type(Type.STRING) //
                 .computedId("0002") //
                 .build()));
 
         final DataSetRow row = new DataSetRow(rowMetadata, values);
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
-                this.getClass().getResourceAsStream("fillEmptyBooleanAction.json"));
+                this.getClass().getResourceAsStream("fillEmptyStringAction.json"));
 
         // when
         action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
 
         // then
-        Assert.assertEquals("True", row.get("0002"));
+        Assert.assertEquals("beer", row.get("0002"));
         Assert.assertEquals("David Bowie", row.get("0001"));
     }
 
     @Test
-    public void should_not_fill_empty_boolean() throws Exception {
+    public void should_not_fill_empty_string() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
         values.put("0001", "David Bowie");
@@ -72,20 +72,76 @@ public class FillWithBooleanIfEmptyTest {
 
         final RowMetadata rowMetadata = new RowMetadata();
         rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
-                .type(Type.BOOLEAN) //
+                .type(Type.STRING) //
                 .computedId("0002") //
                 .build()));
 
         final DataSetRow row = new DataSetRow(rowMetadata, values);
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
-                this.getClass().getResourceAsStream("fillEmptyBooleanAction.json"));
+                this.getClass().getResourceAsStream("fillEmptyStringAction.json"));
 
         // when
         action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
 
         // then
-        Assert.assertEquals("not empty", row.get("0002"));
+        Assert.assertEquals("beer", row.get("0002"));
+        Assert.assertEquals("David Bowie", row.get("0001"));
+    }
+
+    @Test
+    public void should_fill_empty_float() throws Exception {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0001", "David Bowie");
+        values.put("0002", "");
+        values.put("0003", "100");
+
+        final RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
+                .type(Type.FLOAT) //
+                .computedId("0002") //
+                .build()));
+
+        final DataSetRow row = new DataSetRow(rowMetadata, values);
+
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                this.getClass().getResourceAsStream("fillEmptyStringAction.json"));
+        parameters.put(AbstractFillWith.DEFAULT_VALUE_PARAMETER,"12.5");
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+
+        // then
+        Assert.assertEquals("12.5", row.get("0002"));
+        Assert.assertEquals("David Bowie", row.get("0001"));
+    }
+
+    @Test
+    public void should_fill_empty_double() throws Exception {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0001", "David Bowie");
+        values.put("0002", "");
+        values.put("0003", "100");
+
+        final RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
+                .type(Type.DOUBLE) //
+                .computedId("0002") //
+                .build()));
+
+        final DataSetRow row = new DataSetRow(rowMetadata, values);
+
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                this.getClass().getResourceAsStream("fillEmptyStringAction.json"));
+        parameters.put(AbstractFillWith.DEFAULT_VALUE_PARAMETER, "12.5");
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+
+        // then
+        Assert.assertEquals("12.5", row.get("0002"));
         Assert.assertEquals("David Bowie", row.get("0001"));
     }
 
@@ -95,11 +151,11 @@ public class FillWithBooleanIfEmptyTest {
         final Map<String, String> values = new HashMap<>();
         values.put("0001", "David Bowie");
         values.put("0002", "");
-        values.put("0003", "True");
+        values.put("0003", "Something");
 
         final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.addColumn(ColumnMetadata.Builder.column().type(Type.BOOLEAN).computedId("0002").build());
-        rowMetadata.addColumn(ColumnMetadata.Builder.column().type(Type.BOOLEAN).computedId("0003").build());
+        rowMetadata.addColumn(ColumnMetadata.Builder.column().type(Type.STRING).computedId("0002").build());
+        rowMetadata.addColumn(ColumnMetadata.Builder.column().type(Type.STRING).computedId("0003").build());
 
         final DataSetRow row = new DataSetRow(rowMetadata, values);
 
@@ -112,13 +168,13 @@ public class FillWithBooleanIfEmptyTest {
         action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
 
         // then
-        Assert.assertEquals("True", row.get("0002"));
+        Assert.assertEquals("Something", row.get("0002"));
         Assert.assertEquals("David Bowie", row.get("0001"));
     }
 
     @Test
     public void should_accept_column() {
-        assertTrue(action.acceptColumn(getColumn(Type.BOOLEAN)));
+        assertTrue(action.acceptColumn(getColumn(Type.STRING)));
     }
 
     @Test

@@ -22,17 +22,17 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTest
  *
  * @see FillIfEmpty
  */
-public class FillWithBooleanIfEmptyTest {
+public class FillWithBooleanTest {
 
     /** The action to test. */
-    private FillIfEmpty action;
+    private FillWithValue action;
 
     /**
      * Default empty constructor.
      */
-    public FillWithBooleanIfEmptyTest() {
-        action = new FillIfEmpty();
-        action = (FillIfEmpty) action.adapt(ColumnMetadata.Builder.column().type(Type.BOOLEAN).build());
+    public FillWithBooleanTest() {
+        action = new FillWithValue();
+        action = (FillWithValue) action.adapt(ColumnMetadata.Builder.column().type(Type.BOOLEAN).build());
     }
 
     @Test
@@ -63,11 +63,11 @@ public class FillWithBooleanIfEmptyTest {
     }
 
     @Test
-    public void should_not_fill_empty_boolean() throws Exception {
+    public void should_fill_not_empty_boolean() throws Exception {
         // given
         final Map<String, String> values = new HashMap<>();
         values.put("0001", "David Bowie");
-        values.put("0002", "not empty");
+        values.put("0002", "false");
         values.put("0003", "100");
 
         final RowMetadata rowMetadata = new RowMetadata();
@@ -85,7 +85,7 @@ public class FillWithBooleanIfEmptyTest {
         action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
 
         // then
-        Assert.assertEquals("not empty", row.get("0002"));
+        Assert.assertEquals("True", row.get("0002"));
         Assert.assertEquals("David Bowie", row.get("0001"));
     }
 
