@@ -255,7 +255,7 @@ $datagrid-cell-font-size: .80em;
   //--------------------------------------------------Data lookup-------------------------------------------------------
   &.lookup {
     .slick-cell.selected {
-      background: $lookup-selected-column;
+      background: rgba($lookup-selected-column, .6);
     }
   }
 }
