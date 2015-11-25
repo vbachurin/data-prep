@@ -41,6 +41,7 @@
       text-transform: uppercase;
       display: inline;
       padding: 0 10px 2px 8px;
+      border-left: 1px solid $shadow-gray;
 
       &.selected-item-label {
         background-color: $light-gray;

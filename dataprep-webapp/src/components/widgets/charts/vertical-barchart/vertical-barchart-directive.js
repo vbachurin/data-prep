@@ -154,6 +154,7 @@
 
                     scope.buckets = d3.selectAll('rect.bar');
                     /****************** Horizontal grid **********************/
+                    var ticksNbre = (y.domain()[1]) > 10 ? Math.ceil(h / 18): y.domain()[1];
                     var hGrid = svg.append('g')
                         .attr('class', 'grid')
                         .call(d3.svg.axis()
@@ -161,7 +162,7 @@
                             .orient('right')
                             .tickSize(w, 0, 0)
                             .tickFormat(d3.format(',d'))
-                            .ticks(Math.ceil(h / 18))
+                            .ticks(ticksNbre)
                     );
 
                     hGrid.selectAll('.tick text')

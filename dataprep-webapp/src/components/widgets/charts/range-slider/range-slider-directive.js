@@ -293,8 +293,10 @@
                     //Init min/max inputs values with existing filter values if defined, min/max otherwise
                     function initInputValues() {
                         hideMsgErr();
-                        ctrl.minMaxModel.minModel = ''+lastValues.input.min;
-                        ctrl.minMaxModel.maxModel = ''+lastValues.input.max;
+                        $timeout(function(){
+                            ctrl.minMaxModel.minModel = ''+lastValues.input.min;
+                            ctrl.minMaxModel.maxModel = ''+lastValues.input.max;
+                        });
 
                         filterToApply = [lastValues.input.min, lastValues.input.max];
                     }
