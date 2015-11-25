@@ -40,9 +40,9 @@
 
     <div class="lookup-footer">
         <div class="back-forth-btn">
-            <button ng-disabled="lookupCtrl.firstShown < 0"
+            <button ng-disabled="lookupCtrl.secondShown === 1"
                     ng-click="lookupCtrl.showBack()">&lt;</button>
-            <button ng-disabled="lookupCtrl.thirdShown > lookupCtrl.potentialTransformations.length"
+            <button ng-disabled="lookupCtrl.thirdShown > lookupCtrl.potentialTransformations.length - 2"
                     ng-click="lookupCtrl.showForth()">&gt;</button>
         </div>
 
