@@ -85,7 +85,7 @@
         text-transform: uppercase;
         display: inline;
         padding: 0px 10px 2px 8px;
-        //border-top: 1px solid $medium-gray;
+        border-left: 1px solid $shadow-gray;
         &.selected-lookup-dataset-name{
           background-color: $light-gray;
           font-weight: 700;
