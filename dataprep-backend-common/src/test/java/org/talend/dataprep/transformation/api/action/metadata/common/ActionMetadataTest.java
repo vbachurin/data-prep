@@ -52,7 +52,7 @@ public class ActionMetadataTest {
     @Test
     public void acceptScope_should_pass_with_cell_transformation() throws Exception {
         // when
-        final boolean result = cellTransformation.acceptScope(CELL);
+        final boolean result = ActionMetadata.acceptScope(cellTransformation.getClass(), CELL);
 
         // then
         assertThat(result, is(true));
@@ -61,7 +61,7 @@ public class ActionMetadataTest {
     @Test
     public void acceptScope_should_pass_with_line_transformation() throws Exception {
         // when
-        final boolean result = lineTransformation.acceptScope(LINE);
+        final boolean result = ActionMetadata.acceptScope(lineTransformation.getClass(), LINE);
 
         // then
         assertThat(result, is(true));
@@ -70,7 +70,7 @@ public class ActionMetadataTest {
     @Test
     public void acceptScope_should_pass_with_column_transformation() throws Exception {
         // when
-        final boolean result = columnTransformation.acceptScope(COLUMN);
+        final boolean result = ActionMetadata.acceptScope(columnTransformation.getClass(), COLUMN);
 
         // then
         assertThat(result, is(true));
@@ -79,7 +79,7 @@ public class ActionMetadataTest {
     @Test
     public void acceptScope_should_pass_with_table_transformation() throws Exception {
         //when
-        final boolean result = tableTransformation.acceptScope(DATASET);
+        final boolean result = ActionMetadata.acceptScope(tableTransformation.getClass(), DATASET);
 
         // then
         assertThat(result, is(true));
@@ -88,7 +88,7 @@ public class ActionMetadataTest {
     @Test
     public void acceptScope_should_fail_with_non_cell_transformation() throws Exception {
         // when
-        final boolean result = columnTransformation.acceptScope(CELL);
+        final boolean result = ActionMetadata.acceptScope(columnTransformation.getClass(), CELL);
 
         // then
         assertThat(result, is(false));
@@ -97,7 +97,7 @@ public class ActionMetadataTest {
     @Test
     public void acceptScope_should_fail_with_non_line_transformation() throws Exception {
         // when
-        final boolean result = cellTransformation.acceptScope(LINE);
+        final boolean result = ActionMetadata.acceptScope(cellTransformation.getClass(), LINE);
 
         // then
         assertThat(result, is(false));
@@ -106,7 +106,7 @@ public class ActionMetadataTest {
     @Test
     public void acceptScope_should_fail_with_non_column_transformation() throws Exception {
         // when
-        final boolean result = tableTransformation.acceptScope(COLUMN);
+        final boolean result = ActionMetadata.acceptScope(tableTransformation.getClass(), COLUMN);
 
         // then
         assertThat(result, is(false));
@@ -115,7 +115,7 @@ public class ActionMetadataTest {
     @Test
     public void acceptScope_should_fail_with_non_table_transformation() throws Exception {
         //when
-        final boolean result = columnTransformation.acceptScope(DATASET);
+        final boolean result = ActionMetadata.acceptScope(columnTransformation.getClass(), DATASET);
 
         // then
         assertThat(result, is(false));
@@ -339,7 +339,7 @@ class LineTransformation extends ActionMetadata implements RowAction {
     }
 
     @Override
-    public void applyOnRow(DataSetRow row, TransformationContext context, Map<String, String> parameters, Long rowId) {
+    public void applyOnLine(DataSetRow row, TransformationContext context, Map<String, String> parameters, Long rowId) {
         for (final Map.Entry<String, Object> entry : row.values().entrySet()) {
             row.set(entry.getKey(), entry.getValue().toString().toUpperCase());
         }

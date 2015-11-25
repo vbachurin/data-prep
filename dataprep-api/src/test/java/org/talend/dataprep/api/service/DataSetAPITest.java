@@ -315,6 +315,16 @@ public class DataSetAPITest extends ApiServiceTestBase {
     }
 
     @Test
+    public void testDataSetLineActions() throws Exception {
+        // when
+        final String content = given().when().get("/api/transform/actions/line").asString();
+
+        // then
+        final InputStream expected = PreparationAPITest.class.getResourceAsStream("suggestions/all_line_scope_actions.json");
+        assertThat(content, sameJSONAsFile(expected));
+    }
+
+    @Test
     public void testDataSetActions() throws Exception {
         // given
         final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");

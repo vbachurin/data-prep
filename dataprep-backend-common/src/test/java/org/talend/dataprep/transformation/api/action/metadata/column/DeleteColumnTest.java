@@ -148,7 +148,7 @@ public class DeleteColumnTest {
 
     @Test
     public void testAdapt() throws Exception {
-        assertThat(deleteColumn.adapt(null), is(deleteColumn));
+        assertThat(deleteColumn.adapt((ColumnMetadata) null), is(deleteColumn));
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
         assertThat(deleteColumn.adapt(column), is(deleteColumn));
     }

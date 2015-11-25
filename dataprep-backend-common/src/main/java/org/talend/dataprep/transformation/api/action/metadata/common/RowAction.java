@@ -13,11 +13,11 @@ public interface RowAction {
     /**
      * Apply action on a row.
      *
-     * @param row the dataset row.
-     * @param context the transformation context.
+     * @param row        the dataset row.
+     * @param context    the transformation context.
      * @param parameters the action parameters.
-     * @param rowId the row id.
+     * @param rowId      the row id.
      */
-    void applyOnRow(final DataSetRow row, final TransformationContext context, final Map<String, String> parameters,
-            final Long rowId);
+    void applyOnLine(final DataSetRow row, final TransformationContext context, final Map<String, String> parameters,
+                     final Long rowId);
 }

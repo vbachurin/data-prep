@@ -56,7 +56,7 @@ public class RoundDownTest {
 
     @Test
     public void testAdapt() throws Exception {
-        assertThat(action.adapt(null), is(action));
+        assertThat(action.adapt((ColumnMetadata) null), is(action));
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
         assertThat(action.adapt(column), is(action));
     }

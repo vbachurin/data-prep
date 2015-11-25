@@ -59,7 +59,7 @@ public class TextClusteringTest {
 
     @Test
     public void testAdapt() throws Exception {
-        assertThat(textClustering.adapt(null), is(textClustering));
+        assertThat(textClustering.adapt((ColumnMetadata) null), is(textClustering));
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
         assertThat(textClustering.adapt(column), is(textClustering));
     }

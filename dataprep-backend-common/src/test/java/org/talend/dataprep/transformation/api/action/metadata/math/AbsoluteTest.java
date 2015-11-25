@@ -60,14 +60,14 @@ public class AbsoluteTest {
 
     @Test
     public void testAdaptFloat() throws Exception {
-        assertThat(absolute.adapt(null), is(absolute));
+        assertThat(absolute.adapt((ColumnMetadata) null), is(absolute));
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.FLOAT).build();
         assertThat(absolute.adapt(column), not(is(absolute)));
     }
 
     @Test
     public void testAdaptInt() throws Exception {
-        assertThat(absolute.adapt(null), is(absolute));
+        assertThat(absolute.adapt((ColumnMetadata) null), is(absolute));
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.INTEGER).build();
         assertThat(absolute.adapt(column), not(is(absolute)));
     }

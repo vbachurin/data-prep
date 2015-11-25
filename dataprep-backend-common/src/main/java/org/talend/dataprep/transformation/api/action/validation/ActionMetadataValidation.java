@@ -48,7 +48,7 @@ public class ActionMetadataValidation {
     public void checkScopeConsistency(final ActionMetadata action, final Map<String, String> parameters) {
         final ScopeCategory scope = getScope(parameters);
 
-        if (!action.acceptScope(scope)) {
+        if (!ActionMetadata.acceptScope(action.getClass(), scope)) {
             throw new TDPException(UNSUPPORTED_ACTION_SCOPE);
         }
 

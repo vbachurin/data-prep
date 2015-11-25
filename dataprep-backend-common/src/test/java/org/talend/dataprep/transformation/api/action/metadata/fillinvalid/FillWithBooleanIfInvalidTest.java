@@ -159,7 +159,7 @@ public class FillWithBooleanIfInvalidTest {
 
     @Test
     public void should_adapt_null() throws Exception {
-        assertThat(action.adapt(null), is(action));
+        assertThat(action.adapt((ColumnMetadata) null), is(action));
     }
 
     @Test
