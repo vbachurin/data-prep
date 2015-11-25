@@ -180,7 +180,7 @@
                     //--------------------------------------------------------------------------------------------------
                     function initBrush() {
                         //create axis + brush
-                        var axisTicksNumber = rangeLimits.max >= 1e10 || rangeLimits.min <= 1e-10 ? 2 : 3;
+                        var axisTicksNumber = rangeLimits.max >= 1e10 || rangeLimits.min <= 1e-10 ? 1 : 3;
                         svg.append('g')
                             .attr('class', 'x axis')
                             .attr('transform', 'translate(0,' + (margin.top + 20) + ')')
