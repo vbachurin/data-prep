@@ -11,8 +11,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
-import org.talend.dataquality.statistics.frequency.PatternFrequencyAnalyzer;
-import org.talend.dataquality.statistics.frequency.PatternFrequencyStatistics;
+import org.talend.dataquality.statistics.frequency.pattern.CompositePatternFrequencyAnalyzer;
+import org.talend.dataquality.statistics.frequency.pattern.PatternFrequencyAnalyzer;
+import org.talend.dataquality.statistics.frequency.pattern.PatternFrequencyStatistics;
 
 /**
  * Component in charge of parsing dates.
@@ -23,7 +24,7 @@ public class DateParser {
     /**
      * Returns the most frequent pattern. If few patterns are equally frequent, no guaranty of which one is returned.
      * 
-     * @param column
+     * @param column the column to analyse.
      * @return the most frequent pattern or null if no pattern at all.
      */
     public DatePattern getMostFrequentPattern(ColumnMetadata column) {
@@ -86,7 +87,7 @@ public class DateParser {
             throw new DateTimeException("No pattern can be found out of '" + value + "'");
         }
         // call DQ on the given value
-        final PatternFrequencyAnalyzer analyzer = new PatternFrequencyAnalyzer();
+        final PatternFrequencyAnalyzer analyzer = new CompositePatternFrequencyAnalyzer();
         analyzer.analyze(value);
         analyzer.end();
 

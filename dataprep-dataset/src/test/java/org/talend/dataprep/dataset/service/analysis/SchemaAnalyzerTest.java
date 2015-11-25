@@ -132,7 +132,7 @@ public class SchemaAnalyzerTest extends DataSetBaseTest {
             assertThat(column.getDomain(), is(expectedDomains[i++]));
             assertThat(column.getSemanticDomains()).isNotNull().isNotEmpty().hasSize(2).contains(
                     new SemanticDomain("GENDER", "Gender", (float) 30),
-                    new SemanticDomain("COMPANY", "Company", (float) 20));
+ new SemanticDomain("CIVILITY", "Civility", (float) 20));
         }
     }
 
