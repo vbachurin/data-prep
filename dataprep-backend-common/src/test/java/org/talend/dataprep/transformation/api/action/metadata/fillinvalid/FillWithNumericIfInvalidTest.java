@@ -64,6 +64,35 @@ public class FillWithNumericIfInvalidTest {
         assertEquals("David Bowie", row.get("0001"));
     }
 
+
+    @Test
+    public void should_not_fill_non_valid_integer() throws Exception {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0001", "David Bowie");
+        values.put("0002", "30");
+        values.put("0003", "Something");
+
+        final RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
+                .type(Type.INTEGER) //
+                .computedId("0002") //
+                .invalidValues(newHashSet("N")) //
+                .build()));
+
+        final DataSetRow row = new DataSetRow(rowMetadata, values);
+
+        Map<String, String> parameters = ActionMetadataTestUtils
+                .parseParameters(this.getClass().getResourceAsStream("fillInvalidIntegerAction.json"));
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+
+        // then
+        assertEquals("30", row.get("0002"));
+        assertEquals("David Bowie", row.get("0001"));
+    }
+
     @Test
     public void should_fill_non_valid_integer_not_in_invalid_values() throws Exception {
         // given

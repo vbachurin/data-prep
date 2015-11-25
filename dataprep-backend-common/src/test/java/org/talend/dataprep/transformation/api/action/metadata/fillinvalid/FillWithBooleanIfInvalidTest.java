@@ -63,6 +63,33 @@ public class FillWithBooleanIfInvalidTest {
         assertEquals("David Bowie", row.get("0001"));
     }
 
+    @Test
+    public void should_not_fill_non_valid_boolean() throws Exception {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0001", "David Bowie");
+        values.put("0002", "N");
+        values.put("0003", "False"); // invalid boolean
+
+        final RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
+                .type(Type.BOOLEAN) //
+                .computedId("0003") //
+                .invalidValues(newHashSet("100")).build()));
+
+        final DataSetRow row = new DataSetRow(rowMetadata, values);
+
+        Map<String, String> parameters = ActionMetadataTestUtils
+                .parseParameters(this.getClass().getResourceAsStream("fillInvalidBooleanAction.json"));
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0003");
+
+        // then
+        assertEquals("False", row.get("0003"));
+        assertEquals("David Bowie", row.get("0001"));
+    }
+
     /**
      * see https://jira.talendforge.org/browse/TDP-457
      */

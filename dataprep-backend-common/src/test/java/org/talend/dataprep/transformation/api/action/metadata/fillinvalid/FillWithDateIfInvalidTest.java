@@ -76,6 +76,38 @@ public class FillWithDateIfInvalidTest {
         assertEquals("09/07/2015 13:31:36", row.get("0002"));
     }
 
+    @Test
+    public void should_not_fill_non_valid_datetime() throws Exception {
+
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0001", "David Bowie");
+        values.put("0002", "09/07/2015 13:31:35");
+        values.put("0003", "Something");
+
+        final Statistics statistics = getStatistics(
+                this.getClass().getResourceAsStream("fillInvalidDateTimeAction_statistics.json"));
+
+        final RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
+                .type(Type.DATE) //
+                .computedId("0002") //
+                .invalidValues(newHashSet("N")) //
+                .statistics(statistics) //
+                .build()));
+
+        final DataSetRow row = new DataSetRow(rowMetadata, values);
+
+        Map<String, String> parameters = ActionMetadataTestUtils
+                .parseParameters(this.getClass().getResourceAsStream("fillInvalidDateTimeAction.json"));
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+
+        // then
+        assertEquals("09/07/2015 13:31:35", row.get("0002"));
+    }
+
     /**
      * see https://jira.talendforge.org/browse/TDP-457
      */
