@@ -41,9 +41,9 @@
     <div class="lookup-footer">
         <div class="back-forth-btn">
             <button ng-disabled="lookupCtrl.secondShown === 1"
-                    ng-click="lookupCtrl.showBack()">&lt;</button>
+                    ng-click="lookupCtrl.showBack()" class="arrow-left"></button>
             <button ng-disabled="lookupCtrl.thirdShown > lookupCtrl.potentialTransformations.length - 2"
-                    ng-click="lookupCtrl.showForth()">&gt;</button>
+                    ng-click="lookupCtrl.showForth()" class="arrow-right"></button>
         </div>
 
         <ul class="lookup-datasets-list">

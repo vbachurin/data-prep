@@ -2,8 +2,8 @@
   overflow: hidden;
   .lookup-header {
     height: 23px;
-    border-top: 1px solid #5B558E;
-    border-bottom: 1px solid #5B558E;
+    border-top: 1px solid $medium-gray;
+    border-bottom: 1px solid $medium-gray;
   }
 
   .lookup-container {
@@ -27,7 +27,7 @@
         width: 70%;
         p{
           margin-left:15px;
-          color:#505E98;
+          color: $dark-gray;
         }
       }
       button{
@@ -41,38 +41,58 @@
   }
 
   .lookup-footer {
+    border-top: 1px solid $light-gray;
+    font-size: .95em;
     height: 30px;
     width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
-    //border-top: 1px solid #5B558E;
+
     .back-forth-btn{
+      border-top: 1px solid $light-gray;
       display: inline;
-      margin-left: 20px;
-      margin-right: 20px;
-      button{
-        font-weight: 700;
-        padding-top: 3px;
-        padding-bottom: 3px;
-        padding-right: 6px;
-        padding-left: 6px;
-        margin-right: 10px;
-        background-color: #D4D4D4;
+      .arrow-left {
+        padding: 0px;
+        margin-left: 10px;
+        background-color: transparent;
+        width: 0;
+        height: 0;
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+        border-right:8px solid $medium-gray;
+        &:focus{
+          outline: none;
+        }
       }
-    }
+      .arrow-right {
+        padding: 0px;
+        margin-left: 10px;
+        margin-right: 10px;
+        background-color: transparent;
+        width: 0;
+        height: 0;
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+        border-left: 8px solid $medium-gray;
+        &:focus{
+          outline: none;
+        }
+      }
+     }
     .lookup-datasets-list{
       display: inline;
       .lookup-dataset-name{
-        pointer: cursor;
+        cursor: pointer;
         text-transform: uppercase;
         display: inline;
-        padding: 0px 15px 2px 3px;
-        border-top: 1px solid gray;
+        padding: 0px 10px 2px 8px;
+        //border-top: 1px solid $medium-gray;
         &.selected-lookup-dataset-name{
+          background-color: $light-gray;
           font-weight: 700;
           border-top: 1px solid transparent;
-          border-right: 1px solid gray;
-          border-bottom: 1px solid gray;
+          border-right: 1px solid $medium-gray;
+          border-bottom: 1px solid $medium-gray;
           border-left: 10px solid #4fc1de;
         }
       }
