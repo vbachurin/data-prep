@@ -5,7 +5,6 @@
         control-bar="false">
 
    <div class="lookup-header">
-
    </div>
 
    <div class="lookup-container">
@@ -14,7 +13,7 @@
        </div>
 
        <div id="lookup-right">
-           <div class="lookup-descripton">
+           <div class="lookup-description">
                <br>
                <strong><span translate-once="LOOKUP_DESC_TITLE"></span></strong>
                <br>
@@ -38,22 +37,10 @@
        </div>
    </div>
 
-    <div class="lookup-footer">
-        <div class="back-forth-btn">
-            <button ng-disabled="lookupCtrl.secondShown === 1"
-                    ng-click="lookupCtrl.showBack()">&lt;</button>
-            <button ng-disabled="lookupCtrl.thirdShown > lookupCtrl.potentialTransformations.length - 2"
-                    ng-click="lookupCtrl.showForth()">&gt;</button>
-        </div>
-
-        <ul class="lookup-datasets-list">
-           <li ng-repeat="lookupDs in lookupCtrl.potentialTransformations track by $index"
-               ng-click="lookupCtrl.loadSelectedLookupContent(lookupDs)"
-               class="lookup-dataset-name"
-               ng-show="$index === lookupCtrl.firstShown|| $index === lookupCtrl.secondShown || $index === lookupCtrl.thirdShown"
-               ng-class="{'selected-lookup-dataset-name': $index === lookupCtrl.selectedIndex }">
-               {{lookupDs.parameters[2].default}}
-           </li>
-        </ul>
-   </div>
+    <navigation-list list="lookupCtrl.potentialTransformations"
+                   on-click="lookupCtrl.loadSelectedLookupContent(item)"
+                   selected-item="lookupCtrl.selectedItem"
+                   get-label="lookupCtrl.getDsName(item)"
+                   nbre-labels-to-show="4">
+    </navigation-list>
 </talend-slidable>

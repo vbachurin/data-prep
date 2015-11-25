@@ -11,27 +11,13 @@
 	 * @requires data-prep.services.playground.service:EarlyPreviewService
 	 * @requires data-prep.services.transformation.service:TransformationApplicationService
 	 */
-	function LookupCtrl($scope, state, StateService, LookupService, EarlyPreviewService, TransformationApplicationService) {
+	function LookupCtrl($scope, state, StateService, LookupService, EarlyPreviewService,
+						TransformationApplicationService) {
 		var vm = this;
 		vm.state = state;
 		vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
-		vm.selectedIndex = 0;
+		vm.selectedItem = null;
 
-		vm.firstShown = 0;
-		vm.secondShown = 1;
-		vm.thirdShown = 2;
-
-		vm.showBack = function showBack(){
-			vm.firstShown--;
-			vm.secondShown--;
-			vm.thirdShown--;
-		};
-
-		vm.showForth = function showforth(){
-			vm.firstShown++;
-			vm.secondShown++;
-			vm.thirdShown++;
-		};
 		/**
 		 * @ngdoc method
 		 * @name hoverSubmitBtn
@@ -42,6 +28,20 @@
 			var previewClosure = EarlyPreviewService.earlyPreview(vm.lookupAction, 'dataset');
 			populateParams();
 			previewClosure(vm.lookupParams);
+		};
+
+		/**
+		 * @ngdoc method
+		 * @name getDsName
+		 * @methodOf data-prep.lookup.controller:LookupCtrl
+		 * @param {object} item dataset lookup action
+		 * @returns {String} the name of th dataset to be shown in the list
+		 * @description loops over the dataset lookup action parameters to collect the dataset name
+		 */
+		vm.getDsName = function getDsName (item){
+			if(item){
+				return _.find(item.parameters, {name:'lookup_ds_name'}).default;
+			}
 		};
 
 		/**
@@ -67,7 +67,7 @@
 		 * @description loads the content of the selected lookup dataset
 		 */
 		vm.loadSelectedLookupContent = function(lookupDs){
-			vm.selectedIndex = vm.potentialTransformations.indexOf(lookupDs);
+			vm.selectedItem = lookupDs;
 			StateService.resetLookup();
 			vm.lookupParams = extractLookupParams(lookupDs);
 			vm.lookupAction = lookupDs;
@@ -108,7 +108,7 @@
 		};
 
 		//*****************************************************************************************//
-		//**************************** Watcher on the current dataset *****************************//
+		//**************************** Watcher on the current lookup dataset *****************************//
 		//*****************************************************************************************//
 		$scope.$watch(function(){
 			return vm.state.playground.dataset;
