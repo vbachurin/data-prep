@@ -8,6 +8,8 @@ import java.util.Objects;
  */
 public class DatePattern implements Comparable {
 
+    public static final DatePattern ISO_LOCAL_DATE_TIME = new DatePattern(DateTimeFormatter.ISO_DATE_TIME);
+
     private long occurrences;
 
     private String pattern;
@@ -21,6 +23,11 @@ public class DatePattern implements Comparable {
 
     public DatePattern(String pattern, DateTimeFormatter formatter) {
         this.pattern = pattern;
+        this.formatter = formatter;
+    }
+
+    public DatePattern(DateTimeFormatter formatter) {
+        this.pattern = formatter.toString();
         this.formatter = formatter;
     }
 

@@ -70,8 +70,12 @@ public class TimestampToDate extends ActionMetadata implements ColumnAction, Dat
      */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
-
-        DatePattern newPattern = getDateFormat(parameters);
+        DatePattern newPattern = DatePattern.ISO_LOCAL_DATE_TIME;
+        try {
+            newPattern = getDateFormat(parameters);
+        } catch (IllegalArgumentException e) {
+            // Nothing to do, when pattern is invalid, use the default pattern.
+        }
 
         // create new column and append it after current column
         final RowMetadata rowMetadata = row.getRowMetadata();
