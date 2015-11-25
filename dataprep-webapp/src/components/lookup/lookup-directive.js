@@ -1,6 +1,15 @@
 (function() {
     'use strict';
 
+    /**
+     * @ngdoc directive
+     * @name data-prep.lookup.directive:Lookup
+     * @description This directive displays the lookup window
+     * @restrict E
+     * @usage
+     * <lookup visible="visible"></lookup>
+     * @param {Boolean} visible boolean to show or hide the lookup
+     */
     function Lookup() {
         return {
             restrict: 'E',

@@ -200,5 +200,16 @@ describe('Lookup controller', function () {
 			expect(EarlyPreviewService.activatePreview).toHaveBeenCalled();
 			jasmine.clock().uninstall();
 		}));
+
+		it('should return the action name', inject(function () {
+			//given
+			var ctrl      = createController();
+
+			//when
+			var label = ctrl.getDsName(dsActions[0]);
+			//then
+			expect(label).toBe('lookup_2');
+
+		}));
 	});
 });

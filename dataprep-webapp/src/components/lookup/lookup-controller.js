@@ -16,7 +16,6 @@
 		var vm = this;
 		vm.state = state;
 		vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
-		vm.selectedItem = null;
 
 		/**
 		 * @ngdoc method
@@ -67,7 +66,6 @@
 		 * @description loads the content of the selected lookup dataset
 		 */
 		vm.loadSelectedLookupContent = function(lookupDs){
-			vm.selectedItem = lookupDs;
 			StateService.resetLookup();
 			vm.lookupParams = extractLookupParams(lookupDs);
 			vm.lookupAction = lookupDs;
