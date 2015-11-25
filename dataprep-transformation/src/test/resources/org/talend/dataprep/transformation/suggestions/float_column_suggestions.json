@@ -198,8 +198,6 @@
           ],
           "multiple": false
         },
-        "description": "Select if you want to compute against a constant value or to another column",
-        "label": "Compute with",
         "default": "Constant"
       }
     ],
@@ -281,8 +279,6 @@
           ],
           "multiple": false
         },
-        "description": "Select if you want to compute against a constant value or to another column",
-        "label": "Compute with",
         "default": "Constant"
       }
     ],
