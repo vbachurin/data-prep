@@ -1,6 +1,7 @@
 .actions-list {
   $action-color: tint($black, 20%);
   $action-background: $super-light-gray;
+  $border-color: $shadow-gray;
 
   .actions-category {
     background-color: #F1F1F1;
