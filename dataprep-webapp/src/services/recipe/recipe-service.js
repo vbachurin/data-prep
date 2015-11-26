@@ -341,6 +341,9 @@
                     id: actionValues.parameters.column_id,
                     name: actionValues.parameters.column_name
                 },
+                row: {
+                    id: actionValues.parameters.row_id
+                },
                 transformation: {
                     stepId: stepId,
                     name: actionValues.action,
@@ -446,12 +449,11 @@
          * @ngdoc method
          * @name earlyPreview
          * @methodOf data-prep.services.recipe.service:RecipeService
-         * @param {object} column The target step column
          * @param {object} transformation The transformation
          * @param {object} params The transformation params
          * @description Add a preview step in the recipe. The state before preview is saved to be able to revert.
          */
-        function earlyPreview(column, transformation, params) {
+        function earlyPreview(transformation, params) {
             //save state if not already in preview mode
             recipeStateBeforePreview = recipeStateBeforePreview || {
                 recipe: recipe,
@@ -461,10 +463,14 @@
             var stepFilters = getStepFilters();
 
             //create the preview step
+            /*jshint camelcase: false */
             var previewStep = {
                 column: {
-                    id: column.id,
-                    name: column.name
+                    id: params.column_id,
+                    name: params.column_name
+                },
+                row: {
+                    id: params.row_id
                 },
                 transformation: {
                     stepId: 'early preview',

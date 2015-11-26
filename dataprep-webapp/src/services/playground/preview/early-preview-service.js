@@ -71,14 +71,16 @@
                 cancelPendingPreview();
 
                 previewTimeout = $timeout(function () {
+                    var line = state.playground.grid.selectedLine;
                     var column = state.playground.grid.selectedColumn;
                     var preparationId = state.playground.preparation ? state.playground.preparation.id : null;
 
                     params.scope = scope;
-                    params.column_id = column.id;
-                    params.column_name = column.name;
+                    params.column_id = column && column.id;
+                    params.column_name = column && column.name;
+                    params.row_id = line && line.tdpId;
 
-                    RecipeService.earlyPreview(column, action, params);
+                    RecipeService.earlyPreview(action, params);
                     PreviewService.getPreviewAddRecords(preparationId, state.playground.dataset.id, action.name, params);
                 }, 300);
             };

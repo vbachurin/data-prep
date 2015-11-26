@@ -37,11 +37,13 @@
             /*jshint camelcase: false */
             return function (params) {
                 var column = state.playground.grid.selectedColumn;
+                var line = state.playground.grid.selectedLine;
 
                 params = params || {};
                 params.scope = scope;
-                params.column_id = column.id;
-                params.column_name = column.name;
+                params.column_id = column && column.id;
+                params.column_name = column && column.name;
+                params.row_id = line && line.tdpId;
 
                 if(state.playground.filter.applyTransformationOnFilters){
                     var stepFilters = FilterAdapterService.toTree(state.playground.filter.gridFilters);

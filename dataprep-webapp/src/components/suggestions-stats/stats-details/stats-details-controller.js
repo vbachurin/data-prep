@@ -5,12 +5,11 @@
      * @ngdoc controller
      * @name data-prep.stats-details.controller:StatsDetailsCtrl
      * @description Statistics details
-     * @requires data-prep.services.transformation.service:SuggestionService
      * @requires data-prep.services.statisticsService.service:StatisticsService
      */
-    function StatsDetailsCtrl(SuggestionService, StatisticsService, $translate) {
+    function StatsDetailsCtrl(state, $translate, StatisticsService) {
         var vm = this;
-        vm.suggestionService = SuggestionService;
+        vm.state = state;
         vm.statisticsService = StatisticsService;
         
         /**
@@ -48,7 +47,7 @@
             enumerable: true,
             configurable: false,
             get: function () {
-                var column = this.suggestionService.currentColumn;
+                var column = this.state.playground.grid.selectedColumn;
                 return column ? column.statistics.patternFrequencyTable : null;
             }
         });

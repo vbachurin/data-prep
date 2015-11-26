@@ -47,6 +47,7 @@
             updateGridFilter: PlaygroundStateService.updateGridFilter,
 
             //playground - Suggestions
+            setLineTransformations: PlaygroundStateService.setLineTransformations,
             setSuggestionsLoading: PlaygroundStateService.setSuggestionsLoading,
 
             //dataset

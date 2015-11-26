@@ -2,12 +2,18 @@
     'use strict';
 
     var suggestionsState = {
-        isLoading: false
+        isLoading: false,
+        line: {
+            allTransformations: [],
+            filteredTransformations: [],
+            allCategories: null
+        }
     };
 
-    function SuggestionsState() {
+    function SuggestionsStateService() {
 
         return {
+            setLineTransformations: setLineTransformations,
             setLoading: setLoading,
             reset: reset
         };
@@ -16,12 +22,21 @@
             suggestionsState.isLoading = isLoading;
         }
 
+        function setLineTransformations(lineTransformations) {
+            suggestionsState.line = lineTransformations;
+        }
+
         function reset() {
             suggestionsState.isLoading = false;
+            suggestionsState.line = {
+                allTransformations: [],
+                filteredTransformations: [],
+                allCategories: null
+            };
         }
     }
 
     angular.module('data-prep.services.state')
-        .service('SuggestionsState', SuggestionsState)
+        .service('SuggestionsStateService', SuggestionsStateService)
         .constant('suggestionsState', suggestionsState);
 })();

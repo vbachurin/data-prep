@@ -10,7 +10,6 @@
      * @requires data-prep.state.service:StateService
      */
     function ColumnSuggestionService($q, TransformationCacheService, TextFormatService, StateService) {
-        var COLUMN_CATEGORY = 'column_metadata';
         var FILTERED_CATEGORY = 'filtered';
         var SUGGESTION_CATEGORY = 'suggestion';
         var EMPTY_CELLS = 'empty';
@@ -35,28 +34,11 @@
         //----------------------------------------------------INIT------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
 
-        function setHtmlDisplayLabels(transformations) {
+        function resetDisplayLabels(transformations) {
             _.forEach(transformations, function (transfo) {
                 transfo.labelHtml = transfo.label + (transfo.parameters || transfo.dynamic ? '...' : '');
             });
         }
-
-        function isNotColumnCategory(category) {
-            return function (item) {
-                return item.category !== category;
-            };
-        }
-
-        function isColumnCategory(category) {
-            return function (item) {
-                return item.category === category;
-            };
-        }
-
-        function labelCriteria(transfo) {
-            return transfo.label.toLowerCase();
-        }
-
 
         function isAppliedToCells(type) {
             return function (item) {
@@ -69,30 +51,16 @@
          * @name prepareTransformations
          * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
          * @param {object} suggestions Suggested transformations category
-         * @param {array} transformations All transformations list
-         * @description Keep only the non 'column_metadata', non 'filtered' categories and group them by category, then add suggestions before
-         * @returns {object} An object containing {key: value} = {category: [transformations]}
+         * @param {array} transformationsCategories All transformations grouped by category
+         * @description Keep only non 'filtered' categories and add suggestions before
+         * @returns {object} The transformations grouped by category without the 'filtering' category
          */
-        function prepareTransformations(suggestions, transformations) {
-            var groupedTransformations = _.chain(transformations)
-                .filter(isNotColumnCategory(COLUMN_CATEGORY))
-                .filter(isNotColumnCategory(FILTERED_CATEGORY))
-                .sortBy(labelCriteria)
-                .groupBy('category')
-                .value();
+        function prepareTransformations(suggestions, transformationsCategories) {
+            var groupedTransfoWithoutFilterCat = _.filter(transformationsCategories, function(item) {
+                return item.category !== FILTERED_CATEGORY;
+            });
 
-            var adaptedTransformations = _.chain(Object.getOwnPropertyNames(groupedTransformations))
-                .sort()
-                .map(function (key) {
-                    return {
-                        category: key,
-                        categoryHtml: key.toUpperCase(),
-                        transformations: groupedTransformations[key]
-                    };
-                })
-                .value();
-
-            return [suggestions].concat(adaptedTransformations);
+            return [suggestions].concat(groupedTransfoWithoutFilterCat);
         }
 
         /**
@@ -100,25 +68,17 @@
          * @name prepareSuggestions
          * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
          * @param {array} suggestions Suggested transformations list
-         * @param {array} transformations All transformations list
+         * @param {array} transformationsCategories All transformations grouped by category
          * @description Add 'filtered' category in suggestions
-         * @returns {object} The suggestions category containing real suggestions and 'filtered' category transformations
+         * @returns {object} The suggestions category containing suggestions and 'filtered' category transformations
          */
-        function prepareSuggestions(suggestions, transformations) {
-
-            var adaptedFilteredTransformations = _.chain(transformations)
-                .filter(isColumnCategory(FILTERED_CATEGORY))
-                .sortBy(labelCriteria)
-                .value();
-
-            var adaptedSuggestions = _.chain(suggestions)
-                .filter(isNotColumnCategory(COLUMN_CATEGORY))
-                .value();
+        function prepareSuggestions(suggestions, transformationsCategories) {
+            var filterCategory = _.find(transformationsCategories, {category: FILTERED_CATEGORY});
 
             return {
                 category: SUGGESTION_CATEGORY,
                 categoryHtml: SUGGESTION_CATEGORY.toUpperCase(),
-                transformations: adaptedFilteredTransformations.concat(adaptedSuggestions)
+                transformations: (filterCategory ? filterCategory.transformations : []).concat(suggestions)
             };
         }
 
@@ -135,27 +95,19 @@
 
             $q
                 .all([
-                    TransformationCacheService.getSuggestions(column),
-                    TransformationCacheService.getTransformations(column)
+                    TransformationCacheService.getColumnSuggestions(column),
+                    TransformationCacheService.getColumnTransformations(column)
                 ])
                 .then(function (values) {
-                    setHtmlDisplayLabels(values[0]);
-                    setHtmlDisplayLabels(values[1]);
+                    var suggestions = prepareSuggestions(values[0], values[1].allCategories);
+                    allCategories = prepareTransformations(suggestions, values[1].allCategories);
 
-                    var suggestions = prepareSuggestions(values[0], values[1]);
-                    allCategories = prepareTransformations(suggestions, values[1]);
-                    service.filteredTransformations = allCategories;
                     service.allSuggestions = values[0];
-                    service.allTransformations = values[1];
+                    service.allTransformations = values[1].allTransformations;
+                    service.filteredTransformations = allCategories;
 
-                    service.transformationsForEmptyCells = _.chain(values[1])
-                        .filter(isAppliedToCells(EMPTY_CELLS))
-                        .sortBy(labelCriteria)
-                        .value();
-                    service.transformationsForInvalidCells = _.chain(values[1])
-                        .filter(isAppliedToCells(INVALID_CELLS))
-                        .sortBy(labelCriteria)
-                        .value();
+                    service.transformationsForEmptyCells = _.filter(values[1].allTransformations, isAppliedToCells(EMPTY_CELLS));
+                    service.transformationsForInvalidCells = _.filter(values[1].allTransformations, isAppliedToCells(INVALID_CELLS));
                 })
                 .finally(function () {
                     StateService.setSuggestionsLoading(false);
@@ -226,8 +178,8 @@
          * @description Filter transformations list by searchString
          */
         function filterTransformations() {
-            setHtmlDisplayLabels(service.allSuggestions);
-            setHtmlDisplayLabels(service.allTransformations);
+            resetDisplayLabels(service.allSuggestions);
+            resetDisplayLabels(service.allTransformations);
 
             var searchValue = service.searchActionString.toLowerCase();
 

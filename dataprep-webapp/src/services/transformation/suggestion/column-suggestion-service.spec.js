@@ -12,203 +12,173 @@ describe('Column suggestion service', function () {
     }));
 
     beforeEach(inject(function ($q, TransformationCacheService) {
-        spyOn(TransformationCacheService, 'getTransformations').and.returnValue($q.when(
-            [
-                {name: 'rename', category: 'column_metadata', label: 'z', description: 'test'},
-                {name: 'cluster', category: 'quickfix', label: 'f', description: 'test'},
-                {name: 'split', category: 'column_metadata', label: 'c', description: 'test'},
-                {name: 'tolowercase', category: 'case', label: 'v', description: 'test'},
-                {name: 'touppercase', category: 'case', label: 'u', description: 'test',  actionScope: ['unknown']},
-                {name: 'removeempty', category: 'clear', label: 'a', description: 'test', actionScope: ['empty', 'invalid']},
-                {name: 'totitlecase', category: 'case', label: 't', description: 'test', actionScope: ['invalid']},
-                {name: 'removetrailingspaces', category: 'quickfix', label: 'm', description: 'test', actionScope: ['empty', 'unknown']},
-                {name: 'split', category: 'split', label: 'l', dynamic: true, description: 'test'}
+        spyOn(TransformationCacheService, 'getColumnTransformations').and.returnValue($q.when({
+            allTransformations: [
+                {name: 'rename', category: 'column_metadata', label: 'z', labelHtml: 'z', description: 'test'},
+                {name: 'cluster', category: 'quickfix', label: 'f', labelHtml: 'f', description: 'test'},
+                {name: 'split', category: 'column_metadata', label: 'c', labelHtml: 'c', description: 'test'},
+                {name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test'},
+                {name: 'touppercase', category: 'case', label: 'u', labelHtml: 'u', description: 'test',  actionScope: ['unknown']},
+                {name: 'removeempty', category: 'clear', label: 'a', labelHtml: 'a', description: 'test', actionScope: ['empty', 'invalid']},
+                {name: 'totitlecase', category: 'case', label: 't', labelHtml: 't', description: 'test', actionScope: ['invalid']},
+                {name: 'removetrailingspaces', category: 'quickfix', label: 'm', labelHtml: 'm', description: 'test', actionScope: ['empty', 'unknown']},
+                {name: 'split', category: 'split', label: 'l', labelHtml: 'l...', dynamic: true, description: 'test'}
+            ],
+            allCategories: [
+                {
+                    category: 'case',
+                    transformations: [
+                        {name: 'totitlecase', category: 'case', label: 't', labelHtml: 't', description: 'test', actionScope: ['invalid']},
+                        {name: 'touppercase', category: 'case', label: 'u', labelHtml: 'u', description: 'test', actionScope: ['unknown']},
+                        {name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test'}
+                    ]
+                },
+                {
+                    category: 'clear',
+                    transformations: [{name: 'removeempty', category: 'clear', label: 'a', labelHtml: 'a', description: 'test', actionScope: ['empty', 'invalid']}]
+                },
+                {
+                    category: 'quickfix',
+                    transformations: [
+                        {name: 'cluster', category: 'quickfix', label: 'f', labelHtml: 'f', description: 'test'},
+                        {name: 'removetrailingspaces', category: 'quickfix', label: 'm', labelHtml: 'm', description: 'test', actionScope: ['empty', 'unknown']}
+                    ]
+                },
+                {
+                    category: 'split',
+                    transformations: [{name: 'split', category: 'split', label: 'l', labelHtml: 'l...', dynamic: true, description: 'test'}]
+                }
             ]
-        ));
+        }));
 
-        spyOn(TransformationCacheService, 'getSuggestions').and.returnValue($q.when(
-            [
-                {name: 'tolowercase', category: 'case', label: 'v', description: 'test'},
-                {name: 'touppercase', category: 'case', label: 'u', description: 'test'}
-            ]
-        ));
+        spyOn(TransformationCacheService, 'getColumnSuggestions').and.returnValue($q.when([
+            {name: 'touppercase', category: 'case', label: 'u', labelHtml: 'u', description: 'test'},
+            {name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test'}
+        ]));
     }));
 
-    it('should reset the transformations', inject(function (ColumnSuggestionService) {
-        //given
-        ColumnSuggestionService.allTransformations = [{}];
-        ColumnSuggestionService.allSuggestions = [{}];
-        ColumnSuggestionService.searchActionString = 'azeaz';
-        ColumnSuggestionService.filteredTransformations = [{}];
+    describe('reset', function() {
+        it('should reset the transformations', inject(function (ColumnSuggestionService) {
+            //given
+            ColumnSuggestionService.allTransformations = [{}];
+            ColumnSuggestionService.allSuggestions = [{}];
+            ColumnSuggestionService.searchActionString = 'azeaz';
+            ColumnSuggestionService.filteredTransformations = [{}];
 
-        //when
-        ColumnSuggestionService.reset();
+            //when
+            ColumnSuggestionService.reset();
 
-        //then
-        expect(ColumnSuggestionService.allTransformations).toEqual([]);
-        expect(ColumnSuggestionService.allSuggestions).toEqual([]);
-        expect(ColumnSuggestionService.searchActionString).toEqual('');
-        expect(ColumnSuggestionService.filteredTransformations).toBeFalsy();
-    }));
+            //then
+            expect(ColumnSuggestionService.allTransformations).toEqual([]);
+            expect(ColumnSuggestionService.allSuggestions).toEqual([]);
+            expect(ColumnSuggestionService.searchActionString).toEqual('');
+            expect(ColumnSuggestionService.filteredTransformations).toBeFalsy();
+        }));
+    });
 
-    it('should group the transformations by category', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService) {
-        //when
-        ColumnSuggestionService.initTransformations(firstSelectedColumn);
-        $rootScope.$digest();
+    describe('search filter', function() {
+        it('should not filter transformations when searchActionString is empty', inject(function ($rootScope, ColumnSuggestionService) {
+            //given
+            ColumnSuggestionService.searchActionString = '';
 
-        //then
-        expect(TransformationCacheService.getTransformations).toHaveBeenCalledWith(firstSelectedColumn);
-        expect(TransformationCacheService.getSuggestions).toHaveBeenCalledWith(firstSelectedColumn);
+            //when
+            ColumnSuggestionService.initTransformations(firstSelectedColumn);
+            $rootScope.$digest();
+            ColumnSuggestionService.filterTransformations();
+            $rootScope.$digest();
 
-        var suggestedTransformations = ColumnSuggestionService.filteredTransformations;
-        expect(suggestedTransformations[0].category).toBe('suggestion');
-        expect(suggestedTransformations[0].categoryHtml).toBe('SUGGESTION');
-        expect(suggestedTransformations[0].transformations.length).toBe(2);
-        expect(suggestedTransformations[1].category).toBe('case');
-        expect(suggestedTransformations[1].categoryHtml).toBe('CASE');
-        expect(suggestedTransformations[1].transformations.length).toBe(3);
-        expect(suggestedTransformations[2].category).toBe('clear');
-        expect(suggestedTransformations[2].categoryHtml).toBe('CLEAR');
-        expect(suggestedTransformations[2].transformations.length).toBe(1);
-        expect(suggestedTransformations[3].category).toBe('quickfix');
-        expect(suggestedTransformations[3].categoryHtml).toBe('QUICKFIX');
-        expect(suggestedTransformations[3].transformations.length).toBe(2);
-        expect(suggestedTransformations[4].category).toBe('split');
-        expect(suggestedTransformations[4].categoryHtml).toBe('SPLIT');
-        expect(suggestedTransformations[4].transformations.length).toBe(1);
-    }));
+            //then
+            var filteredTransformations = ColumnSuggestionService.filteredTransformations;
 
-    it('should insert html label (with "..." with parameters) in each transformation/suggestions', inject(function ($rootScope, ColumnSuggestionService) {
-        //when
-        ColumnSuggestionService.initTransformations(firstSelectedColumn);
-        $rootScope.$digest();
+            expect(filteredTransformations[0].transformations[0].labelHtml).toBe('u');
+            expect(filteredTransformations[0].transformations[1].labelHtml).toBe('v');
+            expect(filteredTransformations[1].transformations[0].labelHtml).toBe('t');
+            expect(filteredTransformations[1].transformations[1].labelHtml).toBe('u');
+            expect(filteredTransformations[1].transformations[2].labelHtml).toBe('v');
+            expect(filteredTransformations[2].transformations[0].labelHtml).toBe('a');
+            expect(filteredTransformations[3].transformations[0].labelHtml).toBe('f');
+            expect(filteredTransformations[3].transformations[1].labelHtml).toBe('m');
+            expect(filteredTransformations[4].transformations[0].labelHtml).toBe('l...');
+        }));
 
-        //then
-        var suggestedTransformations = ColumnSuggestionService.filteredTransformations;
+        it('should filter transformations', inject(function ($rootScope, ColumnSuggestionService) {
+            //given
+            ColumnSuggestionService.initTransformations(firstSelectedColumn);
+            $rootScope.$digest();
 
-        expect(suggestedTransformations[0].transformations[0].labelHtml).toBe('v');
-        expect(suggestedTransformations[0].transformations[1].labelHtml).toBe('u');
-        expect(suggestedTransformations[1].transformations[0].labelHtml).toBe('t');
-        expect(suggestedTransformations[1].transformations[1].labelHtml).toBe('u');
-        expect(suggestedTransformations[1].transformations[2].labelHtml).toBe('v');
-        expect(suggestedTransformations[2].transformations[0].labelHtml).toBe('a');
-        expect(suggestedTransformations[3].transformations[0].labelHtml).toBe('f');
-        expect(suggestedTransformations[3].transformations[1].labelHtml).toBe('m');
-        expect(suggestedTransformations[4].transformations[0].labelHtml).toBe('l...');
-    }));
+            //when
+            ColumnSuggestionService.searchActionString = 'l';
 
-    it('should filter "column metadata" category', inject(function ($rootScope, ColumnSuggestionService) {
-        //when
-        ColumnSuggestionService.initTransformations(firstSelectedColumn);
-        $rootScope.$digest();
+            ColumnSuggestionService.filterTransformations();
+            $rootScope.$digest();
 
-        //then
-        ColumnSuggestionService.filteredTransformations.forEach(function(categoryTransformations) {
-            expect(categoryTransformations.category).not.toBe('column_metadata');
-        });
-    }));
+            //then
+            var filteredTransformations = ColumnSuggestionService.filteredTransformations;
+            expect(filteredTransformations[0].category).toBe('clear');
+            expect(filteredTransformations[0].transformations.length).toBe(1);
+            expect(filteredTransformations[1].category).toBe('split');
+            expect(filteredTransformations[1].transformations.length).toBe(1);
+        }));
 
-    it('should not filter transformations when searchActionString is empty', inject(function ($rootScope, ColumnSuggestionService) {
-        //given
-        ColumnSuggestionService.searchActionString = '';
+        it('should highlight categories and transformations labels', inject(function ($rootScope, ColumnSuggestionService) {
+            //given
+            ColumnSuggestionService.initTransformations(firstSelectedColumn);
+            $rootScope.$digest();
 
-        //when
-        ColumnSuggestionService.initTransformations(firstSelectedColumn);
-        $rootScope.$digest();
-        ColumnSuggestionService.filterTransformations();
-        $rootScope.$digest();
+            //when
+            ColumnSuggestionService.searchActionString = 'l';
 
-        //then
-        var filteredTransformations = ColumnSuggestionService.filteredTransformations;
+            ColumnSuggestionService.filterTransformations();
+            $rootScope.$digest();
 
-        expect(filteredTransformations[0].transformations[0].labelHtml).toBe('v');
-        expect(filteredTransformations[0].transformations[1].labelHtml).toBe('u');
-        expect(filteredTransformations[1].transformations[0].labelHtml).toBe('t');
-        expect(filteredTransformations[1].transformations[1].labelHtml).toBe('u');
-        expect(filteredTransformations[1].transformations[2].labelHtml).toBe('v');
-        expect(filteredTransformations[2].transformations[0].labelHtml).toBe('a');
-        expect(filteredTransformations[3].transformations[0].labelHtml).toBe('f');
-        expect(filteredTransformations[3].transformations[1].labelHtml).toBe('m');
-        expect(filteredTransformations[4].transformations[0].labelHtml).toBe('l...');
-    }));
+            //then
+            var filteredTransformations = ColumnSuggestionService.filteredTransformations;
+            expect(filteredTransformations.length).toBe(2);
+            expect(filteredTransformations[0].categoryHtml).toBe('C<span class="highlighted">L</span>EAR');
+            expect(filteredTransformations[0].transformations[0].labelHtml).toBe('a');
+            expect(filteredTransformations[1].categoryHtml).toBe('SP<span class="highlighted">L</span>IT');
+            expect(filteredTransformations[1].transformations[0].labelHtml).toBe('<span class="highlighted">l</span>...');
+        }));
 
-    it('should filter transformations when searchActionString is not empty', inject(function ($rootScope, ColumnSuggestionService) {
-        //given
-        ColumnSuggestionService.initTransformations(firstSelectedColumn);
-        $rootScope.$digest();
+        it('should filter transformations with case insensitive', inject(function ($rootScope, ColumnSuggestionService) {
+            //given
+            ColumnSuggestionService.initTransformations(firstSelectedColumn);
+            $rootScope.$digest();
 
-        //when
-        ColumnSuggestionService.searchActionString = 'l';
+            //when
+            ColumnSuggestionService.searchActionString = 'L';
 
-        ColumnSuggestionService.filterTransformations();
-        $rootScope.$digest();
+            ColumnSuggestionService.filterTransformations();
+            $rootScope.$digest();
 
-        //then
-        var filteredTransformations = ColumnSuggestionService.filteredTransformations;
-        expect(filteredTransformations[0].category).toBe('clear');
-        expect(filteredTransformations[0].transformations.length).toBe(1);
-        expect(filteredTransformations[1].category).toBe('split');
-        expect(filteredTransformations[1].transformations.length).toBe(1);
-    }));
+            //then
+            var filteredTransformations = ColumnSuggestionService.filteredTransformations;
+            expect(filteredTransformations.length).toBe(2);
+            expect(filteredTransformations[0].categoryHtml).toBe('C<span class="highlighted">L</span>EAR');
+            expect(filteredTransformations[0].transformations[0].labelHtml).toBe('a');
+            expect(filteredTransformations[1].categoryHtml).toBe('SP<span class="highlighted">L</span>IT');
+            expect(filteredTransformations[1].transformations[0].labelHtml).toBe('<span class="highlighted">l</span>...');
+        }));
 
-    it('should highlight categories and transformations labels when searchActionString is not empty', inject(function ($rootScope, ColumnSuggestionService) {
-        //given
-        ColumnSuggestionService.initTransformations(firstSelectedColumn);
-        $rootScope.$digest();
+        it('should filter transformations by escaping regex', inject(function ($rootScope, ColumnSuggestionService) {
+            //given
+            ColumnSuggestionService.initTransformations(firstSelectedColumn);
+            $rootScope.$digest();
 
-        //when
-        ColumnSuggestionService.searchActionString = 'l';
+            //when
+            ColumnSuggestionService.searchActionString = '...';
 
-        ColumnSuggestionService.filterTransformations();
-        $rootScope.$digest();
+            ColumnSuggestionService.filterTransformations();
+            $rootScope.$digest();
 
-        //then
-        var filteredTransformations = ColumnSuggestionService.filteredTransformations;
-        expect(filteredTransformations.length).toBe(2);
-        expect(filteredTransformations[0].categoryHtml).toBe('C<span class="highlighted">L</span>EAR');
-        expect(filteredTransformations[0].transformations[0].labelHtml).toBe('a');
-        expect(filteredTransformations[1].categoryHtml).toBe('SP<span class="highlighted">L</span>IT');
-        expect(filteredTransformations[1].transformations[0].labelHtml).toBe('<span class="highlighted">l</span>...');
-    }));
+            //then
+            var filteredTransformations = ColumnSuggestionService.filteredTransformations;
+            expect(filteredTransformations.length).toBe(1);
+            expect(filteredTransformations[0].categoryHtml).toBe('SPLIT');
+            expect(filteredTransformations[0].transformations[0].labelHtml).toBe('l<span class="highlighted">...</span>');
+        }));
 
-    it('should filter transformations with case insensitive', inject(function ($rootScope, ColumnSuggestionService) {
-        //given
-        ColumnSuggestionService.initTransformations(firstSelectedColumn);
-        $rootScope.$digest();
-
-        //when
-        ColumnSuggestionService.searchActionString = 'L';
-
-        ColumnSuggestionService.filterTransformations();
-        $rootScope.$digest();
-
-        //then
-        var filteredTransformations = ColumnSuggestionService.filteredTransformations;
-        expect(filteredTransformations.length).toBe(2);
-        expect(filteredTransformations[0].categoryHtml).toBe('C<span class="highlighted">L</span>EAR');
-        expect(filteredTransformations[0].transformations[0].labelHtml).toBe('a');
-        expect(filteredTransformations[1].categoryHtml).toBe('SP<span class="highlighted">L</span>IT');
-        expect(filteredTransformations[1].transformations[0].labelHtml).toBe('<span class="highlighted">l</span>...');
-    }));
-
-    it('should filter transformations by escaping regex', inject(function ($rootScope, ColumnSuggestionService) {
-        //given
-        ColumnSuggestionService.initTransformations(firstSelectedColumn);
-        $rootScope.$digest();
-
-        //when
-        ColumnSuggestionService.searchActionString = '...';
-
-        ColumnSuggestionService.filterTransformations();
-        $rootScope.$digest();
-
-        //then
-        var filteredTransformations = ColumnSuggestionService.filteredTransformations;
-        expect(filteredTransformations.length).toBe(1);
-        expect(filteredTransformations[0].categoryHtml).toBe('SPLIT');
-        expect(filteredTransformations[0].transformations[0].labelHtml).toBe('l<span class="highlighted">...</span>');
-    }));
-
+    });
 
     it('should initialize transformationsForEmptyCells', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService) {
         //when
@@ -216,7 +186,7 @@ describe('Column suggestion service', function () {
         $rootScope.$digest();
 
         //then
-        expect(TransformationCacheService.getTransformations).toHaveBeenCalledWith(firstSelectedColumn);
+        expect(TransformationCacheService.getColumnTransformations).toHaveBeenCalledWith(firstSelectedColumn);
 
         var transformationsForEmptyCells = ColumnSuggestionService.transformationsForEmptyCells;
         expect(transformationsForEmptyCells.length).toBe(2);
@@ -230,7 +200,7 @@ describe('Column suggestion service', function () {
         $rootScope.$digest();
 
         //then
-        expect(TransformationCacheService.getTransformations).toHaveBeenCalledWith(firstSelectedColumn);
+        expect(TransformationCacheService.getColumnTransformations).toHaveBeenCalledWith(firstSelectedColumn);
 
         var transformationsForInvalidCells = ColumnSuggestionService.transformationsForInvalidCells;
         expect(transformationsForInvalidCells.length).toBe(2);

@@ -7,7 +7,7 @@
         RecipeStateService, recipeState,
         GridStateService, gridState,
         FilterStateService, filterState,
-        SuggestionsState, suggestionsState,
+        SuggestionsStateService, suggestionsState,
         LookupStateService, lookupState) {
 
         playgroundState.recipe = recipeState;
@@ -50,7 +50,8 @@
             removeAllGridFilters: removeAllGridFilters,
 
             //Suggestion-Stats
-            setSuggestionsLoading: SuggestionsState.setLoading
+            setLineTransformations: SuggestionsStateService.setLineTransformations,
+            setSuggestionsLoading: SuggestionsStateService.setLoading
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -126,7 +127,7 @@
             FilterStateService.reset();
             GridStateService.reset();
             LookupStateService.reset();
-            SuggestionsState.reset();
+            SuggestionsStateService.reset();
         }
     }
 

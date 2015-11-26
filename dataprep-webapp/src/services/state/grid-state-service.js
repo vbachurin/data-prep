@@ -128,6 +128,7 @@
             gridState.dataView.endUpdate();
 
             updateLinesCount(data);
+            updateSelectedLine(data);
             updateSelectedColumn(data);
             updateFilteredRecords();
         }
@@ -156,17 +157,33 @@
             updateFilteredOccurrencesOnSelectedColumn();
         }
 
+        function updateSelectedLine(data) {
+            //in preview we do not change anything
+            if (data.preview) {
+                return;
+            }
+
+            //if there is already a selected line, we update it if the line still exists
+            if (gridState.lineIndex !== null && data.records) {
+                gridState.selectedLine = gridState.dataView.getItem(gridState.lineIndex);
+            }
+        }
+
         /**
          * @ngdoc method
          * @name setGridSelection
          * @methodOf data-prep.services.state.service:GridStateService
          * @param {object} column The column metadata
-         * @param {number} line The line number
+         * @param {number} lineIndex The line number
          * @description Set the actual selected column and line
          */
-        function setGridSelection(column, line) {
+        function setGridSelection(column, lineIndex) {
+            var hasIndex = !isNaN(lineIndex);
+
             gridState.selectedColumn = column;
-            gridState.selectedLine = line;
+            gridState.lineIndex = hasIndex ? lineIndex : null;
+            gridState.selectedLine = hasIndex ? gridState.dataView.getItem(lineIndex) : null;
+
             updateFilteredOccurrencesOnSelectedColumn();
         }
 

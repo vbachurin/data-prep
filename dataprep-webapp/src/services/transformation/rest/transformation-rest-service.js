@@ -12,8 +12,9 @@
         return {
             getDatasetTransformations: getDatasetTransformations,
             getDynamicParameters: getDynamicParameters,
-            getSuggestions: getSuggestions,
-            getTransformations: getTransformations
+            getColumnSuggestions: getColumnSuggestions,
+            getColumnTransformations: getColumnTransformations,
+            getLineTransformations: getLineTransformations
         };
 
         /**
@@ -30,14 +31,25 @@
 
         /**
          * @ngdoc method
-         * @name getTransformations
+         * @name getColumnTransformations
          * @methodOf data-prep.services.transformation.service:TransformationRestService
-         * @param {string} column The column metadata
+         * @param {object} column The column metadata
          * @description Fetch the transformations on a column
          * @returns {Promise} The POST promise
          */
-        function getTransformations(column) {
+        function getColumnTransformations(column) {
             return $http.post(RestURLs.transformUrl + '/actions/column', column);
+         }
+
+        /**
+         * @ngdoc method
+         * @name getLineTransformations
+         * @methodOf data-prep.services.transformation.service:TransformationRestService
+         * @description Fetch the transformations on a line
+         * @returns {Promise} The GET promise
+         */
+        function getLineTransformations() {
+            return $http.get(RestURLs.transformUrl + '/actions/line');
          }
 
         /**
@@ -48,7 +60,7 @@
          * @description Fetch the suggestions on a column
          * @returns {Promise} The POST promise
          */
-        function getSuggestions(column) {
+        function getColumnSuggestions(column) {
             return $http.post(RestURLs.transformUrl + '/suggest/column', column);
          }
 

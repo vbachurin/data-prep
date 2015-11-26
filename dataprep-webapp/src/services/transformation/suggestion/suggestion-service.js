@@ -7,7 +7,7 @@
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @description Suggestion service. This service holds the selected suggestion tab
      */
-    function SuggestionService(ColumnSuggestionService) {
+    function SuggestionService(LineSuggestionService, ColumnSuggestionService) {
         var tabIndex = {
             'TEXT': 0,
             'CELL': 1,
@@ -25,39 +25,38 @@
              * @type {Object}
              */
             tab: null,
-            /**
-             * @ngdoc property
-             * @name currentColumn
-             * @propertyOf data-prep.services.transformation.service:SuggestionService
-             * @description The currently selected column
-             * @type {Object}
-             */
-            currentColumn: null,
 
             setColumn: setColumn,
+            setLine: setLine,
             selectTab: selectTab,
+
             reset: reset
         };
 
         return service;
-
-
 
         /**
          * @ngdoc method
          * @name setColumn
          * @methodOf data-prep.services.transformation.service:SuggestionService
          * @param {object} column The new selected column
-         * @description Set the selected column and init its suggested transformations and reset action search
+         * @description Set the selected column and init its suggested transformations
          */
         function setColumn(column) {
-
-            if (column === service.currentColumn) {
-                return;
-            }
-
-            service.currentColumn = column;
             ColumnSuggestionService.initTransformations(column);
+        }
+
+        /**
+         * @ngdoc method
+         * @name setLine
+         * @methodOf data-prep.services.transformation.service:SuggestionService
+         * @param {object} line The new selected line
+         * @description Set the selected line and init its suggested transformations
+         */
+        function setLine(line) {
+            if(line) {
+                LineSuggestionService.initTransformations();
+            }
         }
 
         /**
@@ -78,7 +77,6 @@
          * @description Reset the suggestions
          */
         function reset() {
-            service.currentColumn = null;
             ColumnSuggestionService.reset();
         }
     }

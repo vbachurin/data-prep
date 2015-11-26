@@ -18,7 +18,8 @@ describe('Recipe service', function () {
                 '0c58ee3034114eb620b8e598e02c74172a43e96a',
                 '1e1f41dd6d4554705abebd8d1896022acdbad217',
                 'add60ff0f6de4c703fa75725ada38fb37af065e6',
-                '2aba0e60054728f046d35315830bce9abc3c5249'
+                '2aba0e60054728f046d35315830bce9abc3c5249',
+                '3543514689a35456884d54584fe5463c14dd6846'
             ],
             'actions': [
                 {
@@ -72,6 +73,12 @@ describe('Recipe service', function () {
                     'parameters': {
                         'default_value': 'True',
                         'column_name': 'campain'
+                    }
+                },
+                {
+                    'action': 'delete',
+                    'parameters': {
+                        row_id: '125'
                     }
                 }
             ],
@@ -223,6 +230,21 @@ describe('Recipe service', function () {
                     'category': 'repair',
                     'description': 'action.fillemptywithdefaultboolean.desc',
                     'label': 'action.fillemptywithdefaultboolean.label'
+                },
+                {
+                    'name': 'delete line',
+                    'parameters': [
+                        {
+                            'name': 'row_id',
+                            'type': 'string',
+                            'description': 'parameter.row_id.desc',
+                            'label': 'parameter.row_id.label',
+                            implicit: true
+                        }
+                    ],
+                    'category': 'clean',
+                    'description': 'action.delete_single_line.desc',
+                    'label': 'action.delete_single_line.label'
                 }
             ]
         };
@@ -463,6 +485,20 @@ describe('Recipe service', function () {
             expect(RecipeService.getRecipe().length).toBe(0);
         }));
 
+        it('should get recipe with row infos when a preparation is loaded', inject(function($rootScope, RecipeService) {
+            //given
+            stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
+
+            //when
+            RecipeService.refresh();
+            $rootScope.$digest();
+
+            //then
+            var recipe = RecipeService.getRecipe();
+            expect(recipe.length).toBe(7);
+            expect(recipe[6].row.id).toBe('125');
+        }));
+
         it('should get recipe with no params when a preparation is loaded', inject(function($rootScope, RecipeService) {
             //given
             stateMock.playground.preparation = {id: '627766216e4b3c99ee5c8621f32ac42f4f87f1b4'};
@@ -473,7 +509,7 @@ describe('Recipe service', function () {
 
             //then
             var recipe = RecipeService.getRecipe();
-            expect(recipe.length).toBe(6);
+            expect(recipe.length).toBe(7);
             expect(recipe[0].column.name).toBe('country');
             expect(recipe[0].transformation.stepId).toBe('329ccf0cce42db4dc0ffa9f389c05ff7d75c1748');
             expect(recipe[0].transformation.name).toBe('uppercase');
@@ -495,7 +531,7 @@ describe('Recipe service', function () {
 
             //then
             var recipe = RecipeService.getRecipe();
-            expect(recipe.length).toBe(6);
+            expect(recipe.length).toBe(7);
 
             expect(recipe[1].column.name).toBe('gender');
             expect(recipe[1].transformation.stepId).toBe('ec87e2acda2b181fc7eb7c22d91e128c6d0434fc');
@@ -538,7 +574,7 @@ describe('Recipe service', function () {
 
             //then
             var recipe = RecipeService.getRecipe();
-            expect(recipe.length).toBe(6);
+            expect(recipe.length).toBe(7);
 
             expect(recipe[5].column.name).toBe('campain');
             expect(recipe[5].transformation.stepId).toBe('2aba0e60054728f046d35315830bce9abc3c5249');
@@ -580,7 +616,7 @@ describe('Recipe service', function () {
 
             //then
             var recipe = RecipeService.getRecipe();
-            expect(recipe.length).toBe(6);
+            expect(recipe.length).toBe(7);
 
             expect(recipe[4].column.name).toBe('uglystate');
             expect(recipe[4].transformation.stepId).toBe('add60ff0f6de4c703fa75725ada38fb37af065e6');
@@ -786,7 +822,7 @@ describe('Recipe service', function () {
             RecipeService.refresh();
             $rootScope.$digest();
 
-            var expectedStep = RecipeService.getRecipe()[5];
+            var expectedStep = RecipeService.getRecipe()[6];
 
             //when
             var result = RecipeService.getStep(25, true);
@@ -820,7 +856,7 @@ describe('Recipe service', function () {
             var index = RecipeService.getActiveThresholdStepIndex();
 
             //then
-            expect(index).toBe(5);
+            expect(index).toBe(6);
         }));
 
         it('should return the initial state if the index is 0', inject(function($rootScope, RecipeService) {
@@ -846,7 +882,7 @@ describe('Recipe service', function () {
             var step = RecipeService.getStepBefore(1000);
 
             //then
-            expect(step).toEqual(RecipeService.getRecipe()[5]);
+            expect(step).toEqual(RecipeService.getRecipe()[6]);
         }));
 
         it('should return the step before the one identified by the index', inject(function($rootScope, RecipeService) {
@@ -908,7 +944,7 @@ describe('Recipe service', function () {
             $rootScope.$digest();
 
             //when
-            var isLast = RecipeService.isLastStep(RecipeService.getRecipe()[5]);
+            var isLast = RecipeService.isLastStep(RecipeService.getRecipe()[6]);
 
             //then
             expect(isLast).toBe(true);
@@ -1045,7 +1081,7 @@ describe('Recipe service', function () {
 
         it('should create a new recipe with preview step appended', inject(function(RecipeService) {
             //when
-            RecipeService.earlyPreview(column, transformation, params);
+            RecipeService.earlyPreview(transformation, params);
 
             //then
             var recipe = RecipeService.getRecipe();
@@ -1059,6 +1095,7 @@ describe('Recipe service', function () {
                     id: column.id,
                     name: column.name
                 },
+                row: {id: undefined},
                 transformation: {
                     stepId: 'early preview',
                     name: transformation.name,

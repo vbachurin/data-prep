@@ -14,24 +14,23 @@
 
         return {
             invalidateCache: invalidateCache,
-            getSuggestions: getSuggestions,
-            getTransformations: getTransformations
+            getColumnSuggestions: getColumnSuggestions,
+            getColumnTransformations: getColumnTransformations,
+            getLineTransformations: getLineTransformations
         };
 
         /**
          * @ngdoc method
-         * @name getKey
+         * @name getColumnKey
          * @methodOf data-prep.services.transformation.service:TransformationCacheService
          * @param {object} column The column to set as key
          * @description [PRIVATE] Generate a unique key for the column.
          */
-        function getKey(column) {
+        function getColumnKey(column) {
             return JSON.stringify(column);
         }
 
-        function getValue(column, cache, restCall) {
-            var key = getKey(column);
-
+        function getValue(key, cache, restCall) {
             //if cache contains the key, the value is either the values or the fetch promise
             var value = cache.get(key);
             if(value) {
@@ -39,7 +38,7 @@
             }
 
             //fetch value from REST and adapt them. The Promise is put in cache, it is then replaced by the value.
-            var fetchPromise = restCall(column)
+            var fetchPromise = restCall()
                 .then(function(value) {
                     cache.put(key, value);
                     return value;
@@ -51,24 +50,34 @@
 
         /**
          * @ngdoc method
-         * @name getTransformations
+         * @name getLineTransformations
          * @methodOf data-prep.services.transformation.service:TransformationCacheService
-         * @param {object} column The transformations target column
          * @description Get transformations from cache if present, from REST call otherwise.
          */
-        function getTransformations(column) {
-            return getValue(column, transformationsCache, TransformationService.getTransformations);
+        function getLineTransformations() {
+            return getValue('line', transformationsCache, TransformationService.getLineTransformations.bind(null));
         }
 
         /**
          * @ngdoc method
-         * @name getTransformations
+         * @name getColumnTransformations
+         * @methodOf data-prep.services.transformation.service:TransformationCacheService
+         * @param {object} column The transformations target column
+         * @description Get transformations from cache if present, from REST call otherwise.
+         */
+        function getColumnTransformations(column) {
+            return getValue(getColumnKey(column), transformationsCache, TransformationService.getColumnTransformations.bind(null, column));
+        }
+
+        /**
+         * @ngdoc method
+         * @name getColumnTransformations
          * @methodOf data-prep.services.transformation.service:TransformationCacheService
          * @param {object} column The transformations target column
          * @description Get suggestions from cache if present, from REST call otherwise.
          */
-        function getSuggestions(column) {
-            return getValue(column, suggestionsCache, TransformationService.getSuggestions);
+        function getColumnSuggestions(column) {
+            return getValue(getColumnKey(column), suggestionsCache, TransformationService.getColumnSuggestions.bind(null, column));
         }
 
         /**
