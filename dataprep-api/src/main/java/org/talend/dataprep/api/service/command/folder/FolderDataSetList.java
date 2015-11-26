@@ -26,37 +26,26 @@ import org.talend.dataprep.api.service.command.common.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.exception.error.DataSetErrorCodes;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
-import org.talend.dataprep.exception.error.DataSetErrorCodes;
 
 @Component
 @Scope("request")
 public class FolderDataSetList extends GenericCommand<FolderContent> {
 
-    private FolderDataSetList(HttpClient client, String sort, String order) {
-        this(client, sort, order, null);
-    }
-
     private FolderDataSetList(HttpClient client, String sort, String order, String folder) {
         super(PreparationAPI.TRANSFORM_GROUP, client);
-
-        try {
-            execute(() -> onExecute(sort, order, folder));
-            onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_LIST_DATASETS, e));
-            on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyFolderContent());
-            on(HttpStatus.OK).then(buildContent(folder, order, sort));
-
-        } catch (Exception e) {
-            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-        }
+        execute(() -> onExecute(sort, order, folder));
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_LIST_DATASETS, e));
+        on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyFolderContent());
+        on(HttpStatus.OK).then(buildContent(folder, order, sort));
     }
 
     private HttpRequestBase onExecute(String sort, String order, String folder) {
         try {
-
             URIBuilder uriBuilder = new URIBuilder(datasetServiceUrl + "/datasets");
             uriBuilder.addParameter("sort", sort);
             uriBuilder.addParameter("order", order);
@@ -76,7 +65,8 @@ public class FolderDataSetList extends GenericCommand<FolderContent> {
         };
     }
 
-    public BiFunction<HttpRequestBase, HttpResponse, FolderContent> buildContent(final String searchFolder, final String order, final String sort) {
+    public BiFunction<HttpRequestBase, HttpResponse, FolderContent> buildContent(final String searchFolder, final String order,
+            final String sort) {
         return (request, response) -> {
             try {
                 ObjectMapper mapper = builder.build();
@@ -93,32 +83,32 @@ public class FolderDataSetList extends GenericCommand<FolderContent> {
                         new TypeReference<List<Folder>>() {
                 });
 
-
                 final Comparator<String> comparisonOrder;
                 switch (order.toUpperCase()) {
-                    case "ASC":
-                        comparisonOrder = Comparator.naturalOrder();
-                        break;
-                    case "DESC":
-                        comparisonOrder = Comparator.reverseOrder();
-                        break;
-                    default:
-                        throw new TDPException( DataSetErrorCodes.ILLEGAL_ORDER_FOR_LIST, ExceptionContext.build().put( "order", order));
+                case "ASC":
+                    comparisonOrder = Comparator.naturalOrder();
+                    break;
+                case "DESC":
+                    comparisonOrder = Comparator.reverseOrder();
+                    break;
+                default:
+                    throw new TDPException(DataSetErrorCodes.ILLEGAL_ORDER_FOR_LIST,
+                            ExceptionContext.build().put("order", order));
                 }
                 // Select comparator for sort (either by name or date)
                 final Comparator<Folder> comparator;
                 switch (sort.toUpperCase()) {
-                    case "NAME":
-                        comparator = Comparator.comparing(folder -> folder.getName().toUpperCase(), comparisonOrder);
-                        break;
-                    case "DATE":
-                        comparator = Comparator.comparing(folder -> String.valueOf(folder.getCreationDate()), comparisonOrder);
-                        break;
-                    default:
-                        throw new TDPException(DataSetErrorCodes.ILLEGAL_SORT_FOR_LIST, ExceptionContext.build().put("sort", order));
+                case "NAME":
+                    comparator = Comparator.comparing(folder -> folder.getName().toUpperCase(), comparisonOrder);
+                    break;
+                case "DATE":
+                    comparator = Comparator.comparing(folder -> String.valueOf(folder.getCreationDate()), comparisonOrder);
+                    break;
+                default:
+                    throw new TDPException(DataSetErrorCodes.ILLEGAL_SORT_FOR_LIST, ExceptionContext.build().put("sort", order));
                 }
 
-                folders.sort( comparator );
+                folders.sort(comparator);
 
                 return new FolderContent(datasets, folders);
             } catch (IOException e) {
