@@ -20,7 +20,8 @@
 			setData: setData,
 			setGridSelection: setGridSelection,
 			setDataset: setDataset,
-			setLookupColumnsToAdd: setLookupColumnsToAdd
+			setLookupColumnsToAdd: setLookupColumnsToAdd,
+			setPotentialDatasets: setPotentialDatasets
 		};
 
 		/**
@@ -57,6 +58,17 @@
 
 		/**
 		 * @ngdoc method
+		 * @name setPotentialDatasets
+		 * @methodOf data-prep.services.state.service:GridStateService
+		 * @param {Array} datasets the datasets with which a lookup is possible
+		 * @description sets the datasets with which a lookup is possible
+		 */
+		function setPotentialDatasets(datasets) {
+			lookupGridState.datasets = datasets;
+		}
+
+		/**
+		 * @ngdoc method
 		 * @name setData
 		 * @methodOf data-prep.services.state.service:GridStateService
 		 * @param {object} data The data
@@ -76,10 +88,11 @@
 					id: col.id
 				});
 			});
+			setLookupColumnsToAdd();
 		}
 
-		function setDataset(metadata) {
-			lookupGridState.dataset = metadata;
+		function setDataset(dataset) {
+			lookupGridState.dataset = dataset;
 		}
 
 		/**
@@ -126,6 +139,8 @@
 			lookupGridState.selectedLine = null;
 			lookupGridState.lookupColumnsToAdd = [];
 			lookupGridState.addedToLookup = [];
+			lookupGridState.dataset = null;
+			lookupGridState.datasets = [];
 		}
 	}
 

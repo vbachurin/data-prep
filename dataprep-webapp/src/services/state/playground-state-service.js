@@ -43,6 +43,7 @@
             setLookupDataset: LookupGridStateService.setDataset,
             setLookupColumnsToAdd: LookupGridStateService.setLookupColumnsToAdd,
             resetLookup: LookupGridStateService.reset,
+            setLookupDatasets: LookupGridStateService.setPotentialDatasets,
 
             //filters
             addGridFilter: addGridFilter,

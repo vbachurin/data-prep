@@ -11,7 +11,7 @@
 	 * @requires data-prep.services.playground.service:EarlyPreviewService
 	 * @requires data-prep.services.transformation.service:TransformationApplicationService
 	 */
-	function LookupCtrl($scope, state, StateService, LookupService, EarlyPreviewService,
+	function LookupCtrl(state, StateService, LookupService, EarlyPreviewService,
 						TransformationApplicationService) {
 		var vm = this;
 		vm.state = state;
@@ -24,9 +24,8 @@
 		 * @description trigger a preview mode on the main dataset to show the lookup action effet
 		 */
 		vm.hoverSubmitBtn = function hoverSubmitBtn(){
-			var previewClosure = EarlyPreviewService.earlyPreview(vm.lookupAction, 'dataset');
-			populateParams();
-			previewClosure(vm.lookupParams);
+			var previewClosure = EarlyPreviewService.earlyPreview(vm.state.playground.lookupGrid.dataset, 'dataset');
+			previewClosure(getParams());
 		};
 
 		/**
@@ -41,6 +40,11 @@
 			if(item){
 				return _.find(item.parameters, {name:'lookup_ds_name'}).default;
 			}
+		};
+
+		vm.loadLookupDsContent = function loadLookupDsContent (dataset){
+			StateService.setLookupDataset(dataset);
+			LookupService.loadSelectedLookupContent();
 		};
 
 		/**
@@ -60,32 +64,19 @@
 
 		/**
 		 * @ngdoc method
-		 * @name loadSelectedLookupContent
-		 * @methodOf data-prep.lookup.controller:LookupCtrl
-		 * @param {object} dsLookup dataset lookup action
-		 * @description loads the content of the selected lookup dataset
-		 */
-		vm.loadSelectedLookupContent = function(lookupDs){
-			StateService.resetLookup();
-			vm.lookupParams = extractLookupParams(lookupDs);
-			vm.lookupAction = lookupDs;
-			/*jshint camelcase: false */
-			LookupService.loadLookupContent(vm.lookupParams.lookup_ds_url);
-		};
-
-		/**
-		 * @ngdoc method
-		 * @name populateParams
+		 * @name getParams
 		 * @methodOf data-prep.lookup.controller:LookupCtrl
 		 * @description populates the params object by collection the needed parameters
 		 */
-		function populateParams () {
+		function getParams () {
 			/*jshint camelcase: false */
-			vm.lookupParams.column_id = vm.state.playground.grid.selectedColumn.id;
-			vm.lookupParams.column_name = vm.state.playground.grid.selectedColumn.name;
-			vm.lookupParams.lookup_join_on = vm.state.playground.lookupGrid.selectedColumn.id;
-			vm.lookupParams.lookup_join_on_name = vm.state.playground.lookupGrid.selectedColumn.name;
-			vm.lookupParams.lookup_selected_cols = vm.state.playground.lookupGrid.lookupColumnsToAdd;
+			var params = extractLookupParams(vm.state.playground.lookupGrid.dataset);
+			params.column_id = vm.state.playground.grid.selectedColumn.id;
+			params.column_name = vm.state.playground.grid.selectedColumn.name;
+			params.lookup_join_on = vm.state.playground.lookupGrid.selectedColumn.id;
+			params.lookup_join_on_name = vm.state.playground.lookupGrid.selectedColumn.name;
+			params.lookup_selected_cols = vm.state.playground.lookupGrid.lookupColumnsToAdd;
+			return params;
 		}
 
 		/**
@@ -97,31 +88,13 @@
 		vm.submitLookup = function submitLookup() {
 			EarlyPreviewService.deactivatePreview();
 			EarlyPreviewService.cancelPendingPreview();
-			populateParams();
 
-			TransformationApplicationService.append(vm.lookupAction, 'dataset', vm.lookupParams)
+			TransformationApplicationService.append(vm.state.playground.lookupGrid.dataset, 'dataset', getParams())
 				.finally(function() {
 					setTimeout(EarlyPreviewService.activatePreview, 500);
+					StateService.setLookupVisibility(false);
 				});
 		};
-
-		//*****************************************************************************************//
-		//**************************** Watcher on the current lookup dataset *****************************//
-		//*****************************************************************************************//
-		$scope.$watch(function(){
-			return vm.state.playground.dataset;
-		},
-		function(newDataset){
-			if(newDataset){
-				LookupService.getLookupPossibleActions(vm.state.playground.dataset.id)
-					.then(function(dsLookup){
-						vm.potentialTransformations = dsLookup.data;
-						if(vm.potentialTransformations.length){
-							vm.loadSelectedLookupContent(vm.potentialTransformations[0]);
-						}
-					});
-			}
-		});
 	}
 
 	angular.module('data-prep.lookup')

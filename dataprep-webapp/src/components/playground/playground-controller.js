@@ -16,7 +16,8 @@
      * @requires data-prep.services.folder.service:FolderService
      */
     function PlaygroundCtrl($state, $stateParams, state, StateService, PlaygroundService, PreparationService,
-                            PreviewService, RecipeService, RecipeBulletService, OnboardingService, FolderService) {
+                            PreviewService, RecipeService, RecipeBulletService, OnboardingService,
+                            LookupService, FolderService) {
         var vm = this;
         vm.playgroundService = PlaygroundService;
         vm.previewService = PreviewService;
@@ -80,10 +81,20 @@
         }
 
         //--------------------------------------------------------------------------------------------------------------
-        //------------------------------------------------------GRID----------------------------------------------------
+        //------------------------------------------------------LOOKUP--------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
         vm.toggleLookup = function toggleLookup() {
             StateService.setLookupVisibility(!state.playground.lookupVisibility);
+            if(!vm.state.playground.lookupGrid.datasets.length){
+                LookupService.getLookupPossibleActions(vm.state.playground.dataset.id)
+                    .then(function(dsLookup){
+                        StateService.setLookupDatasets(dsLookup.data);
+                        if(vm.state.playground.lookupGrid.datasets.length){
+                            StateService.setLookupDataset(vm.state.playground.lookupGrid.datasets[0]);
+                            LookupService.loadSelectedLookupContent();
+                        }
+                    });
+            }
         };
 
         //--------------------------------------------------------------------------------------------------------------

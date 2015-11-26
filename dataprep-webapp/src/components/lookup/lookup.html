@@ -37,9 +37,9 @@
        </div>
    </div>
 
-    <navigation-list list="lookupCtrl.potentialTransformations"
-                   on-click="lookupCtrl.loadSelectedLookupContent(item)"
-                   selected-item="lookupCtrl.lookupAction"
+    <navigation-list list="lookupCtrl.state.playground.lookupGrid.datasets"
+                   on-click="lookupCtrl.loadLookupDsContent(item)"
+                   selected-item="lookupCtrl.state.playground.lookupGrid.dataset"
                    get-label="lookupCtrl.getDsName(item)"
                    nbre-labels-to-show="4">
     </navigation-list>
