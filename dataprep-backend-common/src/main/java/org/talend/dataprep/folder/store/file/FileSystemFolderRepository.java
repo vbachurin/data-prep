@@ -3,22 +3,12 @@ package org.talend.dataprep.folder.store.file;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
@@ -27,6 +17,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.elasticsearch.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +43,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
     @Value("${folder.store.file.location}")
     private String foldersLocation;
 
-    private FileAttribute<Set<PosixFilePermission>> defaultFilePermissions = //
+    private final FileAttribute<Set<PosixFilePermission>> defaultUnixPermissions = //
     PosixFilePermissions.asFileAttribute( //
             Sets.newHashSet(PosixFilePermission.OWNER_EXECUTE, //
                     PosixFilePermission.OWNER_READ, //
@@ -65,12 +56,26 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
     private void init() {
         try {
             if (!Files.exists(getRootFolder())) {
-                Files.createDirectories(getRootFolder(), defaultFilePermissions);
+                createDirectories(getRootFolder());
             }
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
 
+    }
+
+    /**
+     * Creates a folder with permissions according to current operating system.
+     *
+     * @param folder The folder to be created.
+     * @throws IOException
+     */
+    private void createDirectories(Path folder) throws IOException {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            Files.createDirectories(folder);
+        } else if(SystemUtils.IS_OS_UNIX) {
+            Files.createDirectories(folder, defaultUnixPermissions);
+        }
     }
 
     /**
@@ -142,7 +147,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
             Path pathToCreate = Paths.get(getRootFolder().toString(), pathParts.toArray(new String[pathParts.size()]));
 
             if (!Files.exists(pathToCreate)) {
-                Files.createDirectories(pathToCreate, defaultFilePermissions);
+                createDirectories(pathToCreate);
             }
             return Folder.Builder.folder() //
                     .path(path) //
