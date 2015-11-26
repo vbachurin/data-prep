@@ -7,7 +7,13 @@
   "SEARCH": "Search Talend Data Preparation",
   "LOGOUT": "Logout",
   "MENU": "MENU",
-
+  "FEEDBACK_FROM": "Thank you for filling out this feedback :",
+  "FEEDBACK_MAIL": "Mail",
+  "FEEDBACK_TITLE": "Title (required)",
+  "FEEDBACK_TYPE": "Type",
+  "FEEDBACK_SEVERITY": "Severity",
+  "FEEDBACK_DESCRIPTION": "Description (required)",
+  "FEEDBACK_TOOLTIP": "Send feedback to Talend",
 
   "_comment": "Left side menu",
   "ALL_FOLDERS": "All Datasets",
