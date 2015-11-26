@@ -241,6 +241,7 @@ public abstract class AbstractFolderTest {
 
         // path has changed
         wineEntry.setPath( "bar" );
+        wineEntry.buildId();
         Assertions.assertThat(entries).isNotNull().isNotEmpty().hasSize(1).contains( wineEntry );
 
         // still in foo as it's a copy
@@ -248,8 +249,8 @@ public abstract class AbstractFolderTest {
         entries = new ArrayList<>();
         folderEntries.forEach(entries::add);
 
-
         wineEntry.setPath( "foo" );
+        wineEntry.buildId();
         Assertions.assertThat(entries).isNotNull().isNotEmpty().hasSize(1).contains( wineEntry );
 
     }

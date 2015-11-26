@@ -78,7 +78,6 @@ public interface FolderRepository {
     void moveFolderEntry(FolderEntry folderEntry, String destinationPath);
 
     /**
-     * <b>if the destination or entry doesn't exist a {@link IllegalArgumentException} will be thrown</b>
      *
      * @param folderEntry the {@link FolderEntry} to move
      * @param destinationPath the destination where to copy the entry
