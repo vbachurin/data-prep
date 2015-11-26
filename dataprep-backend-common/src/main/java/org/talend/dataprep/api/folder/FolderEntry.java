@@ -1,10 +1,11 @@
 package org.talend.dataprep.api.folder;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
+
 import org.springframework.data.annotation.Id;
 import org.talend.dataprep.api.preparation.Identifiable;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FolderEntry extends Identifiable implements Serializable {
 
@@ -25,8 +26,7 @@ public class FolderEntry extends Identifiable implements Serializable {
     @JsonProperty("path")
     private String path;
 
-    public FolderEntry()
-    {
+    public FolderEntry() {
         // no op only to help Jackson
     }
 
@@ -37,12 +37,9 @@ public class FolderEntry extends Identifiable implements Serializable {
         this.buildId();
     }
 
-    public void buildId(){
-        if (this.id == null){
-            this.id = contentType + '@' + contentId;
-        }
+    public void buildId() {
+        this.id = contentType + '@' + contentId + '@' + path;
     }
-
 
     @Override
     public String id() {
@@ -57,13 +54,11 @@ public class FolderEntry extends Identifiable implements Serializable {
         this.id = id;
     }
 
-    public String getContentType()
-    {
+    public String getContentType() {
         return contentType;
     }
 
-    public void setContentType( String contentType )
-    {
+    public void setContentType(String contentType) {
         this.contentType = contentType;
     }
 
@@ -75,54 +70,37 @@ public class FolderEntry extends Identifiable implements Serializable {
         this.contentId = contentId;
     }
 
-    public String getPath()
-    {
+    public String getPath() {
         return path;
     }
 
-    public void setPath( String path )
-    {
+    public void setPath(String path) {
         this.path = path;
     }
 
     @Override
-    public String toString()
-    {
-        return "FolderEntry{" +
-            "contentId='" + contentId + '\'' +
-            ", id='" + id + '\'' +
-            ", contentType='" + contentType + '\'' +
-            ", path='" + path + '\'' +
-            '}';
+    public String toString() {
+        return "FolderEntry{" + "contentId='" + contentId + '\'' + ", id='" + id + '\'' + ", contentType='" + contentType + '\''
+                + ", path='" + path + '\'' + '}';
     }
 
     @Override
-    public boolean equals( Object o )
-    {
-        if ( this == o )
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() )
-        {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
         FolderEntry that = (FolderEntry) o;
 
-        if ( id != null ? !id.equals( that.id ) : that.id != null )
-        {
-            return false;
-        }
-        return !( path != null ? !path.equals( that.path ) : that.path != null );
+        return id.equals(that.id);
 
     }
 
     @Override
-    public int hashCode()
-    {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + ( path != null ? path.hashCode() : 0 );
-        return result;
+    public int hashCode() {
+        return id.hashCode();
     }
 }
