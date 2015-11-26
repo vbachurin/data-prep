@@ -33,10 +33,6 @@ public class Absolute extends ActionMetadata implements ColumnAction {
 
     public static final String ABSOLUTE_ACTION_NAME = "absolute"; //$NON-NLS-1$
 
-    private static final String ABSOLUTE_INT_ACTION_NAME = "absolute_int"; //$NON-NLS-1$
-
-    private static final String ABSOLUTE_FLOAT_ACTION_NAME = "absolute_float"; //$NON-NLS-1$
-
     private final Type type;
 
     public Absolute() {
@@ -74,32 +70,6 @@ public class Absolute extends ActionMetadata implements ColumnAction {
             return bd.abs().toPlainString();
         } catch (NumberFormatException nfe2) {
             return null;
-        }
-    }
-
-    @Override
-    public String getLabel() {
-        switch (type) {
-        case INTEGER:
-            return MessagesBundle.getString("action." + ABSOLUTE_INT_ACTION_NAME + ".label");
-        case DOUBLE:
-        case FLOAT:
-            return MessagesBundle.getString("action." + ABSOLUTE_FLOAT_ACTION_NAME + ".label");
-        default:
-            throw new UnsupportedOperationException("Type '" + type + "' is not supported.");
-        }
-    }
-
-    @Override
-    public String getDescription() {
-        switch (type) {
-        case INTEGER:
-            return MessagesBundle.getString("action." + ABSOLUTE_INT_ACTION_NAME + ".desc");
-        case DOUBLE:
-        case FLOAT:
-            return MessagesBundle.getString("action." + ABSOLUTE_FLOAT_ACTION_NAME + ".desc");
-        default:
-            throw new UnsupportedOperationException("Type '" + type + "' is not supported.");
         }
     }
 
@@ -154,4 +124,5 @@ public class Absolute extends ActionMetadata implements ColumnAction {
         }
         return new Absolute(type);
     }
+
 }
