@@ -5,83 +5,13 @@ describe('navigationList directive', function() {
 
 	var list = [
 		{
-			'category': 'data_blending',
-			'name': 'lookup',
-			'parameters': [
-				{
-					'name': 'column_id',
-					'type': 'string',
-					'default': ''
-				},
-				{
-					'name': 'filter',
-					'type': 'filter',
-					'default': ''
-				},
-				{
-					'name': 'lookup_ds_name',
-					'type': 'string',
-					'default': 'us-customers-500'
-				}
-			],
-			'label': 'Lookup',
-			'actionScope': [],
-			'description': 'Blends columns from another dataset into this one',
-			'dynamic': false
+			'label': 'us-customers-500'
 		},
 		{
-			'category': 'data_blending',
-			'name': 'lookup',
-			'parameters': [
-				{
-					'name': 'column_id',
-					'type': 'string',
-					'implicit': true,
-					'canBeBlank': true,
-					'label': 'Column',
-					'description': 'The column on which apply this action to',
-					'default': ''
-				},
-				{
-					'name': 'filter',
-					'type': 'filter',
-					'default': ''
-				},
-				{
-					'name': 'lookup_ds_name',
-					'type': 'string',
-					'default': 'dates'
-				}
-			],
-			'label': 'Lookup',
-			'actionScope': [],
-			'description': 'Blends columns from another dataset into this one',
-			'dynamic': false
+			'label': 'dates'
 		},
 		{
-			'category': 'data_blending',
-			'name': 'lookup',
-			'parameters': [
-				{
-					'name': 'column_id',
-					'type': 'string',
-					'default': ''
-				},
-				{
-					'name': 'filter',
-					'type': 'filter',
-					'default': ''
-				},
-				{
-					'name': 'lookup_ds_name',
-					'type': 'string',
-					'default': 'exponnetial'
-				}
-			],
-			'label': 'Lookup',
-			'actionScope': [],
-			'description': 'Blends columns from another dataset into this one',
-			'dynamic': false
+			'label': 'exponnetial'
 		}
 	];
 
@@ -100,9 +30,8 @@ describe('navigationList directive', function() {
 									);
 			scope.list = list;
 			scope.item = list[0];
-			scope.clickCallbackCalled = false;
 			scope.getLabelCb = function(item){
-				return item.parameters[2].default;
+				return item.label;
 			};
 
 			$compile(element)(scope);
@@ -122,8 +51,6 @@ describe('navigationList directive', function() {
 		//then
 		expect(element.find('.navigation-list').length).toBe(1);
 		expect(element.find('button').length).toBe(2);
-		expect(element.find('button').eq(0).attr('disabled')).toBe('disabled');
-		expect(element.find('button').eq(1).attr('disabled')).toBe(undefined);
 		expect(element.find('.items-list').length).toBe(1);
 		expect(element.find('.item-label').length).toBe(2);
 		expect(element.find('.item-label').eq(0).text().trim()).toBe('us-customers-500');
@@ -134,32 +61,14 @@ describe('navigationList directive', function() {
 
 	it('should trigger item selection callback', function() {
 		//given
-		scope.clickCbCalled = false;
-		scope.trigger = function(){
-			scope.clickCbCalled = true;
-		};
+		scope.trigger = jasmine.createSpy('clickCb');
 		createElement();
 
 		//when
 		element.find('.item-label').eq(1).click();
 
 		//then
-		expect(scope.clickCbCalled).toBeTruthy();
-	});
-
-	it('should trigger item selection callback', function() {
-		//given
-		scope.clickCbCalled = false;
-		scope.trigger = function(){
-			scope.clickCbCalled = true;
-		};
-		createElement();
-
-		//when
-		element.find('.item-label').eq(1).click();
-
-		//then
-		expect(scope.clickCbCalled).toBeTruthy();
+		expect(scope.trigger).toHaveBeenCalledWith(list[1]);
 	});
 
 	it('should show 2nd and 3rd items of the list on forth button click', function() {
@@ -169,7 +78,7 @@ describe('navigationList directive', function() {
 		expect(element.find('.item-label').eq(1).text().trim()).toBe('dates');
 
 		//when
-		element.find('button').eq(1).click();
+		element.find('button.arrow-right').eq(0).click();
 		scope.$digest();
 
 		//then
@@ -181,20 +90,18 @@ describe('navigationList directive', function() {
 		//given
 		createElement();
 
-		element.find('button').eq(1).click();
+		element.find('button.arrow-right').eq(0).click();
 		scope.$digest();
 		expect(element.find('.item-label').eq(0).text().trim()).toBe('dates');
 		expect(element.find('.item-label').eq(1).text().trim()).toBe('exponnetial');
-		expect(element.find('button').eq(0).attr('disabled')).toBe(undefined);
 
 		//when
-		element.find('button').eq(0).click();
+		element.find('button.arrow-left').eq(0).click();
 		scope.$digest();
 
 		//then
 		expect(element.find('.item-label').eq(0).text().trim()).toBe('us-customers-500');
 		expect(element.find('.item-label').eq(1).text().trim()).toBe('dates');
-		expect(element.find('button').eq(0).attr('disabled')).toBe('disabled');
 	});
 
 	it('should deactivate forth btn after forth button has been clicked as the last item is shown', function() {
@@ -203,10 +110,27 @@ describe('navigationList directive', function() {
 		expect(element.find('button').eq(1).attr('disabled')).toBe(undefined);
 
 		//when
-		element.find('button').eq(1).click();
+		element.find('button.arrow-right').eq(0).click();
 		scope.$digest();
 
 		//then
-		expect(element.find('button').eq(1).attr('disabled')).toBe('disabled');
+		expect(element.find('button.arrow-right').eq(0).attr('disabled')).toBe('disabled');
+	});
+
+	it('should activate/deactivate back btn on click and after forth button has been clicked, as the first item is shown', function() {
+		//given
+		createElement();
+		expect(element.find('button.arrow-left').eq(0).attr('disabled')).toBe('disabled');
+
+		element.find('button.arrow-right').eq(0).click();
+		scope.$digest();
+		expect(element.find('button.arrow-left').eq(0).attr('disabled')).toBe(undefined);
+
+		//when
+		element.find('button.arrow-left').eq(0).click();
+		scope.$digest();
+
+		//then
+		expect(element.find('button.arrow-left').eq(0).attr('disabled')).toBe('disabled');
 	});
 });

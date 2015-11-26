@@ -9,10 +9,9 @@ describe('Navigation List controller', function () {
 		scope = $rootScope.$new();
 
 		createController = function () {
-			var ctrlFn = $controller('NavigationListCtrl', {
+			return $controller('NavigationListCtrl', {
 				$scope: scope
 			});
-			return ctrlFn;
 		};
 	}));
 
