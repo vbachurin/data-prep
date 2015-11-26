@@ -1,0 +1,55 @@
+.navigation-list {
+  border-top: 1px solid $light-gray;
+  font-size: .95em;
+  height: 30px;
+
+  .back-forth-btn {
+    display: inline;
+    margin-right: 10px;
+    margin-left: 10px;
+
+    button {
+      padding: 0;
+      margin-left: 10px;
+      background-color: transparent;
+      width: 0;
+      height: 0;
+
+      &.arrow-left {
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+        border-right: 8px solid $medium-gray;
+      }
+
+      &.arrow-right {
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+        border-left: 8px solid $medium-gray;
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
+  .items-list {
+    display: inline;
+
+    .item-label {
+      cursor: pointer;
+      text-transform: uppercase;
+      display: inline;
+      padding: 0 10px 2px 8px;
+      border-left: 1px solid $shadow-gray;
+
+      &.selected-item-label {
+        background-color: $light-gray;
+        font-weight: 700;
+        border: 1px solid;
+        border-top-color: transparent;
+        border-left: 10px solid #4fc1de;
+      }
+    }
+  }
+}

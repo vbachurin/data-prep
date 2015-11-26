@@ -1,6 +1,6 @@
 <div class="datagrid"
      ng-class="{lookup : datagridCtrl.state.playground.lookupVisibility}">
-    <section id="datagrid" style="width: 100%; height: 100%"></section>
+    <section id="datagrid" ng-class="{'datagrid-visible-lookup': datagridCtrl.state.playground.lookupVisibility}"></section>
 </div>
 <span id="tooltip-ruler" class="tooltip-ruler"></span>
 

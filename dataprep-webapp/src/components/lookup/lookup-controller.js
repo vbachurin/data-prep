@@ -11,7 +11,8 @@
 	 * @requires data-prep.services.playground.service:EarlyPreviewService
 	 * @requires data-prep.services.transformation.service:TransformationApplicationService
 	 */
-	function LookupCtrl($scope, state, StateService, LookupService, EarlyPreviewService, TransformationApplicationService) {
+	function LookupCtrl($scope, state, StateService, LookupService, EarlyPreviewService,
+						TransformationApplicationService) {
 		var vm = this;
 		vm.state = state;
 		vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
@@ -26,6 +27,20 @@
 			var previewClosure = EarlyPreviewService.earlyPreview(vm.lookupAction, 'dataset');
 			populateParams();
 			previewClosure(vm.lookupParams);
+		};
+
+		/**
+		 * @ngdoc method
+		 * @name getDsName
+		 * @methodOf data-prep.lookup.controller:LookupCtrl
+		 * @param {object} item dataset lookup action
+		 * @returns {String} the name of th dataset to be shown in the list
+		 * @description loops over the dataset lookup action parameters to collect the dataset name
+		 */
+		vm.getDsName = function getDsName (item){
+			if(item){
+				return _.find(item.parameters, {name:'lookup_ds_name'}).default;
+			}
 		};
 
 		/**
@@ -91,7 +106,7 @@
 		};
 
 		//*****************************************************************************************//
-		//**************************** Watcher on the current dataset *****************************//
+		//**************************** Watcher on the current lookup dataset *****************************//
 		//*****************************************************************************************//
 		$scope.$watch(function(){
 			return vm.state.playground.dataset;

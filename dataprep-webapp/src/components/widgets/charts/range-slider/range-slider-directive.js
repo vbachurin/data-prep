@@ -180,7 +180,7 @@
                     //--------------------------------------------------------------------------------------------------
                     function initBrush() {
                         //create axis + brush
-                        var axisTicksNumber = rangeLimits.max > 1e12 || rangeLimits.min < 1e-10 ? 2 : 3;
+                        var axisTicksNumber = rangeLimits.max >= 1e10 || rangeLimits.min <= 1e-10 ? 1 : 3;
                         svg.append('g')
                             .attr('class', 'x axis')
                             .attr('transform', 'translate(0,' + (margin.top + 20) + ')')
@@ -293,8 +293,10 @@
                     //Init min/max inputs values with existing filter values if defined, min/max otherwise
                     function initInputValues() {
                         hideMsgErr();
-                        ctrl.minMaxModel.minModel = ''+lastValues.input.min;
-                        ctrl.minMaxModel.maxModel = ''+lastValues.input.max;
+                        $timeout(function(){
+                            ctrl.minMaxModel.minModel = ''+lastValues.input.min;
+                            ctrl.minMaxModel.maxModel = ''+lastValues.input.max;
+                        });
 
                         filterToApply = [lastValues.input.min, lastValues.input.max];
                     }

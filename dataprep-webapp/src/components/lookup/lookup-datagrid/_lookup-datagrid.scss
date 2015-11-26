@@ -100,6 +100,7 @@ $datagrid-cell-font-size: .80em;
   height: 100%;
   min-height: 300px;
   border: 1px solid $shadow-gray;
+  border-top: 0px;
 
   //-------------------------------------------------Slickgrid hack-----------------------------------------------------
   //not frozen columns width to fit resizable container
@@ -180,11 +181,11 @@ $datagrid-cell-font-size: .80em;
   //--------------------------------------------------Data lookup-------------------------------------------------------
   &.lookup {
     .slick-cell.selected {
-      background: $lookup-selected-column;
+      background: rgba($lookup-selected-column, .6);
     }
 
     .slick-cell:hover{
-      background: $lookup-selected-column;
+      background: rgba($lookup-selected-column, .6);
     }
   }
 }

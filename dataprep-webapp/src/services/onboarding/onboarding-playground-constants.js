@@ -9,7 +9,7 @@
             position: 'right'
         },
         {
-            element: '#lookup-datagrid .slick-header-columns-right > .slick-header-column',
+            element: '#datagrid .slick-header-columns-right > .slick-header-column',
             title: '',
             content: 'Select a column to discover the transformation actions you can apply to the data.',
             position: 'right'

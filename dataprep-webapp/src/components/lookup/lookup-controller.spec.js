@@ -123,6 +123,7 @@ describe('Lookup controller', function () {
 		it('should load a specific dataset lookup content', inject(function (StateService, LookupService) {
 			//given
 			var ctrl      = createController();
+			ctrl.potentialTransformations = [];
 			spyOn(StateService, 'resetLookup').and.returnValue();
 			spyOn(LookupService, 'loadLookupContent').and.returnValue();
 
@@ -198,6 +199,17 @@ describe('Lookup controller', function () {
 			expect(EarlyPreviewService.cancelPendingPreview).toHaveBeenCalled();
 			expect(EarlyPreviewService.activatePreview).toHaveBeenCalled();
 			jasmine.clock().uninstall();
+		}));
+
+		it('should return the action name', inject(function () {
+			//given
+			var ctrl      = createController();
+
+			//when
+			var label = ctrl.getDsName(dsActions[0]);
+			//then
+			expect(label).toBe('lookup_2');
+
 		}));
 	});
 });
