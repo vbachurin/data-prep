@@ -2,7 +2,7 @@
     <div class="back-forth-btn">
         <button ng-disabled="navigationListCtrl.firstLabelIndex === 0"
                 ng-click="navigationListCtrl.showBack()" class="arrow-left"></button>
-        <button ng-disabled="navigationListCtrl.lastLabelIndex === navigationListCtrl.list.length"
+        <button ng-disabled="navigationListCtrl.lastLabelIndex === navigationListCtrl.list.length || +navigationListCtrl.nbreLabelsToShow > navigationListCtrl.list.length"
                 ng-click="navigationListCtrl.showForth()" class="arrow-right"></button>
     </div>
 
