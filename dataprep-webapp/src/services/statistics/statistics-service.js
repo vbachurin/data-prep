@@ -563,9 +563,11 @@
          * @description Removes all the data to disable all visualization
          */
         function getAggregationColumns() {
-            var column = state.playground.grid.selectedColumn;
-            //TODO JSO : put a cache again that is invalidated when one of the columns change
-            return DatagridService.getNumericColumns(column);
+            if(state.playground.data) {
+                var column = state.playground.grid.selectedColumn;
+                //TODO JSO : put a cache again that is invalidated when one of the columns change
+                return DatagridService.getNumericColumns(column);
+            }
         }
 
         //--------------------------------------------------------------------------------------------------------------

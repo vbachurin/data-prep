@@ -198,7 +198,11 @@ describe('Statistics service', function () {
     var stateMock;
 
     beforeEach(module('data-prep.services.statistics', function ($provide) {
-        stateMock = {playground: {grid: {}, filter: {}}};
+        stateMock = {playground: {
+                        grid: {},
+                        filter: {},
+                        data: {}
+                    }};
         $provide.constant('state', stateMock);
     }));
 
