@@ -188,18 +188,18 @@ public abstract class ActionMetadata {
      * @param scope the scope to test
      * @return true if the action can be applied to the given scope.
      */
-    public static boolean acceptScope(final Class<? extends ActionMetadata> actionClass, final ScopeCategory scope) {
+    public final boolean acceptScope(final ScopeCategory scope) {
         switch (scope) {
-        case CELL:
-            return CellAction.class.isAssignableFrom(actionClass);
-        case LINE:
-            return RowAction.class.isAssignableFrom(actionClass);
-        case COLUMN:
-            return ColumnAction.class.isAssignableFrom(actionClass);
-        case DATASET:
-            return DataSetAction.class.isAssignableFrom(actionClass);
-        default:
-            return false;
+            case CELL:
+                return this instanceof CellAction;
+            case LINE:
+                return this instanceof RowAction;
+            case COLUMN:
+                return this instanceof ColumnAction;
+            case DATASET:
+                return this instanceof DataSetAction;
+            default:
+                return false;
         }
     }
 

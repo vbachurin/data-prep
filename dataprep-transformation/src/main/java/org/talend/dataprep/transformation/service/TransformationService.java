@@ -297,7 +297,7 @@ public class TransformationService {
     @ResponseBody
     public List<ActionMetadata> columnActions(@RequestBody(required = false) ColumnMetadata column) {
         return Stream.of(allActions) //
-                .filter(action -> ActionMetadata.acceptScope(action.getClass(), COLUMN)) //
+                .filter(action -> action.acceptScope(COLUMN)) //
                 .map(am -> column != null ? am.adapt(column) : am) //
                 .collect(toList());
     }
@@ -341,7 +341,7 @@ public class TransformationService {
     @ResponseBody
     public List<ActionMetadata> lineActions() {
         return Stream.of(allActions) //
-                .filter(action -> ActionMetadata.acceptScope(action.getClass(), LINE)) //
+                .filter(action -> action.acceptScope(LINE)) //
                 .map(action -> action.adapt(LINE)) //
                 .collect(toList());
     }
