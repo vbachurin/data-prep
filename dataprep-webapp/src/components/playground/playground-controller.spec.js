@@ -217,7 +217,7 @@ describe('Playground controller', function() {
 
         describe('without querying the dataset content', function () {
 
-            beforeEach(inject(function($q, LookupService, StateService) {
+            beforeEach(inject(function($q, LookupService) {
                 spyOn(LookupService, 'getLookupPossibleActions').and.returnValue($q.when(true));
             }));
 
@@ -248,14 +248,14 @@ describe('Playground controller', function() {
                 parameters:[]
             };
 
-            beforeEach(inject(function($q, LookupService, StateService) {
+            beforeEach(inject(function($q, LookupService) {
                 spyOn(LookupService, 'getLookupPossibleActions').and.callFake(function() {
                     stateMock.playground.lookupGrid.datasets.push(lookupDataset);
                     return $q.when(true);
                 });
             }));
 
-            it('should query the possible lookup with filled datasets as result', inject(function (LookupService, StateService, $q) {
+            it('should query the possible lookup with filled datasets as result', inject(function (LookupService, StateService) {
                 //given
                 stateMock.playground.lookupVisibility = false;
                 stateMock.playground.lookupGrid = {
