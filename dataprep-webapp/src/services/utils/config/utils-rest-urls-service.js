@@ -30,6 +30,7 @@
             service.aggregationUrl = serverUrl + '/api/aggregate';
             service.typesUrl = serverUrl + '/api/types';
             service.folderUrl = serverUrl + '/api/folders';
+            service.mailUrl = serverUrl + '/api/mail';
         }
     }
 

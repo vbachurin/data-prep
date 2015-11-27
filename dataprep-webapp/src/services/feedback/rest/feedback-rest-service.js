@@ -13,8 +13,16 @@
         return service;
 
         function sendFeedback(feedbackOjb) {
-            //var url = RestURLs.folderUrl + '/datasets';
-            //return $http.get(url);
+            var request = {
+                method: 'PUT',
+                url: RestURLs.mailUrl,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: feedbackOjb
+            };
+
+            return $http(request);
         }
 
     }

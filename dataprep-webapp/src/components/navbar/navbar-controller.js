@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function NavbarCtrl($state, OnboardingService, DatasetService, FeedbackService) {
+    function NavbarCtrl($state, OnboardingService, DatasetService, FeedbackService, $translate) {
         var vm =this;
         vm.feedbackModal = false;
         vm.feedback = {
@@ -12,8 +12,14 @@
             description: ''
         };
 
-        vm.feedbackTypes = [{name : 'Bugs'}, {name: 'Improvements'}];
-        vm.feedbackSeverities = [{name : 'Critical'}, {name: 'Major'},{name : 'Minor'}, {name: 'Trivial'}];
+        vm.feedbackTypes = [
+            {name: $translate.instant('FEEDBACK_TYPE_BUGS')},
+            {name: $translate.instant('FEEDBACK_TYPE_IMPROVEMENTS')}];
+        vm.feedbackSeverities = [
+            {name:  $translate.instant('FEEDBACK_SEVERITY_1')},
+            {name:  $translate.instant('FEEDBACK_SEVERITY_2')},
+            {name:  $translate.instant('FEEDBACK_SEVERITY_3')},
+            {name:  $translate.instant('FEEDBACK_SEVERITY_4')}];
 
         //////////////////////////////ONBOARDING/////////////////////////
         var tourId = 'dataset';
@@ -31,7 +37,11 @@
         };
 
         vm.sendFeedback = function() {
-            FeedbackService.sendFeedback(vm.feedback);
+            FeedbackService.sendFeedback(vm.feedback).then (
+                function(){
+                    vm.feedbackModal = false;
+                }
+            );
         };
 
     }

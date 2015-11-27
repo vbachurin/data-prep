@@ -14,6 +14,13 @@
   "FEEDBACK_SEVERITY": "Severity",
   "FEEDBACK_DESCRIPTION": "Description (required)",
   "FEEDBACK_TOOLTIP": "Send feedback to Talend",
+  "FEEDBACK_SEVERITY_1": "Critical",
+  "FEEDBACK_SEVERITY_2": "Major",
+  "FEEDBACK_SEVERITY_3": "Minor",
+  "FEEDBACK_SEVERITY_4": "Trivial",
+  "FEEDBACK_TYPE_BUGS": "Bugs",
+  "FEEDBACK_TYPE_IMPROVEMENTS": "Improvement",
+
 
   "_comment": "Left side menu",
   "ALL_FOLDERS": "All Datasets",

@@ -14,7 +14,7 @@
         return service;
 
         function sendFeedback(feedbackOjb) {
-            FeedbackRestService.sendFeedback(feedbackOjb);
+            return FeedbackRestService.sendFeedback(feedbackOjb);
         }
 
     }
