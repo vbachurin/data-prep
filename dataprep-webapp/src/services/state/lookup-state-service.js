@@ -2,71 +2,39 @@
     'use strict';
 
     var lookupState = {
-        dataView: new Slick.Data.DataView({inlineFilters: false}),
-        addedToLookup: [],
-        lookupColumnsToAdd: [],
-        datasets: []
+        actions: [],                                                // the lookup actions (1 action per dataset)
+        columnCheckboxes: [],                                       // column checkboxes model
+        columnsToAdd: [],                                           // columns that are checked
+        dataset: null,                                              // loaded dataset
+        dataView: new Slick.Data.DataView({inlineFilters: false}),  // grid view that hold the dataset data
+        visibility: false                                           // visibility flag
     };
 
     /**
      * @ngdoc service
      * @name data-prep.services.state.service:GridStateService
-     * @description Grid state service. Manage the lookup grid part state
+     * @description Lookup state service.
      */
     function LookupStateService() {
         return {
             reset: reset,
 
-            setColumnFocus: setColumnFocus,
-            setData: setData,
-            setGridSelection: setGridSelection,
-            setDataset: setDataset,
-            setLookupColumnsToAdd: setLookupColumnsToAdd,
-            setPotentialDatasets: setPotentialDatasets
+            setActions: setActions,//
+            setData: setData,//
+            setDataset: setDataset,//
+            setSelectedColumn: setSelectedColumn,//
+            setVisibility: setVisibility,//
+            updateColumnsToAdd: updateColumnsToAdd//
         };
 
         /**
          * @ngdoc method
-         * @name setLookupColumnsToAdd
+         * @name setVisibility
          * @methodOf data-prep.services.state.service:GridStateService
-         * @description sets the lookupColumnsToAdd array of the columns to add to the
+         * @description Set the lookup visibility
          */
-        function setLookupColumnsToAdd() {
-            function getRidIsAddedFlag(obj) {
-                return _.omit(obj, 'isAdded');
-            }
-
-            lookupState.lookupColumnsToAdd = _.chain(lookupState.addedToLookup)
-                .filter(function (col) {
-                    return col.isAdded === true;
-                })
-                .filter(function (col) {
-                    return col.id !== lookupState.selectedColumn.id;
-                })
-                .map(getRidIsAddedFlag)
-                .value();
-        }
-
-        /**
-         * @ngdoc method
-         * @name setColumnFocus
-         * @methodOf data-prep.services.state.service:GridStateService
-         * @param {string} columnId The column id to focus on
-         * @description Set the column id to focus on
-         */
-        function setColumnFocus(columnId) {
-            lookupState.columnFocus = columnId;
-        }
-
-        /**
-         * @ngdoc method
-         * @name setPotentialDatasets
-         * @methodOf data-prep.services.state.service:GridStateService
-         * @param {Array} datasets the datasets with which a lookup is possible
-         * @description sets the datasets with which a lookup is possible
-         */
-        function setPotentialDatasets(datasets) {
-            lookupState.datasets = datasets;
+        function setVisibility(visibility) {
+            lookupState.visibility = visibility;
         }
 
         /**
@@ -74,25 +42,52 @@
          * @name setData
          * @methodOf data-prep.services.state.service:GridStateService
          * @param {object} data The data
-         * @description Set new data in the grid and resets the isAdded label to false for the new columns
+         * @description Set new data in the grid and reset the column checkboxes
          */
         function setData(data) {
             lookupState.dataView.beginUpdate();
             lookupState.dataView.setItems(data.records, 'tdpId');
             lookupState.dataView.endUpdate();
 
-            updateSelectedColumn(data);
-            lookupState.addedToLookup = [];
-            lookupState.lookupColumnsToAdd = [];//in order to disable the Confirm button & to synch with the state
-            _.each(data.columns, function (col) {
-                lookupState.addedToLookup.push({
-                    isAdded: false,
+            lookupState.selectedColumn = data.columns[0];
+            lookupState.columnsToAdd = [];
+            lookupState.columnCheckboxes = _.map(data.columns, function(col) {
+                return {
+                    id: col.id,
                     name: col.name,
-                    id: col.id
-                });
+                    isAdded: false
+                };
             });
         }
 
+        /**
+         * @ngdoc method
+         * @name updateColumnsToAdd
+         * @methodOf data-prep.services.state.service:GridStateService
+         * @description Update the columns to add depending on the checkboxes state
+         */
+        function updateColumnsToAdd() {
+            lookupState.columnsToAdd = _.chain(lookupState.columnCheckboxes)
+                .filter('isAdded')
+                .filter(function (col) {
+                    return col.id !== lookupState.selectedColumn.id;
+                })
+                .map(function (obj) {
+                    return _.omit(obj, 'isAdded');
+                })
+                .value();
+        }
+
+        /**
+         * @ngdoc method
+         * @name setActions
+         * @methodOf data-prep.services.state.service:GridStateService
+         * @param {Array} actions The lookup actions (1 per possible dataset)
+         * @description Sets the actions
+         */
+        function setActions(actions) {
+            lookupState.actions = actions;
+        }
 
         /**
          * @ngdoc method
@@ -107,33 +102,15 @@
 
         /**
          * @ngdoc method
-         * @name updateSelectedColumn
-         * @methodOf data-prep.services.state.service:GridStateService
-         * @param {object} data The data
-         * @description Determine the selected column from the new data
-         */
-        function updateSelectedColumn(data) {
-            //if there is already a selected column, we update the column metadata to reference one of the new columns
-            if (lookupState.selectedColumn && data.columns) {
-                lookupState.selectedColumn = _.find(data.columns, {id: lookupState.selectedColumn.id}) || data.columns[0];
-            }
-            //the first column is selected by default
-            else {
-                lookupState.selectedColumn = data.columns[0];
-            }
-        }
-
-        /**
-         * @ngdoc method
-         * @name setGridSelection
+         * @name setSelectedColumn
          * @methodOf data-prep.services.state.service:GridStateService
          * @param {object} column The column metadata
          * @description Set the actual selected column and line
          */
-        function setGridSelection(column) {
+        function setSelectedColumn(column) {
             lookupState.selectedColumn = column;
             if (column) {
-                setLookupColumnsToAdd();
+                updateColumnsToAdd();
             }
         }
 
@@ -144,13 +121,12 @@
          * @description Reset the grid internal values
          */
         function reset() {
-            lookupState.columnFocus = null;
-            lookupState.selectedColumn = null;
-            lookupState.selectedLine = null;
-            lookupState.lookupColumnsToAdd = [];
-            lookupState.addedToLookup = [];
+            lookupState.actions = [];
+            lookupState.columnsToAdd = [];
+            lookupState.columnCheckboxes = [];
             lookupState.dataset = null;
-            lookupState.datasets = [];
+            lookupState.selectedColumn = null;
+            lookupState.visibility = false;
         }
     }
 

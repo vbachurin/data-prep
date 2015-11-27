@@ -26,7 +26,6 @@
             reset: reset,
             setData: setData,
             setLookupData: setLookupData,
-            setLookupVisibility: setLookupVisibility,
             updateColumnsStatistics: updateColumnsStatistics,
 
             //recipe
@@ -37,13 +36,12 @@
             setColumnFocus: GridStateService.setColumnFocus,
             setGridSelection: GridStateService.setGridSelection,
 
-            //lookup-datagrid
-            setLookupColumnFocus: LookupStateService.setColumnFocus,
-            setLookupGridSelection: LookupStateService.setGridSelection,
+            //lookup
+            setLookupActions: LookupStateService.setActions,
             setLookupDataset: LookupStateService.setDataset,
-            setLookupColumnsToAdd: LookupStateService.setLookupColumnsToAdd,
-            resetLookup: LookupStateService.reset,
-            setLookupDatasets: LookupStateService.setPotentialDatasets,
+            setLookupSelectedColumn: LookupStateService.setSelectedColumn,
+            setLookupVisibility: LookupStateService.setVisibility,
+            updateLookupColumnsToAdd: LookupStateService.updateColumnsToAdd,
 
             //filters
             addGridFilter: addGridFilter,
@@ -88,10 +86,6 @@
             playgroundState.visible = false;
         }
 
-        function setLookupVisibility(visibility) {
-            playgroundState.lookupVisibility = visibility;
-        }
-
         function updateColumnsStatistics(columns) {
             _.forEach(playgroundState.data.columns, function(col) {
                 var correspondingColumn = _.find(columns, {id: col.id});
@@ -127,12 +121,11 @@
             playgroundState.dataset = null;
             playgroundState.preparation = null;
             playgroundState.nameEditionMode = false;
-            playgroundState.lookupVisibility = false;
             playgroundState.lookupData = null;
 
+            FilterStateService.reset();
             GridStateService.reset();
             LookupStateService.reset();
-            FilterStateService.reset();
             SuggestionsState.reset();
         }
     }

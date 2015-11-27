@@ -69,7 +69,7 @@
 			params.column_name = vm.state.playground.grid.selectedColumn.name;
 			params.lookup_join_on = vm.state.playground.lookup.selectedColumn.id;
 			params.lookup_join_on_name = vm.state.playground.lookup.selectedColumn.name;
-			params.lookup_selected_cols = vm.state.playground.lookup.lookupColumnsToAdd;
+			params.lookup_selected_cols = vm.state.playground.lookup.columnsToAdd;
 			return params;
 		}
 

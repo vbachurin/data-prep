@@ -74,7 +74,7 @@
                  * @description Return condition that trigger a grid resize
                  */
                 function getResizeCondition() {
-                    return state.playground.lookupVisibility;
+                    return state.playground.lookup.visibility;
                 }
 
                 //------------------------------------------------------------------------------------------------------

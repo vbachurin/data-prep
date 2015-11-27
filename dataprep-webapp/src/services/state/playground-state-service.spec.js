@@ -12,7 +12,7 @@ describe('Playground state service', function () {
         $provide.constant('filterState', filterStateMock);
     }));
 
-    beforeEach(inject(function(GridStateService, FilterStateService) {
+    beforeEach(inject(function(GridStateService, FilterStateService, LookupStateService, SuggestionsState) {
         spyOn(GridStateService, 'setData').and.returnValue();
         spyOn(GridStateService, 'setFilter').and.returnValue();
         spyOn(GridStateService, 'reset').and.returnValue();
@@ -21,6 +21,8 @@ describe('Playground state service', function () {
         spyOn(FilterStateService, 'removeGridFilter').and.returnValue();
         spyOn(FilterStateService, 'removeAllGridFilters').and.returnValue();
         spyOn(FilterStateService, 'reset').and.returnValue();
+        spyOn(LookupStateService, 'reset').and.returnValue();
+        spyOn(SuggestionsState, 'reset').and.returnValue();
     }));
 
     describe('playground state', function() {
@@ -111,17 +113,6 @@ describe('Playground state service', function () {
 
             //then
             expect(playgroundState.visible).toBe(false);
-        }));
-
-        it('should set lookup visibility in state', inject(function(playgroundState, PlaygroundStateService) {
-            //given
-            playgroundState.lookupVisibility = false;
-
-            //when
-            PlaygroundStateService.setLookupVisibility(true);
-
-            //then
-            expect(playgroundState.lookupVisibility).toBe(true);
         }));
 
         it('should update columns statistics', inject(function(playgroundState, PlaygroundStateService) {
@@ -261,13 +252,13 @@ describe('Playground state service', function () {
     });
 
     describe('reset', function() {
-       it('should reset playground and sub-states', inject(function(playgroundState, PlaygroundStateService, GridStateService, FilterStateService) {
+       it('should reset playground and sub-states', inject(function(playgroundState, PlaygroundStateService, GridStateService, FilterStateService, LookupStateService, SuggestionsState) {
            //given
            playgroundState.data = {};
            playgroundState.dataset = {};
-           playgroundState.preparation = {};
+           playgroundState.lookupData = {};
            playgroundState.nameEditionMode = true;
-           playgroundState.lookupVisibility = true;
+           playgroundState.preparation = {};
 
            //when
            PlaygroundStateService.reset();
@@ -275,12 +266,14 @@ describe('Playground state service', function () {
            //then
            expect(playgroundState.data).toBe(null);
            expect(playgroundState.dataset).toBe(null);
-           expect(playgroundState.preparation).toBe(null);
            expect(playgroundState.nameEditionMode).toBe(false);
-           expect(playgroundState.lookupVisibility).toBe(false);
+           expect(playgroundState.lookupData).toBe(null);
+           expect(playgroundState.preparation).toBe(null);
 
            expect(GridStateService.reset).toHaveBeenCalled();
            expect(FilterStateService.reset).toHaveBeenCalled();
+           expect(LookupStateService.reset).toHaveBeenCalled();
+           expect(SuggestionsState.reset).toHaveBeenCalled();
        }));
     });
 });

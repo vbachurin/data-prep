@@ -40,7 +40,7 @@
         function getActions(datasetId) {
             return TransformationRestService.getDatasetTransformations(datasetId)
                 .then(function (lookup) {
-                    StateService.setLookupDatasets(lookup.data);
+                    StateService.setLookupActions(lookup.data);
                     return lookup.data;
                 });
         }

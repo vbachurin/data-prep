@@ -23,7 +23,7 @@ describe('Lookup Datagrid external service', function () {
 		spyOn(gridMock.onHeaderClick, 'subscribe').and.returnValue();
 		spyOn(gridMock.onHeaderContextMenu, 'subscribe').and.returnValue();
 
-		spyOn(StateService, 'setLookupGridSelection').and.returnValue();
+		spyOn(StateService, 'setLookupSelectedColumn').and.returnValue();
 	}));
 
 
@@ -64,7 +64,7 @@ describe('Lookup Datagrid external service', function () {
 			onActiveCellChanged(null, args);
 
 			//then
-			expect(StateService.setLookupGridSelection).toHaveBeenCalled();
+			expect(StateService.setLookupSelectedColumn).toHaveBeenCalled();
 		}));
 
 		it('should NOT update current selectedColumn on cell changed', inject(function ($timeout, LookupDatagridExternalService, StateService) {
@@ -75,13 +75,13 @@ describe('Lookup Datagrid external service', function () {
 
 			var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
 			onActiveCellChanged(null, args);
-			expect(StateService.setLookupGridSelection.calls.count()).toBe(1);
+			expect(StateService.setLookupSelectedColumn.calls.count()).toBe(1);
 
 			//when
 			onActiveCellChanged(null, {cell: 1});
 
 			//then
-			expect(StateService.setLookupGridSelection.calls.count()).toBe(1);
+			expect(StateService.setLookupSelectedColumn.calls.count()).toBe(1);
 		}));
 	});
 
@@ -98,7 +98,7 @@ describe('Lookup Datagrid external service', function () {
 			var onHeaderClick = gridMock.onHeaderClick.subscribe.calls.argsFor(0)[0];
 			onHeaderClick(null, args);
 
-			expect(StateService.setLookupGridSelection).toHaveBeenCalled();
+			expect(StateService.setLookupSelectedColumn).toHaveBeenCalled();
 		}));
 
 		it('should NOT update current selectedColumn on header left click twice', inject(function ($timeout, LookupDatagridExternalService, StateService) {
@@ -111,13 +111,13 @@ describe('Lookup Datagrid external service', function () {
 			var onHeaderClick = gridMock.onHeaderClick.subscribe.calls.argsFor(0)[0];
 			onHeaderClick(null, args);
 
-			expect(StateService.setLookupGridSelection.calls.count()).toBe(1);
+			expect(StateService.setLookupSelectedColumn.calls.count()).toBe(1);
 
 			//when
 			onHeaderClick(null, args);
 
 			//then
-			expect(StateService.setLookupGridSelection.calls.count()).toBe(1);
+			expect(StateService.setLookupSelectedColumn.calls.count()).toBe(1);
 		}));
 
 		it('should update current selectedColumn on header right click', inject(function ($timeout, LookupDatagridExternalService, StateService) {
@@ -130,7 +130,7 @@ describe('Lookup Datagrid external service', function () {
 			var onHeaderContextMenu = gridMock.onHeaderContextMenu.subscribe.calls.argsFor(0)[0];
 			onHeaderContextMenu(null, args);
 
-			expect(StateService.setLookupGridSelection).toHaveBeenCalled();
+			expect(StateService.setLookupSelectedColumn).toHaveBeenCalled();
 		}));
 
 		it('should NOT update current selectedColumn on header right click twice', inject(function ($timeout, LookupDatagridExternalService, StateService) {
@@ -141,13 +141,13 @@ describe('Lookup Datagrid external service', function () {
 			};
 			var onHeaderContextMenu = gridMock.onHeaderContextMenu.subscribe.calls.argsFor(0)[0];
 			onHeaderContextMenu(null, args);
-			expect(StateService.setLookupGridSelection.calls.count()).toBe(1);
+			expect(StateService.setLookupSelectedColumn.calls.count()).toBe(1);
 
 			//when
 			onHeaderContextMenu(null, args);
 
 			//then
-			expect(StateService.setLookupGridSelection.calls.count()).toBe(1);
+			expect(StateService.setLookupSelectedColumn.calls.count()).toBe(1);
 		}));
 	});
 });

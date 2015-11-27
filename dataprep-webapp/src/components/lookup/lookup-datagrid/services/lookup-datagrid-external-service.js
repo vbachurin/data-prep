@@ -28,7 +28,7 @@
                 return;
             }
             lastSelectedColumn = column.tdpColMetadata;
-            StateService.setLookupGridSelection(column);
+            StateService.setLookupSelectedColumn(column);
         }
 
         /**

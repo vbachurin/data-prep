@@ -38,7 +38,7 @@
         vm.updateColsToAdd = function updateColsToAdd(e) {
             //stop event propagation in order not to select the column
             e.stopPropagation();
-            StateService.setLookupColumnsToAdd();
+            StateService.updateLookupColumnsToAdd();
         };
     }
 

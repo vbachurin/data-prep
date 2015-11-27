@@ -1,269 +1,261 @@
-describe('Lookup Grid state service', function () {
-	'use strict';
+describe('Lookup state service', function () {
+    'use strict';
 
-	var data = {
-		columns: [
-			{ id: '0000', 'name':'identif'},
-			{ id: '0001', 'name':'code'},
-			{ id: '0002', 'name':'firstname'},
-			{ id: '0003', 'name':'lastname'}
-		],
-		records: [
-			{tdpId: 0, firstname: 'Tata'},
-			{tdpId: 1, firstname: 'Tetggggge'},
-			{tdpId: 2, firstname: 'Titi'},
-			{tdpId: 3, firstname: 'Toto'},
-			{tdpId: 4, name: 'AMC Gremlin'},
-			{tdpId: 5, firstname: 'Tyty'},
-			{tdpId: 6, firstname: 'Papa'},
-			{tdpId: 7, firstname: 'Pepe'},
-			{tdpId: 8, firstname: 'Pipi'},
-			{tdpId: 9, firstname: 'Popo'},
-			{tdpId: 10, firstname: 'Pupu'},
-			{tdpId: 11, firstname: 'Pypy'}
-		]
-	};
+    var data = {
+        columns: [
+            {id: '0000', 'name': 'identif'},
+            {id: '0001', 'name': 'code'},
+            {id: '0002', 'name': 'firstname'},
+            {id: '0003', 'name': 'lastname'}
+        ],
+        records: [
+            {tdpId: 0, firstname: 'Tata'},
+            {tdpId: 1, firstname: 'Tetggggge'},
+            {tdpId: 2, firstname: 'Titi'},
+            {tdpId: 3, firstname: 'Toto'},
+            {tdpId: 4, name: 'AMC Gremlin'},
+            {tdpId: 5, firstname: 'Tyty'},
+            {tdpId: 6, firstname: 'Papa'},
+            {tdpId: 7, firstname: 'Pepe'},
+            {tdpId: 8, firstname: 'Pipi'},
+            {tdpId: 9, firstname: 'Popo'},
+            {tdpId: 10, firstname: 'Pupu'},
+            {tdpId: 11, firstname: 'Pypy'}
+        ]
+    };
 
-	var addedToLookup = [
-		{'id':'0000' , 'name':'identif' , isAdded: false},
-		{'id':'0001' , 'name':'code' , isAdded: false},
-		{'id':'0002' , 'name':'firstname' , isAdded: false},
-		{'id':'0003' , 'name':'lastname' , isAdded: false}
-	];
+    var initialColumnCheckboxes = [
+        {'id': '0000', 'name': 'identif', isAdded: false},
+        {'id': '0001', 'name': 'code', isAdded: false},
+        {'id': '0002', 'name': 'firstname', isAdded: false},
+        {'id': '0003', 'name': 'lastname', isAdded: false}
+    ];
+    var columnCheckboxesWithSelection = [
+        {'id': '0000', 'name': 'identif', isAdded: false},
+        {'id': '0001', 'name': 'code', isAdded: false},
+        {'id': '0002', 'name': 'firstname', isAdded: true},
+        {'id': '0003', 'name': 'lastname', isAdded: true}
+    ];
 
-	var addedToLookupWithSelected = [
-		{'id':'0000','name':'identif',isAdded: false},
-		{'id':'0001','name':'code',isAdded: false},
-		{'id':'0002','name':'firstname',isAdded: true},
-		{'id':'0003','name':'lastname',isAdded: true}
-	];
+    var lookupActions = [
+        {
+            'category': 'data_blending',
+            'name': 'lookup',
+            'parameters': [
+                {
+                    'name': 'column_id',
+                    'type': 'string',
+                    'default': ''
+                },
+                {
+                    'name': 'filter',
+                    'type': 'filter',
+                    'default': ''
+                },
+                {
+                    'name': 'lookup_ds_name',
+                    'type': 'string',
+                    'default': 'lookup_2'
+                },
+                {
+                    'name': 'lookup_ds_id',
+                    'type': 'string',
+                    'default': '9e739b88-5ec9-4b58-84b5-2127a7e2eac7'
+                },
+                {
+                    'name': 'lookup_ds_url',
+                    'type': 'string',
+                    'default': 'http://172.17.0.211:8080/datasets/9ee2eac7/content?metadata=true'
+                },
+                {
+                    'name': 'lookup_join_on',
+                    'type': 'string',
+                    'default': ''
+                },
+                {
+                    'name': 'lookup_join_on_name',
+                    'type': 'string',
+                    'default': ''
+                },
+                {
+                    'name': 'lookup_selected_cols',
+                    'type': 'list',
+                    'default': ''
+                }
+            ]
+        }
+    ];
+    var lookupDataset = lookupActions[0];
 
-	var lookupDatasets = [
-		{
-			'category': 'data_blending',
-			'name': 'lookup',
-			'parameters': [
-				{
-					'name': 'column_id',
-					'type': 'string',
-					'default': ''
-				},
-				{
-					'name': 'filter',
-					'type': 'filter',
-					'default': ''
-				},
-				{
-					'name': 'lookup_ds_name',
-					'type': 'string',
-					'default': 'lookup_2'
-				},
-				{
-					'name': 'lookup_ds_id',
-					'type': 'string',
-					'default': '9e739b88-5ec9-4b58-84b5-2127a7e2eac7'
-				},
-				{
-					'name': 'lookup_ds_url',
-					'type': 'string',
-					'default': 'http://172.17.0.211:8080/datasets/9ee2eac7/content?metadata=true'
-				},
-				{
-					'name': 'lookup_join_on',
-					'type': 'string',
-					'default': ''
-				},
-				{
-					'name': 'lookup_join_on_name',
-					'type': 'string',
-					'default': ''
-				},
-				{
-					'name': 'lookup_selected_cols',
-					'type': 'list',
-					'default': ''
-				}
-			]
-		}
-	];
-	var lookupDataset = lookupDatasets[0];
+    beforeEach(module('data-prep.services.state'));
 
-	beforeEach(module('data-prep.services.state'));
+    beforeEach(inject(function (lookupState) {
+        lookupState.dataView = new DataViewMock();
+    }));
 
-	beforeEach(inject(function(gridState) {
-		gridState.dataView = new DataViewMock();
-	}));
+    describe('visibility', function () {
+        it('should set visibility flag', inject(function (lookupState, LookupStateService) {
+            //given
+            lookupState.visibility = false;
 
-	describe('data', function() {
-		it('should set data to DataView', inject(function (lookupState, LookupStateService) {
-			//given
-			expect(lookupState.dataView.getItems()).not.toBe(data.records);
+            //when
+            LookupStateService.setVisibility(true);
 
-			//when
-			LookupStateService.setData(data);
+            //then
+            expect(lookupState.visibility).toBe(true);
+        }));
+    });
 
-			//then
-			expect(lookupState.dataView.getItems()).toBe(data.records);
-			expect(lookupState.addedToLookup).toEqual(addedToLookup);
-		}));
+    describe('data', function () {
+        it('should set data to DataView', inject(function (lookupState, LookupStateService) {
+            //given
+            expect(lookupState.dataView.getItems()).not.toBe(data.records);
 
-		it('should create and set to false all the columns that will be added to the lookup', inject(function (lookupState, LookupStateService) {
-			//given
-			expect(lookupState.dataView.getItems()).toBe(data.records);
-			lookupState.addedToLookup = [];
+            //when
+            LookupStateService.setData(data);
 
-			//when
-			LookupStateService.setData(data);
+            //then
+            expect(lookupState.dataView.getItems()).toBe(data.records);
+        }));
 
-			//then
-			expect(lookupState.addedToLookup).toEqual(addedToLookup);
-			expect(lookupState.lookupColumnsToAdd).toEqual([]);
-		}));
+        it('should initialize the column checkboxes', inject(function (lookupState, LookupStateService) {
+            //given
+            lookupState.columnCheckboxes = [];
 
-		it('should update column selection metadata with the new metadata corresponding to the selected id', inject(function (lookupState, LookupStateService) {
-			//given
-			var oldMetadata = {id: '0001'};
-			lookupState.selectedColumn = oldMetadata;
+            //when
+            LookupStateService.setData(data);
 
-			//when
-			LookupStateService.setData(data);
+            //then
+            expect(lookupState.columnCheckboxes).toEqual(initialColumnCheckboxes);
+        }));
 
-			//then
-			expect(lookupState.selectedColumn).not.toBe(oldMetadata);
-			expect(lookupState.selectedColumn).toBe(data.columns[1]);
-		}));
+        it('should reset columns to add', inject(function (lookupState, LookupStateService) {
+            //given
+            lookupState.columnsToAdd = [{}];
 
-		it('should update column selection metadata with the 1st column when actual selected column is not in the new columns', inject(function (lookupState, LookupStateService) {
-			//given
-			var oldMetadata = {id: '0018'};
-			lookupState.selectedColumn = oldMetadata;
+            //when
+            LookupStateService.setData(data);
 
-			//when
-			LookupStateService.setData(data);
+            //then
+            expect(lookupState.columnsToAdd).toEqual([]);
+        }));
 
-			//then
-			expect(lookupState.selectedColumn).not.toBe(oldMetadata);
-			expect(lookupState.selectedColumn).toBe(data.columns[0]);
-		}));
+        it('should update selected column to the 1st column', inject(function (lookupState, LookupStateService) {
+            //given
+            lookupState.selectedColumn = {id: '0001'};
 
-		it('should update column selection metadata with the first column metadata when there is no selected column yet', inject(function (lookupState, LookupStateService) {
-			//given
-			lookupState.selectedColumn = null;
+            //when
+            LookupStateService.setData(data);
 
-			//when
-			LookupStateService.setData(data);
+            //then
+            expect(lookupState.selectedColumn).toBe(data.columns[0]);
+        }));
+    });
 
-			//then
-			expect(lookupState.selectedColumn).toBe(data.columns[0]);
-		}));
+    describe('dataset', function () {
+        it('should set dataset', inject(function (lookupState, LookupStateService) {
+            //given
+            lookupState.dataset = null;
 
-	});
+            //when
+            LookupStateService.setDataset(lookupDataset);
 
-	describe('grid event result state', function() {
-		it('should set focused columns', inject(function (lookupState, LookupStateService) {
-			//given
-			expect(lookupState.columnFocus).toBeFalsy();
+            //then
+            expect(lookupState.dataset).toBe(lookupDataset);
+        }));
+    });
 
-			//when
-			LookupStateService.setColumnFocus('0001');
+    describe('actions', function () {
+        it('should set actions', inject(function (lookupState, LookupStateService) {
+            //given
+            lookupState.actions = [];
 
-			//then
-			expect(lookupState.columnFocus).toBe('0001');
-		}));
+            //when
+            LookupStateService.setActions(lookupActions);
 
-		it('should set grid selection', inject(function (lookupState, LookupStateService) {
-			//given
-			lookupState.selectedColumn = null;
-			lookupState.selectedLine = null;
+            //then
+            expect(lookupState.actions).toBe(lookupActions);
+        }));
+    });
 
-			//when
-			LookupStateService.setGridSelection('0001');
+    describe('grid event', function () {
+        it('should update the columns to add corresponding to the checkboxes model', inject(function (lookupState, LookupStateService) {
+            //given
+            lookupState.columnCheckboxes = columnCheckboxesWithSelection;
+            lookupState.columnsToAdd = null;
 
-			//then
-			expect(lookupState.selectedColumn).toBe('0001');
-		}));
+            //when
+            LookupStateService.updateColumnsToAdd();
 
-		it('should set columns list to be added', inject(function (lookupState, LookupStateService) {
-			//given
-			lookupState.addedToLookup = addedToLookupWithSelected;
-			lookupState.lookupColumnsToAdd = null;
+            //then
+            expect(lookupState.columnsToAdd).toEqual([
+                {id: '0002', name: 'firstname'},
+                {id: '0003', name: 'lastname'}
+            ]);
+        }));
 
-			//when
-			LookupStateService.setLookupColumnsToAdd();
+        it('should set selected column', inject(function (lookupState, LookupStateService) {
+            //given
+            lookupState.selectedColumn = null;
+            var selectedColumn = {id: '0001'};
 
-			//then
-			expect(lookupState.lookupColumnsToAdd).toEqual([ { id: '0002', name: 'firstname' }, { id: '0003', name: 'lastname' } ] );
-		}));
+            //when
+            LookupStateService.setSelectedColumn(selectedColumn);
 
-		it('should collect the columns Ids to be added ', inject(function (lookupState, LookupStateService) {
-			//given
-			lookupState.addedToLookup = addedToLookupWithSelected;
+            //then
+            expect(lookupState.selectedColumn).toBe(selectedColumn);
+        }));
 
-			//when
-			LookupStateService.setGridSelection('0001');
+        it('should update the columns to add on new column selection', inject(function (lookupState, LookupStateService) {
+            //given
+            lookupState.columnCheckboxes = columnCheckboxesWithSelection;
+            var selectedColumn = {id: '0001'};
 
-			//then
-			expect(lookupState.lookupColumnsToAdd).toEqual([ { id: '0002', name: 'firstname' }, { id: '0003', name: 'lastname' } ]);
-		}));
+            //when
+            LookupStateService.setSelectedColumn(selectedColumn);
 
-		it('should not collect the columns Ids to be added ', inject(function (lookupState, LookupStateService) {
-			//given
-			lookupState.addedToLookup = addedToLookupWithSelected;
-			var addedCols = ['0018'];
-			lookupState.lookupColumnsToAdd = addedCols;
+            //then
+            expect(lookupState.columnsToAdd).toEqual([
+                {id: '0002', name: 'firstname'},
+                {id: '0003', name: 'lastname'}]
+            );
+        }));
 
-			//when
-			LookupStateService.setGridSelection(null);
+        it('should NOT update the columns to add when there is no selected column', inject(function (lookupState, LookupStateService) {
+            //given
+            var addedCols = ['0018'];
+            lookupState.columnsToAdd = addedCols;
+            lookupState.columnCheckboxes = columnCheckboxesWithSelection;
 
-			//then
-			expect(lookupState.lookupColumnsToAdd).toBe(addedCols);
-		}));
-	});
+            //when
+            LookupStateService.setSelectedColumn(null);
 
-	describe('reset', function() {
-		it('should reset event result state', inject(function(lookupState, LookupStateService) {
-			//given
-			lookupState.columnFocus = '0001';
-			lookupState.selectedColumn = '0001';
-			lookupState.selectedLine = 2;
-			lookupState.lookupColumnsToAdd = ['0000'];
-			lookupState.addedToLookup = [{id:'0001', isAdded: true, name:'vfvf'}];
-			lookupState.datasets = [{}, {}];
+            //then
+            expect(lookupState.columnsToAdd).toBe(addedCols);
+        }));
+    });
 
-			//when
-			LookupStateService.reset();
+    describe('reset', function () {
+        it('should reset state', inject(function (lookupState, LookupStateService) {
+            //given
+            lookupState.actions = [{}, {}];
+            lookupState.columnsToAdd = ['0000'];
+            lookupState.columnCheckboxes = [{id: '0001', isAdded: true, name: 'vfvf'}];
+            lookupState.dataset = {};
+            lookupState.selectedColumn = '0001';
+            lookupState.visibility = true;
 
-			//then
-			expect(lookupState.columnFocus).toBe(null);
-			expect(lookupState.selectedColumn).toBe(null);
-			expect(lookupState.selectedLine).toBe(null);
-			expect(lookupState.lookupColumnsToAdd).toEqual([]);
-			expect(lookupState.addedToLookup).toEqual([]);
-			expect(lookupState.datasets).toEqual([]);
-		}));
-	});
+            //when
+            LookupStateService.reset();
 
-	describe('Lookup Dataset', function() {
-		it('should set lookup dataset', inject(function(lookupState, LookupStateService) {
-			//given
-			lookupState.dataset = null;
+            //then
+            expect(lookupState.actions).toEqual([]);
+            expect(lookupState.columnsToAdd).toEqual([]);
+            expect(lookupState.columnCheckboxes).toEqual([]);
+            expect(lookupState.dataset).toBe(null);
+            expect(lookupState.selectedColumn).toBe(null);
+            expect(lookupState.visibility).toBe(false);
+        }));
+    });
 
-			//when
-			LookupStateService.setDataset(lookupDataset);
-
-			//then
-			expect(lookupState.dataset).toBe(lookupDataset);
-		}));
-
-		it('should set lookup datasets', inject(function(lookupState, LookupStateService) {
-			//given
-			lookupState.datasets = [];
-
-			//when
-			LookupStateService.setPotentialDatasets(lookupDatasets);
-
-			//then
-			expect(lookupState.datasets).toBe(lookupDatasets);
-		}));
-	});
 });

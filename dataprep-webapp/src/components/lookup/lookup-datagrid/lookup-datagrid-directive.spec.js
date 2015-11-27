@@ -50,7 +50,7 @@ describe('Lookup datagrid directive', function() {
 		spyOn(LookupDatagridSizeService, 'autosizeColumns').and.returnValue();
 		spyOn(LookupDatagridStyleService, 'updateColumnClass').and.returnValue();
 		spyOn(LookupDatagridStyleService, 'resetCellStyles').and.returnValue();
-		spyOn(StateService, 'setLookupGridSelection').and.returnValue();
+		spyOn(StateService, 'setLookupSelectedColumn').and.returnValue();
 	}));
 
 	beforeEach(function() {

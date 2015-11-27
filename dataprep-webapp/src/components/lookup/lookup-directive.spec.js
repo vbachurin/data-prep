@@ -8,7 +8,7 @@ describe('Lookup directive', function() {
 		StateMock = {
 			playground : {
 				lookup : {
-					lookupColumnsToAdd : [],
+					columnsToAdd : [],
 					selectedColumn : {}
 				},
 				grid : {
@@ -33,7 +33,7 @@ describe('Lookup directive', function() {
 
 
 	afterEach(function() {
-		StateMock.playground.lookup.lookupColumnsToAdd = [];
+		StateMock.playground.lookup.columnsToAdd = [];
 		StateMock.playground.lookup.selectedColumn = null;
 		StateMock.playground.grid.selectedColumn = null;
 
@@ -51,7 +51,7 @@ describe('Lookup directive', function() {
 
 	it('should enable submit button when the 2 columns are selected', function() {
 		//given
-		StateMock.playground.lookup.lookupColumnsToAdd = [1,2];
+		StateMock.playground.lookup.columnsToAdd = [1,2];
 
 		//when
 		createElement();
@@ -63,14 +63,14 @@ describe('Lookup directive', function() {
 
 	it('should disable submit button when there is no more selected columns', function() {
 		//given
-		StateMock.playground.lookup.lookupColumnsToAdd = [1,2];
+		StateMock.playground.lookup.columnsToAdd = [1,2];
 
 		createElement();
 		scope.$digest();
 		expect(element.find('#lookup-submit-btn-id').attr('disabled')).toBe(undefined);
 
 		//when
-		StateMock.playground.lookup.lookupColumnsToAdd = [];
+		StateMock.playground.lookup.columnsToAdd = [];
 		scope.$digest();
 
 		//then
@@ -80,7 +80,7 @@ describe('Lookup directive', function() {
 
 	it('should disable submit button when the tdpId column is selected', function() {
 		//given
-		StateMock.playground.lookup.lookupColumnsToAdd = [1,2];
+		StateMock.playground.lookup.columnsToAdd = [1,2];
 		StateMock.playground.lookup.selectedColumn = null;
 
 		//when
@@ -93,7 +93,7 @@ describe('Lookup directive', function() {
 
 	it('should enable submit button when the there are 2 columns selected and the tdpId is not selected', function() {
 		//given
-		StateMock.playground.lookup.lookupColumnsToAdd = [1,2];
+		StateMock.playground.lookup.columnsToAdd = [1,2];
 		StateMock.playground.lookup.selectedColumn = {id:'0001'};
 
 		//when
@@ -106,7 +106,7 @@ describe('Lookup directive', function() {
 
 	it('should disable submit button when in the main dataset the tdpId is selected', function() {
 		//given
-		StateMock.playground.lookup.lookupColumnsToAdd = [1,2];
+		StateMock.playground.lookup.columnsToAdd = [1,2];
 		StateMock.playground.lookup.selectedColumn = {id:'0000'};
 		StateMock.playground.grid.selectedColumn = null;
 
@@ -120,7 +120,7 @@ describe('Lookup directive', function() {
 
 	it('should enable submit button when there are columns checked, the tdpId is not selected neither in the main nor in the lookup', function() {
 		//given
-		StateMock.playground.lookup.lookupColumnsToAdd = [1,2];
+		StateMock.playground.lookup.columnsToAdd = [1,2];
 		StateMock.playground.lookup.selectedColumn = {id:'0000'};
 		StateMock.playground.grid.selectedColumn = {id:'0000'};
 

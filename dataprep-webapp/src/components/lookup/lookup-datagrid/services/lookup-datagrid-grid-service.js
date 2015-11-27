@@ -57,14 +57,14 @@
                 if (angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
                     $timeout(function(){
-                        StateService.setLookupGridSelection(column.tdpColMetadata);
+                        StateService.setLookupSelectedColumn(column.tdpColMetadata);
                     });
                 }
             });
 
             grid.onHeaderClick.subscribe(function (e, args) {
                 $timeout(function(){
-                    StateService.setLookupGridSelection(args.column.tdpColMetadata);
+                    StateService.setLookupSelectedColumn(args.column.tdpColMetadata);
                 });
             });
         }

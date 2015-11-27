@@ -78,7 +78,7 @@ describe('Lookup controller', function () {
 						id:'lookupGridColId',
 						name:'lookupGridColName'
 					},
-					lookupColumnsToAdd: ['0002','0003'],
+					columnsToAdd: ['0002','0003'],
 					datasets:dsActions,
 					dataset:dsActions[0]
 				}

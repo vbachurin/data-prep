@@ -17,7 +17,7 @@ describe('Datagrid directive', function () {
             playground: {
                 filter: {gridFilters: []},
                 grid: {dataView: dataViewMock},
-                lookupVisibility: false
+                lookup: {visibility: false}
             }
         };
         $provide.constant('state', stateMock);
@@ -271,7 +271,7 @@ describe('Datagrid directive', function () {
             expect(grid.resizeCanvas).not.toHaveBeenCalled();
 
             //when
-            stateMock.playground.lookupVisibility = true;
+            stateMock.playground.lookup.visibility = true;
             scope.$digest();
             jasmine.clock().tick(200);
 

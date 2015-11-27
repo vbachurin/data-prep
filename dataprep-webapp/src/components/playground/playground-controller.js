@@ -98,9 +98,9 @@
          * @description show hides lookup panel and populates its grid
          */
         vm.toggleLookup = function toggleLookup() {
-            StateService.setLookupVisibility(!state.playground.lookupVisibility);
+            StateService.setLookupVisibility(!state.playground.lookup.visibility);
 
-            if (!state.playground.lookup.datasets.length) {
+            if (!state.playground.lookup.actions.length) {
                 LookupService.getActions(state.playground.dataset.id)
                     .then(function (lookupActions) {
                         if (lookupActions.length) {

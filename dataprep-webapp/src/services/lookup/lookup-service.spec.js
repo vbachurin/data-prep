@@ -74,7 +74,7 @@ describe('lookup service', function () {
         spyOn(DatasetRestService, 'getContentFromUrl').and.returnValue($q.when(dsLookupContent));
         spyOn(TransformationRestService, 'getDatasetTransformations').and.returnValue($q.when(dsActions));
         spyOn(StateService, 'setCurrentLookupData').and.returnValue();
-        spyOn(StateService, 'setLookupDatasets').and.returnValue();
+        spyOn(StateService, 'setLookupActions').and.returnValue();
         spyOn(StateService, 'setLookupDataset').and.returnValue();
     }));
 
@@ -110,6 +110,6 @@ describe('lookup service', function () {
         $rootScope.$digest();
 
         //then
-        expect(StateService.setLookupDatasets).toHaveBeenCalledWith(dsActions.data);
+        expect(StateService.setLookupActions).toHaveBeenCalledWith(dsActions.data);
     }));
 });

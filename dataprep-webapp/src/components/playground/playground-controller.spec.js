@@ -7,7 +7,7 @@ describe('Playground controller', function () {
         stateMock = {playground: {
             dataset: {},
             lookup: {
-                datasets: []
+                actions: []
             }
         }};
         $provide.constant('state', stateMock);
@@ -226,7 +226,7 @@ describe('Playground controller', function () {
 
         it('should toggle lookup visibility', inject(function (StateService) {
             //given
-            stateMock.playground.lookupVisibility = false;
+            stateMock.playground.actionsVisibility = false;
 
             //when
             ctrl.toggleLookup();
@@ -238,7 +238,7 @@ describe('Playground controller', function () {
         it('should fetch lookup datasets when it is not already initialized', inject(function ($q, LookupService) {
             //given
             stateMock.playground.dataset = {id: 'ds54sd-ds5d4s-4dssd8'};
-            stateMock.playground.lookup.datasets = [];
+            stateMock.playground.lookup.actions = [];
             spyOn(LookupService, 'getActions').and.returnValue($q.when(true));
 
             //when
@@ -251,7 +251,7 @@ describe('Playground controller', function () {
         it('should NOT fetch lookup datasets when it is already initialized', inject(function ($q, LookupService) {
             //given
             stateMock.playground.dataset = {id: 'ds54sd-ds5d4s-4dssd8'};
-            stateMock.playground.lookup.datasets = [{}];
+            stateMock.playground.lookup.actions = [{}];
             spyOn(LookupService, 'getActions').and.returnValue($q.when(true));
 
             //when
@@ -272,7 +272,7 @@ describe('Playground controller', function () {
                 parameters: []
             };
             stateMock.playground.dataset = {id: 'ds54sd-ds5d4s-4dssd8'};
-            stateMock.playground.lookup.datasets = [];
+            stateMock.playground.lookup.actions = [];
             spyOn(LookupService, 'getActions').and.returnValue($q.when([lookupDataset, lookupDataset2]));
 
             //when
@@ -286,7 +286,7 @@ describe('Playground controller', function () {
         it('should NOT load lookup dataset content when the potential lookup datasets are empty', inject(function ($q, LookupService) {
             //given
             stateMock.playground.dataset = {id: 'ds54sd-ds5d4s-4dssd8'};
-            stateMock.playground.lookup.datasets = [];
+            stateMock.playground.lookup.actions = [];
             spyOn(LookupService, 'getActions').and.returnValue($q.when(true));
 
             //when
