@@ -6,7 +6,7 @@
      * @name talend.widget.controller:NavigationListCtrl
      * @description navigation-list directive controller
      */
-    function NavigationListCtrl() {
+    function NavigationListCtrl($scope) {
         var vm = this;
 
         /**
@@ -48,6 +48,16 @@
             vm.firstLabelIndex++;
             vm.lastLabelIndex++;
         };
+
+        /**************************************************************************************************************/
+        /******************************** Watcher to reset the navigation list  limits ********************************/
+        /**************************************************************************************************************/
+        $scope.$watch(function(){
+            return vm.list;
+        }, function() {
+            vm.firstLabelIndex = 0;
+            vm.lastLabelIndex = +vm.nbreLabelsToShow;
+        });
     }
 
     angular.module('talend.widget')
