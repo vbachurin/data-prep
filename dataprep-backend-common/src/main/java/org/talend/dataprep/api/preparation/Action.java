@@ -95,6 +95,11 @@ public class Action implements Serializable {
         return Objects.equals(action, action1.action) && Objects.equals(parameters, action1.parameters);
     }
 
+    @Override
+    public String toString() {
+        return "Action{" + "action='" + action + '\'' + ", parameters=" + parameters + '}';
+    }
+
     /**
      * @see Object#hashCode()
      */
