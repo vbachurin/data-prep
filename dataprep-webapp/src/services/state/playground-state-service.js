@@ -8,11 +8,11 @@
         GridStateService, gridState,
         FilterStateService, filterState,
         SuggestionsState, suggestionsState,
-        LookupGridStateService, lookupGridState) {
+        LookupStateService, lookupState) {
 
         playgroundState.recipe = recipeState;
         playgroundState.grid = gridState;
-        playgroundState.lookup = lookupGridState;
+        playgroundState.lookup = lookupState;
         playgroundState.filter = filterState;
         playgroundState.suggestions = suggestionsState;
 
@@ -38,12 +38,12 @@
             setGridSelection: GridStateService.setGridSelection,
 
             //lookup-datagrid
-            setLookupColumnFocus: LookupGridStateService.setColumnFocus,
-            setLookupGridSelection: LookupGridStateService.setGridSelection,
-            setLookupDataset: LookupGridStateService.setDataset,
-            setLookupColumnsToAdd: LookupGridStateService.setLookupColumnsToAdd,
-            resetLookup: LookupGridStateService.reset,
-            setLookupDatasets: LookupGridStateService.setPotentialDatasets,
+            setLookupColumnFocus: LookupStateService.setColumnFocus,
+            setLookupGridSelection: LookupStateService.setGridSelection,
+            setLookupDataset: LookupStateService.setDataset,
+            setLookupColumnsToAdd: LookupStateService.setLookupColumnsToAdd,
+            resetLookup: LookupStateService.reset,
+            setLookupDatasets: LookupStateService.setPotentialDatasets,
 
             //filters
             addGridFilter: addGridFilter,
@@ -69,7 +69,7 @@
 
         function setLookupData(data) {
             playgroundState.lookupData = data;
-            LookupGridStateService.setData(data);
+            LookupStateService.setData(data);
         }
 
         function setPreparation(preparation) {
@@ -131,7 +131,7 @@
             playgroundState.lookupData = null;
 
             GridStateService.reset();
-            LookupGridStateService.reset();
+            LookupStateService.reset();
             FilterStateService.reset();
             SuggestionsState.reset();
         }
