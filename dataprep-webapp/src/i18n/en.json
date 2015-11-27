@@ -67,10 +67,10 @@
   "OK": "OK",
   "CONFIRM": "Confirm",
   "_comment": "Import datasets",
-  "IMPORT_DATASET": "Import Dataset",
-  "IMPORT_HTTP_DATASET": "Import HTTP Dataset",
+  "IMPORT_DATASET": "Create Dataset",
+  "IMPORT_HTTP_DATASET": "Create HTTP Dataset",
   "ENTER_DATASET_URL": "Enter the dataset URL",
-  "IMPORT_HDFS_DATASET": "Import HDFS Dataset",
+  "IMPORT_HDFS_DATASET": "Create HDFS Dataset",
 
   "_comment": "Common",
   "LOADING": "Loading...",
