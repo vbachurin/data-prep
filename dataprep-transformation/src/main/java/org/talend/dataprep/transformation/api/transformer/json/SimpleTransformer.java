@@ -77,10 +77,15 @@ class SimpleTransformer implements Transformer {
     }
 
     // Indicate what the current status related to Analyzer configuration.
-    private AnalysisStatus currentAnalysisStatus = AnalysisStatus.SCHEMA_ANALYSIS;
+    private ThreadLocal<AnalysisStatus> currentAnalysisStatus = new ThreadLocal<AnalysisStatus>() {
+        @Override
+        protected AnalysisStatus initialValue() {
+            return AnalysisStatus.SCHEMA_ANALYSIS;
+        }
+    };
 
     private Analyzer<Analyzers.Result> configureAnalyzer(TransformationContext context, DataSetRow row) {
-        switch (currentAnalysisStatus) {
+        switch (currentAnalysisStatus.get()) {
             case SCHEMA_ANALYSIS:
                 if (initialAnalysisBuffer.size() < ANALYSIS_BUFFER_SIZE) {
                     initialAnalysisBuffer.add(row.clone());
@@ -108,7 +113,7 @@ class SimpleTransformer implements Transformer {
 
     // Empty the initial buffer and perform an early schema analysis, configure a full analyzer, run full analysis on
     private void emptyInitialAnalysisBuffer(TransformationContext context, DataSetRow row) {
-        if (currentAnalysisStatus == AnalysisStatus.FULL_ANALYSIS || initialAnalysisBuffer.isEmpty()) {
+        if (currentAnalysisStatus.get() == AnalysisStatus.FULL_ANALYSIS || initialAnalysisBuffer.isEmpty()) {
             // Got called for nothing
             return;
         }
@@ -126,7 +131,7 @@ class SimpleTransformer implements Transformer {
         }
         // Clear all stored records and set current status to FULL_ANALYSIS for further records.
         initialAnalysisBuffer.clear();
-        currentAnalysisStatus = AnalysisStatus.FULL_ANALYSIS;
+        currentAnalysisStatus.set(AnalysisStatus.FULL_ANALYSIS);
     }
 
     /**
@@ -208,6 +213,8 @@ class SimpleTransformer implements Transformer {
             writer.flush();
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
+        } finally {
+            currentAnalysisStatus.remove();
         }
     }
 
