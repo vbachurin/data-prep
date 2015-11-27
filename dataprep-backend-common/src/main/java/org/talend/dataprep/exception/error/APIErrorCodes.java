@@ -24,8 +24,10 @@ public enum APIErrorCodes implements ErrorCode {
     UNABLE_TO_RETRIEVE_PREPARATION_CONTENT(400),
     UNABLE_TO_UPDATE_PREPARATION(400, "id"),
     UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS(400, "columnName", "dataSetId"),
+    UNABLE_TO_SEND_MAIL(500, "mail"),
     UNABLE_TO_FIND_COMMAND(500, "class", "args"),
     UNABLE_TO_GET_PREPARATION_DETAILS(400),
+    UNABLE_TO_GET_MAIL_DETAILS(400),
     UNABLE_TO_TRANSFORM_DATASET(400, "dataSetId"),
     UNABLE_TO_UPDATE_ACTION_IN_PREPARATION(400, "id"),
     UNABLE_TO_DELETE_ACTION_IN_PREPARATION(400, "id", "stepId"),
@@ -43,15 +45,19 @@ public enum APIErrorCodes implements ErrorCode {
     UNABLE_TO_LIST_FOLDER_ENTRIES(400),
     DATASET_REDIRECT(301);
 
-    /** The http status to use. */
+    /**
+     * The http status to use.
+     */
     private int httpStatus;
 
-    /** Expected entries to be in the context. */
+    /**
+     * Expected entries to be in the context.
+     */
     private List<String> expectedContextEntries;
 
     /**
      * default constructor.
-     * 
+     *
      * @param httpStatus the http status to use.
      */
     APIErrorCodes(int httpStatus) {
@@ -61,8 +67,8 @@ public enum APIErrorCodes implements ErrorCode {
 
     /**
      * default constructor.
-     * 
-     * @param httpStatus the http status to use.
+     *
+     * @param httpStatus     the http status to use.
      * @param contextEntries expected context entries.
      */
     APIErrorCodes(int httpStatus, String... contextEntries) {
@@ -73,37 +79,32 @@ public enum APIErrorCodes implements ErrorCode {
     /**
      * @return the product.
      */
-    @Override
-    public String getProduct() {
+    @Override public String getProduct() {
         return "TDP"; //$NON-NLS-1$
     }
 
     /**
      * @return the group.
      */
-    @Override
-    public String getGroup() {
+    @Override public String getGroup() {
         return "API"; //$NON-NLS-1$
     }
 
     /**
      * @return the http status.
      */
-    @Override
-    public int getHttpStatus() {
+    @Override public int getHttpStatus() {
         return httpStatus;
     }
 
     /**
      * @return the expected context entries.
      */
-    @Override
-    public Collection<String> getExpectedContextEntries() {
+    @Override public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
     }
 
-    @Override
-    public String getCode() {
+    @Override public String getCode() {
         return this.toString();
     }
 }

@@ -19,14 +19,19 @@ import com.wordnik.swagger.annotations.ApiOperation;
         extends APIService {
 
     @RequestMapping(value = "/api/mail", method = PUT) @ApiOperation(value = "Send feedback to Talend") @Timed public void mailTo(
-            @RequestBody MailDetails feedBack) {
+            @RequestBody MailDetails mailDetails) {
+        if (mailDetails.isEmpty()) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_GET_MAIL_DETAILS);
+        }
         try {
-            final HystrixCommand<Void> sendFeedback = getCommand(MailToCommand.class, feedBack);
+
+            final HystrixCommand<Void> sendFeedback = getCommand(MailToCommand.class, mailDetails);
             sendFeedback.execute();
 
         } catch (Exception e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_FIND_COMMAND, e);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_SEND_MAIL, e);
         }
+
     }
 
 }

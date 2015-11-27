@@ -4,6 +4,8 @@ import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.APIErrorCodes;
 
 @Component @Scope("request") public class MailToCommand extends HystrixCommand<Void> {
 
@@ -16,17 +18,18 @@ import org.springframework.stereotype.Component;
         this.mailDetails = mailDetails;
     }
 
-    @Override
-    protected Void run() throws Exception {
+    @Override protected Void run() throws Exception {
         // TODO: Retrieve and send version with the feedback info object
 
-        String body = "Version=0.10 BETA<br/>";
-        body += "Sender=" + mailDetails.getMail() + "<br/>";
-        body += "Type=" + mailDetails.getType() + "<br/>";
-        body += "Severity=" + mailDetails.getSeverity() + "<br/>";
-        body += "Description=" + mailDetails.getDescription() + "<br/>";
+        try {
+            String body = "Version=0.10 BETA<br/>" + "Sender=" + mailDetails.getMail() + "<br/>" + "Type=" + mailDetails.getType()
+                    + "<br/>" + "Severity=" + mailDetails.getSeverity() + "<br/>" + "Description=" + mailDetails.getDescription()
+                    + "<br/>";
 
-        MailSender.getInstance().send(mailDetails.getTitle(), body);
+            MailSender.getInstance().send(mailDetails.getTitle(), body);
+        } catch (Exception e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_SEND_MAIL, e);
+        }
         return null;
     }
 }

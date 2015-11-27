@@ -1,5 +1,7 @@
 package org.talend.dataprep.api.service.mail;
 
+import org.elasticsearch.common.lang3.StringUtils;
+
 import java.io.Serializable;
 
 /**
@@ -55,6 +57,12 @@ public class MailDetails implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isEmpty() {
+        return StringUtils.isEmpty(title) && StringUtils.isEmpty(mail) && StringUtils.isEmpty(severity) && StringUtils
+                .isEmpty(type) &&
+                StringUtils.isEmpty(description);
     }
 
     @Override public String toString() {

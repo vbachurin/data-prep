@@ -17,6 +17,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.log4j.Logger;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.APIErrorCodes;
 
 /**
  * Utility class to send mail.
@@ -37,6 +39,7 @@ public class MailSender {
     }
 
     public void send(String subject, String body) {
+
         send(subject, body, Configuration.INSTANCE.getAsString("mail.smtp.to"));
     }
 
@@ -99,7 +102,7 @@ public class MailSender {
 
             log.debug("Sending mail:'" + subject + "' to '" + Configuration.INSTANCE.getAsString("mail.smtp.to") + "'");
         } catch (Exception e) {
-            log.error("Problem when sending mail", e);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_SEND_MAIL, e);
         }
     }
 
