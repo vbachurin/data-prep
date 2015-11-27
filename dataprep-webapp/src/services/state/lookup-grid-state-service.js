@@ -82,6 +82,7 @@
 
 			updateSelectedColumn(data);
 			lookupGridState.addedToLookup = [];
+			lookupGridState.lookupColumnsToAdd = [];//in order to disable the Confirm button & to synch with the state
 			_.each(data.columns, function(col){
 				lookupGridState.addedToLookup.push({
 					isAdded : false,
@@ -89,7 +90,6 @@
 					id: col.id
 				});
 			});
-			setLookupColumnsToAdd();
 		}
 
 		function setDataset(dataset) {

@@ -83,6 +83,12 @@
         //--------------------------------------------------------------------------------------------------------------
         //------------------------------------------------------LOOKUP--------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name toggleLookup
+         * @methodOf data-prep.playground.controller:PlaygroundCtrl
+         * @description show hides lookup panel and populates its grid
+         */
         vm.toggleLookup = function toggleLookup() {
             StateService.setLookupVisibility(!state.playground.lookupVisibility);
             if(!vm.state.playground.lookupGrid.datasets.length){
