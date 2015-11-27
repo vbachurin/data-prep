@@ -16,9 +16,17 @@ import org.springframework.stereotype.Component;
         this.mailDetails = mailDetails;
     }
 
-    @Override protected Void run() throws Exception {
-        //TODO: Retrieve and send version with the feedback info object
-        MailSender.getInstance().send(mailDetails.getTitle(), mailDetails.getDescription(), mailDetails.getMail());
+    @Override
+    protected Void run() throws Exception {
+        // TODO: Retrieve and send version with the feedback info object
+
+        String body = "Version=0.10 BETA<br/>";
+        body += "Sender=" + mailDetails.getMail() + "<br/>";
+        body += "Type=" + mailDetails.getType() + "<br/>";
+        body += "Severity=" + mailDetails.getSeverity() + "<br/>";
+        body += "Description=" + mailDetails.getDescription() + "<br/>";
+
+        MailSender.getInstance().send(mailDetails.getTitle(), body);
         return null;
     }
 }
