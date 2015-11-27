@@ -1,10 +1,11 @@
 (function () {
     'use strict';
 
-    function NavbarCtrl($state, OnboardingService, DatasetService) {
+    function NavbarCtrl($state, version, OnboardingService, DatasetService) {
 
         var tourId = 'dataset';
         this.startTour = OnboardingService.startTour;
+        this.version = version;
 
         if ($state.current.name === 'nav.home.datasets' && !$state.params.datasetid && OnboardingService.shouldStartTour(tourId)) {
             DatasetService.getDatasets().then(function () {

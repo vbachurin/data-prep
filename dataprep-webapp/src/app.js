@@ -99,6 +99,9 @@ var fetchConfiguration, bootstrapDataPrepApplication;
                     .run(['RestURLs', function (RestURLs) {
                         RestURLs.setServerUrl(config.data.serverUrl);
                     }]);
+
+                angular.module('data-prep.services.utils')
+                    .value('version', config.data.version);
             });
     };
 
