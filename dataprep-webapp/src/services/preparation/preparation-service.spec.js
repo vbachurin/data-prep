@@ -13,7 +13,7 @@ describe('Preparation Service', function () {
 
     beforeEach(module('data-prep.services.preparation'));
 
-    beforeEach(inject(function($q, DatasetListService, PreparationListService, PreparationRestService, StorageService) {
+    beforeEach(inject(function($q, DatasetListService, PreparationListService, PreparationRestService, StorageService, FolderService) {
         preparationConsolidation = $q.when(true);
         datasetConsolidation = $q.when(datasets);
 
@@ -36,6 +36,8 @@ describe('Preparation Service', function () {
         spyOn(StorageService, 'savePreparationAggregationsFromDataset').and.returnValue();
         spyOn(StorageService, 'removeAllAggregations').and.returnValue();
         spyOn(StorageService, 'moveAggregations').and.returnValue();
+
+        spyOn(FolderService, 'refreshDefaultPreparationForCurrentFolder').and.returnValue();
     }));
 
     describe('getter/refresher', function() {
@@ -74,7 +76,7 @@ describe('Preparation Service', function () {
             expect(result).toBe(preparations);
         }));
 
-        it('should consolidate preparations and datasets on refresh', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService) {
+        it('should consolidate preparations and datasets on refresh', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService, FolderService) {
             //when
             PreparationService.refreshPreparations();
             PreparationListService.preparations = preparations; //simulate preparations list update
@@ -83,6 +85,7 @@ describe('Preparation Service', function () {
             //then
             expect(DatasetListService.refreshDefaultPreparation).toHaveBeenCalledWith(preparations);
             expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
+            expect(FolderService.refreshDefaultPreparationForCurrentFolder).toHaveBeenCalled();
         }));
 
         it('should not refresh but return a promise resolving existing preparations if they are already fetched', inject(function ($rootScope, PreparationService, PreparationListService) {

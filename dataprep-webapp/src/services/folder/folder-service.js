@@ -7,14 +7,16 @@
      * @description Folder service. This service provide the entry point to the Folder service.
      * @requires data-prep.services.folder.service:FolderRestService
      * @requires data-prep.services.state.service:StateService
+     * @requires data-prep.services.preparation.service:PreparationListService
      */
-    function FolderService(FolderRestService,StateService, DatasetListSortService, $translate) {
+    function FolderService(state, FolderRestService,StateService, DatasetListSortService, $translate, PreparationListService) {
 
         return {
             // folder operations
             create: createFolder,
             renameFolder: renameFolder,
             getFolderContent: getFolderContent,
+            refreshDefaultPreparationForCurrentFolder: refreshDefaultPreparationForCurrentFolder,
 
             // shared folder ui mngt
             buidStackFromId: buidStackFromId,
@@ -100,6 +102,26 @@
 
         /**
          * @ngdoc method
+         * @name consolidatePreparationsAndDatasetsForCurrentFolder
+         * @methodOf data-prep.folder.controller:FolderCtrl
+         */
+        function refreshDefaultPreparationForCurrentFolder(preparations){
+            // group preparation per dataset
+            var datasetPreps = _.groupBy(preparations, function(preparation){
+                return preparation.dataSetId;
+            });
+
+            // reset default preparation for all datasets
+            _.forEach(state.folder.currentFolderContent.datasets, function(dataset){
+                var preparations = datasetPreps[dataset.id];
+                dataset.defaultPreparation = preparations && preparations.length === 1 ?  preparations[0] : null;
+            });
+
+            return preparations;
+        }
+
+        /**
+         * @ngdoc method
          * @name goToFolder
          * @methodOf data-prep.folder.controller:FolderCtrl
          * @param {object} folder - the folder to go
@@ -111,9 +133,29 @@
             var promise = FolderRestService.getFolderContent(folder, sort, order);
 
             promise.then(function(content){
-                StateService.setCurrentFolder(folder? folder : {id:'', path:'', name: $translate.instant('HOME_FOLDER')});
-                StateService.setCurrentFolderContent(content.data);
-                buidStackFromId(folder? folder.id : '');
+
+                var contentData = content.data;
+                //Consolidate preparations and datasets
+                PreparationListService.getPreparationsPromise()
+                    .then(function(preparations){
+
+                        // group preparation per dataset
+                        var datasetPreps = _.groupBy(preparations, function(preparation){
+                            return preparation.dataSetId;
+                        });
+
+                        // reset default preparation for all datasets
+                        _.forEach(contentData.datasets, function(dataset){
+                            var preparations = datasetPreps[dataset.id];
+                            dataset.defaultPreparation = preparations && preparations.length === 1 ?  preparations[0] : null;
+                        });
+
+                        return contentData;
+                    }).then (function(contentData){
+                        StateService.setCurrentFolder(folder? folder : {id:'', path:'', name: $translate.instant('HOME_FOLDER')});
+                        StateService.setCurrentFolderContent(contentData);
+                        buidStackFromId(folder? folder.id : '');
+                    });
             });
             return promise;
         }

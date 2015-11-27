@@ -14,7 +14,10 @@ describe('Dataset list controller', function () {
 
     beforeEach(module('data-prep.dataset-list', function ($provide) {
         stateMock = {folder: {
-            currentFolder: {id : 'toto', path: 'toto', name: 'toto'}
+            currentFolder: {id : 'toto', path: 'toto', name: 'toto'},
+            currentFolderContent: {
+                datasets: [datasets[0]]
+            }
         }};
         $provide.constant('state', stateMock);
     }));
@@ -383,10 +386,12 @@ describe('Dataset list controller', function () {
             expect(DatasetService.update).toHaveBeenCalledWith(dataset);
         }));
 
-        it('should show confirmation message', inject(function ($q, DatasetService, MessageService) {
+        it('should show confirmation message', inject(function ($q, DatasetService, MessageService, PreparationListService, FolderService) {
             //given
             spyOn(DatasetService, 'update').and.returnValue($q.when(true));
             spyOn(MessageService, 'success').and.returnValue();
+            spyOn(PreparationListService, 'refreshMetadataInfos').and.returnValue($q.when({id : 'preparation'}));
+            spyOn(FolderService, 'refreshDefaultPreparationForCurrentFolder').and.returnValue($q.when(true));
 
             var ctrl = createController();
             var dataset = {name: 'my old name'};
@@ -398,6 +403,8 @@ describe('Dataset list controller', function () {
 
             //then
             expect(MessageService.success).toHaveBeenCalledWith('DATASET_RENAME_SUCCESS_TITLE', 'DATASET_RENAME_SUCCESS');
+            expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith([datasets[0]]);
+            expect(FolderService.refreshDefaultPreparationForCurrentFolder).toHaveBeenCalledWith({id : 'preparation'});
         }));
 
         it('should set back the old name when the real rename is rejected', inject(function ($q, DatasetService) {
@@ -418,10 +425,12 @@ describe('Dataset list controller', function () {
             expect(dataset.name).toBe(oldName);
         }));
 
-        it('should manage "renaming" flag', inject(function ($q, DatasetService, MessageService) {
+        it('should manage "renaming" flag', inject(function ($q, DatasetService, MessageService, PreparationListService, FolderService) {
             //given
             spyOn(DatasetService, 'update').and.returnValue($q.when(true));
             spyOn(MessageService, 'success').and.returnValue();
+            spyOn(PreparationListService, 'refreshMetadataInfos').and.returnValue($q.when({id : 'preparation'}));
+            spyOn(FolderService, 'refreshDefaultPreparationForCurrentFolder').and.returnValue($q.when(true));
 
             var ctrl = createController();
             var dataset = {name: 'my old name'};

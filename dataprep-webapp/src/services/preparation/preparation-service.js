@@ -9,8 +9,9 @@
      * @requires data-prep.services.preparation.service:PreparationListService
      * @requires data-prep.services.preparation.service:PreparationRestService
      * @requires data-prep.services.dataset.service:DatasetListService
+     * @requires data-prep.services.folder.service:FolderService
      */
-    function PreparationService($q, StorageService, PreparationListService, PreparationRestService, DatasetListService) {
+    function PreparationService($q, StorageService, PreparationListService, PreparationRestService, DatasetListService, FolderService) {
         return {
             //get, refresh preparations
             preparationsList: preparationsList,
@@ -63,7 +64,8 @@
          */
         function consolidatePreparationsAndDatasets(response) {
             DatasetListService.refreshDefaultPreparation(preparationsList())
-                .then(PreparationListService.refreshMetadataInfos);
+                .then(PreparationListService.refreshMetadataInfos)
+                .then(FolderService.refreshDefaultPreparationForCurrentFolder);
             return response;
         }
 
