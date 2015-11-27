@@ -101,4 +101,50 @@ describe('Navbar controller', function () {
             expect(OnboardingService.startTour).not.toHaveBeenCalled();
         }));
     });
+
+    describe('feedback ', function() {
+        beforeEach(inject(function(OnboardingService) {
+            spyOn(OnboardingService, 'shouldStartTour').and.returnValue(false);
+            $stateMock.params = {};
+            $stateMock.current = {name: 'nav.home.datasets'};
+        }));
+
+        it('should openFeedbackForm ', inject(function () {
+            //given
+            var ctrl = createController();
+
+            //given
+            ctrl.openFeedbackForm();
+
+            //then
+            expect(ctrl.feedbackModal ).toBe(true);
+        }));
+
+        it('should send feedback', inject(function ($q, FeedbackService) {
+            //given
+            var ctrl = createController();
+            ctrl.feedback = {
+                title : 'test',
+                mail : 'test',
+                severity : 'test',
+                type : 'test',
+                description: 'test'
+            };
+            spyOn(FeedbackService, 'sendFeedback').and.returnValue($q.when(true));
+
+            //given
+            ctrl.sendFeedback ();
+            scope.$digest();
+
+            //then
+            expect(FeedbackService.sendFeedback).toHaveBeenCalledWith({
+                title : 'test',
+                mail : 'test',
+                severity : 'test',
+                type : 'test',
+                description: 'test'
+            });
+            expect(ctrl.feedbackModal ).toBe(false);
+        }));
+    });
 });

@@ -8,8 +8,10 @@
             <li class="nav-link" title="{{'COMING_SOON' | translate}}"><a class="icon" data-icon="i"></a></li>
             <li class="nav-link"><a class="icon" style="color:white;" data-icon="y" id="onboarding-icon"
                                     ng-click="navbarCtrl.startTour('dataset')"></a></li>
-            <li class="nav-link" title="{{'COMING_SOON' | translate}}"><a class="icon" data-icon="j" id="marketplace-icon"></a></li>
-            <li class="nav-link" title="{{'COMING_SOON' | translate}}"><a class="icon" data-icon="h" id="message-icon"></a></li>
+            <li class="nav-link" title="{{'COMING_SOON' | translate}}"><a class="icon" data-icon="j" id="marketplace-icon" ></a></li>
+            <li class="nav-link" title="{{'FEEDBACK_TOOLTIP' | translate}}">
+                <a class="icon" data-icon="H" id="message-icon" ng-click="navbarCtrl.openFeedbackForm()"></a>
+            </li>
             <li class="nav-link" title="{{'COMING_SOON' | translate}}"><a class="icon notification-icon" id="notification-icon">3</a>
             </li>
             <!--<li class="nav-link more"><a class="icon nomore" data-icon="k" id="profile-icon"></a>
@@ -29,6 +31,51 @@
         </div>
     </div>
 </talend-navbar>
+
+<talend-modal fullscreen="false"
+              close-button="true"
+              state="navbarCtrl.feedbackModal">
+    <span translate-once="FEEDBACK_FROM"></span>
+    <form name="navbarCtrl.feedbackForm" ng-submit="navbarCtrl.feedbackForm.$valid && navbarCtrl.sendFeedback()">
+        <div class="feedback-form">
+            <span translate-once="FEEDBACK_MAIL"></span>
+            <input type="text"
+                   ng-model="navbarCtrl.feedback.mail"
+                   ng-model-options="{debounce: { default: 300, blur: 0 }}"/>
+
+            <span translate-once="FEEDBACK_TITLE"></span>
+            <input type="text"
+                   ng-model="navbarCtrl.feedback.title"
+                   ng-model-options="{debounce: { default: 300, blur: 0 }}"
+                   can-be-blank="false"/>
+
+            <span translate-once="FEEDBACK_TYPE"></span>
+            <select
+                    ng-options="type.name as type.name for type in navbarCtrl.feedbackTypes"
+                    ng-model="navbarCtrl.feedback.type"></select>
+
+            <span translate-once="FEEDBACK_SEVERITY"></span>
+            <select
+                    ng-options="severity.name as severity.name for severity in navbarCtrl.feedbackSeverities"
+                    ng-model="navbarCtrl.feedback.severity"></select>
+
+            <span translate-once="FEEDBACK_DESCRIPTION"></span>
+            <textarea can-be-blank="false"
+                      ng-model="navbarCtrl.feedback.description">
+            </textarea>
+        </div>
+        <div class="modal-buttons">
+            <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL">
+            </button>
+            <button class="btn-primary modal-primary-button" translate-once="OK"
+                    ng-disabled="navbarCtrl.feedbackForm.$invalid">
+            </button>
+        </div>
+
+
+    </form>
+</talend-modal>
+
 
 <ui-view class="content"></ui-view>
 

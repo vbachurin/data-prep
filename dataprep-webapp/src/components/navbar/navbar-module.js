@@ -5,6 +5,7 @@
         'ui.router',
         'data-prep.services.onboarding',
         'data-prep.services.dataset',
-        'data-prep.services.utils'
+        'data-prep.services.utils',
+        'data-prep.services.feedback'
     ]);
 })();
