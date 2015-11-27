@@ -3,12 +3,7 @@ package org.talend.dataprep.api.preparation.json;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.elasticsearch.common.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.MixedContentMap;
 
@@ -16,10 +11,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
@@ -30,24 +22,12 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 @Component
 public class MixedContentMapModule extends SimpleModule {
 
-    /** DataPrep ready jackson builder. */
-    @Autowired
-    @Lazy // lazy to prevent circular dependency
-    private Jackson2ObjectMapperBuilder builder;
-
     /**
      * Default empty constructor.
      */
     public MixedContentMapModule() {
         super(MixedContentMapModule.class.getName(), new Version(1, 0, 0, null, null, null));
-    }
-
-    /**
-     * Set the Serializer / Deserializer.
-     */
-    @PostConstruct
-    public void init() {
-        addSerializer(MixedContentMap.class, new Serializer(builder));
+        addSerializer(MixedContentMap.class, new Serializer());
         addDeserializer(MixedContentMap.class, new Deserializer());
     }
 
@@ -55,18 +35,6 @@ public class MixedContentMapModule extends SimpleModule {
      * Serialize MixedContentMap to json.
      */
     private class Serializer extends JsonSerializer<MixedContentMap> {
-
-        /** DataPrep ready jackson builder. */
-        private Jackson2ObjectMapperBuilder builder;
-
-        /**
-         * Default constructor.
-         * 
-         * @param builder the dataprep ready jackson builder.
-         */
-        public Serializer(Jackson2ObjectMapperBuilder builder) {
-            this.builder = builder;
-        }
 
         /**
          * @see JsonSerializer#serialize(Object, JsonGenerator, SerializerProvider)
@@ -84,7 +52,8 @@ public class MixedContentMapModule extends SimpleModule {
                 } else if (value.charAt(0) == '{' || value.charAt(0) == '[') {
                     // check that it's a real json array or object
                     try {
-                        builder.build().reader().readTree(value);
+                        // builder.build().reader().readTree(value);
+                        new ObjectMapper().reader().readTree(value);
                         jsonGenerator.writeRaw(':' + value);
                     }
                     // otherwise, it is written as a string (may be a regular expression, e.g. [A-Za-z0-9]*)
