@@ -17,7 +17,7 @@
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.recipe.service:RecipeBulletService
      * @requires data-prep.services.onboarding.service:OnboardingService
-     * @requires data-prep.services.lookup:LookupService
+     * @requires data-prep.services.lookup.service:LookupService
      * @requires data-prep.services.folder.service:FolderService
      */
     function PlaygroundCtrl($state, $stateParams, state, StateService, PlaygroundService, PreparationService,
@@ -59,12 +59,15 @@
          * @methodOf data-prep.playground.controller:PlaygroundCtrl
          * @description Change the preparation name
          */
-        vm.confirmPrepNameEdition = function confirmPrepNameEdition(name){
+        vm.confirmPrepNameEdition = function confirmPrepNameEdition(name) {
             var cleanName = name.trim();
-            if(!vm.changeNameInProgress && cleanName) {
+            if (!vm.changeNameInProgress && cleanName) {
                 changeName(cleanName)
-                    .then(function() {
-                        return $state.go('nav.home.preparations', {prepid : state.playground.preparation.id}, {location:'replace', inherit:false} );
+                    .then(function () {
+                        return $state.go('nav.home.preparations', {prepid: state.playground.preparation.id}, {
+                            location: 'replace',
+                            inherit: false
+                        });
                     });
             }
         };
@@ -80,7 +83,7 @@
         function changeName(name) {
             vm.changeNameInProgress = true;
             return PlaygroundService.createOrUpdatePreparation(name)
-                .finally(function() {
+                .finally(function () {
                     vm.changeNameInProgress = false;
                 });
         }
@@ -96,11 +99,12 @@
          */
         vm.toggleLookup = function toggleLookup() {
             StateService.setLookupVisibility(!state.playground.lookupVisibility);
-            if(!vm.state.playground.lookupGrid.datasets.length){
-                LookupService.getLookupPossibleActions(vm.state.playground.dataset.id)
-                    .then(function(){
-                        if(vm.state.playground.lookupGrid.datasets.length){
-                            LookupService.loadLookupContent(vm.state.playground.lookupGrid.datasets[0]);
+
+            if (!state.playground.lookup.datasets.length) {
+                LookupService.getActions(state.playground.dataset.id)
+                    .then(function (lookupActions) {
+                        if (lookupActions.length) {
+                            LookupService.loadContent(lookupActions[0]);
                         }
                     });
             }
@@ -129,7 +133,7 @@
          */
         vm.beforeClose = function beforeClose() {
             var isDraft = state.playground.preparation && state.playground.preparation.draft;
-            if(isDraft) {
+            if (isDraft) {
                 vm.showNameValidation = true;
                 return false;
             }
@@ -158,7 +162,7 @@
             var cleanName = vm.preparationName.trim();
             changeName(cleanName)
                 .then(hideAll)
-                .finally(function() {
+                .finally(function () {
                     vm.saveInProgress = false;
                     FolderService.getFolderContent(state.folder.currentFolder);
                 });
@@ -170,12 +174,12 @@
          * @methodOf data-prep.playground.controller:PlaygroundCtrl
          * @description Playground close callback. It change the location and refresh the preparations if needed
          */
-        vm.close = function() {
+        vm.close = function () {
             PreparationService.refreshPreparations();
-            if($stateParams.prepid) {
+            if ($stateParams.prepid) {
                 $state.go('nav.home.preparations', {prepid: null});
             }
-            else if($stateParams.datasetid) {
+            else if ($stateParams.datasetid) {
                 $state.go('nav.home.datasets', {datasetid: null});
             }
         };
@@ -195,7 +199,7 @@
             get: function () {
                 return this.playgroundService.preparationName;
             },
-            set: function(value) {
+            set: function (value) {
                 this.playgroundService.preparationName = value;
             }
         });
@@ -249,7 +253,8 @@
                 var firstStep = this.recipeService.getRecipe()[0];
                 return firstStep && !firstStep.inactive;
             },
-            set: function () {}
+            set: function () {
+            }
         });
 
     angular.module('data-prep.playground')

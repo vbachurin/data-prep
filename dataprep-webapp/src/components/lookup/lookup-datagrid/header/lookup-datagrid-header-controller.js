@@ -21,8 +21,8 @@
          * @description show/hide the checkbox responsible for adding the columns to the lookup action
          */
         vm.showHideCheckbox = function(){
-            if(vm.state.playground.lookupGrid.selectedColumn){
-                return vm.column.id !== vm.state.playground.lookupGrid.selectedColumn.id;
+            if(vm.state.playground.lookup.selectedColumn){
+                return vm.column.id !== vm.state.playground.lookup.selectedColumn.id;
             }
             else {
                 return false;

@@ -41,31 +41,41 @@
                  * @ngdoc method
                  * @name getMetadata
                  * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @description [PRIVATE] Get the loaded metadata
+                 * @description Get the loaded metadata
                  */
-                var getMetadata = function getMetadata() {
+                function getMetadata() {
                     return state.playground.dataset;
-                };
+                }
 
                 /**
                  * @ngdoc method
                  * @name getData
                  * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @description [PRIVATE] Get the loaded data
+                 * @description Get the loaded data
                  */
-                var getData = function getData() {
+                function getData() {
                     return state.playground.data;
-                };
+                }
 
                 /**
                  * @ngdoc method
                  * @name getFilters
                  * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @description [PRIVATE] Get the filter list
+                 * @description Get the filter list
                  */
-                var getFilters = function getFilters() {
+                function getFilters() {
                     return state.playground.filter.gridFilters;
-                };
+                }
+
+                /**
+                 * @ngdoc method
+                 * @name getResizeCondition
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description Return condition that trigger a grid resize
+                 */
+                function getResizeCondition() {
+                    return state.playground.lookupVisibility;
+                }
 
                 //------------------------------------------------------------------------------------------------------
                 //---------------------------------------------------UTILS----------------------------------------------
@@ -74,7 +84,7 @@
                  * @ngdoc method
                  * @name onMetadataChange
                  * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @description [PRIVATE] Reset cell styles, scroll to top and expect to recreate all columns on next update
+                 * @description Reset cell styles, scroll to top and expect to recreate all columns on next update
                  */
                 var onMetadataChange = function onMetadataChange() {
                     if (grid) {
@@ -88,7 +98,7 @@
                  * @ngdoc method
                  * @name onDataChange
                  * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @description [PRIVATE] Update and resize the columns with its headers, set grid styles
+                 * @description Update and resize the columns with its headers, set grid styles
                  */
                 var onDataChange = function onDataChange(data) {
                     if (data) {
@@ -134,7 +144,7 @@
                  * @ngdoc method
                  * @name onFiltersChange
                  * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @description [PRIVATE] Refresh cell styles and scroll to top
+                 * @description Refresh cell styles and scroll to top
                  */
                 var onFiltersChange = function onFiltersChange() {
                     if (grid) {
@@ -143,6 +153,20 @@
                     }
                 };
 
+                /**
+                 * @ngdoc method
+                 * @name resize
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description Resize grid canvas
+                 */
+                function resize() {
+                    if(grid) {
+                        setTimeout(function(){
+                            grid.resizeCanvas();
+                        },200);
+                    }
+                }
+
                 //------------------------------------------------------------------------------------------------------
                 //---------------------------------------------------INIT-----------------------------------------------
                 //------------------------------------------------------------------------------------------------------
@@ -150,7 +174,7 @@
                  * @ngdoc method
                  * @name initGridIfNeeded
                  * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @description [PRIVATE] Init Slick grid and init datagrid private services.
+                 * @description Init Slick grid and init datagrid private services.
                  */
                 var initGridIfNeeded = function () {
                     if (!grid) {
@@ -182,17 +206,9 @@
                 scope.$watch(getFilters, onFiltersChange);
 
                 /**
-                 * When lookupVisibility changes, the grid should be resized to show (Vertical/horizontal) scroll-bars
+                 * When lookup is displayed/hidden changes, the grid should be resized fit available space
                  */
-                scope.$watch(function(){
-                    return state.playground.lookupVisibility;
-                }, function(){
-                    if(grid) {
-                        setTimeout(function(){
-                            grid.resizeCanvas();
-                        },200);
-                    }
-                });
+                scope.$watch(getResizeCondition, resize);
             }
         };
     }

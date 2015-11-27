@@ -18,7 +18,7 @@ describe('Lookup datagrid directive', function() {
 
 	beforeEach(module('data-prep.lookup', function ($provide) {
 		stateMock = {playground: {
-			lookupGrid: {dataView: dataViewMock}
+			lookup: {dataView: dataViewMock}
 		}};
 		$provide.constant('state', stateMock);
 	}));
@@ -119,7 +119,7 @@ describe('Lookup datagrid directive', function() {
 			describe('column style', function() {
 				it('should reset cell styles when there is a selected cell', inject(function(LookupDatagridStyleService) {
 					//given
-					stateMock.playground.lookupGrid.selectedColumn = {id: '0001'};
+					stateMock.playground.lookup.selectedColumn = {id: '0001'};
 
 					//when
 					stateMock.playground.lookupData = {};
@@ -132,7 +132,7 @@ describe('Lookup datagrid directive', function() {
 
 				it('should update selected column style', inject(function(LookupDatagridStyleService) {
 					//given
-					stateMock.playground.lookupGrid.selectedColumn = {id: '0001'};
+					stateMock.playground.lookup.selectedColumn = {id: '0001'};
 					expect(LookupDatagridStyleService.updateColumnClass).not.toHaveBeenCalledWith(createdColumns, data.columns[1]);
 
 					//when
@@ -156,7 +156,7 @@ describe('Lookup datagrid directive', function() {
 				//given
 				expect(LookupDatagridColumnService.createColumns.calls.count()).toBe(1);
 
-				stateMock.playground.lookupGrid.selectedColumn = {id: '0001'};
+				stateMock.playground.lookup.selectedColumn = {id: '0001'};
 
 				//when
 				stateMock.playground.lookupData = {};

@@ -22,7 +22,6 @@
          */
         function setServerUrl(serverUrl) {
             service.datasetUrl = serverUrl + '/api/datasets';
-            service.datasetActionsUrl = serverUrl + '/api/datasets';
             service.transformUrl = serverUrl + '/api/transform';
             service.preparationUrl = serverUrl + '/api/preparations';
             service.previewUrl = serverUrl + '/api/preparations/preview';

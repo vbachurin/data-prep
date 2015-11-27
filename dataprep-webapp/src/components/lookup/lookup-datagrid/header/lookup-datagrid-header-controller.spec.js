@@ -6,7 +6,7 @@ describe('Lookup datagrid header controller', function () {
 	beforeEach(module('data-prep.lookup', function ($provide) {
 		stateMock = {
 			playground: {
-				lookupGrid:{
+				lookup:{
 					selectedColumn: {
 						id:'0000',
 						name:'lookupGridColName'

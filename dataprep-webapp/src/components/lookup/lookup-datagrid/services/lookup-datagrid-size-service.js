@@ -24,7 +24,7 @@
          * @description Get the actual dataset column sizes key. This key is used in localStorage 
          */
         function getLocalStorageKey() {
-            return 'org.talend.dataprep.col_size_' + getDsId(state.playground.lookupGrid.dataset);
+            return 'org.talend.dataprep.col_size_' + getDsId(state.playground.lookup.dataset);
         }
 
         /**

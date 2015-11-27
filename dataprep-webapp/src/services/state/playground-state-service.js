@@ -12,7 +12,7 @@
 
         playgroundState.recipe = recipeState;
         playgroundState.grid = gridState;
-        playgroundState.lookupGrid = lookupGridState;
+        playgroundState.lookup = lookupGridState;
         playgroundState.filter = filterState;
         playgroundState.suggestions = suggestionsState;
 

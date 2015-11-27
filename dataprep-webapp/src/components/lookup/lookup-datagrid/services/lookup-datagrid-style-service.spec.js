@@ -10,7 +10,7 @@ describe('Lookup Datagrid style service', function () {
 	}
 
 	beforeEach(module('data-prep.lookup', function ($provide) {
-		stateMock = {playground: {lookupGrid: {}}};
+		stateMock = {playground: {lookup: {}}};
 		$provide.constant('state', stateMock);
 	}));
 
@@ -174,11 +174,11 @@ describe('Lookup Datagrid style service', function () {
 
 		beforeEach(function () {
 			dataViewMock = new DataViewMock();
-			stateMock.playground.lookupGrid.dataView = dataViewMock;
+			stateMock.playground.lookup.dataView = dataViewMock;
 		});
 
 		beforeEach(inject(function(DatagridService) {
-			//spyOn(stateMock.playground.lookupGrid.dataView, 'getItem').and.returnValue({'0001': 'cell 1 content'});
+			//spyOn(stateMock.playground.lookup.dataView, 'getItem').and.returnValue({'0001': 'cell 1 content'});
 			spyOn(DatagridService, 'getSameContentConfig').and.returnValue({
 				5: { '0001': 'highlight' },
 				18: { '0001': 'highlight' },

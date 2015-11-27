@@ -36,11 +36,11 @@
          * @description Attach listeners for big table row management
          */
         function attachLongTableListeners() {
-            state.playground.lookupGrid.dataView.onRowCountChanged.subscribe(function () {
+            state.playground.lookup.dataView.onRowCountChanged.subscribe(function () {
                 grid.updateRowCount();
                 grid.render();
             });
-            state.playground.lookupGrid.dataView.onRowsChanged.subscribe(function (e, args) {
+            state.playground.lookup.dataView.onRowsChanged.subscribe(function (e, args) {
                 grid.invalidateRows(args.rows);
                 grid.render();
             });
@@ -99,7 +99,7 @@
                 syncColumnCellResize: false,
                 frozenColumn: 0
             };
-            grid = new Slick.Grid(elementId, state.playground.lookupGrid.dataView, [{id: 'tdpId'}], options);
+            grid = new Slick.Grid(elementId, state.playground.lookup.dataView, [{id: 'tdpId'}], options);
 
             //listeners
             attachLongTableListeners();

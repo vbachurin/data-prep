@@ -144,4 +144,27 @@ describe('Transformation Rest Service', function () {
             expect(response).toEqual(result);
         }));
     });
+
+    describe('datasets transformations', function() {
+        var result = [{}];
+
+        it('should fetch the dataset transformations', inject(function ($rootScope, TransformationRestService, RestURLs) {
+            //given
+            var response = null;
+            var datasetId = '4354bf2543a514c25';
+            $httpBackend
+                .expectGET(RestURLs.datasetUrl + '/' + datasetId + '/actions')
+                .respond(200, result);
+
+            //when
+            TransformationRestService.getDatasetTransformations(datasetId)
+                .then(function (resp) {
+                    response = resp.data;
+                });
+            $httpBackend.flush();
+
+            //then
+            expect(response).toEqual(result);
+        }));
+    });
 });

@@ -38,7 +38,7 @@ describe('Lookup Datagrid tooltip service', function() {
 
 	beforeEach(module('data-prep.lookup', function ($provide) {
 		dataViewMock = new DataViewMock();
-		stateMock = {playground: {lookupGrid: {
+		stateMock = {playground: {lookup: {
 			dataView: dataViewMock
 		}}};
 
@@ -53,7 +53,7 @@ describe('Lookup Datagrid tooltip service', function() {
 		spyOn(gridMock.onMouseEnter, 'subscribe').and.returnValue();
 		spyOn(gridMock.onMouseLeave, 'subscribe').and.returnValue();
 
-		spyOn(stateMock.playground.lookupGrid.dataView, 'getItem').and.returnValue(item);
+		spyOn(stateMock.playground.lookup.dataView, 'getItem').and.returnValue(item);
 		LookupDatagridTooltipService.tooltipRuler = RulerMock;
 	}));
 

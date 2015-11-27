@@ -26,7 +26,7 @@ describe('Lookup Datagrid size service', function () {
 			return windowMock;
 		});
 
-		stateMock = {playground: {lookupGrid : {dataset: lookupDataset}}};
+		stateMock = {playground: {lookup : {dataset: lookupDataset}}};
 		$provide.constant('state', stateMock);
 	}));
 

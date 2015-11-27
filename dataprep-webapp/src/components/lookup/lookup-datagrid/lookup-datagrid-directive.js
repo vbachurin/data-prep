@@ -63,7 +63,7 @@
                         initGridIfNeeded();
                         var columns;
                         var selectedColumn;
-                        var stateSelectedColumn = ctrl.state.playground.lookupGrid.selectedColumn;
+                        var stateSelectedColumn = ctrl.state.playground.lookup.selectedColumn;
 
                         //create columns, manage style and size, set columns in grid
                         clearTimeout(columnTimeout);

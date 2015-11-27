@@ -73,7 +73,7 @@ describe('Lookup controller', function () {
 						name:'mainGridColName'
 					}
 				},
-				lookupGrid:{
+				lookup:{
 					selectedColumn: {
 						id:'lookupGridColId',
 						name:'lookupGridColName'
@@ -107,7 +107,7 @@ describe('Lookup controller', function () {
 			ctrl.hoverSubmitBtn();
 
 			//then
-			expect(EarlyPreviewService.earlyPreview).toHaveBeenCalledWith(stateMock.playground.lookupGrid.dataset, 'dataset');
+			expect(EarlyPreviewService.earlyPreview).toHaveBeenCalledWith(stateMock.playground.lookup.dataset, 'dataset');
 		}));
 
 		it('should submit lookup action', inject(function (TransformationApplicationService, EarlyPreviewService, $q) {
@@ -126,7 +126,7 @@ describe('Lookup controller', function () {
 			jasmine.clock().tick(500);
 
 			//then
-			expect(TransformationApplicationService.append).toHaveBeenCalledWith(stateMock.playground.lookupGrid.dataset, 'dataset', params);
+			expect(TransformationApplicationService.append).toHaveBeenCalledWith(stateMock.playground.lookup.dataset, 'dataset', params);
 			expect(EarlyPreviewService.deactivatePreview).toHaveBeenCalled();
 			expect(EarlyPreviewService.cancelPendingPreview).toHaveBeenCalled();
 			expect(EarlyPreviewService.activatePreview).toHaveBeenCalled();

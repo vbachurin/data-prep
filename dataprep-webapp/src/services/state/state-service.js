@@ -34,7 +34,7 @@
             setColumnFocus: PlaygroundStateService.setColumnFocus,
             setGridSelection: PlaygroundStateService.setGridSelection,
 
-            //playground - lookupGrid
+            //playground - lookup
             setLookupColumnFocus: PlaygroundStateService.setLookupColumnFocus,
             setLookupGridSelection: PlaygroundStateService.setLookupGridSelection,
             setLookupDataset: PlaygroundStateService.setLookupDataset,

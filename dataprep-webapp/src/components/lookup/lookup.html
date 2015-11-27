@@ -24,8 +24,8 @@
                </p>
            </div>
 
-           <button ng-disabled="!lookupCtrl.state.playground.lookupGrid.lookupColumnsToAdd.length ||
-                                !lookupCtrl.state.playground.lookupGrid.selectedColumn ||
+           <button ng-disabled="!lookupCtrl.state.playground.lookup.lookupColumnsToAdd.length ||
+                                !lookupCtrl.state.playground.lookup.selectedColumn ||
                                 !lookupCtrl.state.playground.grid.selectedColumn"
                    class="param-primary-button btn-primary"
                    ng-click="lookupCtrl.submitLookup()"
@@ -37,9 +37,9 @@
        </div>
    </div>
 
-    <navigation-list list="lookupCtrl.state.playground.lookupGrid.datasets"
+    <navigation-list list="lookupCtrl.state.playground.lookup.datasets"
                    on-click="lookupCtrl.loadLookupDsContent(item)"
-                   selected-item="lookupCtrl.state.playground.lookupGrid.dataset"
+                   selected-item="lookupCtrl.state.playground.lookup.dataset"
                    get-label="lookupCtrl.getDsName(item)"
                    nbre-labels-to-show="4">
     </navigation-list>

@@ -10,10 +10,23 @@
      */
     function TransformationRestService($http, RestURLs) {
         return {
+            getDatasetTransformations: getDatasetTransformations,
             getDynamicParameters: getDynamicParameters,
             getSuggestions: getSuggestions,
             getTransformations: getTransformations
         };
+
+        /**
+         * @ngdoc method
+         * @name getLookupActions
+         * @methodOf data-prep.services.transformation.service:TransformationRestService
+         * @description Get the dataset actions
+         * @param {string} datasetId The dataset id
+         * @returns {Promise} The GET promise
+         */
+        function getDatasetTransformations (datasetId){
+            return $http.get(RestURLs.datasetUrl+ '/' + datasetId + '/actions');
+        }
 
         /**
          * @ngdoc method

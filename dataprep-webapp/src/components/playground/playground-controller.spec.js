@@ -1,17 +1,22 @@
-describe('Playground controller', function() {
+describe('Playground controller', function () {
     'use strict';
 
     var createController, scope, stateMock;
 
-    beforeEach(module('data-prep.playground', function($provide) {
-        stateMock = {playground: {}};
+    beforeEach(module('data-prep.playground', function ($provide) {
+        stateMock = {playground: {
+            dataset: {},
+            lookup: {
+                datasets: []
+            }
+        }};
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function($rootScope, $q, $controller, $state, PlaygroundService) {
+    beforeEach(inject(function ($rootScope, $q, $controller, $state, PlaygroundService) {
         scope = $rootScope.$new();
 
-        createController = function() {
+        createController = function () {
             return $controller('PlaygroundCtrl', {
                 $scope: scope
             });
@@ -22,8 +27,8 @@ describe('Playground controller', function() {
 
     }));
 
-    describe('bindings', function() {
-        it('should bind preparationName getter with PlaygroundService', inject(function(PlaygroundService) {
+    describe('bindings', function () {
+        it('should bind preparationName getter with PlaygroundService', inject(function (PlaygroundService) {
             //given
             var ctrl = createController();
             expect(ctrl.preparationName).toBeFalsy();
@@ -35,7 +40,7 @@ describe('Playground controller', function() {
             expect(ctrl.preparationName).toBe('My preparation');
         }));
 
-        it('should bind preparationName setter with PlaygroundService', inject(function(PlaygroundService) {
+        it('should bind preparationName setter with PlaygroundService', inject(function (PlaygroundService) {
             //given
             var ctrl = createController();
             expect(PlaygroundService.preparationName).toBeFalsy();
@@ -47,7 +52,7 @@ describe('Playground controller', function() {
             expect(PlaygroundService.preparationName).toBe('My preparation');
         }));
 
-        it('should bind previewInProgress getter with PreviewService', inject(function(PreviewService) {
+        it('should bind previewInProgress getter with PreviewService', inject(function (PreviewService) {
             //given
             var ctrl = createController();
             expect(ctrl.previewInProgress).toBeFalsy();
@@ -60,9 +65,9 @@ describe('Playground controller', function() {
         }));
     });
 
-    describe('recipe header', function() {
+    describe('recipe header', function () {
 
-        it('should create/update preparation with clean name on name edition confirmation', inject(function(PlaygroundService) {
+        it('should create/update preparation with clean name on name edition confirmation', inject(function (PlaygroundService) {
             //given
             var ctrl = createController();
             ctrl.preparationName = 'my old name';
@@ -74,7 +79,7 @@ describe('Playground controller', function() {
             expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalledWith('my new name');
         }));
 
-        it('should change route to preparation route on name edition confirmation', inject(function($rootScope, $state) {
+        it('should change route to preparation route on name edition confirmation', inject(function ($rootScope, $state) {
             //given
             var ctrl = createController();
             ctrl.preparationName = 'My old preparation ';
@@ -85,10 +90,13 @@ describe('Playground controller', function() {
             $rootScope.$digest();
 
             //then
-            expect($state.go).toHaveBeenCalledWith('nav.home.preparations', {prepid : 'fe6843da512545e'}, {location:'replace', inherit:false});
+            expect($state.go).toHaveBeenCalledWith('nav.home.preparations', {prepid: 'fe6843da512545e'}, {
+                location: 'replace',
+                inherit: false
+            });
         }));
 
-        it('should not call service create/updateName service if name is blank on name edition confirmation', inject(function(PlaygroundService) {
+        it('should not call service create/updateName service if name is blank on name edition confirmation', inject(function (PlaygroundService) {
             //given
             var ctrl = createController();
 
@@ -100,11 +108,11 @@ describe('Playground controller', function() {
         }));
     });
 
-    describe('implicit preparation', function() {
+    describe('implicit preparation', function () {
         var ctrl;
         var preparation;
 
-        beforeEach(inject(function($q, PreparationService, StateService) {
+        beforeEach(inject(function ($q, PreparationService, StateService) {
             preparation = {id: '9af874865e42b546', draft: true};
             stateMock.playground.preparation = preparation;
 
@@ -114,7 +122,7 @@ describe('Playground controller', function() {
             ctrl = createController();
         }));
 
-        it('should return true (allow playground close) with NOT implicit preparation', function() {
+        it('should return true (allow playground close) with NOT implicit preparation', function () {
             //given
             preparation.draft = false;
 
@@ -125,7 +133,7 @@ describe('Playground controller', function() {
             expect(result).toBe(true);
         });
 
-        it('should return false (block playground close) with implicit preparation', function() {
+        it('should return false (block playground close) with implicit preparation', function () {
             //when
             var result = ctrl.beforeClose();
 
@@ -133,7 +141,7 @@ describe('Playground controller', function() {
             expect(result).toBe(false);
         });
 
-        it('should show save/discard modal with implicit preparation', function() {
+        it('should show save/discard modal with implicit preparation', function () {
             //given
             expect(ctrl.showNameValidation).toBeFalsy();
 
@@ -144,7 +152,7 @@ describe('Playground controller', function() {
             expect(ctrl.showNameValidation).toBe(true);
         });
 
-        it('should delete current preparation on save discard', inject(function(PreparationService) {
+        it('should delete current preparation on save discard', inject(function (PreparationService) {
             //when
             ctrl.discardSaveOnClose();
 
@@ -152,7 +160,7 @@ describe('Playground controller', function() {
             expect(PreparationService.delete).toHaveBeenCalledWith(preparation);
         }));
 
-        it('should hide save/discard and playground modals on save discard', inject(function(StateService) {
+        it('should hide save/discard and playground modals on save discard', inject(function (StateService) {
             //given
             ctrl.showNameValidation = true;
             expect(StateService.hidePlayground).not.toHaveBeenCalled();
@@ -166,7 +174,7 @@ describe('Playground controller', function() {
             expect(StateService.hidePlayground).toHaveBeenCalled();
         }));
 
-        it('should change preparation name on save confirm', inject(function(PlaygroundService) {
+        it('should change preparation name on save confirm', inject(function (PlaygroundService) {
             //given
             ctrl.preparationName = '  my preparation ';
 
@@ -177,7 +185,7 @@ describe('Playground controller', function() {
             expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalledWith('my preparation');
         }));
 
-        it('should manage saving flag on save confirm', function() {
+        it('should manage saving flag on save confirm', function () {
             //given
             expect(ctrl.saveInProgress).toBeFalsy();
 
@@ -190,7 +198,7 @@ describe('Playground controller', function() {
             expect(ctrl.saveInProgress).toBe(false);
         });
 
-        it('should hide save/discard and playground modals on save confirm', inject(function(StateService) {
+        it('should hide save/discard and playground modals on save confirm', inject(function (StateService) {
             //given
             ctrl.showNameValidation = true;
             expect(StateService.hidePlayground).not.toHaveBeenCalled();
@@ -204,76 +212,89 @@ describe('Playground controller', function() {
             expect(StateService.hidePlayground).toHaveBeenCalled();
         }));
     });
+
     describe('lookup', function () {
         var ctrl;
 
-        beforeEach(inject(function($q, LookupService, StateService) {
+        beforeEach(inject(function ($q, LookupService, StateService) {
             spyOn(StateService, 'setLookupVisibility').and.returnValue();
-            spyOn(LookupService, 'loadLookupContent').and.returnValue();
+            spyOn(LookupService, 'loadContent').and.returnValue();
             spyOn(StateService, 'setLookupDataset').and.returnValue();
 
             ctrl = createController();
         }));
 
-        describe('without querying the dataset content', function () {
+        it('should toggle lookup visibility', inject(function (StateService) {
+            //given
+            stateMock.playground.lookupVisibility = false;
 
-            beforeEach(inject(function($q, LookupService) {
-                spyOn(LookupService, 'getLookupPossibleActions').and.returnValue($q.when(true));
-            }));
+            //when
+            ctrl.toggleLookup();
 
-            it('should query the possible lookup without datasets as result', inject(function (LookupService, StateService) {
-                //given
-                stateMock.playground.lookupVisibility = false;
-                stateMock.playground.lookupGrid = {
-                    datasets : []
-                };
-                stateMock.playground.dataset  = {
-                    id:'ds54sd-ds5d4s-4dssd8'
-                };
+            //then
+            expect(StateService.setLookupVisibility).toHaveBeenCalledWith(true);
+        }));
 
-                //when
-                ctrl.toggleLookup();
-                scope.$digest();
+        it('should fetch lookup datasets when it is not already initialized', inject(function ($q, LookupService) {
+            //given
+            stateMock.playground.dataset = {id: 'ds54sd-ds5d4s-4dssd8'};
+            stateMock.playground.lookup.datasets = [];
+            spyOn(LookupService, 'getActions').and.returnValue($q.when(true));
 
-                //then
-                expect(StateService.setLookupVisibility).toHaveBeenCalledWith(true);
-                expect(LookupService.getLookupPossibleActions).toHaveBeenCalledWith(stateMock.playground.dataset.id);
-                expect(LookupService.loadLookupContent).not.toHaveBeenCalled();
-            }));
-        });
+            //when
+            ctrl.toggleLookup();
 
-        describe('with querying the dataset content', function () {
+            //then
+            expect(LookupService.getActions).toHaveBeenCalledWith(stateMock.playground.dataset.id);
+        }));
+
+        it('should NOT fetch lookup datasets when it is already initialized', inject(function ($q, LookupService) {
+            //given
+            stateMock.playground.dataset = {id: 'ds54sd-ds5d4s-4dssd8'};
+            stateMock.playground.lookup.datasets = [{}];
+            spyOn(LookupService, 'getActions').and.returnValue($q.when(true));
+
+            //when
+            ctrl.toggleLookup();
+
+            //then
+            expect(LookupService.getActions).not.toHaveBeenCalled();
+        }));
+
+        it('should load lookup dataset content when there are potential lookup datasets', inject(function ($q, LookupService) {
+            //given
             var lookupDataset = {
                 name: 'lookup',
-                parameters:[]
+                parameters: []
             };
+            var lookupDataset2 = {
+                name: 'lookup2',
+                parameters: []
+            };
+            stateMock.playground.dataset = {id: 'ds54sd-ds5d4s-4dssd8'};
+            stateMock.playground.lookup.datasets = [];
+            spyOn(LookupService, 'getActions').and.returnValue($q.when([lookupDataset, lookupDataset2]));
 
-            beforeEach(inject(function($q, LookupService) {
-                spyOn(LookupService, 'getLookupPossibleActions').and.callFake(function() {
-                    stateMock.playground.lookupGrid.datasets.push(lookupDataset);
-                    return $q.when(true);
-                });
-            }));
+            //when
+            ctrl.toggleLookup();
+            scope.$digest();
 
-            it('should query the possible lookup with filled datasets as result', inject(function (LookupService, StateService) {
-                //given
-                stateMock.playground.lookupVisibility = false;
-                stateMock.playground.lookupGrid = {
-                    datasets : []
-                };
-                stateMock.playground.dataset  = {
-                    id:'ds54sd-ds5d4s-4dssd8'
-                };
+            //then
+            expect(LookupService.loadContent).toHaveBeenCalledWith(lookupDataset);
+        }));
 
-                //when
-                ctrl.toggleLookup();
-                scope.$digest();
+        it('should NOT load lookup dataset content when the potential lookup datasets are empty', inject(function ($q, LookupService) {
+            //given
+            stateMock.playground.dataset = {id: 'ds54sd-ds5d4s-4dssd8'};
+            stateMock.playground.lookup.datasets = [];
+            spyOn(LookupService, 'getActions').and.returnValue($q.when(true));
 
-                //then
-                expect(StateService.setLookupVisibility).toHaveBeenCalledWith(true);
-                expect(LookupService.getLookupPossibleActions).toHaveBeenCalledWith(stateMock.playground.dataset.id);
-                expect(LookupService.loadLookupContent).toHaveBeenCalledWith(stateMock.playground.lookupGrid.datasets[0]);
-            }));
-        });
+            //when
+            ctrl.toggleLookup();
+            scope.$digest();
+
+            //then
+            expect(LookupService.loadContent).not.toHaveBeenCalled();
+        }));
     });
 });
