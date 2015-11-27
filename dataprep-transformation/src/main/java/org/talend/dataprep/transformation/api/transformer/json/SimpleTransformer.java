@@ -62,8 +62,6 @@ class SimpleTransformer implements Transformer {
     @Autowired
     private AnalyzerService analyzerService;
 
-    private final List<DataSetRow> initialAnalysisBuffer = new ArrayList<>(ANALYSIS_BUFFER_SIZE + 1);
-
     private enum AnalysisStatus {
         /**
          * Status indicating transformation hasn't yet decided what is the schema of the transformed content.
@@ -73,8 +71,15 @@ class SimpleTransformer implements Transformer {
          * Schema was detected (based on first {@link #ANALYSIS_BUFFER_SIZE} rows). This status indicates transformer has
          * enough information (about type & al.) to perform a full analysis of the data.
          */
-        FULL_ANALYSIS
+        FULL_ANALYSIS;
     }
+
+    private final ThreadLocal<List<DataSetRow>> initialAnalysisBuffer = new ThreadLocal<List<DataSetRow>>() {
+        @Override
+        protected List<DataSetRow> initialValue() {
+            return new ArrayList<>(ANALYSIS_BUFFER_SIZE + 1);
+        }
+    };
 
     // Indicate what the current status related to Analyzer configuration.
     private ThreadLocal<AnalysisStatus> currentAnalysisStatus = new ThreadLocal<AnalysisStatus>() {
@@ -87,8 +92,8 @@ class SimpleTransformer implements Transformer {
     private Analyzer<Analyzers.Result> configureAnalyzer(TransformationContext context, DataSetRow row) {
         switch (currentAnalysisStatus.get()) {
             case SCHEMA_ANALYSIS:
-                if (initialAnalysisBuffer.size() < ANALYSIS_BUFFER_SIZE) {
-                    initialAnalysisBuffer.add(row.clone());
+                if (initialAnalysisBuffer.get().size() < ANALYSIS_BUFFER_SIZE) {
+                    initialAnalysisBuffer.get().add(row.clone());
                     return NULL_ANALYZER; // Returns a no op (like a "> /dev/null").
                 } else {
                     emptyInitialAnalysisBuffer(context, row);
@@ -113,24 +118,24 @@ class SimpleTransformer implements Transformer {
 
     // Empty the initial buffer and perform an early schema analysis, configure a full analyzer, run full analysis on
     private void emptyInitialAnalysisBuffer(TransformationContext context, DataSetRow row) {
-        if (currentAnalysisStatus.get() == AnalysisStatus.FULL_ANALYSIS || initialAnalysisBuffer.isEmpty()) {
+        if (currentAnalysisStatus.get() == AnalysisStatus.FULL_ANALYSIS || initialAnalysisBuffer.get().isEmpty()) {
             // Got called for nothing
             return;
         }
         // Perform a first rough guess of records in reservoir
         final List<ColumnMetadata> columns = row.getRowMetadata().getColumns();
         final Analyzer<Analyzers.Result> schema = analyzerService.schemaAnalysis(columns);
-        for (DataSetRow dataSetRow : initialAnalysisBuffer) {
+        for (DataSetRow dataSetRow : initialAnalysisBuffer.get()) {
             schema.analyze(dataSetRow.order(columns).toArray(DataSetRow.SKIP_TDP_ID));
         }
         adapter.adapt(columns, schema.getResult());
         // Now configure the actual (full) analysis and don't forget to process stored records
         Analyzer<Analyzers.Result> analyzer = configureFullAnalyzer(context, columns);
-        for (DataSetRow dataSetRow : initialAnalysisBuffer) {
+        for (DataSetRow dataSetRow : initialAnalysisBuffer.get()) {
             analyzer.analyze(dataSetRow.order(columns).toArray(DataSetRow.SKIP_TDP_ID));
         }
         // Clear all stored records and set current status to FULL_ANALYSIS for further records.
-        initialAnalysisBuffer.clear();
+        initialAnalysisBuffer.get().clear();
         currentAnalysisStatus.set(AnalysisStatus.FULL_ANALYSIS);
     }
 
@@ -215,6 +220,7 @@ class SimpleTransformer implements Transformer {
             throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
         } finally {
             currentAnalysisStatus.remove();
+            initialAnalysisBuffer.remove();
         }
     }
 
