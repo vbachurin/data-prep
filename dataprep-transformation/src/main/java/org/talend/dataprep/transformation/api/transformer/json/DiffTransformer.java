@@ -1,9 +1,11 @@
 package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -73,38 +75,49 @@ class DiffTransformer implements Transformer {
         final Long maxIndex = isIndexLimited ? indexes.stream().mapToLong(Long::longValue).max().getAsLong() : Long.MAX_VALUE;
 
         try {
-
             // defensive programming
             if (reference.getAction() == null) {
                 throw new IllegalStateException("No old action to perform for preview.");
             }
-
+            // Start diff
             writer.startObject();
-
-            // Metadata
-            writer.fieldName("columns");
-
-            RowMetadata rowMetadata = new RowMetadata(input.getColumns());
-            RowMetadata referenceMetadata = rowMetadata.clone();
-
-            rowMetadata = preview.apply(new DataSetRow(rowMetadata)).getRowMetadata();
-            referenceMetadata = reference.apply(new DataSetRow(referenceMetadata)).getRowMetadata();
-
-            rowMetadata.diff(referenceMetadata);
-            writer.write(rowMetadata);
-
             // Records
             writer.fieldName("records");
             writer.startArray();
-
+            final AtomicBoolean firstTransformation = new AtomicBoolean(true);
+            final Set<RowMetadata> diff = new HashSet<>(1);
             input.getRecords() //
                     .filter(isWithinWantedIndexes(minIndex, maxIndex)) //
                     .map(createClone()) //
-                    .map(applyTransformations(reference, preview)) //
+                    .map(rows -> { // Apply actions and generate diff
+                        if (firstTransformation.getAndSet(false)) { // First transformation, keep track of metadata changes
+                            reference.apply(rows[0]);
+                            preview.apply(rows[1]);
+                            rows[1].getRowMetadata().diff(rows[0].getRowMetadata());
+                            diff.add(rows[1].getRowMetadata().clone()); // <- remembers diff for later
+                        } else { // Only apply actions on remaining rows
+                            reference.apply(rows[0]);
+                            preview.apply(rows[1]);
+                        }
+                        return rows;
+                    }) //
                     .filter(shouldWriteDiff(indexes)) //
-                    .forEach(writeDiff(writer));
-
+                    .forEach(rows -> {
+                        try {
+                            rows[1].diff(rows[0]);
+                            if (rows[1].shouldWrite()) {
+                                writer.write(rows[1]);
+                            }
+                        } catch (IOException e) {
+                            throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
+                        }
+                    });
             writer.endArray();
+            // Write metadata diff
+            writer.fieldName("columns");
+            writer.write(diff.iterator().next());
+            diff.clear();
+            // End diff
             writer.endObject();
             writer.flush();
         } catch (IOException e) {
@@ -122,15 +135,10 @@ class DiffTransformer implements Transformer {
     }
 
     private Function<DataSetRow, DataSetRow[]> createClone() {
-        return row -> new DataSetRow[] { row.clone(), row };
-    }
-
-    private Function<DataSetRow[], DataSetRow[]> applyTransformations(InternalTransformationContext reference,
-            InternalTransformationContext preview) {
-        return rows -> {
-            reference.apply(rows[0]);
-            preview.apply(rows[1]);
-            return rows;
+        return row -> {
+            final DataSetRow reference = new DataSetRow(row.getRowMetadata().clone(), row.values());
+            reference.setTdpId(row.getTdpId());
+            return new DataSetRow[] { reference, row };
         };
     }
 
@@ -138,19 +146,6 @@ class DiffTransformer implements Transformer {
         return rows -> indexes == null || // no wanted index, we process all rows
                 indexes.contains(rows[0].getTdpId()) || // row is a wanted diff row
                 rows[0].isDeleted() && !rows[1].isDeleted(); // row is deleted but preview is not
-    }
-
-    private Consumer<DataSetRow[]> writeDiff(TransformerWriter writer) {
-        return rows -> {
-            rows[1].diff(rows[0]);
-            try {
-                if (rows[1].shouldWrite()) {
-                    writer.write(rows[1]);
-                }
-            } catch (IOException e) {
-                throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
-            }
-        };
     }
 
     private class InternalTransformationContext {

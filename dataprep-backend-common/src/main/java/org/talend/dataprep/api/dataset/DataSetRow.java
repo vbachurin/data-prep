@@ -52,9 +52,9 @@ public class DataSetRow implements Cloneable {
      *
      * @param values the row value.
      */
-    public DataSetRow(RowMetadata rowMetadata, Map<String, String> values) {
+    public DataSetRow(RowMetadata rowMetadata, Map<String, ?> values) {
         this(rowMetadata);
-        this.values.putAll(values);
+        values.forEach((k, v) -> this.values.put(k, String.valueOf(v)));
     }
 
     public DataSetRow(Map<String, String> values) {
