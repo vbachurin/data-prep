@@ -16,6 +16,7 @@
 		var vm = this;
 		vm.state = state;
 		vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
+		vm.loadLookupDsContent = LookupService.loadLookupContent;
 
 		/**
 		 * @ngdoc method
@@ -36,22 +37,8 @@
 		 * @returns {String} the name of th dataset to be shown in the list
 		 * @description loops over the dataset lookup action parameters to collect the dataset name
 		 */
-		vm.getDsName = function getDsName (item){//TODO should be put into lookupService
-			if(item){
-				return _.find(item.parameters, {name:'lookup_ds_name'}).default;
-			}
-		};
-
-		/**
-		 * @ngdoc method
-		 * @name loadLookupDsContent
-		 * @methodOf data-prep.lookup.controller:LookupCtrl
-		 * @description loads the content of the selected dataset
-		 * @params {Object} dataset
-		 */
-		vm.loadLookupDsContent = function loadLookupDsContent (dataset){
-			StateService.setLookupDataset(dataset);
-			LookupService.loadLookupContent();
+		vm.getDsName = function getDsName (item){
+			return _.find(item.parameters, {name:'lookup_ds_name'}).default;
 		};
 
 		/**

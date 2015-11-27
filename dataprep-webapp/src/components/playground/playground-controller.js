@@ -9,10 +9,15 @@
      * <ul>
      *     <li>Recipe length : display recipe panel on first step application</li>
      * </ul>
+     * @requires data-prep.services.state.constant:state
+     * @requires data-prep.services.state.service:StateService
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.playground.service:PreviewService
+     * @requires data-prep.services.recipe.service:RecipeService
+     * @requires data-prep.services.recipe.service:RecipeBulletService
      * @requires data-prep.services.onboarding.service:OnboardingService
+     * @requires data-prep.services.lookup:LookupService
      * @requires data-prep.services.folder.service:FolderService
      */
     function PlaygroundCtrl($state, $stateParams, state, StateService, PlaygroundService, PreparationService,
@@ -95,8 +100,7 @@
                 LookupService.getLookupPossibleActions(vm.state.playground.dataset.id)
                     .then(function(){
                         if(vm.state.playground.lookupGrid.datasets.length){
-                            StateService.setLookupDataset(vm.state.playground.lookupGrid.datasets[0]);
-                            LookupService.loadLookupContent();
+                            LookupService.loadLookupContent(vm.state.playground.lookupGrid.datasets[0]);
                         }
                     });
             }

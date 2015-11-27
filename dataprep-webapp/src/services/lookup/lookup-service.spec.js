@@ -80,16 +80,18 @@ describe('lookup service', function() {
 		spyOn(LookupRestService, 'getLookupActions').and.returnValue($q.when(dsActions));
 		spyOn(StateService, 'setCurrentLookupData').and.returnValue();
 		spyOn(StateService, 'setLookupDatasets').and.returnValue();
+		spyOn(StateService, 'setLookupDataset').and.returnValue();
 	}));
 
 	it('should load lookup dataset content', inject(function(LookupRestService, $rootScope, LookupService, StateService) {
 		//when
-		LookupService.loadLookupContent();
+		LookupService.loadLookupContent(lookupDataset);
 		$rootScope.$digest();
 
 		//then
 		expect(LookupRestService.getLookupContent).toHaveBeenCalledWith(dsLookupUrl);
 		expect(StateService.setCurrentLookupData).toHaveBeenCalledWith(dsLookupContent.data);
+		expect(StateService.setLookupDataset).toHaveBeenCalledWith(lookupDataset);
 	}));
 
 	it('should load all datasets with which a lookup is possible', inject(function(LookupRestService, $rootScope, LookupService, StateService) {

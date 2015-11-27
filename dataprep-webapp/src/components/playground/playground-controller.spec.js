@@ -204,12 +204,10 @@ describe('Playground controller', function() {
             expect(StateService.hidePlayground).toHaveBeenCalled();
         }));
     });
-
     describe('lookup', function () {
         var ctrl;
-        beforeEach(inject(function($q, LookupService, StateService) {
 
-            spyOn(LookupService, 'getLookupPossibleActions').and.returnValue($q.when(true));
+        beforeEach(inject(function($q, LookupService, StateService) {
             spyOn(StateService, 'setLookupVisibility').and.returnValue();
             spyOn(LookupService, 'loadLookupContent').and.returnValue();
             spyOn(StateService, 'setLookupDataset').and.returnValue();
@@ -217,57 +215,65 @@ describe('Playground controller', function() {
             ctrl = createController();
         }));
 
-        it('should query the possible lookup datasets without dataset content query', inject(function (LookupService, StateService) {
-            //given
-            stateMock.playground.lookupVisibility = false;
-            stateMock.playground.lookupGrid = {
-                datasets : []
+        describe('without querying the dataset content', function () {
+
+            beforeEach(inject(function($q, LookupService, StateService) {
+                spyOn(LookupService, 'getLookupPossibleActions').and.returnValue($q.when(true));
+            }));
+
+            it('should query the possible lookup without datasets as result', inject(function (LookupService, StateService) {
+                //given
+                stateMock.playground.lookupVisibility = false;
+                stateMock.playground.lookupGrid = {
+                    datasets : []
+                };
+                stateMock.playground.dataset  = {
+                    id:'ds54sd-ds5d4s-4dssd8'
+                };
+
+                //when
+                ctrl.toggleLookup();
+                scope.$digest();
+
+                //then
+                expect(StateService.setLookupVisibility).toHaveBeenCalledWith(true);
+                expect(LookupService.getLookupPossibleActions).toHaveBeenCalledWith(stateMock.playground.dataset.id);
+                expect(LookupService.loadLookupContent).not.toHaveBeenCalled();
+            }));
+        });
+
+        describe('with querying the dataset content', function () {
+            var lookupDataset = {
+                name: 'lookup',
+                parameters:[]
             };
-            stateMock.playground.dataset  = {
-                id:'ds54sd-ds5d4s-4dssd8'
-            };
 
-            //when
-            ctrl.toggleLookup();
-            scope.$digest();
+            beforeEach(inject(function($q, LookupService, StateService) {
+                spyOn(LookupService, 'getLookupPossibleActions').and.callFake(function() {
+                    stateMock.playground.lookupGrid.datasets.push(lookupDataset);
+                    return $q.when(true);
+                });
+            }));
 
-            //then
-            expect(StateService.setLookupVisibility).toHaveBeenCalledWith(true);
-            expect(LookupService.getLookupPossibleActions).toHaveBeenCalledWith(stateMock.playground.dataset.id);
-            expect(StateService.setLookupDataset).not.toHaveBeenCalled();
-            expect(LookupService.loadLookupContent).not.toHaveBeenCalled();
-        }));
+            it('should query the possible lookup with filled datasets as result', inject(function (LookupService, StateService, $q) {
+                //given
+                stateMock.playground.lookupVisibility = false;
+                stateMock.playground.lookupGrid = {
+                    datasets : []
+                };
+                stateMock.playground.dataset  = {
+                    id:'ds54sd-ds5d4s-4dssd8'
+                };
 
-        //it('should trigger query the possible lookup datasets with dataset content query', inject(function (LookupService, StateService, $q) {
-        //    //given
-        //    var lookupDataset = {
-        //        name: 'lookup',
-        //        parameters:[]
-        //    };
-        //    stateMock.playground.lookupVisibility = false;
-        //    stateMock.playground.lookupGrid = {
-        //        datasets : []
-        //    };
-        //    //stateMock.playground.lookupGrid.datasets.push(lookupDataset);
-        //    var fillDatasets = function(){
-        //        stateMock.playground.lookupGrid.datasets.push(lookupDataset);
-        //        return true;
-        //    };
-        //    stateMock.playground.dataset  = {
-        //        id:'ds54sd-ds5d4s-4dssd8'
-        //    };
-		//
-        //    spyOn(LookupService, 'getLookupPossibleActions').and.returnValue($q.when(fillDatasets()));
-        //    console.log(stateMock.playground.lookupGrid.datasets);
-        //    //when
-        //    ctrl.toggleLookup();
-        //    scope.$digest();
-        //    console.log(stateMock.playground.lookupGrid.datasets);
-        //    //then
-        //    expect(StateService.setLookupVisibility).toHaveBeenCalledWith(true);
-        //    expect(LookupService.getLookupPossibleActions).toHaveBeenCalledWith(stateMock.playground.dataset.id);
-        //    expect(StateService.setLookupDataset).toHaveBeenCalledWith(lookupDataset);
-        //    expect(LookupService.loadLookupContent).toHaveBeenCalled();
-        //}));
+                //when
+                ctrl.toggleLookup();
+                scope.$digest();
+
+                //then
+                expect(StateService.setLookupVisibility).toHaveBeenCalledWith(true);
+                expect(LookupService.getLookupPossibleActions).toHaveBeenCalledWith(stateMock.playground.dataset.id);
+                expect(LookupService.loadLookupContent).toHaveBeenCalledWith(stateMock.playground.lookupGrid.datasets[0]);
+            }));
+        });
     });
 });

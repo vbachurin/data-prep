@@ -92,6 +92,14 @@
 			});
 		}
 
+
+		/**
+		 * @ngdoc method
+		 * @name setDataset
+		 * @methodOf data-prep.services.state.service:GridStateService
+		 * @param {object} dataset The dataset
+		 * @description Sets new dataset
+		 */
 		function setDataset(dataset) {
 			lookupGridState.dataset = dataset;
 		}

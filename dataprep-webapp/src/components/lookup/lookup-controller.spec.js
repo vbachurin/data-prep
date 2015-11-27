@@ -97,23 +97,6 @@ describe('Lookup controller', function () {
 		};
 	}));
 
-	describe('on loading a dataset lookup content manually or automatically', function(){
-		it('should load a specific dataset lookup content', inject(function (StateService, LookupService) {
-			//given
-			var ctrl      = createController();
-			spyOn(StateService, 'setLookupDataset').and.returnValue();
-			spyOn(LookupService, 'loadLookupContent').and.returnValue();
-
-			//when
-			ctrl.loadLookupDsContent(dsActions[0]);
-
-			//then
-			expect(StateService.setLookupDataset).toHaveBeenCalledWith(dsActions[0]);
-			/*jshint camelcase: false */
-			expect(LookupService.loadLookupContent).toHaveBeenCalled();
-		}));
-	});
-
 	describe('Confirm button interaction', function(){
 		it('should trigger lookup preview', inject(function (EarlyPreviewService) {
 			//given

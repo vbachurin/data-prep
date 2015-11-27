@@ -5,10 +5,10 @@
 	 * @ngdoc service
 	 * @name data-prep.services.lookup.service:LookupService
 	 * @description Lookup service. This service provide the entry point to load lookup content
+	 * @requires data-prep.services.lookup:LookupRestService
 	 * @requires data-prep.services.state.service:StateService
-	 * @requires data-prep.services.utils.service:RestURLs
 	 */
-	function LookupService(LookupRestService, StateService, state) {
+	function LookupService(LookupRestService, StateService) {
 		var service = {
 			loadLookupContent: loadLookupContent,
 			getLookupPossibleActions: getLookupPossibleActions
@@ -22,9 +22,10 @@
 		 * @methodOf data-prep.services.lookup.service:LookupService
 		 * @description loads the lookup dataset content
 		 */
-		function loadLookupContent(){
-			LookupRestService.getLookupContent(getDsUrl(state.playground.lookupGrid.dataset))
+		function loadLookupContent(dataset){
+			LookupRestService.getLookupContent(getDsUrl(dataset))
 				.then(function(lookupDsContent){
+					StateService.setLookupDataset(dataset);
 					StateService.setCurrentLookupData(lookupDsContent.data);
 				});
 		}
@@ -52,9 +53,7 @@
 		 * @description loops over the dataset lookup action parameters to pick up the dataset url
 		 */
 		function getDsUrl (item){
-			if(item){
-				return _.find(item.parameters, {name:'lookup_ds_url'}).default;
-			}
+			return _.find(item.parameters, {name:'lookup_ds_url'}).default;
 		}
 	}
 
