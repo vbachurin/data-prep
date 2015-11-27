@@ -221,6 +221,8 @@ class SimpleTransformer implements Transformer {
         } finally {
             currentAnalysisStatus.remove();
             initialAnalysisBuffer.remove();
+            // cleanup context (to make sure resources are properly closed)
+            configuration.getTransformationContext().cleanup();
         }
     }
 

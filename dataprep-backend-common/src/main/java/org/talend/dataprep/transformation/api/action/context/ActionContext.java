@@ -1,5 +1,6 @@
 package org.talend.dataprep.transformation.api.action.context;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -92,6 +93,13 @@ public class ActionContext {
         final Object value = supplier.apply(parameters);
         context.put(key, value);
         return value;
+    }
+
+    /**
+     * @return the context entries.
+     */
+    public Collection<Object> getContextEntries() {
+        return context.values();
     }
 
     /**

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -18,6 +17,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
@@ -38,7 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Component
 @Scope("prototype")
-public class LookupRowMatcher {
+public class LookupRowMatcher implements DisposableBean {
 
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(LookupRowMatcher.class);
@@ -99,11 +99,9 @@ public class LookupRowMatcher {
     /**
      * Gently close the input stream as well as the http client.
      */
-    @PreDestroy
-    private void destroy() {
+    public void destroy() {
         try {
             input.close();
-            httpClient.close();
         } catch (IOException e) {
             LOGGER.warn("Error cleaning LookupRowMatcher", e);
         }

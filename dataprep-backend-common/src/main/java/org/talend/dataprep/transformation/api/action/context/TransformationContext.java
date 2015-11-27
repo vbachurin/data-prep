@@ -1,9 +1,13 @@
 package org.talend.dataprep.transformation.api.action.context;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
@@ -16,6 +20,11 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
  * @see ActionMetadata#create(Map)
  */
 public final class TransformationContext {
+
+    /**
+     * This class' logger.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransformationContext.class);
 
     /** Map of action context for each action instance within a transformation. */
     private final Map<ActionMetadata, ActionContext> contexts = new HashMap<>();
@@ -67,7 +76,34 @@ public final class TransformationContext {
         }
     }
 
+    /**
+     * @return all the action contexts.
+     */
+    public Collection<ActionContext> getAllActionsContexts() {
+        return contexts.values();
+    }
+
     public void freezeActionContexts() {
         contexts.replaceAll((actionMetadata, actionContext) -> actionContext.asImmutable());
+    }
+
+
+    /**
+     * Cleanup transformation context.
+     */
+    public void cleanup() {
+        final Collection<ActionContext> contexts = this.getAllActionsContexts();
+        for (ActionContext context : getAllActionsContexts()) {
+            for (Object contextEntry : context.getContextEntries()) {
+                if (contextEntry instanceof DisposableBean) {
+                    try {
+                        ((DisposableBean) contextEntry).destroy();
+                    } catch (Exception error) {
+                        LOGGER.warn("error cleaning action context {}", contextEntry, error);
+                    }
+                }
+            }
+
+        }
     }
 }

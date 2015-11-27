@@ -123,6 +123,11 @@ class DiffTransformer implements Transformer {
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
         }
+ finally {
+            // cleanup context (to make sure resources are properly closed)
+            reference.getContext().cleanup();
+            preview.getContext().cleanup();
+        }
     }
 
     @Override
@@ -173,6 +178,7 @@ class DiffTransformer implements Transformer {
         public DataSetRow apply(DataSetRow dataSetRow) {
             return action.apply(dataSetRow, context);
         }
+
     }
 
 }
