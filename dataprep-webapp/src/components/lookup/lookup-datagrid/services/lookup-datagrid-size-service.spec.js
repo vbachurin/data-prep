@@ -3,7 +3,19 @@ describe('Lookup Datagrid size service', function () {
 
 	var gridMock, windowMock, gridColumns, stateMock;
 
-	var storageKey = 'org.talend.dataprep.col_size_00000000';
+	var storageKey = 'org.talend.dataprep.col_size_9e739b88-5ec9-4b58-84b5-2127a7e2eac7';
+
+	var lookupDataset = {
+		'category': 'data_blending',
+		'name': 'lookup',
+		'parameters': [
+			{
+				'name': 'lookup_ds_id',
+				'type': 'string',
+				'default': '9e739b88-5ec9-4b58-84b5-2127a7e2eac7'
+			}
+		]
+	};
 
 	beforeEach(module('data-prep.lookup', function ($provide) {
 		$provide.factory('$window', function () {
@@ -14,7 +26,7 @@ describe('Lookup Datagrid size service', function () {
 			return windowMock;
 		});
 
-		stateMock = {playground: {lookupGrid : {}}};
+		stateMock = {playground: {lookupGrid : {dataset: lookupDataset}}};
 		$provide.constant('state', stateMock);
 	}));
 
@@ -28,7 +40,6 @@ describe('Lookup Datagrid size service', function () {
 			{id: '0003', name: 'col3', width: 40, minWidth: 80},
 			{id: '0004', name: 'col4', width: 50, minWidth: 80}
 		];
-		stateMock.playground.lookupGrid.dataset = {id: '00000000'};
 
 		spyOn(gridMock.onColumnsResized, 'subscribe').and.returnValue();
 		spyOn(gridMock, 'resizeCanvas').and.returnValue();

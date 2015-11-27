@@ -87,11 +87,10 @@
             StateService.setLookupVisibility(!state.playground.lookupVisibility);
             if(!vm.state.playground.lookupGrid.datasets.length){
                 LookupService.getLookupPossibleActions(vm.state.playground.dataset.id)
-                    .then(function(dsLookup){
-                        StateService.setLookupDatasets(dsLookup.data);
+                    .then(function(){
                         if(vm.state.playground.lookupGrid.datasets.length){
                             StateService.setLookupDataset(vm.state.playground.lookupGrid.datasets[0]);
-                            LookupService.loadSelectedLookupContent();
+                            LookupService.loadLookupContent();
                         }
                     });
             }

@@ -11,21 +11,19 @@
 	function LookupService(LookupRestService, StateService, state) {
 		var service = {
 			loadLookupContent: loadLookupContent,
-			getLookupPossibleActions: getLookupPossibleActions,
-			loadSelectedLookupContent: loadSelectedLookupContent
+			getLookupPossibleActions: getLookupPossibleActions
 		};
 
 		return service;
 
 		/**
-		 * @ngdoc meth???
-		 * @name loadL???upContent
-		 * @methodOf d???-prep.services.lookup.service:LookupService
-		 * @param {str???} lookupDsUrl dataset lookup url
-		 * @descriptio???iven a dataset Lookup url, it loads its content
+		 * @ngdoc method
+		 * @name loadLookupContent
+		 * @methodOf data-prep.services.lookup.service:LookupService
+		 * @description loads the lookup dataset content
 		 */
-		function loadLookupContent(lookupDsUrl){
-			LookupRestService.getLookupContent(lookupDsUrl)
+		function loadLookupContent(){
+			LookupRestService.getLookupContent(getDsUrl(state.playground.lookupGrid.dataset))
 				.then(function(lookupDsContent){
 					StateService.setCurrentLookupData(lookupDsContent.data);
 				});
@@ -36,23 +34,23 @@
 		 * @name getLookupPossibleActions
 		 * @methodOf data-prep.services.lookup.service:LookupService
 		 * @param {string} datasetId dataset id
-		 * @description given a dataset id, it loads its possible actions
+		 * @description given a dataset id, it loads its possible lookup datasets
 		 */
 		function getLookupPossibleActions(datasetId){
-			return LookupRestService.getLookupActions(datasetId);
+			return LookupRestService.getLookupActions(datasetId)
+				.then(function(datasets){
+					StateService.setLookupDatasets(datasets.data);
+				});
 		}
 
 		/**
-		 * @ngdoc met????
-		 * @name load????ctedLookupContent
-		 * @methodOf ????-prep.lookup.controller:LookupCtrl
-		 * @param {ob????} dsLookup dataset lookup action
-		 * @descripti????oads the content of the selected lookup dataset
+		 * @ngdoc method
+		 * @name getDsUrl
+		 * @methodOf data-prep.services.lookup.service:LookupService
+		 * @param {object} item dataset lookup action
+		 * @returns {String} the url of the lookup dataset
+		 * @description loops over the dataset lookup action parameters to pick up the dataset url
 		 */
-		function loadSelectedLookupContent(){
-			loadLookupContent(getDsUrl(state.playground.lookupGrid.dataset));
-		}
-
 		function getDsUrl (item){
 			if(item){
 				return _.find(item.parameters, {name:'lookup_ds_url'}).default;

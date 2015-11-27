@@ -204,4 +204,70 @@ describe('Playground controller', function() {
             expect(StateService.hidePlayground).toHaveBeenCalled();
         }));
     });
+
+    describe('lookup', function () {
+        var ctrl;
+        beforeEach(inject(function($q, LookupService, StateService) {
+
+            spyOn(LookupService, 'getLookupPossibleActions').and.returnValue($q.when(true));
+            spyOn(StateService, 'setLookupVisibility').and.returnValue();
+            spyOn(LookupService, 'loadLookupContent').and.returnValue();
+            spyOn(StateService, 'setLookupDataset').and.returnValue();
+
+            ctrl = createController();
+        }));
+
+        it('should query the possible lookup datasets without dataset content query', inject(function (LookupService, StateService) {
+            //given
+            stateMock.playground.lookupVisibility = false;
+            stateMock.playground.lookupGrid = {
+                datasets : []
+            };
+            stateMock.playground.dataset  = {
+                id:'ds54sd-ds5d4s-4dssd8'
+            };
+
+            //when
+            ctrl.toggleLookup();
+            scope.$digest();
+
+            //then
+            expect(StateService.setLookupVisibility).toHaveBeenCalledWith(true);
+            expect(LookupService.getLookupPossibleActions).toHaveBeenCalledWith(stateMock.playground.dataset.id);
+            expect(StateService.setLookupDataset).not.toHaveBeenCalled();
+            expect(LookupService.loadLookupContent).not.toHaveBeenCalled();
+        }));
+
+        //it('should trigger query the possible lookup datasets with dataset content query', inject(function (LookupService, StateService, $q) {
+        //    //given
+        //    var lookupDataset = {
+        //        name: 'lookup',
+        //        parameters:[]
+        //    };
+        //    stateMock.playground.lookupVisibility = false;
+        //    stateMock.playground.lookupGrid = {
+        //        datasets : []
+        //    };
+        //    //stateMock.playground.lookupGrid.datasets.push(lookupDataset);
+        //    var fillDatasets = function(){
+        //        stateMock.playground.lookupGrid.datasets.push(lookupDataset);
+        //        return true;
+        //    };
+        //    stateMock.playground.dataset  = {
+        //        id:'ds54sd-ds5d4s-4dssd8'
+        //    };
+		//
+        //    spyOn(LookupService, 'getLookupPossibleActions').and.returnValue($q.when(fillDatasets()));
+        //    console.log(stateMock.playground.lookupGrid.datasets);
+        //    //when
+        //    ctrl.toggleLookup();
+        //    scope.$digest();
+        //    console.log(stateMock.playground.lookupGrid.datasets);
+        //    //then
+        //    expect(StateService.setLookupVisibility).toHaveBeenCalledWith(true);
+        //    expect(LookupService.getLookupPossibleActions).toHaveBeenCalledWith(stateMock.playground.dataset.id);
+        //    expect(StateService.setLookupDataset).toHaveBeenCalledWith(lookupDataset);
+        //    expect(LookupService.loadLookupContent).toHaveBeenCalled();
+        //}));
+    });
 });

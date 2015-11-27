@@ -36,15 +36,22 @@
 		 * @returns {String} the name of th dataset to be shown in the list
 		 * @description loops over the dataset lookup action parameters to collect the dataset name
 		 */
-		vm.getDsName = function getDsName (item){
+		vm.getDsName = function getDsName (item){//TODO should be put into lookupService
 			if(item){
 				return _.find(item.parameters, {name:'lookup_ds_name'}).default;
 			}
 		};
 
+		/**
+		 * @ngdoc method
+		 * @name loadLookupDsContent
+		 * @methodOf data-prep.lookup.controller:LookupCtrl
+		 * @description loads the content of the selected dataset
+		 * @params {Object} dataset
+		 */
 		vm.loadLookupDsContent = function loadLookupDsContent (dataset){
 			StateService.setLookupDataset(dataset);
-			LookupService.loadSelectedLookupContent();
+			LookupService.loadLookupContent();
 		};
 
 		/**
@@ -66,11 +73,11 @@
 		 * @ngdoc method
 		 * @name getParams
 		 * @methodOf data-prep.lookup.controller:LookupCtrl
-		 * @description populates the params object by collection the needed parameters
+		 * @description returns the params of the lookup action
 		 */
 		function getParams () {
-			/*jshint camelcase: false */
 			var params = extractLookupParams(vm.state.playground.lookupGrid.dataset);
+			/*jshint camelcase: false */
 			params.column_id = vm.state.playground.grid.selectedColumn.id;
 			params.column_name = vm.state.playground.grid.selectedColumn.name;
 			params.lookup_join_on = vm.state.playground.lookupGrid.selectedColumn.id;

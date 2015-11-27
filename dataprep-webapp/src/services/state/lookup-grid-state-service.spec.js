@@ -38,19 +38,55 @@ describe('Lookup Grid state service', function () {
 		{'id':'0003','name':'lastname',isAdded: true}
 	];
 
-	var metadata = {
-		'id': '8f215b5b-b678-41f1-8a17-dccced6d40fe',
-		'favorite': false,
-		'records': 410,
-		'nbLinesHeader': 1,
-		'nbLinesFooter': 0,
-		'type': 'text/csv',
-		'formatGuess': 'formatGuess#csv',
-		'certificationStep': 'NONE',
-		'location': {
-			'type': 'local'
+	var lookupDatasets = [
+		{
+			'category': 'data_blending',
+			'name': 'lookup',
+			'parameters': [
+				{
+					'name': 'column_id',
+					'type': 'string',
+					'default': ''
+				},
+				{
+					'name': 'filter',
+					'type': 'filter',
+					'default': ''
+				},
+				{
+					'name': 'lookup_ds_name',
+					'type': 'string',
+					'default': 'lookup_2'
+				},
+				{
+					'name': 'lookup_ds_id',
+					'type': 'string',
+					'default': '9e739b88-5ec9-4b58-84b5-2127a7e2eac7'
+				},
+				{
+					'name': 'lookup_ds_url',
+					'type': 'string',
+					'default': 'http://172.17.0.211:8080/datasets/9ee2eac7/content?metadata=true'
+				},
+				{
+					'name': 'lookup_join_on',
+					'type': 'string',
+					'default': ''
+				},
+				{
+					'name': 'lookup_join_on_name',
+					'type': 'string',
+					'default': ''
+				},
+				{
+					'name': 'lookup_selected_cols',
+					'type': 'list',
+					'default': ''
+				}
+			]
 		}
-	};
+	];
+	var lookupDataset = lookupDatasets[0];
 
 	beforeEach(module('data-prep.services.state'));
 
@@ -81,6 +117,7 @@ describe('Lookup Grid state service', function () {
 
 			//then
 			expect(lookupGridState.addedToLookup).toEqual(addedToLookup);
+			expect(lookupGridState.lookupColumnsToAdd).toEqual([]);
 		}));
 
 		it('should update column selection metadata with the new metadata corresponding to the selected id', inject(function (lookupGridState, LookupGridStateService) {
@@ -191,6 +228,7 @@ describe('Lookup Grid state service', function () {
 			lookupGridState.selectedLine = 2;
 			lookupGridState.lookupColumnsToAdd = ['0000'];
 			lookupGridState.addedToLookup = [{id:'0001', isAdded: true, name:'vfvf'}];
+			lookupGridState.datasets = [{}, {}];
 
 			//when
 			LookupGridStateService.reset();
@@ -201,6 +239,7 @@ describe('Lookup Grid state service', function () {
 			expect(lookupGridState.selectedLine).toBe(null);
 			expect(lookupGridState.lookupColumnsToAdd).toEqual([]);
 			expect(lookupGridState.addedToLookup).toEqual([]);
+			expect(lookupGridState.datasets).toEqual([]);
 		}));
 	});
 
@@ -210,10 +249,21 @@ describe('Lookup Grid state service', function () {
 			lookupGridState.dataset = null;
 
 			//when
-			LookupGridStateService.setDataset(metadata);
+			LookupGridStateService.setDataset(lookupDataset);
 
 			//then
-			expect(lookupGridState.dataset).toBe(metadata);
+			expect(lookupGridState.dataset).toBe(lookupDataset);
+		}));
+
+		it('should set lookup datasets', inject(function(lookupGridState, LookupGridStateService) {
+			//given
+			lookupGridState.datasets = [];
+
+			//when
+			LookupGridStateService.setPotentialDatasets(lookupDatasets);
+
+			//then
+			expect(lookupGridState.datasets).toBe(lookupDatasets);
 		}));
 	});
 });

@@ -4,7 +4,8 @@
 	var lookupGridState = {
 		dataView: new Slick.Data.DataView({inlineFilters: false}),
 		addedToLookup : [],
-		lookupColumnsToAdd : []
+		lookupColumnsToAdd : [],
+		datasets: []
 	};
 
 	/**
@@ -80,7 +81,7 @@
 			lookupGridState.dataView.endUpdate();
 
 			updateSelectedColumn(data);
-
+			lookupGridState.addedToLookup = [];
 			_.each(data.columns, function(col){
 				lookupGridState.addedToLookup.push({
 					isAdded : false,

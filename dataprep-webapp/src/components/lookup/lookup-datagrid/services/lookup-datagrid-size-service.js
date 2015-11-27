@@ -27,7 +27,15 @@
             return 'org.talend.dataprep.col_size_' + getDsId(state.playground.lookupGrid.dataset);
         }
 
-        function getDsId (item){
+        /**
+         * @ngdoc method
+         * @name getDsId
+         * @methodOf data-prep.lookup.service:LookupDatagridSizeService
+         * @description returns the id from the params
+         * @params {Object} item the lookup dataset
+         * @returns {String} the lookup dataset Id
+         */
+        function getDsId (item){//TODO should be put into lookupService
             if(item){
                 return _.find(item.parameters, {name:'lookup_ds_id'}).default;
             }
