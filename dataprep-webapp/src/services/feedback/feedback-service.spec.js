@@ -16,5 +16,5 @@ describe('Feedback service', function () {
             expect(FeedbackRestService.sendFeedback).toHaveBeenCalledWith(feedbackOjb);
 
         }));
-    })
+    });
 });
