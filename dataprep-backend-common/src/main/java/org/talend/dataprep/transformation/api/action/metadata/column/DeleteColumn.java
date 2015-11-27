@@ -19,7 +19,7 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
 /**
  * Deletes a column from a dataset. This action is available from column headers</b>
  */
-@Component(DeleteColumn.ACTION_BEAN_PREFIX + DeleteColumn.DELETE_COLUMN_ACTION_NAME)
+// @Component(DeleteColumn.ACTION_BEAN_PREFIX + DeleteColumn.DELETE_COLUMN_ACTION_NAME)
 public class DeleteColumn extends ActionMetadata implements ColumnAction {
 
     /**

@@ -2207,40 +2207,5 @@
         }
       }
     ]
-  },
-  {
-    "category": "column_metadata",
-    "name": "delete_column",
-    "dynamic": false,
-    "parameters": [
-      {
-        "name": "column_id",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "default": ""
-      },
-      {
-        "name": "row_id",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "default": ""
-      },
-      {
-        "name": "scope",
-        "type": "string",
-        "implicit": true,
-        "canBeBlank": true,
-        "default": ""
-      },
-      {
-        "name": "filter",
-        "type": "filter",
-        "implicit": true,
-        "canBeBlank": true,
-        "default": ""
-      }
-    ]
   }
 ]
