@@ -4,22 +4,21 @@ import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.service.APIService;
 
-@Component @Scope("request") public class SendFeedback extends HystrixCommand<Void> {
+@Component @Scope("request") public class MailToCommand extends HystrixCommand<Void> {
 
-    private final FeedbackInfo feedbackInfo;
+    private final MailDetails mailDetails;
 
     public static final HystrixCommandGroupKey MAIL_GROUP = HystrixCommandGroupKey.Factory.asKey("mail"); //$NON-NLS-1$
 
-    private SendFeedback(FeedbackInfo feedbackInfo) {
+    private MailToCommand(MailDetails mailDetails) {
         super(MAIL_GROUP);
-        this.feedbackInfo = feedbackInfo;
+        this.mailDetails = mailDetails;
     }
 
     @Override protected Void run() throws Exception {
-        System.out.println("feedbackInfo = " + feedbackInfo);
         //TODO: Retrieve and send version with the feedback info object
+        MailSender.getInstance().send(mailDetails.getTitle(), mailDetails.getDescription(), mailDetails.getMail());
         return null;
     }
 }

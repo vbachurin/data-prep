@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * This class contains all the data needed to send feedback to Talend.
  */
-public class FeedbackInfo implements Serializable {
+public class MailDetails implements Serializable {
 
     private String title;
 
@@ -58,7 +58,7 @@ public class FeedbackInfo implements Serializable {
     }
 
     @Override public String toString() {
-        return "FeedbackInfo{" +
+        return "MailDetails{" +
                 "title='" + title + '\'' +
                 ", mail='" + mail + '\'' +
                 ", severity='" + severity + '\'' +
