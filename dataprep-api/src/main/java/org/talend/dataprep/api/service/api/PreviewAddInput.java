@@ -100,4 +100,10 @@ public class PreviewAddInput {
     public void setSample(Long sample) {
         this.sample = sample;
     }
+
+    @Override
+    public String toString() {
+        return "PreviewAddInput{" + "action=" + action + ", tdpIds=" + tdpIds + ", datasetId='" + datasetId + '\''
+                + ", preparationId='" + preparationId + '\'' + ", sample=" + sample + '}';
+    }
 }

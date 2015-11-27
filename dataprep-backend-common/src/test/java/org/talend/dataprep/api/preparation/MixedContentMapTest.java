@@ -10,22 +10,33 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 import java.io.InputStream;
 import java.io.StringWriter;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.talend.dataprep.api.preparation.json.MixedContentMapModule;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = MixedContentMapTest.class)
+@Configuration
+@ComponentScan(basePackages = "org.talend.dataprep")
+@EnableAutoConfiguration
 public class MixedContentMapTest {
 
+    @Autowired
     private ObjectMapper mapper;
 
-    @Before
-    public void setUp() throws Exception {
-        mapper = new ObjectMapper();
-        mapper.registerModule(new MixedContentMapModule());
-    }
+    // @Before
+    // public void setUp() throws Exception {
+    // mapper = new ObjectMapper();
+    // mapper.registerModule(new MixedContentMapModule());
+    // }
 
     @Test
     public void testRead() throws Exception {
@@ -53,10 +64,10 @@ public class MixedContentMapTest {
         map.put("empty", "");
         map.put("object", "{\"eq\": { \"field\": \"nbCommands\",\"value\": \"13\" }}");
         map.put("array", "[1, 2, 3]");
+        map.put("regexp", "[AZaz0-9]*");
         final StringWriter writer = new StringWriter();
         mapper.writer().writeValue(writer, map);
         final InputStream expected = MixedContentMapTest.class.getResourceAsStream("mixedMapWrite_expected.json");
         assertThat(writer.toString(), sameJSONAsFile(expected));
     }
-
 }

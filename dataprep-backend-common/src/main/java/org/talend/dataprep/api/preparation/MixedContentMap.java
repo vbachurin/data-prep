@@ -11,8 +11,10 @@ import java.util.function.Function;
 
 /**
  * A {@link Map} implementation for JSON (de)serialization to be used to indicate Map may receive mixed boolean /
- * numeric and JSON object as values. This implementation is a trigger so
- * {@link org.talend.dataprep.api.preparation.json.MixedContentMapModule} module is used to (de)serialize map content.
+ * numeric / string and JSON object as values.
+ *
+ * This implementation is a trigger so {@link org.talend.dataprep.api.preparation.json.MixedContentMapModule} module is
+ * used to de/serialize map content.
  */
 public class MixedContentMap implements Map<String, String>, Serializable {
 
@@ -144,4 +146,8 @@ public class MixedContentMap implements Map<String, String>, Serializable {
         return map.merge(key, value, remappingFunction);
     }
 
+    @Override
+    public String toString() {
+        return "MixedContentMap{" + "map=" + map + '}';
+    }
 }

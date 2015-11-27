@@ -11,23 +11,34 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+/**
+ * Jackson module that deals with MixedContentMap.
+ * 
+ * @see MixedContentMap
+ */
 @Component
 public class MixedContentMapModule extends SimpleModule {
 
+    /**
+     * Default empty constructor.
+     */
     public MixedContentMapModule() {
         super(MixedContentMapModule.class.getName(), new Version(1, 0, 0, null, null, null));
         addSerializer(MixedContentMap.class, new Serializer());
         addDeserializer(MixedContentMap.class, new Deserializer());
     }
 
-    private static class Serializer extends JsonSerializer<MixedContentMap> {
+    /**
+     * Serialize MixedContentMap to json.
+     */
+    private class Serializer extends JsonSerializer<MixedContentMap> {
 
+        /**
+         * @see JsonSerializer#serialize(Object, JsonGenerator, SerializerProvider)
+         */
         @Override
         public void serialize(MixedContentMap map, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
             jsonGenerator.writeStartObject();
@@ -39,7 +50,16 @@ public class MixedContentMapModule extends SimpleModule {
                 } else if (value.isEmpty()) {
                     jsonGenerator.writeString(StringUtils.EMPTY);
                 } else if (value.charAt(0) == '{' || value.charAt(0) == '[') {
-                    jsonGenerator.writeRaw(':' + value);
+                    // check that it's a real json array or object
+                    try {
+                        // builder.build().reader().readTree(value);
+                        new ObjectMapper().reader().readTree(value);
+                        jsonGenerator.writeRaw(':' + value);
+                    }
+                    // otherwise, it is written as a string (may be a regular expression, e.g. [A-Za-z0-9]*)
+                    catch (IOException ioe) {
+                        jsonGenerator.writeString(value);
+                    }
                 } else {
                     jsonGenerator.writeString(value);
                 }
@@ -48,8 +68,14 @@ public class MixedContentMapModule extends SimpleModule {
         }
     }
 
-    private static class Deserializer extends JsonDeserializer<MixedContentMap> {
+    /**
+     * Deserialize MixedContentMap to MixedContentMap.
+     */
+    private class Deserializer extends JsonDeserializer<MixedContentMap> {
 
+        /**
+         * @see JsonDeserializer#deserialize(JsonParser, DeserializationContext)
+         */
         @Override
         public MixedContentMap deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
                 throws IOException {
