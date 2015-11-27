@@ -16,9 +16,10 @@
      * @requires data-prep.services.state.service:StateService
      * @requires data-prep.services.datasetWorkflowService:UpdateWorkflowService
      * @requires data-prep.services.folder.service:FolderService
+     * @requires data-prep.services.preparation.service:PreparationListService
      */
     function DatasetListCtrl($stateParams, StateService, DatasetService, DatasetListSortService, PlaygroundService,
-                             TalendConfirmService, MessageService, UploadWorkflowService, UpdateWorkflowService, FolderService, state) {
+                             TalendConfirmService, MessageService, UploadWorkflowService, UpdateWorkflowService, FolderService, state, PreparationListService) {
         var vm = this;
 
         vm.datasetService = DatasetService;
@@ -198,6 +199,11 @@
                     .then(function () {
                         MessageService.success('DATASET_RENAME_SUCCESS_TITLE',
                             'DATASET_RENAME_SUCCESS');
+                        PreparationListService.refreshMetadataInfos(state.folder.currentFolderContent.datasets)
+                            .then(function(preparations){
+                                FolderService.refreshDefaultPreparationForCurrentFolder(preparations);
+                            });
+
                     }).catch(function () {
                         dataset.name = oldName;
                     }).finally(function () {

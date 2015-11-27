@@ -13,9 +13,10 @@
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.playground.service:PreviewService
      * @requires data-prep.services.onboarding.service:OnboardingService
+     * @requires data-prep.services.folder.service:FolderService
      */
     function PlaygroundCtrl($state, $stateParams, state, StateService, PlaygroundService, PreparationService,
-                            PreviewService, RecipeService, RecipeBulletService, OnboardingService) {
+                            PreviewService, RecipeService, RecipeBulletService, OnboardingService, FolderService) {
         var vm = this;
         vm.playgroundService = PlaygroundService;
         vm.previewService = PreviewService;
@@ -139,6 +140,7 @@
                 .then(hideAll)
                 .finally(function() {
                     vm.saveInProgress = false;
+                    FolderService.getFolderContent(state.folder.currentFolder);
                 });
         };
 
