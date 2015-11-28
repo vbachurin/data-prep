@@ -4,22 +4,25 @@
     /**
      * @ngdoc service
      * @name data-prep.services.feedback.service:FeedbackRestService
-     * @description feedback service. This service provide the entry point to feedback
+     * @description Feedback service. This service provide the entry point to feedback
      */
     function FeedbackRestService($http, RestURLs) {
-        var service = {
+        return {
             sendFeedback: sendFeedback
         };
-        return service;
 
-        function sendFeedback(feedbackOjb) {
+        /**
+         * @ngdoc method
+         * @name sendFeedback
+         * @methodOf data-prep.services.feedback.service:FeedbackRestService
+         * @param {string} feedback The feedback information
+         * @description Send a feedback
+         */
+        function sendFeedback(feedback) {
             var request = {
                 method: 'PUT',
                 url: RestURLs.mailUrl,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: feedbackOjb
+                data: feedback
             };
 
             return $http(request);

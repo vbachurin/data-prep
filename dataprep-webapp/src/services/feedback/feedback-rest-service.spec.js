@@ -8,23 +8,19 @@ describe('Feedback Rest Service', function () {
     beforeEach(inject(function ($rootScope, $injector, RestURLs) {
         RestURLs.setServerUrl('');
         $httpBackend = $injector.get('$httpBackend');
-
-        spyOn($rootScope, '$emit').and.returnValue();
     }));
 
-    it('should send feed back by http', inject(function ($rootScope, FeedbackRestService, RestURLs) {
+    it('should send feed back', inject(function ($rootScope, FeedbackRestService, RestURLs) {
         //given
-        var feedbackOjb = { title: ''};
+        var feedback = { title: ''};
 
         $httpBackend
-            .expectPUT(RestURLs.mailUrl, feedbackOjb)
+            .expectPUT(RestURLs.mailUrl, feedback)
             .respond(200);
 
         //when
-        FeedbackRestService.sendFeedback(feedbackOjb);
+        FeedbackRestService.sendFeedback(feedback);
         $httpBackend.flush();
-        $rootScope.$digest();
-
     }));
 
 });

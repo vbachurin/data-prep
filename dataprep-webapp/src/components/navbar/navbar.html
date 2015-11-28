@@ -12,8 +12,7 @@
             <li class="nav-link" title="{{'FEEDBACK_TOOLTIP' | translate}}">
                 <a class="icon" data-icon="H" id="message-icon" ng-click="navbarCtrl.openFeedbackForm()"></a>
             </li>
-            <li class="nav-link" title="{{'COMING_SOON' | translate}}"><a class="icon notification-icon" id="notification-icon">3</a>
-            </li>
+            <li class="nav-link" title="{{'COMING_SOON' | translate}}"><a class="icon notification-icon" id="notification-icon">3</a></li>
             <!--<li class="nav-link more"><a class="icon nomore" data-icon="k" id="profile-icon"></a>
                 <ul class="submenu">
                     <li><a>{{ ::'LOGOUT' | translate }}</a></li>
@@ -32,47 +31,52 @@
     </div>
 </talend-navbar>
 
-<talend-modal fullscreen="false"
+<talend-modal class="feedback"
+              fullscreen="false"
               close-button="true"
+              disable-enter="true"
               state="navbarCtrl.feedbackModal">
-    <span translate-once="FEEDBACK_FROM"></span>
-    <form name="navbarCtrl.feedbackForm" ng-submit="navbarCtrl.feedbackForm.$valid && navbarCtrl.sendFeedback()">
-        <div class="feedback-form">
-            <span translate-once="FEEDBACK_MAIL"></span>
+    <div class="title"
+         translate-once="FEEDBACK_FORM"></div>
+
+    <form name="navbarCtrl.feedbackForm"
+          class="feedback-form"
+          ng-submit="navbarCtrl.feedbackForm.$valid && navbarCtrl.sendFeedback()">
+        <div class="feedback-form-line">
+            <span class="feedback-form-label" translate-once="FEEDBACK_MAIL"></span>
             <input type="text"
                    ng-model="navbarCtrl.feedback.mail"
                    ng-model-options="{debounce: { default: 300, blur: 0 }}"/>
+        </div>
 
-            <span translate-once="FEEDBACK_TITLE"></span>
+        <div class="feedback-form-line">
+            <span class="feedback-form-label" translate-once="FEEDBACK_TITLE"></span>
             <input type="text"
                    ng-model="navbarCtrl.feedback.title"
                    ng-model-options="{debounce: { default: 300, blur: 0 }}"
                    can-be-blank="false"/>
-
-            <span translate-once="FEEDBACK_TYPE"></span>
-            <select
-                    ng-options="type.name as type.name for type in navbarCtrl.feedbackTypes"
+            <select ng-options="type.value as type.name for type in navbarCtrl.feedbackTypes"
                     ng-model="navbarCtrl.feedback.type"></select>
-
-            <span translate-once="FEEDBACK_SEVERITY"></span>
-            <select
-                    ng-options="severity.name as severity.name for severity in navbarCtrl.feedbackSeverities"
+            <select ng-options="severity.value as severity.name for severity in navbarCtrl.feedbackSeverities"
                     ng-model="navbarCtrl.feedback.severity"></select>
+        </div>
 
-            <span translate-once="FEEDBACK_DESCRIPTION"></span>
-            <textarea can-be-blank="false"
-                      ng-model="navbarCtrl.feedback.description">
-            </textarea>
+        <div class="feedback-form-line">
+            <span class="feedback-form-label" translate-once="FEEDBACK_DESCRIPTION"></span>
+            <textarea rows="5"
+                      can-be-blank="false"
+                      ng-model-options="{debounce: { default: 300, blur: 0 }}"
+                      ng-model="navbarCtrl.feedback.description"></textarea>
         </div>
         <div class="modal-buttons">
-            <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL">
-            </button>
-            <button class="btn-primary modal-primary-button" translate-once="OK"
-                    ng-disabled="navbarCtrl.feedbackForm.$invalid">
+            <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL"></button>
+            <button class="btn-primary modal-primary-button"
+                    ng-switch="navbarCtrl.isSendingFeedback"
+                    ng-disabled="navbarCtrl.feedbackForm.$invalid || navbarCtrl.isSendingFeedback">
+                <span ng-switch-when="false" translate-once="OK"></span>
+                <span ng-switch-when="true"><i data-icon="c" class="icon continuous-rotate"></i></span>
             </button>
         </div>
-
-
     </form>
 </talend-modal>
 

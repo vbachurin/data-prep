@@ -50,3 +50,38 @@ header.navigation {
     }
   }
 }
+
+.feedback {
+  .title {
+    font-weight: bold;
+    padding: 10px;
+  }
+
+  .feedback-form-line {
+    @include flex-row();
+    @include flex-wrap(none);
+    padding: 10px 0;
+
+    .feedback-form-label {
+      @include flex-basis(120px);
+      @include flex-grow(0);
+      @include flex-shrink(0);
+
+      text-align: right;
+      padding-right: 10px;
+    }
+
+    input {
+      margin: 0;
+    }
+
+    select {
+      background: white;
+      border: 1px solid rgb(221, 221, 221);
+      height: 36px;
+      line-height: 36px;
+      margin: 0 0 0 5px;
+      min-width: 130px;
+    }
+  }
+}
