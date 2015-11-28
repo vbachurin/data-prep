@@ -174,6 +174,10 @@ describe('Datagrid external service', function () {
         
         it('should do nothing when no cell is active', inject(function ($timeout, DatagridExternalService, StatisticsService, SuggestionService) {
             //given
+            try{
+                $timeout.flush();
+            }
+            catch(error) {}
             DatagridExternalService.init(gridMock);
 
             //when
