@@ -1,27 +1,12 @@
 (function () {
     'use strict';
 
-    function NavbarCtrl($state, $translate, version, OnboardingService, DatasetService, FeedbackService) {
-        var vm =this;
-        vm.feedbackModal = false;
-        vm.feedback = {
-            title : '',
-            mail : '',
-            severity : '',
-            type : '',
-            description: ''
-        };
+    function NavbarCtrl($state, $translate, version, OnboardingService, DatasetService, FeedbackRestService, MessageService) {
+        var vm = this;
 
-        vm.feedbackTypes = [
-            {name: $translate.instant('FEEDBACK_TYPE_BUGS')},
-            {name: $translate.instant('FEEDBACK_TYPE_IMPROVEMENTS')}];
-        vm.feedbackSeverities = [
-            {name:  $translate.instant('FEEDBACK_SEVERITY_1')},
-            {name:  $translate.instant('FEEDBACK_SEVERITY_2')},
-            {name:  $translate.instant('FEEDBACK_SEVERITY_3')},
-            {name:  $translate.instant('FEEDBACK_SEVERITY_4')}];
-
-        //////////////////////////////ONBOARDING/////////////////////////
+        //--------------------------------------------------------------------------------------------------------------
+        //-------------------------------------------ONBOARDING---------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         var tourId = 'dataset';
         this.startTour = OnboardingService.startTour;
         this.version = version;
@@ -32,17 +17,51 @@
             });
         }
 
-        //////////////////////////////FEEDBACK/////////////////////////
-        vm.openFeedbackForm = function() {
+        //--------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------FEEDBACK---------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        vm.feedbackModal = false;
+        vm.isSendingFeedback = false;
+
+        $translate.onReady(function () {
+            vm.feedbackTypes = [
+                {name: $translate.instant('FEEDBACK_TYPE_BUG'), value: 'BUG'},
+                {name: $translate.instant('FEEDBACK_TYPE_IMPROVEMENT'), value: 'IMPROVEMENT'}];
+            vm.feedbackSeverities = [
+                {name: $translate.instant('FEEDBACK_SEVERITY_CRITICAL'), value: 'CRITICAL'},
+                {name: $translate.instant('FEEDBACK_SEVERITY_MAJOR'), value: 'MAJOR'},
+                {name: $translate.instant('FEEDBACK_SEVERITY_MINOR'), value: 'MINOR'},
+                {name: $translate.instant('FEEDBACK_SEVERITY_TRIVIAL'), value: 'TRIVIAL'}];
+        });
+
+        resetForm();
+
+        function resetForm() {
+            vm.feedback = {
+                title: '',
+                mail: '',
+                severity: 'MINOR',
+                type: 'BUG',
+                description: ''
+            };
+        }
+
+        vm.openFeedbackForm = function () {
             vm.feedbackModal = true;
         };
 
-        vm.sendFeedback = function() {
-            FeedbackService.sendFeedback(vm.feedback).then (
-                function(){
+        vm.sendFeedback = function () {
+            vm.feedbackForm.$commitViewValue();
+            vm.isSendingFeedback = true;
+            FeedbackRestService.sendFeedback(vm.feedback)
+                .then (function () {
+                    resetForm();
                     vm.feedbackModal = false;
-                }
-            );
+                    MessageService.success('FEEDBACK_SENT_TITLE', 'FEEDBACK_SENT_CONTENT');
+                })
+                .finally(function () {
+                    vm.isSendingFeedback = false;
+                });
         };
 
     }

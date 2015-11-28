@@ -60,7 +60,7 @@
     z-index: 100;
 
     @include media($large-screen) {
-      padding-top: 8em;
+      padding-top: 6em;
     }
 
     .modal-bg {
@@ -316,9 +316,4 @@
 
 .modal-closed {
   overflow: auto;
-}
-
-.feedback-form {
-  max-height: 250px;
-  overflow-y: auto;
 }
