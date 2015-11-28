@@ -210,7 +210,7 @@ describe('Navbar controller', function () {
             expect(MessageService.success).toHaveBeenCalledWith('FEEDBACK_SENT_TITLE', 'FEEDBACK_SENT_CONTENT');
         }));
 
-        it('should reset form on send success', inject(function (MessageService) {
+        it('should reset form on send success', function () {
             //given
             var feedback = {
                 title : 'test',
@@ -236,6 +236,6 @@ describe('Navbar controller', function () {
                 type: 'BUG',
                 description: ''
             });
-        }));
+        });
     });
 });
