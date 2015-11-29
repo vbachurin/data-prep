@@ -43,39 +43,20 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
     @Value("${folder.store.file.location}")
     private String foldersLocation;
 
-    private final FileAttribute<Set<PosixFilePermission>> defaultUnixPermissions = //
-    PosixFilePermissions.asFileAttribute( //
-            Sets.newHashSet(PosixFilePermission.OWNER_EXECUTE, //
-                    PosixFilePermission.OWNER_READ, //
-                    PosixFilePermission.OWNER_WRITE));
-
     /**
      * Make sure the root folder is there.
      */
     @PostConstruct
     private void init() {
         try {
-            if (!Files.exists(getRootFolder())) {
-                createDirectories(getRootFolder());
+            Path rootPath = getRootFolder();
+            if (!Files.exists(rootPath)) {
+                Files.createDirectories(rootPath);
             }
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
 
-    }
-
-    /**
-     * Creates a folder with permissions according to current operating system.
-     *
-     * @param folder The folder to be created.
-     * @throws IOException
-     */
-    private void createDirectories(Path folder) throws IOException {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            Files.createDirectories(folder);
-        } else if(SystemUtils.IS_OS_UNIX) {
-            Files.createDirectories(folder, defaultUnixPermissions);
-        }
     }
 
     /**
@@ -147,7 +128,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
             Path pathToCreate = Paths.get(getRootFolder().toString(), pathParts.toArray(new String[pathParts.size()]));
 
             if (!Files.exists(pathToCreate)) {
-                createDirectories(pathToCreate);
+                Files.createDirectories(pathToCreate);
             }
             return Folder.Builder.folder() //
                     .path(path) //
