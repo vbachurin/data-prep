@@ -128,7 +128,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
             Path pathToCreate = Paths.get(getRootFolder().toString(), pathParts.toArray(new String[pathParts.size()]));
 
             if (!Files.exists(pathToCreate)) {
-                createDirectories(pathToCreate);
+                Files.createDirectories((pathToCreate);
             }
             return Folder.Builder.folder() //
                     .path(path) //
