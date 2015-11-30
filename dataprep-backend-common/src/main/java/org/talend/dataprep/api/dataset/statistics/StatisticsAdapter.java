@@ -19,7 +19,7 @@ import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 import org.talend.dataquality.semantic.recognizer.CategoryFrequency;
 import org.talend.dataquality.semantic.statistics.SemanticType;
 import org.talend.dataquality.statistics.cardinality.CardinalityStatistics;
-import org.talend.dataquality.statistics.frequency.DataFrequencyStatistics;
+import org.talend.dataquality.statistics.frequency.DataTypeFrequencyStatistics;
 import org.talend.dataquality.statistics.frequency.pattern.PatternFrequencyStatistics;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileStatistics;
 import org.talend.dataquality.statistics.numeric.summary.SummaryStatistics;
@@ -137,8 +137,8 @@ public class StatisticsAdapter {
                 statistics.setDuplicateCount(cardinalityStatistics.getDuplicateCount());
             }
             // Frequencies (data)
-            if (result.exist(DataFrequencyStatistics.class)) {
-                final DataFrequencyStatistics dataFrequencyStatistics = result.get(DataFrequencyStatistics.class);
+            if (result.exist(DataTypeFrequencyStatistics.class)) {
+                final DataTypeFrequencyStatistics dataFrequencyStatistics = result.get(DataTypeFrequencyStatistics.class);
                 final Map<String, Long> topTerms = dataFrequencyStatistics.getTopK(15);
                 if (topTerms != null) {
                     statistics.getDataFrequencies().clear();
@@ -158,9 +158,9 @@ public class StatisticsAdapter {
             if (result.exist(QuantileStatistics.class)) {
                 final QuantileStatistics quantileStatistics = result.get(QuantileStatistics.class);
                 final Quantiles quantiles = statistics.getQuantiles();
-                quantiles.setLowerQuantile(quantileStatistics.getLowerQuantile());
+                quantiles.setLowerQuantile(quantileStatistics.getLowerQuartile());
                 quantiles.setMedian(quantileStatistics.getMedian());
-                quantiles.setUpperQuantile(quantileStatistics.getUpperQuantile());
+                quantiles.setUpperQuantile(quantileStatistics.getUpperQuartile());
             }
             // Summary (min, max, mean, variance)
             if (result.exist(SummaryStatistics.class)) {

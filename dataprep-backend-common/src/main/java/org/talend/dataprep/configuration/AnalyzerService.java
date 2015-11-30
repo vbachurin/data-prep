@@ -24,7 +24,7 @@ import org.talend.dataquality.semantic.statistics.SemanticAnalyzer;
 import org.talend.dataquality.semantic.statistics.SemanticQualityAnalyzer;
 import org.talend.dataquality.standardization.index.ClassPathDirectory;
 import org.talend.dataquality.statistics.cardinality.CardinalityAnalyzer;
-import org.talend.dataquality.statistics.frequency.DataFrequencyAnalyzer;
+import org.talend.dataquality.statistics.frequency.DataTypeFrequencyAnalyzer;
 import org.talend.dataquality.statistics.frequency.pattern.CompositePatternFrequencyAnalyzer;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramColumnParameter;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramParameter;
@@ -111,7 +111,7 @@ public class AnalyzerService implements DisposableBean {
                 // Cardinality (distinct + duplicate)
                 new CardinalityAnalyzer(),
                 // Frequency analysis (Pattern + data)
-                new DataFrequencyAnalyzer(), new CompositePatternFrequencyAnalyzer(),
+                new DataTypeFrequencyAnalyzer(), new CompositePatternFrequencyAnalyzer(),
                 // Quantile analysis
                 new QuantileAnalyzer(types),
                 // Summary (min, max, mean, variance)

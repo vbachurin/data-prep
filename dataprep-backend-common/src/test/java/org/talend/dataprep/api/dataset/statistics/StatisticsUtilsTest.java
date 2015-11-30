@@ -12,7 +12,7 @@ import org.talend.dataquality.semantic.classifier.custom.UserDefinedCategory;
 import org.talend.dataquality.semantic.recognizer.CategoryFrequency;
 import org.talend.dataquality.semantic.statistics.SemanticType;
 import org.talend.dataquality.statistics.cardinality.CardinalityStatistics;
-import org.talend.dataquality.statistics.frequency.DataFrequencyStatistics;
+import org.talend.dataquality.statistics.frequency.DataTypeFrequencyStatistics;
 import org.talend.dataquality.statistics.frequency.pattern.PatternFrequencyStatistics;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileStatistics;
 import org.talend.dataquality.statistics.numeric.summary.SummaryStatistics;
@@ -50,7 +50,7 @@ public class StatisticsUtilsTest {
         cardinalityStatistics.add("distinctValue");
         result.add(cardinalityStatistics);
         // Data frequency
-        DataFrequencyStatistics dataFrequencyStatistics = new DataFrequencyStatistics();
+        DataTypeFrequencyStatistics dataFrequencyStatistics = new DataTypeFrequencyStatistics();
         dataFrequencyStatistics.add("frequentValue1");
         dataFrequencyStatistics.add("frequentValue1");
         dataFrequencyStatistics.add("frequentValue2");
