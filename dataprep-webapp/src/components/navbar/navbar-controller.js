@@ -23,15 +23,22 @@
         vm.feedbackModal = false;
         vm.isSendingFeedback = false;
 
-        $translate.onReady(function () {
+        $translate([
+            'FEEDBACK_TYPE_BUG',
+            'FEEDBACK_TYPE_IMPROVEMENT',
+            'FEEDBACK_SEVERITY_CRITICAL',
+            'FEEDBACK_SEVERITY_MAJOR',
+            'FEEDBACK_SEVERITY_MINOR',
+            'FEEDBACK_SEVERITY_TRIVIAL'
+        ]).then(function(translations) {
             vm.feedbackTypes = [
-                {name: $translate.instant('FEEDBACK_TYPE_BUG'), value: 'BUG'},
-                {name: $translate.instant('FEEDBACK_TYPE_IMPROVEMENT'), value: 'IMPROVEMENT'}];
+                {name: translations.FEEDBACK_TYPE_BUG, value: 'BUG'},
+                {name: translations.FEEDBACK_TYPE_IMPROVEMENT, value: 'IMPROVEMENT'}];
             vm.feedbackSeverities = [
-                {name: $translate.instant('FEEDBACK_SEVERITY_CRITICAL'), value: 'CRITICAL'},
-                {name: $translate.instant('FEEDBACK_SEVERITY_MAJOR'), value: 'MAJOR'},
-                {name: $translate.instant('FEEDBACK_SEVERITY_MINOR'), value: 'MINOR'},
-                {name: $translate.instant('FEEDBACK_SEVERITY_TRIVIAL'), value: 'TRIVIAL'}];
+                {name: translations.FEEDBACK_SEVERITY_CRITICAL, value: 'CRITICAL'},
+                {name: translations.FEEDBACK_SEVERITY_MAJOR, value: 'MAJOR'},
+                {name: translations.FEEDBACK_SEVERITY_MINOR, value: 'MINOR'},
+                {name: translations.FEEDBACK_SEVERITY_TRIVIAL, value: 'TRIVIAL'}];
         });
 
         resetForm();
