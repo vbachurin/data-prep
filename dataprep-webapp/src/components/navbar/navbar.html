@@ -64,7 +64,6 @@
         <div class="feedback-form-line">
             <span class="feedback-form-label" translate-once="FEEDBACK_DESCRIPTION"></span>
             <textarea rows="5"
-                      can-be-blank="false"
                       ng-model-options="{debounce: { default: 300, blur: 0 }}"
                       ng-model="navbarCtrl.feedback.description"></textarea>
         </div>
@@ -74,7 +73,10 @@
                     ng-switch="navbarCtrl.isSendingFeedback"
                     ng-disabled="navbarCtrl.feedbackForm.$invalid || navbarCtrl.isSendingFeedback">
                 <span ng-switch-when="false" translate-once="OK"></span>
-                <span ng-switch-when="true"><i data-icon="c" class="icon continuous-rotate"></i></span>
+
+                <div class="feedback-sending-div" ng-switch-when="true" >
+                    <span class="feedback-sending continuous-rotate"><i data-icon="c" class="icon"></i></span>
+                </div>
             </button>
         </div>
     </form>
