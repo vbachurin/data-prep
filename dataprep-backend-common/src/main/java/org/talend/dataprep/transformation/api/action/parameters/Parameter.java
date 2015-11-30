@@ -13,6 +13,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 public class Parameter implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     /** The parameter name. */
     private final String name;
     /** The parameter type. */

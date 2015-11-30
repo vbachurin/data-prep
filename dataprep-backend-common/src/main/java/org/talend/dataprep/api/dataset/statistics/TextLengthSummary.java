@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TextLengthSummary implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty("minimalLength")
     double minimalLength = Double.NaN;
 

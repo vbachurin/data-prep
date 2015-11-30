@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Quantiles implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty("median")
     double median = Double.NaN;
 

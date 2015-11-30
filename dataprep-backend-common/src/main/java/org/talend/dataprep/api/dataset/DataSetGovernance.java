@@ -8,6 +8,9 @@ import java.util.Objects;
  */
 public class DataSetGovernance implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     public enum Certification {
         NONE,
         PENDING,

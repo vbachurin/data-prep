@@ -10,6 +10,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SchemaParserResult implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty("draft")
     private boolean draft;
 
@@ -46,6 +49,9 @@ public class SchemaParserResult implements Serializable {
      * Xls sheet content.
      */
     public static class SheetContent implements Serializable {
+
+        /** Serialization UID. */
+        private static final long serialVersionUID = 1L;
 
         /** The sheet name. */
         @JsonProperty("name")

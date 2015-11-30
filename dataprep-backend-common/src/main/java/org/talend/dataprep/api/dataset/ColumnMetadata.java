@@ -24,6 +24,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class ColumnMetadata implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     /** Quality of the column. */
     @JsonProperty("quality")
     private final Quality quality = new Quality();

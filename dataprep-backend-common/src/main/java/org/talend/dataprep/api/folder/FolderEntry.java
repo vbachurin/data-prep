@@ -9,6 +9,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FolderEntry extends Identifiable implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     @Id
     @JsonProperty("id")
     private String id;

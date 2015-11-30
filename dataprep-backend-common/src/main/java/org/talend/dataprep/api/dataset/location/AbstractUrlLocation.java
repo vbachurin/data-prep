@@ -13,6 +13,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public abstract class AbstractUrlLocation implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     /** The dataset http url. */
     @JsonProperty("url")
     protected String url;

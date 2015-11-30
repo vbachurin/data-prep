@@ -11,6 +11,9 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName("statistics")
 public class Statistics implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty("count")
     long count;
 

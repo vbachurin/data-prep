@@ -9,6 +9,9 @@ import org.springframework.data.annotation.PersistenceConstructor;
 
 public class Step extends Identifiable implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     /**
      * The "root step": this is the initial step for all preparation (i.e. a newly created preparation has this root
      * step as head).

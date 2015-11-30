@@ -23,6 +23,9 @@ public enum Type implements Serializable {
     BOOLEAN("boolean", ANY, "BOOLEAN"), //$NON-NLS-1$
     DATE("date", ANY, "DATE"); //$NON-NLS-1$
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     /** The type name. */
     private final String name;
 
