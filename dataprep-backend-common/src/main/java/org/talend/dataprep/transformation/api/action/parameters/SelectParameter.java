@@ -1,7 +1,6 @@
 package org.talend.dataprep.transformation.api.action.parameters;
 
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,6 +15,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Parameter that should be displayed as a select box in the UI.
  */
 public class SelectParameter extends Parameter implements Serializable {
+
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
 
     /** The select items. */
     @JsonIgnore // will be part of the Parameter#configuration

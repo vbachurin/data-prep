@@ -12,6 +12,9 @@ import org.apache.commons.lang.StringUtils;
 
 public class Preparation extends Identifiable implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     private String dataSetId;
 
     private String author;

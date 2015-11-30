@@ -16,6 +16,9 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName("action")
 public class Action implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     /** Default noop action. */
     public static final DataSetRowAction IDLE_ROW_ACTION = (row, context) -> row;
 

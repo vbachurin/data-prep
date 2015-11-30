@@ -13,6 +13,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DataSetContent implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty("records")
     private int nbRecords = 0;
 

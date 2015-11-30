@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StepDiff implements Serializable {
+
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     private List<String> createdColumns = new ArrayList<>(0);
 
     public List<String> getCreatedColumns() {

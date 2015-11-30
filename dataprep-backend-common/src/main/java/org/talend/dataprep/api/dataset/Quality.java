@@ -11,6 +11,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Quality implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     /** Number of empty records. */
     @JsonProperty("empty")
     private int empty;

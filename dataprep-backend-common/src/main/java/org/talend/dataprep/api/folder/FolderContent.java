@@ -12,8 +12,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class FolderContent implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     /**
-     * childs folders
+     * children folders
      */
     @JsonProperty("folders")
     private List<Folder> folders;

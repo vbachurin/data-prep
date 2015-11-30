@@ -28,6 +28,9 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName("userdata")
 public class UserData implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     /** Favorites datasets. */
     @JsonProperty(value = "favoritedDS", required = false)
     Set<String> favoritesDatasets = new HashSet<>();

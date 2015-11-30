@@ -96,6 +96,9 @@ public class ExportFormat {
      */
     public static class Parameter implements Serializable {
 
+        /** Serialization UID. */
+        private static final long serialVersionUID = 1L;
+
         /** Common filename parameter name. */
         public static final String FILENAME_PARAMETER = "fileName";
 

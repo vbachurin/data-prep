@@ -10,6 +10,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class DataSetLifecycle implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty("inProgress")
     private boolean inProgress;
 

@@ -24,6 +24,9 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  */
 public class DataSetMetadata implements Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     /** The dataset id. */
     @Id
     private String id;

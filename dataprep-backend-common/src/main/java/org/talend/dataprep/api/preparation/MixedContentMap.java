@@ -18,6 +18,9 @@ import java.util.function.Function;
  */
 public class MixedContentMap implements Map<String, String>, Serializable {
 
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
+
     private final Map<String, String> map = new HashMap<>();
 
     @Override

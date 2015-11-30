@@ -9,7 +9,6 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.ss.formula.functions.Column;
 import org.talend.dataprep.api.dataset.diff.Flag;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,6 +17,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Models metadata information for a row of a data set.
  */
 public class RowMetadata implements Serializable {
+
+    /** Serialization UID. */
+    private static final long serialVersionUID = 1L;
 
     /** List of row metadata. */
     @JsonProperty("ColumnMetadata")
