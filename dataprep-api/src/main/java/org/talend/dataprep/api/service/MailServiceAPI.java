@@ -1,6 +1,6 @@
 package org.talend.dataprep.api.service;
 
-import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,11 +15,14 @@ import com.netflix.hystrix.HystrixCommand;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
-@RestController @Api(value = "api", basePath = "/api", description = "Send feedback to Talend") public class MailServiceAPI
-        extends APIService {
+@RestController
+@Api(value = "api", basePath = "/api", description = "Send feedback to Talend")
+public class MailServiceAPI extends APIService {
 
-    @RequestMapping(value = "/api/mail", method = PUT) @ApiOperation(value = "Send feedback to Talend") @Timed public void mailTo(
-            @RequestBody MailDetails mailDetails) {
+    @RequestMapping(value = "/api/mail", method = PUT)
+    @ApiOperation(value = "Send feedback to Talend")
+    @Timed
+    public void mailTo(@RequestBody MailDetails mailDetails) {
         if (mailDetails.isEmpty()) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_GET_MAIL_DETAILS);
         }
