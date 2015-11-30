@@ -284,7 +284,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         before = dataSetMetadataRepository.size();
 
-        Response response = given().get( "/datasets/clone/" + dataSetId );
+        Response response = given().put( "/datasets/clone/" + dataSetId );
 
         Assertions.assertThat( response.getStatusCode() ).isEqualTo( 200 );
 

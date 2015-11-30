@@ -390,19 +390,18 @@ public class DataSetService {
     /**
      * Creates a new data set and returns the new data set id as text in the response.
      *
-     * @param name An optional name for the new data set (might be <code>null</code>).
+     * @param folderPath the folder path to clone the dataset
      * @param response The HTTP response to interact with caller.
      * @return The new data id.
      */
-    @RequestMapping(value = "/datasets/clone/{id}", method = GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/datasets/clone/{id}", method = PUT, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Clone a data set", produces = MediaType.TEXT_PLAIN_VALUE,
         notes = "Clone a new data set based on the given id. Returns the id of the newly created data set.")
     @Timed
     @VolumeMetered
     public String clone(
         @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
-        @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015'.  if none the current name concat with ' Copy' will be used. Returns the id of the newly created data set.")
-        @RequestParam(defaultValue = "", required = false) String name,
+        @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "", required = false) String folderPath,
         HttpServletResponse response) throws IOException {
 
         response.setHeader( "Content-Type", MediaType.TEXT_PLAIN_VALUE ); //$NON-NLS-1$
@@ -418,9 +417,7 @@ public class DataSetService {
 
         final String newId = UUID.randomUUID().toString();
 
-        if (StringUtils.isEmpty( name )){
-            name = dataSet.getMetadata().getName() + " Copy";
-        }
+        String name = dataSet.getMetadata().getName() + " Copy";
 
         dataSet.getMetadata().setName( name );
 
@@ -446,6 +443,11 @@ public class DataSetService {
         LOG.debug( marker, "Content stored." );
 
         queueEvents(newId);
+
+        // create associated folderEntry
+        FolderEntry folderEntry = new FolderEntry( "dataset", newId, folderPath );
+        folderRepository.addFolderEntry( folderEntry );
+
         LOG.debug(marker, "Cloned!");
 
         return newId;

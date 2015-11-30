@@ -199,7 +199,7 @@ public class DataSetAPITest extends ApiServiceTestBase {
         assertThat( contentAsString, sameJSONAsFile( expected ) );
 
 
-        final String clonedDataSetId = when().get("/api/datasets/clone/{id}", dataSetId).asString();
+        final String clonedDataSetId = when().put("/api/datasets/clone/{id}", dataSetId).asString();
 
         Assertions.assertThat( clonedDataSetId ).isNotEmpty().isNotEqualTo( dataSetId );
 

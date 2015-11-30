@@ -3,8 +3,10 @@ package org.talend.dataprep.api.service.command.dataset;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
@@ -30,17 +32,17 @@ public class CloneDataSet extends GenericCommand<String> {
      *
      * @param client the http client to use.
      * @param dataSetId the requested dataset id.
-     * @param name optional
+     * @param folderPath the folder to clone the dataset
      */
-    public CloneDataSet(HttpClient client, String dataSetId, String name) {
+    public CloneDataSet(HttpClient client, String dataSetId, String folderPath) {
         super(PreparationAPI.DATASET_GROUP, client);
         execute(() -> {
             try {
                 URIBuilder uriBuilder = new URIBuilder(datasetServiceUrl + "/datasets/clone/" + dataSetId);
-                if (name != null) {
-                    uriBuilder.addParameter("name", name);
+                if ( StringUtils.isNotEmpty( folderPath )){
+                    uriBuilder.addParameter( "folderPath", folderPath );
                 }
-                return new HttpGet(uriBuilder.build());
+                return new HttpPut( uriBuilder.build());
             } catch (URISyntaxException e) {
                 throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
             }

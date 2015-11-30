@@ -106,15 +106,15 @@
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Clone the dataset
          * @param {dataset} dataset the dataset infos to delete
-         * @param {string) the optional clone name
+         * @param {string) the folder path to clone the dataset
          * @returns {Promise} The GET promise
          */
-        function cloneDataset(dataset, name) {
+        function cloneDataset(dataset, folder) {
             var url = RestURLs.datasetUrl + '/clone/' + dataset.id;
-            if (name) {
-                url += '?name=' + encodeURIComponent(name);
+            if (folder) {
+                url += '?folderPath=' + encodeURIComponent(folder);
             }
-            return $http.get(url);
+            return $http.put(url);
         }
 
         //--------------------------------------------------------------------------------------------------------------
