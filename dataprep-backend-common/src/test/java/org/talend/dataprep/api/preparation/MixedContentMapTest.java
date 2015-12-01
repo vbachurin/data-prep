@@ -32,12 +32,6 @@ public class MixedContentMapTest {
     @Autowired
     private ObjectMapper mapper;
 
-    // @Before
-    // public void setUp() throws Exception {
-    // mapper = new ObjectMapper();
-    // mapper.registerModule(new MixedContentMapModule());
-    // }
-
     @Test
     public void testRead() throws Exception {
         final ObjectReader reader = mapper.reader(MixedContentMap.class);

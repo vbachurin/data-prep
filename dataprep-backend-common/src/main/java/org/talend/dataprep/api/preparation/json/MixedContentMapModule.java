@@ -54,7 +54,7 @@ public class MixedContentMapModule extends SimpleModule {
                     try {
                         // builder.build().reader().readTree(value);
                         new ObjectMapper().reader().readTree(value);
-                        jsonGenerator.writeRaw(':' + value);
+                        jsonGenerator.writeRawValue(value);
                     }
                     // otherwise, it is written as a string (may be a regular expression, e.g. [A-Za-z0-9]*)
                     catch (IOException ioe) {
