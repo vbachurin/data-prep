@@ -2,8 +2,6 @@ package org.talend.dataprep.api.service.command.common;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.http.HttpContextHolder;
 
 @RestController
 public class GenericCommandTestService {
@@ -21,8 +20,8 @@ public class GenericCommandTestService {
     }
 
     @RequestMapping(value = "/command/test/success_with_unknown", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    public String success_with_unknown(HttpServletResponse response) throws IOException {
-        response.setStatus(HttpStatus.ACCEPTED.value());
+    public String success_with_unknown() throws IOException {
+        HttpContextHolder.status(HttpStatus.ACCEPTED);
         return "success";
     }
 
@@ -37,8 +36,8 @@ public class GenericCommandTestService {
     }
 
     @RequestMapping(value = "/command/test/fail_with_unknown", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    public void fail_with_unknown(HttpServletResponse response) throws IOException {
-        response.setStatus(HttpStatus.I_AM_A_TEAPOT.value());
+    public void fail_with_unknown() throws IOException {
+        HttpContextHolder.status(HttpStatus.I_AM_A_TEAPOT);
     }
 
 }

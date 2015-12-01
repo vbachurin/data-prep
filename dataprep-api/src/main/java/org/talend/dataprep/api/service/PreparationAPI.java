@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
@@ -24,6 +22,7 @@ import org.talend.dataprep.api.service.command.preparation.*;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.http.HttpContextHolder;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -40,7 +39,7 @@ public class PreparationAPI extends APIService {
     @Timed
     public void listPreparations(
             @RequestParam(value = "format", defaultValue = "long") @ApiParam(name = "format", value = "Format of the returned document (can be 'long' or 'short'). Defaults to 'long'.") String format,
-            HttpServletResponse response) {
+            final OutputStream output) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Listing preparations (pool: {} )...", getConnectionManager().getTotalStats());
         }
@@ -48,10 +47,9 @@ public class PreparationAPI extends APIService {
         HttpClient client = getClient();
         HystrixCommand<InputStream> command = getCommand(PreparationList.class, client, listFormat);
         try {
-            response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-            OutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(command.execute(), outputStream);
-            outputStream.flush();
+            HttpContextHolder.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            IOUtils.copyLarge(command.execute(), output);
+            output.flush();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Listed preparations (pool: {} )...", getConnectionManager().getTotalStats());
             }
@@ -134,7 +132,7 @@ public class PreparationAPI extends APIService {
     @ApiOperation(value = "Get a preparation by id and details.", notes = "Returns the preparation details.")
     @Timed
     public void getPreparation(@PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
-            HttpServletResponse response) {
+            final OutputStream output) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Retrieving preparation details (pool: {} )...", getConnectionManager().getTotalStats());
         }
@@ -143,10 +141,9 @@ public class PreparationAPI extends APIService {
         try {
             // You cannot use Preparation object mapper here: to serialize steps & actions, you'd need a version
             // repository not available at API level. Code below copies command result direct to response.
-            response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
-            OutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(command.execute(), outputStream);
-            outputStream.flush();
+            HttpContextHolder.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            IOUtils.copyLarge(command.execute(), output);
+            output.flush();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Retrieved preparation details (pool: {} )...", getConnectionManager().getTotalStats());
             }
@@ -161,7 +158,7 @@ public class PreparationAPI extends APIService {
     public void getPreparation(@PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             @RequestParam(value = "version", defaultValue = "head") @ApiParam(name = "version", value = "Version of the preparation (can be 'origin', 'head' or the version id). Defaults to 'head'.") String version,
             @RequestParam(required = false, defaultValue = "full") @ApiParam(name = "sample", value = "Size of the wanted sample, if missing or 'full', the full preparation content is returned") String sample, //
-            HttpServletResponse response) {
+            final OutputStream output) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Retrieving preparation content (pool: {} )...", getConnectionManager().getTotalStats());
         }
@@ -175,9 +172,8 @@ public class PreparationAPI extends APIService {
         HystrixCommand<InputStream> command = getCommand(PreparationGetContent.class, client, preparationId, version,
                 sampleValue);
         try (InputStream preparationContent = command.execute()) {
-            OutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(preparationContent, outputStream);
-            outputStream.flush();
+            IOUtils.copyLarge(preparationContent, output);
+            output.flush();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Retrieved preparation content (pool: {} )...", getConnectionManager().getTotalStats());
             }
@@ -280,12 +276,11 @@ public class PreparationAPI extends APIService {
     @ApiOperation(value = "Get a preview diff between 2 steps of the same preparation.")
     @Timed
     public void previewDiff(@RequestBody
-    final PreviewDiffInput input, final HttpServletResponse response) {
+    final PreviewDiffInput input, final OutputStream output) {
         try {
             final HystrixCommand<InputStream> transformation = getCommand(PreviewDiff.class, getClient(), input);
-            final ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(transformation.execute(), outputStream);
-            outputStream.flush();
+            IOUtils.copyLarge(transformation.execute(), output);
+            output.flush();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
         }
@@ -294,12 +289,11 @@ public class PreparationAPI extends APIService {
     @RequestMapping(value = "/api/preparations/preview/update", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a preview diff between the same step of the same preparation but with one step update.")
     public void previewUpdate(@RequestBody
-    final PreviewUpdateInput input, final HttpServletResponse response) {
+    final PreviewUpdateInput input, final OutputStream output) {
         try {
             final HystrixCommand<InputStream> transformation = getCommand(PreviewUpdate.class, getClient(), input);
-            final ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(transformation.execute(), outputStream);
-            outputStream.flush();
+            IOUtils.copyLarge(transformation.execute(), output);
+            output.flush();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
         }
@@ -309,12 +303,11 @@ public class PreparationAPI extends APIService {
     @ApiOperation(value = "Get a preview between the head step and a new appended transformation")
     public void previewAdd(@RequestBody
     @Valid
-    final PreviewAddInput input, final HttpServletResponse response) {
+    final PreviewAddInput input, final OutputStream output) {
         try {
             final HystrixCommand<InputStream> transformation = getCommand(PreviewAdd.class, getClient(), input);
-            final ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(transformation.execute(), outputStream);
-            outputStream.flush();
+            IOUtils.copyLarge(transformation.execute(), output);
+            output.flush();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
         }

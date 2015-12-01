@@ -4,13 +4,13 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
@@ -39,7 +39,7 @@ public class ExportAPI extends APIService {
     @RequestMapping(value = "/api/export", method = GET)
     @ApiOperation(value = "Export a dataset", consumes = APPLICATION_FORM_URLENCODED_VALUE, notes = "Export a dataset or a preparation to file. The file type is provided in the request body.")
     public void export(@ApiParam(value = "Export configuration") @Valid final ExportParameters input, //
-                       final HttpServletResponse response, //
+                       final OutputStream output, //
                        final HttpServletRequest request) {
         try {
             Map<String, String> arguments = new HashMap<>();
@@ -53,7 +53,7 @@ public class ExportAPI extends APIService {
                 }
             }
             input.setArguments(arguments);
-            final GenericCommand<InputStream> command = getCommand(Export.class, getClient(), input, response);
+            final GenericCommand<InputStream> command = getCommand(Export.class, getClient(), input, output);
             final ServletOutputStream outputStream = response.getOutputStream();
             final InputStream commandInputStream = command.execute();
 
@@ -75,12 +75,11 @@ public class ExportAPI extends APIService {
     @RequestMapping(value = "/api/export/formats", method = GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get the available format types")
     @Timed
-    public void exportTypes(final HttpServletResponse response) {
+    public void exportTypes(final OutputStream output) {
         try {
             final HystrixCommand<InputStream> command = getCommand(ExportTypes.class, getClient());
-            final ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(command.execute(), outputStream);
-            outputStream.flush();
+            IOUtils.copyLarge(command.execute(), output);
+            output.flush();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_EXPORT_CONTENT, e);
         }

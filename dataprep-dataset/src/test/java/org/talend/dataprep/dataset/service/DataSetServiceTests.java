@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.CoreMatchers;
@@ -782,7 +780,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         assertNull(metadata);
         int statusCode = when().get("/datasets/{id}/metadata", "9876").statusCode();
 
-        assertThat(statusCode, is(HttpServletResponse.SC_NO_CONTENT));
+        assertThat(statusCode, is(HttpStatus.NO_CONTENT.value()));
 
     }
 

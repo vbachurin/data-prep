@@ -8,8 +8,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.http.client.HttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -49,11 +47,10 @@ public class CommonAPI extends APIService {
     @RequestMapping(value = "/api/errors", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all supported errors.", notes = "Returns the list of all supported errors.")
     @Timed
-    public void listErrors(HttpServletResponse response) throws IOException {
+    public void listErrors(final OutputStream output) throws IOException {
 
         LOG.debug("Listing supported error codes");
 
-        OutputStream output = response.getOutputStream();
         JsonFactory factory = new JsonFactory();
         JsonGenerator generator = factory.createGenerator(output);
         generator.setCodec(builder.build());
