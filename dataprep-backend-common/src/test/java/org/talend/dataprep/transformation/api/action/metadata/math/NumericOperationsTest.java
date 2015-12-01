@@ -142,6 +142,22 @@ public class NumericOperationsTest {
     }
 
     @Test
+    public void should_apply_on_created_column() {
+        // given
+        DataSetRow row = getRow("5", "3");
+
+        // when
+        final TransformationContext context = new TransformationContext();
+        new NumericOperations().applyOnColumn(row, context, parameters, "0000");
+        new NumericOperations().applyOnColumn(row, context, parameters, "0002");
+
+        // then
+        DataSetRow expected = getRow("5", "3", "8", "11");
+        assertEquals(expected, row);
+    }
+
+
+    @Test
     public void should_apply_on_column_constant() {
         // given
         DataSetRow row = getRow("5", "3", "Done !");

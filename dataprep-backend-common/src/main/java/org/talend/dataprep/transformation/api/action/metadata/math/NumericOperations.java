@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -29,6 +30,7 @@ import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
  * The new column content is "prefix + column_source + separator + selected_column + suffix"
  */
 @Component(NumericOperations.ACTION_BEAN_PREFIX + NumericOperations.ACTION_NAME)
+@Scope("prototype")
 public class NumericOperations extends ActionMetadata implements ColumnAction {
     private static final String PLUS = "+";
     private static final String MINUS = "-";
@@ -138,15 +140,14 @@ public class NumericOperations extends ActionMetadata implements ColumnAction {
         if (parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE)) {
             operand = parameters.get(OPERAND_PARAMETER);
             operandName = operand;
-        }
-        else {
+        } else {
             final ColumnMetadata selectedColumn = rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER));
             operand = row.get(selectedColumn.getId());
             operandName = selectedColumn.getName();
         }
 
         // column creation
-        final String newColumnId = context.in(this).column(sourceColumn.getName() + " " + operator + " " + operand,
+        final String newColumnId = context.in(this).column("result",
                 rowMetadata,
                 (r) -> {
                     final ColumnMetadata c = ColumnMetadata.Builder //
