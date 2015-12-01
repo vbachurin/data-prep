@@ -1194,13 +1194,24 @@
               "value": "@"
             },
             {
-              "value": " "
+              "value": " ",
+              "label": "<space>"
+            },
+            {
+              "value": "\t",
+              "label": "<tab>"
             },
             {
               "value": ","
             },
             {
               "value": "-"
+            },
+            {
+              "value": "_"
+            },
+            {
+              "value": ";"
             },
             {
               "value": "other",

@@ -99,6 +99,84 @@ public class SplitTest {
     }
 
     @Test
+    public void should_split_semicolon() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon;ipsum");
+        values.put("0002", "01/01/2015");
+        final DataSetRow row = new DataSetRow(values);
+
+        parameters.put(Split.SEPARATOR_PARAMETER, "other");
+        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER, ";");
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon;ipsum");
+        expectedValues.put("0003", "Bacon");
+        expectedValues.put("0004", "ipsum");
+        expectedValues.put("0002", "01/01/2015");
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
+    public void should_split_underscore() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon_ipsum");
+        values.put("0002", "01/01/2015");
+        final DataSetRow row = new DataSetRow(values);
+
+        parameters.put(Split.SEPARATOR_PARAMETER, "other");
+        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER, "_");
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon_ipsum");
+        expectedValues.put("0003", "Bacon");
+        expectedValues.put("0004", "ipsum");
+        expectedValues.put("0002", "01/01/2015");
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
+    public void should_split_tab() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon\tipsum");
+        values.put("0002", "01/01/2015");
+        final DataSetRow row = new DataSetRow(values);
+
+        parameters.put(Split.SEPARATOR_PARAMETER, "other");
+        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER, "\t");
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon\tipsum");
+        expectedValues.put("0003", "Bacon");
+        expectedValues.put("0004", "ipsum");
+        expectedValues.put("0002", "01/01/2015");
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
     public void test_TDP_786_empty_pattern() {
         // given
         final Map<String, String> values = new HashMap<>();

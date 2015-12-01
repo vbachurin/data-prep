@@ -25,7 +25,7 @@ public class SelectParameterTest extends ParameterBaseTest {
                 .defaultValue("") //
                 .implicit(false) //
                 .canBeBlank(false) //
-                .item("first choice") //
+                .item("first choice", "first value") //
                 .item("2") //
                 .item("your choice", new Parameter("limit", ParameterType.INTEGER, StringUtils.EMPTY, false, false)) //
                 .build();
