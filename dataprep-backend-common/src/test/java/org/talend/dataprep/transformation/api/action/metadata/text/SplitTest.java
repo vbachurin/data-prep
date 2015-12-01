@@ -113,11 +113,6 @@ public class SplitTest {
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", "Je vais bien (tout va bien)");
-<<<<<<< HEAD
-=======
-        expectedValues.put("0003", "");
-        expectedValues.put("0004", "");
->>>>>>> 969b0fe... TDP-786: add junit to see the issue
         expectedValues.put("0002", "01/01/2015");
 
         // when
