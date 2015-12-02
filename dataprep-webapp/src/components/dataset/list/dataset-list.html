@@ -148,14 +148,13 @@
         <span translate-once="CHOOSE_FOLDER_DESTINATION" translate-values="{type: 'dataset', name: dataset.name}"></span>
 
         <script type="text/ng-template" id="basic_renderer.html">
-            <div ui-tree-handle class="folder-node tree-node nodrop">
-                <a class="inventory-icon inventory-folder" data-nodrag ng-click="datasetListCtrl.toggle(node)">
-                    <!--
-                    <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': node.collapsed, 'glyphicon-chevron-down': !node.collapsed }"></span>
-                    -->
+            <div ui-tree-handle class="folder-node tree-node"
+                 ng-class="{folderselected: node.selected, 'dropdown-button-right': node.collapsed, 'dropdown-button-down': !node.collapsed}"
+                 ng-click="datasetListCtrl.toggle(node)">
+                <a class="inventory-icon inventory-folder nodrop" data-nodrag>
                     <img src="assets/images/folder/folder-icon.png"/>
                 </a>
-                <span ng-click="datasetListCtrl.folderDestination = node" class="folder-name">{{node.name}}</span>
+                <span ng-click="datasetListCtrl.chooseFolder(node)" class="folder-name">{{node.name}}</span>
             </div>
             <ol ui-tree-nodes ng-model="node.nodes" ng-class="{hidden: node.collapsed}">
                 <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'basic_renderer.html'"></li>

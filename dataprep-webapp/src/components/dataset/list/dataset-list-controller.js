@@ -223,6 +223,15 @@
             });
         };
 
+        vm.chooseFolder = function(folder){
+            var previousSelected = vm.folderDestination;
+            if (previousSelected){
+                previousSelected.selected = false;
+            }
+            vm.folderDestination = folder;
+            folder.selected=true;
+        };
+
         /**
          * @ngdoc method
          * @name rename

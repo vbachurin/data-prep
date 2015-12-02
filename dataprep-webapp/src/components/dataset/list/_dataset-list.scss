@@ -1,3 +1,4 @@
+$selected-color: #c9d7e4;
 .dataset {
   $button-background-color: $white;
   $button-color-text: $black;
@@ -97,4 +98,25 @@
       text-decoration: none;
     }
   }
+
+  .folderselected{
+    background-color: $selected-color;
+  }
+
+  .dropdown-button-down{
+    cursor: pointer;
+    &:before {
+      content: "\25BC";
+      margin-left: 2px;
+    }
+  }
+
+  .dropdown-button-right{
+    cursor: pointer;
+    &:before {
+      content: "\25B6";
+      margin-left: 2px;
+    }
+  }
+
 }
