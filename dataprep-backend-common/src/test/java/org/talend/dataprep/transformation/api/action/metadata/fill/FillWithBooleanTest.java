@@ -14,6 +14,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 
@@ -55,7 +56,7 @@ public class FillWithBooleanTest {
                 this.getClass().getResourceAsStream("fillEmptyBooleanAction.json"));
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
 
         // then
         Assert.assertEquals("True", row.get("0002"));
@@ -82,7 +83,7 @@ public class FillWithBooleanTest {
                 this.getClass().getResourceAsStream("fillEmptyBooleanAction.json"));
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
 
         // then
         Assert.assertEquals("True", row.get("0002"));
@@ -109,7 +110,7 @@ public class FillWithBooleanTest {
         // when
         parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.COLUMN_MODE);
         parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0003");
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
 
         // then
         Assert.assertEquals("True", row.get("0002"));

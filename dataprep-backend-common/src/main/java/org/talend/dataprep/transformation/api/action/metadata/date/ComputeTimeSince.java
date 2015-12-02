@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -78,10 +78,10 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
 
         TemporalUnit unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
         Temporal now = LocalDateTime.now();
@@ -89,9 +89,8 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
         final ColumnMetadata column = row.getRowMetadata().getById(columnId);
 
         // create the new column and add the new column after the current one
-        String computeTimeSinceColumn = context.in(this).column(PREFIX + column.getName() + SUFFIX + unit.toString().toLowerCase(),
-            row.getRowMetadata(),
-            (r) -> {
+        String computeTimeSinceColumn = context.column(PREFIX + column.getName() + SUFFIX + unit.toString().toLowerCase(),
+                (r) -> {
                 final ColumnMetadata c = ColumnMetadata.Builder //
                         .column() //
                         .copy(column)//

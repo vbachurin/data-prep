@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
 /**
@@ -27,7 +29,7 @@ public final class TransformationContext {
     private static final Logger LOGGER = LoggerFactory.getLogger(TransformationContext.class);
 
     /** Map of action context for each action instance within a transformation. */
-    private final Map<ActionMetadata, ActionContext> contexts = new HashMap<>();
+    private final Map<DataSetRowAction, ActionContext> contexts = new HashMap<>();
 
     /** The context itself. */
     private Map<String, Object> context;
@@ -60,23 +62,6 @@ public final class TransformationContext {
     }
 
     /**
-     * Returns a transformation context specific to the current action. Use this to create columns (see
-     * {@link ActionContext#column(String, RowMetadata, Function)} for more details.
-     *
-     * @param actionMetadata An instance of action used as key for finding context
-     * @return An {@link ActionContext context} ready to be used.
-     */
-    public ActionContext in(ActionMetadata actionMetadata) {
-        if (contexts.containsKey(actionMetadata)) {
-            return contexts.get(actionMetadata);
-        } else {
-            ActionContext actionContext = new ActionContext(this);
-            contexts.put(actionMetadata, actionContext);
-            return actionContext;
-        }
-    }
-
-    /**
      * @return all the action contexts.
      */
     public Collection<ActionContext> getAllActionsContexts() {
@@ -87,23 +72,37 @@ public final class TransformationContext {
         contexts.replaceAll((actionMetadata, actionContext) -> actionContext.asImmutable());
     }
 
-
     /**
      * Cleanup transformation context.
      */
     public void cleanup() {
-        final Collection<ActionContext> contexts = this.getAllActionsContexts();
         for (ActionContext context : getAllActionsContexts()) {
-            for (Object contextEntry : context.getContextEntries()) {
-                if (contextEntry instanceof DisposableBean) {
-                    try {
-                        ((DisposableBean) contextEntry).destroy();
-                    } catch (Exception error) {
-                        LOGGER.warn("error cleaning action context {}", contextEntry, error);
-                    }
-                }
-            }
+            context.getContextEntries().stream().filter(contextEntry -> contextEntry instanceof DisposableBean)
+                    .forEach(contextEntry -> {
+                        try {
+                            ((DisposableBean) contextEntry).destroy();
+                        } catch (Exception error) {
+                            LOGGER.warn("error cleaning action context {}", contextEntry, error);
+                        }
+                    });
+        }
+    }
 
+    /**
+     * Returns a transformation context specific to the current action. Use this to create columns (see
+     * {@link ActionContext#column(String, Function)} for more details.
+     *
+     * @param actionMetadata An instance of action used as key for finding context
+     * @param action
+     *@param rowMetadata The state of row metadata as when it is when action is performed.  @return An {@link ActionContext context} ready to be used.
+     */
+    public ActionContext in(DataSetRowAction action, RowMetadata rowMetadata) {
+        if (contexts.containsKey(action)) {
+            return contexts.get(action);
+        } else {
+            ActionContext actionContext = new ActionContext(this, rowMetadata);
+            contexts.put(action, actionContext);
+            return actionContext;
         }
     }
 }

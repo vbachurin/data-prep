@@ -16,7 +16,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
 import org.talend.dataprep.transformation.api.action.metadata.date.DatePattern;
@@ -60,7 +60,7 @@ public abstract class AbstractFillWith extends ActionMetadata {
 
     public abstract boolean shouldBeProcessed (String value, ColumnMetadata colMetadata);
 
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
         checkParameters(parameters, row);
 
         final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);

@@ -1,35 +1,35 @@
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
-import java.util.*;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 public class DeleteColumnTest {
 
     private DeleteColumn deleteColumn;
 
-    private TransformationContext transformationContext;
+    private ActionContext transformationContext;
 
     private RowMetadata rowMetadata;
 
     @Before
     public void init() {
-        deleteColumn = new DeleteColumn();
-        transformationContext = new TransformationContext();
-        List columns = new ArrayList<>();
+        List<ColumnMetadata> columns = new ArrayList<>();
         ColumnMetadata columnMetadata = ColumnMetadata.Builder.column() //
                 .type(Type.INTEGER) //
                 .computedId("0001") //
@@ -48,6 +48,8 @@ public class DeleteColumnTest {
         columns.add(columnMetadata);
         rowMetadata = new RowMetadata();
         rowMetadata.setColumns(columns);
+        deleteColumn = new DeleteColumn();
+        transformationContext = new ActionContext(new TransformationContext(), rowMetadata);
     }
 
     @Test

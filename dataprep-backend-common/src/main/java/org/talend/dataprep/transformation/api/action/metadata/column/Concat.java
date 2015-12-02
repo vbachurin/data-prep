@@ -12,7 +12,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
@@ -114,10 +114,10 @@ public class Concat extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
         RowMetadata rowMetadata = row.getRowMetadata();
         ColumnMetadata sourceColumn = rowMetadata.getById(columnId);
 
@@ -125,7 +125,7 @@ public class Concat extends ActionMetadata implements ColumnAction {
 
         final String newColumnName = evalNewColumnName(sourceColumn.getName(), rowMetadata, parameters);
 
-        String concatColumn = context.in(this).column(newColumnName, rowMetadata, (r) -> {
+        String concatColumn = context.column(newColumnName, (r) -> {
             final ColumnMetadata c = ColumnMetadata.Builder //
                     .column() //
                     .name(newColumnName) //

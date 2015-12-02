@@ -17,6 +17,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
@@ -61,7 +62,7 @@ public class FillWithDateIfEmptyTest extends AbstractMetadataBaseTest {
                 this.getClass().getResourceAsStream("fillEmptyDateAction.json"));
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
 
         // then
         Assert.assertEquals("1/1/1970 10:0:0", row.get("0002"));
@@ -88,7 +89,7 @@ public class FillWithDateIfEmptyTest extends AbstractMetadataBaseTest {
                 this.getClass().getResourceAsStream("fillEmptyDateAction.json"));
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
 
         // then
         Assert.assertEquals("not empty", row.get("0002"));
@@ -116,7 +117,7 @@ public class FillWithDateIfEmptyTest extends AbstractMetadataBaseTest {
                 .parseParameters(this.getClass().getResourceAsStream("fillEmptyDateAction.json"));
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
 
         // then
         Assert.assertEquals("1970-01-01", row.get("0002"));
@@ -144,7 +145,7 @@ public class FillWithDateIfEmptyTest extends AbstractMetadataBaseTest {
         // when
         parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.COLUMN_MODE);
         parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0003");
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
 
         // then
         Assert.assertEquals("15/10/1999", row.get("0003"));
@@ -173,7 +174,7 @@ public class FillWithDateIfEmptyTest extends AbstractMetadataBaseTest {
         // when
         parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.COLUMN_MODE);
         parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0003");
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
 
         // then
         Assert.assertEquals("tagada", row.get("0003"));

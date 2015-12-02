@@ -1,26 +1,27 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.SPLIT;
+import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.INTEGER;
+import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.REGEX;
+
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
-
-import javax.annotation.Nonnull;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.SPLIT;
-import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.INTEGER;
-import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.REGEX;
 
 /**
  * Split a cell value on a separator.
@@ -112,10 +113,10 @@ public class Split extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
         // Retrieve the separator to use
         final String realSeparator = getSeparator(parameters);
         if (StringUtils.isEmpty(realSeparator)) {
@@ -138,9 +139,8 @@ public class Split extends ActionMetadata implements ColumnAction {
         final Stack<String> lastColumnId = new Stack<>();
         lastColumnId.push(columnId);
         for (int i = 0; i < limit; i++) {
-            newColumns.add(context.in(this).column(column.getName() + SPLIT_APPENDIX + i,
-                rowMetadata,
-                (r) -> {
+            newColumns.add(context.column(column.getName() + SPLIT_APPENDIX + i,
+                    (r) -> {
                     final ColumnMetadata c = ColumnMetadata.Builder //
                             .column() //
                             .type(Type.STRING) //

@@ -36,7 +36,7 @@ public class DeleteEmpty extends AbstractDelete implements ColumnAction {
      */
     @Override
     public List<String> getActionScope() {
-        return Arrays.asList(new String[] { EMPTY.getDisplayName() });
+        return Arrays.asList(EMPTY.getDisplayName());
     }
 
     /**

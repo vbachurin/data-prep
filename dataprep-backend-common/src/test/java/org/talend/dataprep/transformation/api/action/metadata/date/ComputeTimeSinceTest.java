@@ -37,6 +37,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
@@ -95,7 +96,7 @@ public class ComputeTimeSinceTest extends BaseDateTests {
         expectedValues.put("0002", "Bacon");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         //then
         assertEquals(expectedValues, row.values());
@@ -117,7 +118,7 @@ public class ComputeTimeSinceTest extends BaseDateTests {
         expectedValues.put("0002", "Bacon");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         // then
         assertEquals(expectedValues, row.values());
@@ -139,7 +140,7 @@ public class ComputeTimeSinceTest extends BaseDateTests {
         expectedValues.put("0002", "Bacon");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         // then
         assertEquals(expectedValues, row.values());
@@ -166,7 +167,7 @@ public class ComputeTimeSinceTest extends BaseDateTests {
         parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         //then
         assertEquals(expectedValues, row.values());
@@ -193,7 +194,7 @@ public class ComputeTimeSinceTest extends BaseDateTests {
         parameters.put(TIME_UNIT_PARAMETER, HOURS.name());
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         //then
         assertEquals(expectedValues, row.values());
@@ -220,7 +221,7 @@ public class ComputeTimeSinceTest extends BaseDateTests {
         parameters.put(TIME_UNIT_PARAMETER, HOURS.name());
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         // then
         assertEquals(expectedValues, row.values());
@@ -245,8 +246,8 @@ public class ComputeTimeSinceTest extends BaseDateTests {
         parameters.put(TIME_UNIT_PARAMETER, HOURS.name());
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         //then
         assertEquals(expectedValues, row.values());
@@ -271,10 +272,10 @@ public class ComputeTimeSinceTest extends BaseDateTests {
 
         //when
         parameters.put(TIME_UNIT_PARAMETER, YEARS.name());
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         parameters.put(TIME_UNIT_PARAMETER, MONTHS.name());
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         //then
         assertEquals(expectedValues, row.values());
@@ -297,7 +298,7 @@ public class ComputeTimeSinceTest extends BaseDateTests {
         parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         // then
         assertEquals(expectedValues, row.values());
@@ -318,7 +319,7 @@ public class ComputeTimeSinceTest extends BaseDateTests {
         expected.add(createMetadata("0002", "steps"));
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         //then
         assertEquals(expected, row.getRowMetadata().getColumns());
@@ -340,8 +341,8 @@ public class ComputeTimeSinceTest extends BaseDateTests {
         expected.add(createMetadata("0002", "steps"));
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         //then
         assertEquals(expected, row.getRowMetadata().getColumns());
@@ -364,10 +365,10 @@ public class ComputeTimeSinceTest extends BaseDateTests {
 
         //when
         parameters.put(TIME_UNIT_PARAMETER, YEARS.name());
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         //then
         assertEquals(expected, row.getRowMetadata().getColumns());

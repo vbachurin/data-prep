@@ -13,7 +13,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
@@ -60,10 +60,10 @@ public class ExtractUrlTokens extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
         final String originalValue = row.get(columnId);
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
@@ -80,9 +80,8 @@ public class ExtractUrlTokens extends ActionMetadata implements ColumnAction {
         for (UrlTokenExtractor urlTokenExtractor : UrlTokenExtractors.urlTokenExtractors) {
             final String columnName = column.getName() + urlTokenExtractor.getTokenName();
             String columnToInsertAfter = lastId;
-            final String id = context.in(this).column(
+            final String id = context.column(
                     columnName,
-                    rowMetadata,
                     (r) -> {
                         final ColumnMetadata newColumn = column().name(columnName).type(urlTokenExtractor.getType()).build();
                         rowMetadata.insertAfter(columnToInsertAfter, newColumn);

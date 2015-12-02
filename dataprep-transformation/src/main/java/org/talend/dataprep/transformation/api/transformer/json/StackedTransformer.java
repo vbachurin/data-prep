@@ -5,19 +5,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
@@ -31,17 +26,12 @@ import org.talend.dataprep.transformation.format.WriterRegistrationService;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
 
-/**
- * Base implementation of the Transformer interface.
- */
-// @Component
-class SimpleTransformer implements Transformer {
+@Component
+public class StackedTransformer implements Transformer {
 
     private static final String CONTEXT_ANALYZER = "analyzer";
 
     private static final int ANALYSIS_BUFFER_SIZE = 20;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleTransformer.class);
 
     private static final NullAnalyzer NULL_ANALYZER = new NullAnalyzer();
 
@@ -158,33 +148,28 @@ class SimpleTransformer implements Transformer {
         currentAnalysisStatus.set(AnalysisStatus.FULL_ANALYSIS);
     }
 
-    /**
-     * @see Transformer#transform(DataSet, Configuration)
-     */
     @Override
     public void transform(DataSet input, Configuration configuration) {
-        if (input == null) {
-            throw new IllegalArgumentException("Input cannot be null.");
-        }
-        final TransformerWriter writer = writersService.getWriter(configuration.formatId(), configuration.output(),
-                configuration.getArguments());
         try {
-            writer.startObject();
             final ParsedActions parsedActions = actionParser.parse(configuration.getActions());
-            final List<DataSetRowAction> rowActions = parsedActions.getRowTransformers();
-            final boolean transformColumns = input.getMetadata() != null
-                    && !input.getMetadata().getRowMetadata().getColumns().isEmpty();
-            TransformationContext context = configuration.getTransformationContext();
-            final AtomicBoolean wroteMetadata = new AtomicBoolean(false);
-            // Row transformations
-            Stream<DataSetRow> records = input.getRecords();
-            // Apply actions to records
-            for (DataSetRowAction action : rowActions) {
-                records = records.map(r -> action.apply(r, new ActionContext(context, null)));
-            }
-            // Analyze content after all actions were applied to row
-            records = records.map(r -> {
-                if (transformColumns) {
+            final List<DataSetRowAction> allActions = parsedActions.getRowTransformers();
+            final TransformerWriter writer = writersService.getWriter(configuration.formatId(), configuration.output(), configuration.getArguments());
+
+            TransformationContext context = new TransformationContext();
+            ExtendedStream<DataSetRow> records = ExtendedStream.extend(input.getRecords())
+            // Perform transformations
+            .map(r -> {
+                DataSetRow current = r;
+                for (DataSetRowAction action : allActions) {
+                    final ActionContext actionContext = context.in(action, current.getRowMetadata().clone());
+                    current.setRowMetadata(actionContext.getRowMetadata());
+                    current = action.apply(current, actionContext);
+                }
+                return current;
+            })
+            // Analyze content
+            .map(r -> {
+                if (!input.getColumns().isEmpty()) {
                     // Use analyzer (for empty values, semantic...)
                     if (!r.isDeleted()) {
                         final DataSetRow row = r.order(r.getRowMetadata().getColumns());
@@ -193,70 +178,44 @@ class SimpleTransformer implements Transformer {
                 }
                 return r;
             });
-            // Write transformed records to stream
-            final Stack<DataSetRow> postProcessQueue = new Stack<>(); // Stack to remember last processed row.
-
-            writer.fieldName("records");
-            writer.startArray();
-            records.forEach(row -> {
+            // Write metadata if writer asks for it
+            if (writer.requireMetadataForHeader()) {
+                records = records.mapOnce(r -> writeMetadata(writer, context, r));
+            }
+            // Write records
+            Stack<DataSetRow> processingRows = new Stack<>();
+            writer.startObject();
+            records.mapOnce(r -> {
                 try {
-                    // get the current row
-                    if (!postProcessQueue.empty()) {
-                        postProcessQueue.pop();
-                    }
-
-                    // so far, other writers than JsonWriter do not need updated statistics on columns. Hence writing
-                    // metadata at the beginning is no problem
-                    if (writer.requireMetadataForHeader() && !wroteMetadata.get()) {
-                        writer.write(row.getRowMetadata());
-                        wroteMetadata.set(true);
-                    }
-
-                    // write the row if needed
-                    if (row.shouldWrite()) {
-                        writer.write(row);
-                        // when a row is written, RowMetadata cannot be changed anymore, that's why action contexts are
-                        // 'frozen'
-                        context.freezeActionContexts();
-                    }
-
-                    // save the current row for latter (see below)
-                    postProcessQueue.push(row); // In the end, last row remains in stack.
+                    writer.fieldName("records");
+                    writer.startArray();
                 } catch (IOException e) {
-                    throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
+                    // Ignored.
+                }
+                return r;
+            }) //
+            .forEach(r -> {
+                try {
+                    if (!processingRows.empty()) {
+                        processingRows.pop();
+                    }
+                    if (r.shouldWrite()) {
+                        writer.write(r);
+                    }
+                    processingRows.push(r);
+                } catch (IOException e) {
+                    // Ignored.
                 }
             });
             writer.endArray();
-
-            // write metadata with updated columns statistics only when needed
-            if (!wroteMetadata.get() && transformColumns) {
-                writer.fieldName("metadata");
-                writer.startObject();
-                writer.fieldName("columns");
-
-                final DataSetRow row = postProcessQueue.pop();
-
-                // End analysis and set the statistics
-                emptyInitialAnalysisBuffer(context, row); // Call in case row number < ANALYSIS_BUFFER_SIZE
-                final Analyzer<Analyzers.Result> analyzer = (Analyzer<Analyzers.Result>) context.get(CONTEXT_ANALYZER);
-                if (analyzer != null) {
-                    // Analyzer may not be initialized when all rows were deleted.
-                    analyzer.end();
-                    adapter.adapt(row.getRowMetadata().getColumns(), analyzer.getResult());
-                }
-
-                // write the columns metadata
-                writer.write(row.getRowMetadata());
-                writer.endObject();
+            //
+            if (!writer.requireMetadataForHeader()) {
+                writeMetadata(writer, context, processingRows.pop());
             }
-            if (postProcessQueue.size() > 1) {
-                LOGGER.warn("Too many processed rows in stack (expected 1, got {}).", postProcessQueue.size());
-            }
-            postProcessQueue.clear(); // Clear last processed row.
             writer.endObject();
             writer.flush();
         } catch (IOException e) {
-            throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
+            // TODO Exception
         } finally {
             currentAnalysisStatus.remove();
             initialAnalysisBuffer.remove();
@@ -265,18 +224,29 @@ class SimpleTransformer implements Transformer {
         }
     }
 
+    private DataSetRow writeMetadata(TransformerWriter writer, TransformationContext context, DataSetRow row) {
+        try {
+            emptyInitialAnalysisBuffer(context, row); // Call in case row number < ANALYSIS_BUFFER_SIZE
+            final Analyzer<Analyzers.Result> analyzer = (Analyzer<Analyzers.Result>) context.get(CONTEXT_ANALYZER);
+            if (analyzer != null) {
+                // Analyzer may not be initialized when all rows were deleted.
+                analyzer.end();
+                adapter.adapt(row.getRowMetadata().getColumns(), analyzer.getResult());
+            }
+            writer.fieldName("columns");
+            writer.write(row.getRowMetadata());
+        } catch (IOException e) {
+            // Ignored.
+        }
+        return row;
+    }
+
     @Override
     public boolean accept(Configuration configuration) {
         return Configuration.class.equals(configuration.getClass()) && configuration.volume() == Configuration.Volume.SMALL;
     }
 
-    /**
-     * An implementation of {@link Analyzer} that does not record nor analyze anything.
-     */
     private static class NullAnalyzer implements Analyzer<Analyzers.Result> {
-
-        private static final long serialVersionUID = 1L;
-
         @Override
         public void init() {
             // Nothing to do

@@ -17,8 +17,10 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
@@ -66,7 +68,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
 
     @Test(expected = IllegalArgumentException.class)
     public void should_check_column_id_parameter_when_dealing_with_row_metadata() {
-        action.applyOnColumn(new DataSetRow(new HashMap<>()), new TransformationContext(), new HashMap<>(), "");
+        action.applyOnColumn(new DataSetRow(new HashMap<>()), new ActionContext(new TransformationContext(), new RowMetadata()), new HashMap<>(), "");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -77,7 +79,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
         missingParameters.put(ChangeDatePattern.NEW_PATTERN, "toto");
 
         //when
-        action.applyOnColumn(new DataSetRow(new HashMap<>()), new TransformationContext(), missingParameters, "");
+        action.applyOnColumn(new DataSetRow(new HashMap<>()), new ActionContext(new TransformationContext(), new RowMetadata()), missingParameters, "");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -87,7 +89,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
         insufficientParams.put("column_id", "0000");
 
         //when
-        action.applyOnColumn(new DataSetRow(new HashMap<>()), new TransformationContext(), insufficientParams, "");
+        action.applyOnColumn(new DataSetRow(new HashMap<>()), new ActionContext(new TransformationContext(), new RowMetadata()), insufficientParams, "");
     }
 
     @Test
@@ -97,7 +99,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
         setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         // then
         final DataSetRow expectedRow = getRow("toto", "25 - Apr - 1999", "tata");
@@ -111,7 +113,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
         setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         // then
         final List<PatternFrequency> patternFrequencies = row.getRowMetadata() //
@@ -136,7 +138,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
         setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         // then
         final DataSetRow expectedRow = getRow("toto", "25 - Apr - 2009", "tata");
@@ -150,7 +152,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
         setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         // then
         final DataSetRow expectedRow = getRow("toto", "NA", "tata");
@@ -164,7 +166,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
         setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         // then (values should be unchanged)
         final DataSetRow expectedRow = getRow("toto", "", "tata");

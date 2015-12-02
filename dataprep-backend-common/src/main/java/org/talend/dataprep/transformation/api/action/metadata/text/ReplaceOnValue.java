@@ -1,16 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.CellAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.*;
 
 import java.util.List;
 import java.util.Map;
@@ -18,10 +9,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.BOOLEAN;
-import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.REGEX;
-import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.STRING;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.CellAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 @Component(ReplaceOnValue.ACTION_BEAN_PREFIX + ReplaceOnValue.REPLACE_ON_VALUE_ACTION_NAME)
 public class ReplaceOnValue extends ActionMetadata implements ColumnAction, CellAction {
@@ -130,18 +127,18 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
         apply(row, parameters, columnId);
     }
 
     /**
-     * @see CellAction#applyOnCell(DataSetRow, TransformationContext, Map, Long, String)
+     * @see CellAction#applyOnCell(DataSetRow, ActionContext, Map, Long, String)
      */
     @Override
-    public void applyOnCell(DataSetRow row, TransformationContext context, Map<String, String> parameters, Long rowId,
+    public void applyOnCell(DataSetRow row, ActionContext context, Map<String, String> parameters, Long rowId,
                             String columnId) {
         apply(row, parameters, columnId);
     }

@@ -22,6 +22,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
@@ -66,7 +67,7 @@ public class ActionParserTest {
         ParsedActions actualActions = actionParser.parse("");
 
         // when
-        actualActions.asUniqueRowTransformer().apply(actualRow, new TransformationContext());
+        actualActions.asUniqueRowTransformer().apply(actualRow, new ActionContext(new TransformationContext(), actualRow.getRowMetadata()));
 
         // then
         assertEquals(expectedRow, actualRow);
@@ -82,7 +83,7 @@ public class ActionParserTest {
         ParsedActions actualActions = actionParser.parse(json);
 
         // when
-        actualRow = actualActions.asUniqueRowTransformer().apply(actualRow, new TransformationContext());
+        actualRow = actualActions.asUniqueRowTransformer().apply(actualRow, new ActionContext(new TransformationContext(), actualRow.getRowMetadata()));
 
         // then
         RowMetadata expectedMetadata = getRowMetadata();

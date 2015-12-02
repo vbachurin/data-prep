@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
@@ -82,7 +83,7 @@ public class NormalizeTest {
         expectedValues.put("joined", "May 20th 2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "entity");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "entity");
 
         //then
         assertEquals(expectedValues, row.values());
@@ -104,7 +105,7 @@ public class NormalizeTest {
         expectedValues.put("joined", "May 20th 2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "entity");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "entity");
 
         //then
         assertEquals(expectedValues, row.values());

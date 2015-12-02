@@ -1,27 +1,27 @@
 package org.talend.dataprep.transformation.api.action.metadata.delete;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.i18n.MessagesBundle;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.COLUMN;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.LINE;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.i18n.MessagesBundle;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
 /**
  * Test class for Delete action. Creates one consumer, and test it.
@@ -100,7 +100,7 @@ public class DeleteTest {
         final Map<String, String> parameters = new HashMap<>();
         parameters.put("row_id", rowId.toString());
 
-        final TransformationContext context = new TransformationContext();
+        final ActionContext context = new ActionContext(new TransformationContext(), row.getRowMetadata());
 
         assertThat(row.isDeleted(), is(false));
 
@@ -126,7 +126,7 @@ public class DeleteTest {
         final Map<String, String> parameters = new HashMap<>();
         parameters.put("row_id", parameterRowId.toString());
 
-        final TransformationContext context = new TransformationContext();
+        final ActionContext context = new ActionContext(new TransformationContext(), row.getRowMetadata());
 
         assertThat(row.isDeleted(), is(false));
 

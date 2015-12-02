@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
@@ -58,7 +59,7 @@ public class CutTest {
         DataSetRow expected = getRow("Wait for it...", "value that gets cut !", "Done !");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
 
         // then
         assertEquals(expected, row);
@@ -75,7 +76,7 @@ public class CutTest {
         regexpParameters.put("pattern", ".*gets");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), regexpParameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), regexpParameters, "0001");
 
         // then
         assertEquals(expected, row);
@@ -92,7 +93,7 @@ public class CutTest {
         regexpParameters.put("pattern", "*");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), regexpParameters, "0001");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), regexpParameters, "0001");
 
         // then
         assertEquals(expected, row);
@@ -123,7 +124,7 @@ public class CutTest {
         DataSetRow expected = getRow("Wait for it...", "The value that gets cut !", "Done !");
 
         // when (apply on a column that does not exists)
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0010");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0010");
 
         // then (row should not be changed)
         assertEquals(expected, row);

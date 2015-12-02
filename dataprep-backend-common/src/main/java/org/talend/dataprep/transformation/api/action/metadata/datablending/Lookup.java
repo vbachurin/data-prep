@@ -23,7 +23,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.DataSetAction;
@@ -131,10 +131,10 @@ public class Lookup extends ActionMetadata implements DataSetAction {
     }
 
     /**
-     * @see DataSetAction#applyOnDataSet(DataSetRow, TransformationContext, Map)
+     * @see DataSetAction#applyOnDataSet(DataSetRow, ActionContext, Map)
      */
     @Override
-    public void applyOnDataSet(DataSetRow row, TransformationContext context, Map<String, String> parameters) {
+    public void applyOnDataSet(DataSetRow row, ActionContext context, Map<String, String> parameters) {
 
         // read parameters
         String columnId = parameters.get(COLUMN_ID.getKey());
@@ -142,7 +142,7 @@ public class Lookup extends ActionMetadata implements DataSetAction {
         String joinOn = parameters.get(LOOKUP_JOIN_ON.getKey());
 
         // get the rowMatcher from context
-        LookupRowMatcher rowMatcher = (LookupRowMatcher) context.in(this).get("rowMatcher", parameters,
+        LookupRowMatcher rowMatcher = (LookupRowMatcher) context.get("rowMatcher", parameters,
                 (p) -> applicationContext.getBean(LookupRowMatcher.class, p.get(LOOKUP_DS_URL.getKey())));
 
         // get the matching lookup row
@@ -160,7 +160,7 @@ public class Lookup extends ActionMetadata implements DataSetAction {
         colsToAdd.forEach(toAdd -> {
 
             // create the new column
-            String newColId = context.in(this).column(matchingRow.getRowMetadata().getById(toAdd.getId()).getName(), rowMetadata,
+            String newColId = context.column(matchingRow.getRowMetadata().getById(toAdd.getId()).getName(),
                     (r) -> {
                 final ColumnMetadata colMetadata = ColumnMetadata.Builder //
                         .column() //

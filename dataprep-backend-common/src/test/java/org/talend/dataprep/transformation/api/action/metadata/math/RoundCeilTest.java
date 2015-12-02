@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
@@ -73,7 +74,7 @@ public class RoundCeilTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "aNumber");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "aNumber");
 
         // then
         assertEquals( expected, row.get( "aNumber" ) );

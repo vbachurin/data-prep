@@ -31,7 +31,7 @@ public class ActionContextTest {
     public void setUp() throws Exception {
         parent = new TransformationContext();
         row = new RowMetadata();
-        context = new ActionContext(parent);
+        context = new ActionContext(parent, row);
     }
 
     @Test
@@ -42,7 +42,6 @@ public class ActionContextTest {
     @Test
     public void testColumnCreate() throws Exception {
         final String column = context.column("test",
-                row,
                 (row) -> {
                     final ColumnMetadata c = column().name("test").type(Type.STRING).build();
                     row.insertAfter("", c);
@@ -55,7 +54,6 @@ public class ActionContextTest {
     @Test
     public void testColumnCache() throws Exception {
         final String column = context.column("test",
-                row,
                 (row) -> {
                     final ColumnMetadata c = column().name("test").type(Type.STRING).build();
                     row.insertAfter("", c);
@@ -64,7 +62,6 @@ public class ActionContextTest {
         assertThat(column, is("0000"));
         // Calling twice context with same key shall return same column id
         final String cachedColumn = context.column("test",
-                row,
                 (row) -> {
                     final ColumnMetadata c = column().name("test").type(Type.STRING).build();
                     row.insertAfter("", c);
@@ -82,11 +79,11 @@ public class ActionContextTest {
             return c;
         };
         // Create a first column with key "test1"
-        final String column1 = context.column("test1", row, creation);
+        final String column1 = context.column("test1", creation);
         assertThat(column1, is("0000"));
         assertThat(row.getById("0000").getName(), is("test"));
         // Even though columns share same names, key to obtain them differ, hence the different ids.
-        final String column2 = context.column("test2", row, creation);
+        final String column2 = context.column("test2", creation);
         assertThat(column2, is("0001"));
         assertThat(row.getById("0001").getName(), is("test"));
     }
@@ -96,14 +93,14 @@ public class ActionContextTest {
         testColumnCreate(); // Run test column create to get a "test" column.
         final ActionContext immutable = context.asImmutable();
         // Previously created column should still be accessible
-        final String cachedColumn = context.column("test", row, (row) -> {
+        final String cachedColumn = context.column("test", (row) -> {
             final ColumnMetadata c = column().name("test").type(Type.STRING).build();
             row.insertAfter("", c);
             return c;
         });
         assertThat(cachedColumn, is("0000"));
         // But impossible to add a new column -> UnsupportedOperationException
-        immutable.column("test_immutable", row, (row) -> {
+        immutable.column("test_immutable", (row) -> {
             final ColumnMetadata c = column().name("test").type(Type.STRING).build();
             row.insertAfter("", c);
             return c;
@@ -112,7 +109,7 @@ public class ActionContextTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testIllegalCreate() throws Exception {
-        context.column("test", row, (r) -> null);
+        context.column("test", (r) -> null);
     }
 
     @Test

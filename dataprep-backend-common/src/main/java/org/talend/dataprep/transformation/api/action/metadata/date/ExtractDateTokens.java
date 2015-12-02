@@ -17,7 +17,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -119,10 +119,10 @@ public class ExtractDateTokens extends AbstractDate implements ColumnAction {
 
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
 
@@ -130,8 +130,7 @@ public class ExtractDateTokens extends AbstractDate implements ColumnAction {
         final Map<String, String> dateFieldColumns = new HashMap<>();
         for (DateFieldMappingBean date_field : DATE_FIELDS) {
             if (Boolean.valueOf(parameters.get(date_field.key))) {
-                final String newColumn = context.in(this).column(column.getName() + SEPARATOR + date_field.key,
-                        rowMetadata,
+                final String newColumn = context.column(column.getName() + SEPARATOR + date_field.key,
                         (r) -> {
                             final ColumnMetadata c = ColumnMetadata.Builder //
                                     .column() //

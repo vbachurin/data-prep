@@ -23,6 +23,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -110,7 +111,7 @@ public class LookupTest {
         DataSetRow row = ActionMetadataTestUtils.getRow("Atlanta", "GA", "Philips Arena");
 
         // when
-        action.applyOnDataSet(row, new TransformationContext(), parameters);
+        action.applyOnDataSet(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters);
 
         // then (check values)
         DataSetRow expected = ActionMetadataTestUtils.getRow("Atlanta", "GA", "Philips Arena", "Georgia", "Atlanta");
@@ -131,7 +132,7 @@ public class LookupTest {
         DataSetRow row = ActionMetadataTestUtils.getRow("Dallas", "TX");
 
         // when
-        action.applyOnDataSet(row, new TransformationContext(), parameters);
+        action.applyOnDataSet(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters);
 
         // then (check values)
         DataSetRow expected = ActionMetadataTestUtils.getRow("Dallas", "TX", "Dallas Mavericks", "American Airlines Center",
@@ -151,7 +152,7 @@ public class LookupTest {
         DataSetRow row = ActionMetadataTestUtils.getRow("Toronto", "ON", "Air Canada Centre");
 
         // when
-        action.applyOnDataSet(row, new TransformationContext(), parameters);
+        action.applyOnDataSet(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters);
 
         // then (value)
         DataSetRow expected = ActionMetadataTestUtils.getRow("Toronto", "ON", "Air Canada Centre", "", "");
@@ -169,7 +170,7 @@ public class LookupTest {
         DataSetRow row = ActionMetadataTestUtils.getRow("Huntington", "", "");
 
         // when
-        action.applyOnDataSet(row, new TransformationContext(), parameters);
+        action.applyOnDataSet(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters);
 
         // then (value)
         DataSetRow expected = ActionMetadataTestUtils.getRow("Huntington", "", "", "", "");
@@ -191,7 +192,7 @@ public class LookupTest {
                 ActionMetadataTestUtils.getRow("Oakland", "CA", "Oracle Arena") };
 
         // when
-        final TransformationContext transformationContext = new TransformationContext();
+        final ActionContext transformationContext = new ActionContext(new TransformationContext(), rows[0].getRowMetadata());
         for (DataSetRow row : rows) {
             action.applyOnDataSet(row, transformationContext, parameters);
         }

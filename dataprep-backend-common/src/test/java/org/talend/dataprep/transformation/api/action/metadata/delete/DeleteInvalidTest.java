@@ -13,6 +13,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
@@ -61,7 +62,7 @@ public class DeleteInvalidTest {
         final DataSetRow row = new DataSetRow(rowMetadata, values);
 
         //when
-        deleteInvalid.applyOnColumn( row, new TransformationContext(), parameters, "0002");
+        deleteInvalid.applyOnColumn( row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
 
         //then
         assertTrue(row.isDeleted());
@@ -89,7 +90,7 @@ public class DeleteInvalidTest {
         final DataSetRow row = new DataSetRow(rowMetadata, values);
 
         // when
-        deleteInvalid.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+        deleteInvalid.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
 
         // then row is deleted...
         assertTrue(row.isDeleted());
@@ -122,7 +123,7 @@ public class DeleteInvalidTest {
         final DataSetRow row = new DataSetRow(rowMetadata, values);
 
         // when
-        deleteInvalid.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+        deleteInvalid.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
 
         // then row is deleted...
         assertTrue(row.isDeleted());

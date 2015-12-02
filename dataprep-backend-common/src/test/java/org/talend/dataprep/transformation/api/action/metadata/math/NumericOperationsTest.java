@@ -16,6 +16,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
@@ -134,7 +135,7 @@ public class NumericOperationsTest {
         DataSetRow row = getRow("5", "3", "Done !");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0000");
 
         // then
         DataSetRow expected = getRow("5", "3", "Done !", "8");
@@ -147,9 +148,10 @@ public class NumericOperationsTest {
         DataSetRow row = getRow("5", "3");
 
         // when
-        final TransformationContext context = new TransformationContext();
+        final ActionContext context = new ActionContext(new TransformationContext(), row.getRowMetadata());
         new NumericOperations().applyOnColumn(row, context, parameters, "0000");
-        new NumericOperations().applyOnColumn(row, context, parameters, "0002");
+        final ActionContext context2 = new ActionContext(new TransformationContext(), row.getRowMetadata());
+        new NumericOperations().applyOnColumn(row, context2, parameters, "0002");
 
         // then
         DataSetRow expected = getRow("5", "3", "8", "11");
@@ -166,7 +168,7 @@ public class NumericOperationsTest {
         parameters.put(NumericOperations.MODE_PARAMETER, NumericOperations.CONSTANT_MODE);
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0000");
 
         // then
         DataSetRow expected = getRow("5", "3", "Done !", "7");
@@ -183,7 +185,7 @@ public class NumericOperationsTest {
         parameters.remove(NumericOperations.OPERAND_PARAMETER);
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0000");
 
         // then
         final ColumnMetadata expected = ColumnMetadata.Builder.column().id(3).name("source + selected").type(Type.DOUBLE).build();
@@ -202,7 +204,7 @@ public class NumericOperationsTest {
         parameters.put(NumericOperations.MODE_PARAMETER, NumericOperations.CONSTANT_MODE);
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0000");
 
         // then
         final ColumnMetadata expected = ColumnMetadata.Builder.column().id(3).name("source + 2").type(Type.DOUBLE).build();
@@ -216,7 +218,7 @@ public class NumericOperationsTest {
         DataSetRow row = getRow("5");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0000");
     }
 
     @Test(expected = TDPException.class)
@@ -229,7 +231,7 @@ public class NumericOperationsTest {
         parameters.put(NumericOperations.SELECTED_COLUMN_PARAMETER, "youpi");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0000");
     }
 
     @Test(expected = TDPException.class)
@@ -241,7 +243,7 @@ public class NumericOperationsTest {
         parameters.put(NumericOperations.MODE_PARAMETER, NumericOperations.CONSTANT_MODE);
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0000");
     }
 
     @Test

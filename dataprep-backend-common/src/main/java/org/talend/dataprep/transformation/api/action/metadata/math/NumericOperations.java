@@ -17,7 +17,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
@@ -124,10 +124,10 @@ public class NumericOperations extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
      */
     @Override
-    public void applyOnColumn(final DataSetRow row, final TransformationContext context, final Map<String, String> parameters, final String columnId) {
+    public void applyOnColumn(final DataSetRow row, final ActionContext context, final Map<String, String> parameters, final String columnId) {
         checkParameters(parameters, row);
 
         final RowMetadata rowMetadata = row.getRowMetadata();
@@ -147,8 +147,7 @@ public class NumericOperations extends ActionMetadata implements ColumnAction {
         }
 
         // column creation
-        final String newColumnId = context.in(this).column("result",
-                rowMetadata,
+        final String newColumnId = context.column("result",
                 (r) -> {
                     final ColumnMetadata c = ColumnMetadata.Builder //
                             .column() //

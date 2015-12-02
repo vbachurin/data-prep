@@ -4,6 +4,7 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.talend.dataprep.transformation.api.action.metadata.column.DomainChange.NEW_DOMAIN_ID_PARAMETER_KEY;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 public class DomainChangeTest {
@@ -21,12 +23,11 @@ public class DomainChangeTest {
 
     private ColumnMetadata columnMetadata;
 
-    private TransformationContext transformationContext;
+    private ActionContext transformationContext;
 
     @Before
     public void init() {
         domainChange = new DomainChange();
-        transformationContext = new TransformationContext();
         columnMetadata = ColumnMetadata.Builder.column() //
                 .type(Type.INTEGER) //
                 .computedId("0002") //
@@ -34,6 +35,8 @@ public class DomainChangeTest {
                 .domainFrequency(1) //
                 .domainLabel("French Beer") //
                 .build();
+        final RowMetadata rowMetadata = new RowMetadata(Collections.singletonList(columnMetadata));
+        transformationContext = new ActionContext(new TransformationContext(), rowMetadata);
     }
 
     @Test

@@ -1,18 +1,18 @@
 package org.talend.dataprep.transformation.api.action.metadata.delete;
 
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.LINE;
+
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.i18n.MessagesBundle;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.RowAction;
-
-import java.util.Map;
-
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
-import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.LINE;
 
 @Component(Delete.ACTION_BEAN_PREFIX + Delete.DELETE_ACTION_NAME)
 public class Delete extends ActionMetadata implements RowAction {
@@ -68,7 +68,7 @@ public class Delete extends ActionMetadata implements RowAction {
     }
 
     @Override
-    public void applyOnLine(DataSetRow row, TransformationContext context, Map<String, String> parameters, Long rowId) {
+    public void applyOnLine(DataSetRow row, ActionContext context, Map<String, String> parameters, Long rowId) {
         if (row.getTdpId().equals(rowId)) {
             row.setDeleted(true);
         }

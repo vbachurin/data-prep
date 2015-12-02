@@ -6,7 +6,7 @@ import java.util.function.BiFunction;
 
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 /**
  * JavaBean that holds all the transformers.
@@ -47,7 +47,7 @@ public class ParsedActions {
     /**
      * @return The row transformers united into a single consumer.
      */
-    public BiFunction<DataSetRow, TransformationContext, DataSetRow> asUniqueRowTransformer() {
+    public BiFunction<DataSetRow, ActionContext, DataSetRow> asUniqueRowTransformer() {
         return AggregateFunctions.aggregate(rowTransformers);
     }
 

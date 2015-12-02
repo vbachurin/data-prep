@@ -25,7 +25,7 @@ public class DataSetRow implements Cloneable {
     public static final Predicate<Map.Entry<String, String>> SKIP_TDP_ID = e -> !DataSetRow.TDP_ID.equals(e.getKey());
 
     /** Metadata information (columns...) about this DataSetRow */
-    private final RowMetadata rowMetadata;
+    private RowMetadata rowMetadata;
 
     /** Values of the dataset row. */
     private SortedMap<String, String> values = new TreeMap<>();
@@ -342,6 +342,10 @@ public class DataSetRow implements Cloneable {
 
     public DataSetRow modifiable() {
         return this;
+    }
+
+    public void setRowMetadata(RowMetadata rowMetadata) {
+        this.rowMetadata = rowMetadata;
     }
 
     /**

@@ -18,16 +18,20 @@ public class ActionContext {
     /** Link to the transformation context. */
     private final TransformationContext parent;
 
+    private final RowMetadata rowMetadata;
+
     /** A map of object (used to reuse objects across row process). */
     private Map<String, Object> context = new HashMap<>();
 
     /**
      * Default constructor.
-     * 
+     *
      * @param parent the parent transformation context.
+     * @param rowMetadata
      */
-    public ActionContext(TransformationContext parent) {
+    public ActionContext(TransformationContext parent, RowMetadata rowMetadata) {
         this.parent = parent;
+        this.rowMetadata = rowMetadata;
     }
 
     /**
@@ -46,14 +50,13 @@ public class ActionContext {
      * <b>Note</b>It is up to the caller to insert column in a {@link org.talend.dataprep.api.dataset.RowMetadata row}.
      * </p>
      *
+     * @param name A column name as string. All values are accepted, no collision with other action can occur.
      * @param create A {@link Function function} that provides a new {@link ColumnMetadata} in case no column with
      * <code>name</code> was previously created. Function is <b>not</b> allowed to return <code>null</code>.
-     * @param rowMetadata The row metadata use to create column if missing.
-     * @param name A column name as string. All values are accepted, no collision with other action can occur.
      * @return A {@link ColumnMetadata column} id with name <code>name</code>.
      * @throws IllegalArgumentException In case the <code>supplier</code> returned a <code>null</code> instance.
      */
-    public String column(String name, RowMetadata rowMetadata, Function<RowMetadata, ColumnMetadata> create) {
+    public String column(String name, Function<RowMetadata, ColumnMetadata> create) {
         String key = getColumnKey(name);
         if (context.containsKey(key)) {
             return ((ColumnMetadata) context.get(key)).getId();
@@ -107,8 +110,12 @@ public class ActionContext {
      * let action add a new column, but allows to get previously created ones.
      */
     public ActionContext asImmutable() {
-        final ActionContext actionContext = new ActionContext(parent);
+        final ActionContext actionContext = new ActionContext(parent, rowMetadata);
         actionContext.context = Collections.unmodifiableMap(this.context);
         return actionContext;
+    }
+
+    public RowMetadata getRowMetadata() {
+        return rowMetadata;
     }
 }

@@ -10,6 +10,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.column.TypeChange;
 
@@ -36,7 +37,7 @@ public class ChangeTypeTest {
 
         TypeChange typeChange = new TypeChange();
 
-        TransformationContext transformationContext = new TransformationContext();
+        ActionContext transformationContext = new ActionContext(new TransformationContext(), rowMetadata);
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put(TypeChange.NEW_TYPE_PARAMETER_KEY, "STRING");
