@@ -66,10 +66,9 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
     @Test
     public void CORSHeaders() throws Exception {
-        when().get("/datasets").then().header("Access-Control-Allow-Origin", "*")
-                .header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT")
-                .header("Access-Control-Max-Age", "3600")
-                .header("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
+        given().header("Origin", "fake.host.to.trigger.cors")
+                .when()
+                .get("/datasets").then().header("Access-Control-Allow-Origin", "fake.host.to.trigger.cors");
     }
 
     @Test

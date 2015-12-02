@@ -1,5 +1,6 @@
 package org.talend.dataprep.transformation.service;
 
+import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static junit.framework.TestCase.assertTrue;
 
@@ -8,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,14 +21,12 @@ public class BaseTests extends TransformationServiceBaseTests {
 
     @Test
     public void CORSHeaders() throws Exception {
-        when().post("/transform/JSON").then().header("Access-Control-Allow-Origin", "*")
-                .header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT")
-                .header("Access-Control-Max-Age", "3600")
-                .header("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
-        when().post("/suggest/column").then().header("Access-Control-Allow-Origin", "*")
-                .header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT")
-                .header("Access-Control-Max-Age", "3600")
-                .header("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
+        given().header("Origin", "fake.host.to.trigger.cors")
+                .when()
+                .post("/transform/JSON").then().header("Access-Control-Allow-Origin", "fake.host.to.trigger.cors");
+        given().header("Origin", "fake.host.to.trigger.cors")
+                .when()
+                .post("/suggest/column").then().header("Access-Control-Allow-Origin", "fake.host.to.trigger.cors");
     }
 
     @Test
