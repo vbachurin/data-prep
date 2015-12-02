@@ -12,6 +12,7 @@
                 actions: '=',
                 shouldRenderCategory: '=',
                 shouldRenderAction: '=',
+                scrollToBottom: '=',
                 scope: '@'
             }
         };
