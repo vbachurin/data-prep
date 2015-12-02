@@ -199,6 +199,51 @@
             };
         }
 
+        /**
+         * @ngdoc method
+         * @name createMatchFilterFn
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {string} colId The column id
+         * @param {Array} pattern The filter pattern
+         * @description Create a 'match' filter function
+         * @returns {function} The predicate function
+         */
+        function createMatchFilterFn(colId, pattern) {
+            var regexp = convertPatternToRegexp(pattern);
+
+            return function () {
+                return function (item) {
+                    // col could be removed by a step
+                    if (item[colId]) {
+                        return item[colId].match(regexp);
+                    }
+                    else {
+                        return false;
+                    }
+                };
+            };
+        }
+
+        function convertPatternToRegexp(pattern) {
+            var regexp = '';
+            for (var i = 0, len = pattern.length; i < len; i++) {
+                switch(pattern[i]){
+                    case 'A':
+                        regexp = regexp + '[A-Z]';
+                        break;
+                    case'a':
+                        regexp = regexp + '[a-z]';
+                        break;
+                    case'9':
+                        regexp = regexp + '[0-9]';
+                        break;
+                    default:
+                        regexp = regexp + escapeRegExpExceptStar(pattern[i]);
+                }
+            }
+            return '^' + regexp + '$';
+        }
+
         //--------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------FILTER LIFE------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
@@ -291,6 +336,20 @@
                         return _.isEqual(sameColAndTypeFilter.args.interval, args.interval);
                     };
                     break;
+                case 'match':
+                    createFilter = function createFilter() {
+                        filterFn = createMatchFilterFn(colId, args.pattern);
+                        return FilterAdapterService.createFilter(type, colId, colName, false, args, filterFn, removeFilterFn);
+                    };
+
+                    updateFilter = function updateFilter() {
+                        service.updateFilter(sameColAndTypeFilter, args.pattern);
+                    };
+
+                    filterExists = function filterExists() {
+                        return sameColAndTypeFilter.args.pattern === args.pattern;
+                    };
+                    break;
             }
 
             if(!sameColAndTypeFilter) {
@@ -348,6 +407,11 @@
                 case 'inside_range':
                     newArgs.interval = newValue;
                     newFilterFn = createRangeFilterFn(oldFilter.colId, newValue);
+                    editableFilter = false;
+                    break;
+                case 'match':
+                    newArgs.pattern = newValue;
+                    newFilterFn = createMatchFilterFn(oldFilter.colId, newValue);
                     editableFilter = false;
                     break;
             }

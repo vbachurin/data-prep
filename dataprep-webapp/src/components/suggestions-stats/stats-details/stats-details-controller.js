@@ -7,7 +7,7 @@
      * @description Statistics details
      * @requires data-prep.services.statisticsService.service:StatisticsService
      */
-    function StatsDetailsCtrl(state, $translate, StatisticsService) {
+    function StatsDetailsCtrl(StatisticsService, state, FilterService) {
         var vm = this;
         vm.state = state;
         vm.statisticsService = StatisticsService;
@@ -20,7 +20,12 @@
          * @description Add a pattern filter from selected pattern item
          */
         vm.addPatternFilter = function addPatternFilter(item) {
-            alert($translate.instant('SELECT_PATTERN_IS') + item.pattern + '.' + $translate.instant('FILTERING_COMING_SOON'));
+            var column = state.playground.grid.selectedColumn;
+            return item.pattern ?
+                FilterService.addFilterAndDigest('match', column.id, column.name, {
+                    pattern: item.pattern
+                }) :
+                FilterService.addFilterAndDigest('empty_records', column.id, column.name);
         };
     }
 

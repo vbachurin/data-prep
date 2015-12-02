@@ -7,6 +7,7 @@
     var EMPTY_RECORDS = 'empty_records';
     var VALID_RECORDS = 'valid_records';
     var INSIDE_RANGE = 'inside_range';
+    var MATCH = 'match';
 
     /**
      * @ngdoc service
@@ -76,6 +77,8 @@
                     var min = d3.format(',')(this.args.interval[0]);
                     var max = d3.format(',')(this.args.interval[1]);
                     return min === max ? '[' + min + ']' : '[' + min + ' .. ' + max + '[';
+                case MATCH:
+                    return this.args.pattern;
             }
         }
 
@@ -127,6 +130,13 @@
                             field: this.colId,
                             start: '' + this.args.interval[0],
                             end: '' + this.args.interval[1]
+                        }
+                    };
+                case MATCH:
+                    return {
+                        match: {
+                            field: this.colId,
+                            value: this.value
                         }
                     };
             }
@@ -238,6 +248,10 @@
             else if('valid' in leaf) {
                 type = VALID_RECORDS;
                 condition = leaf.valid;
+            }
+            else if('match' in leaf) {
+                type = MATCH;
+                condition = leaf.match;
             }
 
             var colId = condition.field;
