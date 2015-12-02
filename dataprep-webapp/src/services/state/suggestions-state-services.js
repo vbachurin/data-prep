@@ -7,6 +7,13 @@
             allTransformations: [],
             filteredTransformations: [],
             allCategories: null
+        },
+        column: {
+            allSuggestions: [],     // all selected column suggestions
+            allTransformations: [], // all selected column transformations
+            filteredTransformations: [], // categories with their transformations to display, result of filter
+            transformationsForEmptyCells: [], // all column transformations applied to empty cells
+            transformationsForInvalidCells: []// all column transformations applied to invalid cells
         }
     };
 
@@ -14,6 +21,7 @@
 
         return {
             setLineTransformations: setLineTransformations,
+            setColumnTransformations: setColumnTransformations,
             setLoading: setLoading,
             reset: reset
         };
@@ -26,12 +34,23 @@
             suggestionsState.line = lineTransformations;
         }
 
+        function setColumnTransformations(columnTransformations) {
+            suggestionsState.column = columnTransformations;
+        }
+
         function reset() {
             suggestionsState.isLoading = false;
             suggestionsState.line = {
                 allTransformations: [],
                 filteredTransformations: [],
                 allCategories: null
+            };
+            suggestionsState.column = {
+                allSuggestions: [],
+                allTransformations: [],
+                filteredTransformations: [],
+                transformationsForEmptyCells: [],
+                transformationsForInvalidCells: []
             };
         }
     }

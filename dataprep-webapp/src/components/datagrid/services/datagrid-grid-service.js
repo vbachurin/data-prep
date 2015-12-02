@@ -59,6 +59,8 @@
                 if (angular.isDefined(args.cell)) {
                     var column = grid.getColumns()[args.cell];
                     StateService.setGridSelection(column.tdpColMetadata, args.row);
+                } else {
+                    StateService.setGridSelection(state.playground.grid.selectedColumn, null);
                 }
             });
 

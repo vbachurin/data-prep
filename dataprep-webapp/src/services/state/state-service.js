@@ -47,6 +47,7 @@
             updateGridFilter: PlaygroundStateService.updateGridFilter,
 
             //playground - Suggestions
+            setColumnTransformations: PlaygroundStateService.setColumnTransformations,
             setLineTransformations: PlaygroundStateService.setLineTransformations,
             setSuggestionsLoading: PlaygroundStateService.setSuggestionsLoading,
 

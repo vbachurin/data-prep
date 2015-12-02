@@ -9,7 +9,7 @@
      * @requires data-prep.services.utils.service:TextFormatService
      * @requires data-prep.state.service:StateService
      */
-    function ColumnSuggestionService($q, TransformationCacheService, TextFormatService, StateService) {
+    function ColumnSuggestionService(state, $q, TransformationCacheService, TextFormatService, StateService) {
         var FILTERED_CATEGORY = 'filtered';
         var SUGGESTION_CATEGORY = 'suggestion';
         var EMPTY_CELLS = 'empty';
@@ -17,12 +17,7 @@
 
         var allCategories = null;
         var service = {
-            allTransformations: [],                 // all selected column transformations
-            allSuggestions: [],                     // all selected column suggestions
-            transformationsForEmptyCells: [],       // all column transformations applied to empty cells
-            transformationsForInvalidCells: [],     // all column transformations applied to invalid cells
             searchActionString: '',                 // current user input to filter transformations
-            filteredTransformations: null,          // categories with their transformations to display, result of filter
 
             initTransformations: initTransformations,
             filterTransformations: filterTransformations,
@@ -102,12 +97,14 @@
                     var suggestions = prepareSuggestions(values[0], values[1].allCategories);
                     allCategories = prepareTransformations(suggestions, values[1].allCategories);
 
-                    service.allSuggestions = values[0];
-                    service.allTransformations = values[1].allTransformations;
-                    service.filteredTransformations = allCategories;
+                    StateService.setColumnTransformations({
+                        allSuggestions: values[0],
+                        allTransformations: values[1].allTransformations,
+                        filteredTransformations: allCategories,
+                        transformationsForEmptyCells: _.filter(values[1].allTransformations, isAppliedToCells(EMPTY_CELLS)),
+                        transformationsForInvalidCells: _.filter(values[1].allTransformations, isAppliedToCells(INVALID_CELLS))
+                    });
 
-                    service.transformationsForEmptyCells = _.filter(values[1].allTransformations, isAppliedToCells(EMPTY_CELLS));
-                    service.transformationsForInvalidCells = _.filter(values[1].allTransformations, isAppliedToCells(INVALID_CELLS));
                 })
                 .finally(function () {
                     StateService.setSuggestionsLoading(false);
@@ -178,12 +175,12 @@
          * @description Filter transformations list by searchString
          */
         function filterTransformations() {
-            resetDisplayLabels(service.allSuggestions);
-            resetDisplayLabels(service.allTransformations);
+            resetDisplayLabels(state.playground.suggestions.column.allSuggestions);
+            resetDisplayLabels(state.playground.suggestions.column.allTransformations);
 
             var searchValue = service.searchActionString.toLowerCase();
 
-            service.filteredTransformations = !searchValue ?
+            state.playground.suggestions.column.filteredTransformations = !searchValue ?
                 allCategories :
                 _.chain(allCategories)
                     .map(extractTransfosThatMatch(searchValue))
@@ -202,10 +199,12 @@
          * @description Reset the current column and the transformations
          */
         function reset() {
-            service.allTransformations = [];
-            service.allSuggestions = [];
+            state.playground.suggestions.column.allTransformations = [];
+            state.playground.suggestions.column.allSuggestions = [];
             service.searchActionString = '';
-            service.filteredTransformations = null;
+            state.playground.suggestions.column.filteredTransformations = [];
+            state.playground.suggestions.column.transformationsForEmptyCells = [];
+            state.playground.suggestions.column.transformationsForInvalidCells = [];
             allCategories = null;
         }
     }

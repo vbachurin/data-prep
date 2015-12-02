@@ -24,7 +24,7 @@ describe('Grid state service', function () {
             expect(suggestionsState.line.allCategories).toBe(null);
         }));
 
-        it('should set transformations', inject(function (suggestionsState, SuggestionsStateService) {
+        it('should set line transformations', inject(function (suggestionsState, SuggestionsStateService) {
             //given
             var transformations = {
                 allTransformations: [{name: 'delete'}, {name: 'uppercase'}],
@@ -42,6 +42,25 @@ describe('Grid state service', function () {
 
             //then
             expect(suggestionsState.line).toBe(transformations);
+        }));
+
+        it('should set column transformations', inject(function (suggestionsState, SuggestionsStateService) {
+            //given
+            var transformations = {
+                allTransformations: [{name: 'delete'}, {name: 'uppercase'}],
+                filteredTransformations: [{name: 'delete'}],
+                allSuggestions: [{name: 'delete'}, {name: 'uppercase'}],
+                transformationsForEmptyCells: [{}],
+                transformationsForInvalidCells: [{}]
+            };
+
+            expect(suggestionsState.column).not.toBe(transformations);
+
+            //when
+            SuggestionsStateService.setColumnTransformations(transformations);
+
+            //then
+            expect(suggestionsState.column).toBe(transformations);
         }));
     });
 
@@ -76,5 +95,30 @@ describe('Grid state service', function () {
             expect(suggestionsState.line.filteredTransformations).toEqual([]);
             expect(suggestionsState.line.allCategories).toBe(null);
         }));
+
+
+        it('should reset column transformations', inject(function (suggestionsState, SuggestionsStateService) {
+            //given
+            suggestionsState.column = {
+                allSuggestions: [{}],
+                allTransformations: [{}],
+                filteredTransformations: [{}],
+                transformationsForEmptyCells: [{}],
+                transformationsForInvalidCells: [{}]
+            };
+
+            //when
+            SuggestionsStateService.reset();
+
+            //then
+            expect(suggestionsState.column.allSuggestions).toEqual([]);
+            expect(suggestionsState.column.allTransformations).toEqual([]);
+            expect(suggestionsState.column.filteredTransformations).toEqual([]);
+            expect(suggestionsState.column.transformationsForInvalidCells).toEqual([]);
+            expect(suggestionsState.column.transformationsForEmptyCells).toEqual([]);
+        }));
+
+
+
     });
 });

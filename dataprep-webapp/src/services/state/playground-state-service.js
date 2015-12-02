@@ -50,6 +50,7 @@
             removeAllGridFilters: removeAllGridFilters,
 
             //Suggestion-Stats
+            setColumnTransformations: SuggestionsStateService.setColumnTransformations,
             setLineTransformations: SuggestionsStateService.setLineTransformations,
             setSuggestionsLoading: SuggestionsStateService.setLoading
         };

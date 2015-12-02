@@ -34,7 +34,7 @@
                 <li class="coming-soon"><a><span translate-once="FILL_EMPTY_WITH_TOP_VALUE"></span></a></li>
                 <li class="coming-soon"><a><span translate-once="FILL_EMPTY_WITH_BOTTOM_VALUE"></span></a></li>
 
-                <li ng-repeat="transfo in qualityBarCtrl.transformationsForEmptyCells" ng-click="qualityBarCtrl.applyActionOnColumn(transfo)">
+                <li ng-repeat="transfo in qualityBarCtrl.state.playground.suggestions.column.transformationsForEmptyCells" ng-click="qualityBarCtrl.applyActionOnColumn(transfo)">
                     <a>{{transfo.label}}</a>
                 </li>
             </ul>
@@ -57,7 +57,7 @@
                 <li class="coming-soon"><a><span translate-once="REPLACE_INVALID_WITH_TOP_VALUE"></span></a></li>
                 <li class="coming-soon"><a><span translate-once="REPLACE_INVALID_WITH_BOTTOM_VALUE"></span></a></li>
 
-                <li ng-repeat="transfo in qualityBarCtrl.transformationsForInvalidCells" ng-click="qualityBarCtrl.applyActionOnColumn(transfo)">
+                <li ng-repeat="transfo in qualityBarCtrl.state.playground.suggestions.column.transformationsForInvalidCells" ng-click="qualityBarCtrl.applyActionOnColumn(transfo)">
                     <a>{{transfo.label}}</a>
                 </li>
             </ul>
