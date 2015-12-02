@@ -52,9 +52,13 @@ import org.talend.dataprep.schema.SchemaParserResult;
 import org.talend.dataprep.security.Security;
 import org.talend.dataprep.user.store.UserDataRepository;
 
+<<<<<<< HEAD
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+=======
+import com.wordnik.swagger.annotations.*;
+>>>>>>> TDP-738: Back end code review
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -341,12 +345,13 @@ public class DataSetService {
                 dataSet.setColumns(dataSetMetadata.getRow().getColumns());
             }
 
-            if(records) {
+            if (records) {
                 if (sample != null && sample > 0) {
                     // computes the statistics only if columns are required
                     if (columns) {
-                        // Compute statistics *before* to avoid consumption of too many threads in serialization (call to a
-                        // stream sample may use a thread and a pipe stream, so better to consume to perform in this order).
+                        // Compute statistics *before* to avoid consumption of too many threads in serialization (call
+                        // to a stream sample may use a thread and a pipe stream, so better to consume to perform in
+                        // this order).
                         LOG.debug(marker, "Sample statistics...");
                         computeSampleStatistics(dataSetMetadata, sample);
                         LOG.debug(marker, "Sample statistics done.");
@@ -357,6 +362,8 @@ public class DataSetService {
                 } else {
                     dataSet.setRecords(contentStore.stream(dataSetMetadata));
                 }
+            } else {
+                dataSet.setRecords(Stream.of());
             }
             return dataSet;
         } finally {
