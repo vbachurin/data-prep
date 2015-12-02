@@ -112,12 +112,12 @@
          * @name clone
          * @methodOf data-prep.services.dataset.service:DatasetService
          * @param {object} dataset The dataset to clone
-         * @param {string) the folder path to clone the dataset
+         * @param {object) the folder to clone the dataset
          * @description Clone a dataset
          * @returns {promise} The pending CREATE promise
          */
-        function cloneDataset(dataset, folderPath) {
-            var promise = DatasetListService.clone(dataset, folderPath);
+        function cloneDataset(dataset, folder) {
+            var promise = DatasetListService.clone(dataset, folder);
             promise.then(consolidatePreparationsAndDatasets);
             return promise;
         }

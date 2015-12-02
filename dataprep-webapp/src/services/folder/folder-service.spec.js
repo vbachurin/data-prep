@@ -207,9 +207,27 @@ describe('Folder services', function () {
         spyOn(FolderRestService, 'create').and.returnValue($q.when());
         spyOn(FolderRestService, 'renameFolder').and.returnValue($q.when());
         spyOn(StateService, 'setFoldersStack').and.returnValue();
+        spyOn(FolderRestService, 'childs').and.returnValue($q.when());
 
 
+    }));
 
+    it('should call rest childs with a path', inject(function ($rootScope, FolderService, FolderRestService) {
+        //when
+        FolderService.childs('/foo');
+        $rootScope.$digest();
+
+        //then
+        expect(FolderRestService.childs).toHaveBeenCalledWith('/foo');
+    }));
+
+    it('should call rest childs w/o  path', inject(function ($rootScope, FolderService, FolderRestService) {
+        //when
+        FolderService.childs();
+        $rootScope.$digest();
+
+        //then
+        expect(FolderRestService.childs).toHaveBeenCalled();
     }));
 
     it('should call rest create', inject(function ($rootScope, FolderService, FolderRestService) {

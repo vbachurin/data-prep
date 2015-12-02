@@ -220,6 +220,8 @@
   "FAVORITE_ACTION": "Add {{type}} \"{{name}}\" in your favorites",
   "DELETE_ACTION": "Delete {{type}} \"{{name}}\"",
   "CLONE_ACTION": "Clone {{type}} \"{{name}}\"",
+  "COPY_ACTION": "Copy",
+  "CHOOSE_FOLDER_DESTINATION": "Copy/Move {{type}} - Select Folder destination",
 
   "_comment": "Range slider",
   "INVALID_VALUE_RANGE_SLIDER": "Invalid Entered Value",

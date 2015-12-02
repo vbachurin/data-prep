@@ -436,10 +436,10 @@ describe('Dataset Rest Service', function () {
     it('should call clone with folder path', inject(function ($rootScope, DatasetRestService, RestURLs) {
         //given
         var dataset = {id: 'foobar'};
-        var newFolder = '/wine/beer';
+        var newFolder = {id:'/wine/beer'};
 
         $httpBackend
-            .expectPUT(RestURLs.datasetUrl + '/clone/foobar?folderPath=' + encodeURIComponent(newFolder))
+            .expectPUT(RestURLs.datasetUrl + '/clone/foobar?folderPath=' + encodeURIComponent(newFolder.id))
             .respond(200);
 
         //when

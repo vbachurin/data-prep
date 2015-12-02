@@ -78,3 +78,23 @@
     }
   }
 }
+
+.folders {
+  .hidden {
+    display: none;
+    visibility: hidden;
+  }
+  .folder-node {
+    cursor: none;
+  }
+
+  .folder-name {
+    color: $black;
+
+    &:hover {
+      cursor: pointer;
+      color: $dark-blue;
+      text-decoration: none;
+    }
+  }
+}

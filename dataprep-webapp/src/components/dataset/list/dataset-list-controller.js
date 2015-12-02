@@ -18,7 +18,7 @@
      * @requires data-prep.services.folder.service:FolderService
      * @requires data-prep.services.preparation.service:PreparationListService
      */
-    function DatasetListCtrl($stateParams, StateService, DatasetService, DatasetListSortService, PlaygroundService,
+    function DatasetListCtrl($scope, $stateParams, StateService, DatasetService, DatasetListSortService, PlaygroundService,
                              TalendConfirmService, MessageService, UploadWorkflowService, UpdateWorkflowService, FolderService, state, PreparationListService) {
         var vm = this;
 
@@ -165,16 +165,62 @@
 
         /**
          * @ngdoc method
+         * @name toggle
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description load folder childs
+         * @param {object} folder - the folder to display childs
+         */
+        vm.toggle = function (node) {
+            if (!node.collapsed){
+                node.collapsed = true;
+            } else {
+                FolderService.childs(node.id)
+                    .then(function(res) {
+                        node.nodes = res.data?res.data:[];
+                        _.forEach(node.nodes,function(folder){
+                            folder.collapsed = true;
+                        });
+                        if (node.nodes.length > 0) {
+                          node.collapsed = false;
+                        } else {
+                          node.collapsed = !node.collapsed;
+                        }
+                    });
+            }
+        };
+
+        /**
+         * @ngdoc method
          * @name clone
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description Clone a dataset
-         * @param {object} dataset - the dataset to clone
+         * @description perform the dataset cloning to the folder destination
          */
-        vm.clone = function clone(dataset) {
-            DatasetService.clone(dataset)
-                .then(function () {
-                    MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
+        vm.clone = function(){
+            DatasetService.clone(vm.datasetToClone,vm.folderDestination).then(function (){
+                        MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
+                        vm.folderDestinationModal = false;
+                        vm.datasetToClone = null;
+                        vm.folderDestination = null;
+                    });
+        };
+
+        /**
+         * @ngdoc method
+         * @name openFolderChoice
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Display folder destination choice modal
+         * @param {object} dataset - the dataset to clone or move
+         */
+        vm.openFolderChoice = function(dataset) {
+            vm.folderDestinationModal = true;
+            vm.datasetToClone = dataset;
+
+            FolderService.childs().then(function(res){
+                vm.folders=res.data;
+                _.forEach(vm.folders,function(folder){
+                    folder.collapsed = true;
                 });
+            });
         };
 
         /**

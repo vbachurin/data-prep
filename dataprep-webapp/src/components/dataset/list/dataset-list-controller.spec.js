@@ -502,33 +502,53 @@ describe('Dataset list controller', function () {
 
     describe('clone', function () {
 
-        beforeEach(inject(function ($q, DatasetService, MessageService) {
-            spyOn(DatasetService, 'clone').and.returnValue($q.when(true));
+        beforeEach(inject(function ($q, MessageService,FolderService,DatasetService) {
+            spyOn(FolderService, 'childs').and.returnValue($q.when(true));
             spyOn(MessageService, 'success').and.returnValue();
+            spyOn(DatasetService,'clone').and.returnValue($q.when(true));
+
+        }));
+
+        it('should call folder service and open modal', inject(function (FolderService) {
+            // given
+            var ctrl = createController();
+
+            // when
+            ctrl.openFolderChoice(datasets[0]);
+
+            //then
+            expect(FolderService.childs).toHaveBeenCalled();
+            expect(ctrl.folderDestinationModal).toBe(true);
+            expect(ctrl.datasetToClone).toBe(datasets[0]);
         }));
 
         it('should call clone service', inject(function (DatasetService) {
             //given
-            var dataset = datasets[0];
+            var folder = {id:'foo'};
             var ctrl = createController();
+            ctrl.datasetToClone = datasets[0];
+            ctrl.folderDestination = folder;
 
             //when
-            ctrl.clone(dataset);
+            ctrl.clone();
 
             //then
-            expect(DatasetService.clone).toHaveBeenCalledWith(dataset);
+            expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder);
         }));
 
-        it('should display message on success', inject(function (MessageService) {
+        it('should display message on success', inject(function (MessageService,DatasetService) {
             //given
-            var dataset = datasets[0];
+            var folder = {id:'foo'};
             var ctrl = createController();
+            ctrl.datasetToClone = datasets[0];
+            ctrl.folderDestination = folder;
 
             //when
-            ctrl.clone(dataset);
+            ctrl.clone();
             scope.$digest();
 
             //then
+            expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder);
             expect(MessageService.success).toHaveBeenCalledWith('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
         }));
     });

@@ -13,12 +13,29 @@
             // folder operations
             create: createFolder,
             getFolderContent: getFolderContent,
-            renameFolder: renameFolder
+            renameFolder: renameFolder,
+            childs: childs
         };
 
         //----------------------------------------------
         //   folders
         //----------------------------------------------
+
+        /**
+         * @ngdoc method
+         * @name childs
+         * @methodOf data-prep.services.folder.service:FolderRestService
+         * @description Get childs of a folder
+         * @param {string} path the path to get childs
+         * @returns {Promise} The GET promise
+         */
+        function childs(path){
+            var url = RestURLs.folderUrl;
+            if (path){
+                url += '?path=' + encodeURIComponent(path);
+            }
+            return $http.get(url);
+        }
 
         /**
          * @ngdoc method
@@ -72,6 +89,7 @@
         function renameFolder(path, newPath){
             return $http.put(RestURLs.folderUrl + '/rename?path=' + encodeURIComponent(path) + '&newPath=' + encodeURIComponent(newPath) );
         }
+
     }
 
     angular.module('data-prep.services.folder')

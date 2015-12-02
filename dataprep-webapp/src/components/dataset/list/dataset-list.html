@@ -95,9 +95,9 @@
 
                 <a data-icon="B"
                    class="btn-icon btn-transparent"
-                   translate-once-title="CLONE_DATASET"
+                   translate-once-title="CLONE_ACTION"
                    translate-values="{type: 'dataset', name: dataset.name}"
-                   ng-click="datasetListCtrl.clone(dataset)"></a>
+                   ng-click="datasetListCtrl.openFolderChoice(dataset)"></a>
 
                 <a data-icon="e"
                    class="btn-icon btn-transparent"
@@ -139,6 +139,43 @@
                 </button>
             </div>
         </form>
+    </talend-modal>
+
+
+    <talend-modal fullscreen="false"
+                  close-button="true"
+                  state="datasetListCtrl.folderDestinationModal">
+        <span translate-once="CHOOSE_FOLDER_DESTINATION" translate-values="{type: 'dataset', name: dataset.name}"></span>
+
+        <script type="text/ng-template" id="basic_renderer.html">
+            <div ui-tree-handle class="folder-node tree-node nodrop">
+                <a class="inventory-icon inventory-folder" data-nodrag ng-click="datasetListCtrl.toggle(node)">
+                    <!--
+                    <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': node.collapsed, 'glyphicon-chevron-down': !node.collapsed }"></span>
+                    -->
+                    <img src="assets/images/folder/folder-icon.png"/>
+                </a>
+                <span ng-click="datasetListCtrl.folderDestination = node" class="folder-name">{{node.name}}</span>
+            </div>
+            <ol ui-tree-nodes ng-model="node.nodes" ng-class="{hidden: node.collapsed}">
+                <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'basic_renderer.html'"></li>
+            </ol>
+        </script>
+
+
+        <div ui-tree id="tree-root" data-nodrop-enabled="true" class="folders">
+          <ol ui-tree-nodes ng-model="datasetListCtrl.folders">
+            <li ng-repeat="node in datasetListCtrl.folders" ui-tree-node ng-include="'basic_renderer.html'"></li>
+          </ol>
+        </div>
+
+        <div class="modal-buttons">
+            <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL">
+            </button>
+            <button class="btn-primary modal-primary-button" translate-once="COPY_ACTION" ng-click="datasetListCtrl.clone()">
+            </button>
+        </div>
+
     </talend-modal>
 
 </div>
