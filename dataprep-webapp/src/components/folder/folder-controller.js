@@ -9,12 +9,11 @@
 	 * @requires data-prep.services.state.constant:state
 	 */
 	function FolderCtrl (FolderService, state) {
-		var vm         = this;
-		vm.state       = state;
-		vm.contentType = '';
+		var vm = this;
+		vm.state = state;
 
 		vm.loadingChilds = true;
-		vm.state         = state;
+		vm.state = state;
 
 		/**
 		 * @ngdoc method
@@ -22,7 +21,7 @@
 		 * @methodOf data-prep.folder.controller:FolderCtrl
 		 * @param {object} folder - the folder to go
 		 */
-		vm.goToFolder = function (folder) {
+		vm.goToFolder = function goToFolder (folder) {
 			FolderService.getFolderContent(folder);
 		};
 
@@ -33,7 +32,7 @@
 		 * @param {object} folder - the folder
 		 * @description build the child list of the folder menu entry as parameter
 		 */
-		vm.initMenuChilds = function (folder) {
+		vm.initMenuChilds = function initMenuChilds (folder) {
 			vm.loadingChilds = true;
 			FolderService.populateMenuChilds(folder)
 				.finally(

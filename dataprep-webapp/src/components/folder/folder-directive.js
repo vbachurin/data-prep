@@ -8,8 +8,7 @@
 	 * @param type the type of folder entries to display (dataset or preparation)
 	 * @restrict E
 	 * @usage
-	 * <folder type="dataset"></folder>
-	 * @param {String} type the type of the folder's content (dataset/preparation)
+	 * <folder></folder>
 	 */
 	function Folder () {
 		return {
@@ -17,10 +16,7 @@
 			restrict: 'E',
 			bindToController: true,
 			controllerAs: 'folderCtrl',
-			controller: 'FolderCtrl',
-			link: function (scope, iElement, iAttrs, folderCtrl) {
-				folderCtrl.contentType = iAttrs.type;
-			}
+			controller: 'FolderCtrl'
 		};
 	}
 
