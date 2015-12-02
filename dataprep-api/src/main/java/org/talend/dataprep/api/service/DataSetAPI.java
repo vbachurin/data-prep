@@ -110,6 +110,7 @@ public class DataSetAPI extends APIService {
             @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
+            @RequestParam(defaultValue = "true") @ApiParam(name = "records", value = "Include data in the response") boolean records,
             @RequestParam(required = false, defaultValue = "full") @ApiParam(name = "sample", value = "Size of the wanted sample, if missing or 'full', the full dataset is returned") String sample, //
             final OutputStream output) {
         if (LOG.isDebugEnabled()) {
@@ -125,7 +126,7 @@ public class DataSetAPI extends APIService {
             sampleValue = null;
         }
         
-        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata, columns, sampleValue);
+        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata, columns, records, sampleValue);
         try (InputStream content = retrievalCommand.execute()){
             IOUtils.copyLarge(content, output);
             output.flush();

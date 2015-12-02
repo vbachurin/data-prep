@@ -229,6 +229,20 @@ public class DataSetAPITest extends ApiServiceTestBase {
     }
 
     @Test
+    public void testDataSetColumnsGet() throws Exception {
+        // given
+        final String dataSetId = createDataset("dataset/dataset.csv", "test_columns", "text/csv");
+
+        // when
+        final String content = when().get("/api/datasets/{id}?metadata=false&columns=true&records=false", dataSetId)
+                .asString();
+
+        // then
+        final InputStream expected = PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_columns.json");
+        assertThat(content, sameJSONAsFile(expected));
+    }
+
+    @Test
     public void testDataSetGetWithSampleZeroOrFull() throws Exception {
         // given
         final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");

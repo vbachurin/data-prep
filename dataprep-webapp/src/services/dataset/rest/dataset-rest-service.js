@@ -20,6 +20,7 @@
 
             getDatasets: getDatasets,
             updateMetadata: updateMetadata,
+            getColumns: getColumns,
             getContent: getContent,
             getContentFromUrl: getContentFromUrl,
             getSheetPreview: getSheetPreview,
@@ -200,6 +201,22 @@
          */
         function getContent(datasetId, metadata) {
             var url = RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata;
+            return $http.get(url)
+                .then(function (res) {
+                    return res.data;
+                });
+        }
+
+        /**
+         * @ngdoc method
+         * @name getColumns
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @description Get the dataset content
+         * @param {string} datasetId The dataset id
+         * @returns {Promise} The GET promise
+         */
+        function getColumns(datasetId) {
+            var url = RestURLs.datasetUrl + '/' + datasetId + '?metadata=false&records=false';
             return $http.get(url)
                 .then(function (res) {
                     return res.data;

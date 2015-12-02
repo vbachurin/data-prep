@@ -167,7 +167,8 @@ describe('ColumnProfile controller', function () {
             spyOn(StatisticsService, 'processAggregation').and.returnValue();
             StatisticsService.histogram = {
                 aggregation: aggregation,
-                aggregationColumn: column
+                aggregationColumn: column,
+                data: [{field: 'toto', value: 2}]
             };
 
             var ctrl = createController();
@@ -181,34 +182,52 @@ describe('ColumnProfile controller', function () {
     });
 
     describe('statistics', function() {
-        beforeEach(inject(function($q, PlaygroundService) {
-            spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
-        }));
-
-        it('should manage refresh progress flag', function() {
+        it('should not update columns statistics when there are statistics charts to display', inject(function($q, PlaygroundService, StatisticsService) {
             //given
-            var ctrl = createController();
-            expect(ctrl.refreshInProgress).toBe(false);
+            spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
+            StatisticsService.histogram = {data: [{field: 'toto', value: 2}]};
 
             //when
-            ctrl.refresh();
-            expect(ctrl.refreshInProgress).toBe(true);
-            scope.$digest();
+            createController();
 
             //then
-            expect(ctrl.refreshInProgress).toBe(false);
-        });
-
-        it('should trigger statistics refresh', inject(function(PlaygroundService) {
-            //given
-            var ctrl = createController();
             expect(PlaygroundService.updateStatistics).not.toHaveBeenCalled();
+        }));
+
+        it('should update statistics when there are no chart because of a lack of data', inject(function($q, PlaygroundService, StatisticsService) {
+            //given
+            spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
+            StatisticsService.histogram = {data: []};
 
             //when
-            ctrl.refresh();
+            createController();
 
             //then
             expect(PlaygroundService.updateStatistics).toHaveBeenCalled();
+        }));
+
+        it('should retry statistics update when previous fetch has been rejected (stats not computed yet) with a delay of 1500ms', inject(function($q, $timeout, PlaygroundService, StatisticsService) {
+            //given
+            var retry = 0;
+            spyOn(PlaygroundService, 'updateStatistics').and.callFake(function() {
+                if(retry === 0) {
+                    retry++;
+                    return $q.reject();
+                }
+                else {
+                    return $q.when();
+                }
+            });
+            StatisticsService.histogram = {data: []};
+
+            //when
+            createController();
+            scope.$digest();
+            expect(PlaygroundService.updateStatistics.calls.count()).toBe(1);
+            $timeout.flush(1500);
+
+            //then
+            expect(PlaygroundService.updateStatistics.calls.count()).toBe(2);
         }));
     });
 });

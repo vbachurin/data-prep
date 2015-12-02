@@ -79,6 +79,7 @@
   "EXPORT_TABLEAU": "Export to TABLEAU",
   "OK": "OK",
   "CONFIRM": "Confirm",
+
   "_comment": "Import datasets",
   "IMPORT_DATASET": "Create Dataset",
   "IMPORT_HTTP_DATASET": "Create HTTP Dataset",
@@ -212,9 +213,9 @@
   "SELECT_COLUMN_TO_DISPLAY_STATS": "Select a column to display its statistics",
   "SELECT_PATTERN_IS": "The selected pattern is: ",
   "FILTERING_COMING_SOON": "Filtering is coming soon.",
+  "REFRESHING_WAIT": "refreshing, please wait...",
 
-
-"_comment": "Dataset actions",
+  "_comment": "Dataset actions",
   "REPLACE_FILE_CONTENT": "Update dataset with another file",
   "OPEN_ACTION": "Open {{type}} \"{{name}}\"",
   "CERTIFY_ACTION": "Certify {{type}} \"{{name}}\"",

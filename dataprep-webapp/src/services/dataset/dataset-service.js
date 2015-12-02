@@ -26,6 +26,7 @@
             toggleFavorite: toggleFavorite,
 
             //content
+            getColumns: DatasetRestService.getColumns,
             getContent: DatasetRestService.getContent,
 
             //metadata getters

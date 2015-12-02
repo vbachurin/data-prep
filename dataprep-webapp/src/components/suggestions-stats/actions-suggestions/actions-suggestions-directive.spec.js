@@ -5,7 +5,8 @@ describe('Actions suggestions-stats directive', function() {
     var body = angular.element('body');
     beforeEach(module('data-prep.actions-suggestions', function($provide) {
         stateMock = {playground: {
-            grid: {}
+            grid: {},
+            suggestions: {}
         }};
         $provide.constant('state', stateMock);
     }));
@@ -13,11 +14,12 @@ describe('Actions suggestions-stats directive', function() {
 
     beforeEach(module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'COLON': ': '
+            'COLON': ': ',
+            'REFRESHING_WAIT': 'Fetching, please wait...'
         });
         $translateProvider.preferredLanguage('en');
     }));
-    
+
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function() {
@@ -43,4 +45,16 @@ describe('Actions suggestions-stats directive', function() {
         //then
         expect(element.find('.title').text().trim()).toBe('Col 1');
     });
+
+    it('should render ghost when actions are being fetched', inject(function() {
+        //given
+        stateMock.playground.suggestions.isLoading = true;
+
+        //when
+        createElement();
+
+        //then
+        expect(element.find('#actions-ghost').length).toBe(1);
+        expect(element.find('#actions-ghost').text().trim()).toBe('Fetching, please wait...');
+    }));
 });
