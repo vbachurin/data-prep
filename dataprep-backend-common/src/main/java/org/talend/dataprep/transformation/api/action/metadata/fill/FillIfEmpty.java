@@ -99,6 +99,8 @@ public class FillIfEmpty extends AbstractFillWith implements ColumnAction {
         if (column == null || !acceptColumn(column)) {
             return this;
         }
-        return new FillIfEmpty(Type.valueOf(column.getType().toUpperCase()));
+        final FillIfEmpty fillIfEmpty = new FillIfEmpty(Type.valueOf(column.getType().toUpperCase()));
+        fillIfEmpty.dateParser = this.dateParser; // autowired fields should not be forgotten...
+        return fillIfEmpty;
     }
 }

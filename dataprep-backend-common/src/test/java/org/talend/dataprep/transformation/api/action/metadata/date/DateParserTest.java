@@ -1,8 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
 import static org.junit.Assert.assertEquals;
-import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
-import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.setStatistics;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.*;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -10,7 +9,9 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +39,7 @@ public class DateParserTest extends BaseDateTests {
     public void shouldSortPatterns() throws IOException {
 
         // given
-        Map<String, String> values = new HashMap<>();
-        values.put("0000", "toto");
-        values.put("0001", "04/25/1999");
-        values.put("0002", "tata");
-        DataSetRow row = new DataSetRow(values);
+        DataSetRow row = getRow("toto", "04/25/1999", "tata");
         setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_with_different_test_cases.json"));
 
         // when
@@ -54,7 +51,6 @@ public class DateParserTest extends BaseDateTests {
         expected.add(new DatePattern(47, "MM/dd/yyyy"));
         expected.add(new DatePattern(27, "MM-dd-yy"));
         expected.add(new DatePattern(0, "yyyy"));
-
         assertEquals(expected, actual);
     }
 
@@ -102,31 +98,34 @@ public class DateParserTest extends BaseDateTests {
 
     @Test
     public void shouldComputePatternFromDQ() {
-        assertEquals(new DatePattern(1, "d/M/yyyy"), action.guessPattern("01/02/2015"));
-        assertEquals(new DatePattern(1, "yyyy-M-d"), action.guessPattern("2015-01-02"));
-        assertEquals(new DatePattern(1, "9999"), action.guessPattern("2015"));
-        assertEquals(new DatePattern(1, "MMMM d yyyy"), action.guessPattern("July 14 2015"));
+        final ColumnMetadata column = getColumn(Type.DATE);
+        assertEquals(new DatePattern(1, "d/M/yyyy"), action.guessPattern("01/02/2015", column));
+        assertEquals(new DatePattern(1, "yyyy-M-d"), action.guessPattern("2015-01-02", column));
+        assertEquals(new DatePattern(1, "9999"), action.guessPattern("2015", column));
+        assertEquals(new DatePattern(1, "MMMM d yyyy"), action.guessPattern("July 14 2015", column));
     }
 
     @Test(expected = DateTimeException.class)
     public void shouldNotComputePatternFromDQBecauseEmptyValue() {
-        action.guessPattern("");
+        final ColumnMetadata column = getColumn(Type.DATE);
+        action.guessPattern("", column);
     }
 
     @Test(expected = DateTimeException.class)
     public void shouldNotComputePatternFromDQBecauseNullValue() {
-        action.guessPattern(null);
+        final ColumnMetadata column = getColumn(Type.DATE);
+        action.guessPattern(null, column);
     }
 
     @Test(expected = DateTimeException.class)
     public void shouldNotComputePatternFromDQBecauseInvalidValue() {
-        action.guessPattern("not a date");
+        final ColumnMetadata column = getColumn(Type.DATE);
+        action.guessPattern("not a date", column);
     }
 
 
     @Test
     public void shouldUpdateColumnStatisticsWithNewDatePattern() {
-
         // given
         ColumnMetadata column = getColumn(Type.DATE);
         column.getStatistics().getPatternFrequencies().add(new PatternFrequency("yyyy", 19));

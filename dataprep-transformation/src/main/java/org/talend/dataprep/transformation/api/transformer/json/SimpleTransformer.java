@@ -17,9 +17,9 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
-import org.talend.dataprep.configuration.AnalyzerService;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
+import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
@@ -81,7 +81,7 @@ class SimpleTransformer implements Transformer {
         }
     };
 
-    // Indicate what the current status related to Analyzer configuration.
+    /** Indicate what the current status related to Analyzer configuration. */
     private ThreadLocal<AnalysisStatus> currentAnalysisStatus = new ThreadLocal<AnalysisStatus>() {
         @Override
         protected AnalysisStatus initialValue() {
@@ -89,6 +89,14 @@ class SimpleTransformer implements Transformer {
         }
     };
 
+    /**
+     * Configure the analyzer for quality depending on the current tAnalysisStatus.
+     *
+     * @param context the transformation context.
+     * @param row the current row.
+     * @return the configured analyzer.
+     * @see SimpleTransformer#currentAnalysisStatus
+     */
     private Analyzer<Analyzers.Result> configureAnalyzer(TransformationContext context, DataSetRow row) {
         switch (currentAnalysisStatus.get()) {
             case SCHEMA_ANALYSIS:
@@ -106,7 +114,13 @@ class SimpleTransformer implements Transformer {
         }
     }
 
-    // Get or create a full analyzer (with all possible analysis), columns must contain correct type information.
+    /**
+     * Get or create a full analyzer (with all possible analysis), columns must contain correct type information.
+     *
+     * @param context the transformation context to get/put the analyzer.
+     * @param columns the columns to analyze.
+     * @return the full analyzer for the given columns.
+     */
     private Analyzer<Analyzers.Result> configureFullAnalyzer(TransformationContext context, List<ColumnMetadata> columns) {
         Analyzer<Analyzers.Result> analyzer = (Analyzer<Analyzers.Result>) context.get(CONTEXT_ANALYZER);
         if (analyzer == null) {
@@ -116,7 +130,12 @@ class SimpleTransformer implements Transformer {
         return analyzer;
     }
 
-    // Empty the initial buffer and perform an early schema analysis, configure a full analyzer, run full analysis on
+    /**
+     * Empty the initial buffer and perform an early schema analysis, configure a full analyzer, run full analysis on.
+     *
+     * @param context the transformation context.
+     * @param row the current row.
+     */
     private void emptyInitialAnalysisBuffer(TransformationContext context, DataSetRow row) {
         if (currentAnalysisStatus.get() == AnalysisStatus.FULL_ANALYSIS || initialAnalysisBuffer.get().isEmpty()) {
             // Got called for nothing

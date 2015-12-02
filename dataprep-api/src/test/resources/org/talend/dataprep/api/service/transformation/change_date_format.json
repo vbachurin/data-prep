@@ -1,0 +1,13 @@
+{
+  "actions": [
+    {
+      "action": "change_date_pattern",
+      "parameters": {
+        "new_pattern": "MMM.dd.yyyy",
+        "scope": "column",
+        "column_id": "0000",
+        "column_name": "date"
+      }
+    }
+  ]
+}

@@ -1,16 +1,20 @@
-package org.talend.dataprep.configuration;
+package org.talend.dataprep.quality;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.dataset.statistics.StreamHistogramAnalyzer;
 import org.talend.dataprep.api.type.Type;
@@ -25,7 +29,7 @@ import org.talend.dataquality.semantic.statistics.SemanticQualityAnalyzer;
 import org.talend.dataquality.standardization.index.ClassPathDirectory;
 import org.talend.dataquality.statistics.cardinality.CardinalityAnalyzer;
 import org.talend.dataquality.statistics.frequency.DataTypeFrequencyAnalyzer;
-import org.talend.dataquality.statistics.frequency.pattern.CompositePatternFrequencyAnalyzer;
+import org.talend.dataquality.statistics.frequency.pattern.*;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramColumnParameter;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramParameter;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileAnalyzer;
@@ -39,10 +43,15 @@ import org.talend.datascience.common.inference.ValueQualityStatistics;
 import org.talend.datascience.common.inference.type.DataType;
 import org.talend.datascience.common.inference.type.DataTypeAnalyzer;
 
+/**
+ * Service in charge of analyzing dataset quality.
+ */
 @Service
 public class AnalyzerService implements DisposableBean {
 
+    /** This class' logger. */
     public static final Logger LOGGER = LoggerFactory.getLogger(AnalyzerService.class);
+
 
     private static CategoryRecognizerBuilder newCategoryRecognizer() {
         try {
@@ -74,6 +83,7 @@ public class AnalyzerService implements DisposableBean {
                 .collect(Collectors.toList());
         final String[] domains = domainList.toArray(new String[domainList.size()]);
         DataTypeQualityAnalyzer dataTypeQualityAnalyzer = new DataTypeQualityAnalyzer(types);
+        columns.forEach(c -> dataTypeQualityAnalyzer.addCustomDateTimePattern(getMostUsedDatePattern(c)));
         SemanticQualityAnalyzer semanticQualityAnalyzer = new SemanticQualityAnalyzer(categoryBuilder, domains);
         return new ValueQualityAnalyzer(dataTypeQualityAnalyzer, semanticQualityAnalyzer, true);
     }
@@ -107,11 +117,11 @@ public class AnalyzerService implements DisposableBean {
                 // Value quality (invalid values...)
                 valueQualityAnalyzer,
                 // Type analysis (especially useful for new columns).
-                new DataTypeAnalyzer(),
+                getDataTypeAnalyzer(columns),
                 // Cardinality (distinct + duplicate)
                 new CardinalityAnalyzer(),
                 // Frequency analysis (Pattern + data)
-                new DataTypeFrequencyAnalyzer(), new CompositePatternFrequencyAnalyzer(),
+                new DataTypeFrequencyAnalyzer(), getPatternFrequencyAnalyzer(columns),
                 // Quantile analysis
                 new QuantileAnalyzer(types),
                 // Summary (min, max, mean, variance)
@@ -126,6 +136,33 @@ public class AnalyzerService implements DisposableBean {
         return analyzer;
     }
 
+    /**
+     * @see AnalyzerService#getPatternFrequencyAnalyzer(List)
+     */
+    public AbstractPatternFrequencyAnalyzer getPatternFrequencyAnalyzer(ColumnMetadata column) {
+        return getPatternFrequencyAnalyzer(Collections.singletonList(column));
+    }
+
+    /**
+     * @param columns the columns to analyze.
+     * @return the analyzer for the given columns.
+     */
+    public AbstractPatternFrequencyAnalyzer getPatternFrequencyAnalyzer(List<ColumnMetadata> columns) {
+
+        // deal with specific date, even custom date pattern
+        final DateTimePatternFrequencyAnalyzer dateTimePatternFrequencyAnalyzer = new DateTimePatternFrequencyAnalyzer();
+        final List<String> mostUsedDatePatterns = getMostUsedDatePatterns(columns);
+        dateTimePatternFrequencyAnalyzer.addCustomDateTimePatterns(mostUsedDatePatterns);
+
+        // warning, the order is important
+        List<AbstractPatternFrequencyAnalyzer> patternFrequencyAnalyzers = new ArrayList<>();
+        patternFrequencyAnalyzers.add(new EmptyPatternFrequencyAnalyzer());
+        patternFrequencyAnalyzers.add(dateTimePatternFrequencyAnalyzer);
+        patternFrequencyAnalyzers.add(new LatinExtendedCharPatternFrequencyAnalyzer());
+
+        return new CompositePatternFrequencyAnalyzer(patternFrequencyAnalyzers);
+    }
+
     public Analyzer<Analyzers.Result> qualityAnalysis(List<ColumnMetadata> columns) {
         DataType.Type[] types = TypeUtils.convert(columns);
         // Run analysis
@@ -135,11 +172,24 @@ public class AnalyzerService implements DisposableBean {
         final Analyzer<Analyzers.Result> analyzer = Analyzers.with(valueQualityAnalyzer, //
                 new SummaryAnalyzer(types), //
                 new SemanticAnalyzer(categoryBuilder), //
-                new DataTypeAnalyzer());
+                getDataTypeAnalyzer(columns));
         analyzer.init();
         return analyzer;
     }
 
+    /**
+     * <p>
+     * Analyse the... Schema !
+     * </p>
+     * <ul>
+     * <li>ValueQuality</li>
+     * <li>Semantic</li>
+     * <li>DataType</li>
+     * </ul>
+     * 
+     * @param columns the columns to analyze.
+     * @return the analyzers to perform for the schema.
+     */
     public Analyzer<Analyzers.Result> schemaAnalysis(List<ColumnMetadata> columns) {
         // Run analysis
         final CategoryRecognizerBuilder categoryBuilder = newCategoryRecognizer();
@@ -147,11 +197,14 @@ public class AnalyzerService implements DisposableBean {
         final ValueQualityAnalyzer valueQualityAnalyzer = qualityAnalyzer(columns);
         final Analyzer<Analyzers.Result> analyzer = Analyzers.with(valueQualityAnalyzer, //
                 new SemanticAnalyzer(categoryBuilder), //
-                new DataTypeAnalyzer());
+                getDataTypeAnalyzer(columns));
         analyzer.init();
         return analyzer;
     }
 
+    /**
+     * @see DisposableBean#destroy()
+     */
     @Override
     public void destroy() throws Exception {
         LOGGER.info("Clean up analyzers...");
@@ -165,5 +218,48 @@ public class AnalyzerService implements DisposableBean {
         }
         ClassPathDirectory.destroy();
         LOGGER.info("Clean up analyzers done.");
+    }
+
+    private DataTypeAnalyzer getDataTypeAnalyzer(List<ColumnMetadata> columns) {
+        final List<String> mostUsedDatePatterns = getMostUsedDatePatterns(columns);
+        return new DataTypeAnalyzer(mostUsedDatePatterns);
+    }
+
+    /**
+     * Return the list of most used patterns for dates.
+     *
+     * @param columns the columns to analyze.
+     * @return the list of most used patterns for dates or an empty list if there's none.
+     */
+    private List<String> getMostUsedDatePatterns(List<ColumnMetadata> columns) {
+
+        List<String> patterns = new ArrayList<>(columns.size());
+        for (ColumnMetadata column : columns) {
+            final String pattern = getMostUsedDatePattern(column);
+            if (StringUtils.isNotBlank(pattern)) {
+                patterns.add(pattern);
+            }
+        }
+
+        return patterns;
+    }
+
+    /**
+     * In case of a date column, return the most used pattern.
+     *
+     * @param column the column to inspect.
+     * @return the most used pattern or null if there's none.
+     */
+    private String getMostUsedDatePattern(ColumnMetadata column) {
+        // only filter out non date columns
+        if (Type.get(column.getType()) != Type.DATE) {
+            return null;
+        }
+        final List<PatternFrequency> patternFrequencies = column.getStatistics().getPatternFrequencies();
+        if (!patternFrequencies.isEmpty()) {
+            patternFrequencies.sort((p1, p2) -> Long.compare(p2.getOccurrences(), p1.getOccurrences()));
+            return patternFrequencies.get(0).getPattern();
+        }
+        return null;
     }
 }

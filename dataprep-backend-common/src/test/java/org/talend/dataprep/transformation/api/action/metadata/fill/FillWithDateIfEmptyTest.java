@@ -10,12 +10,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.date.ChangeDatePatternTest;
 
@@ -24,16 +27,17 @@ import org.talend.dataprep.transformation.api.action.metadata.date.ChangeDatePat
  *
  * @see FillIfEmpty
  */
-public class FillWithDateIfEmptyTest {
+public class FillWithDateIfEmptyTest extends AbstractMetadataBaseTest {
 
     /** The action to test. */
+    @Autowired
     private FillIfEmpty action;
 
     /**
-     * Default empty constructor.
+     * Set the action up.
      */
-    public FillWithDateIfEmptyTest() {
-        action = new FillIfEmpty();
+    @Before
+    public void setUp() throws Exception {
         action = (FillIfEmpty) action.adapt(ColumnMetadata.Builder.column().type(Type.DATE).build());
     }
 

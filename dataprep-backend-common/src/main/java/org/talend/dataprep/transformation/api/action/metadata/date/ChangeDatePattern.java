@@ -101,6 +101,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
         if (patternFrequencies.isEmpty()) {
             return 1;
         }
+        patternFrequencies.sort((p1, p2) -> Long.compare(p2.getOccurrences(), p1.getOccurrences()));
         return patternFrequencies.get(0).getOccurrences();
     }
 
