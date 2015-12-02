@@ -18,7 +18,7 @@ import org.talend.dataprep.api.service.command.folder.*;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.http.HttpContextHolder;
+import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 
@@ -37,7 +37,7 @@ public class FolderAPI extends APIService {
     public void childs(@RequestParam(required = false) String path, final OutputStream output) {
         try {
             final HystrixCommand<InputStream> foldersList = getCommand(FoldersList.class, getClient(), path);
-            HttpContextHolder.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             IOUtils.copyLarge(foldersList.execute(), output);
             output.flush();
         } catch (Exception e) {
@@ -51,7 +51,7 @@ public class FolderAPI extends APIService {
     public void allFolder(final OutputStream output) {
         try {
             final HystrixCommand<InputStream> foldersList = getCommand(AllFoldersList.class, getClient());
-            HttpContextHolder.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             IOUtils.copyLarge(foldersList.execute(), output);
             output.flush();
         } catch (Exception e) {
@@ -66,7 +66,7 @@ public class FolderAPI extends APIService {
             final OutputStream output) {
         try {
             final HystrixCommand<InputStream> createChildFolder = getCommand(CreateChildFolder.class, getClient(), path);
-            HttpContextHolder.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             IOUtils.copyLarge(createChildFolder.execute(), output);
             output.flush();
         } catch (Exception e) {
@@ -130,7 +130,7 @@ public class FolderAPI extends APIService {
     public void addFolderEntry(@RequestBody FolderEntry folderEntry, final OutputStream output) {
         try {
             final HystrixCommand<InputStream> createFolderEntry = getCommand(CreateFolderEntry.class, getClient(), folderEntry);
-            HttpContextHolder.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             IOUtils.copyLarge(createFolderEntry.execute(), output);
             output.flush();
         } catch (Exception e) {
@@ -176,7 +176,7 @@ public class FolderAPI extends APIService {
         try {
             final HystrixCommand<InputStream> listFolderEntries = getCommand(FolderEntriesList.class, getClient(), path,
                     contentType);
-            HttpContextHolder.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
 
             IOUtils.copyLarge(listFolderEntries.execute(), output);
             output.flush();
@@ -204,7 +204,7 @@ public class FolderAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Listing datasets (pool: {})...", getConnectionManager().getTotalStats());
         }
-        HttpContextHolder.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+        HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
         HystrixCommand<FolderContent> listCommand = getCommand( FolderDataSetList.class, client, sort, order, folder);
         try {

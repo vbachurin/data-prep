@@ -16,7 +16,7 @@ import org.talend.dataprep.api.service.command.transformation.SuggestDataSetActi
 import org.talend.dataprep.api.service.command.transformation.SuggestLookupActions;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.http.HttpContextHolder;
+import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -115,7 +115,7 @@ public class DataSetAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
         }
-        HttpContextHolder.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+        HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
 
         Long sampleValue;
@@ -173,7 +173,7 @@ public class DataSetAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
         }
-        HttpContextHolder.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+        HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
         HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetPreview.class, client, id, metadata, columns, sheetName);
         try (InputStream content = retrievalCommand.execute()) {
@@ -195,7 +195,7 @@ public class DataSetAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Listing datasets (pool: {})...", getConnectionManager().getTotalStats());
         }
-        HttpContextHolder.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+        HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
         HystrixCommand<InputStream> listCommand = getCommand(DataSetList.class, client, sort, order);
         try (InputStream content = listCommand.execute()) {

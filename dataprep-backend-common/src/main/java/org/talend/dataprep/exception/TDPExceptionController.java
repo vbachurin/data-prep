@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.talend.dataprep.http.HttpContextHolder;
+import org.talend.dataprep.http.HttpResponseContext;
 
 /**
  * Controller advice applied to all controller so that they can handle TDPExceptions.
@@ -32,8 +32,8 @@ public class TDPExceptionController {
 
         LOGGER.error("An error occurred", e);
 
-        HttpContextHolder.status(HttpStatus.valueOf(e.getCode().getHttpStatus()));
-        HttpContextHolder.header("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+        HttpResponseContext.status(HttpStatus.valueOf(e.getCode().getHttpStatus()));
+        HttpResponseContext.header("Content-Type", MediaType.APPLICATION_JSON_VALUE);
         final StringWriter message = new StringWriter();
         e.writeTo(message);
         return message.toString();

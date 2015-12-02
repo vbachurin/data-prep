@@ -1,6 +1,9 @@
 package org.talend.dataprep.http;
 
-import org.springframework.http.HttpStatus;
+import java.util.Collections;
+import java.util.Enumeration;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -9,20 +12,21 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * A helper class around {@link RequestContextHolder}: allow simple modifications on HTTP context without worrying
  * whether code is called in a web context or not.
  */
-public class HttpContextHolder {
+public class HttpRequestContext {
 
-    public static void status(HttpStatus status) {
+    public static Enumeration<String> parameters() {
         final RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
         if (attributes != null && attributes instanceof ServletRequestAttributes) {
-            ((ServletRequestAttributes) attributes).getResponse().setStatus(status.value());
+            return ((ServletRequestAttributes) attributes).getRequest().getParameterNames();
         }
+        return Collections.emptyEnumeration();
     }
 
-    public static void header(String header, String value) {
+    public static String parameter(String parameterName) {
         final RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
         if (attributes != null && attributes instanceof ServletRequestAttributes) {
-            ((ServletRequestAttributes) attributes).getResponse().setHeader(header, value);
+            return ((ServletRequestAttributes) attributes).getRequest().getParameter(parameterName);
         }
+        return StringUtils.EMPTY;
     }
-
 }

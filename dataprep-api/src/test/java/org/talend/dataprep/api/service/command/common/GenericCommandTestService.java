@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.http.HttpContextHolder;
+import org.talend.dataprep.http.HttpResponseContext;
 
 @RestController
 public class GenericCommandTestService {
@@ -21,7 +21,7 @@ public class GenericCommandTestService {
 
     @RequestMapping(value = "/command/test/success_with_unknown", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public String success_with_unknown() throws IOException {
-        HttpContextHolder.status(HttpStatus.ACCEPTED);
+        HttpResponseContext.status(HttpStatus.ACCEPTED);
         return "success";
     }
 
@@ -37,7 +37,7 @@ public class GenericCommandTestService {
 
     @RequestMapping(value = "/command/test/fail_with_unknown", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public void fail_with_unknown() throws IOException {
-        HttpContextHolder.status(HttpStatus.I_AM_A_TEAPOT);
+        HttpResponseContext.status(HttpStatus.I_AM_A_TEAPOT);
     }
 
 }

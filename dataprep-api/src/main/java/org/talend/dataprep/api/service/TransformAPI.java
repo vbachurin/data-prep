@@ -24,7 +24,7 @@ import org.talend.dataprep.api.service.command.transformation.*;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.http.HttpContextHolder;
+import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -46,7 +46,7 @@ public class TransformAPI extends APIService {
         LOG.debug("Transforming dataset id #{} (pool: {})...", dataSetId, getConnectionManager().getTotalStats());
         try {
             // Configure transformation flow
-            HttpContextHolder.header( "Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            HttpResponseContext.header( "Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             HttpClient client = getClient();
 
             InputStream contentRetrieval = getCommand(DataSetGet.class, client, dataSetId, false, true, null).execute();
@@ -88,7 +88,7 @@ public class TransformAPI extends APIService {
         // Returns actions
         try {
             // olamy: this is weird to have to configure that manually whereas there is an annotation for the method!!
-            HttpContextHolder.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             IOUtils.copyLarge(getSuggestedActions.execute(), output);
             output.flush();
         } catch (IOException e) {
@@ -117,7 +117,7 @@ public class TransformAPI extends APIService {
         // Returns actions
         try {
             // olamy: this is weird to have to configure that manually whereas there is an annotation for the method!!
-            HttpContextHolder.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             IOUtils.copyLarge(getSuggestedActions.execute(), output);
             output.flush();
         } catch (IOException e) {
@@ -171,7 +171,7 @@ public class TransformAPI extends APIService {
                     inputData, action, dynamicParamsInput.getColumnId());
 
 
-            HttpContextHolder.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             // trigger calls and return last execute content
             IOUtils.copyLarge(getActionDynamicParams.execute(), output);
             output.flush();

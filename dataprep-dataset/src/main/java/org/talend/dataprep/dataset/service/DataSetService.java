@@ -7,15 +7,7 @@ import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Spliterator;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -32,33 +24,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.talend.daikon.exception.ExceptionContext;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
-import org.talend.dataprep.api.dataset.DataSetLocation;
-import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.user.UserData;
-import org.talend.dataprep.dataset.service.analysis.AsynchronousDataSetAnalyzer;
-import org.talend.dataprep.dataset.service.analysis.ContentAnalysis;
-import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
-import org.talend.dataprep.dataset.service.analysis.FormatAnalysis;
-import org.talend.dataprep.dataset.service.analysis.QualityAnalysis;
-import org.talend.dataprep.dataset.service.analysis.SchemaAnalysis;
-import org.talend.dataprep.dataset.service.analysis.StatisticsAnalysis;
-import org.talend.dataprep.dataset.service.analysis.SynchronousDataSetAnalyzer;
+import org.talend.dataprep.dataset.service.analysis.*;
 import org.talend.dataprep.dataset.service.api.UpdateColumnParameters;
 import org.talend.dataprep.dataset.service.locator.DataSetLocatorService;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
@@ -67,8 +40,8 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
-import org.talend.dataprep.http.HttpContextHolder;
 import org.talend.dataprep.folder.store.FolderRepository;
+import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.log.Markers;
 import org.talend.dataprep.metrics.Timed;
@@ -274,7 +247,7 @@ public class DataSetService {
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
             @RequestHeader("Content-Type") String contentType, @ApiParam(value = "content") InputStream content,
             @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "/", required = false) String folderPath) throws IOException {
-        HttpContextHolder.header("Content-Type", MediaType.TEXT_PLAIN_VALUE);
+        HttpResponseContext.header("Content-Type", MediaType.TEXT_PLAIN_VALUE);
         final String id = UUID.randomUUID().toString();
         final Marker marker = Markers.dataset(id);
         LOG.debug(marker, "Creating...");
@@ -337,13 +310,13 @@ public class DataSetService {
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns, //
             @RequestParam(required = false) @ApiParam(name = "sample", value = "Size of the wanted sample, if missing, the full dataset is returned") Long sample, //
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId) {
-        HttpContextHolder.header("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+        HttpResponseContext.header("Content-Type", MediaType.APPLICATION_JSON_VALUE);
         final Marker marker = Markers.dataset(dataSetId);
         LOG.debug(marker, "Get data set #{}", dataSetId);
         try {
             DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
             if (dataSetMetadata == null) {
-                HttpContextHolder.status(HttpStatus.NO_CONTENT);
+                HttpResponseContext.status(HttpStatus.NO_CONTENT);
                 return DataSet.empty(); // No data set, returns empty content.
             }
             if (dataSetMetadata.getLifecycle().importing()) {
@@ -397,7 +370,7 @@ public class DataSetService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015'.  if none the current name concat with ' Copy' will be used. Returns the id of the newly created data set.") @RequestParam(defaultValue = "", required = false) String name)
                     throws IOException {
-        HttpContextHolder.header("Content-Type", MediaType.TEXT_PLAIN_VALUE);
+        HttpResponseContext.header("Content-Type", MediaType.TEXT_PLAIN_VALUE);
         DataSet dataSet = get(true, true, null, dataSetId);
 
         // if no metadata it's an empty one the get method has already set NO CONTENT http return code
@@ -557,16 +530,16 @@ public class DataSetService {
     public DataSet getMetadata(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set metadata") String dataSetId) {
         if (dataSetId == null) {
-            HttpContextHolder.status(HttpStatus.NO_CONTENT);
+            HttpResponseContext.status(HttpStatus.NO_CONTENT);
             return null;
         }
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         if (metadata == null) {
-            HttpContextHolder.status(HttpStatus.NO_CONTENT);
+            HttpResponseContext.status(HttpStatus.NO_CONTENT);
             return null;
         }
         if (!metadata.getLifecycle().schemaAnalyzed()) {
-            HttpContextHolder.status(HttpStatus.ACCEPTED);
+            HttpResponseContext.status(HttpStatus.ACCEPTED);
             return DataSet.empty();
         }
         DataSet dataSet = new DataSet();
@@ -615,13 +588,13 @@ public class DataSetService {
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
 
         if (dataSetMetadata == null) {
-            HttpContextHolder.status(HttpStatus.NO_CONTENT);
+            HttpResponseContext.status(HttpStatus.NO_CONTENT);
             return DataSet.empty(); // No data set, returns empty content.
         }
         if (!dataSetMetadata.isDraft()) {
             // Moved to get data set content operation
-            HttpContextHolder.status(HttpStatus.MOVED_PERMANENTLY);
-            HttpContextHolder.header("Location", "/datasets/" + dataSetId + "/content");
+            HttpResponseContext.status(HttpStatus.MOVED_PERMANENTLY);
+            HttpResponseContext.header("Location", "/datasets/" + dataSetId + "/content");
             return DataSet.empty(); // dataset not anymore a draft so preview doesn't make sense.
         }
         if (StringUtils.isNotEmpty(sheetName)) {
@@ -642,7 +615,7 @@ public class DataSetService {
                     .getSheetContents().stream().filter(sheetContent -> theSheetName.equals(sheetContent.getName())).findFirst();
 
             if (!sheetContentFound.isPresent()) {
-                HttpContextHolder.status(HttpStatus.NO_CONTENT);
+                HttpResponseContext.status(HttpStatus.NO_CONTENT);
                 return DataSet.empty(); // No sheet found, returns empty content.
             }
 

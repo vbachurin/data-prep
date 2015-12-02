@@ -9,8 +9,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
@@ -25,6 +23,8 @@ import org.talend.dataprep.api.service.command.export.Export;
 import org.talend.dataprep.api.service.command.export.ExportTypes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
+import org.talend.dataprep.http.HttpRequestContext;
+import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -39,31 +39,28 @@ public class ExportAPI extends APIService {
     @RequestMapping(value = "/api/export", method = GET)
     @ApiOperation(value = "Export a dataset", consumes = APPLICATION_FORM_URLENCODED_VALUE, notes = "Export a dataset or a preparation to file. The file type is provided in the request body.")
     public void export(@ApiParam(value = "Export configuration") @Valid final ExportParameters input, //
-                       final OutputStream output, //
-                       final HttpServletRequest request) {
+                       final OutputStream output) {
         try {
             Map<String, String> arguments = new HashMap<>();
-            final Enumeration<String> names = request.getParameterNames();
+            final Enumeration<String> names = HttpRequestContext.parameters();
             while (names.hasMoreElements()) {
                 final String paramName = names.nextElement();
                 if (StringUtils.contains(paramName, "exportParameters.")) {
-                    final String paramValue = request.getParameter(paramName);
+                    final String paramValue = HttpRequestContext.parameter(paramName);
                     arguments.put(paramName, StringUtils.isNotEmpty(paramValue)? paramValue : StringUtils.EMPTY);
-
                 }
             }
             input.setArguments(arguments);
-            final GenericCommand<InputStream> command = getCommand(Export.class, getClient(), input, output);
-            final ServletOutputStream outputStream = response.getOutputStream();
+            final GenericCommand<InputStream> command = getCommand(Export.class, getClient(), input);
             final InputStream commandInputStream = command.execute();
 
             // copy all headers from the command response so that the mime-type is correctly forwarded for instance
             final Header[] commandResponseHeaders = command.getCommandResponseHeaders();
             for (Header header : commandResponseHeaders) {
-                response.setHeader(header.getName(), header.getValue());
+                HttpResponseContext.header(header.getName(), header.getValue());
             }
-            IOUtils.copyLarge(commandInputStream, outputStream);
-            outputStream.flush();
+            IOUtils.copyLarge(commandInputStream, output);
+            output.flush();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_EXPORT_CONTENT, e);
         }

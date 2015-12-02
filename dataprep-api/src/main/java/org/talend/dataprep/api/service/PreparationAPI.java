@@ -22,7 +22,7 @@ import org.talend.dataprep.api.service.command.preparation.*;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.http.HttpContextHolder;
+import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -47,7 +47,7 @@ public class PreparationAPI extends APIService {
         HttpClient client = getClient();
         HystrixCommand<InputStream> command = getCommand(PreparationList.class, client, listFormat);
         try {
-            HttpContextHolder.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             IOUtils.copyLarge(command.execute(), output);
             output.flush();
             if (LOG.isDebugEnabled()) {
@@ -141,7 +141,7 @@ public class PreparationAPI extends APIService {
         try {
             // You cannot use Preparation object mapper here: to serialize steps & actions, you'd need a version
             // repository not available at API level. Code below copies command result direct to response.
-            HttpContextHolder.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             IOUtils.copyLarge(command.execute(), output);
             output.flush();
             if (LOG.isDebugEnabled()) {

@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.talend.dataprep.http.HttpContextHolder;
+import org.talend.dataprep.http.HttpResponseContext;
 
 @RestController
 public class ErrorService {
@@ -33,7 +33,7 @@ public class ErrorService {
         body.put("status", status);
         body.put("reason", message);
 
-        HttpContextHolder.status(HttpStatus.valueOf(status));
+        HttpResponseContext.status(HttpStatus.valueOf(status));
 
         return body;
     }
