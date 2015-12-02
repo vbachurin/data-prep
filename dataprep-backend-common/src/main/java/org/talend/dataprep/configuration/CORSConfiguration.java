@@ -20,7 +20,7 @@ public class CORSConfiguration {
                         .allowedOrigins("*") //
                         .allowedMethods("POST", "GET", "OPTIONS", "DELETE", "PUT") //
                         .maxAge(3600) //
-                        .allowedHeaders("x-requested-with", "Content-Type")
+                        .allowedHeaders("x-requested-with", "Content-Type", "accept")
                         .allowCredentials(true);
             }
         };
