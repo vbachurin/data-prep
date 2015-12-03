@@ -133,38 +133,6 @@
         };
     }
 
-    /**
-     * @ngdoc property
-     * @name transformationsForEmptyCells
-     * @propertyOf data-prep.quality-bar.controller:QualityBarCtrl
-     * @description The transformations applied to empty cells.
-     * This is bound to {@link data-prep.services.transformation.service:ColumnSuggestionService ColumnSuggestionService}.transformationsForEmptyCells
-     */
-    Object.defineProperty(LookupQualityBarCtrl.prototype,
-        'transformationsForEmptyCells', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.columnSuggestionService.transformationsForEmptyCells;
-            }
-        });
-
-    /**
-     * @ngdoc property
-     * @name transformationsForInvalidCells
-     * @propertyOf data-prep.quality-bar.controller:QualityBarCtrl
-     * @description The transformations column applied to invalid cells.
-     * This is bound to {@link data-prep.services.transformation.service:ColumnSuggestionService ColumnSuggestionService}.transformationsForInvalidCells
-     */
-    Object.defineProperty(LookupQualityBarCtrl.prototype,
-        'transformationsForInvalidCells', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.columnSuggestionService.transformationsForInvalidCells;
-            }
-        });
-
     angular.module('data-prep.lookup-quality-bar')
         .controller('LookupQualityBarCtrl', LookupQualityBarCtrl);
 

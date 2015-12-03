@@ -1,7 +1,4 @@
 .suggestions-part {
-  $border-color: $shadow-gray;
-  $menu-color: tint($black, 20%);
-  $menu-background: $super-light-gray;
 
   .actions-suggestions{
     @include flex-column();
@@ -48,13 +45,6 @@
         position: absolute;
         width: 100%;
       }
-
-      .action-category {
-        background-color: #F1F1F1;
-        color: $black;
-        font-weight: 300;
-        padding-left: 5px;
-      }
     }
 
     .filters-actions-form{
@@ -80,39 +70,5 @@
         margin-right: 0em;
       }
     }
-  }
-
-  .menu {
-    color: $menu-color;
-
-    .accordion {
-      border-bottom: 1px solid $border-color;
-      font-size: .95em;
-      font-weight: 400;
-      padding: 7px 2px 7px 0;
-
-      &:hover{
-        background-color: $menu-background;
-      }
-
-      a.trigger {
-        cursor: pointer;
-        color: inherit;
-        padding-left: 10px;
-        text-decoration: none;
-        width:100%;
-      }
-
-      &.open {
-        background-color: $menu-background;
-        #trigger::before {
-          content: "\25BE";
-        }
-      }
-    }
-  }
-
-  .highlighted{
-    background-color: yellow;
   }
 }

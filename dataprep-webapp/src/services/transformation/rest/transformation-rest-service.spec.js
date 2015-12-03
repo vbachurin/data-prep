@@ -10,13 +10,6 @@ describe('Transformation Rest Service', function () {
     }));
 
     describe('transformations/suggestions', function() {
-        var column = {
-            'id': 'firstname',
-            'quality': {'empty': 0, 'invalid': 0, 'valid': 2},
-            'type': 'string',
-            'total': 2
-        };
-
         var result = [
             {
                 'category': 'case',
@@ -36,41 +29,70 @@ describe('Transformation Rest Service', function () {
             }
         ];
 
-        it('should call POST transform rest service to get all transformations', inject(function ($rootScope, TransformationRestService, RestURLs) {
-            //given
-            var response = null;
-            $httpBackend
-                .expectPOST(RestURLs.transformUrl + '/actions/column', column)
-                .respond(200, result);
+        describe('column', function() {
+            var column = {
+                'id': 'firstname',
+                'quality': {'empty': 0, 'invalid': 0, 'valid': 2},
+                'type': 'string',
+                'total': 2
+            };
 
-            //when
-            TransformationRestService.getTransformations(column)
-                .then(function (resp) {
-                    response = resp.data;
-                });
-            $httpBackend.flush();
+            it('should call POST transform rest service to get transformations', inject(function ($rootScope, TransformationRestService, RestURLs) {
+                //given
+                var response = null;
+                $httpBackend
+                    .expectPOST(RestURLs.transformUrl + '/actions/column', column)
+                    .respond(200, result);
 
-            //then
-            expect(response).toEqual(result);
-        }));
+                //when
+                TransformationRestService.getColumnTransformations(column)
+                    .then(function (resp) {
+                        response = resp.data;
+                    });
+                $httpBackend.flush();
 
-        it('should call POST transform rest service to get column suggestions', inject(function ($rootScope, TransformationRestService, RestURLs) {
-            //given
-            var response = null;
-            $httpBackend
-                .expectPOST(RestURLs.transformUrl + '/suggest/column', column)
-                .respond(200, result);
+                //then
+                expect(response).toEqual(result);
+            }));
 
-            //when
-            TransformationRestService.getSuggestions(column)
-                .then(function (resp) {
-                    response = resp.data;
-                });
-            $httpBackend.flush();
+            it('should call POST transform rest service to get suggestions', inject(function ($rootScope, TransformationRestService, RestURLs) {
+                //given
+                var response = null;
+                $httpBackend
+                    .expectPOST(RestURLs.transformUrl + '/suggest/column', column)
+                    .respond(200, result);
 
-            //then
-            expect(response).toEqual(result);
-        }));
+                //when
+                TransformationRestService.getColumnSuggestions(column)
+                    .then(function (resp) {
+                        response = resp.data;
+                    });
+                $httpBackend.flush();
+
+                //then
+                expect(response).toEqual(result);
+            }));
+        });
+
+        describe('line', function() {
+            it('should call GET transform rest service to get transformations', inject(function ($rootScope, TransformationRestService, RestURLs) {
+                //given
+                var response = null;
+                $httpBackend
+                    .expectGET(RestURLs.transformUrl + '/actions/line')
+                    .respond(200, result);
+
+                //when
+                TransformationRestService.getLineTransformations()
+                    .then(function (resp) {
+                        response = resp.data;
+                    });
+                $httpBackend.flush();
+
+                //then
+                expect(response).toEqual(result);
+            }));
+        });
     });
 
     describe('dynamic parameters', function() {

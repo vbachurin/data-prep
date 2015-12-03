@@ -45,11 +45,9 @@
         padding: 0 0 0 5px;
       }
 
-      .recipe-description {
-        &.recipe-column-name {
-          font-weight: bold;
-          text-transform: uppercase;
-        }
+      .recipe-column-name {
+        font-weight: bold;
+        text-transform: uppercase;
       }
     }
 

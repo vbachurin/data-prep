@@ -339,7 +339,7 @@ class LineTransformation extends ActionMetadata implements RowAction {
     }
 
     @Override
-    public void applyOnRow(DataSetRow row, TransformationContext context, Map<String, String> parameters, Long rowId) {
+    public void applyOnLine(DataSetRow row, TransformationContext context, Map<String, String> parameters, Long rowId) {
         for (final Map.Entry<String, Object> entry : row.values().entrySet()) {
             row.set(entry.getKey(), entry.getValue().toString().toUpperCase());
         }

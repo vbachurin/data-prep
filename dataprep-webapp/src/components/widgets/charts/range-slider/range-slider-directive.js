@@ -40,7 +40,7 @@
                 ctrl.showRangeInputs = true;
 
                 //the left and right margins MUST be the same as the vertical Barchart ones
-                var margin = {top: 5, right: 20, bottom: 0, left: 15};
+                var margin = {top: 5, right: 20, bottom: 5, left: 15};
                 var width = attrs.width - margin.left - margin.right;
                 var height = attrs.height - margin.top - margin.bottom;
 

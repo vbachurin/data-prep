@@ -1,6 +1,6 @@
 <div class="breadcrumb">
   <ul>
-    <li ng-repeat="folder in folderCtrl.state.folder.foldersStack">
+    <li ng-repeat="folder in folderCtrl.state.folder.foldersStack track by $index" id="folder_{{$index}}">
       <talend-dropdown>
         <div class="dropdown-container">
           <a ng-click="folderCtrl.goToFolder(folder)">{{::folder.name}}</a>
@@ -8,7 +8,7 @@
             <a class="dropdown-button" ng-click="folderCtrl.initMenuChilds(folder)"></a>
           </span>
           <ul class="dropdown-menu">
-            <li ng-if="folderCtrl.loadingChilds" translate-once="LOADING"></li>
+            <li ng-if="folderCtrl.loadingChilds" translate-once="LOADING">y</li>
             <li ng-repeat="child in folderCtrl.state.folder.menuChilds" ng-click="folderCtrl.goToFolder(child)">
               {{child.name}}
             </li>
@@ -17,5 +17,4 @@
       </talend-dropdown>
     </li>
   </ul>
-
 </div>

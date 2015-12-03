@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
@@ -35,6 +34,7 @@ import org.talend.dataprep.preparation.Application;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
@@ -69,10 +69,9 @@ public class PreparationServiceTest {
 
     @Test
     public void CORSHeaders() throws Exception {
-        when().get("/preparations").then().header("Access-Control-Allow-Origin", "*")
-                .header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT")
-                .header("Access-Control-Max-Age", "3600")
-                .header( "Access-Control-Allow-Headers", "x-requested-with, Content-Type" );
+        given().header("Origin", "fake.host.to.trigger.cors")
+                .when()
+                .get("/preparations").then().header("Access-Control-Allow-Origin", "fake.host.to.trigger.cors");
     }
 
     //------------------------------------------------------------------------------------------------------------------

@@ -1,9 +1,16 @@
 describe('Stats-details controller', function () {
     'use strict';
 
-    var createController, scope;
+    var createController, scope, stateMock;
 
-    beforeEach(module('data-prep.stats-details'));
+    beforeEach(module('data-prep.stats-details', function($provide) {
+        stateMock = {
+            playground: {
+                grid: {}
+            }
+        };
+        $provide.constant('state', stateMock);
+    }));
 
     beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();
@@ -43,7 +50,7 @@ describe('Stats-details controller', function () {
         expect(ctrl.boxPlot).toBe(data);
     }));
 
-    it('should bind patternFrequencyTable getter to SuggestionService.currentColumn.patternFrequencyTable', inject(function (SuggestionService) {
+    it('should bind patternFrequencyTable getter to state selected column patternFrequencyTable', function () {
         //given
         var ctrl = createController();
         expect(ctrl.patternFrequencyTable).toBeFalsy();
@@ -51,10 +58,10 @@ describe('Stats-details controller', function () {
         var patternFrequencyTable = {};
 
         //when
-        SuggestionService.currentColumn = {statistics: {patternFrequencyTable: patternFrequencyTable}};
+        stateMock.playground.grid.selectedColumn = {statistics: {patternFrequencyTable: patternFrequencyTable}};
 
         //then
         expect(ctrl.patternFrequencyTable).toBe(patternFrequencyTable);
-    }));
+    });
 
 });

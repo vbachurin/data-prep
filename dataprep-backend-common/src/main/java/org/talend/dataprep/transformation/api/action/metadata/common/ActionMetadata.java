@@ -69,6 +69,21 @@ public abstract class ActionMetadata {
     }
 
     /**
+     * <p>
+     * Adapts the current action metadata to the scope. This method may return <code>this</code> if no action specific
+     * change should be done. It may return a different instance with information from scope (like a different label).
+     * </p>
+     *
+     * @param scope A {@link ScopeCategory scope}.
+     * @return <code>this</code> if no change is required.
+     * OR a new action metadata with information extracted from
+     * <code>scope</code>.
+     */
+    public ActionMetadata adapt(final ScopeCategory scope) {
+        return this;
+    }
+
+    /**
      * @return A unique name used to identify action.
      */
     public abstract String getName();
@@ -175,16 +190,16 @@ public abstract class ActionMetadata {
      */
     public final boolean acceptScope(final ScopeCategory scope) {
         switch (scope) {
-        case CELL:
-            return this instanceof CellAction;
-        case LINE:
-            return this instanceof RowAction;
-        case COLUMN:
-            return this instanceof ColumnAction;
-        case DATASET:
-            return this instanceof DataSetAction;
-        default:
-            return false;
+            case CELL:
+                return this instanceof CellAction;
+            case LINE:
+                return this instanceof RowAction;
+            case COLUMN:
+                return this instanceof ColumnAction;
+            case DATASET:
+                return this instanceof DataSetAction;
+            default:
+                return false;
         }
     }
 
@@ -220,7 +235,7 @@ public abstract class ActionMetadata {
                 break;
             case LINE:
                 if (rowId != null && rowId.equals(row.getTdpId())) {
-                    ((RowAction) this).applyOnRow(row, context, parameters, rowId);
+                    ((RowAction) this).applyOnLine(row, context, parameters, rowId);
                 }
                 break;
             case DATASET:
@@ -250,5 +265,4 @@ public abstract class ActionMetadata {
     public List<Parameter> getParameters() {
         return ImplicitParameters.getParameters();
     }
-
 }

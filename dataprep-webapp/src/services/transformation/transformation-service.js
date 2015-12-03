@@ -11,10 +11,12 @@
     function TransformationService(TransformationRestService, ConverterService) {
         var choiceType = 'CHOICE';
         var clusterType = 'CLUSTER';
+        var COLUMN_CATEGORY = 'column_metadata';
 
         return {
-            getTransformations: getTransformations,
-            getSuggestions: getSuggestions,
+            getLineTransformations: getLineTransformations,
+            getColumnTransformations: getColumnTransformations,
+            getColumnSuggestions: getColumnSuggestions,
             resetParamValue: resetParamValue,
             initParamsValues: initParamsValues,
             initDynamicParameters: initDynamicParameters
@@ -33,7 +35,7 @@
         }
 
         //--------------------------------------------------------------------------------------------------------------
-        //------------------------------------------Transformation suggestions------------------------------------------
+        //---------------------------------------Transformations suggestions Utils--------------------------------------
         //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
@@ -53,12 +55,12 @@
          * @ngdoc method
          * @name insertType
          * @methodOf data-prep.services.transformation.service:TransformationService
-         * @param {object[]} menu - the menu item with parameters to adapt
+         * @param {object[]} transformation The transformation with parameters to adapt
          * @description Insert adapted html input type in each parameter in the menu
          */
-        function insertType(menu) {
-            if(menu.parameters) {
-                _.forEach(menu.parameters, function(param) {
+        function insertType(transformation) {
+            if(transformation.parameters) {
+                _.forEach(transformation.parameters, function(param) {
                     param.inputType = ConverterService.toInputType(param.type);
 
                     // also take care of select parameters...
@@ -77,46 +79,132 @@
 
         /**
          * @ngdoc method
-         * @name adaptInputTypes
+         * @name insertInputTypes
          * @methodOf data-prep.services.transformation.service:TransformationService
-         * @param {object[]} menus - the menus with parameters to adapt
-         * @description Adapt each parameter type to HTML input type
+         * @param {Array} transformations The transformations with parameters to adapt
+         * @description Insert parameter type to HTML input type in each transformations
          */
-        function adaptInputTypes(menus) {
-            _.forEach(menus, function(menu) {
-                insertType(menu);
-            });
-
-            return menus;
+        function insertInputTypes(transformations) {
+            _.forEach(transformations, insertType);
         }
 
         /**
          * @ngdoc method
-         * @name getTransformations
+         * @name setHtmlDisplayLabels
          * @methodOf data-prep.services.transformation.service:TransformationService
-         * @param {object} column The transformations target column
-         * @description Get transformations from REST call, clean and adapt them
+         * @description Inject the UI label in each transformations
+         * @param {Array} transformations The list of transformations
          */
-        function getTransformations(column) {
-            return TransformationRestService.getTransformations(column)
+        function setHtmlDisplayLabels(transformations) {
+            _.forEach(transformations, function (transfo) {
+                transfo.labelHtml = transfo.label + (transfo.parameters || transfo.dynamic ? '...' : '');
+            });
+        }
+
+        function isNotColumnCategory(category) {
+            return function (item) {
+                return item.category !== category;
+            };
+        }
+
+        function labelCriteria(transfo) {
+            return transfo.label.toLowerCase();
+        }
+
+        /**
+         * @ngdoc method
+         * @name prepareTransformations
+         * @methodOf data-prep.services.transformation.service:TransformationService
+         * @description Sort and group transformations by category
+         * @return {Object} An object {category, categoryHtml, transformations} .
+         * "category" the category
+         * "categoryHtml" the adapted category for UI
+         * "transformations" the array of transformations for this category
+         */
+        function prepareTransformations(transformations) {
+            var groupedTransformations = _.chain(transformations)
+                .filter(isNotColumnCategory(COLUMN_CATEGORY))
+                .sortBy(labelCriteria)
+                .groupBy('category')
+                .value();
+
+            return _.chain(Object.getOwnPropertyNames(groupedTransformations))
+                .sort()
+                .map(function (key) {
+                    return {
+                        category: key,
+                        categoryHtml: key.toUpperCase(),
+                        transformations: groupedTransformations[key]
+                    };
+                })
+                .value();
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        //------------------------------------------Transformations suggestions-----------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name getLineTransformations
+         * @methodOf data-prep.services.transformation.service:TransformationService
+         * @description Get transformations from REST call, clean and adapt them
+         * @return {Object} An object {allTransformations, allCategories} .
+         * "allTransformations" is the array of all transformations (cleaned and adapted for UI)
+         * "allCategories" is the array of all transformations grouped by category
+         */
+        function getLineTransformations() {
+            return TransformationRestService.getLineTransformations()
                 .then(function(response) {
-                    var menus = cleanParams(response.data);
-                    return adaptInputTypes(menus);
+                    var allTransformations = cleanParams(response.data);
+                    insertInputTypes(allTransformations);
+                    setHtmlDisplayLabels(allTransformations);
+                    var allCategories = prepareTransformations(allTransformations);
+                    return {
+                        allTransformations : allTransformations,
+                        allCategories : allCategories
+                    };
                 });
         }
 
         /**
          * @ngdoc method
-         * @name getSuggestions
+         * @name getColumnTransformations
+         * @methodOf data-prep.services.transformation.service:TransformationService
+         * @param {object} column The transformations target column
+         * @description Get transformations from REST call, clean and adapt them
+         * @return {Object} An object {allTransformations, allCategories} .
+         * "allTransformations" is the array of all transformations (cleaned and adapted for UI)
+         * "allCategories" is the array of all transformations grouped by category
+         */
+        function getColumnTransformations(column) {
+            return TransformationRestService.getColumnTransformations(column)
+                .then(function(response) {
+                    var allTransformations = cleanParams(response.data);
+                    insertInputTypes(allTransformations);
+                    setHtmlDisplayLabels(allTransformations);
+                    var allCategories = prepareTransformations(allTransformations);
+                    return {
+                        allTransformations : allTransformations,
+                        allCategories : allCategories
+                    };
+                });
+        }
+
+        /**
+         * @ngdoc method
+         * @name getColumnSuggestions
          * @methodOf data-prep.services.transformation.service:TransformationService
          * @param {object} column The transformations target column
          * @description Get suggestions from REST call, clean and adapt them
+         * @returns {Array} All the suggestions, cleaned and adapted for UI
          */
-        function getSuggestions(column) {
-            return TransformationRestService.getSuggestions(column)
+        function getColumnSuggestions(column) {
+            return TransformationRestService.getColumnSuggestions(column)
                 .then(function(response) {
-                    var menus = cleanParams(response.data);
-                    return adaptInputTypes(menus);
+                    var allTransformations = cleanParams(response.data);
+                    insertInputTypes(allTransformations);
+                    setHtmlDisplayLabels(allTransformations);
+                    return allTransformations;
                 });
         }
 

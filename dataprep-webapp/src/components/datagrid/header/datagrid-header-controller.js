@@ -55,9 +55,9 @@
                 vm.transformationsRetrieveError = false;
                 vm.initTransformationsInProgress = true;
 
-                TransformationCacheService.getTransformations(vm.column, true)
-                    .then(function(menus) {
-                        vm.transformations = _.filter(menus, function(menu) {
+                TransformationCacheService.getColumnTransformations(vm.column, true)
+                    .then(function(columnTransformations) {
+                        vm.transformations = _.filter(columnTransformations.allTransformations, function(menu) {
                             return (menu.actionScope.indexOf(ACTION_SCOPE) !== -1);
                         });
                     })

@@ -57,8 +57,9 @@
   "PREPARATION_CLONING_SUCCESS": "The preparation has been cloned.",
 
   "_comment": "Datagrid transformations",
-  "RECIPE_ITEM_ON_COL": "on column",
+  "RECIPE_ITEM_ON_COL": "on column <b>{{columnName}}</b>",
   "RECIPE_ITEM_ON_CELL": "on cell",
+  "RECIPE_ITEM_ON_LINE": "<b>#{{rowId}}</b>",
   "NO_TRANSFORMATION": "No transformation available.",
 
   "_comment": "Datagrid",
@@ -156,9 +157,8 @@
   "DATASET_NAME_ALREADY_USED" : "This Dataset name is already used by an other dataset",
 
   "_comment": "Transformation",
-  "NO_CLUSTERS_ACTION_MSG":"No clusters were found.",
-  "NO_CHOICES_ACTION_MSG":"No choices were found.",
-  "NO_PARAMS_ACTION_MSG":"No simple parameters were found.",
+  "NO_CLUSTERS_ACTION_MSG":"No clusters found.",
+  "NO_PARAMETERS_ACTION_MSG":"No parameters found.",
   "COLUMN_TYPE_IS": "This column is a",
   "COLUMN_TYPE_SET": "Set as",
   "DATE_FORMAT_ERROR": "This must be a date in the 'DD/MM/YYYY hh:mm:ss' format.",
@@ -178,6 +178,7 @@
   "CREATE_EMAIL": "Create Email Addresses",
   "CORRECT_POSTAL_ADDRESS": "Correct Postal Addresses",
   "SELECT_COLUMN_TO_DISPLAY_ACTIONS": "Select a column to display its actions",
+  "SELECT_LINE_TO_DISPLAY_ACTIONS": "Select a line to display its actions",
   "APPLY_CHANGE_TO": "Apply changes to:",
   "ALL_LINES": "All Lines",
   "FILTERED_LINED": "Filtered Lines",

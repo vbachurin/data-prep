@@ -7,6 +7,7 @@ describe('Early Preview Service', function () {
     var dataset = {id: '123456'};
     var preparation = {id: '456789'};
     var column = {id: '0001', name: 'firstname'};
+    var line = {tdpId: 125};
     var transfoScope;
     var transformation;
     var params;
@@ -22,6 +23,7 @@ describe('Early Preview Service', function () {
 
     beforeEach(inject(function (PlaygroundService, PreviewService, RecipeService, EarlyPreviewService) {
         stateMock.playground.grid.selectedColumn = column;
+        stateMock.playground.grid.selectedLine = line;
 
         transfoScope = 'column';
         transformation = {
@@ -48,14 +50,14 @@ describe('Early Preview Service', function () {
 
         //then
         expect(RecipeService.earlyPreview).toHaveBeenCalledWith(
-            column,
             transformation,
             {
                 value: 'James',
                 replace: 'Jimmy',
                 scope: transfoScope,
                 column_id: column.id,
-                column_name: column.name
+                column_name: column.name,
+                row_id: 125
             }
         );
         expect(PreviewService.getPreviewAddRecords).toHaveBeenCalledWith(
@@ -67,7 +69,8 @@ describe('Early Preview Service', function () {
                 replace: 'Jimmy',
                 scope: transfoScope,
                 column_id: column.id,
-                column_name: column.name
+                column_name: column.name,
+                row_id: 125
             }
         );
     }));
@@ -80,14 +83,14 @@ describe('Early Preview Service', function () {
 
         //then
         expect(RecipeService.earlyPreview).toHaveBeenCalledWith(
-            column,
             transformation,
             {
                 value: 'James',
                 replace: 'Jimmy',
                 scope: transfoScope,
                 column_id: column.id,
-                column_name: column.name
+                column_name: column.name,
+                row_id: 125
             }
         );
         expect(PreviewService.getPreviewAddRecords).toHaveBeenCalledWith(
@@ -99,7 +102,8 @@ describe('Early Preview Service', function () {
                 replace: 'Jimmy',
                 scope: transfoScope,
                 column_id: column.id,
-                column_name: column.name
+                column_name: column.name,
+                row_id: 125
             }
         );
     }));
@@ -171,14 +175,14 @@ describe('Early Preview Service', function () {
 
         //then
         expect(RecipeService.earlyPreview).toHaveBeenCalledWith(
-            column,
             transformation,
             {
                 value: 'James',
                 replace: 'Jimmy',
                 scope: transfoScope,
                 column_id: column.id,
-                column_name: column.name
+                column_name: column.name,
+                row_id: 125
             }
         );
         expect(PreviewService.getPreviewAddRecords).toHaveBeenCalledWith(
@@ -190,7 +194,8 @@ describe('Early Preview Service', function () {
                 replace: 'Jimmy',
                 scope: transfoScope,
                 column_id: column.id,
-                column_name: column.name
+                column_name: column.name,
+                row_id: 125
             }
         );
     }));

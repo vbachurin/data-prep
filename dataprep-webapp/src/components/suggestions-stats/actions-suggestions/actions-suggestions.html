@@ -1,21 +1,29 @@
 <div class="actions-suggestions">
-    <div class="suggestions-title" ng-if="actionsSuggestionsCtrl.column.name">
-        <span class="title" title="{{actionsSuggestionsCtrl.column.name}}">{{actionsSuggestionsCtrl.column.name}}</span>
+    <div class="suggestions-title" ng-if="actionsSuggestionsCtrl.state.playground.grid.selectedColumn.name">
+        <span class="title" title="{{actionsSuggestionsCtrl.state.playground.grid.selectedColumn.name}}">{{actionsSuggestionsCtrl.state.playground.grid.selectedColumn.name}}</span>
     </div>
 
-    <div class="Description" ng-if="!actionsSuggestionsCtrl.columnSuggestionService.filteredTransformations" translate-once="SELECT_COLUMN_TO_DISPLAY_ACTIONS"></div>
-
-    <talend-tabs tab="actionsSuggestionsCtrl.tab" ng-if="actionsSuggestionsCtrl.columnSuggestionService.filteredTransformations">
+    <talend-tabs tab="actionsSuggestionsCtrl.suggestionService.tab">
         <talend-tabs-item tab-title="Text">
             <div class="action-suggestion-tab-items watermark" translate-once="COMING_SOON"></div>
         </talend-tabs-item>
         <talend-tabs-item tab-title="Cell">
             <div class="action-suggestion-tab-items watermark" translate-once="COMING_SOON"></div>
         </talend-tabs-item>
-        <talend-tabs-item tab-title="Line">
-            <div class="action-suggestion-tab-items watermark" translate-once="COMING_SOON"></div>
+        <talend-tabs-item tab-title="Line" ng-switch="!!actionsSuggestionsCtrl.state.playground.grid.selectedLine">
+            <actions-list class="action-suggestion-tab-items"
+                          actions="actionsSuggestionsCtrl.state.playground.suggestions.line.filteredTransformations"
+                          scope="line"
+                          should-render-category="actionsSuggestionsCtrl.shouldRenderCategory"
+                          should-render-action="actionsSuggestionsCtrl.shouldRenderAction"
+                          ng-switch-when="true"
+                          scroll-to-bottom="actionsSuggestionsCtrl.scrollToBottom"></actions-list>
+
+            <div class="Description"
+                 ng-switch-when="false"
+                 translate-once="SELECT_LINE_TO_DISPLAY_ACTIONS"></div>
         </talend-tabs-item>
-        <talend-tabs-item tab-title="Column" default="true">
+        <talend-tabs-item tab-title="Column" default="true" ng-switch="!!actionsSuggestionsCtrl.state.playground.grid.selectedColumn">
             <input type="search"
                    class="action-search"
                    id="action-suggestions-search"
@@ -23,62 +31,35 @@
                    ng-model="actionsSuggestionsCtrl.columnSuggestionService.searchActionString"
                    ng-model-options="{debounce: { default: 300, blur: 0 }}"
                    ng-change="actionsSuggestionsCtrl.columnSuggestionService.filterTransformations()"
-                   talend-search-input>
+                   talend-search-input
+                   ng-switch-when="true">
 
-            <div class="action-suggestion-tab-items">
-                <div ng-repeat="categoryTransformations in actionsSuggestionsCtrl.columnSuggestionService.filteredTransformations track by $index"
-                     ng-if="actionsSuggestionsCtrl.shouldRenderCategory(categoryTransformations)">
-                    <div class="action-category" ng-bind-html="categoryTransformations.categoryHtml"></div>
-                    <div>
-                        <talend-accordions class="menu">
-                            <talend-accordions-item
-                                    ng-repeat="transfo in categoryTransformations.transformations track by transfo.name"
-                                    ng-if="actionsSuggestionsCtrl.shouldRenderTransformation(transfo)"
-                                    action="actionsSuggestionsCtrl.scrollToBottom"
-                                    ng-switch="!!transfo.parameters">
-                                <!--with dynamic parameters-->
-                                <a class="trigger"
-                                   ng-switch-when="false"
-                                   ng-if="transfo.dynamic"
-                                   ng-click="actionsSuggestionsCtrl.select(transfo, 'column')" ng-bind-html="transfo.labelHtml"></a>
+            <actions-list class="action-suggestion-tab-items"
+                          actions="actionsSuggestionsCtrl.state.playground.suggestions.column.filteredTransformations"
+                          scope="column"
+                          should-render-category="actionsSuggestionsCtrl.shouldRenderCategory"
+                          should-render-action="actionsSuggestionsCtrl.shouldRenderAction"
+                          ng-switch-when="true"
+                          scroll-to-bottom="actionsSuggestionsCtrl.scrollToBottom"></actions-list>
 
-                                <!--no parameters-->
-                                <a class="trigger"
-                                   ng-switch-when="false"
-                                   ng-if="!transfo.dynamic"
-                                   ng-click="actionsSuggestionsCtrl.select(transfo, 'column')"
-                                   ng-mouseenter="actionsSuggestionsCtrl.earlyPreview(transfo, 'column')({})"
-                                   ng-mouseleave="actionsSuggestionsCtrl.cancelEarlyPreview()" ng-bind-html="transfo.labelHtml"></a>
-
-                                <!--with static parameters-->
-                                <a class="trigger" ng-switch-when="true" ng-bind-html="transfo.labelHtml"></a>
-                                <ul class="content" ng-switch-when="true">
-                                    <transform-form transformation="transfo"
-                                                      on-submit="actionsSuggestionsCtrl.transform(transfo, 'column')(params)"
-                                                      on-submit-hover-on="actionsSuggestionsCtrl.earlyPreview(transfo, 'column')(params)"
-                                                      on-submit-hover-off="actionsSuggestionsCtrl.cancelEarlyPreview(params)"></transform-form>
-                                </ul>
-                            </talend-accordions-item>
-                        </talend-accordions>
-                    </div>
-                </div>
-            </div>
-
+            <div class="Description"
+                 ng-switch-when="false"
+                 translate-once="SELECT_COLUMN_TO_DISPLAY_ACTIONS"></div>
         </talend-tabs-item>
 
         <talend-tabs-item tab-title="Table">
             <div class="action-suggestion-tab-items">
-                <talend-accordions class="menu">
+                <talend-accordions class="action">
                     <talend-accordions-item>
                         <a translate-once="REMOVE_EMPTY_LINES"></a>
                     </talend-accordions-item>
                 </talend-accordions>
-                <talend-accordions class="menu">
+                <talend-accordions class="action">
                     <talend-accordions-item>
                         <a translate-once="CREATE_EMAIL"></a>
                     </talend-accordions-item>
                 </talend-accordions>
-                <talend-accordions class="menu">
+                <talend-accordions class="action">
                     <talend-accordions-item>
                         <a translate-once="CORRECT_POSTAL_ADDRESS"></a>
                     </talend-accordions-item>
@@ -86,30 +67,6 @@
             </div>
         </talend-tabs-item>
     </talend-tabs>
-
-    <!-- Dynamic params  -->
-    <talend-modal fullscreen="false"
-                  state="actionsSuggestionsCtrl.showDynamicModal"
-                  close-button="true"
-                  ng-if="actionsSuggestionsCtrl.showDynamicModal">
-
-        <div ng-if="actionsSuggestionsCtrl.showModalContent">
-            <div class="modal-title">{{ actionsSuggestionsCtrl.dynamicTransformation.label }}</div>
-            <div class="modal-subtitle">{{ actionsSuggestionsCtrl.dynamicTransformation.description }}</div>
-
-            <div ng-if="actionsSuggestionsCtrl.dynamicFetchInProgress">
-                <i data-icon="c" class="icon continuous-rotate"></i>
-            </div>
-            <transform-form transformation="actionsSuggestionsCtrl.dynamicTransformation"
-                              on-submit="actionsSuggestionsCtrl.transform(actionsSuggestionsCtrl.dynamicTransformation, actionsSuggestionsCtrl.dynamicScope)(params)"></transform-form>
-        </div>
-        <div ng-if="!actionsSuggestionsCtrl.showModalContent">
-            <div class="modal-title">{{ actionsSuggestionsCtrl.dynamicTransformation.label }}</div>
-
-            <div class="modal-subtitle">{{ actionsSuggestionsCtrl.emptyParamsMsg | translate }}</div>
-
-        </div>
-    </talend-modal>
 
     <div class="filters-actions-form" ng-if="actionsSuggestionsCtrl.state.playground.filter.gridFilters.length">
         <form name="myForm">

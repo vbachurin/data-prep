@@ -12,7 +12,7 @@ describe('Playground state service', function () {
         $provide.constant('filterState', filterStateMock);
     }));
 
-    beforeEach(inject(function(GridStateService, FilterStateService, LookupStateService, SuggestionsState) {
+    beforeEach(inject(function(GridStateService, FilterStateService, LookupStateService, SuggestionsStateService) {
         spyOn(GridStateService, 'setData').and.returnValue();
         spyOn(GridStateService, 'setFilter').and.returnValue();
         spyOn(GridStateService, 'reset').and.returnValue();
@@ -22,7 +22,7 @@ describe('Playground state service', function () {
         spyOn(FilterStateService, 'removeAllGridFilters').and.returnValue();
         spyOn(FilterStateService, 'reset').and.returnValue();
         spyOn(LookupStateService, 'reset').and.returnValue();
-        spyOn(SuggestionsState, 'reset').and.returnValue();
+        spyOn(SuggestionsStateService, 'reset').and.returnValue();
     }));
 
     describe('playground state', function() {
@@ -252,7 +252,7 @@ describe('Playground state service', function () {
     });
 
     describe('reset', function() {
-       it('should reset playground and sub-states', inject(function(playgroundState, PlaygroundStateService, GridStateService, FilterStateService, LookupStateService, SuggestionsState) {
+       it('should reset playground and sub-states', inject(function(playgroundState, PlaygroundStateService, GridStateService, FilterStateService, LookupStateService, SuggestionsStateService) {
            //given
            playgroundState.data = {};
            playgroundState.dataset = {};
@@ -273,7 +273,7 @@ describe('Playground state service', function () {
            expect(GridStateService.reset).toHaveBeenCalled();
            expect(FilterStateService.reset).toHaveBeenCalled();
            expect(LookupStateService.reset).toHaveBeenCalled();
-           expect(SuggestionsState.reset).toHaveBeenCalled();
+           expect(SuggestionsStateService.reset).toHaveBeenCalled();
        }));
     });
 });

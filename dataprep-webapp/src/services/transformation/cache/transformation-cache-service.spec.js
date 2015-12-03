@@ -102,69 +102,130 @@ describe('Transformation cache service', function() {
 
     describe('transformations', function() {
         beforeEach(inject(function($q, TransformationService) {
-            spyOn(TransformationService, 'getTransformations').and.returnValue($q.when(transformationsMock()));
+            spyOn(TransformationService, 'getColumnTransformations').and.returnValue($q.when(transformationsMock()));
+            spyOn(TransformationService, 'getLineTransformations').and.returnValue($q.when(transformationsMock()));
         }));
 
-        it('should call TransformationService when column is not in cache', inject(function($rootScope, TransformationCacheService, TransformationService) {
-            //given
-            var result = null;
+        describe('column', function() {
+            it('should call TransformationService when column is not in cache', inject(function($rootScope, TransformationCacheService, TransformationService) {
+                //given
+                var result = null;
 
-            //when
-            TransformationCacheService.getTransformations(column)
-                .then(function(transformations) {
-                    result = transformations;
-                });
-            $rootScope.$digest();
+                //when
+                TransformationCacheService.getColumnTransformations(column)
+                    .then(function(transformations) {
+                        result = transformations;
+                    });
+                $rootScope.$digest();
 
-            //then
-            expect(TransformationService.getTransformations).toHaveBeenCalledWith(column);
-            expect(result).toEqual(transformationsMock());
-        }));
+                //then
+                expect(TransformationService.getColumnTransformations).toHaveBeenCalledWith(column);
+                expect(result).toEqual(transformationsMock());
+            }));
 
-        it('should return the same result from cache', inject(function($rootScope, TransformationCacheService, TransformationService) {
-            //given
-            var oldResult = null;
-            var newResult = null;
-            TransformationCacheService.getTransformations(column)
-                .then(function(transformations) {
-                    oldResult = transformations;
-                });
+            it('should return the same result from cache', inject(function($rootScope, TransformationCacheService, TransformationService) {
+                //given
+                var oldResult = null;
+                var newResult = null;
+                TransformationCacheService.getColumnTransformations(column)
+                    .then(function(transformations) {
+                        oldResult = transformations;
+                    });
 
-            expect(TransformationService.getTransformations.calls.count()).toBe(1);
+                expect(TransformationService.getColumnTransformations.calls.count()).toBe(1);
 
-            //when
-            TransformationCacheService.getTransformations(column)
-                .then(function(transformations) {
-                    newResult = transformations;
-                });
-            $rootScope.$digest();
+                //when
+                TransformationCacheService.getColumnTransformations(column)
+                    .then(function(transformations) {
+                        newResult = transformations;
+                    });
+                $rootScope.$digest();
 
-            //then
-            expect(newResult).toBe(oldResult);
-            expect(TransformationService.getTransformations.calls.count()).toBe(1);
-        }));
+                //then
+                expect(newResult).toBe(oldResult);
+                expect(TransformationService.getColumnTransformations.calls.count()).toBe(1);
+            }));
 
-        it('should remove all cache entries', inject(function($rootScope, TransformationCacheService, TransformationService) {
-            //given
-            TransformationCacheService.getTransformations(column);
-            $rootScope.$digest();
+            it('should remove all cache entries', inject(function($rootScope, TransformationCacheService, TransformationService) {
+                //given
+                TransformationCacheService.getColumnTransformations(column);
+                $rootScope.$digest();
 
-            expect(TransformationService.getTransformations.calls.count()).toBe(1);
+                expect(TransformationService.getColumnTransformations.calls.count()).toBe(1);
 
-            //when
-            TransformationCacheService.invalidateCache();
+                //when
+                TransformationCacheService.invalidateCache();
 
-            TransformationCacheService.getTransformations(column);
-            $rootScope.$digest();
+                TransformationCacheService.getColumnTransformations(column);
+                $rootScope.$digest();
 
-            //then
-            expect(TransformationService.getTransformations.calls.count()).toBe(2);
-        }));
+                //then
+                expect(TransformationService.getColumnTransformations.calls.count()).toBe(2);
+            }));
+        });
+
+        describe('line', function() {
+            it('should call TransformationService when line is not in cache', inject(function($rootScope, TransformationCacheService, TransformationService) {
+                //given
+                var result = null;
+
+                //when
+                TransformationCacheService.getLineTransformations()
+                    .then(function(transformations) {
+                        result = transformations;
+                    });
+                $rootScope.$digest();
+
+                //then
+                expect(TransformationService.getLineTransformations).toHaveBeenCalledWith();
+                expect(result).toEqual(transformationsMock());
+            }));
+
+            it('should return the same result from cache', inject(function($rootScope, TransformationCacheService, TransformationService) {
+                //given
+                var oldResult = null;
+                var newResult = null;
+                TransformationCacheService.getLineTransformations()
+                    .then(function(transformations) {
+                        oldResult = transformations;
+                    });
+
+                expect(TransformationService.getLineTransformations.calls.count()).toBe(1);
+
+                //when
+                TransformationCacheService.getLineTransformations()
+                    .then(function(transformations) {
+                        newResult = transformations;
+                    });
+                $rootScope.$digest();
+
+                //then
+                expect(newResult).toBe(oldResult);
+                expect(TransformationService.getLineTransformations.calls.count()).toBe(1);
+            }));
+
+            it('should remove all cache entries', inject(function($rootScope, TransformationCacheService, TransformationService) {
+                //given
+                TransformationCacheService.getLineTransformations(column);
+                $rootScope.$digest();
+
+                expect(TransformationService.getLineTransformations.calls.count()).toBe(1);
+
+                //when
+                TransformationCacheService.invalidateCache();
+
+                TransformationCacheService.getLineTransformations(column);
+                $rootScope.$digest();
+
+                //then
+                expect(TransformationService.getLineTransformations.calls.count()).toBe(2);
+            }));
+        });
     });
 
     describe('suggestions', function() {
         beforeEach(inject(function($q, TransformationService) {
-            spyOn(TransformationService, 'getSuggestions').and.returnValue($q.when(transformationsMock()));
+            spyOn(TransformationService, 'getColumnSuggestions').and.returnValue($q.when(transformationsMock()));
         }));
 
         it('should call TransformationService when column is not in cache', inject(function($rootScope, TransformationCacheService, TransformationService) {
@@ -172,14 +233,14 @@ describe('Transformation cache service', function() {
             var result = null;
 
             //when
-            TransformationCacheService.getSuggestions(column)
+            TransformationCacheService.getColumnSuggestions(column)
                 .then(function(transformations) {
                     result = transformations;
                 });
             $rootScope.$digest();
 
             //then
-            expect(TransformationService.getSuggestions).toHaveBeenCalledWith(column);
+            expect(TransformationService.getColumnSuggestions).toHaveBeenCalledWith(column);
             expect(result).toEqual(transformationsMock());
         }));
 
@@ -187,15 +248,15 @@ describe('Transformation cache service', function() {
             //given
             var oldResult = null;
             var newResult = null;
-            TransformationCacheService.getSuggestions(column)
+            TransformationCacheService.getColumnSuggestions(column)
                 .then(function(transformations) {
                     oldResult = transformations;
                 });
 
-            expect(TransformationService.getSuggestions.calls.count()).toBe(1);
+            expect(TransformationService.getColumnSuggestions.calls.count()).toBe(1);
 
             //when
-            TransformationCacheService.getSuggestions(column)
+            TransformationCacheService.getColumnSuggestions(column)
                 .then(function(transformations) {
                     newResult = transformations;
                 });
@@ -203,24 +264,24 @@ describe('Transformation cache service', function() {
 
             //then
             expect(newResult).toBe(oldResult);
-            expect(TransformationService.getSuggestions.calls.count()).toBe(1);
+            expect(TransformationService.getColumnSuggestions.calls.count()).toBe(1);
         }));
 
         it('should remove all cache entries', inject(function($rootScope, TransformationCacheService, TransformationService) {
             //given
-            TransformationCacheService.getSuggestions(column);
+            TransformationCacheService.getColumnSuggestions(column);
             $rootScope.$digest();
 
-            expect(TransformationService.getSuggestions.calls.count()).toBe(1);
+            expect(TransformationService.getColumnSuggestions.calls.count()).toBe(1);
 
             //when
             TransformationCacheService.invalidateCache();
 
-            TransformationCacheService.getSuggestions(column);
+            TransformationCacheService.getColumnSuggestions(column);
             $rootScope.$digest();
 
             //then
-            expect(TransformationService.getSuggestions.calls.count()).toBe(2);
+            expect(TransformationService.getColumnSuggestions.calls.count()).toBe(2);
         }));
     });
 });

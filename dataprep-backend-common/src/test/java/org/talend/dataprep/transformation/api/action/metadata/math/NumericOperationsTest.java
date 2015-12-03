@@ -48,7 +48,7 @@ public class NumericOperationsTest {
 
     @Test
     public void testAdapt() throws Exception {
-        assertThat(action.adapt(null), is(action));
+        assertThat(action.adapt((ColumnMetadata) null), is(action));
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
         assertThat(action.adapt(column), is(action));
     }
@@ -140,6 +140,22 @@ public class NumericOperationsTest {
         DataSetRow expected = getRow("5", "3", "Done !", "8");
         assertEquals(expected, row);
     }
+
+    @Test
+    public void should_apply_on_created_column() {
+        // given
+        DataSetRow row = getRow("5", "3");
+
+        // when
+        final TransformationContext context = new TransformationContext();
+        new NumericOperations().applyOnColumn(row, context, parameters, "0000");
+        new NumericOperations().applyOnColumn(row, context, parameters, "0002");
+
+        // then
+        DataSetRow expected = getRow("5", "3", "8", "11");
+        assertEquals(expected, row);
+    }
+
 
     @Test
     public void should_apply_on_column_constant() {

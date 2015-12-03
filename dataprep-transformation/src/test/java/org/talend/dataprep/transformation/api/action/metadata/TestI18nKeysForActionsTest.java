@@ -2,6 +2,7 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -35,26 +36,28 @@ public class TestI18nKeysForActionsTest {
     @Autowired
     private ActionMetadata[] allActions;
 
-    private void assertI18nKeyExists(String key) {
-        assertNotEquals("missing key <" + key + ">", key, MessagesBundle.getString(key));
+    private void assertI18nKeyExists(final String label) {
+        if(label.startsWith("action.")) {
+            fail("missing key <" + label + ">");
+        }
     }
 
     @Test
     public void test() {
         for (ActionMetadata actionMetadata : allActions) {
-            String name = actionMetadata.getName();
+            final String name = actionMetadata.getName();
             assertNotNull(name);
             assertNotEquals("", name);
 
             String label = actionMetadata.getLabel();
             assertNotNull(label);
             assertNotEquals("", label);
-            assertI18nKeyExists("action." + name + ".label");
+            assertI18nKeyExists(label);
 
             String desc = actionMetadata.getDescription();
             assertNotNull(desc);
             assertNotEquals("", desc);
-            assertI18nKeyExists("action." + name + ".desc");
+            assertI18nKeyExists(desc);
 
             String toString = actionMetadata.getName() + "," + actionMetadata.getCategory() + "," + actionMetadata.getLabel()
                     + "," + actionMetadata.getDescription();

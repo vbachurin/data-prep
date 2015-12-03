@@ -206,6 +206,7 @@ describe('Datagrid directive', function () {
             it('should update suggestion panel when there is a selected column', inject(function (DatagridService, DatagridStyleService, DatagridExternalService) {
                 //given
                 stateMock.playground.grid.selectedColumn = {id: '0001'};
+                stateMock.playground.grid.selectedLine = {tdpId: 1};
 
                 //when
                 stateMock.playground.data = {};
@@ -213,7 +214,7 @@ describe('Datagrid directive', function () {
                 jasmine.clock().tick(1);
 
                 //then
-                expect(DatagridExternalService.updateSuggestionPanel).toHaveBeenCalledWith(data.columns[1], null, true);
+                expect(DatagridExternalService.updateSuggestionPanel).toHaveBeenCalledWith(null, true);
             }));
 
             it('should NOT update suggestion panel when in preview mode', inject(function (DatagridService, DatagridStyleService, DatagridExternalService) {

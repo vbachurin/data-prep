@@ -30,8 +30,7 @@ describe('Recipe directive', function () {
                 name: 'uppercase',
                 label: 'To uppercase',
                 category: 'case',
-                parameters: [],
-                items: []
+                parameters: []
             },
             actionParameters: {
                 action: 'uppercase',
@@ -52,8 +51,7 @@ describe('Recipe directive', function () {
                 parameters: [
                     {name: 'cell_value', type: 'string'},
                     {name: 'replace_value', type: 'string'}
-                ],
-                items: []
+                ]
             },
             actionParameters: {
                 action: 'quickfix',
@@ -73,7 +71,6 @@ describe('Recipe directive', function () {
                 label: 'Cluster',
                 category: 'quickfix',
                 parameters: null,
-                items: null,
                 cluster: {
                     titles: ['', ''],
                     clusters: [
@@ -119,6 +116,26 @@ describe('Recipe directive', function () {
                     column_id: '2',
                     Texa: 'Texas',
                     Tixass: 'Texas'
+                }
+            },
+            inactive: true
+        },
+        {
+            column: {id: undefined, name: undefined},
+            row: {id: 125},
+            transformation: {
+                stepId: '3213ca58454a58d436',
+                name: 'delete',
+                label: 'Delete Line',
+                category: 'clean',
+                parameters: null
+            },
+            actionParameters: {
+                action: 'delete',
+                parameters: {
+                    scope: 'line',
+                    column_id: undefined,
+                    row_id: 125
                 }
             },
             inactive: true
@@ -682,8 +699,9 @@ describe('Recipe directive', function () {
 
     beforeEach(module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'RECIPE_ITEM_ON_COL': 'on column',
+            'RECIPE_ITEM_ON_COL': 'on column {{columnName}}',
             'RECIPE_ITEM_ON_CELL': 'on cell',
+            'RECIPE_ITEM_ON_LINE': '#{{rowId}}',
             'RECIPE_LOOKUP_MADE_ON_COL':'made on the column',
             'RECIPE_LOOKUP_OF_DS':'done with dataset ',
             'RECIPE_LOOKUP_JOIN_COLS': 'Join has been set between',
@@ -700,9 +718,12 @@ describe('Recipe directive', function () {
         element = angular.element('<recipe></recipe>');
         $compile(element)(scope);
         scope.$digest();
+
+        jasmine.clock().install();
     }));
 
     afterEach(function () {
+        jasmine.clock().uninstall();
         scope.$destroy();
         element.remove();
     });
@@ -712,13 +733,15 @@ describe('Recipe directive', function () {
         RecipeService.getRecipe().push(recipe[0]);
         RecipeService.getRecipe().push(recipe[1]);
         RecipeService.getRecipe().push(recipe[2]);
+        RecipeService.getRecipe().push(recipe[4]);
         scope.$digest();
 
         //then
-        expect(element.find('>ul .accordion').length).toBe(3);
-        expect(element.find('>ul .accordion .trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Split on column col1');
-        expect(element.find('>ul .accordion .trigger').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2. To uppercase on column col2');
+        expect(element.find('>ul .accordion').length).toBe(4);
+        expect(element.find('>ul .accordion .trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Split on column COL1');
+        expect(element.find('>ul .accordion .trigger').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2. To uppercase on column COL2');
         expect(element.find('>ul .accordion .trigger').eq(2).text().trim().replace(/\s+/g, ' ')).toBe('3. Replace value on cell');
+        expect(element.find('>ul .accordion .trigger').eq(3).text().trim().replace(/\s+/g, ' ')).toBe('4. Delete Line #125');
     }));
 
     it('should render recipe Lookup entry', inject(function (RecipeService) {
@@ -735,7 +758,7 @@ describe('Recipe directive', function () {
         //when
         RecipeService.getRecipe().push(recipe[0]);
         RecipeService.getRecipe().push(recipe[1]);
-        RecipeService.getRecipe().push(recipe[4]); // preview step
+        RecipeService.getRecipe().push(recipe[5]); // preview step
         scope.$digest();
 
         //then
@@ -770,7 +793,6 @@ describe('Recipe directive', function () {
 
     it('should highlight steps that will be deleted on remove icon mouse over', inject(function(RecipeService) {
         //given
-        jasmine.clock().install();
         spyOn(RecipeService, 'getRecipe').and.returnValue(recipeWithDiff);
         scope.$digest();
         jasmine.clock().tick(1);
@@ -782,14 +804,10 @@ describe('Recipe directive', function () {
         expect(element.find('#step-260a4b7a3d1f2c03509d865a7961a481e594142e').hasClass('remove')).toBe(true);
         expect(element.find('#step-8113ae52f8f34d0cbb595c30d07ba4db80a1aec7').hasClass('remove')).toBe(true);
         expect(element.find('#step-2f749665763cffe0382ab581ac1a7c4bffb5afbc').hasClass('remove')).toBe(true);
-
-        //finally
-        jasmine.clock().uninstall();
     }));
 
     it('should remove highlight class on remove icon mouse out', inject(function(RecipeService) {
         //given
-        jasmine.clock().install();
         spyOn(RecipeService, 'getRecipe').and.returnValue(recipeWithDiff);
         scope.$digest();
         jasmine.clock().tick(1);
@@ -806,8 +824,5 @@ describe('Recipe directive', function () {
         expect(element.find('#step-260a4b7a3d1f2c03509d865a7961a481e594142e').hasClass('remove')).toBe(false);
         expect(element.find('#step-8113ae52f8f34d0cbb595c30d07ba4db80a1aec7').hasClass('remove')).toBe(false);
         expect(element.find('#step-2f749665763cffe0382ab581ac1a7c4bffb5afbc').hasClass('remove')).toBe(false);
-
-        //finally
-        jasmine.clock().uninstall();
     }));
 });

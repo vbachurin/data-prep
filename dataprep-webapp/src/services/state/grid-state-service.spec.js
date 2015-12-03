@@ -143,6 +143,42 @@ describe('Grid state service', function () {
             expect(gridState.displayLinesPercentage).toBe('100');
         }));
 
+        it('should update line selection row with the new row corresponding to the selected index (not id)', inject(function (gridState, GridStateService) {
+            //given
+            var oldRow = {tdpId: '0125'};
+            gridState.lineIndex = 2;
+            gridState.selectedLine = oldRow;
+
+            //when
+            GridStateService.setData(data);
+
+            //then
+            expect(gridState.selectedLine).toBe(data.records[2]);
+        }));
+
+        it('should not change selected line row when data is preview data', inject(function (gridState, GridStateService) {
+            var oldRow = {tdpId: '0125'};
+            gridState.lineIndex = 2;
+            gridState.selectedLine = oldRow;
+
+            //when
+            GridStateService.setData(previewData);
+
+            //then
+            expect(gridState.selectedLine).toBe(oldRow);
+        }));
+
+        it('should not change select line row when there is no selected line yet', inject(function (gridState, GridStateService) {
+            gridState.lineIndex = null;
+            gridState.selectedLine = null;
+
+            //when
+            GridStateService.setData(data);
+
+            //then
+            expect(gridState.selectedLine).toBe(null);
+        }));
+
         it('should update column selection metadata with the new metadata corresponding to the selected id', inject(function (gridState, GridStateService) {
             //given
             var oldMetadata = {id: '0001'};
@@ -193,7 +229,7 @@ describe('Grid state service', function () {
         }));
     });
 
-    describe('grid event result state', function() {
+    describe('grid event state', function() {
         it('should set focused columns', inject(function (gridState, GridStateService) {
             //given
             expect(gridState.columnFocus).toBeFalsy();
@@ -207,15 +243,30 @@ describe('Grid state service', function () {
 
         it('should set grid selection', inject(function (gridState, GridStateService) {
             //given
+            gridState.dataView.setItems(data.records, 'tdpId');
             gridState.selectedColumn = null;
             gridState.selectedLine = null;
 
             //when
-            GridStateService.setGridSelection('0001', 18);
+            GridStateService.setGridSelection('0001', 2);
 
             //then
             expect(gridState.selectedColumn).toBe('0001');
-            expect(gridState.selectedLine).toBe(18);
+            expect(gridState.selectedLine).toBe(data.records[2]);
+        }));
+
+        it('should set lineIndex to null when we have no line selection', inject(function (gridState, GridStateService) {
+            //given
+            gridState.dataView.setItems(data.records, 'tdpId');
+            gridState.lineIndex = 1;
+            gridState.selectedLine = {tdpId: '125'};
+
+            //when
+            GridStateService.setGridSelection('0001');
+
+            //then
+            expect(gridState.lineIndex).toBe(null);
+            expect(gridState.selectedLine).toBe(null);
         }));
     });
 

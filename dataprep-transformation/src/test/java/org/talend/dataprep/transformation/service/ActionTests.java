@@ -44,4 +44,16 @@ public class ActionTests extends TransformationServiceBaseTests {
         assertThat(response, sameJSONAsFile(ActionTests.class.getResourceAsStream("all_actions_string.json")));
     }
 
+    @Test
+    public void should_get_all_lines_actions() throws Exception {
+        // when
+        final String response = given() //
+                .when() //
+                .get("/actions/line") //
+                .asString();
+
+        // then
+        assertThat(response, sameJSONAsFile(ActionTests.class.getResourceAsStream("all_line_scope_actions.json")));
+    }
+
 }

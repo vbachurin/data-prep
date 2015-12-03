@@ -3,123 +3,115 @@ describe('Suggestion Service', function() {
 
     beforeEach(module('data-prep.services.transformation'));
 
-    beforeEach(inject(function(ColumnSuggestionService) {
+    beforeEach(inject(function(ColumnSuggestionService, LineSuggestionService) {
+        spyOn(LineSuggestionService, 'initTransformations').and.returnValue();
         spyOn(ColumnSuggestionService, 'initTransformations').and.returnValue();
         spyOn(ColumnSuggestionService, 'reset').and.returnValue();
     }));
 
-    it('should set new selected column', inject(function(SuggestionService) {
-        //given
-        expect(SuggestionService.currentColumn).toBeFalsy();
-        var column = {id: '0001'};
+    describe('transformations/suggestions', function() {
+        it('should init column suggestions', inject(function(SuggestionService, ColumnSuggestionService) {
+            //given
+            expect(ColumnSuggestionService.initTransformations).not.toHaveBeenCalled();
+            var column = {id: '0001'};
 
-        //when
-        SuggestionService.setColumn(column);
+            //when
+            SuggestionService.setColumn(column);
 
-        //then
-        expect(SuggestionService.currentColumn).toBe(column);
-    }));
+            //then
+            expect(ColumnSuggestionService.initTransformations).toHaveBeenCalledWith(column);
+        }));
 
-    it('should init column suggestions', inject(function(SuggestionService, ColumnSuggestionService) {
-        //given
-        expect(ColumnSuggestionService.initTransformations).not.toHaveBeenCalled();
-        var column = {id: '0001'};
+        it('should init line suggestions', inject(function(SuggestionService, LineSuggestionService) {
+            //given
+            expect(LineSuggestionService.initTransformations).not.toHaveBeenCalled();
+            var line = {tdpId: 125};
 
-        //when
-        SuggestionService.setColumn(column);
+            //when
+            SuggestionService.setLine(line);
 
-        //then
-        expect(ColumnSuggestionService.initTransformations).toHaveBeenCalledWith(column);
-    }));
+            //then
+            expect(LineSuggestionService.initTransformations).toHaveBeenCalled();
+        }));
 
-    it('should NOT init column suggestions when column is already selected', inject(function(SuggestionService, ColumnSuggestionService) {
-        //given
-        expect(ColumnSuggestionService.initTransformations).not.toHaveBeenCalled();
-        var column = {id: '0001'};
-        SuggestionService.currentColumn = column;
+        it('should NOT init line suggestions when selected line is falsy', inject(function(SuggestionService, LineSuggestionService) {
+            //given
+            expect(LineSuggestionService.initTransformations).not.toHaveBeenCalled();
 
-        //when
-        SuggestionService.setColumn(column);
+            //when
+            SuggestionService.setLine();
 
-        //then
-        expect(ColumnSuggestionService.initTransformations).not.toHaveBeenCalled();
-    }));
+            //then
+            expect(LineSuggestionService.initTransformations).not.toHaveBeenCalled();
+        }));
 
-    it('should select TEXT tab', inject(function(SuggestionService) {
-        //given
-        expect(SuggestionService.tab).toBeFalsy();
+        it('should reset column suggestions', inject(function(SuggestionService, ColumnSuggestionService) {
+            //given
+            expect(ColumnSuggestionService.reset).not.toHaveBeenCalled();
 
-        //when
-        SuggestionService.selectTab('TEXT');
+            //when
+            SuggestionService.reset();
 
-        //then
-        expect(SuggestionService.tab).toBe(0);
-    }));
+            //then
+            expect(ColumnSuggestionService.reset).toHaveBeenCalled();
+        }));
+    });
 
-    it('should select TEXT tab', inject(function(SuggestionService) {
-        //given
-        expect(SuggestionService.tab).toBeFalsy();
+    describe('tab', function() {
+        it('should select TEXT tab', inject(function(SuggestionService) {
+            //given
+            expect(SuggestionService.tab).toBeFalsy();
 
-        //when
-        SuggestionService.selectTab('CELL');
+            //when
+            SuggestionService.selectTab('TEXT');
 
-        //then
-        expect(SuggestionService.tab).toBe(1);
-    }));
+            //then
+            expect(SuggestionService.tab).toBe(0);
+        }));
 
-    it('should select TEXT tab', inject(function(SuggestionService) {
-        //given
-        expect(SuggestionService.tab).toBeFalsy();
+        it('should select CELL tab', inject(function(SuggestionService) {
+            //given
+            expect(SuggestionService.tab).toBeFalsy();
 
-        //when
-        SuggestionService.selectTab('LINE');
+            //when
+            SuggestionService.selectTab('CELL');
 
-        //then
-        expect(SuggestionService.tab).toBe(2);
-    }));
+            //then
+            expect(SuggestionService.tab).toBe(1);
+        }));
 
-    it('should select TEXT tab', inject(function(SuggestionService) {
-        //given
-        expect(SuggestionService.tab).toBeFalsy();
+        it('should select LINE tab', inject(function(SuggestionService) {
+            //given
+            expect(SuggestionService.tab).toBeFalsy();
 
-        //when
-        SuggestionService.selectTab('COLUMN');
+            //when
+            SuggestionService.selectTab('LINE');
 
-        //then
-        expect(SuggestionService.tab).toBe(3);
-    }));
+            //then
+            expect(SuggestionService.tab).toBe(2);
+        }));
 
-    it('should select TABLE tab', inject(function(SuggestionService) {
-        //given
-        expect(SuggestionService.tab).toBeFalsy();
+        it('should select COLUMN tab', inject(function(SuggestionService) {
+            //given
+            expect(SuggestionService.tab).toBeFalsy();
 
-        //when
-        SuggestionService.selectTab('TABLE');
+            //when
+            SuggestionService.selectTab('COLUMN');
 
-        //then
-        expect(SuggestionService.tab).toBe(4);
-    }));
+            //then
+            expect(SuggestionService.tab).toBe(3);
+        }));
 
-    it('should reset column suggestions', inject(function(SuggestionService, ColumnSuggestionService) {
-        //given
-        expect(ColumnSuggestionService.reset).not.toHaveBeenCalled();
+        it('should select TABLE tab', inject(function(SuggestionService) {
+            //given
+            expect(SuggestionService.tab).toBeFalsy();
 
-        //when
-        SuggestionService.reset();
+            //when
+            SuggestionService.selectTab('TABLE');
 
-        //then
-        expect(ColumnSuggestionService.reset).toHaveBeenCalled();
-    }));
-
-    it('should reset current column', inject(function(SuggestionService) {
-        //given
-        SuggestionService.currentColumn = {};
-
-        //when
-        SuggestionService.reset();
-
-        //then
-        expect(SuggestionService.currentColumn).toBeFalsy();
-    }));
+            //then
+            expect(SuggestionService.tab).toBe(4);
+        }));
+    });
 
 });

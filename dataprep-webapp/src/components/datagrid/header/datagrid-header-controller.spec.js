@@ -8,8 +8,8 @@ describe('Datagrid header controller', function () {
         type: 'string'
     };
 
-    var menusMock = function () {
-        return [
+    var transformationsMock = function () {
+        var transformations = [
             {
                 'name': 'uppercase',
                 'category': 'case',
@@ -107,6 +107,9 @@ describe('Datagrid header controller', function () {
                 ]
             }
         ];
+        return {
+            allTransformations : transformations
+        };
     };
 
     beforeEach(module('data-prep.datagrid-header'));
@@ -126,7 +129,7 @@ describe('Datagrid header controller', function () {
 
     describe('with transformation list success', function () {
         beforeEach(inject(function ($q, TransformationCacheService) {
-            spyOn(TransformationCacheService, 'getTransformations').and.returnValue($q.when(menusMock()));
+            spyOn(TransformationCacheService, 'getColumnTransformations').and.returnValue($q.when(transformationsMock()));
         }));
 
         it('should filter and init only "column_metadata" category', inject(function ($rootScope, TransformationCacheService) {
@@ -138,7 +141,7 @@ describe('Datagrid header controller', function () {
             $rootScope.$digest();
 
             //then
-            expect(TransformationCacheService.getTransformations).toHaveBeenCalledWith(column, true);
+            expect(TransformationCacheService.getColumnTransformations).toHaveBeenCalledWith(column, true);
             expect(ctrl.transformations.length).toBe(2);
             expect(ctrl.transformations[0].name).toBe('rename');
             expect(ctrl.transformations[1].name).toBe('split');
@@ -155,13 +158,13 @@ describe('Datagrid header controller', function () {
             $rootScope.$digest();
 
             //then
-            expect(TransformationCacheService.getTransformations.calls.count()).toBe(1);
+            expect(TransformationCacheService.getColumnTransformations.calls.count()).toBe(1);
         }));
     });
 
     describe('with transformation list error', function () {
         beforeEach(inject(function ($q, TransformationCacheService) {
-            spyOn(TransformationCacheService, 'getTransformations').and.returnValue($q.reject('server error'));
+            spyOn(TransformationCacheService, 'getColumnTransformations').and.returnValue($q.reject('server error'));
         }));
 
         it('should change inProgress and error flags', inject(function ($rootScope) {
