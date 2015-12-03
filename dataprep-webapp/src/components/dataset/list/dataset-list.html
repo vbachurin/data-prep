@@ -152,7 +152,8 @@
                  ng-class="{folderselected: node.selected, 'dropdown-button-right': node.collapsed, 'dropdown-button-down': !node.collapsed}"
                  ng-click="datasetListCtrl.toggle(node)">
                 <a class="inventory-icon inventory-folder nodrop" data-nodrag>
-                    <img src="assets/images/folder/folder-icon.png"/>
+                    <img ng-if="!node.collapsed" src="assets/images/folder/folder_open_small-icon.png"/>
+                    <img ng-if="node.collapsed" src="assets/images/folder/folder_close_small-icon.png"/>
                 </a>
                 <span ng-click="datasetListCtrl.chooseFolder(node)" class="folder-name">{{node.name}}</span>
             </div>
