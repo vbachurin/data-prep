@@ -204,17 +204,29 @@
          * @name createMatchFilterFn
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {string} colId The column id
-         * @param {Array} pattern The filter pattern
+         * @param {string} pattern The filter pattern
          * @description Create a 'match' filter function
          * @returns {function} The predicate function
          */
         function createMatchFilterFn(colId, pattern) {
-            var regexp = convertPatternToRegexp(pattern);
+
+            var regexp;
+            pattern = pattern.replace(/d/g, 'D').replace(/y/g, 'Y');  // convert to date format used by moment.js
 
             return function () {
                 return function (item) {
                     // col could be removed by a step
                     if (item[colId]) {
+                        if (pattern.indexOf('D') > -1 &&
+                            pattern.indexOf('M') > -1 &&
+                            pattern.indexOf('Y') > -1) {
+
+                            if(itemBelongsToOtherPattern(item, colId, pattern)){
+                                return false;
+                            }
+                            return moment(item[colId], pattern, true).isValid();
+                        }
+                        regexp = convertPatternToRegexp(pattern);
                         return item[colId].match(regexp);
                     }
                     else {
@@ -224,6 +236,20 @@
             };
         }
 
+        function itemBelongsToOtherPattern(item, colId, pattern) {
+
+            var patternFrequencyTable = _.find(state.playground.data.columns, function(column) {
+                                                return column.id === colId;}
+                                              ).statistics.patternFrequencyTable;
+            for (var i = 0; i < patternFrequencyTable.length; i++) {
+
+                if(patternFrequencyTable[i].pattern === pattern) {
+                    return false;
+                } else if(moment(item[colId], patternFrequencyTable[i].pattern, true).isValid()) {
+                    return true;
+                }
+            }
+        }
         function convertPatternToRegexp(pattern) {
             var regexp = '';
             for (var i = 0, len = pattern.length; i < len; i++) {

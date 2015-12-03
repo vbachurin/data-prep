@@ -32,7 +32,7 @@
     "d3": "~3.5.5",
     "d3-tip": "~0.6.7",
     "intro.js": "~1.1.1",
-    "moment": "~2.10.3",
+    "moment": "~2.10.6",
     "datetimepicker": "2.4.5",
     "x-slickgrid": "3.0.0",
     "bg-splitter": "*",
