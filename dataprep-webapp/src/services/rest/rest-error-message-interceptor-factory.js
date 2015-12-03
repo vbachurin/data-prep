@@ -48,6 +48,10 @@
                     else if(rejection.data.code === 'TDP_API_UNABLE_TO_CREATE_OR_UPDATE_DATASET') {
                         MessageService.error('UPDATE_ERROR_TITLE', 'UPDATE_ERROR');
                     }
+                    // TODO remove the or if changed in GenericCommand is not approved
+                    else if(rejection.data.code === 'TDP_API_UNABLE_TO_COPY_DATASET_CONTENT' || rejection.data.code === 'TDP_DSS_DATASET_NAME_ALREADY_USED'){
+                        MessageService.error('DATASET_NAME_ALREADY_USED_TITLE', 'DATASET_NAME_ALREADY_USED');
+                    }
                     else {
                         MessageService.error('SERVER_ERROR_TITLE', 'GENERIC_ERROR');
                     }

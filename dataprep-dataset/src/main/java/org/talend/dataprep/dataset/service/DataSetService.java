@@ -404,10 +404,27 @@ public class DataSetService {
         @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "", required = false) String folderPath,
         HttpServletResponse response) throws IOException {
 
+        final DataSet dataSet = get( true, true, null, dataSetId, response);
+        final String name = dataSet.getMetadata().getName() + " Copy";
+        // first check if the name is already used in the target folder
+        final Iterable<FolderEntry> entries = folderRepository.entries( folderPath, "dataset" );
+
+        boolean alreadyUsed = false;
+
+        entries.forEach( folderEntry -> {
+            DataSetMetadata dataSetEntry = dataSetMetadataRepository.get(folderEntry.getContentId());
+            if (dataSetEntry != null && StringUtils.equals( name, dataSetEntry.getName())){
+                final ExceptionContext context = ExceptionContext.build() //
+                    .put("id", folderEntry.getContentId()) //
+                    .put( "folder", folderPath ) //
+                    .put( "name", name );
+                throw new TDPException(DataSetErrorCodes.DATASET_NAME_ALREADY_USED, context);
+            }
+        });
+
+
         response.setHeader( "Content-Type", MediaType.TEXT_PLAIN_VALUE ); //$NON-NLS-1$
 
-
-        DataSet dataSet = get( true, true, null, dataSetId, response);
 
         // if no metadata it's an empty one the get method has already set NO CONTENT http return code
         // so simply return!!
@@ -416,8 +433,6 @@ public class DataSetService {
         }
 
         final String newId = UUID.randomUUID().toString();
-
-        String name = dataSet.getMetadata().getName() + " Copy";
 
         dataSet.getMetadata().setName( name );
 

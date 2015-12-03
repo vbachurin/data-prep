@@ -20,6 +20,7 @@ import com.jayway.restassured.http.ContentType;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.talend.daikon.exception.json.JsonErrorCode;
@@ -188,6 +189,7 @@ public class DataSetAPITest extends ApiServiceTestBase {
 
     @Test
     public void testDataSetCreate_clone() throws Exception {
+
         // given
         final String dataSetId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
         InputStream expected = PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_metadata.json");
@@ -199,16 +201,72 @@ public class DataSetAPITest extends ApiServiceTestBase {
         assertThat( contentAsString, sameJSONAsFile( expected ) );
 
 
-        final String clonedDataSetId = when().put("/api/datasets/clone/{id}", dataSetId).asString();
+        final String clonedDataSetId = given() //
+            .when() //
+            .put("/api/datasets/clone/{id}", dataSetId) //
+            .asString();
 
         Assertions.assertThat( clonedDataSetId ).isNotEmpty().isNotEqualTo( dataSetId );
 
-        contentAsString = when().get("/api/datasets/{id}?metadata=true&columns=false", clonedDataSetId).asString();
+        Response response = when().get("/api/datasets/{id}?metadata=true&columns=false", clonedDataSetId);
+
+        Assert.assertEquals( HttpStatus.OK.value(), response.getStatusCode() );
+
+        contentAsString = response.asString();
 
         expected = PreparationAPITest.class.getResourceAsStream( "dataset/expected_dataset_with_metadata_clone.json" );
 
         // then
         assertThat( contentAsString, sameJSONAsFile( expected ) );
+
+    }
+
+    @Test
+    public void testDataSetCreate_clone_already_exists() throws Exception {
+
+        // create beer folder
+        Response response = RestAssured.given() //
+            .queryParam("path", "beer").when() //
+            .put("/api/folders");
+
+        Assert.assertEquals( HttpStatus.OK.value(), response.getStatusCode() );
+
+        // given
+        final String dataSetId = createDataset("dataset/dataset.csv", "tagada", "text/csv", "beer");
+        InputStream expected = PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_metadata.json");
+
+        // when
+        String contentAsString = when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
+
+        // then
+        assertThat( contentAsString, sameJSONAsFile( expected ) );
+
+
+        String clonedDataSetId = given() //
+            .queryParam("folderPath", "foo").when() //
+            .when() //
+            .put("/api/datasets/clone/{id}", dataSetId) //
+            .asString();
+
+        Assert.assertEquals( HttpStatus.OK.value(), response.getStatusCode() );
+
+        Assertions.assertThat( clonedDataSetId ).isNotEmpty().isNotEqualTo( dataSetId );
+
+        response = when().get("/api/datasets/{id}?metadata=true&columns=false", clonedDataSetId);
+
+        contentAsString = response.asString();
+
+        expected = PreparationAPITest.class.getResourceAsStream( "dataset/expected_dataset_with_metadata_clone.json" );
+
+        // then
+        assertThat( contentAsString, sameJSONAsFile( expected ) );
+
+        response = given() //
+            .queryParam("folderPath", "foo").when() //
+            .when() //
+            .put("/api/datasets/clone/{id}", dataSetId);
+
+        Assert.assertEquals( HttpStatus.BAD_REQUEST.value(), response.getStatusCode() );
 
     }
 
