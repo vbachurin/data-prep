@@ -11,13 +11,13 @@
       "tdpId": 2
     },
     {
-      "state": "AZ",
+      "state": "CA",
       "city":"Santa Fe",
       "tdpId": 3
     },
     {
-      "state": "CA",
-      "city":"Santa Fe",
+      "state": "TX",
+      "city": "Grapevine",
       "tdpId": 4
     }
   ],
