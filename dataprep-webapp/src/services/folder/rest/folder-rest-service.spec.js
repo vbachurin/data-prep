@@ -12,36 +12,6 @@ describe('Folder Rest Service', function () {
         spyOn($rootScope, '$emit').and.returnValue();
     }));
 
-    it('should call get childs folder of root', inject(function ($rootScope, FolderRestService, RestURLs) {
-        //given
-        var path = '';
-
-        $httpBackend
-            .expectGET(RestURLs.folderUrl)
-            .respond(200);
-
-        //when
-        FolderRestService.childs(path);
-        $httpBackend.flush();
-        $rootScope.$digest();
-
-    }));
-
-    it('should call get childs folder', inject(function ($rootScope, FolderRestService, RestURLs) {
-        //given
-        var path = '/foo/bar';
-
-        $httpBackend
-            .expectGET(RestURLs.folderUrl + '?path=' + encodeURIComponent(path))
-            .respond(200);
-
-        //when
-        FolderRestService.childs(path);
-        $httpBackend.flush();
-        $rootScope.$digest();
-
-    }));
-
     it('should call create folder', inject(function ($rootScope, FolderRestService, RestURLs) {
         //given
         var path = '/foo/bar';
@@ -132,6 +102,36 @@ describe('Folder Rest Service', function () {
 
         //when
         FolderRestService.renameFolder('foo', 'beer');
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+    }));
+
+    it('should call get children folder of root', inject(function ($rootScope, FolderRestService, RestURLs) {
+        //given
+        var path = '';
+
+        $httpBackend
+            .expectGET(RestURLs.folderUrl)
+            .respond(200);
+
+        //when
+        FolderRestService.children(path);
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+    }));
+
+    it('should call get children folder', inject(function ($rootScope, FolderRestService, RestURLs) {
+        //given
+        var path = '/foo/bar';
+
+        $httpBackend
+            .expectGET(RestURLs.folderUrl + '?path=' + encodeURIComponent(path))
+            .respond(200);
+
+        //when
+        FolderRestService.children(path);
         $httpBackend.flush();
         $rootScope.$digest();
 

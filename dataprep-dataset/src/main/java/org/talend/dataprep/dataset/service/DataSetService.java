@@ -1,7 +1,8 @@
 package org.talend.dataprep.dataset.service;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 
 import java.io.IOException;
@@ -408,8 +409,6 @@ public class DataSetService {
         final String name = dataSet.getMetadata().getName() + " Copy";
         // first check if the name is already used in the target folder
         final Iterable<FolderEntry> entries = folderRepository.entries( folderPath, "dataset" );
-
-        boolean alreadyUsed = false;
 
         entries.forEach( folderEntry -> {
             DataSetMetadata dataSetEntry = dataSetMetadataRepository.get(folderEntry.getContentId());

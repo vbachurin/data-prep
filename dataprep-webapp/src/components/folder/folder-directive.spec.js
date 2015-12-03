@@ -78,13 +78,13 @@ describe('folder directive', function() {
 		expect(FolderService.getFolderContent.calls.count()).toBe(2);
 	}));
 
-	describe('folder childs', function(){
+	describe('folder children', function(){
 
 		beforeEach(inject(function($q, FolderService) {
 			spyOn(FolderService, 'populateMenuChilds').and.returnValue($q.when(true));
 		}));
 
-		it('should load menu childs content', inject(function(FolderService){
+		it('should load menu children content', inject(function(FolderService){
 			//given
 			createElement();
 

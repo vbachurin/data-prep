@@ -37,10 +37,10 @@
          * @ngdoc method
          * @name setCurrentChilds
          * @methodOf data-prep.services.state.service:FolderStateService
-         * @param {object} array the childs of the current folder
+         * @param {object} array the children of the current folder
          */
-        function setCurrentFolderContent(childs){
-            folderState.currentFolderContent = childs;
+        function setCurrentFolderContent(children){
+            folderState.currentFolderContent = children;
         }
 
         /**
@@ -57,10 +57,10 @@
          * @ngdoc method
          * @name setCurrentChilds
          * @methodOf data-prep.services.state.service:FolderStateService
-         * @param {object} array the current childs of the current menu entry
+         * @param {object} array the current children of the current menu entry
          */
-        function setMenuChilds(childs){
-            folderState.menuChilds = childs;
+        function setMenuChilds(children){
+            folderState.menuChilds = children;
         }
 
     }

@@ -19,6 +19,7 @@
       renameFolder: renameFolder,
       getFolderContent: getFolderContent,
       refreshDefaultPreparationForCurrentFolder: refreshDefaultPreparationForCurrentFolder,
+      children: children,
 
       // shared folder ui mngt
       buildStackFromId: buildStackFromId,
@@ -28,6 +29,19 @@
     //----------------------------------------------
     //   folders
     //----------------------------------------------
+
+
+    /**
+     * @ngdoc method
+     * @name children
+     * @methodOf data-prep.services.folder.service:FolderService
+     * @description Get children of a folder
+     * @param {string} path the path to get children
+     * @returns {Promise} The GET promise
+     */
+    function children(path){
+      return FolderRestService.children(path);
+    }
 
     /**
      * @ngdoc method

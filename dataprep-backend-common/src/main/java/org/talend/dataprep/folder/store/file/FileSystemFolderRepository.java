@@ -69,7 +69,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
     }
 
     @Override
-    public Iterable<Folder> childs(String parentPath) {
+    public Iterable<Folder> children( String parentPath) {
         try {
             Path folderPath = null;
             if (StringUtils.isNotEmpty(parentPath)) {
@@ -80,14 +80,14 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
             if (Files.notExists(folderPath)) {
                 return Collections.emptyList();
             }
-            Stream<Path> childStream = Files.list(folderPath);
-            List<Folder> childs = new ArrayList<>();
-            childStream.forEach(path -> { //
+            Stream<Path> childrenStream = Files.list(folderPath);
+            List<Folder> children = new ArrayList<>();
+            childrenStream.forEach(path -> { //
                 if (Files.isDirectory(path)) {
                     String pathStr = pathAsString(path);
                     try {
                         BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
-                        childs.add(Folder.Builder.folder() //
+                        children.add(Folder.Builder.folder() //
                                 .path(pathStr) //
                                 .name(extractName(pathStr)) //
                                 .modificationDate(attr.lastModifiedTime().to(TimeUnit.MILLISECONDS))//
@@ -97,7 +97,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
                     }
                 }
             });
-            return childs;
+            return children;
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }

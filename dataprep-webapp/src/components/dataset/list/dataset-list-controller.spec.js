@@ -503,7 +503,7 @@ describe('Dataset list controller', function () {
     describe('clone', function () {
 
         beforeEach(inject(function ($q, MessageService,FolderService,DatasetService) {
-            spyOn(FolderService, 'childs').and.returnValue($q.when(true));
+            spyOn(FolderService, 'children').and.returnValue($q.when(true));
             spyOn(MessageService, 'success').and.returnValue();
             spyOn(DatasetService,'clone').and.returnValue($q.when(true));
 
@@ -517,7 +517,7 @@ describe('Dataset list controller', function () {
             ctrl.openFolderChoice(datasets[0]);
 
             //then
-            expect(FolderService.childs).toHaveBeenCalled();
+            expect(FolderService.children).toHaveBeenCalled();
             expect(ctrl.folderDestinationModal).toBe(true);
             expect(ctrl.datasetToClone).toBe(datasets[0]);
         }));

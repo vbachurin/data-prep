@@ -13,11 +13,11 @@ public interface FolderRepository {
     char PATH_SEPARATOR = '/';
 
     /**
-     * @return A {@link java.lang.Iterable iterable} of child {@link Folder folder}. Returned folders are expected to be
+     * @return A {@link java.lang.Iterable iterable} of children {@link Folder folder}. Returned folders are expected to be
      * visible by current user.
      * @param path the parent folder in the format /ffo/blab/mm or <code>null</code> for root folder
      */
-    Iterable<Folder> childs(String path);
+    Iterable<Folder> children( String path);
 
     /**
      * 

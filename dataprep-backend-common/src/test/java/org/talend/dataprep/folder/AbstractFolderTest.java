@@ -36,7 +36,7 @@ public abstract class AbstractFolderTest {
 
         Assertions.assertThat(sizeAfter).isEqualTo(sizeBefore + 1);
 
-        Iterable<Folder> iterable = getFolderRepository().childs("");
+        Iterable<Folder> iterable = getFolderRepository().children( "");
         List<Folder> folders = new ArrayList<>();
         iterable.forEach(folders::add);
 
@@ -48,7 +48,7 @@ public abstract class AbstractFolderTest {
 
         Assertions.assertThat(sizeAfter).isEqualTo(sizeBefore);
 
-        iterable = getFolderRepository().childs("");
+        iterable = getFolderRepository().children( "");
         folders = new ArrayList<>();
         iterable.forEach(folders::add);
 
@@ -61,7 +61,7 @@ public abstract class AbstractFolderTest {
      * asserting the deletion
      */
     @Test
-    public void create_two_childs_little_child_then_remove() throws Exception {
+    public void create_two_children_little_children_then_remove() throws Exception {
 
         // - foo
         // - beer-
@@ -86,7 +86,7 @@ public abstract class AbstractFolderTest {
 
         Assertions.assertThat(sizeAfter).isEqualTo(sizeBefore + 3);
 
-        iterable = getFolderRepository().childs("");
+        iterable = getFolderRepository().children( "");
         folders = new ArrayList<>();
         iterable.forEach(folders::add);
 
@@ -94,7 +94,7 @@ public abstract class AbstractFolderTest {
 
         // testing child of /bar
 
-        iterable = getFolderRepository().childs("/beer");
+        iterable = getFolderRepository().children( "/beer");
         folders = new ArrayList<>();
         iterable.forEach(folders::add);
 
@@ -105,7 +105,7 @@ public abstract class AbstractFolderTest {
         getFolderRepository().removeFolder("/beer/bar");
 
         // testing child of /beer after removing the first child
-        iterable = getFolderRepository().childs("/beer");
+        iterable = getFolderRepository().children( "/beer");
         folders = new ArrayList<>();
         iterable.forEach(folders::add);
 
@@ -126,7 +126,7 @@ public abstract class AbstractFolderTest {
 
         Assertions.assertThat(sizeAfter).isEqualTo(sizeBefore);
 
-        iterable = getFolderRepository().childs("");
+        iterable = getFolderRepository().children( "");
         folders = new ArrayList<>();
         iterable.forEach(folders::add);
 
@@ -383,12 +383,12 @@ public abstract class AbstractFolderTest {
 
     }
 
-    protected void assertChildsSize(String folder, int childsNumber){
-        Iterable<Folder> iterable = getFolderRepository().childs(folder);
+    protected void assertChildsSize(String folder, int childrenNumber){
+        Iterable<Folder> iterable = getFolderRepository().children( folder);
         List<Folder> folders = new ArrayList<>();
         iterable.forEach(folders::add);
-        if (childsNumber>0) {
-            Assertions.assertThat( folders ).isNotNull().isNotEmpty().hasSize( childsNumber );
+        if (childrenNumber>0) {
+            Assertions.assertThat( folders ).isNotNull().isNotEmpty().hasSize( childrenNumber );
         } else {
             Assertions.assertThat( folders ).isNotNull().isEmpty();
         }

@@ -46,9 +46,9 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class FolderAPI extends APIService {
 
     @RequestMapping(value = "/api/folders", method = GET)
-    @ApiOperation(value = "List childs folders of the parameter if null list root childs.", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List children folders of the parameter if null list root children.", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
-    public void childs(@RequestParam(required = false) String path, final HttpServletResponse response) {
+    public void children(@RequestParam(required = false) String path, final HttpServletResponse response) {
         try {
             final HystrixCommand<InputStream> foldersList = getCommand(FoldersList.class, getClient(), path);
             response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$

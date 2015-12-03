@@ -2,7 +2,6 @@ package org.talend.dataprep.dataset.service;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -42,11 +41,11 @@ public class FolderService {
      * @return
      */
     @RequestMapping(value = "/folders", method = GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Folder childs", produces = MediaType.APPLICATION_JSON_VALUE, notes = "List all child folders of the one as parameter")
+    @ApiOperation(value = "Folder children", produces = MediaType.APPLICATION_JSON_VALUE, notes = "List all child folders of the one as parameter")
     @Timed
     @VolumeMetered
-    public Iterable<Folder> childs( @RequestParam(required = false)  String path){
-        return folderRepository.childs(path == null ? "" : path);
+    public Iterable<Folder> children( @RequestParam(required = false)  String path){
+        return folderRepository.children( path == null ? "" : path);
     }
 
     /**

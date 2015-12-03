@@ -167,14 +167,14 @@
          * @ngdoc method
          * @name toggle
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description load folder childs
-         * @param {object} folder - the folder to display childs
+         * @description load folder children
+         * @param {object} folder - the folder to display children
          */
         vm.toggle = function (node) {
             if (!node.collapsed){
                 node.collapsed = true;
             } else {
-                FolderService.childs(node.id)
+                FolderService.children(node.id)
                     .then(function(res) {
                         node.nodes = res.data?res.data:[];
                         _.forEach(node.nodes,function(folder){
@@ -217,7 +217,7 @@
             vm.folderDestinationModal = true;
             vm.datasetToClone = dataset;
 
-            FolderService.childs().then(function(res){
+            FolderService.children().then(function(res){
                 vm.folders=res.data;
                 _.forEach(vm.folders,function(folder){
                     folder.collapsed = true;
@@ -396,7 +396,7 @@
      * @ngdoc property
      * @name currentChilds
      * @propertyOf data-prep.folder.controller:FolderCtrl
-     * @description The childs list.
+     * @description The children list.
      * This list is bound to {@link data-prep.services.state.service:FolderStateService}.folderState.currentFolderChilds
      */
     Object.defineProperty(DatasetListCtrl.prototype,
