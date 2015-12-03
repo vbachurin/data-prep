@@ -264,6 +264,12 @@
                 <artifactId>commons-httpclient</artifactId>
                 <version>3.1</version>
             </dependency>
+            <!-- See https://issues.apache.org/jira/browse/COLLECTIONS-580 -->
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>3.2.2</version>
+            </dependency>
             <!-- logging stuff -->
             <dependency>
                 <groupId>org.slf4j</groupId>
