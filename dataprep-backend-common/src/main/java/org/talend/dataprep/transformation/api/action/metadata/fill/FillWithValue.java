@@ -5,7 +5,6 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
@@ -52,6 +51,8 @@ public class FillWithValue extends AbstractFillWith implements ColumnAction {
         if (column == null || !acceptColumn(column)) {
             return this;
         }
-        return new FillWithValue(Type.valueOf(column.getType().toUpperCase()));
+        final FillWithValue fillWithValue = new FillWithValue(Type.valueOf(column.getType().toUpperCase()));
+        fillWithValue.dateParser = this.dateParser; // autowired fields should not be forgotten...
+        return fillWithValue;
     }
 }

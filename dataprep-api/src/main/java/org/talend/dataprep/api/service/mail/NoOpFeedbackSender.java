@@ -15,7 +15,8 @@ import org.springframework.stereotype.Component;
 /**
  * An implementation of {@link FeedbackSender} useful to debug
  */
-@ConditionalOnProperty(value = {"mail.smtp.host", "mail.smtp.to", "mail.smtp.username", "mail.smtp.from"}, matchIfMissing = true)
+@ConditionalOnProperty(value = { "mail.smtp.host", "mail.smtp.to", "mail.smtp.username",
+        "mail.smtp.from" }, matchIfMissing = true)
 @Component
 public class NoOpFeedbackSender implements FeedbackSender {
 

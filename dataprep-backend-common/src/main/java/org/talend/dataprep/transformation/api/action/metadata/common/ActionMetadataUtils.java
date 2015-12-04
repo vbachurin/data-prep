@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.TypeUtils;
-import org.talend.dataprep.configuration.AnalyzerService;
+import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.dataquality.statistics.quality.DataTypeQualityAnalyzer;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.ValueQualityStatistics;

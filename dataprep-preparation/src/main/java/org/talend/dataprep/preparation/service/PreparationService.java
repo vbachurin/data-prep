@@ -9,7 +9,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.exception.error.PreparationErrorCodes.*;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,29 +19,15 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.talend.daikon.exception.ExceptionContext;
-import org.talend.dataprep.api.preparation.Action;
-import org.talend.dataprep.api.preparation.AppendStep;
-import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.preparation.PreparationActions;
-import org.talend.dataprep.api.preparation.PreparationUtils;
-import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.PreparationErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
@@ -326,22 +311,18 @@ public class PreparationService {
     }
 
     /**
-     * List all preparation related error codes.git
+     * List all preparation related error codes.
      */
     @RequestMapping(value = "/preparations/errors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all preparation related error codes.", notes = "Returns the list of all preparation related error codes.")
     @Timed
-    public void listErrors(HttpServletResponse response) {
-        try {
-            // need to cast the typed dataset errors into mock ones to use json parsing
-            List<JsonErrorCodeDescription> errors = new ArrayList<>(PreparationErrorCodes.values().length);
-            for (PreparationErrorCodes code : PreparationErrorCodes.values()) {
-                errors.add(new JsonErrorCodeDescription(code));
-            }
-            builder.build().writer().writeValue(response.getOutputStream(), errors);
-        } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+    public Iterable<JsonErrorCodeDescription> listErrors() {
+        // need to cast the typed dataset errors into mock ones to use json parsing
+        List<JsonErrorCodeDescription> errors = new ArrayList<>(PreparationErrorCodes.values().length);
+        for (PreparationErrorCodes code : PreparationErrorCodes.values()) {
+            errors.add(new JsonErrorCodeDescription(code));
         }
+        return errors;
     }
 
     // ------------------------------------------------------------------------------------------------------------------

@@ -4,23 +4,38 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
- *
+ * Bean that model a date pattern.
  */
 public class DatePattern implements Comparable {
 
     public static final DatePattern ISO_LOCAL_DATE_TIME = new DatePattern(DateTimeFormatter.ISO_DATE_TIME);
 
+    /** Number of occurrences of this date pattern within a dataset. */
     private long occurrences;
 
+    /** The date pattern as String. */
     private String pattern;
 
+    /** The date pattern formatter. */
     private DateTimeFormatter formatter;
 
+    /**
+     * Constructor from the pattern.
+     *
+     * @param occurrences the number of occurrences.
+     * @param pattern the date pattern.
+     */
     public DatePattern(long occurrences, String pattern) {
         this.occurrences = occurrences;
         this.pattern = pattern;
     }
 
+    /**
+     * Constructor with the pattern and formattter.
+     *
+     * @param pattern the pattern.
+     * @param formatter the formatter.
+     */
     public DatePattern(String pattern, DateTimeFormatter formatter) {
         this.pattern = pattern;
         this.formatter = formatter;
@@ -32,7 +47,7 @@ public class DatePattern implements Comparable {
     }
 
     /**
-     * @return the Occurences
+     * @return the Occurrences
      */
     public long getOccurrences() {
         return occurrences;
@@ -105,6 +120,9 @@ public class DatePattern implements Comparable {
         return Objects.hash(occurrences, pattern);
     }
 
+    /**
+     * @see Object#toString()
+     */
     @Override
     public String toString() {
         return "DatePattern{" + "occurrences=" + occurrences + ", pattern='" + pattern + '\'' + '}';

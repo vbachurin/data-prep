@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
@@ -39,7 +38,7 @@ public class AggregationAPI extends APIService {
      */
     @RequestMapping(value = "/api/aggregate", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Compute aggregation", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE, notes = "Compute aggregation according to the given parameters")
-    public void compute(@RequestBody @Valid final AggregationParameters input, final HttpServletResponse response) {
+    public void compute(@RequestBody @Valid final AggregationParameters input, final OutputStream output) {
 
         LOG.debug("Aggregation computation requested (pool: {} )...", getConnectionManager().getTotalStats());
 
@@ -49,7 +48,6 @@ public class AggregationAPI extends APIService {
 
         // copy the content to the http response
         try (InputStream result = command.execute()) {
-            OutputStream output = response.getOutputStream();
             IOUtils.copyLarge(result, output);
             output.flush();
             LOG.debug("Aggregation done (pool: {} )...", getConnectionManager().getTotalStats());

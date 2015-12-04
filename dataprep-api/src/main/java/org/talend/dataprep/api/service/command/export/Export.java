@@ -10,8 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
@@ -39,18 +37,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Scope("request")
 public class Export extends PreparationCommand<InputStream> {
 
-    private Export(final HttpClient client, final ExportParameters input, final HttpServletResponse response) {
+    private Export(final HttpClient client, final ExportParameters input) {
         super(APIService.TRANSFORM_GROUP, client);
-        execute(() -> onExecute(input, response));
+        execute(() -> onExecute(input));
         on(HttpStatus.OK).then(pipeStream());
     }
 
     /**
      * @param input the export parameters.
-     * @param response http response to the client.
      * @return the request to perform.
      */
-    private HttpRequestBase onExecute(ExportParameters input, HttpServletResponse response) {
+    private HttpRequestBase onExecute(ExportParameters input) {
         try {
             String name;
             List<Action> actions;

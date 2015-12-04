@@ -15,17 +15,17 @@
       "tdpId": 2
     },
     {
-      "0002": "",
-      "0003": "",
-      "city": "Santa Fe",
-      "state": "AZ",
-      "tdpId": 3
-    },
-    {
       "0002": "Santa",
       "0003": "Fe",
       "city": "Santa Fe",
       "state": "CA",
+      "tdpId": 3
+    },
+    {
+      "0002": "",
+      "0003": "",
+      "city": "Grapevine",
+      "state": "TX",
       "tdpId": 4
     }
   ]

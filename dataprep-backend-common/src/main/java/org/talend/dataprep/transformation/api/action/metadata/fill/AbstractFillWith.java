@@ -1,10 +1,19 @@
 package org.talend.dataprep.transformation.api.action.metadata.fill;
 
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
@@ -14,14 +23,6 @@ import org.talend.dataprep.transformation.api.action.metadata.date.DatePattern;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
-import org.talend.dataprep.api.type.Type;
-
-import java.time.DateTimeException;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
 
 public abstract class AbstractFillWith extends ActionMetadata {
 
@@ -52,7 +53,8 @@ public abstract class AbstractFillWith extends ActionMetadata {
     /**
      * Component that parses dates.
      */
-    private final DateParser dateParser = new DateParser(); // TODO investigate why this instantiation is required, should be auto with Autowired
+    @Autowired
+    protected DateParser dateParser;
 
     protected Type type;
 
@@ -77,7 +79,7 @@ public abstract class AbstractFillWith extends ActionMetadata {
                 newValue = row.get(selectedColumn.getId());
             }
 
-            // Second: if we're on a date column, format new value with the most frequent pattenr of the column:
+            // Second: if we're on a date column, format new value with the most frequent pattern of the column:
             Type type = (columnMetadata == null ? Type.ANY : Type.get(columnMetadata.getType()));
             if (type.equals(Type.DATE)) {
                 try {

@@ -1,8 +1,8 @@
 package org.talend.dataprep.api.service.mail;
 
-import org.elasticsearch.common.lang3.StringUtils;
-
 import java.io.Serializable;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * This class contains all the data needed to send feedback to Talend.
@@ -60,9 +60,11 @@ public class MailDetails implements Serializable {
     }
 
     public boolean isEmpty() {
-        return StringUtils.isEmpty(title) && StringUtils.isEmpty(mail) && StringUtils.isEmpty(severity) && StringUtils
-                .isEmpty(type) &&
-                StringUtils.isEmpty(description);
+        return StringUtils.isEmpty(title) && //
+            StringUtils.isEmpty(mail) && //
+            StringUtils.isEmpty(severity) && //
+            StringUtils.isEmpty(type) && //
+            StringUtils.isEmpty(description);
     }
 
     @Override public String toString() {

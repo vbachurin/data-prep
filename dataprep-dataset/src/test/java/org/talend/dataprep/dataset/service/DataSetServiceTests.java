@@ -19,14 +19,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
@@ -63,6 +63,10 @@ public class DataSetServiceTests extends DataSetBaseTest {
     private static final String METADATA_JSON = "../metadata.json";
 
     private static final String DATASET_WITH_NUL_CHAR_CSV = "../dataset_with_NUL_char.csv";
+
+    /** DataPrep jackson ready to use builder. */
+    @Autowired
+    Jackson2ObjectMapperBuilder builder;
 
     @Test
     public void CORSHeaders() throws Exception {
@@ -776,7 +780,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         assertNull(metadata);
         int statusCode = when().get("/datasets/{id}/metadata", "9876").statusCode();
 
-        assertThat(statusCode, is(HttpServletResponse.SC_NO_CONTENT));
+        assertThat(statusCode, is(HttpStatus.NO_CONTENT.value()));
 
     }
 
@@ -1079,8 +1083,13 @@ public class DataSetServiceTests extends DataSetBaseTest {
         InputStream content = when().get("/datasets/{id}/content?metadata=true&columns=true", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("../invalid_us_states_expected.json");
-        assertThat(contentAsString, sameJSONAsFile(expected));
+        final DataSet dataset = builder.build().readerFor(DataSet.class).readValue(contentAsString);
+        assertThat(dataset, is(notNullValue()));
+        assertThat(dataset.getColumns().isEmpty(), is(false));
+
+        final ColumnMetadata column = dataset.getColumns().get(0);
+        assertThat(column.getDomain(), is("US_STATE_CODE")); // us state code
+        assertThat(column.getQuality().getInvalid(), is(2)); // 2 invalid values
     }
 
     private String insertEmptyDataSet() {

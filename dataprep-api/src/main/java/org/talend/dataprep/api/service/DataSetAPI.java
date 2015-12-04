@@ -5,14 +5,13 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Writer;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +35,7 @@ import org.talend.dataprep.api.service.command.transformation.SuggestDataSetActi
 import org.talend.dataprep.api.service.command.transformation.SuggestLookupActions;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -130,11 +130,11 @@ public class DataSetAPI extends APIService {
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
             @RequestParam(required = false, defaultValue = "full") @ApiParam(name = "sample", value = "Size of the wanted sample, if missing or 'full', the full dataset is returned") String sample, //
-            HttpServletResponse response) {
+            final OutputStream output) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
         }
-        response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+        HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
 
         Long sampleValue;
@@ -146,9 +146,8 @@ public class DataSetAPI extends APIService {
         
         HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata, columns, sampleValue);
         try (InputStream content = retrievalCommand.execute()){
-            ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(content, outputStream);
-            outputStream.flush();
+            IOUtils.copyLarge(content, output);
+            output.flush();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
             }
@@ -200,17 +199,16 @@ public class DataSetAPI extends APIService {
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
             @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
-            HttpServletResponse response) {
+            final OutputStream output) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
         }
-        response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+        HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
         HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetPreview.class, client, id, metadata, columns, sheetName);
         try (InputStream content = retrievalCommand.execute()) {
-            ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(content, outputStream);
-            outputStream.flush();
+            IOUtils.copyLarge(content, output);
+            output.flush();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
             }
@@ -223,17 +221,16 @@ public class DataSetAPI extends APIService {
     @ApiOperation(value = "List data sets.", produces = APPLICATION_JSON_VALUE, notes = "Returns a list of data sets the user can use.")
     public void list(@ApiParam(value = "Sort key (by name or date), defaults to 'date'.") @RequestParam(defaultValue = "DATE", required = false) String sort,
                      @ApiParam(value = "Order for sort key (desc or asc), defaults to 'desc'.") @RequestParam(defaultValue = "DESC", required = false) String order,
-                     HttpServletResponse response) {
+                     final OutputStream output) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Listing datasets (pool: {})...", getConnectionManager().getTotalStats());
         }
-        response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+        HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
         HystrixCommand<InputStream> listCommand = getCommand(DataSetList.class, client, sort, order);
         try (InputStream content = listCommand.execute()) {
-            ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(content, outputStream);
-            outputStream.flush();
+            IOUtils.copyLarge(content, output);
+            output.flush();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
             }
@@ -277,7 +274,7 @@ public class DataSetAPI extends APIService {
     @Timed
     public void suggestDatasetActions(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Data set id to get suggestions from.") String dataSetId,
-            HttpServletResponse response) {
+            final OutputStream output) {
         // Get dataset metadata
         HttpClient client = getClient();
         HystrixCommand<DataSetMetadata> retrieveMetadata = getCommand(DataSetGetMetadata.class, client, dataSetId);
@@ -288,9 +285,8 @@ public class DataSetAPI extends APIService {
                 dataSetId);
         // Returns actions
         try (InputStream content = getLookupActions.execute()) {
-            ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(content, outputStream);
-            outputStream.flush();
+            IOUtils.copyLarge(content, output);
+            output.flush();
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }

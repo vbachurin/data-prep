@@ -405,11 +405,7 @@
         "patternFrequencyTable": [
           {
             "pattern": "M/d/yyyy",
-            "occurrences": 9
-          },
-          {
-            "pattern": "d/M/yyyy",
-            "occurrences": 7
+            "occurrences": 16
           }
         ],
         "quantiles": {

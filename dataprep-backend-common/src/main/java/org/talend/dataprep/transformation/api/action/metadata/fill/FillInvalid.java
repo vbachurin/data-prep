@@ -83,6 +83,9 @@ public class FillInvalid extends AbstractFillWith implements ColumnAction {
         if (column == null || !acceptColumn(column)) {
             return this;
         }
-        return new FillInvalid(Type.valueOf(column.getType().toUpperCase()));
+        final FillInvalid fillInvalid = new FillInvalid(Type.valueOf(column.getType().toUpperCase()));
+        fillInvalid.dateParser = this.dateParser; // autowired fields should not be forgotten...
+        return fillInvalid;
+
     }
 }

@@ -8,11 +8,13 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
-import org.talend.dataquality.statistics.frequency.PatternFrequencyAnalyzer;
-import org.talend.dataquality.statistics.frequency.PatternFrequencyStatistics;
+import org.talend.dataprep.quality.AnalyzerService;
+import org.talend.dataquality.statistics.frequency.pattern.AbstractPatternFrequencyAnalyzer;
+import org.talend.dataquality.statistics.frequency.pattern.PatternFrequencyStatistics;
 
 /**
  * Component in charge of parsing dates.
@@ -20,10 +22,13 @@ import org.talend.dataquality.statistics.frequency.PatternFrequencyStatistics;
 @Component
 public class DateParser {
 
+    @Autowired
+    private AnalyzerService analyzerService;
+
     /**
      * Returns the most frequent pattern. If few patterns are equally frequent, no guaranty of which one is returned.
      * 
-     * @param column
+     * @param column the column to analyse.
      * @return the most frequent pattern or null if no pattern at all.
      */
     public DatePattern getMostFrequentPattern(ColumnMetadata column) {
@@ -64,7 +69,7 @@ public class DateParser {
      * @throws DateTimeException if the date cannot be parsed.
      */
     protected LocalDateTime guessAndParse(String value, ColumnMetadata column) {
-        final DatePattern guessedPattern = guessPattern(value);
+        final DatePattern guessedPattern = guessPattern(value, column);
         LocalDateTime result = parseDateFromPatterns(value, Collections.singletonList(guessedPattern));
 
         // update the column statistics to prevent future DQ calls
@@ -78,15 +83,16 @@ public class DateParser {
      * Guess the pattern from the given value.
      *
      * @param value the value to get the date time from.
+     * @param column the column metadata
      * @return the wanted parsed date time. For date only value, time is set to 00:00:00.
      */
-    protected DatePattern guessPattern(String value) {
+    protected DatePattern guessPattern(String value, ColumnMetadata column) {
 
         if (StringUtils.isEmpty(value)) {
             throw new DateTimeException("No pattern can be found out of '" + value + "'");
         }
         // call DQ on the given value
-        final PatternFrequencyAnalyzer analyzer = new PatternFrequencyAnalyzer();
+        final AbstractPatternFrequencyAnalyzer analyzer = analyzerService.getPatternFrequencyAnalyzer(column);
         analyzer.analyze(value);
         analyzer.end();
 

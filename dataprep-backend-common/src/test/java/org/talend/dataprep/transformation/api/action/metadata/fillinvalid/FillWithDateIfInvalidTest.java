@@ -12,35 +12,39 @@ import java.util.*;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.date.ChangeDatePatternTest;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.talend.dataprep.transformation.api.action.metadata.fill.FillIfEmpty;
 import org.talend.dataprep.transformation.api.action.metadata.fill.FillInvalid;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Unit test for FillWithDateIfInvalid action.
  * 
  * @see FillInvalid
  */
-public class FillWithDateIfInvalidTest {
+public class FillWithDateIfInvalidTest extends AbstractMetadataBaseTest {
 
     /** The action to test. */
+    @Autowired
     private FillInvalid action;
 
     /**
-     * Default empty constructor.
+     * Set the action up.
      */
-    public FillWithDateIfInvalidTest() {
-        action = new FillInvalid();
+    @Before
+    public void setUp() throws Exception {
         action = (FillInvalid) action.adapt(ColumnMetadata.Builder.column().type(Type.DATE).build());
     }
 
