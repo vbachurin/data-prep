@@ -1,11 +1,11 @@
 package org.talend.dataprep.info;
 
-import org.elasticsearch.common.lang3.StringUtils;
-
 import java.io.IOException;
 import java.util.Scanner;
-import java.util.jar.Manifest;
 import java.util.jar.Attributes;
+import java.util.jar.Manifest;
+
+import org.elasticsearch.common.lang3.StringUtils;
 
 /**
  * Contains the information info the version of running application
@@ -22,6 +22,9 @@ public class ManifestInfo {
      */
     private final String buildId;
 
+    /**
+     * default message when some version info is missing
+     */
     public static final String UNKNOWN = "???";
 
     /**
@@ -31,6 +34,7 @@ public class ManifestInfo {
 
     /**
      * Constructor
+     *
      * @param versionId the version ID
      * @param buildId the build ID
      */
@@ -40,33 +44,59 @@ public class ManifestInfo {
     }
 
     /**
-     * static initializer
+     * Retrieve the attributes from the jar manifest file.
+     * 
+     * @return
      */
-    static {
+    private static Attributes retrieveManifestAttributes() {
         Manifest mf = new Manifest();
+        Attributes attributes = null;
         try {
-            mf.read((new ManifestInfo("", "")).getClass().getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF"));
-            Attributes attributes = mf.getMainAttributes();
-            String versionId = attributes.getValue("Implementation-Version");
-            // remove the hyphen if present
-            if (StringUtils.isNotEmpty(versionId)&& StringUtils.contains(versionId, '-')){
-                Scanner scanner = new Scanner(versionId).useDelimiter("-");
-                versionId = scanner.next();
-            }
-            String buildId = attributes.getValue("SHA-Build");
-            uniqueInstance = new ManifestInfo(versionId,buildId);
+            mf.read((new Version()).getClass().getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF"));
+            attributes = mf.getMainAttributes();
+            System.out.println(attributes.getValue("SHA-Build"));
+
+        } catch (IOException ie) {
+
         }
-        catch (IOException ie){
-            uniqueInstance = new ManifestInfo(UNKNOWN, UNKNOWN);
-            System.out.println("version error");
-        }
+        return attributes;
     }
 
     /**
-     * Return the unique instance
+     * static initializer
+     */
+    static {
+        Attributes attributes = retrieveManifestAttributes();
+        String versionId = null;
+        String buildId = null;
+
+        if (attributes != null) {
+            versionId = attributes.getValue("Implementation-Version");
+            buildId = attributes.getValue("SHA-Build");
+            // remove the hyphen if present
+            if (StringUtils.isNotEmpty(versionId) && StringUtils.contains(versionId, '-')) {
+                Scanner scanner = new Scanner(versionId).useDelimiter("-");
+                if (scanner.hasNext()) {
+                    versionId = scanner.next();
+                }
+            }
+        }
+        if (StringUtils.isEmpty(versionId)) {
+            versionId = UNKNOWN;
+        }
+        if (StringUtils.isEmpty(buildId)) {
+            buildId = UNKNOWN;
+        }
+        System.out.println("Version Id: " + versionId + " build Id: " + buildId);
+        uniqueInstance = new ManifestInfo(versionId, buildId);
+    }
+
+    /**
+     * Return the unique instance.
+     *
      * @return
      */
-    public static ManifestInfo getUniqueInstance(){
+    public static ManifestInfo getUniqueInstance() {
         return uniqueInstance;
     }
 

@@ -1,6 +1,7 @@
 package org.talend.dataprep.info;
 
 public class Version {
+
     private String versionId;
 
     private String buildId;
@@ -38,5 +39,30 @@ public class Version {
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Version version = (Version) o;
+
+        if (versionId != null ? !versionId.equals(version.versionId) : version.versionId != null)
+            return false;
+        if (buildId != null ? !buildId.equals(version.buildId) : version.buildId != null)
+            return false;
+        return !(serviceName != null ? !serviceName.equals(version.serviceName) : version.serviceName != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = versionId != null ? versionId.hashCode() : 0;
+        result = 31 * result + (buildId != null ? buildId.hashCode() : 0);
+        result = 31 * result + (serviceName != null ? serviceName.hashCode() : 0);
+        return result;
     }
 }
