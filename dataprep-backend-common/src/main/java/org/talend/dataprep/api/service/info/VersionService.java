@@ -19,13 +19,10 @@ import com.wordnik.swagger.annotations.ApiOperation;
 @Api(value = "version", basePath = "/version", description = "versions of running application")
 public class VersionService {
 
-    @Autowired(required = true)
-    private HttpServletRequest request;
-
     @RequestMapping(value = "/version", method = GET)
     @ApiOperation(value = "Get the version of the running service", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
-    public Version version(String serviceName) {
+    public Version version(HttpServletRequest request, String serviceName) {
         String serviceUrl = "http://" + request.getLocalAddr() + ":" + request.getLocalPort();
         ManifestInfo manifestInfo = ManifestInfo.getUniqueInstance();
         return new Version(manifestInfo.getVersionId(), manifestInfo.getBuildId(), serviceName + ": (" + serviceUrl + ")");
