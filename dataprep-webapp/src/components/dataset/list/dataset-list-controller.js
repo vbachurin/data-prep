@@ -197,7 +197,6 @@
          */
         vm.clone = function(){
             DatasetService.clone(vm.datasetToClone,vm.folderDestination).then(function (res){
-                        console.log('status:'+res.status);
                         MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
                     }).finally(function () {
                         vm.folderDestinationModal = false;
