@@ -17,10 +17,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.preparation.Identifiable;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 
@@ -81,7 +81,7 @@ public class FileSystemPreparationRepository implements PreparationRepository {
 
         final File from = getPreparationFile(id);
         if (!from.exists()) {
-            LOG.info("preparation #{} not found in file system", id);
+            LOG.debug("preparation #{} not found in file system", id);
             return null;
         }
 
