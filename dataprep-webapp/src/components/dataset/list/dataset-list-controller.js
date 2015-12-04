@@ -203,6 +203,8 @@
                         vm.folderDestinationModal = false;
                         vm.datasetToClone = null;
                         vm.folderDestination = null;
+                        vm.foldersFound = [];
+                        vm.displayFoldersList = false;
                     });
         };
 
@@ -339,6 +341,7 @@
                     vm.folderNameModal = false;
                 });
         };
+
         /**
          * @ngdoc method
          * @name goToFolder
@@ -367,6 +370,20 @@
                 .then(function() {
                     vm.goToFolder(state.folder.currentFolder);
                     // or to newOne?
+                });
+        };
+
+        /**
+         * @ngdoc method
+         * @name searchFolders
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Search folders
+         */
+        vm.searchFolders = function(){
+            FolderService.searchFolders(vm.searchFolderQuery)
+                .then(function(response){
+                    vm.foldersFound = response.data;
+                    vm.displayFoldersList = true;
                 });
         };
 

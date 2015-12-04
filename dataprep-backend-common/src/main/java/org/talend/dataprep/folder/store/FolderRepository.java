@@ -102,6 +102,13 @@ public interface FolderRepository {
      */
     Iterable<Folder> allFolder();
 
+    /**
+     *
+     * @param queryString part of the name to search in folder (not case sensitive)
+     * @return A {@link Iterable} of {@link Folder} with the query string in the name
+     */
+    Iterable<Folder> searchFolders(String queryString);
+
     DistributedLock createFolderLock(String id);
 
     /**

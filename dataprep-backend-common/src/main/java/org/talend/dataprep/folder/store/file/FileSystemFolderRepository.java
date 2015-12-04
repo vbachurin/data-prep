@@ -3,22 +3,29 @@ package org.talend.dataprep.folder.store.file;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
-import org.elasticsearch.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -352,25 +359,78 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
 
         Set<Folder> folders = new HashSet<>();
 
+        FoldersConsumer foldersConsumer = new FoldersConsumer()
+        {
+            @Override
+            public Collection<Folder> getFolders()
+            {
+                return folders;
+            }
+
+            @Override
+            public void accept( Path path )
+            {
+                if (Files.isDirectory(path)) {
+                    String pathStr = pathAsString(path);
+                    folders.add(Folder.Builder.folder() //
+                                    .path(pathStr) //
+                                    .name(extractName(pathStr)) //
+                                    .build());
+                }
+            }
+        };
+
+        visitAllFolders( foldersConsumer );
+
+        return folders;
+    }
+
+    @Override
+    public Iterable<Folder> searchFolders( String queryString )
+    {
+        Set<Folder> folders = new HashSet<>();
+
+        FoldersConsumer foldersConsumer = new FoldersConsumer()
+        {
+            @Override
+            public Collection<Folder> getFolders()
+            {
+                return folders;
+            }
+
+            @Override
+            public void accept( Path path )
+            {
+                if (Files.isDirectory(path)) {
+                    String pathStr = pathAsString(path);
+                    String pathName = extractName(pathStr);
+                    if (StringUtils.containsIgnoreCase( pathName, queryString )) {
+                        folders.add( Folder.Builder.folder() //
+                                         .path( pathStr ) //
+                                         .name( pathName ) //
+                                         .build() );
+                    }
+                }
+            }
+        };
+
+        visitAllFolders( foldersConsumer );
+
+        return folders;
+    }
+
+
+    protected void visitAllFolders( final FoldersConsumer foldersConsumer ){
+
         try {
             Files.walkFileTree(getRootFolder(), new FileVisitor<Path>() {
 
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                    final AtomicBoolean filesFound = new AtomicBoolean(false);
 
-                    Files.list(dir).forEach(path -> {
-                        if (Files.isDirectory(path)) {
-                            String pathStr = pathAsString(path);
-                            folders.add(Folder.Builder.folder() //
-                                    .path(pathStr) //
-                                    .name(extractName(pathStr)) //
-                                    .build());
-                            filesFound.set(true);
-                        }
-                    });
+                    Files.list(dir).forEach(foldersConsumer);
 
-                    return filesFound.get() ? FileVisitResult.CONTINUE : FileVisitResult.SKIP_SUBTREE;
+                    return FileVisitResult.CONTINUE;
                 }
 
                 @Override
@@ -392,41 +452,20 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-
-        return folders;
     }
 
-    protected String buildFileName(FolderEntry folderEntry){
+    private interface FoldersConsumer extends Consumer<Path> {
+        Collection<Folder> getFolders();
+    }
+
+    protected String buildFileName( FolderEntry folderEntry){
         return folderEntry.getContentType() + '@' + folderEntry.getContentId();
     }
 
     @Override
     public void copyFolderEntry(FolderEntry folderEntry, String destinationPath) {
-        /*
-        Path path = Paths.get(getRootFolder().toString(), StringUtils.split(destinationPath, PATH_SEPARATOR));
-
-        if (Files.notExists(path)) {
-            throw new IllegalArgumentException("destinationPath doesn't exists");
-        }
-
-        Path entry = Paths.get(getRootFolder().toString(), StringUtils.split(folderEntry.getPath(), PATH_SEPARATOR));
-        Path originFile = Paths.get(entry.toString(), buildFileName(folderEntry));
-
-        if (Files.notExists(originFile)) {
-            throw new IllegalArgumentException("entry doesn't exists");
-        }
-
-        try {
-
-            Path destinationFile = Paths.get(path.toString(), buildFileName(  ));
-            Files.copy(originFile, destinationFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-        */
         FolderEntry cloned = new FolderEntry( folderEntry.getContentType(), folderEntry.getContentId(), destinationPath);
         addFolderEntry( cloned );
-
     }
 
     @Override

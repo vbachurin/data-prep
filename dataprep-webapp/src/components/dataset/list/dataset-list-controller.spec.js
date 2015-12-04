@@ -553,6 +553,28 @@ describe('Dataset list controller', function () {
         }));
     });
 
+    describe('search folders', function () {
+
+        beforeEach(inject(function ($q, MessageService,FolderService) {
+            spyOn(FolderService, 'searchFolders').and.returnValue($q.when(true));
+        }));
+
+        it('should call search folders service', inject(function (FolderService) {
+            //given
+            var ctrl = createController();
+            ctrl.searchFolderQuery = 'beer';
+
+            //when
+            ctrl.searchFolders();
+            scope.$digest();
+
+            //then
+            expect(FolderService.searchFolders).toHaveBeenCalledWith(ctrl.searchFolderQuery);
+            expect(ctrl.displayFoldersList).toBe(true);
+        }));
+
+    });
+
     describe('Replace an existing dataset with a new one', function() {
         beforeEach(inject(function (UpdateWorkflowService) {
             spyOn(UpdateWorkflowService,'updateDataset').and.returnValue();

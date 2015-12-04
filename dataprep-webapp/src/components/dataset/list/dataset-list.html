@@ -145,37 +145,56 @@
     <talend-modal fullscreen="false"
                   close-button="true"
                   state="datasetListCtrl.folderDestinationModal">
-        <span translate-once="CHOOSE_FOLDER_DESTINATION" translate-values="{type: 'dataset', name: dataset.name}"></span>
 
-        <script type="text/ng-template" id="basic_renderer.html">
-            <div ui-tree-handle class="folder-node tree-node"
-                 ng-class="{folderselected: node.selected, 'dropdown-button-right': node.collapsed, 'dropdown-button-down': !node.collapsed}"
-                 ng-click="datasetListCtrl.toggle(node)">
-                <a class="inventory-icon inventory-folder nodrop" data-nodrag>
-                    <img ng-if="!node.collapsed" src="assets/images/folder/folder_open_small-icon.png"/>
-                    <img ng-if="node.collapsed" src="assets/images/folder/folder_close_small-icon.png"/>
-                </a>
-                <span ng-click="datasetListCtrl.chooseFolder(node)" class="folder-name">{{node.name}}</span>
+        <div class="folders">
+
+            <span translate-once="CHOOSE_FOLDER_DESTINATION" translate-values="{type: 'dataset', name: dataset.name}"></span>
+
+            <form class="search-bar" id="search-folder-form">
+                <input type="search" ng-model="datasetListCtrl.searchFolderQuery"  translate-once-placeholder="FIND_FOLDER"/>
+                <button type="submit" ng-click="datasetListCtrl.searchFolders()">
+                    <img src="assets/images/folder/search-icon.png">
+                </button>
+            </form>
+
+
+            <script type="text/ng-template" id="basic_renderer.html">
+                <div ui-tree-handle class="folder-node tree-node"
+                     ng-class="{folderselected: node.selected}">
+                    <a class="inventory-icon inventory-folder nodrop" data-nodrag ng-click="datasetListCtrl.toggle(node)"
+                       ng-class="{'dropdown-button-right': node.collapsed, 'dropdown-button-down': !node.collapsed}">
+                        <img ng-if="!node.collapsed" src="assets/images/folder/folder_open_small-icon.png"/>
+                        <img ng-if="node.collapsed" src="assets/images/folder/folder_close_small-icon.png"/>
+                    </a>
+                    <span ng-click="datasetListCtrl.chooseFolder(node)" class="folder-name">{{node.name}}</span>
+                </div>
+                <ol ui-tree-nodes ng-model="node.nodes" ng-class="{hidden: node.collapsed}">
+                    <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'basic_renderer.html'"></li>
+                </ol>
+            </script>
+
+            <div ng-if="datasetListCtrl.displayFoldersList">
+                <ul class="folders-list">
+                    <li ng-repeat="node in datasetListCtrl.foldersFound"
+                        ng-class="{folderselected: node.selected}">
+                        <span ng-click="datasetListCtrl.chooseFolder(node)" class="folder-name">{{node.path}}</span>
+                    </li>
+                </ul>
             </div>
-            <ol ui-tree-nodes ng-model="node.nodes" ng-class="{hidden: node.collapsed}">
-                <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'basic_renderer.html'"></li>
-            </ol>
-        </script>
 
+            <div ui-tree id="tree-root" data-nodrop-enabled="true" ng-if="!datasetListCtrl.displayFoldersList">
+              <ol ui-tree-nodes ng-model="datasetListCtrl.folders">
+                <li ng-repeat="node in datasetListCtrl.folders" ui-tree-node ng-include="'basic_renderer.html'"></li>
+              </ol>
+            </div>
 
-        <div ui-tree id="tree-root" data-nodrop-enabled="true" class="folders">
-          <ol ui-tree-nodes ng-model="datasetListCtrl.folders">
-            <li ng-repeat="node in datasetListCtrl.folders" ui-tree-node ng-include="'basic_renderer.html'"></li>
-          </ol>
+            <div class="modal-buttons">
+                <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL">
+                </button>
+                <button class="btn-primary modal-primary-button" translate-once="COPY_ACTION" ng-click="datasetListCtrl.clone()">
+                </button>
+            </div>
         </div>
-
-        <div class="modal-buttons">
-            <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL">
-            </button>
-            <button class="btn-primary modal-primary-button" translate-once="COPY_ACTION" ng-click="datasetListCtrl.clone()">
-            </button>
-        </div>
-
     </talend-modal>
 
 </div>

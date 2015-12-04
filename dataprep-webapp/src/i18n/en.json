@@ -262,5 +262,8 @@
   "OTHER": "other",
   "RECIPE_LOOKUP_FOLLOWING_COLS_ADDED_PLURAL":"column(s) have been added.",
   "RECIPE_LOOKUP_FOLLOWING_COLS_ADDED_SINGULAR":"column has been added.",
-  "ADD_TO_LOOKUP":"Add to Lookup"
+  "ADD_TO_LOOKUP":"Add to Lookup",
+
+  "_comment": "Folders",
+  "FIND_FOLDER": "Find a Folder"
 }

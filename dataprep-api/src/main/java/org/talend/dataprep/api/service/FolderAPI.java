@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderContent;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.service.command.folder.AllFoldersList;
@@ -30,6 +31,7 @@ import org.talend.dataprep.api.service.command.folder.FoldersList;
 import org.talend.dataprep.api.service.command.folder.RemoveFolder;
 import org.talend.dataprep.api.service.command.folder.RemoveFolderEntry;
 import org.talend.dataprep.api.service.command.folder.RenameFolder;
+import org.talend.dataprep.api.service.command.folder.SearchFolders;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -59,6 +61,27 @@ public class FolderAPI extends APIService {
             throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDERS, e);
         }
     }
+
+    /**
+     * no javadoc here so see description in @ApiOperation notes.
+     * @param pathName
+     * @return
+     */
+    @RequestMapping(value = "/api/folders/search", method = GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Search Folders with parameter as part of the name", produces = MediaType.APPLICATION_JSON_VALUE, notes = "")
+    @Timed
+    public void search( @RequestParam(required = false)  String pathName, final HttpServletResponse response){
+        try {
+            final HystrixCommand<InputStream> foldersList = getCommand( SearchFolders.class, getClient(), pathName);
+            response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            final ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copyLarge(foldersList.execute(), outputStream);
+            outputStream.flush();
+        } catch (Exception e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDERS, e);
+        }
+    }
+
 
     @RequestMapping(value = "/api/folders/all", method = GET)
     @ApiOperation(value = "List all folders.", produces = MediaType.APPLICATION_JSON_VALUE)

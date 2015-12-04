@@ -137,4 +137,19 @@ describe('Folder Rest Service', function () {
 
     }));
 
+    it('should call search', inject(function ($rootScope, FolderRestService, RestURLs) {
+        //given
+        var path = '/foo/bar';
+
+        $httpBackend
+            .expectGET(RestURLs.folderUrl + '/search?pathName=' + encodeURIComponent(path))
+            .respond(200);
+
+        //when
+        FolderRestService.searchFolders(path);
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+    }));
+
 });

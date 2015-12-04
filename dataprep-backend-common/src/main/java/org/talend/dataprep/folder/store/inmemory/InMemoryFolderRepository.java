@@ -204,4 +204,10 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
     public int size() {
         return this.foldersMap.size();
     }
+
+    @Override
+    public Iterable<Folder> searchFolders( String queryString )
+    {
+        return null;
+    }
 }

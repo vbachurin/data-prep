@@ -63,6 +63,19 @@ public class FolderService {
 
     /**
      * no javadoc here so see description in @ApiOperation notes.
+     * @param pathName
+     * @return
+     */
+    @RequestMapping(value = "/folders/search", method = GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Search Folders with parameter as part of the name", produces = MediaType.APPLICATION_JSON_VALUE, notes = "")
+    @Timed
+    @VolumeMetered
+    public Iterable<Folder> search( @RequestParam(required = false)  String pathName){
+        return folderRepository.searchFolders(pathName);
+    }
+
+    /**
+     * no javadoc here so see description in @ApiOperation notes.
      * @param path
      * @return
      */

@@ -20,6 +20,7 @@
       getFolderContent: getFolderContent,
       refreshDefaultPreparationForCurrentFolder: refreshDefaultPreparationForCurrentFolder,
       children: children,
+      searchFolders: searchFolders,
 
       // shared folder ui mngt
       buildStackFromId: buildStackFromId,
@@ -53,6 +54,18 @@
      */
     function createFolder (path) {
       return FolderRestService.create(path);
+    }
+
+    /**
+     * @ngdoc method
+     * @name searchFolders
+     * @methodOf data-prep.services.folder.service:FolderService
+     * @description Search folders with a part of the name
+     * @param {string} query the part of the name to search
+     * @returns {Promise} The GET promise
+     */
+    function searchFolders (path) {
+      return FolderRestService.searchFolders(path);
     }
 
     /**

@@ -14,7 +14,8 @@
 			create: createFolder,
 			getFolderContent: getFolderContent,
 			renameFolder: renameFolder,
-			children: children
+			children: children,
+			searchFolders: searchFolders
 		};
 
 		//----------------------------------------------
@@ -33,6 +34,23 @@
 			var url = RestURLs.folderUrl;
 			if (path){
 				url += '?path=' + encodeURIComponent(path);
+			}
+			return $http.get(url);
+		}
+
+
+		/**
+		 * @ngdoc method
+		 * @name searchFolders
+		 * @methodOf data-prep.services.folder.service:FolderRestService
+		 * @description Search folders with a part of the name
+		 * @param {string} query the part of the name to search
+		 * @returns {Promise} The GET promise
+		 */
+		function searchFolders(query){
+			var url = RestURLs.folderUrl + '/search';
+			if (query){
+				url += '?pathName=' + encodeURIComponent(query);
 			}
 			return $http.get(url);
 		}
