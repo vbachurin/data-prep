@@ -149,15 +149,14 @@
         <div class="modal-title" translate-once="CHOOSE_FOLDER_DESTINATION" translate-values="{type: 'dataset', name: dataset.name}">
         </div>
         <div class="modal-body">
-            <div>
-                <form class="search-bar" id="search-folder-form">
-                    <input type="search" ng-model="datasetListCtrl.searchFolderQuery"  translate-once-placeholder="FIND_FOLDER"/>
-                    <button type="submit" ng-click="datasetListCtrl.searchFolders()">
-                        <img src="assets/images/folder/search-icon.png">
-                    </button>
-                </form>
-            </div>
             <div class="folders-modal">
+                    <form class="search-bar" id="search-folder-form">
+                        <input type="search" ng-model="datasetListCtrl.searchFolderQuery"  translate-once-placeholder="FIND_FOLDER"/>
+                        <button type="submit" ng-click="datasetListCtrl.searchFolders()">
+                            <img src="assets/images/folder/search-icon.png">
+                        </button>
+                    </form>
+
                 <div class="folders">
                     <script type="text/ng-template" id="basic_renderer.html">
                         <div ui-tree-handle class="folder-node tree-node"
