@@ -28,7 +28,7 @@ public interface DatePatternParamModel {
     /**
      * The parameter object for the custom new pattern.
      */
-    Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, ParameterType.STRING, EMPTY);
+    Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, ParameterType.STRING, EMPTY, false, false);
 
     /**
      * @return the Parameters to display for the date related action.
