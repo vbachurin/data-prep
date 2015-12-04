@@ -211,15 +211,25 @@
         function createMatchFilterFn(colId, pattern) {
 
             var regexp;
-            pattern = pattern.replace(/d/g, 'D').replace(/y/g, 'Y');  // convert to date format used by moment.js
+            moment.locale('en');
+            var end = false;
+
+            pattern = pattern.replace(/\'/g, function() { //Hack quote problems
+                return (end = !end) ? '[' : ']';
+            }).replace(/\[\]/g, "[']").replace(/\]\[/g, "'");
+
+            pattern = moment().toMomentFormatString(pattern);
 
             return function () {
                 return function (item) {
-                    // col could be removed by a step
                     if (item[colId]) {
-                        if (pattern.indexOf('D') > -1 &&
-                            pattern.indexOf('M') > -1 &&
-                            pattern.indexOf('Y') > -1) {
+                        if (pattern.indexOf('D') > -1 ||  // if date format???
+                            pattern.indexOf('M') > -1 ||
+                            pattern.indexOf('Y') > -1 ||
+                            pattern.indexOf('H') > -1 ||
+                            pattern.indexOf('h') > -1 ||
+                            pattern.indexOf('m') > -1 ||
+                            pattern.indexOf('s') > -1) {
 
                             if(itemBelongsToOtherPattern(item, colId, pattern)){
                                 return false;
