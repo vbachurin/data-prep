@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -65,7 +66,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
         boolean isNewPatternRegistered = false;
         // loop on the existing patterns to see if the new one is already present or not:
         for (PatternFrequency patternFrequency : statistics.getPatternFrequencies()) {
-            if (patternFrequency.getPattern().equals(newPattern)) {
+            if (StringUtils.equals(patternFrequency.getPattern(), newPattern.getPattern())) {
                 isNewPatternRegistered = true;
                 break;
             }
