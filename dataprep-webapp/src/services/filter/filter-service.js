@@ -211,29 +211,32 @@
         function createMatchFilterFn(colId, pattern) {
 
             var regexp;
-            moment.locale('en');
             var end = false;
+            var isDatePattern = (pattern.indexOf('d') > -1 ||  // if date format???
+                pattern.indexOf('M') > -1 ||
+                pattern.indexOf('y') > -1 ||
+                pattern.indexOf('H') > -1 ||
+                pattern.indexOf('h') > -1 ||
+                pattern.indexOf('m') > -1 ||
+                pattern.indexOf('s') > -1);
 
-            pattern = pattern.replace(/\'/g, function() { //Hack quote problems
-                return (end = !end) ? '[' : ']';
-            }).replace(/\[\]/g, "[']").replace(/\]\[/g, "'");
+            if (isDatePattern) {
+                pattern = pattern.replace(/\'/g, function() { //quote problems => replace quotes by brackets (ex : 'T' => [T], ''y => [']y, 'o''clock' => [o'clock])
+                    return (end = !end) ? '[' : ']';
+                }).replace(/\[\]/g, '[\']').replace(/\]\[/g, '\'');
 
-            pattern = moment().toMomentFormatString(pattern);
-
+                //Convert java date format to moment.js date format by escaping contents in brackets
+                var stringsNotToBeReplaced = pattern.match(/\[.*?\]/g);
+                var i = 0;
+                pattern = moment().toMomentFormatString(pattern);
+                pattern = pattern.replace(/\[.*?\]/g, function() {
+                    return stringsNotToBeReplaced[i++];
+                });
+            }
             return function () {
                 return function (item) {
                     if (item[colId]) {
-                        if (pattern.indexOf('D') > -1 ||  // if date format???
-                            pattern.indexOf('M') > -1 ||
-                            pattern.indexOf('Y') > -1 ||
-                            pattern.indexOf('H') > -1 ||
-                            pattern.indexOf('h') > -1 ||
-                            pattern.indexOf('m') > -1 ||
-                            pattern.indexOf('s') > -1) {
-
-                            if(itemBelongsToOtherPattern(item, colId, pattern)){
-                                return false;
-                            }
+                        if (isDatePattern) {
                             return moment(item[colId], pattern, true).isValid();
                         }
                         regexp = convertPatternToRegexp(pattern);
@@ -246,20 +249,6 @@
             };
         }
 
-        function itemBelongsToOtherPattern(item, colId, pattern) {
-
-            var patternFrequencyTable = _.find(state.playground.data.columns, function(column) {
-                                                return column.id === colId;}
-                                              ).statistics.patternFrequencyTable;
-            for (var i = 0; i < patternFrequencyTable.length; i++) {
-
-                if(patternFrequencyTable[i].pattern === pattern) {
-                    return false;
-                } else if(moment(item[colId], patternFrequencyTable[i].pattern, true).isValid()) {
-                    return true;
-                }
-            }
-        }
         function convertPatternToRegexp(pattern) {
             var regexp = '';
             for (var i = 0, len = pattern.length; i < len; i++) {
