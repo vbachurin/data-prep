@@ -27,8 +27,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.talend.daikon.exception.ExceptionContext;
-import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
+import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.user.UserData;
@@ -359,21 +359,22 @@ public class DataSetService {
 
     /**
      * Clone to a new data set and returns the new data set id as text in the response.
+     * 
      * @param folderPath the folder path to clone the dataset
      * @return The new data id.
      */
     @RequestMapping(value = "/datasets/clone/{id}", method = PUT, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "Clone a data set", produces = MediaType.TEXT_PLAIN_VALUE,
-        notes = "Clone a new data set based on the given id. Returns the id of the newly created data set.")
+    @ApiOperation(value = "Clone a data set", produces = MediaType.TEXT_PLAIN_VALUE, notes = "Clone a new data set based on the given id. Returns the id of the newly created data set.")
     @Timed
     @VolumeMetered
     public String clone(
-        @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
-        @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "", required = false) String folderPath) throws IOException {
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
+            @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "", required = false) String folderPath)
+                    throws IOException {
 
         HttpResponseContext.header("Content-Type", MediaType.TEXT_PLAIN_VALUE);
 
-        final DataSet dataSet = get( true, true, null, dataSetId);
+        final DataSet dataSet = get(true, true, null, dataSetId);
 
         // if no metadata it's an empty one the get method has already set NO CONTENT http return code
         // so simply return!!
@@ -383,22 +384,22 @@ public class DataSetService {
 
         final String name = dataSet.getMetadata().getName() + " Copy";
         // first check if the name is already used in the target folder
-        final Iterable<FolderEntry> entries = folderRepository.entries( folderPath, "dataset" );
+        final Iterable<FolderEntry> entries = folderRepository.entries(folderPath, "dataset");
 
-        entries.forEach( folderEntry -> {
+        entries.forEach(folderEntry -> {
             DataSetMetadata dataSetEntry = dataSetMetadataRepository.get(folderEntry.getContentId());
-            if (dataSetEntry != null && StringUtils.equals( name, dataSetEntry.getName())){
+            if (dataSetEntry != null && StringUtils.equals(name, dataSetEntry.getName())) {
                 final ExceptionContext context = ExceptionContext.build() //
-                    .put("id", folderEntry.getContentId()) //
-                    .put( "folder", folderPath ) //
-                    .put( "name", name );
+                        .put("id", folderEntry.getContentId()) //
+                        .put("folder", folderPath) //
+                        .put("name", name);
                 throw new TDPException(DataSetErrorCodes.DATASET_NAME_ALREADY_USED, context);
             }
         });
 
         final String newId = UUID.randomUUID().toString();
 
-        dataSet.getMetadata().setName( name );
+        dataSet.getMetadata().setName(name);
 
         final Marker marker = Markers.dataset(newId);
         LOG.debug(marker, "Cloning...");
@@ -422,8 +423,8 @@ public class DataSetService {
         queueEvents(newId);
 
         // create associated folderEntry
-        FolderEntry folderEntry = new FolderEntry( "dataset", newId, folderPath );
-        folderRepository.addFolderEntry( folderEntry );
+        FolderEntry folderEntry = new FolderEntry("dataset", newId, folderPath);
+        folderRepository.addFolderEntry(folderEntry);
 
         LOG.debug(marker, "Cloned!");
 
