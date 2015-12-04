@@ -196,7 +196,7 @@
          * @description perform the dataset cloning to the folder destination
          */
         vm.clone = function(){
-            DatasetService.clone(vm.datasetToClone,vm.folderDestination).then(function (res){
+            DatasetService.clone(vm.datasetToClone,vm.folderDestination).then(function (){
                         MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
                     }).finally(function () {
                         vm.folderDestinationModal = false;

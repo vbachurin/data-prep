@@ -54,7 +54,10 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
     }
 
     @Override
-    public Iterable<Folder> children( String path) {
+    public Iterable<Folder> children(String path) {
+        if (StringUtils.equals(path, "/")) {
+            path = "";
+        }
         final List<Folder> children = new ArrayList<>();
         final String cleanedPath = cleanPath(path);
         this.foldersMap.values().stream().forEach(folder -> {
@@ -64,7 +67,6 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
                     children.add(folder);
                 }
             } else {
-
                 if (StringUtils.startsWith(folder.getPath(), cleanedPath)) {
                     // path asked /foo
                     // /foo/bar/beer /foo/bar
@@ -72,11 +74,32 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
                     // remove path start then count occurences of /
 
                     String endPath = StringUtils.removeStart(folder.getPath(), cleanedPath);
-                    if (StringUtils.countMatches(endPath, "/") > 0) {
+                    if (StringUtils.countMatches(endPath, "/") == 1) {
                         children.add(folder);
                     }
                 }
             }
+        });
+
+        return children;
+    }
+
+    @Override
+    public Iterable<Folder> searchFolders(String queryString) {
+        final List<Folder> children = new ArrayList<>();
+        this.foldersMap.values().stream().forEach(folder -> {
+            String cleanPath = cleanPath(folder.getPath());
+
+            if (StringUtils.contains(cleanPath, '/')) {
+                if (StringUtils.containsIgnoreCase(StringUtils.substringAfterLast(cleanPath, "/"), queryString)) {
+                    children.add(folder);
+                }
+            } else {
+                if (StringUtils.containsIgnoreCase(cleanPath, queryString)) {
+                    children.add(folder);
+                }
+            }
+
         });
 
         return children;
@@ -205,9 +228,4 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
         return this.foldersMap.size();
     }
 
-    @Override
-    public Iterable<Folder> searchFolders( String queryString )
-    {
-        return null;
-    }
 }

@@ -135,7 +135,6 @@ public abstract class AbstractFolderTest {
     @Test
     public void create_child_with_two_entries_then_remove() throws Exception {
 
-
         int sizeBefore = getFolderRepository().size();
 
         Folder foo = getFolderRepository().addFolder("foo");
@@ -146,7 +145,7 @@ public abstract class AbstractFolderTest {
 
         Assertions.assertThat(sizeAfter).isEqualTo(sizeBefore + 2);
 
-        assertChildrenSize( "", 1 );
+        assertChildrenSize("", 1);
 
         FolderEntry beerEntry = new FolderEntry(DataSet.class.getName(), "littlecreatures", "/foo");
 
@@ -156,29 +155,27 @@ public abstract class AbstractFolderTest {
 
         getFolderRepository().addFolderEntry(wineEntry);
 
-
         wineEntry = new FolderEntry(DataSet.class.getName(), "bordeaux", "foo/beer");
 
         getFolderRepository().addFolderEntry(wineEntry);
 
         Iterable<FolderEntry> folderEntries = getFolderRepository().entries("foo", DataSet.class.getName());
         List<FolderEntry> entries = Lists.newArrayList(folderEntries);
-        
+
         Assertions.assertThat(entries).isNotNull().isNotEmpty().hasSize(2);
 
-
-        folderEntries = getFolderRepository().findFolderEntries( "bordeaux", DataSet.class.getName() );
+        folderEntries = getFolderRepository().findFolderEntries("bordeaux", DataSet.class.getName());
         entries.clear();
         folderEntries.forEach(entries::add);
         Assertions.assertThat(entries).isNotNull().isNotEmpty().hasSize(2);
 
-        folderEntries = getFolderRepository().findFolderEntries( "littlecreatures", DataSet.class.getName() );
+        folderEntries = getFolderRepository().findFolderEntries("littlecreatures", DataSet.class.getName());
         entries.clear();
         folderEntries.forEach(entries::add);
         Assertions.assertThat(entries).isNotNull().isNotEmpty().hasSize(1);
 
         getFolderRepository().removeFolderEntry("foo", "littlecreatures", DataSet.class.getName());
-            
+
         folderEntries = getFolderRepository().entries("/foo", DataSet.class.getName());
         entries = Lists.newArrayList(folderEntries);
 
@@ -190,7 +187,7 @@ public abstract class AbstractFolderTest {
 
         Assertions.assertThat(sizeAfter).isEqualTo(sizeBefore);
 
-        assertChildrenSize( "", 0 );
+        assertChildrenSize("", 0);
 
     }
 
@@ -211,7 +208,7 @@ public abstract class AbstractFolderTest {
 
         Assertions.assertThat(sizeAfter).isEqualTo(sizeBefore + 2);
 
-        assertChildrenSize( "", 2);
+        assertChildrenSize("", 2);
 
         FolderEntry wineEntry = new FolderEntry(DataSet.class.getName(), "bordeaux", "foo");
 
@@ -259,7 +256,7 @@ public abstract class AbstractFolderTest {
 
         Assertions.assertThat(sizeAfter).isEqualTo(sizeBefore + 2);
 
-        assertChildrenSize( "", 2);
+        assertChildrenSize("", 2);
 
         FolderEntry wineEntry = new FolderEntry(DataSet.class.getName(), "bordeaux", "foo");
 
@@ -303,7 +300,7 @@ public abstract class AbstractFolderTest {
 
         Assertions.assertThat(sizeAfter).isEqualTo(sizeBefore + 3);
 
-        assertChildrenSize( "", 1);
+        assertChildrenSize("", 1);
 
         FolderEntry beerEntry = new FolderEntry(DataSet.class.getName(), "littlecreatures", "/foo");
 
@@ -337,11 +334,11 @@ public abstract class AbstractFolderTest {
 
         Assertions.assertThat(entries).isNotNull().isNotEmpty().hasSize(1);
 
-        assertChildrenSize( "/foo", 2);
+        assertChildrenSize("/foo", 2);
 
         getFolderRepository().renameFolder("/foo", "/wine");
 
-        assertChildrenSize( "/wine", 2);
+        assertChildrenSize("/wine", 2);
 
         // test FolderEntry moved as well
         folderEntries = getFolderRepository().entries("/wine", DataSet.class.getName());
@@ -355,7 +352,7 @@ public abstract class AbstractFolderTest {
 
         Assertions.assertThat(sizeAfter).isEqualTo(sizeBefore);
 
-        assertChildrenSize( "/", 0);
+        assertChildrenSize("/", 0);
 
     }
 
@@ -376,7 +373,7 @@ public abstract class AbstractFolderTest {
 
         Assertions.assertThat(sizeAfter).isEqualTo(sizeBefore + 2);
 
-        assertChildrenSize( "", 2);
+        assertChildrenSize("", 2);
 
         getFolderRepository().addFolder("foo/beer");
 
@@ -400,29 +397,25 @@ public abstract class AbstractFolderTest {
 
         Assertions.assertThat(sizeAfter).isEqualTo(sizeBefore + 2 + 9);
 
+        /*
         assertChildrenSize( "", 2);
 
         assertChildrenSize( "/", 2);
 
-        assertChildrenSize( "/foo", 2);
+        assertChildrenSize("/foo", 2);
 
-        assertChildrenSize( "/foo/wine", 7);
+        assertChildrenSize("/foo/wine", 7);
+        */
 
-        Iterable<Folder> folders = getFolderRepository().searchFolders( "foo" );
+        assertOnSearch("foo", 1);
 
-        Assertions.assertThat( Lists.newArrayList(folders) ).isNotNull().isNotEmpty().hasSize( 1 );
+        assertOnSearch("wine", 3);
 
-        folders = getFolderRepository().searchFolders( "wine" );
-
-        Assertions.assertThat( Lists.newArrayList(folders) ).isNotNull().isNotEmpty().hasSize( 3 );
-
-        folders = getFolderRepository().searchFolders( "tIti" );
-
-        Assertions.assertThat( Lists.newArrayList(folders) ).isNotNull().isNotEmpty().hasSize( 4 );
+        assertOnSearch("tIti", 4);
 
     }
 
-    protected void assertChildrenSize( String folder, int childrenNumber) {
+    protected void assertChildrenSize(String folder, int childrenNumber) {
         Iterable<Folder> iterable = getFolderRepository().children(folder);
         List<Folder> folders = Lists.newArrayList(iterable);
         if (childrenNumber > 0) {
@@ -431,4 +424,10 @@ public abstract class AbstractFolderTest {
             Assertions.assertThat(folders).isNotNull().isEmpty();
         }
     }
+
+    protected void assertOnSearch(String query, int foundNumber) {
+        Iterable<Folder> folders = getFolderRepository().searchFolders(query);
+        Assertions.assertThat(Lists.newArrayList(folders)).isNotNull().isNotEmpty().hasSize(foundNumber);
+    }
+
 }
