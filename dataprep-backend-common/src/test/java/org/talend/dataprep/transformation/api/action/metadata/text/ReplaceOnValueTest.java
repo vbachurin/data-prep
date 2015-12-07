@@ -267,4 +267,17 @@ public class ReplaceOnValueTest {
         Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue("password swordfish with Halle Berry", "*", "replaced", false));
     }
 
+
+    @Test
+    public void test_TDP_958_emptyPattern() {
+        Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue("password swordfish with Halle Berry", "", "replaced", false));
+        Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue("password swordfish with Halle Berry", "", "replaced", true));
+    }
+
+    @Test
+    public void test_TDP_958_invalidPattern() {
+        Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue("password swordfish with Halle Berry", "^(", "replaced", false));
+        Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue("password swordfish with Halle Berry", "^(", "replaced", true));
+    }
+
 }

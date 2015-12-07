@@ -102,6 +102,10 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
             return null;
         }
 
+        if (regexp == null || regexp.length() == 0) {
+            return originalValue;
+        }
+
         try {
             if (replaceEntireCell) {
                 regexp = ".*" + regexp + ".*";
