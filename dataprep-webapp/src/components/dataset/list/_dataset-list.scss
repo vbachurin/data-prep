@@ -89,6 +89,8 @@ $border-color: #CECECE;
   $medium-screen: em(640) !default;
   $large-screen: em(860) !default;
 
+  min-height: 400px;
+
   padding: 10px 20px;
 
   @include display(flex);
