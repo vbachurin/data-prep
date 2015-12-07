@@ -366,26 +366,35 @@
          * @name toggle
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description load folder children
-         * @param {object} folder - the folder to display children
+         * @param {object} node - the folder to display children
          */
         vm.toggle = function (node) {
             if (!node.collapsed){
                 node.collapsed = true;
             } else {
-                FolderService.children(node.id)
-                    .then(function(res) {
-                        node.nodes = res.data?res.data:[];
-                        _.forEach(node.nodes,function(folder){
-                            folder.collapsed = true;
-                        });
-                        if (node.nodes.length > 0) {
-                            node.collapsed = false;
-                        } else {
-                            node.collapsed = !node.collapsed;
-                        }
-                    });
+                if (!node.nodes) {
+                    FolderService.children( node.id )
+                        .then(function(res){
+                                   node.nodes = res.data ? res.data : [];
+                                   _.forEach(node.nodes,function(folder){
+                                       folder.collapsed = true;
+                                   });
+                                   collapseNodes(node);
+                               });
+
+                } else {
+                    collapseNodes(node);
+                }
             }
         };
+
+        function collapseNodes(node){
+            if (node.nodes.length > 0 ) {
+                node.collapsed = false;
+            } else {
+                node.collapsed = !node.collapsed;
+            }
+        }
 
 
         /**
