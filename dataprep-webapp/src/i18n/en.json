@@ -8,7 +8,7 @@
   "LOGOUT": "Logout",
   "MENU": "MENU",
   "FEEDBACK_FORM": "Send Feedback",
-  "FEEDBACK_MAIL": "Mail",
+  "FEEDBACK_MAIL": "Your Email",
   "FEEDBACK_TITLE": "Title (required)",
   "FEEDBACK_DESCRIPTION": "Description",
   "FEEDBACK_TOOLTIP": "Send feedback to Talend",
