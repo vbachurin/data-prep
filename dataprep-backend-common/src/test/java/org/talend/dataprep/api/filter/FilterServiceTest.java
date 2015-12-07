@@ -28,6 +28,7 @@ public class FilterServiceTest {
                 put("0002", "2");
                 put("0003", "");
                 put("0004", "10.5");
+                put("0005", "abcde/XxXx-ZZZZ"); // Match "aaaaa/AaAa-AAAA"
             }
         };
         row = new DataSetRow(values);
@@ -276,6 +277,13 @@ public class FilterServiceTest {
         assertThat(nonMatchPredicate.test(row), is(false));
     }
 
-
-
+    @Test
+    public void testStringMatches() throws Exception {
+        // Test match on "matches(0005, aaaaa/AaAa-AAAA)"
+        final Predicate<DataSetRow> matchPredicate = service.build("{\"matches\": {\"field\": \"0005\", \"value\": \"aaaaa/AaAa-AAAA\"}}");
+        assertThat(matchPredicate.test(row), is(true));
+        // Test non match on "matches(0005, aaaaa_Aa_)"
+        final Predicate<DataSetRow> nonMatchPredicate = service.build("{\"matches\": {\"field\": \"0005\", \"value\": \"aaaaa_Aa_\"}}");
+        assertThat(nonMatchPredicate.test(row), is(false));
+    }
 }
