@@ -169,24 +169,24 @@
                     </ul>
                 </div>
 
-                <script type="text/ng-template" id="basic_renderer.html">
-                    <div ui-tree-handle class="folder-node tree-node"
+                <script type="text/ng-template" id="folder_node_render.html">
+                    <div class="folder-node"
                          ng-class="{folderselected: node.selected}">
-                        <a class="inventory-icon inventory-folder nodrop" data-nodrag ng-click="datasetListCtrl.toggle(node)"
+                        <a class="inventory-icon inventory-folder" ng-click="datasetListCtrl.toggle(node)"
                            ng-class="{'dropdown-button-right': node.collapsed, 'dropdown-button-down': !node.collapsed}">
                             <img ng-if="!node.collapsed" src="assets/images/folder/folder_open_small-icon.png"/>
                             <img ng-if="node.collapsed" src="assets/images/folder/folder_close_small-icon.png"/>
                         </a>
                         <span ng-click="datasetListCtrl.chooseFolder(node)" class="folder-name">{{node.name}}</span>
                     </div>
-                    <ol ui-tree-nodes ng-model="node.nodes" ng-class="{hidden: node.collapsed}">
-                        <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'basic_renderer.html'"></li>
+                    <ol class="folder-nodes" ng-model="node.nodes" ng-class="{hidden: node.collapsed}">
+                        <li ng-repeat="node in node.nodes" class="folder-node" ng-include="'folder_node_render.html'"></li>
                     </ol>
                 </script>
 
-                <div ui-tree id="tree-root" data-nodrop-enabled="true" ng-if="!datasetListCtrl.displayFoldersList">
-                  <ol ui-tree-nodes ng-model="datasetListCtrl.folders">
-                    <li ng-repeat="node in datasetListCtrl.folders" ui-tree-node ng-include="'basic_renderer.html'"></li>
+                <div class="folders-tree" id="folders-tree-root" ng-if="!datasetListCtrl.displayFoldersList">
+                  <ol class="folder-nodes" ng-model="datasetListCtrl.folders">
+                    <li ng-repeat="node in datasetListCtrl.folders" class="folder-node" ng-include="'folder_node_render.html'"></li>
                   </ol>
                 </div>
             </div>

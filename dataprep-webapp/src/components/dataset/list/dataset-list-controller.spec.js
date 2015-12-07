@@ -515,6 +515,7 @@ describe('Dataset list controller', function () {
 
             // when
             ctrl.openFolderChoice(datasets[0]);
+            scope.$digest();
 
             //then
             expect(FolderService.children).toHaveBeenCalled();
@@ -531,6 +532,7 @@ describe('Dataset list controller', function () {
 
             //when
             ctrl.clone();
+            scope.$digest();
 
             //then
             expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder);
@@ -556,7 +558,12 @@ describe('Dataset list controller', function () {
     describe('search folders', function () {
 
         beforeEach(inject(function ($q, MessageService,FolderService) {
-            spyOn(FolderService, 'searchFolders').and.returnValue($q.when(true));
+            var folders = [
+                {path: 'folder-1', name: 'folder-1'},
+                {path: 'folder-2', name: 'folder-2'},
+                {path: 'folder-3', name: 'folder-3'}
+            ];
+            spyOn(FolderService, 'searchFolders').and.returnValue($q.when(folders));
         }));
 
         it('should call search folders service', inject(function (FolderService) {
@@ -574,6 +581,7 @@ describe('Dataset list controller', function () {
         }));
 
     });
+
 
     describe('Replace an existing dataset with a new one', function() {
         beforeEach(inject(function (UpdateWorkflowService) {

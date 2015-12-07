@@ -173,6 +173,16 @@ $border-color: #CECECE;
     display: none;
     visibility: hidden;
   }
+
+
+  .folders-tree-root .folder-nodes {
+    padding-left: 2px;
+  }
+
+  .folder-nodes {
+    padding-left: 20px;
+  }
+
   .folder-node {
     cursor: none;
   }
