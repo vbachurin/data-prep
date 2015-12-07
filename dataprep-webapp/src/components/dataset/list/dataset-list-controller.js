@@ -71,6 +71,10 @@
          */
         vm.sortOrderSelected = DatasetListSortService.getOrderItem();
 
+        vm.displayFoldersList = false;
+
+        vm.foldersFound = [];
+
         /**
          * @ngdoc method
          * @name sort
@@ -215,14 +219,18 @@
          * @param {object} dataset - the dataset to clone or move
          */
         vm.openFolderChoice = function(dataset) {
-            vm.folderDestinationModal = true;
+
             vm.datasetToClone = dataset;
+            vm.displayFoldersList = false;
+            vm.foldersFound = [];
 
             FolderService.children().then(function(res){
                 vm.folders=res.data;
                 _.forEach(vm.folders,function(folder){
                     folder.collapsed = true;
                 });
+                console.log('openFolderChoice:'+vm.displayFoldersList+','+vm.folders.length);
+                vm.folderDestinationModal = true;
             });
         };
 
