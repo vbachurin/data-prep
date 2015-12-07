@@ -299,7 +299,6 @@ public class FilterServiceTest {
         assertThat(nonMatchPredicate.test(row), is(false));
     }
 
-    // d/m/yyyy h:m:s
     @Test
     public void testDateMatches() throws Exception {
         // Test match on "matches(0007, d/m/yyyy h:m:s)"

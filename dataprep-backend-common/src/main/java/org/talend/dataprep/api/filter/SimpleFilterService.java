@@ -135,7 +135,7 @@ public class SimpleFilterService implements FilterService {
             return false;
         }
         // Character based patterns
-        if (StringUtils.containsOnly(pattern, new char[]{'A', 'a', '9'})) {
+        if (StringUtils.containsAny(pattern, new char[]{'A', 'a', '9'})) {
             if (value.length() != pattern.length()) {
                 return false;
             }
