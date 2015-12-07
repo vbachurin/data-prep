@@ -56,7 +56,7 @@ public class ExtendedStream<T> implements Stream<T> {
 
     @Override
     public <R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper) {
-        return stream.flatMap(mapper);
+        return ExtendedStream.extend(stream.flatMap(mapper));
     }
 
     @Override

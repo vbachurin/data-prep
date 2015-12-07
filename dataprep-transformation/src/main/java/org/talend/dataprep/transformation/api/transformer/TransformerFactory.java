@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 
@@ -17,7 +18,7 @@ import org.talend.dataprep.transformation.api.transformer.configuration.Configur
 public class TransformerFactory {
 
     @Autowired
-    private List<Transformer> transformers;
+    private ApplicationContext context;
 
     // Intentionally left private to prevent non-Spring managed initialization.
     private TransformerFactory() {
@@ -30,7 +31,7 @@ public class TransformerFactory {
      * @param configuration A {@link Configuration configuration} for a transformation.
      */
     public Transformer get(@Nonnull Configuration configuration) {
-        List<Transformer> electedTransformers = transformers.stream() //
+        List<Transformer> electedTransformers = context.getBeansOfType(Transformer.class).values().stream() //
                 .filter(transformer -> transformer.accept(configuration)) //
                 .collect(Collectors.toList());
         if (electedTransformers.isEmpty()) {
