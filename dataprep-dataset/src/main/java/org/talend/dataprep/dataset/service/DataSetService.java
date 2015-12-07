@@ -237,7 +237,7 @@ public class DataSetService {
      * @param content The raw content of the data set (might be a CSV, XLS...) or the connection parameter in case of a
      * remote csv.
      * @return The new data id.
-     * @see #get(boolean, boolean, Long, String)
+     * @see #get(boolean, Long, String)
      */
     @RequestMapping(value = "/datasets", method = POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a data set", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, notes = "Create a new data set based on content provided in POST body. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too. Returns the id of the newly created data set.")
@@ -297,7 +297,6 @@ public class DataSetService {
      * completed so content is not yet ready to be served.
      *
      * @param metadata If <code>true</code>, includes data set metadata information.
-     * @param columns If <code>true</code>, includes column metadata information (column types...).
      * @param sample Size of the wanted sample, if missing, the full dataset is returned.
      * @param dataSetId A data set id.
      */
@@ -307,7 +306,6 @@ public class DataSetService {
     @ResponseBody
     public DataSet get(
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata, //
-            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns, //
             @RequestParam(required = false) @ApiParam(name = "sample", value = "Size of the wanted sample, if missing, the full dataset is returned") Long sample, //
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId) {
         HttpResponseContext.header("Content-Type", MediaType.APPLICATION_JSON_VALUE);
@@ -331,13 +329,10 @@ public class DataSetService {
                 completeWithUserData(dataSetMetadata);
                 dataSet.setMetadata(dataSetMetadata);
             }
-            if (columns) {
-                dataSet.setColumns(dataSetMetadata.getRow().getColumns());
-            }
 
             if (sample != null && sample > 0) {
                 // computes the statistics only if columns are required
-                if (columns) {
+                if (metadata) {
                     // Compute statistics *before* to avoid consumption of too many threads in serialization (call to a
                     // stream sample may use a thread and a pipe stream, so better to consume to perform in this order).
                     LOG.debug(marker, "Sample statistics...");
@@ -371,7 +366,7 @@ public class DataSetService {
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015'.  if none the current name concat with ' Copy' will be used. Returns the id of the newly created data set.") @RequestParam(defaultValue = "", required = false) String name)
                     throws IOException {
         HttpResponseContext.header("Content-Type", MediaType.TEXT_PLAIN_VALUE);
-        DataSet dataSet = get(true, true, null, dataSetId);
+        DataSet dataSet = get(true, null, dataSetId);
 
         // if no metadata it's an empty one the get method has already set NO CONTENT http return code
         // so simply return!!
@@ -545,7 +540,6 @@ public class DataSetService {
         DataSet dataSet = new DataSet();
         completeWithUserData(metadata);
         dataSet.setMetadata(metadata);
-        dataSet.setColumns(metadata.getRow().getColumns());
         return dataSet;
     }
 
@@ -570,7 +564,6 @@ public class DataSetService {
      * completed so content is not yet ready to be served.
      *
      * @param metadata If <code>true</code>, includes data set metadata information.
-     * @param columns If <code>true</code>, includes column metadata information (column types...).
      * @param sheetName the sheet name to preview
      * @param dataSetId A data set id.
      */
@@ -580,7 +573,6 @@ public class DataSetService {
     @ResponseBody
     public DataSet preview(
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata, //
-            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns, //
             @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName, //
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId //
     ) {
@@ -634,9 +626,6 @@ public class DataSetService {
         if (metadata) {
             completeWithUserData(dataSetMetadata);
             dataSet.setMetadata(dataSetMetadata);
-        }
-        if (columns) {
-            dataSet.setColumns(dataSetMetadata.getRow().getColumns());
         }
         dataSet.setRecords(contentStore.stream(dataSetMetadata).limit(100));
         return dataSet;
@@ -860,7 +849,6 @@ public class DataSetService {
         // compute statistics on a copy
         DataSet copy = new DataSet();
         copy.setMetadata(dataSetMetadata);
-        copy.setColumns(dataSetMetadata.getRow().getColumns());
         // Compute quality and statistics on sample only
         try (Stream<DataSetRow> stream = contentStore.sample(dataSetMetadata, sample)) {
             qualityAnalyzer.computeQuality(copy.getMetadata(), stream, sample);

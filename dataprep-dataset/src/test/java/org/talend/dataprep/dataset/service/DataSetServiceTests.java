@@ -305,7 +305,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         String content = response.asString();
 
         ObjectMapper objectMapper = new ObjectMapper(  );
-        DataSet dataSet = objectMapper.reader( DataSet.class ).readValue(content.getBytes() );
+        DataSet dataSet = objectMapper.readerFor(DataSet.class).readValue(content.getBytes());
 
         Assertions.assertThat( dataSet.getMetadata().getName() ).isNotEmpty().contains( "Copy" );
 
@@ -408,7 +408,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         // given
         String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
         // when
-        String sample = requestDataSetSample(dataSetId, true, "10.5");
+        requestDataSetSample(dataSetId, true, "10.5");
         // then expect error (400 bad request)
     }
 
@@ -417,7 +417,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         // given
         String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
         // when
-        String sample = requestDataSetSample(dataSetId, true, "ghqmkdhjsgf");
+        requestDataSetSample(dataSetId, true, "ghqmkdhjsgf");
         // then expect error (400 bad request)
     }
 
@@ -496,21 +496,22 @@ public class DataSetServiceTests extends DataSetBaseTest {
                 .when().post("/datasets").asString();
 
 
+        // TODO Vincent: see if this step is necessary
         final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
         String json = given().contentType(JSON).get("/datasets/{id}/preview?sheetName=Leads", dataSetId).asString();
-        DataSet dataSet = objectMapper.reader(DataSet.class).readValue(json);
+        DataSet dataSet = objectMapper.readerFor(DataSet.class).readValue(json);
 
-        Assertions.assertThat(dataSet.getColumns()).isNotNull().isNotEmpty().hasSize(21);
+        Assertions.assertThat(dataSet.getMetadata().getRow().getColumns()).isNotNull().isNotEmpty().hasSize(21);
 
         json = given().contentType(JSON).get("/datasets/{id}/preview?sheetName=Tableau de bord", dataSetId)
                 .asString();
 
-        dataSet = objectMapper.reader(DataSet.class).readValue(json);
+        dataSet = objectMapper.readerFor(DataSet.class).readValue(json);
 
-        Assertions.assertThat(dataSet.getColumns()).isNotNull().isNotEmpty().isNotEmpty().hasSize(10);
+        Assertions.assertThat(dataSet.getMetadata().getRow().getColumns()).isNotNull().isNotEmpty().hasSize(10);
 
     }
 
@@ -1057,7 +1058,8 @@ public class DataSetServiceTests extends DataSetBaseTest {
         assertThat(column.getType(), is("date"));
         assertThat(column.getDomain(), is(""));
         ObjectMapper mapper = new ObjectMapper();
-        final Statistics statistics = mapper.reader(Statistics.class).readValue(DataSetServiceTests.class.getResourceAsStream("../date_time_pattern_expected.json"));
+        final Statistics statistics = mapper.readerFor(Statistics.class)
+                .readValue(DataSetServiceTests.class.getResourceAsStream("../date_time_pattern_expected.json"));
         assertThat(column.getStatistics(), CoreMatchers.equalTo(statistics));
     }
 
@@ -1085,9 +1087,9 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         final DataSet dataset = builder.build().readerFor(DataSet.class).readValue(contentAsString);
         assertThat(dataset, is(notNullValue()));
-        assertThat(dataset.getColumns().isEmpty(), is(false));
+        assertThat(dataset.getMetadata().getRow().getColumns().isEmpty(), is(false));
 
-        final ColumnMetadata column = dataset.getColumns().get(0);
+        final ColumnMetadata column = dataset.getMetadata().getRow().getColumns().get(0);
         assertThat(column.getDomain(), is("US_STATE_CODE")); // us state code
         assertThat(column.getQuality().getInvalid(), is(2)); // 2 invalid values
     }

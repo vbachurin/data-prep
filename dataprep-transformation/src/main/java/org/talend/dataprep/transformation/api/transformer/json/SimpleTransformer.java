@@ -71,7 +71,7 @@ class SimpleTransformer implements Transformer {
          * Schema was detected (based on first {@link #ANALYSIS_BUFFER_SIZE} rows). This status indicates transformer has
          * enough information (about type & al.) to perform a full analysis of the data.
          */
-        FULL_ANALYSIS;
+        FULL_ANALYSIS
     }
 
     private final ThreadLocal<List<DataSetRow>> initialAnalysisBuffer = new ThreadLocal<List<DataSetRow>>() {
@@ -172,7 +172,7 @@ class SimpleTransformer implements Transformer {
             writer.startObject();
             final ParsedActions parsedActions = actionParser.parse(configuration.getActions());
             final List<DataSetRowAction> rowActions = parsedActions.getRowTransformers();
-            final boolean transformColumns = !input.getColumns().isEmpty();
+            final boolean transformColumns = !input.getMetadata().getRow().getColumns().isEmpty();
             TransformationContext context = configuration.getTransformationContext();
             final AtomicBoolean wroteMetadata = new AtomicBoolean(false);
             // Row transformations
@@ -254,6 +254,9 @@ class SimpleTransformer implements Transformer {
      * An implementation of {@link Analyzer} that does not record nor analyze anything.
      */
     private static class NullAnalyzer implements Analyzer<Analyzers.Result> {
+
+        private static final long serialVersionUID = 1L;
+
         @Override
         public void init() {
             // Nothing to do
