@@ -1,6 +1,8 @@
 package org.talend.dataprep.api.filter;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -132,28 +134,38 @@ public class SimpleFilterService implements FilterService {
         if (value == null) {
             return false;
         }
-        if (value.length() != pattern.length()) {
-            return false;
-        }
-        final char[] valueArray = value.toCharArray();
-        final char[] patternArray = pattern.toCharArray();
-        for (int i = 0; i < valueArray.length; i++) {
-            if (patternArray[i] == 'A') {
-                if (!Character.isUpperCase(valueArray[i])) {
-                    return false;
+        // Character based patterns
+        if (StringUtils.containsOnly(pattern, new char[]{'A', 'a', '9'})) {
+            if (value.length() != pattern.length()) {
+                return false;
+            }
+            final char[] valueArray = value.toCharArray();
+            final char[] patternArray = pattern.toCharArray();
+            for (int i = 0; i < valueArray.length; i++) {
+                if (patternArray[i] == 'A') {
+                    if (!Character.isUpperCase(valueArray[i])) {
+                        return false;
+                    }
+                } else if (patternArray[i] == 'a') {
+                    if (!Character.isLowerCase(valueArray[i])) {
+                        return false;
+                    }
+                } else if (patternArray[i] == '9') {
+                    if (!Character.isDigit(valueArray[i])) {
+                        return false;
+                    }
+                } else {
+                    if (valueArray[i] != patternArray[i]) {
+                        return false;
+                    }
                 }
-            } else if (patternArray[i] == 'a') {
-                if (!Character.isLowerCase(valueArray[i])) {
-                    return false;
-                }
-            } else if (patternArray[i] == '9') {
-                if (!Character.isDigit(valueArray[i])) {
-                    return false;
-                }
-            } else {
-                if (valueArray[i] != patternArray[i]) {
-                    return false;
-                }
+            }
+        } else {
+            final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+            try {
+                formatter.toFormat().parseObject(value);
+            } catch (ParseException e) {
+                return false;
             }
         }
         return true;

@@ -30,6 +30,7 @@ public class FilterServiceTest {
                 put("0004", "10.5");
                 put("0005", "abcde/XxXx-ZZZZ"); // Match "aaaaa/AaAa-AAAA"
                 put("0006", "1234@55 678"); // Match "9999@99 999"
+                put("0007", "14/12/2015 12:00:00"); // Match "d/m/yyyy h:m:s"
             }
         };
         row = new DataSetRow(values);
@@ -295,6 +296,17 @@ public class FilterServiceTest {
         assertThat(matchPredicate.test(row), is(true));
         // Test non match on "matches(0006, 9999_99-999)"
         final Predicate<DataSetRow> nonMatchPredicate = service.build("{\"matches\": {\"field\": \"0006\", \"value\": \"9999_99-999\"}}");
+        assertThat(nonMatchPredicate.test(row), is(false));
+    }
+
+    // d/m/yyyy h:m:s
+    @Test
+    public void testDateMatches() throws Exception {
+        // Test match on "matches(0007, d/m/yyyy h:m:s)"
+        final Predicate<DataSetRow> matchPredicate = service.build("{\"matches\": {\"field\": \"0007\", \"value\": \"d/M/yyyy h:m:s\"}}");
+        assertThat(matchPredicate.test(row), is(true));
+        // Test non match on "matches(0007, d/m/yyyy)"
+        final Predicate<DataSetRow> nonMatchPredicate = service.build("{\"matches\": {\"field\": \"0007\", \"value\": \"d/M/yyyy\"}}");
         assertThat(nonMatchPredicate.test(row), is(false));
     }
 
