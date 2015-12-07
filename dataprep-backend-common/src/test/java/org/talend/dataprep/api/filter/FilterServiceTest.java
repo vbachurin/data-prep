@@ -29,6 +29,7 @@ public class FilterServiceTest {
                 put("0003", "");
                 put("0004", "10.5");
                 put("0005", "abcde/XxXx-ZZZZ"); // Match "aaaaa/AaAa-AAAA"
+                put("0006", "1234@55 678"); // Match "9999@99 999"
             }
         };
         row = new DataSetRow(values);
@@ -286,4 +287,15 @@ public class FilterServiceTest {
         final Predicate<DataSetRow> nonMatchPredicate = service.build("{\"matches\": {\"field\": \"0005\", \"value\": \"aaaaa_Aa_\"}}");
         assertThat(nonMatchPredicate.test(row), is(false));
     }
+
+    @Test
+    public void testNumberMatches() throws Exception {
+        // Test match on "matches(0006, 9999@99 999)"
+        final Predicate<DataSetRow> matchPredicate = service.build("{\"matches\": {\"field\": \"0006\", \"value\": \"9999@99 999\"}}");
+        assertThat(matchPredicate.test(row), is(true));
+        // Test non match on "matches(0006, 9999_99-999)"
+        final Predicate<DataSetRow> nonMatchPredicate = service.build("{\"matches\": {\"field\": \"0006\", \"value\": \"9999_99-999\"}}");
+        assertThat(nonMatchPredicate.test(row), is(false));
+    }
+
 }

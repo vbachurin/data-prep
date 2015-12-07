@@ -146,6 +146,10 @@ public class SimpleFilterService implements FilterService {
                 if (!Character.isLowerCase(valueArray[i])) {
                     return false;
                 }
+            } else if (patternArray[i] == '9') {
+                if (!Character.isDigit(valueArray[i])) {
+                    return false;
+                }
             } else {
                 if (valueArray[i] != patternArray[i]) {
                     return false;
