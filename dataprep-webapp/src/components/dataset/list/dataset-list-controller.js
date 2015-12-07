@@ -353,12 +353,16 @@
          * @param {object} folder - the folder to use for cloning the dataset
          */
         vm.chooseFolder = function(folder){
-            var previousSelected = vm.folderDestination;
-            if (previousSelected){
-                previousSelected.selected = false;
+            if (folder.selected===true){
+                folder.selected=false;
+            } else {
+                var previousSelected = vm.folderDestination;
+                if (previousSelected){
+                    previousSelected.selected = false;
+                }
+                vm.folderDestination = folder;
+                folder.selected=true;
             }
-            vm.folderDestination = folder;
-            folder.selected=true;
         };
 
         /**
@@ -376,25 +380,32 @@
                     FolderService.children( node.id )
                         .then(function(res){
                                    node.nodes = res.data ? res.data : [];
-                                   _.forEach(node.nodes,function(folder){
-                                       folder.collapsed = true;
-                                   });
-                                   collapseNodes(node);
+                                   vm.collapseNodes(node);
                                });
 
                 } else {
-                    collapseNodes(node);
+                    vm.collapseNodes(node);
                 }
             }
         };
 
-        function collapseNodes(node){
+        /**
+         * @ngdoc method
+         * @name collapseNodes
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description utility function to collapse nodes
+         * @param {object} node - parent node of childs to collapse
+         */
+        vm.collapseNodes = function(node){
+            _.forEach(node.nodes,function(folder){
+                folder.collapsed = true;
+            });
             if (node.nodes.length > 0 ) {
                 node.collapsed = false;
             } else {
                 node.collapsed = !node.collapsed;
             }
-        }
+        };
 
 
         /**
