@@ -361,7 +361,7 @@
                         return _.isEqual(sameColAndTypeFilter.args.interval, args.interval);
                     };
                     break;
-                case 'match':
+                case 'matches':
                     createFilter = function createFilter() {
                         filterFn = createMatchFilterFn(colId, args.pattern);
                         return FilterAdapterService.createFilter(type, colId, colName, false, args, filterFn, removeFilterFn);
@@ -434,7 +434,7 @@
                     newFilterFn = createRangeFilterFn(oldFilter.colId, newValue);
                     editableFilter = false;
                     break;
-                case 'match':
+                case 'matches':
                     newArgs.pattern = newValue;
                     newFilterFn = createMatchFilterFn(oldFilter.colId, newValue);
                     editableFilter = false;

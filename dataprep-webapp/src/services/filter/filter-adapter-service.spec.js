@@ -11,7 +11,8 @@ describe('Filter Adapter Service', function () {
                             {id: '0000', name: 'firstname'},
                             {id: '0001', name: 'lastname'},
                             {id: '0002', name: 'birthdate'},
-                            {id: '0003', name: 'address'}
+                            {id: '0003', name: 'address'},
+                            {id: '0004', name: 'gender'}
                         ]
                     }
                 }
@@ -129,6 +130,18 @@ describe('Filter Adapter Service', function () {
                 //then
                 expect(filter.value).toBe('[5]');
             }));
+
+            it('should return value on MATCHES filter', inject(function (FilterAdapterService) {
+                //given
+                var type = 'matches';
+                var args = {pattern: 'Aa9'};
+
+                //when
+                var filter = FilterAdapterService.createFilter(type, null, null, null, args, null, null);
+
+                //then
+                expect(filter.value).toBe('Aa9');
+            }));
         });
 
         describe('to tree', function() {
@@ -245,6 +258,26 @@ describe('Filter Adapter Service', function () {
                         field: '0001',
                         start: '1000',
                         end: '2000'
+                    }
+                });
+            }));
+
+            it('should return tree corresponding to MATCHES filter', inject(function (FilterAdapterService) {
+                //given
+                var type = 'matches';
+                var colId = '0001';
+                var args = {pattern: 'Aa9'};
+
+                var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null);
+
+                //when
+                var tree = filter.toTree();
+
+                //then
+                expect(tree).toEqual({
+                    matches: {
+                        field: '0001',
+                        value: 'Aa9'
                     }
                 });
             }));
@@ -474,6 +507,29 @@ describe('Filter Adapter Service', function () {
             expect(singleFilter.args).toBeFalsy();
         }));
 
+        it('should create single MATCHES filter from leaf', inject(function (FilterAdapterService) {
+            //given
+            var tree = {
+                matches: {
+                    field: '0001',
+                    value: 'Aa9'
+                }
+            };
+
+            //when
+            var filters = FilterAdapterService.fromTree(tree);
+
+            //then
+            expect(filters.length).toBe(1);
+
+            var singleFilter = filters[0];
+            expect(singleFilter.type).toBe('matches');
+            expect(singleFilter.colId).toBe('0001');
+            expect(singleFilter.colName).toBe('lastname');
+            expect(singleFilter.editable).toBe(false);
+            expect(singleFilter.args).toEqual({pattern: 'Aa9'});
+        }));
+
         it('should create multiple filters from tree', inject(function (FilterAdapterService) {
             //given
             var tree = {
@@ -500,6 +556,12 @@ describe('Filter Adapter Service', function () {
                             field: '0003',
                             value: 'Toto'
                         }
+                    },
+                    {
+                        matches: {
+                            field: '0004',
+                            value: 'Aa9'
+                        }
                     }
                 ]
             };
@@ -508,7 +570,7 @@ describe('Filter Adapter Service', function () {
             var filters = FilterAdapterService.fromTree(tree);
 
             //then
-            expect(filters.length).toBe(3);
+            expect(filters.length).toBe(4);
 
             var rangeFilter = filters[0];
             expect(rangeFilter.type).toBe('inside_range');
@@ -530,6 +592,13 @@ describe('Filter Adapter Service', function () {
             expect(exactFilter.colName).toBe('address');
             expect(exactFilter.editable).toBe(false);
             expect(exactFilter.args).toEqual({phrase: 'Toto'});
+
+            var matchesFilter = filters[3];
+            expect(matchesFilter.type).toBe('matches');
+            expect(matchesFilter.colId).toBe('0004');
+            expect(matchesFilter.colName).toBe('gender');
+            expect(matchesFilter.editable).toBe(false);
+            expect(matchesFilter.args).toEqual({pattern: 'Aa9'});
         }));
     });
 });

@@ -22,7 +22,7 @@
         vm.addPatternFilter = function addPatternFilter(item) {
             var column = state.playground.grid.selectedColumn;
             return item.pattern ?
-                FilterService.addFilterAndDigest('match', column.id, column.name, {
+                FilterService.addFilterAndDigest('matches', column.id, column.name, {
                     pattern: item.pattern
                 }) :
                 FilterService.addFilterAndDigest('empty_records', column.id, column.name);

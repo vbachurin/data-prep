@@ -9,7 +9,7 @@ $inside_range-color: $blue;
 $empty_records-color: $white;
 $valid_records-color: $color-ok;
 $invalid_records-color: rgb(247, 168, 0);
-$match: #B3AF76;
+$matches: #B3AF76;
 
 @mixin badge($color: $contains-color) {
   background-color: $color;
@@ -99,8 +99,8 @@ $match: #B3AF76;
     }
   }
 
-  &.match {
-    @include badge($match);
+  &.matches {
+    @include badge($matches);
 
     .badge-close {
       color: $white;

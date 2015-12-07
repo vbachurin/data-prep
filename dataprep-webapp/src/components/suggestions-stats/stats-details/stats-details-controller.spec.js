@@ -12,7 +12,7 @@ describe('Stats-details controller', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function ($rootScope, $controller) {
+    beforeEach(inject(function ($rootScope, $controller, FilterService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -20,6 +20,7 @@ describe('Stats-details controller', function () {
                 $scope: scope
             });
         };
+        spyOn(FilterService, 'addFilterAndDigest').and.returnValue();
     }));
 
     it('should bind statistics getter to StatisticsService.statistics', inject(function (StatisticsService) {
@@ -63,5 +64,39 @@ describe('Stats-details controller', function () {
         //then
         expect(ctrl.patternFrequencyTable).toBe(patternFrequencyTable);
     });
+
+    it('should add a new "pattern" filter', inject(function (FilterService) {
+        //given
+        var ctrl = createController();
+        var obj = {'data': 'Ulysse', 'occurrences': 5, pattern:'Aa9'};
+
+        stateMock.playground.grid.selectedColumn = {
+            id: '0001',
+            name: 'firstname'
+        };
+
+        //when
+        ctrl.addPatternFilter (obj);
+
+        //then
+        expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('matches', '0001', 'firstname', {pattern: 'Aa9'});
+    }));
+
+    it('should add a new "empty" filter if pattern is empty', inject(function (FilterService) {
+        //given
+        var ctrl = createController();
+        var obj = {'data': 'Ulysse', 'occurrences': 5};
+
+        stateMock.playground.grid.selectedColumn = {
+            id: '0001',
+            name: 'firstname'
+        };
+
+        //when
+        ctrl.addPatternFilter (obj);
+
+        //then
+        expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('empty_records', '0001', 'firstname');
+    }));
 
 });

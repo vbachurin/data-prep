@@ -386,6 +386,104 @@ describe('Filter service', function () {
         }));
     });
 
+    describe('with "match" type', function() {
+        it('should create filter with string and numeric patterns', inject(function (FilterService, StateService) {
+            //given
+            expect(StateService.addGridFilter).not.toHaveBeenCalled();
+
+            //when
+            FilterService.addFilter('matches', 'col1', 'column name', {pattern: 'Aa9/.,'});
+
+            //then
+            expect(StateService.addGridFilter).toHaveBeenCalled();
+
+            var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
+            expect(filterInfo.filterFn()({col1: 'Ha6/.,'})).toBeTruthy();
+            expect(filterInfo.filterFn()({col1: ' ha6/.,'})).toBeFalsy();
+            expect(filterInfo.filterFn()({col1: ' hah/.,'})).toBeFalsy();
+        }));
+
+        it('should create filter with date patterns', inject(function (FilterService, StateService) {
+            //given
+            expect(StateService.addGridFilter).not.toHaveBeenCalled();
+
+            //when
+            FilterService.addFilter('matches', 'col1', 'column name', {pattern: 'yyyy-d-M'});
+
+            //then
+            expect(StateService.addGridFilter).toHaveBeenCalled();
+
+            var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
+            expect(filterInfo.filterFn()({col1: '2015-12-12'})).toBeTruthy();
+            expect(filterInfo.filterFn()({col1: '2015-12-13'})).toBeFalsy();
+            expect(filterInfo.filterFn()({col1: '2015/12/13'})).toBeFalsy();
+        }));
+
+        it('should create filter with customized date patterns', inject(function (FilterService, StateService) {
+            //given
+            expect(StateService.addGridFilter).not.toHaveBeenCalled();
+
+            //when
+            FilterService.addFilter('matches', 'col1', 'column name', {pattern: 'yyyy d \'o\'\'clock d\' M HH:mm:ss'});
+
+            //then
+            expect(StateService.addGridFilter).toHaveBeenCalled();
+
+            var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
+            expect(filterInfo.filterFn()({col1: '2015 12 o\'clock d 12 00:00:00'})).toBeTruthy();
+            expect(filterInfo.filterFn()({col1: '2015 12 o\'clock D 12'})).toBeFalsy();
+            expect(filterInfo.filterFn()({col1: '2015 12 12'})).toBeFalsy();
+            expect(filterInfo.filterFn()({col1: '2015 12 \'o\'\'clock\' 13'})).toBeFalsy();
+        }));
+
+        it('should remove filter when it already exists', inject(function (FilterService, StateService) {
+            //given
+            var oldFilter = {colId: 'col1', args: {pattern: 'Aa'}, type: 'matches'};
+            stateMock.playground.filter.gridFilters = [oldFilter];
+            spyOn(StateService, 'removeGridFilter').and.returnValue();
+
+            //when
+            FilterService.addFilter('matches', 'col1', 'column name', {pattern: 'Aa'}, null);
+
+            //then
+            expect(StateService.removeGridFilter).toHaveBeenCalledWith(oldFilter);
+        }));
+
+        it('should update filter when on already exists with a different pattern', inject(function (FilterService, StateService) {
+            //given
+            var oldFilter = {colId: 'col1', args: {pattern: 'Aa'}, type: 'matches'};
+            stateMock.playground.filter.gridFilters = [oldFilter];
+            spyOn(StateService, 'updateGridFilter').and.returnValue();
+
+            //when
+            FilterService.addFilter('matches', 'col1', 'column name', {pattern: 'Aa9'}, null);
+
+            //then
+            expect(StateService.updateGridFilter).toHaveBeenCalled();
+            expect(StateService.updateGridFilter.calls.argsFor(0)[0]).toBe(oldFilter);
+            var newFilter = StateService.updateGridFilter.calls.argsFor(0)[1];
+            expect(newFilter.type).toBe('matches');
+            expect(newFilter.colId).toBe('col1');
+            expect(newFilter.args.pattern).toBe('Aa9');
+
+        }));
+
+        it('should create filter with empty patterns', inject(function (FilterService, StateService) {
+            //given
+            expect(StateService.addGridFilter).not.toHaveBeenCalled();
+
+            //when
+            FilterService.addFilter('matches', 'col1', 'column name', {pattern: 'Aa9'});
+
+            //then
+            expect(StateService.addGridFilter).toHaveBeenCalled();
+
+            var filterInfo = StateService.addGridFilter.calls.argsFor(0)[0];
+            expect(filterInfo.filterFn()({col2: '2015 12 o\'clock d 12'})).toBeFalsy();
+            expect(filterInfo.filterFn()({col2: 'Aa9'})).toBeFalsy();
+        }));
+    });
+
     describe('add filter and digest', function () {
         it('should add a filter wrapped in $timeout to trigger a digest', inject(function ($timeout, FilterService, StateService) {
             //given
