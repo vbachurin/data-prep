@@ -178,6 +178,7 @@
                         <ul class="folders-list">
                             <li ng-repeat="node in datasetListCtrl.foldersFound"
                                 ng-class="{folderselected: node.selected}">
+                                <img src="assets/images/folder/folder_close_small-icon.png"/>
                                 <span ng-click="datasetListCtrl.chooseFolder(node)" class="folder-name">{{node.path}}</span>
                             </li>
                         </ul>
