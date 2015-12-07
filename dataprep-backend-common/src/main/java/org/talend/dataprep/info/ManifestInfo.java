@@ -54,8 +54,6 @@ public class ManifestInfo {
         try {
             mf.read((new Version()).getClass().getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF"));
             attributes = mf.getMainAttributes();
-            System.out.println(attributes.getValue("SHA-Build"));
-
         } catch (IOException ie) {
 
         }
@@ -87,7 +85,6 @@ public class ManifestInfo {
         if (StringUtils.isEmpty(buildId)) {
             buildId = UNKNOWN;
         }
-        System.out.println("Version Id: " + versionId + " build Id: " + buildId);
         uniqueInstance = new ManifestInfo(versionId, buildId);
     }
 

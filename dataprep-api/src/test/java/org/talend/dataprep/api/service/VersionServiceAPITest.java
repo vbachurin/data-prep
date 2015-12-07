@@ -2,6 +2,7 @@ package org.talend.dataprep.api.service;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.info.Version;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -9,14 +10,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
 
+// @WebAppConfiguration
+/*
+ * @WebIntegrationTest("server.port:9000")
+ * 
+ * @TestPropertySource(properties = { "dataset.service.url: http://localhost:${server.port}",
+ * "preparation.service.url: http://localhost:${server.port}",
+ * "transformation.service.url: http://localhost:${server.port}" })
+ */
 public class VersionServiceAPITest extends ApiServiceTestBase {
 
+    @Autowired
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     public void shouldReturnOKWhenVersionAsked() throws Exception {
         Response response = RestAssured.given() //
-                .queryParam("path", "foo").when() //
+                .when() //
                 .get("/api/version");
 
         Assert.assertEquals(200, response.getStatusCode());
@@ -31,11 +41,11 @@ public class VersionServiceAPITest extends ApiServiceTestBase {
     public void shouldReceiveSameVersionsWhenAskedTwice() throws Exception {
         //
         Response response = RestAssured.given() //
-                .queryParam("path", "foo").when() //
+                .when() //
                 .get("/api/version");
 
         Response response2 = RestAssured.given() //
-                .queryParam("path", "foo").when() //
+                .when() //
                 .get("/api/version");
 
         Version[] versions = objectMapper.readValue(response.asString(), new TypeReference<Version[]>() {

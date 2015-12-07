@@ -7,10 +7,8 @@ import java.io.InputStream;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.service.command.common.GenericCommand;
@@ -25,16 +23,11 @@ public class VersionCommand extends GenericCommand<InputStream> {
 
     public static final HystrixCommandGroupKey VERSION_GROUP = HystrixCommandGroupKey.Factory.asKey("version"); //$NON-NLS-1$
 
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
-
-    private final String serviceName;
-
     private VersionCommand(HttpClient client, String serviceUrl, String serviceName) {
         super(VERSION_GROUP, client);
-        this.serviceName = serviceName;
 
         execute(() -> {
+
             String url = serviceUrl + "/version?serviceName=" + serviceName;
             return new HttpGet(url);
         });

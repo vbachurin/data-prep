@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.http.client.HttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 @Component
+@Scope("request")
 @RestController
 @Api(value = "api", basePath = "/api", description = "Get the version of the running jar")
 public class VersionServiceAPI extends APIService {
@@ -43,9 +45,6 @@ public class VersionServiceAPI extends APIService {
     @Value("${preparation.service.url}")
     protected String preparationServiceUrl;
 
-    @Autowired(required = true)
-    private HttpServletRequest request;
-
     @RequestMapping(value = "/api/version", method = GET)
     @ApiOperation(value = "Get the version of the running API", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
@@ -54,7 +53,7 @@ public class VersionServiceAPI extends APIService {
      * 
      * @return an array of service versions
      */
-    public Version[] allVersions() {
+    public Version[] allVersions(HttpServletRequest request) {
         Version[] versions = new Version[4];
         ManifestInfo manifestInfo = ManifestInfo.getUniqueInstance();
 
