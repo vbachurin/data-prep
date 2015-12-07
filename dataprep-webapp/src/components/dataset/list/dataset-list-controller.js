@@ -169,32 +169,6 @@
 
         /**
          * @ngdoc method
-         * @name toggle
-         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description load folder children
-         * @param {object} folder - the folder to display children
-         */
-        vm.toggle = function (node) {
-            if (!node.collapsed){
-                node.collapsed = true;
-            } else {
-                FolderService.children(node.id)
-                    .then(function(res) {
-                        node.nodes = res.data?res.data:[];
-                        _.forEach(node.nodes,function(folder){
-                            folder.collapsed = true;
-                        });
-                        if (node.nodes.length > 0) {
-                          node.collapsed = false;
-                        } else {
-                          node.collapsed = !node.collapsed;
-                        }
-                    });
-            }
-        };
-
-        /**
-         * @ngdoc method
          * @name clone
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description perform the dataset cloning to the folder destination
@@ -209,38 +183,6 @@
                         vm.foldersFound = [];
                         vm.displayFoldersList = false;
                     });
-        };
-
-        /**
-         * @ngdoc method
-         * @name openFolderChoice
-         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description Display folder destination choice modal
-         * @param {object} dataset - the dataset to clone or move
-         */
-        vm.openFolderChoice = function(dataset) {
-
-            vm.datasetToClone = dataset;
-            vm.displayFoldersList = false;
-            vm.foldersFound = [];
-
-            FolderService.children().then(function(res){
-                vm.folders=res.data;
-                _.forEach(vm.folders,function(folder){
-                    folder.collapsed = true;
-                });
-                console.log('openFolderChoice:'+vm.displayFoldersList+','+vm.folders.length);
-                vm.folderDestinationModal = true;
-            });
-        };
-
-        vm.chooseFolder = function(folder){
-            var previousSelected = vm.folderDestination;
-            if (previousSelected){
-                previousSelected.selected = false;
-            }
-            vm.folderDestination = folder;
-            folder.selected=true;
         };
 
         /**
@@ -379,6 +321,72 @@
                     // or to newOne?
                 });
         };
+
+
+        /**
+         * @ngdoc method
+         * @name openFolderChoice
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Display folder destination choice modal
+         * @param {object} dataset - the dataset to clone or move
+         */
+        vm.openFolderChoice = function(dataset) {
+            vm.datasetToClone = dataset;
+            vm.displayFoldersList = false;
+            vm.foldersFound = [];
+            vm.searchFolderQuery = '';
+
+            FolderService.children().then(function(res){
+                vm.folders=res.data;
+                _.forEach(vm.folders,function(folder){
+                    folder.collapsed = true;
+                });
+                vm.folderDestinationModal = true;
+            });
+        };
+
+        /**
+         * @ngdoc method
+         * @name chooseFolder
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Set folder destination choice
+         * @param {object} folder - the folder to use for cloning the dataset
+         */
+        vm.chooseFolder = function(folder){
+            var previousSelected = vm.folderDestination;
+            if (previousSelected){
+                previousSelected.selected = false;
+            }
+            vm.folderDestination = folder;
+            folder.selected=true;
+        };
+
+        /**
+         * @ngdoc method
+         * @name toggle
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description load folder children
+         * @param {object} folder - the folder to display children
+         */
+        vm.toggle = function (node) {
+            if (!node.collapsed){
+                node.collapsed = true;
+            } else {
+                FolderService.children(node.id)
+                    .then(function(res) {
+                        node.nodes = res.data?res.data:[];
+                        _.forEach(node.nodes,function(folder){
+                            folder.collapsed = true;
+                        });
+                        if (node.nodes.length > 0) {
+                            node.collapsed = false;
+                        } else {
+                            node.collapsed = !node.collapsed;
+                        }
+                    });
+            }
+        };
+
 
         /**
          * @ngdoc method
