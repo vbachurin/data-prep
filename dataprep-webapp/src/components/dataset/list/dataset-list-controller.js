@@ -423,6 +423,20 @@
             }
         };
 
+        /**
+         * @ngdoc method
+         * @name updateSearchFolderQuery
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description trigger when searchFolderQuery get changed trigger a search only if search folder query has a minimum of 3 characters
+         */
+        vm.onSearchFolderQueryChange = function(){
+            if (vm.searchFolderQuery && vm.searchFolderQuery.length>2){
+                vm.searchFolders();
+            } else {
+                vm.foldersFound = [];
+                vm.displayFoldersList = false;
+            }
+        };
 
         /**
          * @ngdoc method

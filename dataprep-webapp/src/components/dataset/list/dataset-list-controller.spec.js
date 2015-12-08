@@ -510,31 +510,39 @@ describe('Dataset list controller', function () {
         it('should call clone service', inject(function (DatasetService) {
             //given
             var folder = {id:'foo'};
+            var cloneName = 'bar';
             var ctrl = createController();
             ctrl.datasetToClone = datasets[0];
             ctrl.folderDestination = folder;
+            ctrl.cloneNameForm = {};
+            ctrl.cloneNameForm.$commitViewValue = function(){};
+            ctrl.cloneName = cloneName;
 
             //when
             ctrl.clone();
             scope.$digest();
 
             //then
-            expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder);
+            expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder, cloneName);
         }));
 
         it('should display message on success', inject(function (MessageService,DatasetService) {
             //given
             var folder = {id:'foo'};
             var ctrl = createController();
+            var cloneName = 'bar';
             ctrl.datasetToClone = datasets[0];
             ctrl.folderDestination = folder;
+            ctrl.cloneNameForm = {};
+            ctrl.cloneNameForm.$commitViewValue = function(){};
+            ctrl.cloneName = cloneName;
 
             //when
             ctrl.clone();
             scope.$digest();
 
             //then
-            expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder);
+            expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder, cloneName);
             expect(MessageService.success).toHaveBeenCalledWith('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
         }));
     });
@@ -657,6 +665,34 @@ describe('Dataset list controller', function () {
             expect(folder.nodes[1].collapsed).toBe(true);
             expect(folder.collapsed).toBe(false);
         });
+
+        it('should not call search for only 2 characters', inject(function (FolderService) {
+            // given
+            var ctrl = createController();
+            ctrl.searchFolderQuery = 'ff';
+
+            // when
+            ctrl.onSearchFolderQueryChange();
+            scope.$digest();
+
+            //then
+            expect(FolderService.searchFolders).not.toHaveBeenCalled();
+
+        }));
+
+        it('should call search for 3 characters', inject(function (FolderService) {
+            // given
+            var ctrl = createController();
+            ctrl.searchFolderQuery = 'fff';
+
+            // when
+            ctrl.onSearchFolderQueryChange();
+            scope.$digest();
+
+            //then
+            expect(FolderService.searchFolders).toHaveBeenCalledWith('fff');
+
+        }));
 
     });
 

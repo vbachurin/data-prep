@@ -152,7 +152,8 @@
         <div class="folders-modal">
             <div class="search-folder-box">
                 <form class="search-bar" id="search-folder-form">
-                    <input type="search" ng-model="datasetListCtrl.searchFolderQuery"  translate-once-placeholder="FIND_FOLDER"/>
+                    <input type="search" ng-model="datasetListCtrl.searchFolderQuery" ng-change="datasetListCtrl.onSearchFolderQueryChange()"
+                           translate-once-placeholder="FIND_FOLDER"/>
                     <button type="submit" ng-click="datasetListCtrl.searchFolders()">
                         <img src="assets/images/folder/search-icon.png">
                     </button>
