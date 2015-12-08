@@ -351,15 +351,63 @@
             vm.displayFoldersList = false;
             vm.foldersFound = [];
             vm.searchFolderQuery = '';
+            vm.cloneName = dataset.name + ' Copy';
+            // ensure nothing is null
+            var toggleToCurrentFolder = state.folder && state.folder.currentFolder && state.folder.currentFolder.id;
 
-            FolderService.children().then(function(res){
-                vm.folders=res.data;
-                _.forEach(vm.folders,function(folder){
-                    folder.collapsed = true;
+            if (toggleToCurrentFolder) {
+                var pathParts = state.folder.currentFolder.id.split( '/' );
+                var currentPath = pathParts[0];
+            }
+
+            FolderService.children()
+                .then(function(res) {
+                    vm.folders = res.data;
+                    _.forEach(vm.folders,function(folder){
+                        folder.collapsed = true;
+                        // recursive toggle until we reach the current folder
+                        if (toggleToCurrentFolder && folder.id===currentPath){
+                            vm.toggle(folder, pathParts.length>0?_.slice(pathParts,1):null,currentPath);
+                        }
+                    });
+                    vm.folderDestinationModal = true;
                 });
-                vm.folderDestinationModal = true;
-            });
+
         };
+
+        /**
+         * @ngdoc method
+         * @name toggle
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description load folder children
+         * @param {object} node - the folder to display children
+         */
+        vm.toggle = function (node,pathParts,currentPath) {
+            if (!node.collapsed){
+                node.collapsed = true;
+            } else {
+                if (!node.nodes) {
+                    FolderService.children( node.id )
+                        .then(function(res){
+                            node.nodes = res.data ? res.data : [];
+                            vm.collapseNodes(node);
+                            if(pathParts && pathParts[0]){
+                                currentPath += currentPath ? '/' + pathParts[0] : pathParts[0];
+                                _.forEach(node.nodes,function(folder){
+                                    if(folder.id===currentPath) {
+                                        vm.toggle(folder,pathParts.length>0?_.slice(pathParts,1):null, currentPath);
+                                    }
+                                });
+
+                            }
+                        });
+
+                } else {
+                    vm.collapseNodes(node);
+                }
+            }
+        };
+
 
         /**
          * @ngdoc method
@@ -378,30 +426,6 @@
                 }
                 vm.folderDestination = folder;
                 folder.selected=true;
-            }
-        };
-
-        /**
-         * @ngdoc method
-         * @name toggle
-         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description load folder children
-         * @param {object} node - the folder to display children
-         */
-        vm.toggle = function (node) {
-            if (!node.collapsed){
-                node.collapsed = true;
-            } else {
-                if (!node.nodes) {
-                    FolderService.children( node.id )
-                        .then(function(res){
-                                   node.nodes = res.data ? res.data : [];
-                                   vm.collapseNodes(node);
-                               });
-
-                } else {
-                    vm.collapseNodes(node);
-                }
             }
         };
 

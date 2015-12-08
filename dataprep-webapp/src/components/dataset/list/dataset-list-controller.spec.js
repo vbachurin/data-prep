@@ -12,9 +12,11 @@ describe('Dataset list controller', function () {
         {id: 'ab45f893d8e923', name: 'Us states'}
     ];
 
+    var theCurrentFolder = {id : 'folder-16/folder-1/sub-1', path: 'folder-16/folder-1/sub-1', name: 'sub-1'};
+
     beforeEach(module('data-prep.dataset-list', function ($provide) {
         stateMock = {folder: {
-            currentFolder: {id : 'toto', path: 'toto', name: 'toto'},
+            currentFolder: theCurrentFolder,
             currentFolderContent: {
                 datasets: [datasets[0]]
             }
@@ -105,7 +107,7 @@ describe('Dataset list controller', function () {
                 ctrl.updateSortBy(newSort);
 
                 //then
-                expect(FolderService.getFolderContent).toHaveBeenCalledWith({id : 'toto', path: 'toto', name: 'toto'});
+                expect(FolderService.getFolderContent).toHaveBeenCalledWith(theCurrentFolder);
             }));
 
             it('should refresh dataset when order is changed', inject(function ($q, FolderService) {
@@ -118,7 +120,7 @@ describe('Dataset list controller', function () {
                 ctrl.updateSortOrder(newSortOrder);
 
                 //then
-                expect(FolderService.getFolderContent).toHaveBeenCalledWith({id : 'toto', path: 'toto', name: 'toto'});
+                expect(FolderService.getFolderContent).toHaveBeenCalledWith(theCurrentFolder);
             }));
 
             it('should not refresh dataset when requested sort is already the selected one', inject(function (FolderService) {
@@ -310,8 +312,8 @@ describe('Dataset list controller', function () {
             scope.$digest();
             //then
             expect(ctrl.folderNameForm.$commitViewValue).toHaveBeenCalled();
-            expect(FolderService.create).toHaveBeenCalledWith('toto/1');
-            expect(FolderService.getFolderContent).toHaveBeenCalledWith({id : 'toto', path: 'toto', name: 'toto'});
+            expect(FolderService.create).toHaveBeenCalledWith(theCurrentFolder.id+'/1');
+            expect(FolderService.getFolderContent).toHaveBeenCalledWith(theCurrentFolder);
 
         }));
 
@@ -348,7 +350,7 @@ describe('Dataset list controller', function () {
             scope.$digest();
             //then
             expect(DatasetService.processCertification).toHaveBeenCalledWith(datasets[0]);
-            expect(FolderService.getFolderContent).toHaveBeenCalledWith({id : 'toto', path: 'toto', name: 'toto'});
+            expect(FolderService.getFolderContent).toHaveBeenCalledWith(theCurrentFolder);
 
         }));
     });
@@ -495,7 +497,7 @@ describe('Dataset list controller', function () {
             scope.$digest();
             //then
             expect(FolderService.renameFolder).toHaveBeenCalledWith('toto/1', 'toto/2');
-            expect(FolderService.getFolderContent).toHaveBeenCalledWith({id : 'toto', path: 'toto', name: 'toto'});
+            expect(FolderService.getFolderContent).toHaveBeenCalledWith(theCurrentFolder);
         }));
 
     });
@@ -549,7 +551,7 @@ describe('Dataset list controller', function () {
 
     describe('search folders', function () {
 
-        beforeEach(inject(function ($q, MessageService,FolderService) {
+        beforeEach(inject(function ($q,MessageService,FolderService) {
             var foldersFromSearch = [
                 {path: 'folder-1', name: 'folder-1'},
                 {path: 'folder-1/sub-1', name: 'sub-1'},
@@ -564,9 +566,10 @@ describe('Dataset list controller', function () {
 
             spyOn(FolderService, 'children').and.returnValue($q.when(childrenFolders));
             spyOn(FolderService, 'searchFolders').and.returnValue($q.when(foldersFromSearch));
+
         }));
 
-        it('should call folder service and open modal', inject(function (FolderService) {
+        it('should call children service and open modal', inject(function (FolderService) {
             // given
             var ctrl = createController();
 
@@ -583,6 +586,7 @@ describe('Dataset list controller', function () {
             expect(ctrl.searchFolderQuery).toBe('');
 
         }));
+
 
         it('should call search folders service', inject(function (FolderService) {
             //given
