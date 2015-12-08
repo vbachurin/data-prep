@@ -2,9 +2,6 @@ package org.talend.dataprep.api.service.command.dataset;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
-import static org.talend.dataprep.api.service.command.common.Defaults.asString;
-import static org.talend.dataprep.api.service.command.common.Defaults.emptyString;
-import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -38,17 +35,21 @@ public class CloneDataSet extends GenericCommand<HttpResponse> {
      * @param client the http client to use.
      * @param dataSetId the requested dataset id.
      * @param folderPath the folder to clone the dataset
+     * @param cloneName the cloned name
      */
-    public CloneDataSet(HttpClient client, String dataSetId, String folderPath) {
+    public CloneDataSet(HttpClient client, String dataSetId, String folderPath, String cloneName) {
         super(PreparationAPI.DATASET_GROUP, client);
         execute(() -> {
             try {
                 URIBuilder uriBuilder = new URIBuilder(datasetServiceUrl + "/datasets/clone/" + dataSetId);
-                if ( StringUtils.isNotEmpty( folderPath )){
-                    uriBuilder.addParameter( "folderPath", folderPath );
+                if (StringUtils.isNotEmpty(folderPath)) {
+                    uriBuilder.addParameter("folderPath", folderPath);
                 }
-                HttpPut httpPut = new HttpPut( uriBuilder.build());
-                //
+                if (StringUtils.isNotEmpty(cloneName)) {
+                    uriBuilder.addParameter("cloneName", cloneName);
+                }
+                HttpPut httpPut = new HttpPut(uriBuilder.build());
+
                 return httpPut;
             } catch (URISyntaxException e) {
                 throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
@@ -57,21 +58,19 @@ public class CloneDataSet extends GenericCommand<HttpResponse> {
         onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_COPY_DATASET_CONTENT, e,
                 ExceptionContext.build().put("id", dataSetId)));
 
-        on(HttpStatus.OK, HttpStatus.BAD_REQUEST).then(
-            ( httpRequestBase, httpResponse ) -> {
-                try {
-                    // we transfer status code and content type
-                    return new HttpResponse(httpResponse.getStatusLine().getStatusCode(), //
-                                     IOUtils.toString(httpResponse.getEntity().getContent()), //
-                                     httpResponse.getStatusLine().getStatusCode() == HttpStatus.BAD_REQUEST.value() ? //
-                                                APPLICATION_JSON_VALUE : TEXT_PLAIN_VALUE );
-                } catch (IOException e) {
-                    throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-                } finally {
-                    httpRequestBase.releaseConnection();
-                }
+        on(HttpStatus.OK, HttpStatus.BAD_REQUEST).then((httpRequestBase, httpResponse) -> {
+            try {
+                // we transfer status code and content type
+                return new HttpResponse(httpResponse.getStatusLine().getStatusCode(), //
+                        IOUtils.toString(httpResponse.getEntity().getContent()), //
+                        httpResponse.getStatusLine().getStatusCode() == HttpStatus.BAD_REQUEST.value() ? //
+                                APPLICATION_JSON_VALUE : TEXT_PLAIN_VALUE);
+            } catch (IOException e) {
+                throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+            } finally {
+                httpRequestBase.releaseConnection();
             }
-        );
+        });
     }
 
 }

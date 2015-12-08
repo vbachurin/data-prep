@@ -71,9 +71,20 @@
          */
         vm.sortOrderSelected = DatasetListSortService.getOrderItem();
 
+        /**
+         * @type {boolean} display or not folder search result
+         */
         vm.displayFoldersList = false;
 
+        /**
+         * @type {Array} folder found after a search
+         */
         vm.foldersFound = [];
+
+        /**
+         * @type {string} name used for dataset clone
+         */
+        vm.cloneName = '';
 
         /**
          * @ngdoc method
@@ -174,14 +185,19 @@
          * @description perform the dataset cloning to the folder destination
          */
         vm.clone = function(){
-            DatasetService.clone(vm.datasetToClone,vm.folderDestination).then(function (){
+
+            vm.cloneNameForm.$commitViewValue();
+
+            DatasetService.clone(vm.datasetToClone,vm.folderDestination,vm.cloneName).then(function (){
                         MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
                     }).finally(function () {
+                        // reset some values to initial values
                         vm.folderDestinationModal = false;
                         vm.datasetToClone = null;
                         vm.folderDestination = null;
                         vm.foldersFound = [];
                         vm.displayFoldersList = false;
+                        vm.cloneName = '';
                     });
         };
 

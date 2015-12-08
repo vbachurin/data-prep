@@ -359,7 +359,7 @@ public class DataSetService {
 
     /**
      * Clone to a new data set and returns the new data set id as text in the response.
-     * 
+     * @param cloneName the name of the cloned dataset
      * @param folderPath the folder path to clone the dataset
      * @return The new data id.
      */
@@ -369,6 +369,7 @@ public class DataSetService {
     @VolumeMetered
     public String clone(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
+            @ApiParam(value = "The name of the cloned dataset.") @RequestParam(defaultValue = "", required = false) String cloneName,
             @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "", required = false) String folderPath)
                     throws IOException {
 
@@ -376,37 +377,44 @@ public class DataSetService {
 
         final DataSet dataSet = get(true, true, null, dataSetId);
 
+        // use a default name if empty (original name + " Copy" )
+        if (StringUtils.isEmpty( cloneName)){
+            cloneName = dataSet.getMetadata().getName() + " Copy";
+        }
+
+        // just because the lambda need a final variable.... grhhh :-)
+        String newDatasetName = cloneName;
+
         // if no metadata it's an empty one the get method has already set NO CONTENT http return code
         // so simply return!!
         if (dataSet.getMetadata() == null) {
             return StringUtils.EMPTY;
         }
 
-        final String name = dataSet.getMetadata().getName() + " Copy";
         // first check if the name is already used in the target folder
         final Iterable<FolderEntry> entries = folderRepository.entries(folderPath, "dataset");
 
         entries.forEach(folderEntry -> {
             DataSetMetadata dataSetEntry = dataSetMetadataRepository.get(folderEntry.getContentId());
-            if (dataSetEntry != null && StringUtils.equals(name, dataSetEntry.getName())) {
+            if (dataSetEntry != null && StringUtils.equals(newDatasetName, dataSetEntry.getName())) {
                 final ExceptionContext context = ExceptionContext.build() //
                         .put("id", folderEntry.getContentId()) //
                         .put("folder", folderPath) //
-                        .put("name", name);
-                throw new TDPException(DataSetErrorCodes.DATASET_NAME_ALREADY_USED, context);
+                        .put("name", newDatasetName);
+                throw new TDPException(DataSetErrorCodes.DATASET_NAME_ALREADY_USED, context, true);
             }
         });
 
         final String newId = UUID.randomUUID().toString();
 
-        dataSet.getMetadata().setName(name);
+        dataSet.getMetadata().setName(cloneName);
 
         final Marker marker = Markers.dataset(newId);
         LOG.debug(marker, "Cloning...");
 
         DataSetMetadata dataSetMetadata = metadata() //
                 .id(newId) //
-                .name(name) //
+                .name(cloneName) //
                 .author(security.getUserId()) //
                 .location(dataSet.getMetadata().getLocation()) //
                 .created(System.currentTimeMillis()) //

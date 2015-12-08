@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Assertions;
@@ -27,7 +26,6 @@ import org.talend.daikon.exception.json.JsonErrorCode;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -200,8 +198,10 @@ public class DataSetAPITest extends ApiServiceTestBase {
         // then
         assertThat( contentAsString, sameJSONAsFile( expected ) );
 
+        String cloneName = "foo bar";
 
         final String clonedDataSetId = given() //
+            .queryParam( "cloneName", cloneName)
             .when() //
             .put("/api/datasets/clone/{id}", dataSetId) //
             .asString();
@@ -210,9 +210,17 @@ public class DataSetAPITest extends ApiServiceTestBase {
 
         Response response = when().get("/api/datasets/{id}?metadata=true&columns=false", clonedDataSetId);
 
-        Assert.assertEquals( HttpStatus.OK.value(), response.getStatusCode() );
-
         contentAsString = response.asString();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        DataSet dataSet = objectMapper.readValue( contentAsString, DataSet.class );
+
+        DataSetMetadata dataSetMetadata = dataSet.getMetadata();
+
+        Assertions.assertThat( dataSetMetadata.getName() ).isEqualTo( cloneName );
+
+        Assert.assertEquals( HttpStatus.OK.value(), response.getStatusCode() );
 
         expected = PreparationAPITest.class.getResourceAsStream( "dataset/expected_dataset_with_metadata_clone.json" );
 
@@ -241,9 +249,8 @@ public class DataSetAPITest extends ApiServiceTestBase {
         // then
         assertThat( contentAsString, sameJSONAsFile( expected ) );
 
-
         String clonedDataSetId = given() //
-            .queryParam("folderPath", "foo").when() //
+            .queryParam("folderPath", "foo")
             .when() //
             .put("/api/datasets/clone/{id}", dataSetId) //
             .asString();
@@ -256,13 +263,21 @@ public class DataSetAPITest extends ApiServiceTestBase {
 
         contentAsString = response.asString();
 
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        DataSet dataSet = objectMapper.readValue( contentAsString, DataSet.class );
+
+        DataSetMetadata dataSetMetadata = dataSet.getMetadata();
+
+        Assertions.assertThat( dataSetMetadata.getName() ).isEqualTo( "tagada Copy" );
+
         expected = PreparationAPITest.class.getResourceAsStream( "dataset/expected_dataset_with_metadata_clone.json" );
 
         // then
         assertThat( contentAsString, sameJSONAsFile( expected ) );
 
         response = given() //
-            .queryParam("folderPath", "foo").when() //
+            .queryParam("folderPath", "foo") //
             .when() //
             .put("/api/datasets/clone/{id}", dataSetId);
 

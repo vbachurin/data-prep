@@ -161,12 +161,14 @@ public class DataSetAPI extends APIService {
      *
      * @param id the dataset id to clone
      * @param folderPath the folder path to clone the dataset
+     * @param cloneName the name of the dataset clone
      * @return The dataset id.
      */
     @RequestMapping(value = "/api/datasets/clone/{id}", method = PUT, produces = TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a data set", produces = TEXT_PLAIN_VALUE, notes = "Clone a data set based the id provided.")
     public void cloneDataset(
         @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
+        @ApiParam(value = "The name of the cloned dataset.") @RequestParam(defaultValue = "", required = false) String cloneName,
         @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "", required = false) String folderPath,
         HttpServletResponse response) {
 
@@ -175,7 +177,7 @@ public class DataSetAPI extends APIService {
         }
 
         HttpClient client = getClient();
-        HystrixCommand<HttpResponse> creation = getCommand( CloneDataSet.class, client, id, folderPath);
+        HystrixCommand<HttpResponse> creation = getCommand( CloneDataSet.class, client, id, folderPath, cloneName);
         HttpResponse result = creation.execute();
         LOG.debug("Dataset clone done.");
 

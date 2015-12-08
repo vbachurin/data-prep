@@ -191,13 +191,22 @@
                 </div>
             </div>
         </div>
-
-        <div class="modal-buttons">
-            <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL">
-            </button>
-            <button class="btn-primary modal-primary-button" translate-once="COPY_ACTION" ng-click="datasetListCtrl.clone()">
-            </button>
-        </div>
+        <form name="datasetListCtrl.cloneNameForm" ng-submit="datasetListCtrl.cloneNameForm.$valid">
+            <div class="clone-name">
+                <span translate-once="DATASET_NAME"></span>
+                <input type="text"
+                       ng-model="datasetListCtrl.cloneName"
+                       can-be-blank="false"/>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL">
+                </button>
+                <button class="btn-primary modal-primary-button" translate-once="COPY_ACTION"
+                        ng-disabled="datasetListCtrl.cloneNameForm.$invalid"
+                        ng-click="datasetListCtrl.clone()">
+                </button>
+            </div>
+        </form>
 
     </talend-modal>
 

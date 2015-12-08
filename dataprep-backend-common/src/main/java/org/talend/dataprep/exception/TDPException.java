@@ -13,6 +13,11 @@ public class TDPException extends TalendRuntimeException {
     private static final long serialVersionUID = -51732176302413600L;
 
     /**
+     * this field if set to <code>true</code> will prevent {@link TDPExceptionController} to log a stack trace
+     */
+    private boolean error = false;
+
+    /**
      * Full constructor.
      *
      * @param code the error code that holds all the .
@@ -44,6 +49,17 @@ public class TDPException extends TalendRuntimeException {
     }
 
     /**
+     * Lightweight constructor without a cause.
+     *
+     * @param code the error code that holds all the .
+     * @param context the exception context.
+     */
+    public TDPException(ErrorCode code, ExceptionContext context, boolean error) {
+        super(code, null, context);
+        this.error = true;
+    }    
+    
+    /**
      * Basic constructor from a JSON error code.
      *
      * @param code an error code serialized to JSON.
@@ -61,4 +77,8 @@ public class TDPException extends TalendRuntimeException {
         super(code, null, null);
     }
 
+
+    public boolean isError() {
+        return error;
+    }
 }

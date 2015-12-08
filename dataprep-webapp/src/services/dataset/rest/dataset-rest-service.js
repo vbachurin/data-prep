@@ -107,12 +107,20 @@
          * @description Clone the dataset
          * @param {dataset} dataset the dataset infos to delete
          * @param {folder) the folder to clone the dataset
+         * @param {string) cloneName the name for the cloned dataset
          * @returns {Promise} The GET promise
          */
-        function cloneDataset(dataset, folder) {
+        function cloneDataset(dataset, folder, cloneName) {
             var url = RestURLs.datasetUrl + '/clone/' + dataset.id;
             if (folder) {
                 url += '?folderPath=' + encodeURIComponent(folder.id);
+                if (cloneName){
+                    url += '&cloneName=' + encodeURIComponent(cloneName);
+                }
+            } else {
+                if (cloneName){
+                    url += '?cloneName=' + encodeURIComponent(cloneName);
+                }
             }
             return $http.put(url);
         }

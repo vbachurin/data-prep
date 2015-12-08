@@ -416,7 +416,7 @@ describe('Dataset Rest Service', function () {
         //expect POST not to throw any exception;
     }));
 
-    it('should call clone w/o folder', inject(function ($rootScope, DatasetRestService, RestURLs) {
+    it('should call clone w/o folder and w/o clone name', inject(function ($rootScope, DatasetRestService, RestURLs) {
         //given
         var dataset = {id: 'foobar'};
 
@@ -444,6 +444,43 @@ describe('Dataset Rest Service', function () {
 
         //when
         DatasetRestService.clone(dataset, newFolder);
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        //expect GET not to throw any exception;
+    }));
+
+    it('should call clone with folder path and clone name', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        //given
+        var dataset = {id: 'foobar'};
+        var newFolder = {id:'/wine/beer'};
+        var cloneName = 'foo-bar';
+
+        $httpBackend
+            .expectPUT(RestURLs.datasetUrl + '/clone/foobar?folderPath=' + encodeURIComponent(newFolder.id) + '&cloneName=' + encodeURIComponent(cloneName))
+            .respond(200);
+
+        //when
+        DatasetRestService.clone(dataset, newFolder, cloneName);
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        //expect GET not to throw any exception;
+    }));
+
+    it('should call clone w/o folder path and clone name', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        //given
+        var dataset = {id: 'foobar'};
+        var cloneName = 'foo-bar';
+
+        $httpBackend
+            .expectPUT(RestURLs.datasetUrl + '/clone/foobar?cloneName=' + encodeURIComponent(cloneName))
+            .respond(200);
+
+        //when
+        DatasetRestService.clone(dataset, null, cloneName);
         $httpBackend.flush();
         $rootScope.$digest();
 
