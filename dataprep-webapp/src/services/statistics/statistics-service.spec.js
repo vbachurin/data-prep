@@ -62,6 +62,16 @@ describe('Statistics service', function () {
                     'occurences': 22
                 }
             ],
+            'patternFrequencyTable': [
+                {
+                    'pattern': '   Aa9',
+                    'occurences': 202
+                },
+                {
+                    'pattern': 'yyyy-M-d',
+                    'occurences': 2
+                }
+            ],
             textLengthSummary: {
                 averageLength: 10.13248646854654,
                 minimalLength: 12,
@@ -1051,7 +1061,24 @@ describe('Statistics service', function () {
     });
 
     describe('Update Statistics : Statistics routing (basic / aggregations)', function () {
-        var currentColumn = {'id': '0001', 'name': 'city'}; // the selected column
+        var currentColumn = {
+            'id': '0001',
+            'name': 'city',
+            'type': 'date',
+            'statistics': {
+                'patternFrequencyTable': [
+                    {
+                        'pattern': '   d-M-yyyy',
+                        'occurences': 202
+                    },
+                    {
+                        'pattern': 'yyyy-M-d',
+                        'occurences': 2
+                    }
+                ]
+            }
+        }; // the selected column
+
         var datasetId = '13654634856752';                   // the current data id
         var preparationId = '2132548345365';                // the current preparation id
         var stepId = '9878645468';                          // the currently viewed step id
@@ -1101,6 +1128,7 @@ describe('Statistics service', function () {
         }));
 
         it('should update histogram data from saved aggregation configuration', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService, DatagridService, StorageService) {
+            stateMock.playground.grid.selectedColumn = currentColumn;
             //given
             spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
             var savedAggregation = {

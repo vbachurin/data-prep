@@ -7,7 +7,7 @@
      * @description Filter service. This service provide the entry point to datagrid filters
      * @requires data-prep.services.playground.service:DatagridService
      */
-    function FilterService($timeout, state, StateService, FilterAdapterService, DatagridService, ConverterService, StatisticsService) {
+    function FilterService($timeout, state, StateService, FilterAdapterService, DatagridService, ConverterService, StatisticsService, TextFormatService) {
         var service = {
             //utils
             getColumnsContaining: getColumnsContaining,
@@ -24,14 +24,6 @@
         //--------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------UTILS------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
-        /**
-         * Escape all regexp characters except * wildcard, and adapt * wildcard to regexp (* --> .*)
-         * @param {string} str The string to escape
-         * @returns {*}
-         */
-        function escapeRegExpExceptStar(str) {
-            return str.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, '\\$&').replace(/\*/g, '.*');
-        }
 
         /**
          * @ngdoc method
@@ -46,7 +38,7 @@
                 return [];
             }
 
-            var regexp = new RegExp(escapeRegExpExceptStar(phrase));
+            var regexp = new RegExp(TextFormatService.escapeRegExpExceptStar(phrase));
             var canBeNumeric = !isNaN(phrase.replace(/\*/g, ''));
             var canBeBoolean = 'true'.match(regexp) || 'false'.match(regexp);
 
@@ -82,7 +74,7 @@
          */
         function createContainFilterFn(colId, phrase) {
             var lowerCasePhrase = phrase.toLowerCase();
-            var regexp = new RegExp(escapeRegExpExceptStar(lowerCasePhrase));
+            var regexp = new RegExp(TextFormatService.escapeRegExpExceptStar(lowerCasePhrase));
 
             return function () {
                 return function (item) {
@@ -210,9 +202,7 @@
          */
         function createMatchFilterFn(colId, pattern) {
 
-            var regexp;
-            var end = false;
-            var isDatePattern = (pattern.indexOf('d') > -1 ||  // if date format???
+            var datePattern = (pattern.indexOf('d') > -1 ||  // if date format???
                 pattern.indexOf('M') > -1 ||
                 pattern.indexOf('y') > -1 ||
                 pattern.indexOf('H') > -1 ||
@@ -220,53 +210,14 @@
                 pattern.indexOf('m') > -1 ||
                 pattern.indexOf('s') > -1);
 
-            if (isDatePattern) {
-                pattern = pattern.replace(/\'/g, function() { //quote problems => replace quotes by brackets (ex : 'T' => [T], ''y => [']y, 'o''clock' => [o'clock])
-                    return (end = !end) ? '[' : ']';
-                }).replace(/\[\]/g, '[\']').replace(/\]\[/g, '\'');
-
-                //Convert java date format to moment.js date format by escaping contents in brackets
-                var stringsNotToBeReplaced = pattern.match(/\[.*?\]/g);
-                var i = 0;
-                pattern = moment().toMomentFormatString(pattern);
-                pattern = pattern.replace(/\[.*?\]/g, function() {
-                    return stringsNotToBeReplaced[i++];
-                });
+            if (datePattern) {
+                pattern = TextFormatService.convertJavaDateFormatToMomentDateFormat(pattern);
             }
             return function () {
                 return function (item) {
-                    if (item[colId]) {
-                        if (isDatePattern) {
-                            return moment(item[colId], pattern, true).isValid();
-                        }
-                        regexp = convertPatternToRegexp(pattern);
-                        return item[colId].match(regexp);
-                    }
-                    else {
-                        return false;
-                    }
+                    return StatisticsService.checkValueMatchPattern(item[colId], pattern, datePattern);
                 };
             };
-        }
-
-        function convertPatternToRegexp(pattern) {
-            var regexp = '';
-            for (var i = 0, len = pattern.length; i < len; i++) {
-                switch(pattern[i]){
-                    case 'A':
-                        regexp = regexp + '[A-Z]';
-                        break;
-                    case'a':
-                        regexp = regexp + '[a-z]';
-                        break;
-                    case'9':
-                        regexp = regexp + '[0-9]';
-                        break;
-                    default:
-                        regexp = regexp + escapeRegExpExceptStar(pattern[i]);
-                }
-            }
-            return '^' + regexp + '$';
         }
 
         //--------------------------------------------------------------------------------------------------------------

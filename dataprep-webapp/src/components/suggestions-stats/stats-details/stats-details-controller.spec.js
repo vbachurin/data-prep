@@ -56,7 +56,7 @@ describe('Stats-details controller', function () {
         var ctrl = createController();
         expect(ctrl.patternFrequencyTable).toBeFalsy();
 
-        var patternFrequencyTable = {};
+        var patternFrequencyTable = null;
 
         //when
         stateMock.playground.grid.selectedColumn = {statistics: {patternFrequencyTable: patternFrequencyTable}};

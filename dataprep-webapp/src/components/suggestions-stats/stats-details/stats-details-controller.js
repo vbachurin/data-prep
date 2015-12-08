@@ -52,8 +52,7 @@
             enumerable: true,
             configurable: false,
             get: function () {
-                var column = this.state.playground.grid.selectedColumn;
-                return column ? column.statistics.patternFrequencyTable : null;
+                return this.statisticsService.patterns;
             }
         });
 

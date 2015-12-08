@@ -27,7 +27,8 @@
                 keyField: '@',
                 valueField: '@',
                 valueField2: '@',
-                keyLabel:'@'
+                keyLabel:'@',
+                frontBarClass:'@'
             },
             link: function (scope, element, attrs) {
                 var xField = scope.keyField;//occurences
@@ -120,10 +121,10 @@
                             .transition().delay(function (d,i){ return i * 30;})
                             .attr('width', function(d) { return x(d[xField]);});
 
-                        frontBar = svg.selectAll('g.frontBar')
+                        frontBar = svg.selectAll('g.' + scope.frontBarClass? scope.frontBarClass: 'frontBar')
                             .data(statData)
                             .enter().append('g')
-                            .attr('class', 'frontBar')
+                            .attr('class', scope.frontBarClass? scope.frontBarClass: 'frontBar')
                             .attr('transform', function (d) {
                                 return 'translate(0,' + y(d[yField]) +')';
                             });
@@ -137,10 +138,10 @@
                             });
                     } else {
 
-                        frontBar = svg.selectAll('g.frontBar')
+                        frontBar = svg.selectAll('g.' + scope.frontBarClass? scope.frontBarClass: 'frontBar')
                             .data(statData)
                             .enter().append('g')
-                            .attr('class', 'frontBar')
+                            .attr('class', scope.frontBarClass? scope.frontBarClass: 'frontBar')
                             .attr('transform', function (d) {
                                 return 'translate(0,' + y(d[yField]) + ')';
                             });
