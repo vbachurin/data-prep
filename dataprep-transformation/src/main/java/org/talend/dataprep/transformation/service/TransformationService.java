@@ -1,12 +1,25 @@
 package org.talend.dataprep.transformation.service;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import static java.util.stream.Collectors.toList;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.COLUMN;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.LINE;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -42,24 +55,13 @@ import org.talend.dataprep.transformation.format.ExportFormat;
 import org.talend.dataprep.transformation.format.FormatRegistrationService;
 import org.talend.dataprep.transformation.format.JsonFormat;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import static java.util.stream.Collectors.toList;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.COLUMN;
-import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.LINE;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 @RestController
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
@@ -125,14 +127,12 @@ public class TransformationService {
     @RequestMapping(value = "/transform/{format}", method = POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation(value = "Export the preparation applying the transformation", notes = "This operation format the input data transformed using the supplied actions in the provided format.", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @VolumeMetered
-    public void transform( //
-                           @ApiParam(value = "Output format.")
-                           @PathVariable("format")
-                           final String formatName, //
+    //@formatter:off
+    public void transform(@ApiParam(value = "Output format.") @PathVariable("format") final String formatName, //
                            @ApiParam(value = "Actions to perform on content.") @RequestPart(value = "actions", required = false) final Part actions, //
                            @ApiParam(value = "Data set content as JSON.") @RequestPart(value = "content", required = false) final Part content, //
                            final HttpServletResponse response, final HttpServletRequest request) {
-
+    //@formatter:on
         final ExportFormat format = formatRegistrationService.getByName(formatName);
         if (format == null) {
             LOG.error("Export format {} not supported", formatName);
@@ -158,7 +158,7 @@ public class TransformationService {
 
             }
             String decodedActions = actions == null ? StringUtils.EMPTY : IOUtils.toString(actions.getInputStream());
-            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
 
             // set headers
             String name = request.getParameter("exportParameters." + ExportFormat.Parameter.FILENAME_PARAMETER);
@@ -170,8 +170,7 @@ public class TransformationService {
             response.setHeader("Content-Disposition", "attachment; filename=\"" + name + format.getExtension() + "\"");
 
             Configuration configuration = Configuration.builder() //
-                    .format(format.getName()).args(arguments)
-                    .output(response.getOutputStream()) //
+                    .format(format.getName()).args(arguments).output(response.getOutputStream()) //
                     .actions(decodedActions) //
                     .build();
             factory.get(configuration).transform(dataSet, configuration);
@@ -236,7 +235,7 @@ public class TransformationService {
             final String decodedIndexes = indexes == null ? null : IOUtils.toString(indexes.getInputStream());
             final String decodedOldActions = oldActions == null ? null : IOUtils.toString(oldActions.getInputStream());
             final String decodedNewActions = newActions == null ? null : IOUtils.toString(newActions.getInputStream());
-            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
 
             executePreview(decodedNewActions, decodedOldActions, decodedIndexes, dataSet, response.getOutputStream());
         } catch (IOException e) {
@@ -260,14 +259,14 @@ public class TransformationService {
             //decode parts
             final String decodedReferenceActions = referenceActions == null ? null : IOUtils.toString(referenceActions.getInputStream());
             final String decodedDiffActions = diffActions == null ? null : IOUtils.toString(diffActions.getInputStream());
-            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
 
             //call diff
             executePreview(decodedDiffActions, decodedReferenceActions, null, dataSet, output);
 
             //extract created columns ids
             final JsonNode node = mapper.readTree(output.toString());
-            final JsonNode columnsNode = node.get("columns");
+            final JsonNode columnsNode = node.findPath("columns");
             final List<String> createdColumns = StreamSupport.stream(columnsNode.spliterator(), false)
                     .filter(col -> "new".equals(col.path("__tdpColumnDiff").asText()))
                     .map(col -> col.path("id").asText())
@@ -396,7 +395,7 @@ public class TransformationService {
         }
         final ObjectMapper mapper = builder.build();
         try (JsonParser parser = mapper.getFactory().createParser(content)) {
-            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
             return actionType.getGenerator(context).getParameters(columnId, dataSet);
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
@@ -442,7 +441,7 @@ public class TransformationService {
         // parse the parameters
         AggregationParameters params;
         try {
-            params = mapper.reader(AggregationParameters.class).readValue(parameters.getInputStream());
+            params = mapper.readerFor(AggregationParameters.class).readValue(parameters.getInputStream());
             LOG.debug("Aggregation requested {}", params);
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.BAD_AGGREGATION_PARAMETERS, e);
@@ -451,7 +450,7 @@ public class TransformationService {
 
         // apply the aggregation
         try (JsonParser parser = mapper.getFactory().createParser(content.getInputStream())) {
-            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
 
             AggregationResult result = aggregationService.aggregate(params, dataSet);
             mapper.writer().writeValue(response.getWriter(), result);

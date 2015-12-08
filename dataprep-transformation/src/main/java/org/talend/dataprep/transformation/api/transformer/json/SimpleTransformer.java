@@ -172,7 +172,7 @@ class SimpleTransformer implements Transformer {
             writer.startObject();
             final ParsedActions parsedActions = actionParser.parse(configuration.getActions());
             final List<DataSetRowAction> rowActions = parsedActions.getRowTransformers();
-            final boolean transformColumns = !input.getMetadata().getRow().getColumns().isEmpty();
+            final boolean transformColumns = input.getMetadata() != null && !input.getMetadata().getRow().getColumns().isEmpty();
             TransformationContext context = configuration.getTransformationContext();
             final AtomicBoolean wroteMetadata = new AtomicBoolean(false);
             // Row transformations
@@ -194,31 +194,47 @@ class SimpleTransformer implements Transformer {
             });
             // Write transformed records to stream
             final Stack<DataSetRow> postProcessQueue = new Stack<>(); // Stack to remember last processed row.
+
             writer.fieldName("records");
             writer.startArray();
             records.forEach(row -> {
                 try {
+                    // get the current row
                     if (!postProcessQueue.empty()) {
                         postProcessQueue.pop();
                     }
+
+                    // so far, other writers than JsonWriter do not need updated statistics on columns. Hence writing
+                    // metadata at the beginning is no problem
                     if (writer.requireMetadataForHeader() && !wroteMetadata.get()) {
                         writer.write(row.getRowMetadata());
                         wroteMetadata.set(true);
                     }
+
+                    // write the row if needed
                     if (row.shouldWrite()) {
                         writer.write(row);
+                        // when a row is written, RowMetadata cannot be changed anymore, that's why action contexts are
+                        // 'frozen'
                         context.freezeActionContexts();
                     }
+
+                    // save the current row for latter (see below)
                     postProcessQueue.push(row); // In the end, last row remains in stack.
                 } catch (IOException e) {
                     throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
                 }
             });
             writer.endArray();
-            // Write columns (using last processed row).
+
+            // write metadata with updated columns statistics only when needed
             if (!wroteMetadata.get() && transformColumns) {
+                writer.fieldName("metadata");
+                writer.startObject();
                 writer.fieldName("columns");
+
                 final DataSetRow row = postProcessQueue.pop();
+
                 // End analysis and set the statistics
                 emptyInitialAnalysisBuffer(context, row); // Call in case row number < ANALYSIS_BUFFER_SIZE
                 final Analyzer<Analyzers.Result> analyzer = (Analyzer<Analyzers.Result>) context.get(CONTEXT_ANALYZER);
@@ -227,7 +243,10 @@ class SimpleTransformer implements Transformer {
                     analyzer.end();
                     adapter.adapt(row.getRowMetadata().getColumns(), analyzer.getResult());
                 }
+
+                // write the columns metadata
                 writer.write(row.getRowMetadata());
+                writer.endObject();
             }
             if (postProcessQueue.size() > 1) {
                 LOGGER.warn("Too many processed rows in stack (expected 1, got {}).", postProcessQueue.size());

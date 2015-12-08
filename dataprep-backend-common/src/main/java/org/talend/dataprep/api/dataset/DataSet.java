@@ -43,4 +43,8 @@ public class DataSet {
         this.records = records;
     }
 
+    @Override
+    public String toString() {
+        return "DataSet{" + "metadata=" + metadata + ", records=...}";
+    }
 }

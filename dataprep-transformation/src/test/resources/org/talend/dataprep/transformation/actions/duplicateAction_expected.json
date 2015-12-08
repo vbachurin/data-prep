@@ -19,90 +19,92 @@
       "0006": "true"
     }
   ],
-  "columns": [
-    {
-      "name": "id",
-      "headerSize": 0,
-      "type": "integer",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 2,
-        "invalidValues": []
+  "metadata": {
+    "columns": [
+      {
+        "name": "id",
+        "headerSize": 0,
+        "type": "integer",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 2,
+          "invalidValues": []
+        },
+        "id": "0000"
       },
-      "id": "0000"
-    },
-    {
-      "name": "firstname",
-      "headerSize": 0,
-      "type": "string",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 2,
-        "invalidValues": []
+      {
+        "name": "firstname",
+        "headerSize": 0,
+        "type": "string",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 2,
+          "invalidValues": []
+        },
+        "id": "0001"
       },
-      "id": "0001"
-    },
-    {
-      "name": "lastname",
-      "headerSize": 0,
-      "type": "string",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 2,
-        "invalidValues": []
+      {
+        "name": "lastname",
+        "headerSize": 0,
+        "type": "string",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 2,
+          "invalidValues": []
+        },
+        "id": "0002"
       },
-      "id": "0002"
-    },
-    {
-      "name": "age",
-      "headerSize": 0,
-      "type": "integer",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 2,
-        "invalidValues": []
+      {
+        "name": "age",
+        "headerSize": 0,
+        "type": "integer",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 2,
+          "invalidValues": []
+        },
+        "id": "0003"
       },
-      "id": "0003"
-    },
-    {
-      "name": "date-of-birth",
-      "headerSize": 0,
-      "type": "date",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 2,
-        "invalidValues": []
+      {
+        "name": "date-of-birth",
+        "headerSize": 0,
+        "type": "date",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 2,
+          "invalidValues": []
+        },
+        "id": "0004"
       },
-      "id": "0004"
-    },
-    {
-      "name": "alive",
-      "headerSize": 0,
-      "type": "boolean",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 2,
-        "invalidValues": []
+      {
+        "name": "alive",
+        "headerSize": 0,
+        "type": "boolean",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 2,
+          "invalidValues": []
+        },
+        "id": "0005"
       },
-      "id": "0005"
-    },
-    {
-      "name": "alive_copy",
-      "headerSize": 0,
-      "type": "boolean",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 2,
-        "invalidValues": []
-      },
-      "id": "0006"
-    }
-  ]
+      {
+        "name": "alive_copy",
+        "headerSize": 0,
+        "type": "boolean",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 2,
+          "invalidValues": []
+        },
+        "id": "0006"
+      }
+    ]
+  }
 }

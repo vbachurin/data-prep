@@ -52,12 +52,12 @@ public class JsonWriter implements TransformerWriter {
         this.generator = builder.build().getFactory().createGenerator(output);
     }
 
+    // TODO Vincent to remove if unneeded
     /*
-     * TODO Vincent to remove if unneeded public static JsonWriter create(Jackson2ObjectMapperBuilder builder,
-     * OutputStream output) { try { final JsonFactory factory = builder.build().getFactory(); final JsonGenerator
-     * generator = factory.createGenerator(output); generator.setCodec(builder.build()); return new
-     * JsonWriter(generator); } catch (IOException e) { throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON,
-     * e); } }
+     * public static JsonWriter create(Jackson2ObjectMapperBuilder builder, OutputStream output) { try { final
+     * JsonFactory factory = builder.build().getFactory(); final JsonGenerator generator =
+     * factory.createGenerator(output); generator.setCodec(builder.build()); return new JsonWriter(generator); } catch
+     * (IOException e) { throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e); } }
      */
 
     @Override

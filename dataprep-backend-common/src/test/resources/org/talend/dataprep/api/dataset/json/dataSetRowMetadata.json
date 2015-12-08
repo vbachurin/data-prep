@@ -1,87 +1,89 @@
 {
-  "columns": [
-    {
-      "id": "id",
-      "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
+  "metadata": {
+    "columns": [
+      {
+        "id": "id",
+        "quality": {
+          "empty": 5,
+          "invalid": 10,
+          "valid": 72
+        },
+        "type": "integer"
       },
-      "type": "integer"
-    },
-    {
-      "id": "firstname",
-      "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
+      {
+        "id": "firstname",
+        "quality": {
+          "empty": 5,
+          "invalid": 10,
+          "valid": 72
+        },
+        "type": "string"
       },
-      "type": "string"
-    },
-    {
-      "id": "lastname",
-      "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
+      {
+        "id": "lastname",
+        "quality": {
+          "empty": 5,
+          "invalid": 10,
+          "valid": 72
+        },
+        "type": "string"
       },
-      "type": "string"
-    },
-    {
-      "id": "state",
-      "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
+      {
+        "id": "state",
+        "quality": {
+          "empty": 5,
+          "invalid": 10,
+          "valid": 72
+        },
+        "type": "string"
       },
-      "type": "string"
-    },
-    {
-      "id": "registration",
-      "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
+      {
+        "id": "registration",
+        "quality": {
+          "empty": 5,
+          "invalid": 10,
+          "valid": 72
+        },
+        "type": "string"
       },
-      "type": "string"
-    },
-    {
-      "id": "city",
-      "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
+      {
+        "id": "city",
+        "quality": {
+          "empty": 5,
+          "invalid": 10,
+          "valid": 72
+        },
+        "type": "string"
       },
-      "type": "string"
-    },
-    {
-      "id": "birth",
-      "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
+      {
+        "id": "birth",
+        "quality": {
+          "empty": 5,
+          "invalid": 10,
+          "valid": 72
+        },
+        "type": "string"
       },
-      "type": "string"
-    },
-    {
-      "id": "nbCommands",
-      "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
+      {
+        "id": "nbCommands",
+        "quality": {
+          "empty": 5,
+          "invalid": 10,
+          "valid": 72
+        },
+        "type": "integer"
       },
-      "type": "integer"
-    },
-    {
-      "id": "avgAmount",
-      "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
-      },
-      "type": "string"
-    }
-  ],
+      {
+        "id": "avgAmount",
+        "quality": {
+          "empty": 5,
+          "invalid": 10,
+          "valid": 72
+        },
+        "type": "string"
+      }
+    ]
+  },
   "records": [
     {
       "id": "1",

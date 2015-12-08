@@ -1,6 +1,7 @@
 package org.talend.dataprep.api.dataset.json;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.*;
@@ -153,6 +154,7 @@ public class DataSetJSONTest {
         DataSet dataSet = new DataSet();
         dataSet.setMetadata(metadata);
         to(dataSet, writer);
+        System.out.println(writer.toString());
         assertThat(writer.toString(), sameJSONAsFile(DataSetJSONTest.class.getResourceAsStream("test2.json")));
     }
 
@@ -174,7 +176,6 @@ public class DataSetJSONTest {
         // There are 4 columns, but Jackson doesn't take them into account if at end of content. This is not "expected"
         // but known. This test ensure the known behavior remains the same.
         assertThat(dataSet.getMetadata(), nullValue());
-        assertThat(dataSet.getMetadata().getRow().getColumns().size(), is(0));
     }
 
     @Test
@@ -182,7 +183,7 @@ public class DataSetJSONTest {
         // given
         String[] columnNames = new String[] {"id", "firstname", "lastname", "state", "registration", "city", "birth", "nbCommands", "avgAmount"};
 
-        final InputStream input = DataSetJSONTest.class.getResourceAsStream("dataSetRowMetadata.json");
+        final InputStream input = this.getClass().getResourceAsStream("dataSetRowMetadata.json");
         final ObjectMapper mapper = builder.build();
         try (JsonParser parser = mapper.getFactory().createParser(input)) {
             final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);

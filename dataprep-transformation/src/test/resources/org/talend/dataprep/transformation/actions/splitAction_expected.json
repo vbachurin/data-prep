@@ -211,62 +211,64 @@
       "tdpId": 30
     }
   ],
-  "columns": [
-    {
-      "name": "birth",
-      "headerSize": 0,
-      "type": "date",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 30,
-        "invalidValues": []
+  "metadata": {
+    "columns": [
+      {
+        "name": "birth",
+        "headerSize": 0,
+        "type": "date",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 30,
+          "invalidValues": []
+        },
+        "id": "birth",
+        "domain": "",
+        "domainLabel": ""
       },
-      "id": "birth",
-      "domain": "",
-      "domainLabel": ""
-    },
-    {
-      "name": "birth_split",
-      "headerSize": 0,
-      "type": "integer",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 30,
-        "invalidValues": []
+      {
+        "name": "birth_split",
+        "headerSize": 0,
+        "type": "integer",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 30,
+          "invalidValues": []
+        },
+        "id": "0001",
+        "domain": "",
+        "domainLabel": ""
       },
-      "id": "0001",
-      "domain": "",
-      "domainLabel": ""
-    },
-    {
-      "name": "birth_split",
-      "headerSize": 0,
-      "type": "integer",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 30,
-        "invalidValues": []
+      {
+        "name": "birth_split",
+        "headerSize": 0,
+        "type": "integer",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 30,
+          "invalidValues": []
+        },
+        "id": "0002",
+        "domain": "",
+        "domainLabel": ""
       },
-      "id": "0002",
-      "domain": "",
-      "domainLabel": ""
-    },
-    {
-      "name": "birth_split",
-      "headerSize": 0,
-      "type": "integer",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 30,
-        "invalidValues": []
-      },
-      "id": "0003",
-      "domain": "",
-      "domainLabel": ""
-    }
-  ]
+      {
+        "name": "birth_split",
+        "headerSize": 0,
+        "type": "integer",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 30,
+          "invalidValues": []
+        },
+        "id": "0003",
+        "domain": "",
+        "domainLabel": ""
+      }
+    ]
+  }
 }

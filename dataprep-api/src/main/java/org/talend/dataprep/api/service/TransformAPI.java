@@ -49,7 +49,7 @@ public class TransformAPI extends APIService {
             HttpResponseContext.header( "Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             HttpClient client = getClient();
 
-            InputStream contentRetrieval = getCommand(DataSetGet.class, client, dataSetId, false, true, null).execute();
+            InputStream contentRetrieval = getCommand(DataSetGet.class, client, dataSetId, true, null).execute();
             HystrixCommand<InputStream> transformation = getCommand(Transform.class, client, contentRetrieval,
                     IOUtils.toString(body));
 
@@ -163,7 +163,7 @@ public class TransformAPI extends APIService {
             if (isNotBlank(dynamicParamsInput.getPreparationId())) {
                 inputData = getCommand(PreparationGetContent.class, getClient(), dynamicParamsInput.getPreparationId(), dynamicParamsInput.getStepId());
             } else {
-                inputData = getCommand(DataSetGet.class, getClient(), dynamicParamsInput.getDatasetId(), false, true, null);
+                inputData = getCommand(DataSetGet.class, getClient(), dynamicParamsInput.getDatasetId(), true, null);
             }
 
             // get params, passing content in the body

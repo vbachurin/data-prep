@@ -8,6 +8,8 @@ import org.talend.dataprep.api.dataset.location.LocalStoreLocation;
 import org.talend.dataprep.schema.SchemaParserResult;
 import org.talend.dataprep.schema.io.CSVSerializer;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
@@ -31,7 +33,9 @@ public class DataSetMetadata implements Serializable {
     private String id;
 
     /** Row description. */
-    @JsonProperty("columns")
+    @JsonUnwrapped
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonProperty(value = "columns", required = false)
     private RowMetadata rowMetadata;
 
     /** Dataset life cycle status. */
@@ -127,6 +131,7 @@ public class DataSetMetadata implements Serializable {
     /**
      * @return the dataset row description.
      */
+    @JsonIgnore // needed because getRow != getRowMetadata
     public RowMetadata getRow() {
         return rowMetadata;
     }

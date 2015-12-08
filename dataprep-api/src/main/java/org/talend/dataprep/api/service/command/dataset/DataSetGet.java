@@ -29,13 +29,12 @@ public class DataSetGet extends GenericCommand<InputStream> {
      * @param client the http client to use.
      * @param dataSetId the requested dataset id.
      * @param metadata true if the metadata is requested.
-     * @param columns true if the columns is requested.
      * @param sample optional sample size (if null or <=0, the full dataset is returned).
      */
-    public DataSetGet(HttpClient client, String dataSetId, boolean metadata, boolean columns, Long sample) {
+    public DataSetGet(HttpClient client, String dataSetId, boolean metadata, Long sample) {
         super(PreparationAPI.DATASET_GROUP, client);
         execute(() -> {
-            String url = datasetServiceUrl + "/datasets/" + dataSetId + "/content?metadata=" + metadata + "&columns=" + columns;
+            String url = datasetServiceUrl + "/datasets/" + dataSetId + "/content?metadata=" + metadata;
             if (sample != null) {
                 url += "&sample=" + sample;
             }

@@ -109,7 +109,6 @@ public class DataSetAPI extends APIService {
     public void get(
             @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
-            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
             @RequestParam(required = false, defaultValue = "full") @ApiParam(name = "sample", value = "Size of the wanted sample, if missing or 'full', the full dataset is returned") String sample, //
             final OutputStream output) {
         if (LOG.isDebugEnabled()) {
@@ -125,7 +124,7 @@ public class DataSetAPI extends APIService {
             sampleValue = null;
         }
         
-        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata, columns, sampleValue);
+        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata, sampleValue);
         try (InputStream content = retrievalCommand.execute()){
             IOUtils.copyLarge(content, output);
             output.flush();
@@ -167,7 +166,6 @@ public class DataSetAPI extends APIService {
     public void preview(
             @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
-            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
             @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
             final OutputStream output) {
         if (LOG.isDebugEnabled()) {
@@ -175,7 +173,7 @@ public class DataSetAPI extends APIService {
         }
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
-        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetPreview.class, client, id, metadata, columns, sheetName);
+        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetPreview.class, client, id, metadata, sheetName);
         try (InputStream content = retrievalCommand.execute()) {
             IOUtils.copyLarge(content, output);
             output.flush();

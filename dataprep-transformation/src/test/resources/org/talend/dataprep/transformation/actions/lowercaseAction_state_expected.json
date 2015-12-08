@@ -17,97 +17,99 @@
       "tdpId": 4
     }
   ],
-  "columns": [
-    {
-      "name": "state",
-      "headerSize": 0,
-      "type": "string",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 4,
-        "invalidValues": []
-      },
-      "id": "state",
-      "statistics": {
-        "count": 4,
-        "valid": 4,
-        "invalid": 0,
-        "empty": 0,
-        "max": "NaN",
-        "min": "NaN",
-        "mean": "NaN",
-        "variance": "NaN",
-        "duplicateCount": 0,
-        "distinctCount": 4,
-        "frequencyTable": [
+  "metadata": {
+    "columns": [
+      {
+        "name": "state",
+        "headerSize": 0,
+        "type": "string",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 4,
+          "invalidValues": []
+        },
+        "id": "state",
+        "statistics": {
+          "count": 4,
+          "valid": 4,
+          "invalid": 0,
+          "empty": 0,
+          "max": "NaN",
+          "min": "NaN",
+          "mean": "NaN",
+          "variance": "NaN",
+          "duplicateCount": 0,
+          "distinctCount": 4,
+          "frequencyTable": [
+            {
+              "data": "nc",
+              "occurrences": 1
+            },
+            {
+              "data": "az",
+              "occurrences": 1
+            },
+            {
+              "data": "ny",
+              "occurrences": 1
+            },
+            {
+              "data": "ca",
+              "occurrences": 1
+            }
+          ],
+          "patternFrequencyTable": [
+            {
+              "pattern": "aa",
+              "occurrences": 4
+            }
+          ],
+          "quantiles": {
+            "median": "NaN",
+            "lowerQuantile": "NaN",
+            "upperQuantile": "NaN"
+          },
+          "histogram": [],
+          "textLengthSummary": {
+            "minimalLength": 2.0,
+            "maximalLength": 2.0,
+            "averageLength": 2.0
+          }
+        },
+        "domain": "US_STATE_CODE",
+        "domainLabel": "US State Code",
+        "domainFrequency": 100.0,
+        "semanticDomains": [
           {
-            "data": "nc",
-            "occurrences": 1
+            "id": "US_STATE_CODE",
+            "label": "US State Code",
+            "frequency": 100.0
           },
           {
-            "data": "az",
-            "occurrences": 1
+            "id": "COUNTRY_CODE_ISO2",
+            "label": "Country Code ISO2",
+            "frequency": 75.0
           },
           {
-            "data": "ny",
-            "occurrences": 1
+            "id": "LANGUAGE_CODE_ISO2",
+            "label": "Language Code ISO2",
+            "frequency": 75.0
           },
           {
-            "data": "ca",
-            "occurrences": 1
+            "id": "CITY",
+            "label": "City",
+            "frequency": 25.0
+          },
+          {
+            "id": "COMPANY",
+            "label": "Company",
+            "frequency": 25.0
           }
         ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "aa",
-            "occurrences": 4
-          }
-        ],
-        "quantiles": {
-          "median": "NaN",
-          "lowerQuantile": "NaN",
-          "upperQuantile": "NaN"
-        },
-        "histogram": [],
-        "textLengthSummary": {
-          "minimalLength": 2.0,
-          "maximalLength": 2.0,
-          "averageLength": 2.0
-        }
-      },
-      "domain": "US_STATE_CODE",
-      "domainLabel": "US State Code",
-      "domainFrequency": 100.0,
-      "semanticDomains": [
-        {
-          "id": "US_STATE_CODE",
-          "label": "US State Code",
-          "frequency": 100.0
-        },
-        {
-          "id": "COUNTRY_CODE_ISO2",
-          "label": "Country Code ISO2",
-          "frequency": 75.0
-        },
-        {
-          "id": "LANGUAGE_CODE_ISO2",
-          "label": "Language Code ISO2",
-          "frequency": 75.0
-        },
-        {
-          "id": "CITY",
-          "label": "City",
-          "frequency": 25.0
-        },
-        {
-          "id": "COMPANY",
-          "label": "Company",
-          "frequency": 25.0
-        }
-      ],
-      "domainForced": false,
-      "typeForced": false
-    }
-  ]
+        "domainForced": false,
+        "typeForced": false
+      }
+    ]
+  }
 }

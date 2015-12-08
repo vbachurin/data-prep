@@ -1,1052 +1,1053 @@
 {
-  "metadata": null,
-  "columns": [
-    {
-      "name": "user_id",
-      "headerSize": 0,
-      "type": "string",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 16,
-        "invalidValues": []
-      },
-      "id": "0000",
-      "statistics": {
-        "count": 16,
-        "valid": 16,
-        "invalid": 0,
-        "empty": 0,
-        "max": "NaN",
-        "min": "NaN",
-        "mean": "NaN",
-        "variance": "NaN",
-        "duplicateCount": 2,
-        "distinctCount": 14,
-        "frequencyTable": [
-          {
-            "data": "61a7d084f5",
-            "occurrences": 2
-          },
-          {
-            "data": "87f89d1fe4",
-            "occurrences": 2
-          },
-          {
-            "data": "23b5dae249",
-            "occurrences": 1
-          },
-          {
-            "data": "67dc195843",
-            "occurrences": 1
-          },
-          {
-            "data": "7c52e0eab6",
-            "occurrences": 1
-          },
-          {
-            "data": "a4dc1548af",
-            "occurrences": 1
-          },
-          {
-            "data": "e8f6f7853c",
-            "occurrences": 1
-          },
-          {
-            "data": "d72e9b958a",
-            "occurrences": 1
-          },
-          {
-            "data": "5802162c20",
-            "occurrences": 1
-          },
-          {
-            "data": "ef433d39c6",
-            "occurrences": 1
-          },
-          {
-            "data": "1c3ddff940",
-            "occurrences": 1
-          },
-          {
-            "data": "ff971288b2",
-            "occurrences": 1
-          },
-          {
-            "data": "82c97f8fbc",
-            "occurrences": 1
-          },
-          {
-            "data": "17b8b214b0",
-            "occurrences": 1
-          }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "99a9a999a9",
-            "occurrences": 3
-          },
-          {
-            "pattern": "99a99a9aa9",
-            "occurrences": 2
-          },
-          {
-            "pattern": "99a9aaa999",
-            "occurrences": 1
-          },
-          {
-            "pattern": "99aa999999",
-            "occurrences": 1
-          },
-          {
-            "pattern": "99a99a9aaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "aa999999a9",
-            "occurrences": 1
-          },
-          {
-            "pattern": "a99a9a999a",
-            "occurrences": 1
-          },
-          {
-            "pattern": "9999999a99",
-            "occurrences": 1
-          },
-          {
-            "pattern": "a9aa9999aa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "a9a9a9999a",
-            "occurrences": 1
-          },
-          {
-            "pattern": "9a9aaaa999",
-            "occurrences": 1
-          },
-          {
-            "pattern": "9a99a9aaa9",
-            "occurrences": 1
-          },
-          {
-            "pattern": "aa999a99a9",
-            "occurrences": 1
-          }
-        ],
-        "quantiles": {
-          "median": "NaN",
-          "lowerQuantile": "NaN",
-          "upperQuantile": "NaN"
+  "metadata": {
+    "columns": [
+      {
+        "name": "user_id",
+        "headerSize": 0,
+        "type": "string",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 16,
+          "invalidValues": []
         },
-        "histogram": [],
-        "textLengthSummary": {
-          "minimalLength": 10.0,
-          "maximalLength": 10.0,
-          "averageLength": 10.0
-        }
-      },
-      "domain": "",
-      "domainLabel": "",
-      "domainFrequency": 0.0,
-      "semanticDomains": [],
-      "domainForced": false,
-      "typeForced": false
-    },
-    {
-      "name": "departement",
-      "headerSize": 0,
-      "type": "integer",
-      "quality": {
-        "empty": 1,
-        "invalid": 0,
-        "valid": 15,
-        "invalidValues": []
-      },
-      "id": "0001",
-      "statistics": {
-        "count": 16,
-        "valid": 15,
-        "invalid": 0,
-        "empty": 1,
-        "max": 92.0,
-        "min": 13.0,
-        "mean": 63.26666666666667,
-        "variance": 575.9238095238096,
-        "duplicateCount": 5,
-        "distinctCount": 11,
-        "frequencyTable": [
-          {
-            "data": "75",
-            "occurrences": 4
+        "id": "0000",
+        "statistics": {
+          "count": 16,
+          "valid": 16,
+          "invalid": 0,
+          "empty": 0,
+          "max": "NaN",
+          "min": "NaN",
+          "mean": "NaN",
+          "variance": "NaN",
+          "duplicateCount": 2,
+          "distinctCount": 14,
+          "frequencyTable": [
+            {
+              "data": "61a7d084f5",
+              "occurrences": 2
+            },
+            {
+              "data": "87f89d1fe4",
+              "occurrences": 2
+            },
+            {
+              "data": "23b5dae249",
+              "occurrences": 1
+            },
+            {
+              "data": "67dc195843",
+              "occurrences": 1
+            },
+            {
+              "data": "7c52e0eab6",
+              "occurrences": 1
+            },
+            {
+              "data": "a4dc1548af",
+              "occurrences": 1
+            },
+            {
+              "data": "e8f6f7853c",
+              "occurrences": 1
+            },
+            {
+              "data": "d72e9b958a",
+              "occurrences": 1
+            },
+            {
+              "data": "5802162c20",
+              "occurrences": 1
+            },
+            {
+              "data": "ef433d39c6",
+              "occurrences": 1
+            },
+            {
+              "data": "1c3ddff940",
+              "occurrences": 1
+            },
+            {
+              "data": "ff971288b2",
+              "occurrences": 1
+            },
+            {
+              "data": "82c97f8fbc",
+              "occurrences": 1
+            },
+            {
+              "data": "17b8b214b0",
+              "occurrences": 1
+            }
+          ],
+          "patternFrequencyTable": [
+            {
+              "pattern": "99a9a999a9",
+              "occurrences": 3
+            },
+            {
+              "pattern": "99a99a9aa9",
+              "occurrences": 2
+            },
+            {
+              "pattern": "99a9aaa999",
+              "occurrences": 1
+            },
+            {
+              "pattern": "99aa999999",
+              "occurrences": 1
+            },
+            {
+              "pattern": "99a99a9aaa",
+              "occurrences": 1
+            },
+            {
+              "pattern": "aa999999a9",
+              "occurrences": 1
+            },
+            {
+              "pattern": "a99a9a999a",
+              "occurrences": 1
+            },
+            {
+              "pattern": "9999999a99",
+              "occurrences": 1
+            },
+            {
+              "pattern": "a9aa9999aa",
+              "occurrences": 1
+            },
+            {
+              "pattern": "a9a9a9999a",
+              "occurrences": 1
+            },
+            {
+              "pattern": "9a9aaaa999",
+              "occurrences": 1
+            },
+            {
+              "pattern": "9a99a9aaa9",
+              "occurrences": 1
+            },
+            {
+              "pattern": "aa999a99a9",
+              "occurrences": 1
+            }
+          ],
+          "quantiles": {
+            "median": "NaN",
+            "lowerQuantile": "NaN",
+            "upperQuantile": "NaN"
           },
-          {
-            "data": "13",
-            "occurrences": 2
-          },
-          {
-            "data": "53",
-            "occurrences": 2
-          },
-          {
-            "data": "",
-            "occurrences": 1
-          },
-          {
-            "data": "78",
-            "occurrences": 1
-          },
-          {
-            "data": "46",
-            "occurrences": 1
-          },
-          {
-            "data": "69",
-            "occurrences": 1
-          },
-          {
-            "data": "91",
-            "occurrences": 1
-          },
-          {
-            "data": "92",
-            "occurrences": 1
-          },
-          {
-            "data": "70",
-            "occurrences": 1
-          },
-          {
-            "data": "71",
-            "occurrences": 1
+          "histogram": [],
+          "textLengthSummary": {
+            "minimalLength": 10.0,
+            "maximalLength": 10.0,
+            "averageLength": 10.0
           }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "99",
-            "occurrences": 15
-          },
-          {
-            "pattern": "",
-            "occurrences": 1
-          }
-        ],
-        "quantiles": {
-          "median": 71.0,
-          "lowerQuantile": 53.0,
-          "upperQuantile": 75.0
         },
-        "histogram": [
-          {
-            "occurrences": 2,
-            "range": {
-              "min": 13.0,
-              "max": 13.0
-            }
-          },
-          {
-            "occurrences": 1,
-            "range": {
-              "min": 46.0,
-              "max": 46.0
-            }
-          },
-          {
-            "occurrences": 2,
-            "range": {
-              "min": 53.0,
-              "max": 53.0
-            }
-          },
-          {
-            "occurrences": 1,
-            "range": {
-              "min": 69.0,
-              "max": 69.0
-            }
-          },
-          {
-            "occurrences": 1,
-            "range": {
-              "min": 70.0,
-              "max": 70.0
-            }
-          },
-          {
-            "occurrences": 1,
-            "range": {
-              "min": 71.0,
-              "max": 71.0
-            }
-          },
-          {
-            "occurrences": 4,
-            "range": {
-              "min": 75.0,
-              "max": 75.0
-            }
-          },
-          {
-            "occurrences": 1,
-            "range": {
-              "min": 78.0,
-              "max": 78.0
-            }
-          },
-          {
-            "occurrences": 1,
-            "range": {
-              "min": 91.0,
-              "max": 91.0
-            }
-          },
-          {
-            "occurrences": 1,
-            "range": {
-              "min": 92.0,
-              "max": 92.0
-            }
-          }
-        ],
-        "textLengthSummary": {
-          "minimalLength": "NaN",
-          "maximalLength": "NaN",
-          "averageLength": "NaN"
-        }
+        "domain": "",
+        "domainLabel": "",
+        "domainFrequency": 0.0,
+        "semanticDomains": [],
+        "domainForced": false,
+        "typeForced": false
       },
-      "domain": "",
-      "domainLabel": "",
-      "domainFrequency": 0.0,
-      "semanticDomains": [],
-      "domainForced": false,
-      "typeForced": false
-    },
-    {
-      "name": "birth",
-      "headerSize": 0,
-      "type": "date",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 16,
-        "invalidValues": []
-      },
-      "id": "0002",
-      "statistics": {
-        "count": 16,
-        "valid": 16,
-        "invalid": 0,
-        "empty": 0,
-        "max": "NaN",
-        "min": "NaN",
-        "mean": "NaN",
-        "variance": "NaN",
-        "duplicateCount": 2,
-        "distinctCount": 14,
-        "frequencyTable": [
-          {
-            "data": "12/18/1950",
-            "occurrences": 2
-          },
-          {
-            "data": "02/11/1963",
-            "occurrences": 2
-          },
-          {
-            "data": "01/23/1991",
-            "occurrences": 1
-          },
-          {
-            "data": "01/05/1971",
-            "occurrences": 1
-          },
-          {
-            "data": "11/09/1970",
-            "occurrences": 1
-          },
-          {
-            "data": "12/16/1977",
-            "occurrences": 1
-          },
-          {
-            "data": "05/24/1982",
-            "occurrences": 1
-          },
-          {
-            "data": "04/04/1987",
-            "occurrences": 1
-          },
-          {
-            "data": "01/31/1983",
-            "occurrences": 1
-          },
-          {
-            "data": "05/28/1973",
-            "occurrences": 1
-          },
-          {
-            "data": "06/05/1958",
-            "occurrences": 1
-          },
-          {
-            "data": "06/07/1977",
-            "occurrences": 1
-          },
-          {
-            "data": "12/30/1899",
-            "occurrences": 1
-          },
-          {
-            "data": "12/19/1981",
-            "occurrences": 1
-          }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "M/d/yyyy",
-            "occurrences": 16
-          }
-        ],
-        "quantiles": {
-          "median": "NaN",
-          "lowerQuantile": "NaN",
-          "upperQuantile": "NaN"
+      {
+        "name": "departement",
+        "headerSize": 0,
+        "type": "integer",
+        "quality": {
+          "empty": 1,
+          "invalid": 0,
+          "valid": 15,
+          "invalidValues": []
         },
-        "histogram": [],
-        "textLengthSummary": {
-          "minimalLength": "NaN",
-          "maximalLength": "NaN",
-          "averageLength": "NaN"
-        }
-      },
-      "domain": "",
-      "domainLabel": "",
-      "domainFrequency": 0.0,
-      "semanticDomains": [],
-      "domainForced": false,
-      "typeForced": false
-    },
-    {
-      "name": "order_id",
-      "headerSize": 0,
-      "type": "string",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 16,
-        "invalidValues": []
-      },
-      "id": "0003",
-      "statistics": {
-        "count": 16,
-        "valid": 16,
-        "invalid": 0,
-        "empty": 0,
-        "max": "NaN",
-        "min": "NaN",
-        "mean": "NaN",
-        "variance": "NaN",
-        "duplicateCount": 0,
-        "distinctCount": 16,
-        "frequencyTable": [
-          {
-            "data": "TSG-1200493",
-            "occurrences": 1
+        "id": "0001",
+        "statistics": {
+          "count": 16,
+          "valid": 15,
+          "invalid": 0,
+          "empty": 1,
+          "max": 92.0,
+          "min": 13.0,
+          "mean": 63.26666666666667,
+          "variance": 575.9238095238096,
+          "duplicateCount": 5,
+          "distinctCount": 11,
+          "frequencyTable": [
+            {
+              "data": "75",
+              "occurrences": 4
+            },
+            {
+              "data": "13",
+              "occurrences": 2
+            },
+            {
+              "data": "53",
+              "occurrences": 2
+            },
+            {
+              "data": "",
+              "occurrences": 1
+            },
+            {
+              "data": "78",
+              "occurrences": 1
+            },
+            {
+              "data": "46",
+              "occurrences": 1
+            },
+            {
+              "data": "69",
+              "occurrences": 1
+            },
+            {
+              "data": "91",
+              "occurrences": 1
+            },
+            {
+              "data": "92",
+              "occurrences": 1
+            },
+            {
+              "data": "70",
+              "occurrences": 1
+            },
+            {
+              "data": "71",
+              "occurrences": 1
+            }
+          ],
+          "patternFrequencyTable": [
+            {
+              "pattern": "99",
+              "occurrences": 15
+            },
+            {
+              "pattern": "",
+              "occurrences": 1
+            }
+          ],
+          "quantiles": {
+            "median": 71.0,
+            "lowerQuantile": 53.0,
+            "upperQuantile": 75.0
           },
-          {
-            "data": "TSG-1200530",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200541",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200552",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200500",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200555",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200509",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200534",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200545",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200502",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200535",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200503",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200547",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200505",
-            "occurrences": 1
-          },
-          {
-            "data": "TSG-1200538",
-            "occurrences": 1
+          "histogram": [
+            {
+              "occurrences": 2,
+              "range": {
+                "min": 13.0,
+                "max": 13.0
+              }
+            },
+            {
+              "occurrences": 1,
+              "range": {
+                "min": 46.0,
+                "max": 46.0
+              }
+            },
+            {
+              "occurrences": 2,
+              "range": {
+                "min": 53.0,
+                "max": 53.0
+              }
+            },
+            {
+              "occurrences": 1,
+              "range": {
+                "min": 69.0,
+                "max": 69.0
+              }
+            },
+            {
+              "occurrences": 1,
+              "range": {
+                "min": 70.0,
+                "max": 70.0
+              }
+            },
+            {
+              "occurrences": 1,
+              "range": {
+                "min": 71.0,
+                "max": 71.0
+              }
+            },
+            {
+              "occurrences": 4,
+              "range": {
+                "min": 75.0,
+                "max": 75.0
+              }
+            },
+            {
+              "occurrences": 1,
+              "range": {
+                "min": 78.0,
+                "max": 78.0
+              }
+            },
+            {
+              "occurrences": 1,
+              "range": {
+                "min": 91.0,
+                "max": 91.0
+              }
+            },
+            {
+              "occurrences": 1,
+              "range": {
+                "min": 92.0,
+                "max": 92.0
+              }
+            }
+          ],
+          "textLengthSummary": {
+            "minimalLength": "NaN",
+            "maximalLength": "NaN",
+            "averageLength": "NaN"
           }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "AAA-9999999",
-            "occurrences": 16
-          }
-        ],
-        "quantiles": {
-          "median": "NaN",
-          "lowerQuantile": "NaN",
-          "upperQuantile": "NaN"
         },
-        "histogram": [],
-        "textLengthSummary": {
-          "minimalLength": 11.0,
-          "maximalLength": 11.0,
-          "averageLength": 11.0
-        }
+        "domain": "",
+        "domainLabel": "",
+        "domainFrequency": 0.0,
+        "semanticDomains": [],
+        "domainForced": false,
+        "typeForced": false
       },
-      "domain": "",
-      "domainLabel": "",
-      "domainFrequency": 0.0,
-      "semanticDomains": [],
-      "domainForced": false,
-      "typeForced": false
-    },
-    {
-      "name": "order_date",
-      "headerSize": 0,
-      "type": "date",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 16,
-        "invalidValues": []
-      },
-      "id": "0004",
-      "statistics": {
-        "count": 16,
-        "valid": 16,
-        "invalid": 0,
-        "empty": 0,
-        "max": "NaN",
-        "min": "NaN",
-        "mean": "NaN",
-        "variance": "NaN",
-        "duplicateCount": 2,
-        "distinctCount": 14,
-        "frequencyTable": [
-          {
-            "data": "2013-12-15 15:05:00",
-            "occurrences": 2
-          },
-          {
-            "data": "2014-01-19 10:59:00",
-            "occurrences": 2
-          },
-          {
-            "data": "2013-12-07 15:27:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2014-02-10 14:22:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2013-12-21 20:42:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2013-12-22 14:09:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2013-11-29 13:19:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2014-03-22 21:07:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2014-05-22 12:14:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2014-01-22 08:28:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2013-12-05 19:45:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2014-05-20 15:25:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2014-09-07 09:03:00",
-            "occurrences": 1
-          },
-          {
-            "data": "2014-08-20 10:10:00",
-            "occurrences": 1
-          }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "yyyy-M-d H:m:s",
-            "occurrences": 16
-          }
-        ],
-        "quantiles": {
-          "median": "NaN",
-          "lowerQuantile": "NaN",
-          "upperQuantile": "NaN"
+      {
+        "name": "birth",
+        "headerSize": 0,
+        "type": "date",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 16,
+          "invalidValues": []
         },
-        "histogram": [],
-        "textLengthSummary": {
-          "minimalLength": "NaN",
-          "maximalLength": "NaN",
-          "averageLength": "NaN"
-        }
-      },
-      "domain": "",
-      "domainLabel": "",
-      "domainFrequency": 0.0,
-      "semanticDomains": [],
-      "domainForced": false,
-      "typeForced": false
-    },
-    {
-      "name": "total",
-      "headerSize": 0,
-      "type": "double",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 16,
-        "invalidValues": []
-      },
-      "id": "0005",
-      "statistics": {
-        "count": 16,
-        "valid": 16,
-        "invalid": 0,
-        "empty": 0,
-        "max": 200.0,
-        "min": 16.7,
-        "mean": 51.74375,
-        "variance": 3678.941291666667,
-        "duplicateCount": 8,
-        "distinctCount": 8,
-        "frequencyTable": [
-          {
-            "data": "19.9",
-            "occurrences": 5
+        "id": "0002",
+        "statistics": {
+          "count": 16,
+          "valid": 16,
+          "invalid": 0,
+          "empty": 0,
+          "max": "NaN",
+          "min": "NaN",
+          "mean": "NaN",
+          "variance": "NaN",
+          "duplicateCount": 2,
+          "distinctCount": 14,
+          "frequencyTable": [
+            {
+              "data": "12/18/1950",
+              "occurrences": 2
+            },
+            {
+              "data": "02/11/1963",
+              "occurrences": 2
+            },
+            {
+              "data": "01/23/1991",
+              "occurrences": 1
+            },
+            {
+              "data": "01/05/1971",
+              "occurrences": 1
+            },
+            {
+              "data": "11/09/1970",
+              "occurrences": 1
+            },
+            {
+              "data": "12/16/1977",
+              "occurrences": 1
+            },
+            {
+              "data": "05/24/1982",
+              "occurrences": 1
+            },
+            {
+              "data": "04/04/1987",
+              "occurrences": 1
+            },
+            {
+              "data": "01/31/1983",
+              "occurrences": 1
+            },
+            {
+              "data": "05/28/1973",
+              "occurrences": 1
+            },
+            {
+              "data": "06/05/1958",
+              "occurrences": 1
+            },
+            {
+              "data": "06/07/1977",
+              "occurrences": 1
+            },
+            {
+              "data": "12/30/1899",
+              "occurrences": 1
+            },
+            {
+              "data": "12/19/1981",
+              "occurrences": 1
+            }
+          ],
+          "patternFrequencyTable": [
+            {
+              "pattern": "M/d/yyyy",
+              "occurrences": 16
+            }
+          ],
+          "quantiles": {
+            "median": "NaN",
+            "lowerQuantile": "NaN",
+            "upperQuantile": "NaN"
           },
-          {
-            "data": "16.7",
-            "occurrences": 3
-          },
-          {
-            "data": "33.4",
-            "occurrences": 2
-          },
-          {
-            "data": "200.0",
-            "occurrences": 2
-          },
-          {
-            "data": "25.0",
-            "occurrences": 1
-          },
-          {
-            "data": "39.8",
-            "occurrences": 1
-          },
-          {
-            "data": "75.0",
-            "occurrences": 1
-          },
-          {
-            "data": "71.7",
-            "occurrences": 1
+          "histogram": [],
+          "textLengthSummary": {
+            "minimalLength": "NaN",
+            "maximalLength": "NaN",
+            "averageLength": "NaN"
           }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "99.9",
-            "occurrences": 14
-          },
-          {
-            "pattern": "999.9",
-            "occurrences": 2
-          }
-        ],
-        "quantiles": {
-          "median": 22.45,
-          "lowerQuantile": 19.9,
-          "upperQuantile": 63.725
         },
-        "histogram": [
-          {
-            "occurrences": 3,
-            "range": {
-              "min": 16.7,
-              "max": 16.7
-            }
-          },
-          {
-            "occurrences": 5,
-            "range": {
-              "min": 19.9,
-              "max": 19.9
-            }
-          },
-          {
-            "occurrences": 1,
-            "range": {
-              "min": 25.0,
-              "max": 25.0
-            }
-          },
-          {
-            "occurrences": 2,
-            "range": {
-              "min": 33.4,
-              "max": 33.4
-            }
-          },
-          {
-            "occurrences": 1,
-            "range": {
-              "min": 39.8,
-              "max": 39.8
-            }
-          },
-          {
-            "occurrences": 1,
-            "range": {
-              "min": 71.7,
-              "max": 71.7
-            }
-          },
-          {
-            "occurrences": 1,
-            "range": {
-              "min": 75.0,
-              "max": 75.0
-            }
-          },
-          {
-            "occurrences": 2,
-            "range": {
-              "min": 200.0,
-              "max": 200.0
-            }
-          }
-        ],
-        "textLengthSummary": {
-          "minimalLength": "NaN",
-          "maximalLength": "NaN",
-          "averageLength": "NaN"
-        }
+        "domain": "",
+        "domainLabel": "",
+        "domainFrequency": 0.0,
+        "semanticDomains": [],
+        "domainForced": false,
+        "typeForced": false
       },
-      "domain": "",
-      "domainLabel": "",
-      "domainFrequency": 0.0,
-      "semanticDomains": [],
-      "domainForced": false,
-      "typeForced": false
-    },
-    {
-      "name": "nb_tshirts",
-      "headerSize": 0,
-      "type": "integer",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 16,
-        "invalidValues": []
-      },
-      "id": "0006",
-      "statistics": {
-        "count": 16,
-        "valid": 16,
-        "invalid": 0,
-        "empty": 0,
-        "max": 8.0,
-        "min": 1.0,
-        "mean": 2.3124999999999996,
-        "variance": 5.429166666666666,
-        "duplicateCount": 12,
-        "distinctCount": 4,
-        "frequencyTable": [
-          {
-            "data": "1",
-            "occurrences": 9
-          },
-          {
-            "data": "2",
-            "occurrences": 3
-          },
-          {
-            "data": "3",
-            "occurrences": 2
-          },
-          {
-            "data": "8",
-            "occurrences": 2
-          }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "9",
-            "occurrences": 16
-          }
-        ],
-        "quantiles": {
-          "median": 1.0,
-          "lowerQuantile": 1.0,
-          "upperQuantile": 2.75
+      {
+        "name": "order_id",
+        "headerSize": 0,
+        "type": "string",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 16,
+          "invalidValues": []
         },
-        "histogram": [
-          {
-            "occurrences": 9,
-            "range": {
-              "min": 1.0,
-              "max": 1.0
+        "id": "0003",
+        "statistics": {
+          "count": 16,
+          "valid": 16,
+          "invalid": 0,
+          "empty": 0,
+          "max": "NaN",
+          "min": "NaN",
+          "mean": "NaN",
+          "variance": "NaN",
+          "duplicateCount": 0,
+          "distinctCount": 16,
+          "frequencyTable": [
+            {
+              "data": "TSG-1200493",
+              "occurrences": 1
+            },
+            {
+              "data": "TSG-1200530",
+              "occurrences": 1
+            },
+            {
+              "data": "TSG-1200541",
+              "occurrences": 1
+            },
+            {
+              "data": "TSG-1200552",
+              "occurrences": 1
+            },
+            {
+              "data": "TSG-1200500",
+              "occurrences": 1
+            },
+            {
+              "data": "TSG-1200555",
+              "occurrences": 1
+            },
+            {
+              "data": "TSG-1200509",
+              "occurrences": 1
+            },
+            {
+              "data": "TSG-1200534",
+              "occurrences": 1
+            },
+            {
+              "data": "TSG-1200545",
+              "occurrences": 1
+            },
+            {
+              "data": "TSG-1200502",
+              "occurrences": 1
+            },
+            {
+              "data": "TSG-1200535",
+              "occurrences": 1
+            },
+            {
+              "data": "TSG-1200503",
+              "occurrences": 1
+            },
+            {
+              "data": "TSG-1200547",
+              "occurrences": 1
+            },
+            {
+              "data": "TSG-1200505",
+              "occurrences": 1
+            },
+            {
+              "data": "TSG-1200538",
+              "occurrences": 1
             }
+          ],
+          "patternFrequencyTable": [
+            {
+              "pattern": "AAA-9999999",
+              "occurrences": 16
+            }
+          ],
+          "quantiles": {
+            "median": "NaN",
+            "lowerQuantile": "NaN",
+            "upperQuantile": "NaN"
           },
-          {
-            "occurrences": 3,
-            "range": {
-              "min": 2.0,
-              "max": 2.0
-            }
-          },
-          {
-            "occurrences": 2,
-            "range": {
-              "min": 3.0,
-              "max": 3.0
-            }
-          },
-          {
-            "occurrences": 2,
-            "range": {
-              "min": 8.0,
-              "max": 8.0
-            }
+          "histogram": [],
+          "textLengthSummary": {
+            "minimalLength": 11.0,
+            "maximalLength": 11.0,
+            "averageLength": 11.0
           }
-        ],
-        "textLengthSummary": {
-          "minimalLength": "NaN",
-          "maximalLength": "NaN",
-          "averageLength": "NaN"
-        }
-      },
-      "domain": "",
-      "domainLabel": "",
-      "domainFrequency": 0.0,
-      "semanticDomains": [],
-      "domainForced": false,
-      "typeForced": false
-    },
-    {
-      "name": "tshirt_price",
-      "headerSize": 0,
-      "type": "double",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 16,
-        "invalidValues": []
-      },
-      "id": "0007",
-      "statistics": {
-        "count": 16,
-        "valid": 16,
-        "invalid": 0,
-        "empty": 0,
-        "max": 25.0,
-        "min": 16.7,
-        "mean": 20.425,
-        "variance": 11.121999999999998,
-        "duplicateCount": 12,
-        "distinctCount": 4,
-        "frequencyTable": [
-          {
-            "data": "19.9",
-            "occurrences": 6
-          },
-          {
-            "data": "16.7",
-            "occurrences": 5
-          },
-          {
-            "data": "25.0",
-            "occurrences": 4
-          },
-          {
-            "data": "23.9",
-            "occurrences": 1
-          }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "99.9",
-            "occurrences": 16
-          }
-        ],
-        "quantiles": {
-          "median": 19.9,
-          "lowerQuantile": 16.7,
-          "upperQuantile": 24.725
         },
-        "histogram": [
-          {
-            "occurrences": 5,
-            "range": {
-              "min": 16.7,
-              "max": 16.7
-            }
-          },
-          {
-            "occurrences": 6,
-            "range": {
-              "min": 19.9,
-              "max": 19.9
-            }
-          },
-          {
-            "occurrences": 1,
-            "range": {
-              "min": 23.9,
-              "max": 23.9
-            }
-          },
-          {
-            "occurrences": 4,
-            "range": {
-              "min": 25.0,
-              "max": 25.0
-            }
-          }
-        ],
-        "textLengthSummary": {
-          "minimalLength": "NaN",
-          "maximalLength": "NaN",
-          "averageLength": "NaN"
-        }
+        "domain": "",
+        "domainLabel": "",
+        "domainFrequency": 0.0,
+        "semanticDomains": [],
+        "domainForced": false,
+        "typeForced": false
       },
-      "domain": "",
-      "domainLabel": "",
-      "domainFrequency": 0.0,
-      "semanticDomains": [],
-      "domainForced": false,
-      "typeForced": false
-    },
-    {
-      "name": "category",
-      "headerSize": 0,
-      "type": "string",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 16,
-        "invalidValues": []
-      },
-      "id": "0008",
-      "statistics": {
-        "count": 16,
-        "valid": 16,
-        "invalid": 0,
-        "empty": 0,
-        "max": "NaN",
-        "min": "NaN",
-        "mean": "NaN",
-        "variance": "NaN",
-        "duplicateCount": 12,
-        "distinctCount": 4,
-        "frequencyTable": [
-          {
-            "data": "Hoodie",
-            "occurrences": 5
-          },
-          {
-            "data": "Black T-Shirt M",
-            "occurrences": 5
-          },
-          {
-            "data": "White T-Shirt M",
-            "occurrences": 3
-          },
-          {
-            "data": "Black T-Shirt F",
-            "occurrences": 3
-          }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "Aaaaa A-Aaaaa A",
-            "occurrences": 11
-          },
-          {
-            "pattern": "Aaaaaa",
-            "occurrences": 5
-          }
-        ],
-        "quantiles": {
-          "median": "NaN",
-          "lowerQuantile": "NaN",
-          "upperQuantile": "NaN"
+      {
+        "name": "order_date",
+        "headerSize": 0,
+        "type": "date",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 16,
+          "invalidValues": []
         },
-        "histogram": [],
-        "textLengthSummary": {
-          "minimalLength": 6.0,
-          "maximalLength": 15.0,
-          "averageLength": 12.1875
-        }
+        "id": "0004",
+        "statistics": {
+          "count": 16,
+          "valid": 16,
+          "invalid": 0,
+          "empty": 0,
+          "max": "NaN",
+          "min": "NaN",
+          "mean": "NaN",
+          "variance": "NaN",
+          "duplicateCount": 2,
+          "distinctCount": 14,
+          "frequencyTable": [
+            {
+              "data": "2013-12-15 15:05:00",
+              "occurrences": 2
+            },
+            {
+              "data": "2014-01-19 10:59:00",
+              "occurrences": 2
+            },
+            {
+              "data": "2013-12-07 15:27:00",
+              "occurrences": 1
+            },
+            {
+              "data": "2014-02-10 14:22:00",
+              "occurrences": 1
+            },
+            {
+              "data": "2013-12-21 20:42:00",
+              "occurrences": 1
+            },
+            {
+              "data": "2013-12-22 14:09:00",
+              "occurrences": 1
+            },
+            {
+              "data": "2013-11-29 13:19:00",
+              "occurrences": 1
+            },
+            {
+              "data": "2014-03-22 21:07:00",
+              "occurrences": 1
+            },
+            {
+              "data": "2014-05-22 12:14:00",
+              "occurrences": 1
+            },
+            {
+              "data": "2014-01-22 08:28:00",
+              "occurrences": 1
+            },
+            {
+              "data": "2013-12-05 19:45:00",
+              "occurrences": 1
+            },
+            {
+              "data": "2014-05-20 15:25:00",
+              "occurrences": 1
+            },
+            {
+              "data": "2014-09-07 09:03:00",
+              "occurrences": 1
+            },
+            {
+              "data": "2014-08-20 10:10:00",
+              "occurrences": 1
+            }
+          ],
+          "patternFrequencyTable": [
+            {
+              "pattern": "yyyy-M-d H:m:s",
+              "occurrences": 16
+            }
+          ],
+          "quantiles": {
+            "median": "NaN",
+            "lowerQuantile": "NaN",
+            "upperQuantile": "NaN"
+          },
+          "histogram": [],
+          "textLengthSummary": {
+            "minimalLength": "NaN",
+            "maximalLength": "NaN",
+            "averageLength": "NaN"
+          }
+        },
+        "domain": "",
+        "domainLabel": "",
+        "domainFrequency": 0.0,
+        "semanticDomains": [],
+        "domainForced": false,
+        "typeForced": false
       },
-      "domain": "FULL_NAME",
-      "domainLabel": "Full Name",
-      "domainFrequency": 50.0,
-      "semanticDomains": [
-        {
-          "id": "FULL_NAME",
-          "label": "Full Name",
-          "frequency": 50.0
-        }
-      ],
-      "domainForced": false,
-      "typeForced": false
-    }
-  ],
+      {
+        "name": "total",
+        "headerSize": 0,
+        "type": "double",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 16,
+          "invalidValues": []
+        },
+        "id": "0005",
+        "statistics": {
+          "count": 16,
+          "valid": 16,
+          "invalid": 0,
+          "empty": 0,
+          "max": 200.0,
+          "min": 16.7,
+          "mean": 51.74375,
+          "variance": 3678.941291666667,
+          "duplicateCount": 8,
+          "distinctCount": 8,
+          "frequencyTable": [
+            {
+              "data": "19.9",
+              "occurrences": 5
+            },
+            {
+              "data": "16.7",
+              "occurrences": 3
+            },
+            {
+              "data": "33.4",
+              "occurrences": 2
+            },
+            {
+              "data": "200.0",
+              "occurrences": 2
+            },
+            {
+              "data": "25.0",
+              "occurrences": 1
+            },
+            {
+              "data": "39.8",
+              "occurrences": 1
+            },
+            {
+              "data": "75.0",
+              "occurrences": 1
+            },
+            {
+              "data": "71.7",
+              "occurrences": 1
+            }
+          ],
+          "patternFrequencyTable": [
+            {
+              "pattern": "99.9",
+              "occurrences": 14
+            },
+            {
+              "pattern": "999.9",
+              "occurrences": 2
+            }
+          ],
+          "quantiles": {
+            "median": 22.45,
+            "lowerQuantile": 19.9,
+            "upperQuantile": 63.725
+          },
+          "histogram": [
+            {
+              "occurrences": 3,
+              "range": {
+                "min": 16.7,
+                "max": 16.7
+              }
+            },
+            {
+              "occurrences": 5,
+              "range": {
+                "min": 19.9,
+                "max": 19.9
+              }
+            },
+            {
+              "occurrences": 1,
+              "range": {
+                "min": 25.0,
+                "max": 25.0
+              }
+            },
+            {
+              "occurrences": 2,
+              "range": {
+                "min": 33.4,
+                "max": 33.4
+              }
+            },
+            {
+              "occurrences": 1,
+              "range": {
+                "min": 39.8,
+                "max": 39.8
+              }
+            },
+            {
+              "occurrences": 1,
+              "range": {
+                "min": 71.7,
+                "max": 71.7
+              }
+            },
+            {
+              "occurrences": 1,
+              "range": {
+                "min": 75.0,
+                "max": 75.0
+              }
+            },
+            {
+              "occurrences": 2,
+              "range": {
+                "min": 200.0,
+                "max": 200.0
+              }
+            }
+          ],
+          "textLengthSummary": {
+            "minimalLength": "NaN",
+            "maximalLength": "NaN",
+            "averageLength": "NaN"
+          }
+        },
+        "domain": "",
+        "domainLabel": "",
+        "domainFrequency": 0.0,
+        "semanticDomains": [],
+        "domainForced": false,
+        "typeForced": false
+      },
+      {
+        "name": "nb_tshirts",
+        "headerSize": 0,
+        "type": "integer",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 16,
+          "invalidValues": []
+        },
+        "id": "0006",
+        "statistics": {
+          "count": 16,
+          "valid": 16,
+          "invalid": 0,
+          "empty": 0,
+          "max": 8.0,
+          "min": 1.0,
+          "mean": 2.3124999999999996,
+          "variance": 5.429166666666666,
+          "duplicateCount": 12,
+          "distinctCount": 4,
+          "frequencyTable": [
+            {
+              "data": "1",
+              "occurrences": 9
+            },
+            {
+              "data": "2",
+              "occurrences": 3
+            },
+            {
+              "data": "3",
+              "occurrences": 2
+            },
+            {
+              "data": "8",
+              "occurrences": 2
+            }
+          ],
+          "patternFrequencyTable": [
+            {
+              "pattern": "9",
+              "occurrences": 16
+            }
+          ],
+          "quantiles": {
+            "median": 1.0,
+            "lowerQuantile": 1.0,
+            "upperQuantile": 2.75
+          },
+          "histogram": [
+            {
+              "occurrences": 9,
+              "range": {
+                "min": 1.0,
+                "max": 1.0
+              }
+            },
+            {
+              "occurrences": 3,
+              "range": {
+                "min": 2.0,
+                "max": 2.0
+              }
+            },
+            {
+              "occurrences": 2,
+              "range": {
+                "min": 3.0,
+                "max": 3.0
+              }
+            },
+            {
+              "occurrences": 2,
+              "range": {
+                "min": 8.0,
+                "max": 8.0
+              }
+            }
+          ],
+          "textLengthSummary": {
+            "minimalLength": "NaN",
+            "maximalLength": "NaN",
+            "averageLength": "NaN"
+          }
+        },
+        "domain": "",
+        "domainLabel": "",
+        "domainFrequency": 0.0,
+        "semanticDomains": [],
+        "domainForced": false,
+        "typeForced": false
+      },
+      {
+        "name": "tshirt_price",
+        "headerSize": 0,
+        "type": "double",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 16,
+          "invalidValues": []
+        },
+        "id": "0007",
+        "statistics": {
+          "count": 16,
+          "valid": 16,
+          "invalid": 0,
+          "empty": 0,
+          "max": 25.0,
+          "min": 16.7,
+          "mean": 20.425,
+          "variance": 11.121999999999998,
+          "duplicateCount": 12,
+          "distinctCount": 4,
+          "frequencyTable": [
+            {
+              "data": "19.9",
+              "occurrences": 6
+            },
+            {
+              "data": "16.7",
+              "occurrences": 5
+            },
+            {
+              "data": "25.0",
+              "occurrences": 4
+            },
+            {
+              "data": "23.9",
+              "occurrences": 1
+            }
+          ],
+          "patternFrequencyTable": [
+            {
+              "pattern": "99.9",
+              "occurrences": 16
+            }
+          ],
+          "quantiles": {
+            "median": 19.9,
+            "lowerQuantile": 16.7,
+            "upperQuantile": 24.725
+          },
+          "histogram": [
+            {
+              "occurrences": 5,
+              "range": {
+                "min": 16.7,
+                "max": 16.7
+              }
+            },
+            {
+              "occurrences": 6,
+              "range": {
+                "min": 19.9,
+                "max": 19.9
+              }
+            },
+            {
+              "occurrences": 1,
+              "range": {
+                "min": 23.9,
+                "max": 23.9
+              }
+            },
+            {
+              "occurrences": 4,
+              "range": {
+                "min": 25.0,
+                "max": 25.0
+              }
+            }
+          ],
+          "textLengthSummary": {
+            "minimalLength": "NaN",
+            "maximalLength": "NaN",
+            "averageLength": "NaN"
+          }
+        },
+        "domain": "",
+        "domainLabel": "",
+        "domainFrequency": 0.0,
+        "semanticDomains": [],
+        "domainForced": false,
+        "typeForced": false
+      },
+      {
+        "name": "category",
+        "headerSize": 0,
+        "type": "string",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 16,
+          "invalidValues": []
+        },
+        "id": "0008",
+        "statistics": {
+          "count": 16,
+          "valid": 16,
+          "invalid": 0,
+          "empty": 0,
+          "max": "NaN",
+          "min": "NaN",
+          "mean": "NaN",
+          "variance": "NaN",
+          "duplicateCount": 12,
+          "distinctCount": 4,
+          "frequencyTable": [
+            {
+              "data": "Hoodie",
+              "occurrences": 5
+            },
+            {
+              "data": "Black T-Shirt M",
+              "occurrences": 5
+            },
+            {
+              "data": "White T-Shirt M",
+              "occurrences": 3
+            },
+            {
+              "data": "Black T-Shirt F",
+              "occurrences": 3
+            }
+          ],
+          "patternFrequencyTable": [
+            {
+              "pattern": "Aaaaa A-Aaaaa A",
+              "occurrences": 11
+            },
+            {
+              "pattern": "Aaaaaa",
+              "occurrences": 5
+            }
+          ],
+          "quantiles": {
+            "median": "NaN",
+            "lowerQuantile": "NaN",
+            "upperQuantile": "NaN"
+          },
+          "histogram": [],
+          "textLengthSummary": {
+            "minimalLength": 6.0,
+            "maximalLength": 15.0,
+            "averageLength": 12.1875
+          }
+        },
+        "domain": "FULL_NAME",
+        "domainLabel": "Full Name",
+        "domainFrequency": 50.0,
+        "semanticDomains": [
+          {
+            "id": "FULL_NAME",
+            "label": "Full Name",
+            "frequency": 50.0
+          }
+        ],
+        "domainForced": false,
+        "typeForced": false
+      }
+    ]
+  },
   "records": [
     {
       "0000": "a4dc1548af",
