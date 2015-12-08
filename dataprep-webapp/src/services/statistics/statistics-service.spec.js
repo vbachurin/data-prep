@@ -1068,12 +1068,24 @@ describe('Statistics service', function () {
             'statistics': {
                 'patternFrequencyTable': [
                     {
-                        'pattern': '   d-M-yyyy',
-                        'occurences': 202
+                        'pattern': 'd-M-yyyy',
+                        'occurences': 1
                     },
                     {
                         'pattern': 'yyyy-M-d',
                         'occurences': 2
+                    },
+                    {
+                        'pattern': 'Aa,/',
+                        'occurences': 3
+                    },
+                    {
+                        'pattern': '99/99-99',
+                        'occurences': 4
+                    },
+                    {
+                        'pattern': '',
+                        'occurences': 1
                     }
                 ]
             }
@@ -1169,6 +1181,59 @@ describe('Statistics service', function () {
                 aggregation: aggregation
             });
         }));
+
+
+        it('should update pattern statistics', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService, DatagridService, StorageService) {
+            stateMock.playground.grid.selectedColumn = currentColumn;
+            stateMock.playground.grid.filteredRecords = [{'0001': '10-12-2015'}, {'0001': '2015-12-02'}, {'0001': 'To,/'}, {'0001': '10/12-20'}];
+
+            //given
+            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
+            var savedAggregation = {
+                aggregationColumnId: '0002',
+                aggregation: 'MAX'
+            };
+            spyOn(StorageService, 'getAggregation').and.returnValue(savedAggregation);
+            var datagridNumericColumns = [
+                {id: '0002', name: 'state'},
+                {id: '0003', name: 'name'}
+            ];
+            spyOn(DatagridService, 'getNumericColumns').and.returnValue(datagridNumericColumns);
+
+            //when
+            StatisticsService.updateStatistics();
+            $rootScope.$digest();
+
+            //then
+            expect(StatisticsService.patterns.data).toEqual([
+                                                            {
+                                                            'pattern': 'd-M-yyyy',
+                                                            'occurences': 1,
+                                                            'filteredOccurrences': 1
+                                                            },
+                                                            {
+                                                                'pattern': 'yyyy-M-d',
+                                                                'occurences': 2,
+                                                                'filteredOccurrences': 1
+                                                            },
+                                                            {
+                                                                'pattern': 'Aa,/',
+                                                                'occurences': 3,
+                                                                'filteredOccurrences': 1
+                                                            },
+                                                            {
+                                                                'pattern': '99/99-99',
+                                                                'occurences': 4,
+                                                                'filteredOccurrences': 1
+                                                            },
+                                                            {
+                                                                'pattern': '',
+                                                                'occurences': 1,
+                                                                'filteredOccurrences': 0
+                                                            }
+                                                        ]);
+        }));
+
 
         it('should reset non histogram charts', inject(function (StatisticsService) {
             //given
