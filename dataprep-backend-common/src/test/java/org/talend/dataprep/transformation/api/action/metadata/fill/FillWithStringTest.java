@@ -14,8 +14,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 
 /**
@@ -56,7 +55,7 @@ public class FillWithStringTest {
                 this.getClass().getResourceAsStream("fillEmptyStringAction.json"));
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         Assert.assertEquals("beer", row.get("0002"));
@@ -83,7 +82,7 @@ public class FillWithStringTest {
                 this.getClass().getResourceAsStream("fillEmptyStringAction.json"));
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         Assert.assertEquals("beer", row.get("0002"));
@@ -111,7 +110,7 @@ public class FillWithStringTest {
         parameters.put(AbstractFillWith.DEFAULT_VALUE_PARAMETER,"12.5");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         Assert.assertEquals("12.5", row.get("0002"));
@@ -139,7 +138,7 @@ public class FillWithStringTest {
         parameters.put(AbstractFillWith.DEFAULT_VALUE_PARAMETER, "12.5");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         Assert.assertEquals("12.5", row.get("0002"));
@@ -166,7 +165,7 @@ public class FillWithStringTest {
         // when
         parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.COLUMN_MODE);
         parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0003");
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         Assert.assertEquals("Something", row.get("0002"));

@@ -13,9 +13,9 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.metadata.fill.AbstractFillWith;
 import org.talend.dataprep.transformation.api.action.metadata.fill.FillInvalid;
 
@@ -55,9 +55,10 @@ public class FillWithBooleanIfInvalidTest {
 
         Map<String, String> parameters = ActionMetadataTestUtils
                 .parseParameters(this.getClass().getResourceAsStream("fillInvalidBooleanAction.json"));
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0003");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0003");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals("True", row.get("0003"));
@@ -82,9 +83,10 @@ public class FillWithBooleanIfInvalidTest {
 
         Map<String, String> parameters = ActionMetadataTestUtils
                 .parseParameters(this.getClass().getResourceAsStream("fillInvalidBooleanAction.json"));
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0003");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0003");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals("False", row.get("0003"));
@@ -113,9 +115,10 @@ public class FillWithBooleanIfInvalidTest {
 
         Map<String, String> parameters = ActionMetadataTestUtils
                 .parseParameters(this.getClass().getResourceAsStream("fillInvalidBooleanAction.json"));
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0003");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0003");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals("True", row.get("0003"));
@@ -146,7 +149,7 @@ public class FillWithBooleanIfInvalidTest {
         // when
         parameters.put(AbstractFillWith.MODE_PARAMETER, AbstractFillWith.COLUMN_MODE);
         parameters.put(AbstractFillWith.SELECTED_COLUMN_PARAMETER, "0003");
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         Assert.assertEquals("False", row.get("0002"));

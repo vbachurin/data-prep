@@ -3,9 +3,12 @@ package org.talend.dataprep.api.preparation;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.springframework.data.annotation.Transient;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRootName;
@@ -119,6 +122,8 @@ public class Action implements Serializable {
         /** The default noop action. */
         private DataSetRowAction rowAction = IDLE_ROW_ACTION;
 
+        private Function<ActionContext, DataSetRowAction.CompileResult> compile = ac -> DataSetRowAction.CompileResult.CONTINUE;
+
         /**
          * @return the Builder to use.
          */
@@ -139,8 +144,23 @@ public class Action implements Serializable {
          * @return the built row action.
          */
         public Action build() {
-            return new Action(rowAction);
+            DataSetRowAction action = new DataSetRowAction() {
+                @Override
+                public DataSetRow apply(DataSetRow dataSetRow, ActionContext actionContext) {
+                    return rowAction.apply(dataSetRow, actionContext);
+                }
+
+                @Override
+                public CompileResult compile(ActionContext actionContext) {
+                    return compile.apply(actionContext);
+                }
+            };
+            return new Action(action);
         }
 
+        public Builder withCompile(Function<ActionContext, DataSetRowAction.CompileResult> compile) {
+            this.compile = compile;
+            return this;
+        }
     }
 }

@@ -180,7 +180,7 @@ class SimpleTransformer implements Transformer {
             Stream<DataSetRow> records = input.getRecords();
             // Apply actions to records
             for (DataSetRowAction action : rowActions) {
-                records = records.map(r -> action.apply(r, new ActionContext(context, null)));
+                records = records.map(r -> action.apply(r, new ActionContext(context)));
             }
             // Analyze content after all actions were applied to row
             records = records.map(r -> {

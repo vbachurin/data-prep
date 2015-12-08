@@ -16,10 +16,12 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
 /**
  * Unit test for the NumericOperations action.
@@ -148,10 +150,10 @@ public class NumericOperationsTest {
         DataSetRow row = getRow("5", "3");
 
         // when
-        final ActionContext context = new ActionContext(new TransformationContext(), row.getRowMetadata());
-        new NumericOperations().applyOnColumn(row, context, parameters, "0000");
-        final ActionContext context2 = new ActionContext(new TransformationContext(), row.getRowMetadata());
-        new NumericOperations().applyOnColumn(row, context2, parameters, "0002");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0002");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         DataSetRow expected = getRow("5", "3", "8", "11");
@@ -166,9 +168,10 @@ public class NumericOperationsTest {
 
         parameters.remove(NumericOperations.SELECTED_COLUMN_PARAMETER);
         parameters.put(NumericOperations.MODE_PARAMETER, NumericOperations.CONSTANT_MODE);
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0000");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         DataSetRow expected = getRow("5", "3", "Done !", "7");
@@ -183,9 +186,10 @@ public class NumericOperationsTest {
         row.getRowMetadata().getById("0001").setName("selected");
 
         parameters.remove(NumericOperations.OPERAND_PARAMETER);
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0000");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         final ColumnMetadata expected = ColumnMetadata.Builder.column().id(3).name("source + selected").type(Type.DOUBLE).build();
@@ -202,9 +206,10 @@ public class NumericOperationsTest {
 
         parameters.remove(NumericOperations.SELECTED_COLUMN_PARAMETER);
         parameters.put(NumericOperations.MODE_PARAMETER, NumericOperations.CONSTANT_MODE);
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0000");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         final ColumnMetadata expected = ColumnMetadata.Builder.column().id(3).name("source + 2").type(Type.DOUBLE).build();
@@ -218,7 +223,8 @@ public class NumericOperationsTest {
         DataSetRow row = getRow("5");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0000");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
     }
 
     @Test(expected = TDPException.class)
@@ -229,9 +235,10 @@ public class NumericOperationsTest {
         row.getRowMetadata().getById("0001").setName("selected");
 
         parameters.put(NumericOperations.SELECTED_COLUMN_PARAMETER, "youpi");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0000");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
     }
 
     @Test(expected = TDPException.class)
@@ -241,9 +248,10 @@ public class NumericOperationsTest {
 
         parameters.remove(NumericOperations.OPERAND_PARAMETER);
         parameters.put(NumericOperations.MODE_PARAMETER, NumericOperations.CONSTANT_MODE);
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0000");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
     }
 
     @Test

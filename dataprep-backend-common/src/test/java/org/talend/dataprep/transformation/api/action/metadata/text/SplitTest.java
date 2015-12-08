@@ -30,8 +30,7 @@ import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
@@ -52,9 +51,7 @@ public class SplitTest {
     @Before
     public void init() throws IOException {
         action = new Split();
-
-        parameters = ActionMetadataTestUtils.parseParameters( //
-                SplitTest.class.getResourceAsStream("splitAction.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(SplitTest.class.getResourceAsStream("splitAction.json"));
     }
 
     @Test
@@ -167,7 +164,7 @@ public class SplitTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expectedValues, row.values());
@@ -191,7 +188,7 @@ public class SplitTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expectedValues, row.values());
@@ -215,7 +212,7 @@ public class SplitTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expectedValues, row.values());
@@ -238,7 +235,7 @@ public class SplitTest {
         List<SemanticDomain> originalDomains = row.getRowMetadata().getById("0001").getSemanticDomains();
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertTrue(originalStats == row.getRowMetadata().getById("0001").getStatistics());
@@ -276,8 +273,7 @@ public class SplitTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction(), action.create(parameters).getRowAction());
 
         // then
         assertEquals(expectedValues, row.values());
@@ -303,7 +299,7 @@ public class SplitTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expectedValues, row.values());
@@ -329,7 +325,7 @@ public class SplitTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expectedValues, row.values());
@@ -355,7 +351,7 @@ public class SplitTest {
         expected.add(createMetadata("0002", "last update"));
 
         // when
-        action.applyOnColumn(new DataSetRow(rowMetadata), new ActionContext(new TransformationContext(), rowMetadata), parameters, "0001");
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expected, rowMetadata.getColumns());
@@ -383,8 +379,7 @@ public class SplitTest {
         expected.add(createMetadata("0002", "last update"));
 
         // when
-        action.applyOnColumn(new DataSetRow(rowMetadata), new ActionContext(new TransformationContext(), rowMetadata), parameters, "0001");
-        action.applyOnColumn(new DataSetRow(rowMetadata), new ActionContext(new TransformationContext(), rowMetadata), parameters, "0001");
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction(), action.create(parameters).getRowAction());
 
         assertEquals(expected, rowMetadata.getColumns());
     }
@@ -404,7 +399,7 @@ public class SplitTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        nullSeparatorAction.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "steps");
+        ActionTestWorkbench.test(row, nullSeparatorAction.create(parameters).getRowAction());
 
         // then
         assertEquals(values, row.values());
@@ -425,7 +420,7 @@ public class SplitTest {
         final RowMetadata rowMetadata = new RowMetadata(input);
 
         // when
-        nullSeparatorAction.applyOnColumn(new DataSetRow(rowMetadata), new ActionContext(new TransformationContext(), rowMetadata), parameters, "steps");
+        ActionTestWorkbench.test(rowMetadata, nullSeparatorAction.create(parameters).getRowAction());
 
         // then
         assertEquals(input, rowMetadata.getColumns());

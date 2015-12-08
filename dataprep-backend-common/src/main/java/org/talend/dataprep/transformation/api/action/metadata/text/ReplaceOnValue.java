@@ -90,7 +90,7 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
         final String newValue = computeNewValue(value, //
                 parameters.get(CELL_VALUE_PARAMETER), //
                 parameters.get(REPLACE_VALUE_PARAMETER), //
-                new Boolean(parameters.get(REPLACE_ENTIRE_CELL_PARAMETER)));
+                Boolean.valueOf(parameters.get(REPLACE_ENTIRE_CELL_PARAMETER)));
         row.set(columnId, newValue);
     }
 

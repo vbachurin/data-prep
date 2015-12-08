@@ -14,8 +14,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
@@ -36,10 +35,7 @@ public class NegateTest {
      */
     public NegateTest() throws IOException {
         action = new Negate();
-
-        parameters = ActionMetadataTestUtils.parseParameters( //
-                //
-                NegateTest.class.getResourceAsStream("negateAction.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(NegateTest.class.getResourceAsStream("negateAction.json"));
     }
 
     @Test
@@ -69,7 +65,7 @@ public class NegateTest {
         DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "active");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertThat(row.get("active"), is("False"));
@@ -85,7 +81,7 @@ public class NegateTest {
         DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "active");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertThat(row.get("active"), is("True"));

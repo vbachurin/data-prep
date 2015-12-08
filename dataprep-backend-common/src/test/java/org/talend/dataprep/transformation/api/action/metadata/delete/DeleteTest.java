@@ -19,9 +19,9 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.i18n.MessagesBundle;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
 /**
  * Test class for Delete action. Creates one consumer, and test it.
@@ -98,14 +98,13 @@ public class DeleteTest {
         row.setTdpId(rowId);
 
         final Map<String, String> parameters = new HashMap<>();
+        parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "line");
         parameters.put("row_id", rowId.toString());
-
-        final ActionContext context = new ActionContext(new TransformationContext(), row.getRowMetadata());
 
         assertThat(row.isDeleted(), is(false));
 
         //when
-        action.applyOnLine(row, context, parameters, rowId);
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertThat(row.isDeleted(), is(true));
@@ -124,14 +123,13 @@ public class DeleteTest {
         row.setTdpId(rowId);
 
         final Map<String, String> parameters = new HashMap<>();
+        parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "line");
         parameters.put("row_id", parameterRowId.toString());
-
-        final ActionContext context = new ActionContext(new TransformationContext(), row.getRowMetadata());
 
         assertThat(row.isDeleted(), is(false));
 
         //when
-        action.applyOnLine(row, context, parameters, parameterRowId);
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertThat(row.isDeleted(), is(false));

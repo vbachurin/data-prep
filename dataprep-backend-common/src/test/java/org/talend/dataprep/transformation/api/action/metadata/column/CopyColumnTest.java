@@ -30,8 +30,7 @@ import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
@@ -50,10 +49,7 @@ public class CopyColumnTest {
     @Before
     public void init() throws IOException {
         action = new CopyColumnMetadata();
-
-        parameters = ActionMetadataTestUtils.parseParameters( //
-                //
-                CopyColumnTest.class.getResourceAsStream("copyColumnAction.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(CopyColumnTest.class.getResourceAsStream("copyColumnAction.json"));
     }
 
     @Test
@@ -87,7 +83,7 @@ public class CopyColumnTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expectedValues, row.values());
@@ -112,7 +108,7 @@ public class CopyColumnTest {
         expected.add(createMetadata("0002", "last update"));
 
         // when
-        action.applyOnColumn(new DataSetRow(rowMetadata), new ActionContext(new TransformationContext(), rowMetadata), parameters, "0001");
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expected, rowMetadata.getColumns());
@@ -134,7 +130,7 @@ public class CopyColumnTest {
         expected.add(transformed);
 
         // when
-        action.applyOnColumn(new DataSetRow(rowMetadata), new ActionContext(new TransformationContext(), rowMetadata), parameters, "0001");
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expected.get(1).getStatistics(), original.getStatistics());
@@ -158,7 +154,7 @@ public class CopyColumnTest {
 
         Assertions.assertThat(rowMetadata.getColumns()).isNotNull().isNotEmpty().hasSize(1);
 
-        action.applyOnColumn(new DataSetRow(rowMetadata), new ActionContext(new TransformationContext(), rowMetadata), parameters, "0001");
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
 
         List<ColumnMetadata> expected = rowMetadata.getColumns();
 
@@ -194,7 +190,7 @@ public class CopyColumnTest {
 
         Assertions.assertThat(rowMetadata.getColumns()).isNotNull().isNotEmpty().hasSize(1);
 
-        action.applyOnColumn(new DataSetRow(rowMetadata), new ActionContext(new TransformationContext(), rowMetadata), parameters, "0001");
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
 
         List<ColumnMetadata> expected = rowMetadata.getColumns();
 
@@ -230,7 +226,7 @@ public class CopyColumnTest {
 
         Assertions.assertThat(rowMetadata.getColumns()).isNotNull().isNotEmpty().hasSize(1);
 
-        action.applyOnColumn(new DataSetRow(rowMetadata), new ActionContext(new TransformationContext(), rowMetadata), parameters, "0001");
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
 
         List<ColumnMetadata> expected = rowMetadata.getColumns();
 

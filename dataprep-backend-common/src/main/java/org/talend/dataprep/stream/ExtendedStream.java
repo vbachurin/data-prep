@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.transformer.json;
+package org.talend.dataprep.stream;
 
 import java.util.*;
 import java.util.function.*;
@@ -8,7 +8,7 @@ public class ExtendedStream<T> implements Stream<T> {
 
     private final Stream<T> stream;
 
-    private final Set<Function<T, T>> isMappedOnce = new HashSet<>();
+    private final Set<Object> isMappedOnce = new HashSet<>();
 
     private ExtendedStream(Stream<T> stream) {
         this.stream = stream;
@@ -18,12 +18,12 @@ public class ExtendedStream<T> implements Stream<T> {
         return new ExtendedStream<>(stream);
     }
 
-    public ExtendedStream<T> mapOnce(Function<T, T> mapper) {
-        Function<T, T> mapOnce = r -> {
-            if (isMappedOnce.add(mapper)) {
-                return mapper.apply(r);
+    public <R> ExtendedStream<R> mapOnce(Function<T, ? extends R> once, Function<T, ? extends R> other) {
+        Function<T, ? extends R> mapOnce = r -> {
+            if (isMappedOnce.add(once)) {
+                return once.apply(r);
             } else {
-                return r;
+                return other.apply(r);
             }
         };
         return ExtendedStream.extend(stream.map(mapOnce));

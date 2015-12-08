@@ -17,6 +17,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
@@ -112,6 +113,23 @@ public class Split extends ActionMetadata implements ColumnAction {
                 .get(SEPARATOR_PARAMETER);
     }
 
+    @Override
+    public DataSetRowAction.CompileResult compile(ActionContext actionContext, Map<String, String> parameters) {
+        // Retrieve the separator to use
+        final String realSeparator = getSeparator(parameters);
+        if (StringUtils.isEmpty(realSeparator)) {
+            return DataSetRowAction.CompileResult.IGNORE;
+        }
+        try {
+            // Check if separator is a valid regex
+            Pattern.compile(realSeparator);
+        } catch (PatternSyntaxException e) {
+            // In case the pattern is not valid: nothing to do, do not create new columns.
+            return DataSetRowAction.CompileResult.IGNORE;
+        }
+        return DataSetRowAction.CompileResult.CONTINUE;
+    }
+
     /**
      * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
      */
@@ -119,18 +137,6 @@ public class Split extends ActionMetadata implements ColumnAction {
     public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
         // Retrieve the separator to use
         final String realSeparator = getSeparator(parameters);
-        if (StringUtils.isEmpty(realSeparator)) {
-            return;
-        }
-
-        try {
-            // Check if separator is a valid regex
-            Pattern.compile(realSeparator);
-        } catch (PatternSyntaxException e) {
-            // In case the pattern is not valid: nothing to do, do not create new columns.
-            return;
-        }
-
         // create the new columns
         int limit = Integer.parseInt(parameters.get(LIMIT));
         final RowMetadata rowMetadata = row.getRowMetadata();

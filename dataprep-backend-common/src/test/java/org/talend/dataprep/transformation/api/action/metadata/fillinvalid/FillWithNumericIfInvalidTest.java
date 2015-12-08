@@ -13,8 +13,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.fill.FillIfEmpty;
 import org.talend.dataprep.transformation.api.action.metadata.fill.FillInvalid;
@@ -58,7 +57,7 @@ public class FillWithNumericIfInvalidTest {
                 .parseParameters(this.getClass().getResourceAsStream("fillInvalidIntegerAction.json"));
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals("25", row.get("0002"));
@@ -87,7 +86,7 @@ public class FillWithNumericIfInvalidTest {
                 .parseParameters(this.getClass().getResourceAsStream("fillInvalidIntegerAction.json"));
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals("30", row.get("0002"));
@@ -115,7 +114,7 @@ public class FillWithNumericIfInvalidTest {
                 .parseParameters(this.getClass().getResourceAsStream("fillInvalidIntegerAction.json"));
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals("25", row.get("0002"));
@@ -146,7 +145,7 @@ public class FillWithNumericIfInvalidTest {
         // when
         parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.COLUMN_MODE);
         parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0003");
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0002");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         Assert.assertEquals("10", row.get("0002"));

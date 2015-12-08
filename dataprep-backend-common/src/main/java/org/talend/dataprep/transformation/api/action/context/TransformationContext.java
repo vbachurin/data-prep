@@ -8,8 +8,6 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
-import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
@@ -92,17 +90,29 @@ public final class TransformationContext {
      * Returns a transformation context specific to the current action. Use this to create columns (see
      * {@link ActionContext#column(String, Function)} for more details.
      *
-     * @param actionMetadata An instance of action used as key for finding context
      * @param action
-     *@param rowMetadata The state of row metadata as when it is when action is performed.  @return An {@link ActionContext context} ready to be used.
      */
-    public ActionContext in(DataSetRowAction action, RowMetadata rowMetadata) {
+    public ActionContext create(DataSetRowAction action) {
         if (contexts.containsKey(action)) {
             return contexts.get(action);
         } else {
-            ActionContext actionContext = new ActionContext(this, rowMetadata);
+            ActionContext actionContext = new ActionContext(this);
             contexts.put(action, actionContext);
             return actionContext;
+        }
+    }
+
+    /**
+     * Returns a transformation context specific to the current action. Use this to create columns (see
+     * {@link ActionContext#column(String, Function)} for more details.
+     *
+     * @param action
+     */
+    public ActionContext in(DataSetRowAction action) {
+        if (contexts.containsKey(action)) {
+            return contexts.get(action);
+        } else {
+            throw new IllegalStateException("No action context found for '" + action + "'.");
         }
     }
 }

@@ -19,9 +19,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.talend.dataprep.api.type.Type.BOOLEAN;
 import static org.talend.dataprep.api.type.Type.STRING;
 import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.*;
-import static org.talend.dataprep.transformation.api.action.metadata.text.ReplaceOnValue.CELL_VALUE_PARAMETER;
-import static org.talend.dataprep.transformation.api.action.metadata.text.ReplaceOnValue.REPLACE_ENTIRE_CELL_PARAMETER;
-import static org.talend.dataprep.transformation.api.action.metadata.text.ReplaceOnValue.REPLACE_VALUE_PARAMETER;
+import static org.talend.dataprep.transformation.api.action.metadata.text.ReplaceOnValue.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +30,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
@@ -98,9 +98,11 @@ public class ReplaceOnValueTest {
         parameters.put(CELL_VALUE_PARAMETER, "James");
         parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
         parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "true");
+        parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "column");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), columnId);
 
         // when
-        action.applyOnColumn(row, null, parameters, columnId);
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertThat(row.get(columnId), is("Jimmy"));
@@ -170,9 +172,11 @@ public class ReplaceOnValueTest {
         parameters.put(CELL_VALUE_PARAMETER, "James");
         parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
         parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
+        parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "column");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "no column here");
 
         // when
-        action.applyOnColumn(row, null, parameters, "no column here");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertThat(row.get(columnId), is("Toto"));
@@ -186,14 +190,18 @@ public class ReplaceOnValueTest {
         final Map<String, String> values = new HashMap<>();
         values.put(columnId, "James");
         final DataSetRow row = new DataSetRow(values);
+        row.setTdpId(85L);
 
         final Map<String, String> parameters = new HashMap<>();
         parameters.put(CELL_VALUE_PARAMETER, "James");
         parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
         parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
+        parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "cell");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), columnId);
+        parameters.put(ImplicitParameters.ROW_ID.getKey().toLowerCase(), "85");
 
         // when
-        action.applyOnCell(row, null, parameters, 85L, columnId);
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertThat(row.get(columnId), is("Jimmy"));
@@ -221,14 +229,18 @@ public class ReplaceOnValueTest {
         final Map<String, String> values = new HashMap<>();
         values.put(columnId, "James Cleveland James");
         final DataSetRow row = new DataSetRow(values);
+        row.setTdpId(85L);
 
         final Map<String, String> parameters = new HashMap<>();
         parameters.put(CELL_VALUE_PARAMETER, "James");
         parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
         parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
+        parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "cell");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), columnId);
+        parameters.put(ImplicitParameters.ROW_ID.getKey().toLowerCase(), "85");
 
         // when
-        action.applyOnCell(row, null, parameters, 85L, columnId);
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertThat(row.get(columnId), is("Jimmy Cleveland Jimmy"));
@@ -241,15 +253,19 @@ public class ReplaceOnValueTest {
 
         final Map<String, String> values = new HashMap<>();
         values.put(columnId, "Toto");
+        values.put(DataSetRow.TDP_ID, "85");
         final DataSetRow row = new DataSetRow(values);
 
         final Map<String, String> parameters = new HashMap<>();
         parameters.put(CELL_VALUE_PARAMETER, "James");
         parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
         parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
+        parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "cell");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), columnId);
+        parameters.put(ImplicitParameters.ROW_ID.getKey().toLowerCase(), "85");
 
         // when
-        action.applyOnCell(row, null, parameters, 85L, columnId);
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertThat(row.get(columnId), is("Toto"));

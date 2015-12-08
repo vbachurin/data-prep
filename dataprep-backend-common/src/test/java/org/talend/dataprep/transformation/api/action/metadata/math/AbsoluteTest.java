@@ -27,8 +27,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
@@ -86,7 +85,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absFloatParameters, "float_column");
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
 
         // then
         assertEquals("5.42", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -100,7 +99,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absFloatParameters, "float_column");
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
 
         //then
         assertEquals("12345678.1", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -114,7 +113,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         // when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absFloatParameters, "float_column");
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
 
         // then
         assertEquals("12345678.1", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -128,7 +127,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absIntParameters, "int_column");
+        ActionTestWorkbench.test(row, absolute.create(absIntParameters).getRowAction());
 
         //then
         assertEquals("5.42", row.get(INT_COLUMN)); //$NON-NLS-1$
@@ -142,7 +141,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absFloatParameters, "float_column");
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
 
         //then
         assertEquals("5.42", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -156,7 +155,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absIntParameters, "int_column");
+        ActionTestWorkbench.test(row, absolute.create(absIntParameters).getRowAction());
 
         //then
         assertEquals("5.42", row.get(INT_COLUMN)); //$NON-NLS-1$
@@ -170,7 +169,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absFloatParameters, "float_column");
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
 
         //then
         assertEquals("42", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -184,7 +183,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absIntParameters, "int_column");
+        ActionTestWorkbench.test(row, absolute.create(absIntParameters).getRowAction());
 
         //then
         assertEquals("42", row.get(INT_COLUMN)); //$NON-NLS-1$
@@ -198,7 +197,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absFloatParameters, "float_column");
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
 
         //then
         assertEquals("542", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -212,7 +211,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absIntParameters, "int_column");
+        ActionTestWorkbench.test(row, absolute.create(absIntParameters).getRowAction());
 
         //then
         assertEquals("542", row.get(INT_COLUMN)); //$NON-NLS-1$
@@ -226,7 +225,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absFloatParameters, "float_column");
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
 
         //then
         assertEquals("0", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -240,7 +239,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absIntParameters, "int_column");
+        ActionTestWorkbench.test(row, absolute.create(absIntParameters).getRowAction());
 
         //then
         assertEquals("0", row.get(INT_COLUMN)); //$NON-NLS-1$
@@ -254,7 +253,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absFloatParameters, "float_column");
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
 
         //then
         assertEquals("", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -268,7 +267,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absIntParameters, "int_column");
+        ActionTestWorkbench.test(row, absolute.create(absIntParameters).getRowAction());
 
         //then
         assertEquals("", row.get(INT_COLUMN)); //$NON-NLS-1$
@@ -282,7 +281,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absFloatParameters, "float_column");
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
 
         //then
         assertEquals("foobar", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
@@ -296,7 +295,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absIntParameters, "int_column");
+        ActionTestWorkbench.test(row, absolute.create(absIntParameters).getRowAction());
 
         //then
         assertEquals("foobar", row.get(INT_COLUMN)); //$NON-NLS-1$
@@ -310,7 +309,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absFloatParameters, "float_column");
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
 
         //then
         assertEquals("-12", row.get("wrong_column")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -324,7 +323,7 @@ public class AbsoluteTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        absolute.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), absFloatParameters, "float_column");
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
 
         //then
         assertEquals("-13", row.get("wrong_column")); //$NON-NLS-1$ //$NON-NLS-2$

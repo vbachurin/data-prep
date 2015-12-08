@@ -26,8 +26,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
@@ -46,10 +45,7 @@ public class RemoveNonNumCharsTest {
     @Before
     public void init() throws IOException {
         action = new RemoveNonNumChars();
-
-        parameters = ActionMetadataTestUtils.parseParameters( //
-                //
-                RemoveNonNumCharsTest.class.getResourceAsStream("remove_non_num_chars.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(RemoveNonNumCharsTest.class.getResourceAsStream("remove_non_num_chars.json"));
     }
 
     @Test
@@ -82,7 +78,7 @@ public class RemoveNonNumCharsTest {
         expectedValues.put("joined", "May 20th 2015");
 
         //when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "entity");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());

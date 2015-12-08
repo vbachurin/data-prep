@@ -26,8 +26,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.text.LowerCase;
@@ -47,10 +46,7 @@ public class NormalizeTest {
     @Before
     public void init() throws IOException {
         action = new Normalize();
-
-        parameters = ActionMetadataTestUtils.parseParameters( //
-                //
-                NormalizeTest.class.getResourceAsStream("normalize.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(NormalizeTest.class.getResourceAsStream("normalize.json"));
     }
 
     @Test
@@ -83,7 +79,7 @@ public class NormalizeTest {
         expectedValues.put("joined", "May 20th 2015");
 
         //when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "entity");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -105,7 +101,7 @@ public class NormalizeTest {
         expectedValues.put("joined", "May 20th 2015");
 
         //when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "entity");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());

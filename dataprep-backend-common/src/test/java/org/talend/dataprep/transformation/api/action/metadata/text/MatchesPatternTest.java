@@ -29,8 +29,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
@@ -51,7 +50,6 @@ public class MatchesPatternTest {
     @Before
     public void init() throws IOException {
         action = new MatchesPattern();
-
         parameters = ActionMetadataTestUtils.parseParameters(MatchesPatternTest.class.getResourceAsStream("matchesPattern.json"));
     }
 
@@ -86,7 +84,7 @@ public class MatchesPatternTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expectedValues, row.values());
@@ -166,8 +164,7 @@ public class MatchesPatternTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction(), action.create(parameters).getRowAction());
 
         // then
         assertEquals(expectedValues, row.values());
@@ -192,7 +189,7 @@ public class MatchesPatternTest {
         expected.add(createMetadata("0002", "last update"));
 
         // when
-        action.applyOnColumn(new DataSetRow(rowMetadata), new ActionContext(new TransformationContext(), rowMetadata), parameters, "0001");
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expected, rowMetadata.getColumns());
@@ -218,8 +215,7 @@ public class MatchesPatternTest {
         expected.add(createMetadata("0002", "last update"));
 
         // when
-        action.applyOnColumn(new DataSetRow(rowMetadata), new ActionContext(new TransformationContext(), rowMetadata), parameters, "0001");
-        action.applyOnColumn(new DataSetRow(rowMetadata), new ActionContext(new TransformationContext(), rowMetadata), parameters, "0001");
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction(), action.create(parameters).getRowAction());
 
         // then
         assertEquals(expected, rowMetadata.getColumns());

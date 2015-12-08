@@ -1,6 +1,6 @@
 package org.talend.dataprep.transformation.api.action.metadata.type;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,9 +10,9 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.column.TypeChange;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
 public class ChangeTypeTest {
 
@@ -25,7 +25,7 @@ public class ChangeTypeTest {
         values.put("0003", "Something");
 
         final RowMetadata rowMetadata = new RowMetadata();
-        rowMetadata.setColumns(Arrays.asList(ColumnMetadata.Builder.column() //
+        rowMetadata.setColumns(Collections.singletonList(ColumnMetadata.Builder.column() //
                 .type(Type.INTEGER) //
                 .computedId("0002") //
                 .domain("FR_BEER") //
@@ -37,13 +37,13 @@ public class ChangeTypeTest {
 
         TypeChange typeChange = new TypeChange();
 
-        ActionContext transformationContext = new ActionContext(new TransformationContext(), rowMetadata);
-
         Map<String, String> parameters = new HashMap<>();
         parameters.put(TypeChange.NEW_TYPE_PARAMETER_KEY, "STRING");
+        parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "column");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0002");
 
         // when
-        typeChange.applyOnColumn(row, transformationContext, parameters, "0002");
+        ActionTestWorkbench.test(row, typeChange.create(parameters).getRowAction());
 
         // then
         Assertions.assertThat(row.getRowMetadata().getColumns().get(0).getDomain()).isEmpty();

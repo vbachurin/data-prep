@@ -18,20 +18,25 @@ public class ActionContext {
     /** Link to the transformation context. */
     private final TransformationContext parent;
 
-    private final RowMetadata rowMetadata;
-
     /** A map of object (used to reuse objects across row process). */
     private Map<String, Object> context = new HashMap<>();
+
+    private RowMetadata outputRowMetadata;
+
+    private RowMetadata inputRowMetadata;
+
+    public ActionContext(TransformationContext parent, RowMetadata rowMetadata) {
+        this.parent = parent;
+        this.inputRowMetadata = rowMetadata;
+    }
 
     /**
      * Default constructor.
      *
      * @param parent the parent transformation context.
-     * @param rowMetadata
      */
-    public ActionContext(TransformationContext parent, RowMetadata rowMetadata) {
+    public ActionContext(TransformationContext parent) {
         this.parent = parent;
-        this.rowMetadata = rowMetadata;
     }
 
     /**
@@ -61,7 +66,7 @@ public class ActionContext {
         if (context.containsKey(key)) {
             return ((ColumnMetadata) context.get(key)).getId();
         } else {
-            final ColumnMetadata columnMetadata = create.apply(rowMetadata);
+            final ColumnMetadata columnMetadata = create.apply(inputRowMetadata);
             if (columnMetadata == null) {
                 throw new IllegalArgumentException("Cannot use a null column for '" + name + "'");
             }
@@ -110,12 +115,26 @@ public class ActionContext {
      * let action add a new column, but allows to get previously created ones.
      */
     public ActionContext asImmutable() {
-        final ActionContext actionContext = new ActionContext(parent, rowMetadata);
+        final ActionContext actionContext = new ActionContext(parent);
+        actionContext.setInputRowMetadata(inputRowMetadata);
+        actionContext.setOutputRowMetadata(outputRowMetadata);
         actionContext.context = Collections.unmodifiableMap(this.context);
         return actionContext;
     }
 
-    public RowMetadata getRowMetadata() {
-        return rowMetadata;
+    public RowMetadata getInputRowMetadata() {
+        return inputRowMetadata;
+    }
+
+    public void setOutputRowMetadata(RowMetadata outputRowMetadata) {
+        this.outputRowMetadata = outputRowMetadata;
+    }
+
+    public RowMetadata getOutputRowMetadata() {
+        return outputRowMetadata;
+    }
+
+    public void setInputRowMetadata(RowMetadata inputRowMetadata) {
+        this.inputRowMetadata = inputRowMetadata;
     }
 }

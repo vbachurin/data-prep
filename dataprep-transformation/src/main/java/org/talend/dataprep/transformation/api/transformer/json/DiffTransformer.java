@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.transformation.api.action.ActionParser;
@@ -171,7 +170,7 @@ class DiffTransformer implements Transformer {
         public DataSetRow apply(DataSetRow dataSetRow) {
             DataSetRow current = dataSetRow;
             for (DataSetRowAction action : parsedActions.getRowTransformers()) {
-                current = action.apply(current, context.in(action, dataSetRow.getRowMetadata()));
+                current = action.apply(current, context.create(action));
             }
             return current;
         }

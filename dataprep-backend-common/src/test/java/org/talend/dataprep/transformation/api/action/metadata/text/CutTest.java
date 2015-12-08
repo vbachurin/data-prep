@@ -14,10 +14,10 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
 /**
  * Unit test for the Cut action.
@@ -59,7 +59,7 @@ public class CutTest {
         DataSetRow expected = getRow("Wait for it...", "value that gets cut !", "Done !");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expected, row);
@@ -76,7 +76,7 @@ public class CutTest {
         regexpParameters.put("pattern", ".*gets");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), regexpParameters, "0001");
+        ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
 
         // then
         assertEquals(expected, row);
@@ -93,7 +93,7 @@ public class CutTest {
         regexpParameters.put("pattern", "*");
 
         // when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), regexpParameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expected, row);
@@ -124,7 +124,8 @@ public class CutTest {
         DataSetRow expected = getRow("Wait for it...", "The value that gets cut !", "Done !");
 
         // when (apply on a column that does not exists)
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "0010");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0010");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then (row should not be changed)
         assertEquals(expected, row);

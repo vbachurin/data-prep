@@ -26,8 +26,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
@@ -47,10 +46,7 @@ public class UpperCaseTest {
     @Before
     public void init() throws IOException {
         action = new UpperCase();
-
-        parameters = ActionMetadataTestUtils.parseParameters( //
-                //
-                UpperCaseTest.class.getResourceAsStream("uppercase.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(UpperCaseTest.class.getResourceAsStream("uppercase.json"));
     }
 
     @Test
@@ -81,7 +77,7 @@ public class UpperCaseTest {
         expectedValues.put("country", "Canada");
 
         //when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "city");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -103,7 +99,7 @@ public class UpperCaseTest {
         expectedValues.put("capital", "Ottawa");
 
         //when
-        action.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, "city");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());

@@ -19,6 +19,7 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionScope;
 import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -179,6 +180,9 @@ public abstract class ActionMetadata {
      * @return A {@link Predicate filter} for data set rows.
      */
     protected Predicate<DataSetRow> getFilter(Map<String, String> parameters) {
+        if (filterService == null) {
+            return r -> true;
+        }
         return filterService.build(parameters.get(ImplicitParameters.FILTER.getKey()));
     }
 
@@ -203,6 +207,10 @@ public abstract class ActionMetadata {
         }
     }
 
+    public DataSetRowAction.CompileResult compile(ActionContext actionContext, final Map<String, String> parameters) {
+        return DataSetRowAction.CompileResult.CONTINUE;
+    }
+
     /**
      * Creates an {@link Action action} based on provided parameters.
      *
@@ -211,14 +219,17 @@ public abstract class ActionMetadata {
      * {@link DataSetMetadataAction metadata action}.
      */
     public final Action create(final Map<String, String> parameters) {
-        validator.checkScopeConsistency(this, parameters);
+        if (validator != null) {
+            validator.checkScopeConsistency(this, parameters);
+        }
 
         final Long rowId = getRowId(parameters);
         final String columnId = getColumnId(parameters);
         final ScopeCategory scope = getScope(parameters);
         final Predicate<DataSetRow> filter = getFilter(parameters);
 
-        return builder().withRow((row, context) -> {
+        return builder().withCompile((actionContext) -> compile(actionContext, parameters))
+        .withRow((row, context) -> {
             if (implicitFilter() && !filter.test(row)) {
                 // Return non-modifiable row since it didn't pass the filter (but metadata might be modified).
                 row = row.unmodifiable();

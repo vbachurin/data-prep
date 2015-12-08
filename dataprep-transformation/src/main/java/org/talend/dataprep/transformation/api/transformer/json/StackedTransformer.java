@@ -1,10 +1,7 @@
 package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +16,7 @@ import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.quality.AnalyzerService;
+import org.talend.dataprep.stream.ExtendedStream;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
@@ -135,12 +133,35 @@ public class StackedTransformer implements Transformer {
             TransformationContext context = new TransformationContext();
             ExtendedStream<DataSetRow> records = ExtendedStream.extend(input.getRecords())
             // Perform transformations
-            .map(r -> {
+            .mapOnce(r -> {
+                // Initial compilation of actions
+                DataSetRow current = r;
+                final Iterator<DataSetRowAction> iterator = allActions.iterator();
+                while (iterator.hasNext()) {
+                    final DataSetRowAction action = iterator.next();
+                    final ActionContext actionContext = context.create(action);
+                    actionContext.setInputRowMetadata(current.getRowMetadata().clone());
+                    final DataSetRowAction.CompileResult result = action.compile(actionContext);
+                    switch (result) {
+                        case CONTINUE:
+                            current = action.apply(current, actionContext);
+                            break;
+                        case IGNORE:
+                            iterator.remove();
+                            break;
+                    }
+                    actionContext.setOutputRowMetadata(current.getRowMetadata().clone());
+                }
+                return current;
+            }, //
+            r -> {
+                // Apply compiled actions on data
                 DataSetRow current = r;
                 for (DataSetRowAction action : allActions) {
-                    final ActionContext actionContext = context.in(action, current.getRowMetadata().clone());
-                    current.setRowMetadata(actionContext.getRowMetadata());
+                    final ActionContext actionContext = context.in(action);
+                    current.setRowMetadata(actionContext.getInputRowMetadata());
                     current = action.apply(current, actionContext);
+                    current.setRowMetadata(actionContext.getOutputRowMetadata());
                 }
                 return current;
             })
@@ -157,7 +178,7 @@ public class StackedTransformer implements Transformer {
             });
             // Write metadata if writer asks for it
             if (writer.requireMetadataForHeader()) {
-                records = records.mapOnce(r -> writeMetadata(writer, r));
+                records = records.mapOnce(r -> writeMetadata(writer, r), r -> r);
             }
             // Write records
             Stack<DataSetRow> processingRows = new Stack<>();
@@ -170,7 +191,7 @@ public class StackedTransformer implements Transformer {
                     // Ignored.
                 }
                 return r;
-            }) //
+            }, r -> r) //
             .forEach(r -> {
                 try {
                     if (!processingRows.empty()) {

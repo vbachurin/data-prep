@@ -12,8 +12,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 public class TextClusteringTest {
@@ -39,7 +38,7 @@ public class TextClusteringTest {
         rows.add(createRow(columnId, "Tata"));
 
         // when
-        rows.stream().forEach(row -> textClustering.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, columnId));
+        ActionTestWorkbench.test(rows, textClustering.create(parameters).getRowAction());
 
         // then
         rows.stream().map(row -> row.get(columnId))
@@ -77,7 +76,7 @@ public class TextClusteringTest {
         rows.add(createRow(columnId, "Tata1"));
 
         // when
-        rows.stream().forEach(row -> textClustering.applyOnColumn(row, new ActionContext(new TransformationContext(), row.getRowMetadata()), parameters, columnId));
+        ActionTestWorkbench.test(rows, textClustering.create(parameters).getRowAction());
 
         // then
         rows.stream().map((row) -> row.get(columnId))

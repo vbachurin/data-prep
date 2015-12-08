@@ -16,16 +16,16 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
 public class DeleteColumnTest {
 
     private DeleteColumn deleteColumn;
 
-    private ActionContext transformationContext;
-
     private RowMetadata rowMetadata;
+    private Map<String, String> parameters;
 
     @Before
     public void init() {
@@ -49,7 +49,9 @@ public class DeleteColumnTest {
         rowMetadata = new RowMetadata();
         rowMetadata.setColumns(columns);
         deleteColumn = new DeleteColumn();
-        transformationContext = new ActionContext(new TransformationContext(), rowMetadata);
+
+        parameters = new HashMap<>();
+        parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "column");
     }
 
     @Test
@@ -59,13 +61,12 @@ public class DeleteColumnTest {
         values.put("0001", "1");
         values.put("0002", "Wolf");
         final DataSetRow row = new DataSetRow(rowMetadata, values);
-        final Map<String, String> parameters = new HashMap<>();
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0002");
 
         // when
-        deleteColumn.applyOnColumn(row, transformationContext, parameters, "0002");
+        ActionTestWorkbench.test(row, deleteColumn.create(parameters).getRowAction());
 
         // then
-        final ColumnMetadata column = row.getRowMetadata().getColumns().get(0);
         final int rowSize = row.getRowMetadata().getColumns().size();
         assertEquals(1, rowSize);
         assertFalse(row.values().containsKey("0002"));
@@ -84,11 +85,12 @@ public class DeleteColumnTest {
         values2.put("0001", "2");
         values2.put("0002", "Lion");
         final DataSetRow row2 = new DataSetRow(rowMetadata, values2);
-        final Map<String, String> parameters = new HashMap<>();
 
         // when
-        deleteColumn.applyOnColumn(row, transformationContext, parameters, "0002");
-        deleteColumn.applyOnColumn(row2, transformationContext, parameters, "0002");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0002");
+        final DataSetRowAction rowAction = deleteColumn.create(parameters).getRowAction();
+        ActionTestWorkbench.test(row, rowAction);
+        ActionTestWorkbench.test(row2, rowAction);
 
         // then
         final int rowSize = row.getRowMetadata().getColumns().size();
@@ -113,13 +115,14 @@ public class DeleteColumnTest {
         values.put("0001", "2");
         values.put("0002", "Lion");
         final DataSetRow row2 = new DataSetRow(rowMetadata, values2);
-        final Map<String, String> parameters = new HashMap<>();
 
         // when
-        deleteColumn.applyOnColumn(row, transformationContext, parameters, "0001");
-        deleteColumn.applyOnColumn(row2, transformationContext, parameters, "0001");
-        deleteColumn.applyOnColumn(row, transformationContext, parameters, "0002");
-        deleteColumn.applyOnColumn(row2, transformationContext, parameters, "0002");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0002");
+        final DataSetRowAction action1 = deleteColumn.create(parameters).getRowAction();
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0001");
+        final DataSetRowAction action2 = deleteColumn.create(parameters).getRowAction();
+        ActionTestWorkbench.test(row, action1, action2);
+        ActionTestWorkbench.test(row2, action1, action2);
 
         // then
         final int rowSize = row.getRowMetadata().getColumns().size();
