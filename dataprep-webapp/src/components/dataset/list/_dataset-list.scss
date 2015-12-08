@@ -89,8 +89,6 @@ $border-color: #CECECE;
   $medium-screen: em(640) !default;
   $large-screen: em(860) !default;
 
-  min-height: 400px;
-
   padding: 10px 20px;
 
   @include display(flex);
@@ -153,13 +151,17 @@ $border-color: #CECECE;
 
 
   .folders {
+
+    display: flex;
+    min-height: 400px;
+    max-height: 400px;
+    overflow: auto;
     border: 1px solid $border-color;
-    padding: 10px;
+    padding: 2px;
     position: relative;
 
     width: 100%;
     height: 36%;
-
     margin: 0;
 
     &.datagrid{
