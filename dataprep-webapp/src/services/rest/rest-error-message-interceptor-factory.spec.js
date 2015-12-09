@@ -40,48 +40,10 @@ describe('Rest message interceptor factory', function () {
     }));
 
 
-    it('should not show alert when status code is not mapped', inject(function ($rootScope, $http, MessageService) {
-        //given
-        $httpBackend.expectGET('testService').respond(300);
-
-        //when
-        $http.get('testService');
-        $httpBackend.flush();
-        $rootScope.$digest();
-
-        //then
-        expect(MessageService.error).not.toHaveBeenCalled();
-    }));
-    
-    it('should show alert when service is unavailable', inject(function ($rootScope, $http, MessageService) {
-        //given
-        $httpBackend.expectGET('testService').respond(0);
-
-        //when
-        $http.get('testService');
-        $httpBackend.flush();
-        $rootScope.$digest();
-
-        //then
-        expect(MessageService.error).toHaveBeenCalledWith('SERVER_ERROR_TITLE', 'SERVICE_UNAVAILABLE');
-    }));
-
-    it('should show toast on status 500', inject(function ($rootScope, $http, MessageService) {
-        //given
-        $httpBackend.expectGET('testService').respond(500);
-
-        //when
-        $http.get('testService');
-        $httpBackend.flush();
-        $rootScope.$digest();
-
-        //then
-        expect(MessageService.error).toHaveBeenCalledWith('SERVER_ERROR_TITLE', 'GENERIC_ERROR');
-    }));
-
     it('should show expected error message when dataset deletion cannot be processed', inject(function ($rootScope, $http, MessageService) {
         //given
-        $httpBackend.expectGET('testService').respond(400, {code:'TDP_API_DATASET_STILL_IN_USE'});
+        /*jshint camelcase: false */
+        $httpBackend.expectGET('testService').respond(400, {message_title : 'TDP_API_DATASET_STILL_IN_USE_TITLE', message: 'TDP_API_DATASET_STILL_IN_USE' });
 
         //when
         $http.get('testService');
@@ -89,72 +51,7 @@ describe('Rest message interceptor factory', function () {
         $rootScope.$digest();
 
         //then
-        expect(MessageService.error).toHaveBeenCalledWith('SERVER_ERROR_TITLE', 'DELETE_DATASET_ERROR');
-    }));
-
-    it('should show expected error message when step deletion cannot be done in single mode', inject(function ($rootScope, $http, MessageService) {
-        //given
-        $httpBackend.expectGET('testService').respond(403, {code:'TDP_PS_PREPARATION_STEP_CANNOT_BE_DELETED_IN_SINGLE_MODE'});
-
-        //when
-        $http.get('testService');
-        $httpBackend.flush();
-        $rootScope.$digest();
-
-        //then
-        expect(MessageService.error).toHaveBeenCalledWith('PREPARATION_STEP_DELETE_MODE_NOT_AUTHORIZED_TITLE', 'PREPARATION_STEP_DELETE_MODE_NOT_AUTHORIZED');
-    }));
-
-    it('should show generic message when code is unknown', inject(function ($rootScope, $http, MessageService) {
-        //given
-        $httpBackend.expectGET('testService').respond(400, {code:'TDP_XXXXX'});
-
-        //when
-        $http.get('testService');
-        $httpBackend.flush();
-        $rootScope.$digest();
-
-        //then
-        expect(MessageService.error).toHaveBeenCalledWith('SERVER_ERROR_TITLE', 'GENERIC_ERROR');
-    }));
-
-     it('expected error message when dataset content is not supported', inject(function ($rootScope, $http, MessageService) {
-        //given
-        $httpBackend.expectGET('testService').respond(400, {code:'TDP_DSS_UNSUPPORTED_CONTENT'});
-
-        //when
-        $http.get('testService');
-        $httpBackend.flush();
-        $rootScope.$digest();
-
-        //then
-        expect(MessageService.error).toHaveBeenCalledWith('UNSUPPORTED_CONTENT_TITLE', 'UNSUPPORTED_CONTENT');
-    }));
-
-    it('expected error message when creating a dataset', inject(function ($rootScope, $http, MessageService) {
-        //given
-        $httpBackend.expectGET('testService').respond(400, {code:'TDP_API_UNABLE_TO_CREATE_DATASET'});
-
-        //when
-        $http.get('testService');
-        $httpBackend.flush();
-        $rootScope.$digest();
-
-        //then
-        expect(MessageService.error).toHaveBeenCalledWith('IMPORT_ERROR_TITLE', 'IMPORT_ERROR');
-    }));
-
-    it('expected error message when updating a dataset', inject(function ($rootScope, $http, MessageService) {
-        //given
-        $httpBackend.expectGET('testService').respond(400, {code:'TDP_API_UNABLE_TO_CREATE_OR_UPDATE_DATASET'});
-
-        //when
-        $http.get('testService');
-        $httpBackend.flush();
-        $rootScope.$digest();
-
-        //then
-        expect(MessageService.error).toHaveBeenCalledWith('UPDATE_ERROR_TITLE', 'UPDATE_ERROR');
+        expect(MessageService.error).toHaveBeenCalledWith('TDP_API_DATASET_STILL_IN_USE_TITLE', 'TDP_API_DATASET_STILL_IN_USE');
     }));
 
 });
