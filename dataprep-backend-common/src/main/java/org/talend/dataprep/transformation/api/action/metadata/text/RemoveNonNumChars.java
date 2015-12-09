@@ -1,5 +1,6 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -53,7 +54,7 @@ public class RemoveNonNumChars extends ActionMetadata implements ColumnAction {
 
     protected String apply(String from) {
         if (from == null) {
-            return "";
+            return StringUtils.EMPTY;
         }
         return from.replaceAll("[^0-9., -]", "");
     }

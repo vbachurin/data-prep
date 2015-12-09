@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
 /**
@@ -17,18 +18,23 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitPar
  */
 public class ActionContext {
 
+
+
     public enum ActionStatus {
         /**
          * Indicate action is good for usage and transformation process should continue using this action.
          */
         OK,
         /**
+         * Indicates an action no longer needs to be executed.
+         */
+        DONE,
+        /**
          * Indicates action is "canceled": transformation process should discard action from execution and won't execute
          * it.
          */
         CANCELED
     }
-
     /** Link to the transformation context. */
     private final TransformationContext parent;
 
@@ -107,11 +113,23 @@ public class ActionContext {
      * Return the object from the context or use the supplier to create it and cache it.
      *
      * @param key the object key.
-     * @param parameters the parameters used by the supplier.
+     * @return the object (stored in the context).
+     */
+    public <T> T get(String key) {
+        if (context.containsKey(key)) {
+            return (T) context.get(key);
+        }
+        throw new IllegalArgumentException("Key '" + key + "' does not exist.");
+    }
+
+    /**
+     * Return the object from the context or use the supplier to create it and cache it.
+     *
+     * @param key the object key.
      * @param supplier the supplier to use to create the object in case it is not found in the context.
      * @return the object (stored in the context).
      */
-    public <T> T get(String key, Map<String, String> parameters, Function<Map<String, String>, T> supplier) {
+    public <T> T get(String key, Function<Map<String, String>, T> supplier) {
         if (context.containsKey(key)) {
             return (T) context.get(key);
         }
@@ -176,10 +194,27 @@ public class ActionContext {
         return parent.getPreviousRow();
     }
 
+    public ScopeCategory getScope() {
+        final String scopeParameter = parameters.get(ImplicitParameters.SCOPE.getKey());
+        if (scopeParameter != null) {
+            return ScopeCategory.valueOf(scopeParameter.toUpperCase());
+        }
+        return null;
+    }
+
+    /**
+     * @return The {@link ActionStatus status} of the action.
+     */
     public ActionStatus getActionStatus() {
         return actionStatus;
     }
 
+    /**
+     * Changes the action status: implementation of actions may want to interrupt computation (no more changes to be
+     * done).
+     *
+     * @param actionStatus The new action status, one of {@link ActionStatus}.
+     */
     public void setActionStatus(ActionStatus actionStatus) {
         this.actionStatus = actionStatus;
     }

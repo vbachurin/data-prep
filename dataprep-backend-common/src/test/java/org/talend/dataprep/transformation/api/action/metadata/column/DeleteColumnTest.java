@@ -5,10 +5,7 @@ import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -89,8 +86,7 @@ public class DeleteColumnTest {
         // when
         parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0002");
         final DataSetRowAction rowAction = deleteColumn.create(parameters).getRowAction();
-        ActionTestWorkbench.test(row, rowAction);
-        ActionTestWorkbench.test(row2, rowAction);
+        ActionTestWorkbench.test(Arrays.asList(row, row2), rowAction);
 
         // then
         final int rowSize = row.getRowMetadata().getColumns().size();

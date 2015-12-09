@@ -115,8 +115,7 @@ public class Rename extends ActionMetadata implements ColumnAction {
         final String newColumnName = context.getParameters().get(NEW_COLUMN_NAME_PARAMETER_NAME);
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(context.getColumnId());
-        if (column != null) {
-            column.setName(newColumnName);
-        }
+        column.setName(newColumnName);
+        context.setActionStatus(ActionContext.ActionStatus.DONE);
     }
 }

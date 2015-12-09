@@ -123,6 +123,14 @@ public class NumericOperations extends ActionMetadata implements ColumnAction {
         return Type.NUMERIC.isAssignableFrom(columnType);
     }
 
+    @Override
+    public void compile(ActionContext actionContext) {
+        super.compile(actionContext);
+        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
+            checkParameters(actionContext.getParameters(), actionContext.getInputRowMetadata());
+        }
+    }
+
     /**
      * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
@@ -130,7 +138,6 @@ public class NumericOperations extends ActionMetadata implements ColumnAction {
     public void applyOnColumn(final DataSetRow row, final ActionContext context) {
         final Map<String, String> parameters = context.getParameters();
         final String columnId = context.getColumnId();
-        checkParameters(parameters, row);
 
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata sourceColumn = rowMetadata.getById(columnId);
@@ -207,15 +214,15 @@ public class NumericOperations extends ActionMetadata implements ColumnAction {
      * the parameter is invalid, an exception is thrown.
      *
      * @param parameters where to look the parameter value.
-     * @param row        the row where to look for the column.
+     * @param rowMetadata        the row where to look for the column.
      */
-    private void checkParameters(Map<String, String> parameters, DataSetRow row) {
+    private void checkParameters(Map<String, String> parameters, RowMetadata rowMetadata) {
         if (parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE) && !parameters.containsKey(OPERAND_PARAMETER)) {
             throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER, ExceptionContext.build().put("paramName",
                     OPERAND_PARAMETER));
         }
         else if (!parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE) &&
-                (!parameters.containsKey(SELECTED_COLUMN_PARAMETER) || row.getRowMetadata().getById(parameters.get(SELECTED_COLUMN_PARAMETER)) == null)) {
+                (!parameters.containsKey(SELECTED_COLUMN_PARAMETER) || rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER)) == null)) {
             throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER, ExceptionContext.build().put("paramName",
                     SELECTED_COLUMN_PARAMETER));
         }

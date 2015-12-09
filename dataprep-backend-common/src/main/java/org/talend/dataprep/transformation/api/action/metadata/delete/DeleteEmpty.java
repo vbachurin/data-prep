@@ -1,16 +1,16 @@
 package org.talend.dataprep.transformation.api.action.metadata.delete;
 
-import java.util.Arrays;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionScope.EMPTY;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionScope;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionScope.EMPTY;
 
 /**
  * Delete row when value is empty.
@@ -36,7 +36,7 @@ public class DeleteEmpty extends AbstractDelete implements ColumnAction {
      */
     @Override
     public List<String> getActionScope() {
-        return Arrays.asList(EMPTY.getDisplayName());
+        return Collections.singletonList(EMPTY.getDisplayName());
     }
 
     /**
@@ -45,6 +45,12 @@ public class DeleteEmpty extends AbstractDelete implements ColumnAction {
     @Override
     public boolean acceptColumn(ColumnMetadata column) {
         return true;
+    }
+
+    @Override
+    public void compile(ActionContext actionContext) {
+        // This action is able to deal with missing column, overrides default behavior
+        actionContext.setActionStatus(ActionContext.ActionStatus.OK);
     }
 
     /**

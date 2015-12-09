@@ -6,7 +6,6 @@ import static org.junit.Assert.fail;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 
 import java.math.BigInteger;
-import java.util.Collections;
 import java.util.function.Function;
 
 import org.junit.Before;
@@ -115,7 +114,7 @@ public class ActionContextTest {
     @Test
     public void testGetCreate() {
 
-        Object actual = context.get("test", Collections.emptyMap(), (p) -> "new object");
+        Object actual = context.get("test", (p) -> "new object");
 
         assertThat(actual, is("new object"));
     }
@@ -123,11 +122,11 @@ public class ActionContextTest {
     @Test
     public void testGetCache() {
 
-        Object toTheCache = context.get("testCache", Collections.emptyMap(), (p) -> new BigInteger("123"));
+        Object toTheCache = context.get("testCache", (p) -> new BigInteger("123"));
         assertThat(toTheCache, is(new BigInteger("123")));
 
         // the second call has another supplier that fails the test
-        Object actual = context.get("testCache", Collections.emptyMap(), (p) -> {
+        Object actual = context.get("testCache", (p) -> {
             fail("should not be invoked");
             return new BigInteger("123");
         });

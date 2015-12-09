@@ -90,7 +90,7 @@ public class Cut extends ActionMetadata implements ColumnAction {
         if (toCut != null) {
             try {
                 // Check if the pattern is valid:
-                Pattern p = context.get(COMPILED_PATTERN, context.getParameters(), (map) -> Pattern.compile(map.get(PATTERN_PARAMETER)));
+                Pattern p = context.get(COMPILED_PATTERN, (map) -> Pattern.compile(map.get(PATTERN_PARAMETER)));
                 row.set(columnId, p.matcher(toCut).replaceAll("")); //$NON-NLS-1$
             } catch (PatternSyntaxException e) {
                 // In case the pattern is not valid, consider that the value does not match: do nothing.

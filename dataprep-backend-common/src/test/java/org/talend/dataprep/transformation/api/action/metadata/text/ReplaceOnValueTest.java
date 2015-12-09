@@ -31,6 +31,8 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
@@ -40,6 +42,17 @@ import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 public class ReplaceOnValueTest {
 
     private ReplaceOnValue action = new ReplaceOnValue();
+
+    private ActionContext buildPatternActionContext(String regex, String replacement, boolean replace) {
+        ActionContext context = new ActionContext(new TransformationContext());
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put(ReplaceOnValue.CELL_VALUE_PARAMETER, regex);
+        parameters.put(ReplaceOnValue.REPLACE_VALUE_PARAMETER, replacement);
+        parameters.put(ReplaceOnValue.REPLACE_ENTIRE_CELL_PARAMETER, String.valueOf(replace));
+        context.setParameters(parameters);
+        action.compile(context);
+        return context;
+    }
 
     @Test
     public void should_return_common_and_specific_parameters() {
@@ -111,52 +124,52 @@ public class ReplaceOnValueTest {
     @Test
     public void testComputeNewValue() {
         // Case text when matches:
-        Assert.assertEquals("Bob Dylan", action.computeNewValue("Robert Dylan", "Robert", "Bob", false));
-        Assert.assertEquals("Bob", action.computeNewValue("Robert Dylan", "Robert", "Bob", true));
-        Assert.assertEquals("I listen to Bob Dylan every day", action.computeNewValue("I listen to Robert Dylan every day", "Robert", "Bob", false));
+        Assert.assertEquals("Bob Dylan", action.computeNewValue(buildPatternActionContext("Robert", "Bob", false), "Robert Dylan"));
+        Assert.assertEquals("Bob", action.computeNewValue(buildPatternActionContext("Robert", "Bob", true), "Robert Dylan"));
+        Assert.assertEquals("I listen to Bob Dylan every day", action.computeNewValue(buildPatternActionContext("Robert", "Bob", false), "I listen to Robert Dylan every day"));
 
         // Case text when don't match:
-        Assert.assertEquals("Robert Dylan", action.computeNewValue("Robert Dylan", "Andy", "Bob", false));
-        Assert.assertEquals("Robert Dylan", action.computeNewValue("Robert Dylan", "Andy", "Bob", true));
+        Assert.assertEquals("Robert Dylan", action.computeNewValue(buildPatternActionContext("Andy", "Bob", false), "Robert Dylan"));
+        Assert.assertEquals("Robert Dylan", action.computeNewValue(buildPatternActionContext("Andy", "Bob", false), "Robert Dylan"));
+        Assert.assertEquals("Robert Dylan", action.computeNewValue(buildPatternActionContext("Andy", "Bob", true), "Robert Dylan"));
 
         // Case regexp when matches:
-        Assert.assertEquals("Bob", action.computeNewValue("Robert Dylan", "Robert.*", "Bob", false));
-        Assert.assertEquals("Bob", action.computeNewValue("Robert Dylan", "Robert.*", "Bob", true));
-        Assert.assertEquals("I want to break free", action.computeNewValue("I want 2 break free", "\\d", "to", false));
-        Assert.assertEquals("to", action.computeNewValue("I want 2 break free", ".*\\d.*", "to", false));
-        Assert.assertEquals("to", action.computeNewValue("I want 2 break free", "\\d", "to", true));
+        Assert.assertEquals("Bob", action.computeNewValue(buildPatternActionContext("Robert.*", "Bob", false), "Robert Dylan"));
+        Assert.assertEquals("Bob", action.computeNewValue(buildPatternActionContext("Robert.*", "Bob", true), "Robert Dylan"));
+        Assert.assertEquals("I want to break free", action.computeNewValue(buildPatternActionContext("\\d", "to", false), "I want 2 break free"));
+        Assert.assertEquals("to", action.computeNewValue(buildPatternActionContext(".*\\d.*", "to", false), "I want 2 break free"));
+        Assert.assertEquals("to", action.computeNewValue(buildPatternActionContext("\\d", "to", true), "I want 2 break free"));
 
         // Case regexp when don't match:
-        Assert.assertEquals("Robert Dylan", action.computeNewValue("Robert Dylan", ".*Andy.*", "Bob", false));
-        Assert.assertEquals("Robert Dylan", action.computeNewValue("Robert Dylan", "Andy.*", "Bob", true));
+        Assert.assertEquals("Robert Dylan", action.computeNewValue(buildPatternActionContext(".*Andy.*", "Bob", false), "Robert Dylan"));
+        Assert.assertEquals("Robert Dylan", action.computeNewValue(buildPatternActionContext(".*Andy.*", "Bob", true), "Robert Dylan"));
 
-        Assert.assertEquals("XXX_EN_YYY", action.computeNewValue("XXX_FR_YYY", "FR", "EN", false));
-        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue("XXX_FR_YYY", "FOO", "EN", false));
-        Assert.assertEquals("EN", action.computeNewValue("XXX_FR_YYY", "FR", "EN", true));
+        Assert.assertEquals("XXX_EN_YYY", action.computeNewValue(buildPatternActionContext("FR", "EN", false), "XXX_FR_YYY"));
+        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue(buildPatternActionContext("FOO", "EN", false), "XXX_FR_YYY"));
+        Assert.assertEquals("EN", action.computeNewValue(buildPatternActionContext("FR", "EN", true), "XXX_FR_YYY"));
 
-        Assert.assertEquals("XXX_EN_YYY", action.computeNewValue("XXX_FR_YYY", "F.", "EN", false));
-        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue("XXX_FR_YYY", "G.", "EN", false));
-        Assert.assertEquals("EN", action.computeNewValue("XXX_FR_YYY", "F.", "EN", true));
+        Assert.assertEquals("XXX_EN_YYY", action.computeNewValue(buildPatternActionContext("F.", "EN", false), "XXX_FR_YYY"));
+        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue(buildPatternActionContext("G.", "EN", false), "XXX_FR_YYY"));
+        Assert.assertEquals("EN", action.computeNewValue(buildPatternActionContext("F.", "EN", true), "XXX_FR_YYY"));
 
-        Assert.assertEquals("XXX_EN_YYY", action.computeNewValue("XXX_David Bowie_YYY", "_.*_", "_EN_", false));
-        Assert.assertEquals("XXX_David 2 Bowie_YYY",
-                action.computeNewValue("XXX_David 2 Bowie_YYY", "_[a-zA-Z]*_", "_EN_", false));
-        Assert.assertEquals("XXX_EN_YYY", action.computeNewValue("XXX_David 2 Bowie_YYY", "_[a-zA-Z0-9 ]*_", "_EN_", false));
+        Assert.assertEquals("XXX_EN_YYY", action.computeNewValue(buildPatternActionContext("_.*_", "_EN_", false), "XXX_David Bowie_YYY"));
+        Assert.assertEquals("XXX_David 2 Bowie_YYY", action.computeNewValue(buildPatternActionContext("_[a-zA-Z]*_", "EN", false), "XXX_David 2 Bowie_YYY"));
+        Assert.assertEquals("XXX_EN_YYY", action.computeNewValue(buildPatternActionContext("_[a-zA-Z0-9 ]*_", "_EN_", false), "XXX_David 2 Bowie_YYY"));
 
-        Assert.assertEquals("XXX_YYY", action.computeNewValue("XXX_FR_YYY", "FR_", "", false));
+        Assert.assertEquals("XXX_YYY", action.computeNewValue(buildPatternActionContext("FR_", "", false), "XXX_FR_YYY"));
 
     }
 
     @Test
     public void should_replace_the_value_that_match_on_the_specified_column() {
-        Assert.assertEquals("Jimmy Hetfield", action.computeNewValue("James Hetfield", "James", "Jimmy", false));
-        Assert.assertEquals("Jimmy", action.computeNewValue("James Hetfield", "James", "Jimmy", true));
+        Assert.assertEquals("Jimmy Hetfield", action.computeNewValue(buildPatternActionContext("James", "Jimmy", false), "James Hetfield"));
+        Assert.assertEquals("Jimmy", action.computeNewValue(buildPatternActionContext("James", "Jimmy", true), "James"));
     }
 
     @Test
     public void should_NOT_replace_the_value_that_DOESNT_match_on_the_specified_column() {
-        Assert.assertEquals("Toto", action.computeNewValue("Toto", "James", "Jimmy", false));
-        Assert.assertEquals("Toto", action.computeNewValue("Toto", "James", "Jimmy", true));
+        Assert.assertEquals("Toto", action.computeNewValue(buildPatternActionContext("James", "Jimmy", false), "Toto"));
+        Assert.assertEquals("Toto", action.computeNewValue(buildPatternActionContext("James", "Jimmy", true), "Toto"));
     }
 
     @Test
@@ -215,7 +228,7 @@ public class ReplaceOnValueTest {
         final String to = "pont.html?region=FR";
 
         //when
-        final String result = action.computeNewValue(from, regexp, to, false);
+        final String result = action.computeNewValue(buildPatternActionContext(regexp, to, false), from);
 
         //then
         assertThat(result, is(to));
@@ -273,27 +286,26 @@ public class ReplaceOnValueTest {
 
     @Test
     public void should_replace_the_value_because_regexp() {
-        Assert.assertEquals("replaced", action.computeNewValue("password swordfish with Halle Berry", ".*Halle.*", "replaced", false));
-        Assert.assertEquals("replaced", action.computeNewValue("password swordfish with Halle Berry", ".*Halle.*", "replaced", true));
+        Assert.assertEquals("replaced", action.computeNewValue(buildPatternActionContext(".*Halle.*", "replaced", true), "password swordfish with Halle Berry"));
+        Assert.assertEquals("replaced", action.computeNewValue(buildPatternActionContext(".*Halle.*", "replaced", false), "password swordfish with Halle Berry"));
     }
 
     @Test
     public void test_TDP_663() {
-        Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue("password swordfish with Halle Berry", "*", "replaced", true));
-        Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue("password swordfish with Halle Berry", "*", "replaced", false));
+        Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue(buildPatternActionContext("*", "replaced", false), "password swordfish with Halle Berry"));
+        Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue(buildPatternActionContext("*", "replaced", true), "password swordfish with Halle Berry"));
     }
-
 
     @Test
     public void test_TDP_958_emptyPattern() {
-        Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue("password swordfish with Halle Berry", "", "replaced", false));
-        Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue("password swordfish with Halle Berry", "", "replaced", true));
+        Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue(buildPatternActionContext("", "replaced", false), "password swordfish with Halle Berry"));
+        Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue(buildPatternActionContext("", "replaced", true), "password swordfish with Halle Berry"));
     }
 
     @Test
     public void test_TDP_958_invalidPattern() {
-        Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue("password swordfish with Halle Berry", "^(", "replaced", false));
-        Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue("password swordfish with Halle Berry", "^(", "replaced", true));
+        Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue(buildPatternActionContext("^(", "replaced", false), "password swordfish with Halle Berry"));
+        Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue(buildPatternActionContext("^(", "replaced", true), "password swordfish with Halle Berry"));
     }
 
 }

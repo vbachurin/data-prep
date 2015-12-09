@@ -58,9 +58,6 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
         // checks for fail fast
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
-        if (column == null) {
-            return;
-        }
 
         // parse and checks the new date pattern
         // register the new pattern in column stats, to be able to process date action later

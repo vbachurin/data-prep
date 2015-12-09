@@ -62,10 +62,6 @@ public class TypeChange extends ActionMetadata implements ColumnAction {
         final Map<String, String> parameters = context.getParameters();
         LOGGER.debug("TypeChange for columnId {} with parameters {} ", columnId, parameters);
         final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
-        if (columnMetadata == null) {
-            // FIXME exception?
-            return;
-        }
         final String newType = parameters.get(NEW_TYPE_PARAMETER_KEY);
         if (StringUtils.isNotEmpty(newType)) {
             columnMetadata.setType(newType);
@@ -77,6 +73,7 @@ public class TypeChange extends ActionMetadata implements ColumnAction {
             // We must set this to fix TDP-838: we force the domain to empty
             columnMetadata.setDomainForced(true);
         }
+        context.setActionStatus(ActionContext.ActionStatus.DONE);
     }
 
     @Override

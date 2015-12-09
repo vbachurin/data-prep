@@ -35,6 +35,7 @@ public class BaseTransformer {
                             current = action.apply(current, actionContext);
                             break;
                         case CANCELED:
+                        case DONE:
                             LOGGER.debug("[Compilation] Remove action '{}' (compilation step returned {}).", action, actionStatus);
                             iterator.remove();
                             break;
@@ -52,7 +53,10 @@ public class BaseTransformer {
                     final DataSetRowAction action = iterator.next();
                     final ActionContext actionContext = context.in(action);
                     current.setRowMetadata(actionContext.getInputRowMetadata());
-                    current = action.apply(current, actionContext);
+                    if (actionContext.getActionStatus() != ActionContext.ActionStatus.DONE) {
+                        // Only apply action if it hasn't indicated it's DONE.
+                        current = action.apply(current, actionContext);
+                    }
                     current.setRowMetadata(actionContext.getOutputRowMetadata());
                     // Check whether we should continue using this action or not
                     final ActionContext.ActionStatus actionStatus = actionContext.getActionStatus();

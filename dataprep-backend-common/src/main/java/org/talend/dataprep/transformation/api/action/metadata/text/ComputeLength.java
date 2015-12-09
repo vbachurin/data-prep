@@ -56,7 +56,6 @@ public class ComputeLength extends ActionMetadata implements ColumnAction {
         final RowMetadata rowMetadata = row.getRowMetadata();
         final String columnId = context.getColumnId();
         final ColumnMetadata column = rowMetadata.getById(columnId);
-        //
         final String lengthColumn = context.column(column.getName() + APPENDIX, (r) -> {
             final ColumnMetadata c = ColumnMetadata.Builder //
                     .column() //

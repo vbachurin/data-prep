@@ -62,16 +62,13 @@ public class DomainChange extends ActionMetadata implements ColumnAction {
         final Map<String, String> parameters = context.getParameters();
         LOGGER.debug("DomainChange for columnId {} with parameters {} ", columnId, parameters);
         final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
-        if (columnMetadata == null) {
-            // FIXME exception?
-            return;
-        }
         final String newDomainId = parameters.get(NEW_DOMAIN_ID_PARAMETER_KEY);
         if (StringUtils.isNotEmpty(newDomainId)) {
             columnMetadata.setDomain(newDomainId);
             columnMetadata.setDomainFrequency(0);
             columnMetadata.setDomainForced(true);
         }
+        context.setActionStatus(ActionContext.ActionStatus.DONE);
     }
 
     @Override

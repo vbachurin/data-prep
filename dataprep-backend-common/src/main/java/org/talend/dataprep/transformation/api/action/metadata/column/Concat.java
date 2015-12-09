@@ -113,6 +113,15 @@ public class Concat extends ActionMetadata implements ColumnAction {
         return true;
     }
 
+    @Override
+    public void compile(ActionContext actionContext) {
+        super.compile(actionContext);
+        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
+            checkSelectedColumnParameter(actionContext.getParameters(), actionContext.getInputRowMetadata());
+            actionContext.setActionStatus(ActionContext.ActionStatus.OK);
+        }
+    }
+
     /**
      * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
@@ -123,7 +132,6 @@ public class Concat extends ActionMetadata implements ColumnAction {
         final Map<String, String> parameters = context.getParameters();
         final ColumnMetadata sourceColumn = rowMetadata.getById(columnId);
 
-        checkSelectedColumnParameter(parameters, row);
 
         final String newColumnName = evalNewColumnName(sourceColumn.getName(), rowMetadata, parameters);
 
@@ -172,11 +180,11 @@ public class Concat extends ActionMetadata implements ColumnAction {
      * parameters and there's a matching column. If the parameter is invalid, an exception is thrown.
      *
      * @param parameters where to look the parameter value.
-     * @param row the row where to look for the column.
+     * @param row the row metadata where to look for the column.
      */
-    private void checkSelectedColumnParameter(Map<String, String> parameters, DataSetRow row) {
+    private void checkSelectedColumnParameter(Map<String, String> parameters, RowMetadata row) {
         if (parameters.get(OTHER_COLUMN_PARAMETER).equals(CONCAT_WITH_ANOTHER_COLUMN)
-                && (!parameters.containsKey(SELECTED_COLUMN_PARAMETER) || row.getRowMetadata().getById(
+                && (!parameters.containsKey(SELECTED_COLUMN_PARAMETER) || row.getById(
                         parameters.get(SELECTED_COLUMN_PARAMETER)) == null)) {
             throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER, ExceptionContext.build().put("paramName",
                     SELECTED_COLUMN_PARAMETER));

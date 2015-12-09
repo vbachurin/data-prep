@@ -157,7 +157,7 @@ public class StackedTransformer implements Transformer {
                     writer.fieldName("records");
                     writer.startArray();
                 } catch (IOException e) {
-                    // Ignored.
+                    throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
                 }
                 return r;
             }, r -> r) //
@@ -171,7 +171,7 @@ public class StackedTransformer implements Transformer {
                     }
                     processingRows.push(r);
                 } catch (IOException e) {
-                    // Ignored.
+                    throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
                 }
             });
             writer.endArray();
@@ -203,7 +203,7 @@ public class StackedTransformer implements Transformer {
             writer.fieldName("columns");
             writer.write(row.getRowMetadata());
         } catch (IOException e) {
-            // Ignored.
+            throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
         }
         return row;
     }
