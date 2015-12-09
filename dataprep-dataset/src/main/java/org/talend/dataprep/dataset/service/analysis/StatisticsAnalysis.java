@@ -1,11 +1,5 @@
 package org.talend.dataprep.dataset.service.analysis;
 
-import java.util.List;
-import java.util.stream.Stream;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +19,13 @@ import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.talend.dataprep.exception.error.DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY;
 
 @Component
 public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
@@ -66,22 +67,36 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
         datasetLock.lock();
         try {
             DataSetMetadata metadata = repository.get(dataSetId);
-            try (Stream<DataSetRow> stream = store.stream(metadata)) {
-                if (metadata != null) {
-                    if (!metadata.getLifecycle().schemaAnalyzed()) {
-                        LOGGER.debug("Schema information must be computed before quality analysis can be performed, ignoring message");
-                        return; // no acknowledge to allow re-poll.
-                    }
-                    computeStatistics(metadata, stream);
-                    // Tag data set quality: now analyzed
-                    metadata.getLifecycle().qualityAnalyzed(true);
-                    repository.add(metadata);
-                } else {
-                    LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
+            if (metadata != null) {
+                if (!metadata.getLifecycle().schemaAnalyzed()) {
+                    LOGGER.debug("Dataset {}, schema information must be computed before quality analysis can be performed, ignoring message", metadata.getId());
+                    return; // no acknowledge to allow re-poll.
                 }
-            } catch (Exception e) {
-                LOGGER.warn("dataset {} generates an error", dataSetId, e);
-                throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
+
+                if (metadata.getRow().getColumns().isEmpty()) {
+                    LOGGER.debug("Skip statistics of dataset {} (no column information).", metadata.getId());
+                    return;
+                }
+
+                try (final Stream<DataSetRow> stream = store.stream(metadata)) {
+                    computeBaseStatistics(metadata, stream);
+                } catch (Exception e) {
+                    LOGGER.warn("Base statistics analysis, dataset {} generates an error", dataSetId, e);
+                    throw new TDPException(UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
+                }
+
+                try (final Stream<DataSetRow> stream = store.stream(metadata)) {
+                    computeStatistics(metadata, stream);
+                } catch (Exception e) {
+                    LOGGER.warn("Numeric statistics analysis, dataset {} generates an error", dataSetId, e);
+                    throw new TDPException(UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
+                }
+
+                // Tag data set quality: now analyzed
+                metadata.getLifecycle().qualityAnalyzed(true);
+                repository.add(metadata);
+            } else {
+                LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
             }
         } finally {
             datasetLock.unlock();
@@ -90,23 +105,45 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
     }
 
     /**
-     * Compute the statistics for the given dataset metadata and content.
+     * Compute the base statistics for the given dataset metadata and content.
      *
      * @param metadata the metadata to compute the statistics for.
-     * @param stream the content to compute the statistics from.
+     * @param stream   the content to compute the statistics from.
      */
-    public void computeStatistics(DataSetMetadata metadata, Stream<DataSetRow> stream) {
+    public void computeBaseStatistics(final DataSetMetadata metadata, final Stream<DataSetRow> stream) {
         // Create a content with the expected format for the StatisticsClientJson class
         final List<ColumnMetadata> columns = metadata.getRowMetadata().getColumns();
         if (columns.isEmpty()) {
             LOGGER.debug("Skip statistics of {} (no column information).", metadata.getId());
             return;
         }
-        final Analyzer<Analyzers.Result> analyzer = analyzerService.full(columns);
-        stream.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
-        analyzer.end();
-        // Store results back in data set
-        adapter.adapt(columns, analyzer.getResult());
+        final Analyzer<Analyzers.Result> baseAnalyzer = analyzerService.baseAnalysis(columns);
+        stream.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(baseAnalyzer::analyze);
+        baseAnalyzer.end();
+
+        // Store base analysis in data set
+        adapter.adapt(columns, baseAnalyzer.getResult());
+    }
+
+    /**
+     * Compute the numeric statistics for the given dataset metadata and content.
+     *
+     * @param metadata the metadata to compute the statistics for.
+     * @param stream   the content to compute the statistics from.
+     */
+    public void computeStatistics(final DataSetMetadata metadata, final Stream<DataSetRow> stream) {
+        // Create a content with the expected format for the StatisticsClientJson class
+        final List<ColumnMetadata> columns = metadata.getRowMetadata().getColumns();
+        if (columns.isEmpty()) {
+            LOGGER.debug("Skip statistics of {} (no column information).", metadata.getId());
+            return;
+        }
+        final Analyzer<Analyzers.Result> numericAnalyzer = analyzerService.computedStatisticsAnalysis(columns);
+        stream.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(numericAnalyzer::analyze);
+        numericAnalyzer.end();
+
+        // Store base analysis in data set
+        adapter.adapt(columns, numericAnalyzer.getResult());
     }
 
     /**

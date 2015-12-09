@@ -62,7 +62,6 @@ public abstract class DataSetBaseTest {
 
     protected void assertQueueMessages(String dataSetId) throws Exception {
         // Wait for queue messages
-        waitForQueue(Destinations.QUALITY_ANALYSIS, dataSetId);
         waitForQueue(Destinations.STATISTICS_ANALYSIS, dataSetId);
         // Asserts on metadata status
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);

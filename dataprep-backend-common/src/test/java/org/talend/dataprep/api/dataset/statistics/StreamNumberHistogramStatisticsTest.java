@@ -9,26 +9,26 @@ import java.util.Collection;
 import org.junit.Test;
 import org.talend.dataquality.statistics.numeric.histogram.Range;
 
-public class StreamHistogramStatisticsTest {
+public class StreamNumberHistogramStatisticsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionWhenNegativeOrZeroNumberOfBins() {
         // given
-        final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
+        final StreamNumberHistogramStatistics histogram = new StreamNumberHistogramStatistics();
         histogram.setNumberOfBins(0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionWhenNumberOfBinsNotPowerOfTwo() {
         // given
-        final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
+        final StreamNumberHistogramStatistics histogram = new StreamNumberHistogramStatistics();
         histogram.setNumberOfBins(3);
     }
 
     @Test
     public void shouldBConsistentWhenNoValueAdded() throws Exception {
         // given
-        final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
+        final StreamNumberHistogramStatistics histogram = new StreamNumberHistogramStatistics();
         histogram.setNumberOfBins(32);
         // expected
         assertEquals(0, histogram.getNumberOfValues());
@@ -41,7 +41,7 @@ public class StreamHistogramStatisticsTest {
     @Test
     public void shouldBeConsistentWhenOneValueAdded() throws Exception {
         // given
-        final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
+        final StreamNumberHistogramStatistics histogram = new StreamNumberHistogramStatistics();
         histogram.setNumberOfBins(16);
 
         // when
@@ -64,7 +64,7 @@ public class StreamHistogramStatisticsTest {
     @Test
     public void shouldBeConsistentWhenAHundredValuesFromOneToOneHundredAreAdded() throws Exception {
         // given
-        final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
+        final StreamNumberHistogramStatistics histogram = new StreamNumberHistogramStatistics();
         histogram.setNumberOfBins(16);
         // when
         for (int i = 1; i <= 100; i++) {
@@ -89,7 +89,7 @@ public class StreamHistogramStatisticsTest {
     @Test
     public void shouldBeConsistentWhenAHundredValuesFromOneHundredToOneAreAdded() throws Exception {
         // given
-        final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
+        final StreamNumberHistogramStatistics histogram = new StreamNumberHistogramStatistics();
         histogram.setNumberOfBins(32);
         for (int i = 100; i >= 1; i--) {
             histogram.add(i);
@@ -113,7 +113,7 @@ public class StreamHistogramStatisticsTest {
     @Test
     public void shouldBeConsistentWhenAHundredValuesUnorderedFromOneHundredToOneAreAdded() throws Exception {
         // given
-        final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
+        final StreamNumberHistogramStatistics histogram = new StreamNumberHistogramStatistics();
         histogram.setNumberOfBins(2);
         int[] array = { 48, 49, 50, 51, 32, 33, 34, 35, 96, 97, 98, 100, 15, 16, 17, 18, 91, 90, 92, 93, 94, 95, 1, 2, 3, 4, 5, 6,
                 7, 8, 9, 10, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 11, 12, 13, 14, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 20,
@@ -140,7 +140,7 @@ public class StreamHistogramStatisticsTest {
     @Test
     public void shouldHaveConsistentRangesWhenAThousandValuesAreAdded() throws Exception {
         // given
-        final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
+        final StreamNumberHistogramStatistics histogram = new StreamNumberHistogramStatistics();
         histogram.setNumberOfBins(32);
         for (int i = 1000; i >= 1; i--) {
             histogram.add(i);
@@ -158,7 +158,7 @@ public class StreamHistogramStatisticsTest {
     @Test
     public void shouldHaveSameMinWhenMinIsAdded() throws Exception {
         // given
-        final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
+        final StreamNumberHistogramStatistics histogram = new StreamNumberHistogramStatistics();
         histogram.setNumberOfBins(4);
         histogram.add(1);
         double min = histogram.getMin();
@@ -172,7 +172,7 @@ public class StreamHistogramStatisticsTest {
     @Test
     public void shouldHaveSameMaxWhenMaxIsAdded() throws Exception {
         // given
-        final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
+        final StreamNumberHistogramStatistics histogram = new StreamNumberHistogramStatistics();
         histogram.setNumberOfBins(4);
         histogram.add(1);
         double max = histogram.getMin();
@@ -186,7 +186,7 @@ public class StreamHistogramStatisticsTest {
     @Test
     public void shouldHaveMinMaxAndMeanWhenAValueIsAdded() throws Exception {
         // given
-        final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
+        final StreamNumberHistogramStatistics histogram = new StreamNumberHistogramStatistics();
         histogram.setNumberOfBins(4);
         histogram.add(10);
 
@@ -199,7 +199,7 @@ public class StreamHistogramStatisticsTest {
     @Test
     public void shouldHaveRightBoundaries() throws Exception {
         // given
-        final StreamHistogramStatistics histogram = new StreamHistogramStatistics();
+        final StreamNumberHistogramStatistics histogram = new StreamNumberHistogramStatistics();
         histogram.setNumberOfBins(2);
         histogram.add(2);
         histogram.add(3);

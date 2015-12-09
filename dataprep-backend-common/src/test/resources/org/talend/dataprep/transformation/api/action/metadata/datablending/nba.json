@@ -1227,140 +1227,160 @@
               "range": {
                 "min": 1948.0,
                 "max": 1949.4
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1949.4,
                 "max": 1950.8000000000002
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1950.8000000000002,
                 "max": 1952.2000000000003
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1952.2000000000003,
                 "max": 1953.6000000000004
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1953.6000000000004,
                 "max": 1955.0000000000005
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1955.0000000000005,
                 "max": 1956.4000000000005
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1956.4000000000005,
                 "max": 1957.8000000000006
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1957.8000000000006,
                 "max": 1959.2000000000007
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1959.2000000000007,
                 "max": 1960.6000000000008
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1960.6000000000008,
                 "max": 1962.000000000001
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1962.000000000001,
                 "max": 1963.400000000001
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1963.400000000001,
                 "max": 1964.800000000001
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1964.800000000001,
                 "max": 1966.2000000000012
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1966.2000000000012,
                 "max": 1967.6000000000013
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1967.6000000000013,
                 "max": 1969.0000000000014
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1969.0000000000014,
                 "max": 1970.4000000000015
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1970.4000000000015,
                 "max": 1971.8000000000015
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1971.8000000000015,
                 "max": 1973.2000000000016
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 0,
               "range": {
                 "min": 1973.2000000000016,
                 "max": 1974.6000000000017
-              }
+              },
+              "type": "number"
             },
             {
               "occurrences": 4,
               "range": {
                 "min": 1974.6000000000017,
                 "max": 1976.0
-              }
+              },
+              "type": "number"
             }
           ],
           "textLengthSummary": {
@@ -1745,5 +1765,35 @@
       "0008": "1976",
       "tdpId": 30
     }
-  ]
+  ],
+  "metadata": {
+    "id": "611e01ad-3377-4aa7-9e01-8eff851422db",
+    "favorite": false,
+    "lifecycle": {
+      "inProgress": false,
+      "importing": false,
+      "contentAnalyzed": true,
+      "schemaAnalyzed": true,
+      "qualityAnalyzed": true
+    },
+    "records": 30,
+    "nbLinesHeader": 1,
+    "nbLinesFooter": 0,
+    "type": "text/csv",
+    "parameters": {
+      "SEPARATOR": ";"
+    },
+    "formatGuess": "formatGuess#csv",
+    "certificationStep": "NONE",
+    "location": {
+      "type": "local"
+    },
+    "name": "nba_franchises",
+    "author": "anonymousUser",
+    "created": 1446198414863,
+    "sheetName": null,
+    "draft": false,
+    "schemaParserResult": null,
+    "encoding": "UTF-8"
+  }
 }

@@ -24,7 +24,7 @@ import org.talend.dataquality.statistics.numeric.histogram.Range;
  * value appears we switch to a regular representation: each bin may contains many values.
  *
  */
-public class StreamHistogramStatistics {
+public class StreamNumberHistogramStatistics {
 
     /**
      * The default bin number which is 32.
@@ -369,7 +369,7 @@ public class StreamHistogramStatistics {
 
     /**
      * Return the number of values added to this histogram.
-     * 
+     *
      * @return the number of values added to this histogram
      */
     public long getNumberOfValues() {
