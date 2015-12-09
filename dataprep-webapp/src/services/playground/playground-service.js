@@ -178,18 +178,18 @@
          * @returns {Promise} The process promise
          */
         function updateStatistics() {
-            var getColumns;
+            var getMetadata;
             if (state.playground.preparation) {
                 var lastActiveStep = RecipeService.getLastActiveStep();
                 var preparationId = state.playground.preparation.id;
                 var stepId = lastActiveStep ? lastActiveStep.transformation.stepId : 'head';
-                getColumns = PreparationService.getContent.bind(null, preparationId, stepId);
+                getMetadata = PreparationService.getContent.bind(null, preparationId, stepId);
             }
             else {
-                getColumns = DatasetService.getColumns.bind(null, state.playground.dataset.id);
+                getMetadata = DatasetService.getMetadata.bind(null, state.playground.dataset.id);
             }
 
-            return getColumns()
+            return getMetadata()
                 .then(function(response) {
                     if(!response.columns[0].statistics.frequencyTable.length) {
                         return $q.reject();
@@ -203,7 +203,7 @@
         }
 
         //------------------------------------------------------------------------------------------------------
-        //------------------------------------------------PREPARATION-------------------------------------------
+        //------------------------------------------------PREPARATIO*N-------------------------------------------
         //------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method

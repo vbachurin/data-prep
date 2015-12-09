@@ -2,8 +2,8 @@
 describe('Playground Service', function () {
     'use strict';
 
-    var datasetColumnsWithoutStatistics = {metadata: {columns: [{id: '0001', statistics: {frequencyTable: []}}]}, records: [], data: []};
-    var datasetColumns = {metadata: {columns: [{id: '0001', statistics: {frequencyTable: [{'toto': 2}]}}]}, records: [], data: []};
+    var datasetColumnsWithoutStatistics = {columns: [{id: '0001', statistics: {frequencyTable: []}}], records: [], data: []};
+    var datasetColumns = {columns: [{id: '0001', statistics: {frequencyTable: [{'toto': 2}]}}], records: [], data: []};
     var createdPreparation;
     var stateMock = {};
 
@@ -361,7 +361,7 @@ describe('Playground Service', function () {
 
         it('should get dataset columns and set statistics in state', inject(function ($rootScope, $q, PlaygroundService, DatasetService, StateService) {
             //given
-            spyOn(DatasetService, 'getColumns').and.returnValue($q.when(datasetColumns));
+            spyOn(DatasetService, 'getMetadata').and.returnValue($q.when(datasetColumns));
             stateMock.playground.dataset = {id: '1324d56456b84ef154'};
             stateMock.playground.preparation = null;
 
@@ -370,13 +370,13 @@ describe('Playground Service', function () {
             $rootScope.$digest();
 
             //then
-            expect(DatasetService.getColumns).toHaveBeenCalledWith('1324d56456b84ef154');
+            expect(DatasetService.getMetadata).toHaveBeenCalledWith('1324d56456b84ef154');
             expect(StateService.updateColumnsStatistics).toHaveBeenCalledWith(datasetColumns.columns);
         }));
 
         it('should trigger statistics update', inject(function ($rootScope, $q, DatasetService, PlaygroundService, StatisticsService) {
             //given
-            spyOn(DatasetService, 'getColumns').and.returnValue($q.when(datasetColumns));
+            spyOn(DatasetService, 'getMetadata').and.returnValue($q.when(datasetColumns));
             stateMock.playground.dataset = {id: '1324d56456b84ef154'};
             stateMock.playground.preparation = null;
 
@@ -391,7 +391,7 @@ describe('Playground Service', function () {
         it('should reject promise when the statistics are not computed yet', inject(function ($rootScope, $q, PlaygroundService, DatasetService, StateService) {
             //given
             var rejected = false;
-            spyOn(DatasetService, 'getColumns').and.returnValue($q.when(datasetColumnsWithoutStatistics));
+            spyOn(DatasetService, 'getMetadata').and.returnValue($q.when(datasetColumnsWithoutStatistics));
             stateMock.playground.dataset = {id: '1324d56456b84ef154'};
             stateMock.playground.preparation = null;
 

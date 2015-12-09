@@ -281,18 +281,18 @@ describe('Dataset Rest Service', function () {
     });
 
     describe('content', function() {
-        it('should call dataset get columns rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        it('should call dataset get metadata rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
             //given
             var result = null;
             var datasetId = 'e85afAa78556d5425bc2';
-            var data = [{column: [], records: []}];
+            var data = [{column: []}];
 
             $httpBackend
-                .expectGET(RestURLs.datasetUrl + '/e85afAa78556d5425bc2?metadata=false&records=false')
+                .expectGET(RestURLs.datasetUrl + '/e85afAa78556d5425bc2/metadata')
                 .respond(200, data);
 
             //when
-            DatasetRestService.getColumns(datasetId).then(function (data) {
+            DatasetRestService.getMetadata(datasetId).then(function (data) {
                 result = data;
             });
             $httpBackend.flush();

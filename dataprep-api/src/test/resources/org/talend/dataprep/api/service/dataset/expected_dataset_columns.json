@@ -31,5 +31,6 @@
       "type": "boolean"
     }
   ],
-  "records": null
+  "name": "test_metadata",
+  "records": 2
 }

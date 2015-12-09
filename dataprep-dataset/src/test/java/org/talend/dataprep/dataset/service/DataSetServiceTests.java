@@ -48,8 +48,6 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
     private static final String T_SHIRT_100_CSV_EXPECTED_JSON = "../t-shirt_100.csv.expected.json";
 
-    private static final String T_SHIRT_100_CSV_COLUMNS_JSON = "../t-shirt_100.csv.columns.json";
-
     private static final String T_SHIRT_100_CSV = "../t-shirt_100.csv";
 
     private static final String US_STATES_TO_CLEAN_CSV = "../us_states_to_clean.csv";
@@ -324,19 +322,6 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         final String content = when().get("/datasets/{id}/content", dataSetId).asString();
         assertThat(content, sameJSONAsFile(DataSetServiceTests.class.getResourceAsStream(EMPTY_LINES2_JSON)));
-    }
-
-    @Test
-    public void getColumns() throws Exception {
-        //given
-        final String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV)))
-                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
-
-        //when
-        final String content = when().get("/datasets/{id}/content?metadata=false&records=false", dataSetId).asString();
-
-        //then
-        assertThat(content, sameJSONAsFile(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV_COLUMNS_JSON)));
     }
 
     @Test

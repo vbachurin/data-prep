@@ -34,7 +34,6 @@ public class AggregationAPI extends APIService {
      * Compute an aggregation according to the given parameters.
      *
      * @param input The aggregation parameters.
-     * @param response The HTTP response.
      */
     @RequestMapping(value = "/api/aggregate", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Compute aggregation", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE, notes = "Compute aggregation according to the given parameters")

@@ -137,6 +137,32 @@ public class DataSetAPI extends APIService {
     }
 
     /**
+     * Return the dataset metadata.
+     *
+     * @param id the wanted dataset metadata.
+     * @return the dataset metadata or no content if not found.
+     */
+    @RequestMapping(value = "/api/datasets/{id}/metadata", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get a data set metadata by id.", produces = APPLICATION_JSON_VALUE, notes = "Get a data set metadata based on given id.")
+    public DataSetMetadata getMetadata(@ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id) {
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Requesting dataset metadata #{} (pool: {})...", id, getConnectionManager().getTotalStats());
+        }
+
+        HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+        HttpClient client = getClient();
+
+        HystrixCommand<DataSetMetadata> getMetadataCommand = getCommand(DataSetGetMetadata.class, client, id);
+        final DataSetMetadata metadata = getMetadataCommand.execute();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Request dataset metadata #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
+        }
+        return metadata;
+    }
+
+    /**
      * Clone a dataset from the given id
      *
      * @param id the dataset id to clone

@@ -225,13 +225,12 @@ public class DataSetAPITest extends ApiServiceTestBase {
     }
 
     @Test
-    public void testDataSetColumnsGet() throws Exception {
+    public void testDataSetGetMetadata() throws Exception {
         // given
-        final String dataSetId = createDataset("dataset/dataset.csv", "test_columns", "text/csv");
+        final String dataSetId = createDataset("dataset/dataset.csv", "test_metadata", "text/csv");
 
         // when
-        final String content = when().get("/api/datasets/{id}?metadata=false&columns=true&records=false", dataSetId)
-                .asString();
+        final String content = when().get("/api/datasets/{id}/metadata", dataSetId).asString();
 
         // then
         final InputStream expected = PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_columns.json");

@@ -237,7 +237,7 @@ public class DataSetService {
      * @param content The raw content of the data set (might be a CSV, XLS...) or the connection parameter in case of a
      * remote csv.
      * @return The new data id.
-     * @see #get(boolean, boolean, boolean, Long, String)
+     * @see #get(boolean, Long, String)
      */
     @RequestMapping(value = "/datasets", method = POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a data set", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, notes = "Create a new data set based on content provided in POST body. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too. Returns the id of the newly created data set.")
@@ -297,7 +297,6 @@ public class DataSetService {
      * completed so content is not yet ready to be served.
      *
      * @param metadata If <code>true</code>, includes data set metadata information.
-     * @param columns If <code>true</code>, includes column metadata information (column types...).
      * @param sample Size of the wanted sample, if missing, the full dataset is returned.
      * @param dataSetId A data set id.
      */
@@ -307,13 +306,13 @@ public class DataSetService {
     @ResponseBody
     public DataSet get(
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata, //
-            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns, //
-            @RequestParam(defaultValue = "true") @ApiParam(name = "records", value = "Include data in the response") boolean records, //
             @RequestParam(required = false) @ApiParam(name = "sample", value = "Size of the wanted sample, if missing, the full dataset is returned") Long sample, //
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId) {
+
         HttpResponseContext.header("Content-Type", MediaType.APPLICATION_JSON_VALUE);
         final Marker marker = Markers.dataset(dataSetId);
         LOG.debug(marker, "Get data set #{}", dataSetId);
+
         try {
             DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
             if (dataSetMetadata == null) {
@@ -327,34 +326,66 @@ public class DataSetService {
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, context);
             }
             // Build the result
-            final DataSet dataSet = new DataSet();
-
+            DataSet dataSet = new DataSet();
             if (metadata) {
                 completeWithUserData(dataSetMetadata);
                 dataSet.setMetadata(dataSetMetadata);
             }
 
-            if(records) {
-                if (sample != null && sample > 0) {
-                    // computes the statistics only if columns are required
-                    if (columns) {
-                        // Compute statistics *before* to avoid consumption of too many threads in serialization (call to a
-                        // stream sample may use a thread and a pipe stream, so better to consume to perform in this order).
-                        LOG.debug(marker, "Sample statistics...");
-                        computeSampleStatistics(dataSetMetadata, sample);
-                        LOG.debug(marker, "Sample statistics done.");
-                    }
-                    LOG.debug(marker, "Sampling...");
-                    dataSet.setRecords(contentStore.sample(dataSetMetadata, sample));
-                    LOG.debug(marker, "Sample done.");
-                } else {
-                    dataSet.setRecords(contentStore.stream(dataSetMetadata));
+            if (sample != null && sample > 0) {
+                // computes the statistics only if columns are required
+                if (metadata) {
+                    // Compute statistics *before* to avoid consumption of too many threads in serialization (call to a
+                    // stream sample may use a thread and a pipe stream, so better to consume to perform in this order).
+                    LOG.debug(marker, "Sample statistics...");
+                    computeSampleStatistics(dataSetMetadata, sample);
+                    LOG.debug(marker, "Sample statistics done.");
                 }
+                LOG.debug(marker, "Sampling...");
+                dataSet.setRecords(contentStore.sample(dataSetMetadata, sample));
+                LOG.debug(marker, "Sample done.");
+            } else {
+                dataSet.setRecords(contentStore.stream(dataSetMetadata));
             }
+
             return dataSet;
+
         } finally {
             LOG.debug(marker, "Get done.");
         }
+    }
+
+
+    /**
+     * Returns the data set {@link DataSetMetadata metadata} for given <code>dataSetId</code>.
+     *
+     * @param dataSetId A data set id. If <code>null</code> <b>or</b> if no data set with provided id exits, operation
+     * returns {@link org.apache.commons.httpclient.HttpStatus#SC_NO_CONTENT}
+     *
+     */
+    @RequestMapping(value = "/datasets/{id}/metadata", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get metadata information of a data set by id", notes = "Get metadata information of a data set by id. Not valid or non existing data set id returns empty content.")
+    @Timed
+    @ResponseBody
+    public DataSet getMetadata(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set metadata") String dataSetId) {
+        if (dataSetId == null) {
+            HttpResponseContext.status(HttpStatus.NO_CONTENT);
+            return null;
+        }
+        DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
+        if (metadata == null) {
+            HttpResponseContext.status(HttpStatus.NO_CONTENT);
+            return null;
+        }
+        if (!metadata.getLifecycle().schemaAnalyzed()) {
+            HttpResponseContext.status(HttpStatus.ACCEPTED);
+            return DataSet.empty();
+        }
+        DataSet dataSet = new DataSet();
+        completeWithUserData(metadata);
+        dataSet.setMetadata(metadata);
+        return dataSet;
     }
 
     /**
@@ -372,7 +403,7 @@ public class DataSetService {
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015'.  if none the current name concat with ' Copy' will be used. Returns the id of the newly created data set.") @RequestParam(defaultValue = "", required = false) String name)
                     throws IOException {
         HttpResponseContext.header("Content-Type", MediaType.TEXT_PLAIN_VALUE);
-        DataSet dataSet = get(true, true, true, null, dataSetId);
+        DataSet dataSet = get(true, null, dataSetId);
 
         // if no metadata it's an empty one the get method has already set NO CONTENT http return code
         // so simply return!!
@@ -515,38 +546,6 @@ public class DataSetService {
         }
         // Content was changed, so queue events (format analysis, content indexing for search...)
         queueEvents(dataSetId);
-    }
-
-    /**
-     * Returns the data set {@link DataSetMetadata metadata} for given <code>dataSetId</code>.
-     *
-     * @param dataSetId A data set id. If <code>null</code> <b>or</b> if no data set with provided id exits, operation
-     * returns {@link org.apache.commons.httpclient.HttpStatus#SC_NO_CONTENT}
-     *
-     */
-    @RequestMapping(value = "/datasets/{id}/metadata", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get metadata information of a data set by id", notes = "Get metadata information of a data set by id. Not valid or non existing data set id returns empty content.")
-    @Timed
-    @ResponseBody
-    public DataSet getMetadata(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set metadata") String dataSetId) {
-        if (dataSetId == null) {
-            HttpResponseContext.status(HttpStatus.NO_CONTENT);
-            return null;
-        }
-        DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
-        if (metadata == null) {
-            HttpResponseContext.status(HttpStatus.NO_CONTENT);
-            return null;
-        }
-        if (!metadata.getLifecycle().schemaAnalyzed()) {
-            HttpResponseContext.status(HttpStatus.ACCEPTED);
-            return DataSet.empty();
-        }
-        DataSet dataSet = new DataSet();
-        completeWithUserData(metadata);
-        dataSet.setMetadata(metadata);
-        return dataSet;
     }
 
     /**
