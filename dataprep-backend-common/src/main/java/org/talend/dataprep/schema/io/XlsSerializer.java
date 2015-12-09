@@ -57,7 +57,7 @@ public class XlsSerializer implements Serializer {
 
             generator.writeStartArray();
 
-            List<ColumnMetadata> columns = metadata.getRow().getColumns();
+            List<ColumnMetadata> columns = metadata.getRowMetadata().getColumns();
 
             for (int i = 0, size = sheet.getLastRowNum(); i <= size; i++) {
 

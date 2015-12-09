@@ -497,21 +497,21 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
 
         // TODO Vincent: see if this step is necessary
-        final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        // final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
         String json = given().contentType(JSON).get("/datasets/{id}/preview?sheetName=Leads", dataSetId).asString();
         DataSet dataSet = objectMapper.readerFor(DataSet.class).readValue(json);
 
-        Assertions.assertThat(dataSet.getMetadata().getRow().getColumns()).isNotNull().isNotEmpty().hasSize(21);
+        Assertions.assertThat(dataSet.getMetadata().getRowMetadata().getColumns()).isNotNull().isNotEmpty().hasSize(21);
 
         json = given().contentType(JSON).get("/datasets/{id}/preview?sheetName=Tableau de bord", dataSetId)
                 .asString();
 
         dataSet = objectMapper.readerFor(DataSet.class).readValue(json);
 
-        Assertions.assertThat(dataSet.getMetadata().getRow().getColumns()).isNotNull().isNotEmpty().hasSize(10);
+        Assertions.assertThat(dataSet.getMetadata().getRowMetadata().getColumns()).isNotNull().isNotEmpty().hasSize(10);
 
     }
 
@@ -822,7 +822,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertThat(dataSetMetadata, notNullValue());
         assertEquals(Certification.PENDING, dataSetMetadata.getGovernance().getCertificationStep());
-        assertThat(dataSetMetadata.getRow().getColumns(), not(empty()));
+        assertThat(dataSetMetadata.getRowMetadata().getColumns(), not(empty()));
     }
 
     @Test
@@ -930,7 +930,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         try {
             dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
             assertNotNull(dataSetMetadata);
-            row = dataSetMetadata.getRow();
+            row = dataSetMetadata.getRowMetadata();
             assertNotNull(row);
             column = row.getById("0002");
             final SemanticDomain jsoDomain = new SemanticDomain("JSO", "JSO label", 1.0F);
@@ -955,7 +955,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         res.then().statusCode(200);
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertNotNull(dataSetMetadata);
-        row = dataSetMetadata.getRow();
+        row = dataSetMetadata.getRowMetadata();
         assertNotNull(row);
         final ColumnMetadata actual = row.getById("0002");
         assertThat(actual.getDomain(), is("JSO"));
@@ -975,7 +975,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         Assert.assertNotNull(dataSetMetadata);
-        RowMetadata row = dataSetMetadata.getRow();
+        RowMetadata row = dataSetMetadata.getRowMetadata();
         assertNotNull(row);
         final ColumnMetadata column = row.getById("0002");
 
@@ -995,7 +995,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         res.then().statusCode(200);
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         Assert.assertNotNull(dataSetMetadata);
-        row = dataSetMetadata.getRow();
+        row = dataSetMetadata.getRowMetadata();
         assertNotNull(row);
         final ColumnMetadata actual = row.getById("0002");
         assertThat(actual.getDomain(), is("FIRST_NAME"));
@@ -1016,7 +1016,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertNotNull(dataSetMetadata);
-        RowMetadata row = dataSetMetadata.getRow();
+        RowMetadata row = dataSetMetadata.getRowMetadata();
         assertNotNull(row);
         final ColumnMetadata column = row.getById("0002");
 
@@ -1035,7 +1035,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         res.then().statusCode(200);
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertNotNull(dataSetMetadata);
-        row = dataSetMetadata.getRow();
+        row = dataSetMetadata.getRowMetadata();
         assertNotNull(row);
         final ColumnMetadata actual = row.getById("0002");
         assertThat(actual.getDomain(), is(""));
@@ -1053,7 +1053,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         assertQueueMessages(dataSetId);
         final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertNotNull(dataSetMetadata);
-        final ColumnMetadata column = dataSetMetadata.getRow().getById("0001");
+        final ColumnMetadata column = dataSetMetadata.getRowMetadata().getById("0001");
 
         assertThat(column.getType(), is("date"));
         assertThat(column.getDomain(), is(""));
@@ -1087,9 +1087,9 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         final DataSet dataset = builder.build().readerFor(DataSet.class).readValue(contentAsString);
         assertThat(dataset, is(notNullValue()));
-        assertThat(dataset.getMetadata().getRow().getColumns().isEmpty(), is(false));
+        assertThat(dataset.getMetadata().getRowMetadata().getColumns().isEmpty(), is(false));
 
-        final ColumnMetadata column = dataset.getMetadata().getRow().getColumns().get(0);
+        final ColumnMetadata column = dataset.getMetadata().getRowMetadata().getColumns().get(0);
         assertThat(column.getDomain(), is("US_STATE_CODE")); // us state code
         assertThat(column.getQuality().getInvalid(), is(2)); // 2 invalid values
     }

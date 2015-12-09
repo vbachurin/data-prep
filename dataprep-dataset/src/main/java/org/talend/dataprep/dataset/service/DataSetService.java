@@ -613,11 +613,11 @@ public class DataSetService {
 
             List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
 
-            if (dataSetMetadata.getRow() == null) {
+            if (dataSetMetadata.getRowMetadata() == null) {
                 dataSetMetadata.setRowMetadata(new RowMetadata(Collections.emptyList()));
             }
 
-            dataSetMetadata.getRow().setColumns(columnMetadatas);
+            dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
         } else {
             LOG.warn("dataset#{} has draft status but any SchemaParserResult");
         }
@@ -678,10 +678,10 @@ public class DataSetService {
 
                 if (sheetContentFound.isPresent()) {
                     List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
-                    if (previous.getRow() == null) {
+                    if (previous.getRowMetadata() == null) {
                         previous.setRowMetadata(new RowMetadata(Collections.emptyList()));
                     }
-                    previous.getRow().setColumns(columnMetadatas);
+                    previous.getRowMetadata().setColumns(columnMetadatas);
                 }
                 // Set the user-selected sheet name
                 previous.setSheetName(dataSetMetadata.getSheetName());
@@ -795,7 +795,7 @@ public class DataSetService {
                     parameters.getDomain());
 
             // get the column
-            final ColumnMetadata column = dataSetMetadata.getRow().getById(columnId);
+            final ColumnMetadata column = dataSetMetadata.getRowMetadata().getById(columnId);
             if (column == null) {
                 throw new TDPException(DataSetErrorCodes.COLUMN_DOES_NOT_EXIST, //
                         ExceptionContext.build() //

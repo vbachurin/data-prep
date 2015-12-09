@@ -97,7 +97,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
      */
     public void computeStatistics(DataSetMetadata metadata, Stream<DataSetRow> stream) {
         // Create a content with the expected format for the StatisticsClientJson class
-        final List<ColumnMetadata> columns = metadata.getRow().getColumns();
+        final List<ColumnMetadata> columns = metadata.getRowMetadata().getColumns();
         if (columns.isEmpty()) {
             LOGGER.debug("Skip statistics of {} (no column information).", metadata.getId());
             return;

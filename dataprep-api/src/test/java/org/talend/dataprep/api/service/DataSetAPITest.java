@@ -385,7 +385,7 @@ public class DataSetAPITest extends ApiServiceTestBase {
         assertNotNull(dataSetMetadata);
         assertNotNull(dataSetMetadata.getGovernance());
         assertEquals(DataSetGovernance.Certification.PENDING, dataSetMetadata.getGovernance().getCertificationStep());
-        assertThat(dataSetMetadata.getRow().getColumns(), not(empty()));
+        assertThat(dataSetMetadata.getRowMetadata().getColumns(), not(empty()));
 
         // when
         when().put("/api/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
@@ -395,7 +395,7 @@ public class DataSetAPITest extends ApiServiceTestBase {
         assertNotNull(dataSetMetadata);
         assertNotNull(dataSetMetadata.getGovernance());
         assertEquals(DataSetGovernance.Certification.CERTIFIED, dataSetMetadata.getGovernance().getCertificationStep());
-        assertThat(dataSetMetadata.getRow().getColumns(), not(empty()));
+        assertThat(dataSetMetadata.getRowMetadata().getColumns(), not(empty()));
     }
 
     @Test

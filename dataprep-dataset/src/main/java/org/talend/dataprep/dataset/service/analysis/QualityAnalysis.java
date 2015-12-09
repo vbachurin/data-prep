@@ -135,7 +135,7 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer, Asynchronous
      */
     public void computeQuality(DataSetMetadata dataset, Stream<DataSetRow> records, long limit) {
         // Compute valid / invalid / empty count, need data types for analyzer first
-        final List<ColumnMetadata> columns = dataset.getRow().getColumns();
+        final List<ColumnMetadata> columns = dataset.getRowMetadata().getColumns();
         if (columns.isEmpty()) {
             LOGGER.debug("Skip analysis of {} (no column information).", dataset.getId());
             return;

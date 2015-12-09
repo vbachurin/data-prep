@@ -219,8 +219,8 @@ public class TransformAPITest extends ApiServiceTestBase {
                 .asString();
 
         final DataSet content = builder.build().readerFor(DataSet.class).readValue(preparationContent);
-        assertThat(content.getMetadata().getRow().getColumns().isEmpty(), is(false));
-        final ColumnMetadata column = content.getMetadata().getRow().getColumns().get(0);
+        assertThat(content.getMetadata().getRowMetadata().getColumns().isEmpty(), is(false));
+        final ColumnMetadata column = content.getMetadata().getRowMetadata().getColumns().get(0);
         assertThat(column.getName(), is("date"));
         assertThat(column.getType(), is("date"));
         assertThat(column.getQuality().getInvalid(), is(0));

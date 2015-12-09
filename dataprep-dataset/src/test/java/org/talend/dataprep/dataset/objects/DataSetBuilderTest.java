@@ -25,7 +25,7 @@ public class DataSetBuilderTest {
                 .build();
         assertThat(dataSetMetadata.getId(), is(dataSetId));
 
-        List<ColumnMetadata> columns = dataSetMetadata.getRow().getColumns();
+        List<ColumnMetadata> columns = dataSetMetadata.getRowMetadata().getColumns();
         assertThat(columns.size(), is(2));
         assertThat(columns, CoreMatchers.hasItems(column().id(1).name("firstname").type(Type.STRING).build()));
         assertThat(columns, CoreMatchers.hasItems(column().id(2).name("lastname").type(Type.STRING).build()));

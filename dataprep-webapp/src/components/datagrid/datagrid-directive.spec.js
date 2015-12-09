@@ -177,7 +177,7 @@ describe('Datagrid directive', function () {
                 expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
                 expect(DatagridGridService.navigateToFocusedColumn.calls.count()).toBe(0);
 
-                stateMock.playground.data = {metadata:{}, };
+                stateMock.playground.data = {metadata:{}};
                 scope.$digest();
                 jasmine.clock().tick(300);
 

@@ -186,7 +186,7 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
             if (schemaParserResult.getSheetContents().isEmpty()) {
                 throw new IOException("Parser could not detect file format for " + metadata.getId());
             }
-            metadata.getRow().setColumns(schemaParserResult.getSheetContents().get(0).getColumnMetadatas());
+            metadata.getRowMetadata().setColumns(schemaParserResult.getSheetContents().get(0).getColumnMetadatas());
 
         } catch (IOException e) {
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);

@@ -90,7 +90,7 @@ public class LookupRowMatcher implements DisposableBean {
             JsonParser jsonParser = mapper.getFactory().createParser(input);
             DataSet lookup = mapper.readerFor(DataSet.class).readValue(jsonParser);
             this.lookupIterator = lookup.getRecords().iterator();
-            this.emptyRow = getEmptyRow(lookup.getMetadata().getRow().getColumns());
+            this.emptyRow = getEmptyRow(lookup.getMetadata().getRowMetadata().getColumns());
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_READ_LOOKUP_DATASET, e);
         }

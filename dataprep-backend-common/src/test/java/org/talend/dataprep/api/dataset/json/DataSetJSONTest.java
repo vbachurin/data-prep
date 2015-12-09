@@ -107,7 +107,7 @@ public class DataSetJSONTest {
         Date expectedDate = dateFormat.parse("02-17-2015 09:02");
         assertEquals(expectedDate, new Date(metadata.getCreationDate()));
 
-        List<ColumnMetadata> columns = dataSet.getMetadata().getRow().getColumns();
+        List<ColumnMetadata> columns = dataSet.getMetadata().getRowMetadata().getColumns();
         assertEquals(6, columns.size());
 
         ColumnMetadata firstColumn = columns.get(0);
@@ -154,7 +154,6 @@ public class DataSetJSONTest {
         DataSet dataSet = new DataSet();
         dataSet.setMetadata(metadata);
         to(dataSet, writer);
-        System.out.println(writer.toString());
         assertThat(writer.toString(), sameJSONAsFile(DataSetJSONTest.class.getResourceAsStream("test2.json")));
     }
 

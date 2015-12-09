@@ -172,7 +172,8 @@ class SimpleTransformer implements Transformer {
             writer.startObject();
             final ParsedActions parsedActions = actionParser.parse(configuration.getActions());
             final List<DataSetRowAction> rowActions = parsedActions.getRowTransformers();
-            final boolean transformColumns = input.getMetadata() != null && !input.getMetadata().getRow().getColumns().isEmpty();
+            final boolean transformColumns = input.getMetadata() != null
+                    && !input.getMetadata().getRowMetadata().getColumns().isEmpty();
             TransformationContext context = configuration.getTransformationContext();
             final AtomicBoolean wroteMetadata = new AtomicBoolean(false);
             // Row transformations
