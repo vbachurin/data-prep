@@ -83,7 +83,7 @@ public class CutTest {
     }
 
     @Test
-    public void test_TTP_663() throws IOException {
+    public void test_TDP_663() throws IOException {
         // given
         DataSetRow row = getRow("Wait for it...", "The value that gets cut !", "Done !");
         DataSetRow expected = getRow("Wait for it...", "The value that gets cut !", "Done !");
@@ -93,7 +93,7 @@ public class CutTest {
         regexpParameters.put("pattern", "*");
 
         // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
 
         // then
         assertEquals(expected, row);
@@ -101,7 +101,7 @@ public class CutTest {
 
 
     @Test
-    public void test_TTP_958() throws IOException {
+    public void test_TDP_958() throws IOException {
         // given
         DataSetRow row = getRow("Wait for it...", "The value that gets cut !", "Done !");
         DataSetRow expected = getRow("Wait for it...", "The value that gets cut !", "Done !");
@@ -111,7 +111,7 @@ public class CutTest {
         regexpParameters.put("pattern", "");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), regexpParameters, "0001");
+        ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
 
         // then
         assertEquals(expected, row);

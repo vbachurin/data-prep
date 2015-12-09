@@ -86,7 +86,7 @@ public class SplitTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expectedValues, row.values());
@@ -112,7 +112,7 @@ public class SplitTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expectedValues, row.values());
@@ -138,7 +138,7 @@ public class SplitTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expectedValues, row.values());

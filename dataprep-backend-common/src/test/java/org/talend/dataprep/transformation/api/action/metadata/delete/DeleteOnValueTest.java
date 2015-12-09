@@ -187,7 +187,7 @@ public class DeleteOnValueTest {
         regexpParameters.put("value", "");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), regexpParameters, "city");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertFalse(row.isDeleted());
