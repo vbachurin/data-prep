@@ -334,7 +334,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         //when
         final String content = when().get("/datasets/{id}/content?metadata=false&records=false", dataSetId).asString();
-        System.out.println(content);
+
         //then
         assertThat(content, sameJSONAsFile(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV_COLUMNS_JSON)));
     }
