@@ -17,7 +17,6 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
@@ -114,20 +113,22 @@ public class Split extends ActionMetadata implements ColumnAction {
     }
 
     @Override
-    public DataSetRowAction.CompileResult compile(ActionContext actionContext, Map<String, String> parameters) {
+    public void compile(ActionContext actionContext) {
         // Retrieve the separator to use
-        final String realSeparator = getSeparator(parameters);
+        final String realSeparator = getSeparator(actionContext.getParameters());
         if (StringUtils.isEmpty(realSeparator)) {
-            return DataSetRowAction.CompileResult.IGNORE;
+            actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
+            return;
         }
         try {
             // Check if separator is a valid regex
             Pattern.compile(realSeparator);
         } catch (PatternSyntaxException e) {
             // In case the pattern is not valid: nothing to do, do not create new columns.
-            return DataSetRowAction.CompileResult.IGNORE;
+            actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
+            return;
         }
-        return DataSetRowAction.CompileResult.CONTINUE;
+        actionContext.setActionStatus(ActionContext.ActionStatus.OK);
     }
 
     /**

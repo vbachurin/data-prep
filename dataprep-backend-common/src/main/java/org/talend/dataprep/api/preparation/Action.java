@@ -3,7 +3,7 @@ package org.talend.dataprep.api.preparation;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 import org.springframework.data.annotation.Transient;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -122,7 +122,7 @@ public class Action implements Serializable {
         /** The default noop action. */
         private DataSetRowAction rowAction = IDLE_ROW_ACTION;
 
-        private Function<ActionContext, DataSetRowAction.CompileResult> compile = ac -> DataSetRowAction.CompileResult.CONTINUE;
+        private Consumer<ActionContext> compile = ac -> ac.setActionStatus(ActionContext.ActionStatus.OK);
 
         /**
          * @return the Builder to use.
@@ -151,14 +151,14 @@ public class Action implements Serializable {
                 }
 
                 @Override
-                public CompileResult compile(ActionContext actionContext) {
-                    return compile.apply(actionContext);
+                public void compile(ActionContext actionContext) {
+                    compile.accept(actionContext);
                 }
             };
             return new Action(action);
         }
 
-        public Builder withCompile(Function<ActionContext, DataSetRowAction.CompileResult> compile) {
+        public Builder withCompile(Consumer<ActionContext> compile) {
             this.compile = compile;
             return this;
         }

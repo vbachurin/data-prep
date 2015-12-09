@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
@@ -15,6 +16,18 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitPar
  * Context for an action within a transformation. Hence, several instance of the same action can have their own context.
  */
 public class ActionContext {
+
+    public enum ActionStatus {
+        /**
+         * Indicate action is good for usage and transformation process should continue using this action.
+         */
+        OK,
+        /**
+         * Indicates action is "canceled": transformation process should discard action from execution and won't execute
+         * it.
+         */
+        CANCELED
+    }
 
     /** Link to the transformation context. */
     private final TransformationContext parent;
@@ -27,6 +40,8 @@ public class ActionContext {
     private RowMetadata inputRowMetadata;
 
     private Map<String, String> parameters = Collections.emptyMap();
+
+    private ActionStatus actionStatus;
 
     public ActionContext(TransformationContext parent, RowMetadata rowMetadata) {
         this.parent = parent;
@@ -155,5 +170,17 @@ public class ActionContext {
 
     public Long getRowId() {
         return Long.parseLong(parameters.get(ImplicitParameters.ROW_ID.getKey()));
+    }
+
+    public DataSetRow getPreviousRow() {
+        return parent.getPreviousRow();
+    }
+
+    public ActionStatus getActionStatus() {
+        return actionStatus;
+    }
+
+    public void setActionStatus(ActionStatus actionStatus) {
+        this.actionStatus = actionStatus;
     }
 }

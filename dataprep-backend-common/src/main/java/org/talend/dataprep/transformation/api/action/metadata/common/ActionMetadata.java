@@ -218,8 +218,8 @@ public abstract class ActionMetadata {
         }
     }
 
-    public DataSetRowAction.CompileResult compile(ActionContext actionContext, final Map<String, String> parameters) {
-        return DataSetRowAction.CompileResult.CONTINUE;
+    public void compile(ActionContext actionContext) {
+        actionContext.setActionStatus(ActionContext.ActionStatus.OK);
     }
 
     /**
@@ -239,7 +239,7 @@ public abstract class ActionMetadata {
 
         return builder().withCompile((actionContext) -> {
             actionContext.setParameters(parametersCopy);
-            return compile(actionContext, parametersCopy);
+            compile(actionContext);
         })
         .withRow((row, context) -> {
             if (implicitFilter() && !filter.test(row)) {

@@ -1,6 +1,7 @@
 package org.talend.dataprep.transformation.api.action.context;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -8,6 +9,7 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
@@ -31,6 +33,8 @@ public final class TransformationContext {
 
     /** The context itself. */
     private Map<String, Object> context;
+
+    private DataSetRow previousRow = new DataSetRow(Collections.emptyMap());
 
     /**
      * Default empty constructor.
@@ -114,5 +118,13 @@ public final class TransformationContext {
         } else {
             throw new IllegalStateException("No action context found for '" + action + "'.");
         }
+    }
+
+    public void setPreviousRow(DataSetRow previousRow) {
+        this.previousRow = previousRow;
+    }
+
+    public DataSetRow getPreviousRow() {
+        return previousRow;
     }
 }

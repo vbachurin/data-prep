@@ -35,28 +35,45 @@ public class ActionTestWorkbench {
                 final DataSetRowAction action = iterator.next();
                 final ActionContext actionContext = context.create(action);
                 actionContext.setInputRowMetadata(current.getRowMetadata().clone());
-                final DataSetRowAction.CompileResult result = action.compile(actionContext);
-                switch (result) {
-                    case CONTINUE:
+                action.compile(actionContext);
+                final ActionContext.ActionStatus actionStatus = actionContext.getActionStatus();
+                switch (actionStatus) {
+                    case OK:
+                        LOGGER.debug("[Compilation] Continue using action '{}' (compilation step returned {}).", action, actionStatus);
                         current = action.apply(current, actionContext);
                         break;
-                    case IGNORE:
+                    case CANCELED:
+                        LOGGER.debug("[Compilation] Remove action '{}' (compilation step returned {}).", action, actionStatus);
                         iterator.remove();
                         break;
                 }
                 actionContext.setOutputRowMetadata(current.getRowMetadata().clone());
             }
+            context.setPreviousRow(current.clone());
             return current;
         }, //
         r -> {
-            // Apply compiled actions on data
             DataSetRow current = r;
-            for (DataSetRowAction action : allActions) {
+            final Iterator<DataSetRowAction> iterator = allActions.iterator();
+            while (iterator.hasNext()) {
+                final DataSetRowAction action = iterator.next();
                 final ActionContext actionContext = context.in(action);
                 current.setRowMetadata(actionContext.getInputRowMetadata());
                 current = action.apply(current, actionContext);
                 current.setRowMetadata(actionContext.getOutputRowMetadata());
+                // Check whether we should continue using this action or not
+                final ActionContext.ActionStatus actionStatus = actionContext.getActionStatus();
+                switch (actionStatus) {
+                    case OK:
+                        LOGGER.debug("[Transformation] Continue using action '{}' (compilation step returned {}).", action, actionStatus);
+                        break;
+                    case CANCELED:
+                        LOGGER.debug("[Transformation] Remove action '{}' (compilation step returned {}).", action, actionStatus);
+                        iterator.remove();
+                        break;
+                }
             }
+            context.setPreviousRow(current.clone());
             return current;
         }) //
         .forEach(r -> LOGGER.debug(r.toString()));

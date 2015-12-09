@@ -2,11 +2,13 @@ package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -14,11 +16,14 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
+import org.talend.dataprep.stream.ExtendedStream;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
@@ -169,8 +174,16 @@ class DiffTransformer implements Transformer {
 
         public DataSetRow apply(DataSetRow dataSetRow) {
             DataSetRow current = dataSetRow;
-            for (DataSetRowAction action : parsedActions.getRowTransformers()) {
-                current = action.apply(current, context.create(action));
+            final List<Action> allActions = parsedActions.getAllActions();
+            final Iterator<DataSetRowAction> rowTransformers = parsedActions.getRowTransformers().iterator();
+            for (Action action : allActions) {
+                final ActionContext actionContext = context.create(action.getRowAction());
+                actionContext.setParameters(action.getParameters());
+                final DataSetRowAction rowAction = rowTransformers.next();
+                rowAction.compile(actionContext);
+                if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
+                    current = rowAction.apply(current, actionContext);
+                }
             }
             return current;
         }

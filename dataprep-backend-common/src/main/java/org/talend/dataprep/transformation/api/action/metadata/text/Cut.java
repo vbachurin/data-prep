@@ -6,7 +6,6 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.REGEX;
 
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
@@ -73,12 +71,12 @@ public class Cut extends ActionMetadata implements ColumnAction {
     }
 
     @Override
-    public DataSetRowAction.CompileResult compile(ActionContext actionContext, Map<String, String> parameters) {
+    public void compile(ActionContext actionContext) {
         try {
-            Pattern.compile(parameters.get(PATTERN_PARAMETER));
-            return DataSetRowAction.CompileResult.CONTINUE;
+            Pattern.compile(actionContext.getParameters().get(PATTERN_PARAMETER));
+            actionContext.setActionStatus(ActionContext.ActionStatus.OK);
         } catch (Exception e) {
-            return DataSetRowAction.CompileResult.IGNORE;
+            actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
         }
     }
 
