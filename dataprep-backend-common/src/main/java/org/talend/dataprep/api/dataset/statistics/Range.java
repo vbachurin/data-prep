@@ -1,33 +1,73 @@
 package org.talend.dataprep.api.dataset.statistics;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Range implements Serializable {
+import java.io.Serializable;
 
-    /** Serialization UID. */
+/**
+ * Class that represents a range [min, max[
+ * @param <T> The type of bound values
+ */
+public class Range<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The min range value
+     */
     @JsonProperty("min")
-    double min;
+    T min;
 
+    /**
+     * The max range value
+     */
     @JsonProperty("max")
-    double max;
+    T max;
 
-    public double getMin() {
+    /**
+     * Constructor
+     */
+    public Range() {
+    }
+
+    /**
+     * Constructor
+     * @param min The minimum value
+     * @param max The maximum value
+     */
+    public Range(T min, T max) {
+        this.min = min;
+        this.max = max;
+    }
+
+    /**
+     * Minimum value getter
+     * @return The minimum value
+     */
+    public T getMin() {
         return min;
     }
 
-    public void setMin(double min) {
+    /**
+     * Minimum value setter
+     * @param min The new minimum value
+     */
+    public void setMin(T min) {
         this.min = min;
     }
 
-    public double getMax() {
+    /**
+     * Maximum value getter
+     * @return The maximum value
+     */
+    public T getMax() {
         return max;
     }
 
-    public void setMax(double max) {
+    /**
+     * Maximum value setter
+     * @param max The new maximum value
+     */
+    public void setMax(T max) {
         this.max = max;
     }
 
@@ -40,22 +80,17 @@ public class Range implements Serializable {
             return false;
         }
 
-        Range range = (Range) o;
-
-        if (Double.compare(range.min, min) != 0) {
-            return false;
-        }
-        return Double.compare(range.max, max) == 0;
+        final Range range = (Range) o;
+        return range.min.equals(min) && range.max.equals(max);
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        temp = Double.doubleToLongBits(min);
-        result = (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(max);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        long minHashCode = min.hashCode();
+        long maxHashCode = max.hashCode();
+
+        int result = (int) (minHashCode ^ (minHashCode >>> 32));
+        result = 31 * result + (int) (maxHashCode ^ (maxHashCode >>> 32));
         return result;
     }
 }

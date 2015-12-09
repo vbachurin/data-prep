@@ -109,11 +109,11 @@ public class StatisticsTest {
     @Test
     public void testGetHistogram() throws Exception {
         assertEquals(2, statistics.getHistogram().size());
-        assertEquals(1.0, statistics.getHistogram().get(0).getRange().getMin(), 0);
-        assertEquals(1.5, statistics.getHistogram().get(0).getRange().getMax(), 0);
+        assertEquals(1.0, ((NumberHistogramRange)statistics.getHistogram().get(0)).getRange().getMin(), 0);
+        assertEquals(1.5, ((NumberHistogramRange)statistics.getHistogram().get(0)).getRange().getMax(), 0);
         assertEquals(1, statistics.getHistogram().get(0).getOccurrences());
-        assertEquals(2.0, statistics.getHistogram().get(1).getRange().getMin(), 0);
-        assertEquals(2.5, statistics.getHistogram().get(1).getRange().getMax(), 0);
+        assertEquals(2.0, ((NumberHistogramRange)statistics.getHistogram().get(1)).getRange().getMin(), 0);
+        assertEquals(2.5, ((NumberHistogramRange)statistics.getHistogram().get(1)).getRange().getMax(), 0);
         assertEquals(1, statistics.getHistogram().get(1).getOccurrences());
     }
 

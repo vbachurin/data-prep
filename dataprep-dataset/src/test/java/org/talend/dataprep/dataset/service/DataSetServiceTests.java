@@ -1,21 +1,8 @@
 package org.talend.dataprep.dataset.service;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static com.jayway.restassured.http.ContentType.JSON;
-import static com.jayway.restassured.path.json.JsonPath.from;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
-import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.restassured.response.Response;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.CoreMatchers;
@@ -34,13 +21,29 @@ import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.DataSetBaseTest;
+import org.talend.dataprep.date.LocalDateModule;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.schema.csv.CSVFormatGuess;
 import org.talend.dataprep.schema.csv.CSVFormatGuesser;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.restassured.response.Response;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static com.jayway.restassured.http.ContentType.JSON;
+import static com.jayway.restassured.path.json.JsonPath.from;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 public class DataSetServiceTests extends DataSetBaseTest {
 
@@ -62,7 +65,9 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
     private static final String DATASET_WITH_NUL_CHAR_CSV = "../dataset_with_NUL_char.csv";
 
-    /** DataPrep jackson ready to use builder. */
+    /**
+     * DataPrep jackson ready to use builder.
+     */
     @Autowired
     Jackson2ObjectMapperBuilder builder;
 
@@ -216,7 +221,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         String id1 = UUID.randomUUID().toString();
         final DataSetMetadata metadata1 = metadata().id(id1).name("AAAA").author("anonymous").created(20)
                 .formatGuessId(new CSVFormatGuess().getBeanId()).build();
-        dataSetMetadataRepository.add( metadata1 );
+        dataSetMetadataRepository.add(metadata1);
         String id2 = UUID.randomUUID().toString();
         final DataSetMetadata metadata2 = metadata().id(id2).name("CCCC").author("anonymous").created(0)
                 .formatGuessId(new CSVFormatGuess().getBeanId()).build();
@@ -270,42 +275,43 @@ public class DataSetServiceTests extends DataSetBaseTest {
         int after = dataSetMetadataRepository.size();
         assertThat(after - before, is(1));
         // the next call may fail due to timing issues : TODO // make this synchronized somehow
-        assertQueueMessages( dataSetId );
+        assertQueueMessages(dataSetId);
     }
 
     @Test
     public void clone_dataset() throws Exception {
         int before = dataSetMetadataRepository.size();
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
-            .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         int after = dataSetMetadataRepository.size();
-        assertThat( after - before, is( 1 ) );
+        assertThat(after - before, is(1));
         // the next call may fail due to timing issues : TODO // make this synchronized somehow
-        assertQueueMessages( dataSetId );
+        assertQueueMessages(dataSetId);
 
         before = dataSetMetadataRepository.size();
 
         Response response = given().put( "/datasets/clone/" + dataSetId );
 
-        Assertions.assertThat( response.getStatusCode() ).isEqualTo( 200 );
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
 
         String clonedDataSetId = response.asString();
 
         after = dataSetMetadataRepository.size();
-        assertThat( after - before, is( 1 ) );
+        assertThat(after - before, is(1));
 
-        assertQueueMessages( clonedDataSetId );
+        assertQueueMessages(clonedDataSetId);
 
-        Assertions.assertThat( clonedDataSetId ).isNotNull().isNotEmpty().isNotEqualTo( dataSetId );
+        Assertions.assertThat(clonedDataSetId).isNotNull().isNotEmpty().isNotEqualTo(dataSetId);
 
-        response = when().get( "/datasets/{id}/content", clonedDataSetId);
+        response = when().get("/datasets/{id}/content", clonedDataSetId);
 
         String content = response.asString();
 
-        ObjectMapper objectMapper = new ObjectMapper(  );
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new LocalDateModule());
         DataSet dataSet = objectMapper.readerFor(DataSet.class).readValue(content.getBytes());
 
-        Assertions.assertThat( dataSet.getMetadata().getName() ).isNotEmpty().contains( "Copy" );
+        Assertions.assertThat(dataSet.getMetadata().getName()).isNotEmpty().contains("Copy");
 
     }
 
@@ -621,7 +627,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         String dataSetId = given()
                 .body(IOUtils.toByteArray(this.getClass().getResourceAsStream("../TDP-375_xsl_read_as_csv.xls")))
-                        // .queryParam("Content-Type", "application/vnd.ms-excel")
+                // .queryParam("Content-Type", "application/vnd.ms-excel")
                 .when().post("/datasets").asString();
 
         assertQueueMessages(dataSetId);
@@ -1052,8 +1058,8 @@ public class DataSetServiceTests extends DataSetBaseTest {
         assertThat(column.getType(), is("date"));
         assertThat(column.getDomain(), is(""));
         ObjectMapper mapper = new ObjectMapper();
-        final Statistics statistics = mapper.readerFor(Statistics.class)
-                .readValue(DataSetServiceTests.class.getResourceAsStream("../date_time_pattern_expected.json"));
+        mapper.registerModule(new LocalDateModule());
+        final Statistics statistics = mapper.readerFor(Statistics.class).readValue(DataSetServiceTests.class.getResourceAsStream("../date_time_pattern_expected.json"));
         assertThat(column.getStatistics(), CoreMatchers.equalTo(statistics));
     }
 

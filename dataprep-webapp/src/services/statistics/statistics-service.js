@@ -106,20 +106,15 @@
          * @ngdoc method
          * @name getRangeFilteredOccurrence
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {number} min Minimum value
-         * @param {number} max Maximum value
-         * @description Compute The filtered records number with value inside the provided range [min, max[
+         * @param {function} predicateFn A function that determine if a value is in the filtered values
+         * @description Compute The filtered records that fullfill the given predicate
          * @returns {number} The Number of records
          */
-        function getRangeFilteredOccurrence(min, max) {
+        function getRangeFilteredOccurrence(predicateFn) {
             return _.chain(state.playground.grid.filteredOccurences)
                 .keys()
-                .filter(function (key) {
-                    var numberValue = Number(key);
-                    return !isNaN(numberValue) &&
-                        ((numberValue === min) || (numberValue > min && numberValue < max));
-                })
-                .map(function (key) {
+                .filter(predicateFn)
+                .map(function(key) {
                     return state.playground.grid.filteredOccurences[key];
                 })
                 .reduce(function (accu, value) {
@@ -137,10 +132,61 @@
          */
         function initRangeHistogram(histoData) {
             var rangeData = _.map(histoData, function (histDatum) {
+                var min = histDatum.range.min;
+                var max = histDatum.range.max;
+                var isInRangeLimits = function(value) {
+                    var numberValue = Number(value);
+                    return !isNaN(numberValue) &&
+                        ((numberValue === min) || (numberValue > min && numberValue < max));
+                };
                 return {
                     'data': [histDatum.range.min, histDatum.range.max],
                     'occurrences': histDatum.occurrences,
-                    'filteredOccurrences': getRangeFilteredOccurrence(histDatum.range.min, histDatum.range.max)
+                    'filteredOccurrences': getRangeFilteredOccurrence(isInRangeLimits)
+                };
+            });
+
+            initVerticalHistogram('occurrences', 'Occurrences', rangeData);
+        }
+
+        /**
+         * @ngdoc method
+         * @name initDateRangeHistogram
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {Array} histoData Array of data
+         * @description Adapt the date range data to fit histogram format
+         */
+        function initDateRangeHistogram(histoData) {
+            var rangeData = _.map(histoData, function (histDatum) {
+                var minDate = new Date(histDatum.range.min.year, histDatum.range.min.monthValue - 1, histDatum.range.min.dayOfMonth);
+                var maxDate = new Date(histDatum.range.max.year, histDatum.range.max.monthValue - 1, histDatum.range.max.dayOfMonth);
+                var minTimestamp = minDate.getTime();
+                var maxTimestamp = maxDate.getTime();
+                var patterns = _.map(state.playground.grid.selectedColumn.statistics.patternFrequencyTable, function(patternFreq) {
+                    return moment().toMomentFormatString(patternFreq.pattern);
+                });
+                var isInDateLimits = function(value) {
+                    var parsedMoment = _.chain(patterns)
+                        .map(function(pattern) {
+                            return moment(value, pattern);
+                        })
+                        .find(function(momentDate) {
+                            return momentDate.isValid();
+                        })
+                        .value();
+
+                    if(!parsedMoment) {
+                        return false;
+                    }
+
+                    var time = parsedMoment.toDate().getTime();
+                    return time === minTimestamp || (time > minTimestamp && time < maxTimestamp);
+                };
+                var dateFilter = $filter('date');
+                return {
+                    'data': [dateFilter(minDate), dateFilter(maxDate)],
+                    'occurrences': histDatum.occurrences,
+                    'filteredOccurrences': getRangeFilteredOccurrence(isInDateLimits)
                 };
             });
 
@@ -503,6 +549,9 @@
                     initRangeHistogram(column.statistics.histogram);
                     updateBoxplotData();
                     initRangeLimits();
+                    break;
+                case 'date':
+                    initDateRangeHistogram(column.statistics.histogram);
                     break;
                 case 'text':
                 case 'boolean':

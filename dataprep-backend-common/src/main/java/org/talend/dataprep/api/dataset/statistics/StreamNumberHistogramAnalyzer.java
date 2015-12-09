@@ -12,8 +12,6 @@
 // ============================================================================
 package org.talend.dataprep.api.dataset.statistics;
 
-import java.util.List;
-
 import org.apache.commons.lang.NotImplementedException;
 import org.talend.dataquality.statistics.numeric.NumericalStatisticsAnalyzer;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramParameter;
@@ -22,20 +20,24 @@ import org.talend.datascience.common.inference.ResizableList;
 import org.talend.datascience.common.inference.type.DataType.Type;
 import org.talend.datascience.common.inference.type.TypeInferenceUtils;
 
+import java.util.List;
+
 /**
+ * Number histogram analyzer. It processes all the records and compute the statistics for each.
  */
-public class StreamHistogramAnalyzer extends NumericalStatisticsAnalyzer<StreamHistogramStatistics> {
+public class StreamNumberHistogramAnalyzer extends NumericalStatisticsAnalyzer<StreamNumberHistogramStatistics> {
 
     private static final long serialVersionUID = -3756520692420812485L;
 
-    private ResizableList<StreamHistogramStatistics> stats = new ResizableList<>(StreamHistogramStatistics.class);
+    private ResizableList<StreamNumberHistogramStatistics> stats = new ResizableList<>(StreamNumberHistogramStatistics.class);
 
     /**
+     * Constructor
      *
-     * @param types data types
+     * @param types              data types
      * @param histogramParameter Histogram analyzer's parameter
      */
-    public StreamHistogramAnalyzer(Type[] types, HistogramParameter histogramParameter) {
+    public StreamNumberHistogramAnalyzer(Type[] types, HistogramParameter histogramParameter) {
         super(types);
         if (histogramParameter == null) {
             throw new IllegalArgumentException("Histogram analyzer's parameter should is null.");
@@ -53,28 +55,24 @@ public class StreamHistogramAnalyzer extends NumericalStatisticsAnalyzer<StreamH
                     + "Using method: setTypes(DataType.Type[] types) to set the types. ");
 
         if (stats.resize(record.length)) {
-            for (StreamHistogramStatistics stat : stats) {
+            for (StreamNumberHistogramStatistics stat : stats) {
                 // Set column parameters to histogram statistics.
                 stat.setNumberOfBins(32);
             }
         }
 
-        for (int id : this.getStatColIdx()) { // analysis each numerical column in the record
-            if (!TypeInferenceUtils.isValid(types[id], record[id])) {
+        for (int index : this.getStatColIdx()) { // analysis each numerical column in the record
+            final String value = record[index];
+            if (!TypeInferenceUtils.isValid(types[index], value)) {
                 continue;
             }
-            analyzerHistogram(id, record);
+            stats.get(index).add(Double.valueOf(value));
         }
         return true;
     }
 
-    private void analyzerHistogram(int index, String... record) {
-        StreamHistogramStatistics histStats = stats.get(index);
-        histStats.add(Double.valueOf(record[index]));
-    }
-
     @Override
-    public Analyzer<StreamHistogramStatistics> merge(Analyzer<StreamHistogramStatistics> another) {
+    public Analyzer<StreamNumberHistogramStatistics> merge(Analyzer<StreamNumberHistogramStatistics> another) {
         throw new NotImplementedException();
     }
 
@@ -84,7 +82,7 @@ public class StreamHistogramAnalyzer extends NumericalStatisticsAnalyzer<StreamH
     }
 
     @Override
-    public List<StreamHistogramStatistics> getResult() {
+    public List<StreamNumberHistogramStatistics> getResult() {
         return stats;
     }
 

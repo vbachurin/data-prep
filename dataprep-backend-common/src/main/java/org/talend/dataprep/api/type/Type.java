@@ -121,11 +121,20 @@ public enum Type implements Serializable {
 
     /**
      * Returns whether <code>type</code> is contained in the list of subtypes from {@link Type#list()}.
-     * 
+     * @param type The type to test
      * @return true is <code>type</code> is contained in all subtypes including this type or false otherwise.
      */
     public boolean isAssignableFrom(Type type) {
         return list().contains(type);
+    }
+
+    /**
+     * Returns whether <code>type</code> is contained in the list of subtypes from {@link Type#list()}.
+     * @param type The type name to test
+     * @return true is <code>type</code> is contained in all subtypes including this type or false otherwise.
+     */
+    public boolean isAssignableFrom(String type) {
+        return list().contains(Type.get(type));
     }
 
     /**

@@ -10,6 +10,10 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.lock.DistributedLock;
 
+/**
+ * This analyzer means to index the content for search.
+ * It is not used right now, that is why it does not do much.
+ */
 @Component
 public class ContentAnalysis implements SynchronousDataSetAnalyzer {
 

@@ -1,23 +1,15 @@
 package org.talend.dataprep.dataset.service.analysis;
 
-import java.util.List;
-import java.util.stream.Stream;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.statistics.StatisticsAdapter;
-import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
@@ -28,8 +20,11 @@ import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.ValueQualityStatistics;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 @Component
-public class QualityAnalysis implements SynchronousDataSetAnalyzer, AsynchronousDataSetAnalyzer {
+public class QualityAnalysis implements SynchronousDataSetAnalyzer {
 
     @Value("max_records")
     public static final int MAX_RECORD = 5000;
@@ -47,20 +42,6 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer, Asynchronous
 
     @Autowired
     AnalyzerService analyzerService;
-
-    @JmsListener(destination = Destinations.QUALITY_ANALYSIS)
-    public void analyzeQuality(Message message) {
-        try {
-            String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1$
-            try {
-                analyze(dataSetId);
-            } finally {
-                message.acknowledge();
-            }
-        } catch (JMSException e) {
-            throw new TDPException(DataSetErrorCodes.UNEXPECTED_JMS_EXCEPTION, e);
-        }
-    }
 
     /**
      * Analyse the dataset metadata quality.
@@ -128,10 +109,10 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer, Asynchronous
 
     /**
      * Compute the quality (count, valid, invalid and empty) of the given dataset.
-     * 
+     *
      * @param dataset the dataset metadata.
      * @param records the dataset records
-     * @param limit indicates how many records will be read from stream. Use a number < 0 to perform a full scan of
+     * @param limit   indicates how many records will be read from stream. Use a number < 0 to perform a full scan of
      */
     public void computeQuality(DataSetMetadata dataset, Stream<DataSetRow> records, long limit) {
         // Compute valid / invalid / empty count, need data types for analyzer first
@@ -156,10 +137,5 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer, Asynchronous
             final long recordCount = result.get(0).get(ValueQualityStatistics.class).getCount();
             dataset.getContent().setNbRecords((int) recordCount);
         }
-    }
-
-    @Override
-    public String destination() {
-        return Destinations.QUALITY_ANALYSIS;
     }
 }
