@@ -46,12 +46,19 @@
       top: 100px;
       left: 35px;
       right: 35px;
-      padding: 15px;
+      padding: 15px 5px 15px 5px;
 
       background: $pale-blue;
       color: white;
       font-weight: bold;
       opacity: 0.8;
+    }
+
+    .wait-icon{
+      position: absolute;
+    }
+    .wait-text{
+      padding-left: 40px;
     }
   }
 }
