@@ -12,17 +12,6 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
-import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
-import static org.talend.dataprep.transformation.api.action.metadata.text.ReplaceOnValue.CELL_VALUE_PARAMETER;
-import static org.talend.dataprep.transformation.api.action.metadata.text.ReplaceOnValue.REPLACE_ENTIRE_CELL_PARAMETER;
-import static org.talend.dataprep.transformation.api.action.metadata.text.ReplaceOnValue.REPLACE_VALUE_PARAMETER;
-
-import java.io.IOException;
-import java.util.*;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -36,6 +25,14 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+
+import java.io.IOException;
+import java.util.*;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 /**
  * Test class for Split action. Creates one consumer, and test it.
@@ -56,7 +53,6 @@ public class SplitTest {
         action = new Split();
 
         parameters = ActionMetadataTestUtils.parseParameters( //
-                //
                 SplitTest.class.getResourceAsStream("splitAction.json"));
     }
 
