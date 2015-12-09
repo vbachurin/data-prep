@@ -337,13 +337,12 @@ public class DataSetService {
                 dataSet.setColumns(dataSetMetadata.getRow().getColumns());
             }
 
-            if (records) {
+            if(records) {
                 if (sample != null && sample > 0) {
                     // computes the statistics only if columns are required
                     if (columns) {
-                        // Compute statistics *before* to avoid consumption of too many threads in serialization (call
-                        // to a stream sample may use a thread and a pipe stream, so better to consume to perform in
-                        // this order).
+                        // Compute statistics *before* to avoid consumption of too many threads in serialization (call to a
+                        // stream sample may use a thread and a pipe stream, so better to consume to perform in this order).
                         LOG.debug(marker, "Sample statistics...");
                         computeSampleStatistics(dataSetMetadata, sample);
                         LOG.debug(marker, "Sample statistics done.");
@@ -354,8 +353,6 @@ public class DataSetService {
                 } else {
                     dataSet.setRecords(contentStore.stream(dataSetMetadata));
                 }
-            } else {
-                dataSet.setRecords(Stream.of());
             }
             return dataSet;
         } finally {
