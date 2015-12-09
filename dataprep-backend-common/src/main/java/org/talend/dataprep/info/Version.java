@@ -1,5 +1,7 @@
 package org.talend.dataprep.info;
 
+import org.apache.commons.lang.StringUtils;
+
 public class Version {
 
     private String versionId;
@@ -9,6 +11,10 @@ public class Version {
     private String serviceName;
 
     public Version() {
+    }
+
+    public Version(String versionId, String buildId) {
+        this(versionId, buildId, StringUtils.EMPTY);
     }
 
     public Version(String versionId, String buildId, String serviceName) {

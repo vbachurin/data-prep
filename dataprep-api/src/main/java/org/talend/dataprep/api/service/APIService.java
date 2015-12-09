@@ -24,7 +24,9 @@ import org.talend.dataprep.exception.error.APIErrorCodes;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.wordnik.swagger.annotations.Api;
 
+@Api(value = "api", basePath = "/api", description = "Data Preparation API")
 public class APIService {
 
     public static final HystrixCommandGroupKey PREPARATION_GROUP = HystrixCommandGroupKey.Factory.asKey("preparation"); //$NON-NLS-1$

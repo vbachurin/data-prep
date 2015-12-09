@@ -10,14 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
 
-// @WebAppConfiguration
-/*
- * @WebIntegrationTest("server.port:9000")
- * 
- * @TestPropertySource(properties = { "dataset.service.url: http://localhost:${server.port}",
- * "preparation.service.url: http://localhost:${server.port}",
- * "transformation.service.url: http://localhost:${server.port}" })
- */
 public class VersionServiceAPITest extends ApiServiceTestBase {
 
     @Autowired

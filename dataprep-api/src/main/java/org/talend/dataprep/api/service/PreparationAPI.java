@@ -26,12 +26,10 @@ import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
-import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @RestController
-@Api(value = "api", basePath = "/api", description = "Data Preparation API")
 public class PreparationAPI extends APIService {
 
     @RequestMapping(value = "/api/preparations", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)

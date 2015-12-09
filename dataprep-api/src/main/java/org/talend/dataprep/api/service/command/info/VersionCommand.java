@@ -23,12 +23,11 @@ public class VersionCommand extends GenericCommand<InputStream> {
 
     public static final HystrixCommandGroupKey VERSION_GROUP = HystrixCommandGroupKey.Factory.asKey("version"); //$NON-NLS-1$
 
-    private VersionCommand(HttpClient client, String serviceUrl, String serviceName) {
+    private VersionCommand(HttpClient client, String serviceUrl) {
         super(VERSION_GROUP, client);
 
         execute(() -> {
-
-            String url = serviceUrl + "/version?serviceName=" + serviceName;
+            String url = serviceUrl + "/version";
             return new HttpGet(url);
         });
         onError(e -> new TDPException(CommonErrorCodes.UNABLE_TO_GET_SERVICE_VERSION, e,

@@ -3,10 +3,6 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
-    <scm>
-        <connection>scm:git:https://github.com/Talend/data-prep.git</connection>
-        <url>https://github.com/Talend/data-prep.git</url>
-    </scm>
     <parent>
         <groupId>org.talend.dataprep</groupId>
         <artifactId>dataprep-backend</artifactId>
@@ -145,22 +141,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <doCheck>false</doCheck>
-                    <doUpdate>false</doUpdate>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
@@ -170,16 +150,6 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
-                        <configuration>
-                            <archive>
-                                <manifest>
-                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                                </manifest>
-                                <manifestEntries>
-                                    <SHA-Build>${buildNumber}</SHA-Build>
-                                </manifestEntries>
-                            </archive>
-                        </configuration>
                     </execution>
                     <execution>
                         <id>jar-lib</id>
@@ -193,14 +163,6 @@
                             <excludes>
                                 <exclude>*.properties</exclude>
                             </excludes>
-                            <archive>
-                                <manifest>
-                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                                </manifest>
-                                <manifestEntries>
-                                    <SHA-Build>${buildNumber}</SHA-Build>
-                                </manifestEntries>
-                            </archive>
                         </configuration>
                     </execution>
                     <execution>

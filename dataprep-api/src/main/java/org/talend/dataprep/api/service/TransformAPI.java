@@ -28,12 +28,10 @@ import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
-import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @RestController
-@Api(value = "api", basePath = "/api", description = "Transformation API")
 public class TransformAPI extends APIService {
 
     @RequestMapping(value = "/api/transform/{id}", method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)

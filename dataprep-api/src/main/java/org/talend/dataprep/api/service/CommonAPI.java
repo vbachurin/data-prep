@@ -26,14 +26,12 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
-import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 /**
  * Common API that does not stand in either DataSet, Preparation nor Transform.
  */
 @RestController
-@Api(value = "api", basePath = "/api", description = "Common data-prep API")
 public class CommonAPI extends APIService {
 
     @Autowired

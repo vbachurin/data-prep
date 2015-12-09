@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.service.command.info.VersionCommand;
@@ -24,13 +23,10 @@ import org.talend.dataprep.info.Version;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
-import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
-@Component
-@Scope("request")
 @RestController
-@Api(value = "api", basePath = "/api", description = "Get the version of the running jar")
+@Scope("request")
 public class VersionServiceAPI extends APIService {
 
     @Autowired
@@ -46,20 +42,18 @@ public class VersionServiceAPI extends APIService {
     protected String preparationServiceUrl;
 
     @RequestMapping(value = "/api/version", method = GET)
-    @ApiOperation(value = "Get the version of the running API", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get the version of all services (including underlying low level services)", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     /**
-     * Returns all the versions of the different services (api, dataset, preparation and transforamtion).
+     * Returns all the versions of the different services (api, dataset, preparation and transformation).
      * 
      * @return an array of service versions
      */
     public Version[] allVersions(HttpServletRequest request) {
         Version[] versions = new Version[4];
-        ManifestInfo manifestInfo = ManifestInfo.getUniqueInstance();
+        ManifestInfo manifestInfo = ManifestInfo.getInstance();
 
-        String serviceUrl = "http://" + request.getLocalAddr() + ":" + request.getLocalPort();
-
-        versions[0] = new Version(manifestInfo.getVersionId(), manifestInfo.getBuildId(), "API: (" + serviceUrl + ")");
+        versions[0] = new Version(manifestInfo.getVersionId(), manifestInfo.getBuildId(), "API");
         versions[1] = callVersionService(datasetServiceUrl, "DATASET");
         versions[2] = callVersionService(preparationServiceUrl, "PREPARATION");
         versions[3] = callVersionService(transformationServiceUrl, "TRANSFORMATION");
@@ -75,9 +69,11 @@ public class VersionServiceAPI extends APIService {
      */
     private Version callVersionService(String serviceUrl, String serviceName) {
         HttpClient client = getClient();
-        HystrixCommand<InputStream> versionCommand = getCommand(VersionCommand.class, client, serviceUrl, serviceName);
+        HystrixCommand<InputStream> versionCommand = getCommand(VersionCommand.class, client, serviceUrl);
         try (InputStream content = versionCommand.execute()) {
-            return builder.build().reader(Version.class).readValue(content);
+            final Version version = builder.build().readerFor(Version.class).readValue(content);
+            version.setServiceName(serviceName);
+            return version;
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_GET_SERVICE_VERSION, e);
         }
