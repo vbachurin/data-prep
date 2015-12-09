@@ -1,7 +1,10 @@
 package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Stack;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +20,10 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.dataprep.stream.ExtendedStream;
+import org.talend.dataprep.transformation.BaseTransformer;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
@@ -131,60 +134,7 @@ public class StackedTransformer implements Transformer {
             final TransformerWriter writer = writersService.getWriter(configuration.formatId(), configuration.output(), configuration.getArguments());
 
             TransformationContext context = new TransformationContext();
-            ExtendedStream<DataSetRow> records = ExtendedStream.extend(input.getRecords())
-            // Perform transformations
-            .mapOnce(r -> {
-                // Initial compilation of actions
-                DataSetRow current = r;
-                final Iterator<DataSetRowAction> iterator = allActions.iterator();
-                while (iterator.hasNext()) {
-                    final DataSetRowAction action = iterator.next();
-                    final ActionContext actionContext = context.create(action);
-                    actionContext.setInputRowMetadata(current.getRowMetadata().clone());
-                    action.compile(actionContext);
-                    final ActionContext.ActionStatus actionStatus = actionContext.getActionStatus();
-                    switch (actionStatus) {
-                        case OK:
-                            LOGGER.debug("[Compilation] Continue using action '{}' (compilation step returned {}).", action, actionStatus);
-                            current = action.apply(current, actionContext);
-                            break;
-                        case CANCELED:
-                            LOGGER.debug("[Compilation] Remove action '{}' (compilation step returned {}).", action, actionStatus);
-                            iterator.remove();
-                            break;
-                    }
-                    actionContext.setOutputRowMetadata(current.getRowMetadata().clone());
-                }
-                context.setPreviousRow(current.clone());
-                return current;
-            }, //
-            r -> {
-                // Apply compiled actions on data
-                DataSetRow current = r;
-                final Iterator<DataSetRowAction> iterator = allActions.iterator();
-                while (iterator.hasNext()) {
-                    final DataSetRowAction action = iterator.next();
-                    final ActionContext actionContext = context.in(action);
-                    current.setRowMetadata(actionContext.getInputRowMetadata());
-                    current = action.apply(current, actionContext);
-                    current.setRowMetadata(actionContext.getOutputRowMetadata());
-                    // Check whether we should continue using this action or not
-                    final ActionContext.ActionStatus actionStatus = actionContext.getActionStatus();
-                    switch (actionStatus) {
-                        case OK:
-                            LOGGER.debug("[Transformation] Continue using action '{}' (compilation step returned {}).", action, actionStatus);
-                            break;
-                        case CANCELED:
-                            LOGGER.debug("[Transformation] Remove action '{}' (compilation step returned {}).", action, actionStatus);
-                            iterator.remove();
-                            break;
-                    }
-                }
-                context.setPreviousRow(current.clone());
-                return current;
-            })
-            // Analyze content
-            .map(r -> {
+            ExtendedStream<DataSetRow> records = BaseTransformer.baseTransform(input.getRecords(), allActions, context).map(r -> {
                 if (!input.getColumns().isEmpty()) {
                     // Use analyzer (for empty values, semantic...)
                     if (!r.isDeleted()) {
@@ -194,15 +144,16 @@ public class StackedTransformer implements Transformer {
                 }
                 return r;
             });
-            // Write metadata if writer asks for it
-            if (writer.requireMetadataForHeader()) {
-                records = records.mapOnce(r -> writeMetadata(writer, r), r -> r);
-            }
             // Write records
             Stack<DataSetRow> processingRows = new Stack<>();
             writer.startObject();
             records.mapOnce(r -> {
                 try {
+                    // Write metadata if writer asks for it
+                    if (writer.requireMetadataForHeader()) {
+                        writeMetadata(writer, r);
+                    }
+                    // Now starts records
                     writer.fieldName("records");
                     writer.startArray();
                 } catch (IOException e) {
