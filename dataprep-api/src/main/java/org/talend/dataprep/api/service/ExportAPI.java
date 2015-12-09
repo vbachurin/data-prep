@@ -28,12 +28,10 @@ import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
-import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @RestController
-@Api(value = "api", basePath = "/api", description = "Export data API")
 public class ExportAPI extends APIService {
 
     @RequestMapping(value = "/api/export", method = GET)

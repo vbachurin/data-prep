@@ -20,12 +20,10 @@ import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
-import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @RestController
-@Api(value = "api", basePath = "/api", description = "Data Preparation API")
 public class DataSetAPI extends APIService {
 
     /**

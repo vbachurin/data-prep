@@ -2,8 +2,10 @@
 
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
+var karma = require('karma');
 var wiredep = require('wiredep');
 var runSequence = require('run-sequence');
+var path = require('path');
 
 var fullTestsFiles = [
     'src/*.js',
@@ -11,6 +13,8 @@ var fullTestsFiles = [
     'src/{services,components,mocks}/**/*.js',
     'src/components/**/*.html'
 ];
+
+var pathSrcHtml = ['src/**/*.html'];
 
 var filesToExclude = {
     services: [
@@ -36,34 +40,37 @@ var filesToCover = {
 function runTests(singleRun, done, karmaConfPath, type) {
     var bowerDeps = wiredep({
         directory: 'bower_components',
-        exclude: ['bootstrap-sass-official'],
         dependencies: true,
         devDependencies: true
     });
 
-    var testFiles = bowerDeps.js.concat(fullTestsFiles);
+    var reporters = ['progress'];
+    var preprocessors = {};
 
-    var preprocessors = {
-        'src/**/*.html':['ng-html2js']
+    pathSrcHtml.forEach(function (path) {
+        preprocessors[path] = ['ng-html2js'];
+    });
+
+    if (singleRun) {
+        var srcJs = type ? filesToCover [type] : 'src/**/!(*spec|*mock).js';
+        preprocessors[srcJs] = ['coverage'];
+        reporters.push('coverage')
+    }
+
+    var localConfig = {
+        configFile: path.join(__dirname, '/../', karmaConfPath),
+        singleRun: singleRun,
+        autoWatch: !singleRun,
+        reporters: reporters,
+        preprocessors: preprocessors,
+        files: bowerDeps.js.concat(fullTestsFiles),
+        exclude: type ? filesToExclude[type] : []
     };
-    var toCover = type ? filesToCover [type] : 'src/**/!(*spec|*mock).js';
-    preprocessors[toCover] = ['coverage'];
 
-    return gulp.src([])
-        .pipe($.karma({
-            configFile: karmaConfPath,
-            action: (singleRun) ? 'run' : 'watch',
-            files: testFiles,
-            exclude: filesToExclude[type],
-            coverageReporter: {
-                dir: 'coverage/' + (type || '')
-            },
-            preprocessors: preprocessors
-        }))
-        .on('error', function (err) {
-            // Make sure failed tests cause gulp to exit non-zero
-            throw err;
-        });
+    var server = new karma.Server(localConfig, function (failCount) {
+        done(failCount ? new Error("Failed " + failCount + " tests.") : null);
+    });
+    server.start();
 }
 
 gulp.task('test:components', function (done) {
