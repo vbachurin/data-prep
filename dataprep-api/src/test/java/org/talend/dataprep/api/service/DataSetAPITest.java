@@ -201,7 +201,7 @@ public class DataSetAPITest extends ApiServiceTestBase {
         String cloneName = "foo bar";
 
         final String clonedDataSetId = given() //
-            .queryParam( "cloneName", cloneName)
+            .queryParam( "cloneName", cloneName) //
             .when() //
             .put("/api/datasets/clone/{id}", dataSetId) //
             .asString();
@@ -249,8 +249,11 @@ public class DataSetAPITest extends ApiServiceTestBase {
         // then
         assertThat( contentAsString, sameJSONAsFile( expected ) );
 
+        String cloneName = "foo bar";
+
         String clonedDataSetId = given() //
-            .queryParam("folderPath", "foo")
+            .queryParam("folderPath", "foo") //
+            .queryParam( "cloneName", cloneName) //
             .when() //
             .put("/api/datasets/clone/{id}", dataSetId) //
             .asString();
@@ -269,7 +272,7 @@ public class DataSetAPITest extends ApiServiceTestBase {
 
         DataSetMetadata dataSetMetadata = dataSet.getMetadata();
 
-        Assertions.assertThat( dataSetMetadata.getName() ).isEqualTo( "tagada Copy" );
+        Assertions.assertThat( dataSetMetadata.getName() ).isEqualTo( cloneName );
 
         expected = PreparationAPITest.class.getResourceAsStream( "dataset/expected_dataset_with_metadata_clone.json" );
 
@@ -278,6 +281,7 @@ public class DataSetAPITest extends ApiServiceTestBase {
 
         response = given() //
             .queryParam("folderPath", "foo") //
+            .queryParam( "cloneName", cloneName) //
             .when() //
             .put("/api/datasets/clone/{id}", dataSetId);
 
