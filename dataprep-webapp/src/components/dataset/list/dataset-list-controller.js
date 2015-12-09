@@ -381,6 +381,8 @@
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description load folder children
          * @param {object} node - the folder to display children
+         * @param {array} contains all path parts
+         * @param {string} the current path for recursive call
          */
         vm.toggle = function (node,pathParts,currentPath) {
             if (!node.collapsed){
@@ -500,10 +502,10 @@
 
     /**
      * @ngdoc property
-     * @name currentChilds
+     * @name currentFolderContent
      * @propertyOf data-prep.folder.controller:FolderCtrl
-     * @description The children list.
-     * This list is bound to {@link data-prep.services.state.service:FolderStateService}.folderState.currentFolderChilds
+     * @description The folder content list.
+     * This list is bound to {@link data-prep.services.state.service:FolderStateService}.state.currentFolderContent
      */
     Object.defineProperty(DatasetListCtrl.prototype,
         'currentFolderContent', {

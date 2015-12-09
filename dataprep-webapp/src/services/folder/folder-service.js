@@ -24,7 +24,7 @@
 
       // shared folder ui mngt
       buildStackFromId: buildStackFromId,
-      populateMenuChilds: populateMenuChilds
+      populateMenuChildren: populateMenuChildren
     };
 
     //----------------------------------------------
@@ -120,15 +120,15 @@
 
     /**
      * @ngdoc method
-     * @name populateMenuChilds
+     * @name populateMenuChildren
      * @methodOf data-prep.folder.controller:FolderCtrl
-     * @description build the child list of the part part given by the index parameter
+     * @description build the children of the part part given by the index parameter
      */
-    function populateMenuChilds (folder) {
+    function populateMenuChildren(folder) {
       var promise = FolderRestService.getFolderContent(folder);
 
       promise.then(function (content) {
-        StateService.setMenuChilds(content.data.folders);
+        StateService.setMenuChildren(content.data.folders);
       });
       return promise;
     }

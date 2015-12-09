@@ -249,21 +249,21 @@ describe('Folder services', function () {
     //}));
 
 
-    it('should populateMenuChilds', inject(function ($q, $rootScope, FolderService, StateService, FolderRestService) {
+    it('should populateMenuChildren', inject(function ($q, $rootScope, FolderService, StateService, FolderRestService) {
         //Given
         var content ={data: {
             folders: [{id : 'toto', path: 'toto', name: 'toto'}]
         }};
         spyOn(FolderRestService, 'getFolderContent').and.returnValue($q.when(content));
-        spyOn(StateService, 'setMenuChilds').and.returnValue();
+        spyOn(StateService, 'setMenuChildren').and.returnValue();
 
         //when
-        FolderService.populateMenuChilds({id : 'toto', path: 'toto', name: 'toto'});
+        FolderService.populateMenuChildren({id : 'toto', path: 'toto', name: 'toto'});
         $rootScope.$digest();
 
         //then
         expect(FolderRestService.getFolderContent).toHaveBeenCalledWith({id : 'toto', path: 'toto', name: 'toto'});
-        expect(StateService.setMenuChilds).toHaveBeenCalledWith([{id : 'toto', path: 'toto', name: 'toto'}]);
+        expect(StateService.setMenuChildren).toHaveBeenCalledWith([{id : 'toto', path: 'toto', name: 'toto'}]);
     }));
 
     it('should getFolderContent', inject(function ($q, $rootScope, FolderService, StateService, FolderRestService, DatasetListSortService, PreparationListService) {

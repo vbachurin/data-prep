@@ -11,7 +11,7 @@ describe('folder directive', function() {
 					{id : '1', path: '1', name: '1'},
 					{id : '1/2', path: '1/2', name: '2'}
 				],
-				menuChilds:[
+				menuChildren:[
 					{'id':'TDP-714','path':'TDP-714','name':'TDP-714','creationDate':1448984715000,'modificationDate':1448984715000},
 					{'id':'lookups','path':'lookups','name':'lookups','creationDate':1448895776000,'modificationDate':1448895776000}
 				]
@@ -81,7 +81,7 @@ describe('folder directive', function() {
 	describe('folder children', function(){
 
 		beforeEach(inject(function($q, FolderService) {
-			spyOn(FolderService, 'populateMenuChilds').and.returnValue($q.when(true));
+			spyOn(FolderService, 'populateMenuChildren').and.returnValue($q.when(true));
 		}));
 
 		it('should load menu children content', inject(function(FolderService){
@@ -93,13 +93,13 @@ describe('folder directive', function() {
 			scope.$digest();
 
 			//then
-			expect(FolderService.populateMenuChilds).toHaveBeenCalledWith(stateMock.folder.foldersStack[1]);
+			expect(FolderService.populateMenuChildren).toHaveBeenCalledWith(stateMock.folder.foldersStack[1]);
 		}));
 
 		it('should show "Loading..." message while getting children', function(){
 			//given
 			createElement();
-			spyOn(controller, 'initMenuChilds').and.returnValue();//in order not to access the .finally()
+			spyOn(controller, 'initMenuChildren').and.returnValue();//in order not to access the .finally()
 
 			//when
 			element.find('#folder_1 .dropdown-button').eq(0).click();
@@ -134,7 +134,7 @@ describe('folder directive', function() {
 			scope.$digest();
 
 			//then
-			expect(FolderService.getFolderContent).toHaveBeenCalledWith(stateMock.folder.menuChilds[0]);
+			expect(FolderService.getFolderContent).toHaveBeenCalledWith(stateMock.folder.menuChildren[0]);
 		}));
 	});
 });
