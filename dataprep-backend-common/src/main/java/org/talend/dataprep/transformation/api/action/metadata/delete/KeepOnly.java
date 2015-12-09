@@ -2,8 +2,6 @@ package org.talend.dataprep.transformation.api.action.metadata.delete;
 
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.FILTERED;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -37,8 +35,8 @@ public class KeepOnly extends ActionMetadata implements ColumnAction {
     }
 
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
-        if (!getFilter(parameters).test(row)) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        if (!getFilter(context.getParameters()).test(row)) {
             row.setDeleted(true);
         }
     }

@@ -119,11 +119,13 @@ public class ExtractDateTokens extends AbstractDate implements ColumnAction {
 
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
         final RowMetadata rowMetadata = row.getRowMetadata();
+        final String columnId = context.getColumnId();
+        final Map<String, String> parameters = context.getParameters();
         final ColumnMetadata column = rowMetadata.getById(columnId);
 
         // Create new columns for date tokens

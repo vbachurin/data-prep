@@ -54,10 +54,12 @@ public class TypeChange extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final String columnId = context.getColumnId();
+        final Map<String, String> parameters = context.getParameters();
         LOGGER.debug("TypeChange for columnId {} with parameters {} ", columnId, parameters);
         final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
         if (columnMetadata == null) {

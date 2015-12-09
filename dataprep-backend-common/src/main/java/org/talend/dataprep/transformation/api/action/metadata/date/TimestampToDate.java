@@ -66,10 +66,12 @@ public class TimestampToDate extends ActionMetadata implements ColumnAction, Dat
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final String columnId = context.getColumnId();
+        final Map<String, String> parameters = context.getParameters();
         DatePattern newPattern = DatePattern.ISO_LOCAL_DATE_TIME;
         try {
             newPattern = getDateFormat(parameters);

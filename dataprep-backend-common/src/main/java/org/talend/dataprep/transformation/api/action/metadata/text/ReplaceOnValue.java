@@ -127,19 +127,18 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
-        apply(row, parameters, columnId);
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        apply(row, context.getParameters(), context.getColumnId());
     }
 
     /**
-     * @see CellAction#applyOnCell(DataSetRow, ActionContext, Map, Long, String)
+     * @see CellAction#applyOnCell(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnCell(DataSetRow row, ActionContext context, Map<String, String> parameters, Long rowId,
-                            String columnId) {
-        apply(row, parameters, columnId);
+    public void applyOnCell(DataSetRow row, ActionContext context) {
+        apply(row, context.getParameters(), context.getColumnId());
     }
 }

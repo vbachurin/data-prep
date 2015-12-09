@@ -5,7 +5,6 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -67,11 +66,12 @@ public class CopyColumnMetadata extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
         final RowMetadata rowMetadata = row.getRowMetadata();
+        final String columnId = context.getColumnId();
         final ColumnMetadata column = rowMetadata.getById(columnId);
         final String copyColumn = context.column(
                 column.getName() + COPY_APPENDIX,

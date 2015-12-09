@@ -124,10 +124,12 @@ public class NumericOperations extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(final DataSetRow row, final ActionContext context, final Map<String, String> parameters, final String columnId) {
+    public void applyOnColumn(final DataSetRow row, final ActionContext context) {
+        final Map<String, String> parameters = context.getParameters();
+        final String columnId = context.getColumnId();
         checkParameters(parameters, row);
 
         final RowMetadata rowMetadata = row.getRowMetadata();

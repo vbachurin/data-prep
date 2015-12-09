@@ -103,12 +103,14 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
         // Retrieve the pattern to use
+        final Map<String, String> parameters = context.getParameters();
         final String realPattern = getPattern(parameters);
+        final String columnId = context.getColumnId();
 
         // create new column and append it after current column
         final RowMetadata rowMetadata = row.getRowMetadata();

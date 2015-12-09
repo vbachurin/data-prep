@@ -1,7 +1,5 @@
 package org.talend.dataprep.transformation.api.action.metadata.bool;
 
-import java.util.Map;
-
 import org.apache.commons.lang.WordUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -51,10 +49,11 @@ public class Negate extends ActionMetadata implements ColumnAction {
 
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final String columnId = context.getColumnId();
         final String value = row.get(columnId);
         if (isBoolean(value)) {
             final Boolean boolValue = Boolean.valueOf(value);

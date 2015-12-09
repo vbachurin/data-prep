@@ -34,13 +34,14 @@ public abstract class AbstractDelete extends ActionMetadata implements ColumnAct
     public abstract boolean toDelete(final ColumnMetadata colMetadata, final Map<String, String> parsedParameters, final String value);
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final String columnId = context.getColumnId();
         final String value = row.get(columnId);
         final ColumnMetadata colMetadata = row.getRowMetadata().getById(columnId);
-        if (toDelete(colMetadata, parameters, value)) {
+        if (toDelete(colMetadata, context.getParameters(), value)) {
             row.setDeleted(true);
         }
     }

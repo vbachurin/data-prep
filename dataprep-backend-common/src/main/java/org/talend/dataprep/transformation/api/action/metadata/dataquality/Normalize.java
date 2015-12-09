@@ -1,7 +1,6 @@
 package org.talend.dataprep.transformation.api.action.metadata.dataquality;
 
 import java.text.Normalizer;
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -48,10 +47,11 @@ public class Normalize extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final String columnId = context.getColumnId();
         final String value = row.get(columnId);
         if (value != null) {
             row.set(columnId, normalize(value));

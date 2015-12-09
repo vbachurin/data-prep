@@ -131,12 +131,14 @@ public class Split extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
         // Retrieve the separator to use
+        final Map<String, String> parameters = context.getParameters();
         final String realSeparator = getSeparator(parameters);
+        final String columnId = context.getColumnId();
         // create the new columns
         int limit = Integer.parseInt(parameters.get(LIMIT));
         final RowMetadata rowMetadata = row.getRowMetadata();

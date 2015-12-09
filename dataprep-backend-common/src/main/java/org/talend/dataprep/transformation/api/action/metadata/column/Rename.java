@@ -5,7 +5,6 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 
@@ -109,13 +108,13 @@ public class Rename extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
-        final String newColumnName = parameters.get(NEW_COLUMN_NAME_PARAMETER_NAME);
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final String newColumnName = context.getParameters().get(NEW_COLUMN_NAME_PARAMETER_NAME);
         final RowMetadata rowMetadata = row.getRowMetadata();
-        final ColumnMetadata column = rowMetadata.getById(columnId);
+        final ColumnMetadata column = rowMetadata.getById(context.getColumnId());
         if (column != null) {
             column.setName(newColumnName);
         }

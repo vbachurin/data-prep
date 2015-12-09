@@ -3,8 +3,6 @@ package org.talend.dataprep.transformation.api.action.metadata.delete;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.LINE;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -68,8 +66,8 @@ public class Delete extends ActionMetadata implements RowAction {
     }
 
     @Override
-    public void applyOnLine(DataSetRow row, ActionContext context, Map<String, String> parameters, Long rowId) {
-        if (row.getTdpId().equals(rowId)) {
+    public void applyOnLine(DataSetRow row, ActionContext context) {
+        if (row.getTdpId().equals(context.getRowId())) {
             row.setDeleted(true);
         }
     }

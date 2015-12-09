@@ -60,16 +60,16 @@ public abstract class AbstractFillWith extends ActionMetadata {
 
     public abstract boolean shouldBeProcessed (String value, ColumnMetadata colMetadata);
 
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final Map<String, String> parameters = context.getParameters();
         checkParameters(parameters, row);
 
+        final String columnId = context.getColumnId();
         final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
 
         final String value = row.get(columnId);
         if (shouldBeProcessed(value, columnMetadata)) {
-
-            String newValue = "";
-
+            String newValue;
             // First, get raw new value regarding mode (constant or other column):
             if (parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE)) {
                 newValue = parameters.get(DEFAULT_VALUE_PARAMETER);

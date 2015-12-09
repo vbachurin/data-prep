@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
@@ -31,6 +32,11 @@ public class Cut extends ActionMetadata implements ColumnAction {
      * The pattern "where to cut" parameter name
      */
     public static final String PATTERN_PARAMETER = "pattern"; //$NON-NLS-1$
+
+    /**
+     * The compiled pattern based on provided value.
+     */
+    private static final String COMPILED_PATTERN = "compiled_pattern"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getName()
@@ -66,17 +72,27 @@ public class Cut extends ActionMetadata implements ColumnAction {
         return STRING.equals(Type.get(column.getType()));
     }
 
+    @Override
+    public DataSetRowAction.CompileResult compile(ActionContext actionContext, Map<String, String> parameters) {
+        try {
+            Pattern.compile(parameters.get(PATTERN_PARAMETER));
+            return DataSetRowAction.CompileResult.CONTINUE;
+        } catch (Exception e) {
+            return DataSetRowAction.CompileResult.IGNORE;
+        }
+    }
+
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final String columnId = context.getColumnId();
         final String toCut = row.get(columnId);
         if (toCut != null) {
             try {
                 // Check if the pattern is valid:
-                Pattern p = Pattern.compile(parameters.get(PATTERN_PARAMETER));
-
+                Pattern p = context.get(COMPILED_PATTERN, context.getParameters(), (map) -> Pattern.compile(map.get(PATTERN_PARAMETER)));
                 row.set(columnId, p.matcher(toCut).replaceAll("")); //$NON-NLS-1$
             } catch (PatternSyntaxException e) {
                 // In case the pattern is not valid, consider that the value does not match: do nothing.

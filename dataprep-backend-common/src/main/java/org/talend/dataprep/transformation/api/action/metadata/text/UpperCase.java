@@ -1,7 +1,5 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -47,10 +45,11 @@ public class UpperCase extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final String columnId = context.getColumnId();
         final String toUpperCase = row.get(columnId);
         if (toUpperCase != null) {
             row.set(columnId, toUpperCase.toUpperCase());

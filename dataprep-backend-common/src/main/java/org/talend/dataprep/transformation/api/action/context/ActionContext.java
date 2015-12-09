@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
 /**
  * Context for an action within a transformation. Hence, several instance of the same action can have their own context.
@@ -24,6 +25,8 @@ public class ActionContext {
     private RowMetadata outputRowMetadata;
 
     private RowMetadata inputRowMetadata;
+
+    private Map<String, String> parameters = Collections.emptyMap();
 
     public ActionContext(TransformationContext parent, RowMetadata rowMetadata) {
         this.parent = parent;
@@ -93,12 +96,12 @@ public class ActionContext {
      * @param supplier the supplier to use to create the object in case it is not found in the context.
      * @return the object (stored in the context).
      */
-    public Object get(String key, Map<String, String> parameters, Function<Map<String, String>, Object> supplier) {
+    public <T> T get(String key, Map<String, String> parameters, Function<Map<String, String>, T> supplier) {
         if (context.containsKey(key)) {
-            return context.get(key);
+            return (T) context.get(key);
         }
 
-        final Object value = supplier.apply(parameters);
+        final T value = supplier.apply(parameters);
         context.put(key, value);
         return value;
     }
@@ -136,5 +139,21 @@ public class ActionContext {
 
     public void setInputRowMetadata(RowMetadata inputRowMetadata) {
         this.inputRowMetadata = inputRowMetadata;
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
+    public String getColumnId() {
+        return parameters.get(ImplicitParameters.COLUMN_ID.getKey());
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    public Long getRowId() {
+        return Long.parseLong(parameters.get(ImplicitParameters.ROW_ID.getKey()));
     }
 }

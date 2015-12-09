@@ -131,18 +131,19 @@ public class Lookup extends ActionMetadata implements DataSetAction {
     }
 
     /**
-     * @see DataSetAction#applyOnDataSet(DataSetRow, ActionContext, Map)
+     * @see DataSetAction#applyOnDataSet(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnDataSet(DataSetRow row, ActionContext context, Map<String, String> parameters) {
+    public void applyOnDataSet(DataSetRow row, ActionContext context) {
 
         // read parameters
+        final Map<String, String> parameters = context.getParameters();
         String columnId = parameters.get(COLUMN_ID.getKey());
         String joinValue = row.get(columnId);
         String joinOn = parameters.get(LOOKUP_JOIN_ON.getKey());
 
         // get the rowMatcher from context
-        LookupRowMatcher rowMatcher = (LookupRowMatcher) context.get("rowMatcher", parameters,
+        LookupRowMatcher rowMatcher = context.get("rowMatcher", parameters,
                 (p) -> applicationContext.getBean(LookupRowMatcher.class, p.get(LOOKUP_DS_URL.getKey())));
 
         // get the matching lookup row

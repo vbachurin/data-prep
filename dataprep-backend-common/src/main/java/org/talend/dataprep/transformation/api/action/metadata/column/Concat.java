@@ -114,12 +114,14 @@ public class Concat extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
-        RowMetadata rowMetadata = row.getRowMetadata();
-        ColumnMetadata sourceColumn = rowMetadata.getById(columnId);
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        final String columnId = context.getColumnId();
+        final Map<String, String> parameters = context.getParameters();
+        final ColumnMetadata sourceColumn = rowMetadata.getById(columnId);
 
         checkSelectedColumnParameter(parameters, row);
 

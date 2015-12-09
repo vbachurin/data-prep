@@ -4,10 +4,12 @@ import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -180,10 +182,19 @@ public abstract class ActionMetadata {
      * @return A {@link Predicate filter} for data set rows.
      */
     protected Predicate<DataSetRow> getFilter(Map<String, String> parameters) {
+        final Predicate<DataSetRow> predicate;
         if (filterService == null) {
-            return r -> true;
+            predicate = r -> true;
+        } else {
+            predicate = filterService.build(parameters.get(ImplicitParameters.FILTER.getKey()));
         }
-        return filterService.build(parameters.get(ImplicitParameters.FILTER.getKey()));
+        final ScopeCategory scope = getScope(parameters);
+        if (scope == ScopeCategory.CELL || scope == ScopeCategory.LINE) {
+            final Long rowId = getRowId(parameters);
+            return predicate.and(r -> ObjectUtils.equals(r.getTdpId(), rowId));
+        } else {
+            return predicate;
+        }
     }
 
     /**
@@ -222,13 +233,14 @@ public abstract class ActionMetadata {
         if (validator != null) {
             validator.checkScopeConsistency(this, parameters);
         }
+        final Map<String, String> parametersCopy = new HashMap<>(parameters);
+        final ScopeCategory scope = getScope(parametersCopy);
+        final Predicate<DataSetRow> filter = getFilter(parametersCopy);
 
-        final Long rowId = getRowId(parameters);
-        final String columnId = getColumnId(parameters);
-        final ScopeCategory scope = getScope(parameters);
-        final Predicate<DataSetRow> filter = getFilter(parameters);
-
-        return builder().withCompile((actionContext) -> compile(actionContext, parameters))
+        return builder().withCompile((actionContext) -> {
+            actionContext.setParameters(parametersCopy);
+            return compile(actionContext, parametersCopy);
+        })
         .withRow((row, context) -> {
             if (implicitFilter() && !filter.test(row)) {
                 // Return non-modifiable row since it didn't pass the filter (but metadata might be modified).
@@ -237,20 +249,16 @@ public abstract class ActionMetadata {
             // Select the correct method to call depending on scope.
             switch (scope) {
             case CELL:
-                if (rowId != null && rowId.equals(row.getTdpId())) {
-                    ((CellAction) this).applyOnCell(row, context, parameters, rowId, columnId);
-                }
-                break;
-            case COLUMN:
-                ((ColumnAction) this).applyOnColumn(row, context, parameters, columnId);
+                ((CellAction) this).applyOnCell(row, context);
                 break;
             case LINE:
-                if (rowId != null && rowId.equals(row.getTdpId())) {
-                    ((RowAction) this).applyOnLine(row, context, parameters, rowId);
-                }
+                ((RowAction) this).applyOnLine(row, context);
+                break;
+            case COLUMN:
+                ((ColumnAction) this).applyOnColumn(row, context);
                 break;
             case DATASET:
-                ((DataSetAction) this).applyOnDataSet(row, context, parameters);
+                ((DataSetAction) this).applyOnDataSet(row, context);
                 break;
             default:
                 LOGGER.warn("Is there a new action scope ??? {}", scope);

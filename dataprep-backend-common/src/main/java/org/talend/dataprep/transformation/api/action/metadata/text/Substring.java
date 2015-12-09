@@ -95,12 +95,13 @@ public class Substring extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
         // create the new column
         final RowMetadata rowMetadata = row.getRowMetadata();
+        final String columnId = context.getColumnId();
         final ColumnMetadata column = rowMetadata.getById(columnId);
         final String substringColumn = context.column(column.getName() + APPENDIX, (r) -> {
             final ColumnMetadata c = ColumnMetadata.Builder //
@@ -121,6 +122,7 @@ public class Substring extends ActionMetadata implements ColumnAction {
         if (value == null) {
             return;
         }
+        final Map<String, String> parameters = context.getParameters();
         final int realFromIndex = getStartIndex(parameters, value);
         final int realToIndex = getEndIndex(parameters, value);
 
