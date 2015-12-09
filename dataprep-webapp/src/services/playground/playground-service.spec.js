@@ -2,7 +2,7 @@
 describe('Playground Service', function () {
     'use strict';
 
-    var datasetContent = {columns: [{id: '0001'}], records: []};
+    var datasetContent = {metadata: {columns: [{id: '0001'}]}, records: []};
     var createdPreparation;
     var stateMock = {};
 
@@ -368,8 +368,8 @@ describe('Playground Service', function () {
             $rootScope.$digest();
 
             //then
-            expect(DatasetService.getContent).toHaveBeenCalledWith('1324d56456b84ef154', false);
-            expect(StateService.updateColumnsStatistics).toHaveBeenCalledWith(datasetContent.columns);
+            expect(DatasetService.getContent).toHaveBeenCalledWith('1324d56456b84ef154', true);
+            expect(StateService.updateColumnsStatistics).toHaveBeenCalledWith(datasetContent.metadata.columns);
         }));
 
         it('should trigger statistics update', inject(function ($rootScope, PlaygroundService, StatisticsService) {
@@ -397,7 +397,7 @@ describe('Playground Service', function () {
 
             //then
             expect(PreparationService.getContent).toHaveBeenCalledWith('56ab612e6546ef15', 'head');
-            expect(StateService.updateColumnsStatistics).toHaveBeenCalledWith(datasetContent.columns);
+            expect(StateService.updateColumnsStatistics).toHaveBeenCalledWith(datasetContent.metadata.columns);
         }));
 
         it('should get preparation at specific step content and set statistics in state', inject(function ($rootScope, RecipeService, PlaygroundService, PreparationService, StateService) {
@@ -412,7 +412,7 @@ describe('Playground Service', function () {
 
             //then
             expect(PreparationService.getContent).toHaveBeenCalledWith('56ab612e6546ef15', '35ae846435a8486');
-            expect(StateService.updateColumnsStatistics).toHaveBeenCalledWith(datasetContent.columns);
+            expect(StateService.updateColumnsStatistics).toHaveBeenCalledWith(datasetContent.metadata.columns);
         }));
     });
 

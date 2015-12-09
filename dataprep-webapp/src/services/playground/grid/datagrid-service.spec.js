@@ -18,7 +18,7 @@ describe('Datagrid service', function () {
             {tdpId: 10, firstname: 'Pupu'},
             {tdpId: 11, firstname: 'Pypy'}
         ],
-        columns: [{id: '0000', name: 'lastname'}, {id: '0001', name: 'firstname'}]
+        metadata: {columns: [{id: '0000', name: 'lastname'}, {id: '0001', name: 'firstname'}]}
     };
 
     //diff result corresponding to gridRangeIndex
@@ -31,7 +31,7 @@ describe('Datagrid service', function () {
             {tdpId: 7, firstname: 'Pepe 2', __tdpDiff: {firstname: 'update'}}, //firstname is updated in preview
             {tdpId: 8, firstname: 'Pipi'}
         ],
-        columns: [{id: '0000', name: 'lastname'}, {id: '0001', name: 'firstname'}, {id: '0002', name: 'age'}]
+        metadata: {columns: [{id: '0000', name: 'lastname'}, {id: '0001', name: 'firstname'}, {id: '0002', name: 'age'}]}
     };
 
     beforeEach(module('data-prep.services.playground', function ($provide) {
@@ -48,9 +48,9 @@ describe('Datagrid service', function () {
         it('should update data records', inject(function (DatagridService, StateService) {
             //given
             stateMock.playground.dataset = {name: 'my dataset'};
-            stateMock.playground.data = {columns: [], records: []};
+            stateMock.playground.data = {metadata: {columns: []}, records: []};
 
-            var data = {columns: [], 'records': [{tdpId: 1, col: 'value'}]};
+            var data = {metadata: {columns: []}, records: [{tdpId: 1, col: 'value'}]};
 
             //when
             DatagridService.updateData(data);
@@ -64,21 +64,27 @@ describe('Datagrid service', function () {
         it('should navigate to the column having the highest Id', inject(function (DatagridService) {
             //given
             stateMock.playground.data = {
-                columns: [
-                    {id: '0000', name: 'column 1', type: 'string'},
-                    {id: '0001', name: 'column 2', type: 'numeric'},
-                    {id: '0002', name: 'column 2', type: 'numeric'},
-                    {id: '0003', name: 'column 3', type: 'integer'}], records: []
+                metadata: {
+                    columns: [
+                        {id: '0000', name: 'column 1', type: 'string'},
+                        {id: '0001', name: 'column 2', type: 'numeric'},
+                        {id: '0002', name: 'column 2', type: 'numeric'},
+                        {id: '0003', name: 'column 3', type: 'integer'}]
+                },
+                records: []
             };
 
             //the result of the 2nd column duplication
             var data = {
-                columns: [
-                    {id: '0000', name: 'column 1', type: 'string'},
-                    {id: '0001', name: 'column 2', type: 'numeric'},
-                    {id: '0004', name: 'column 1', type: 'string'},
-                    {id: '0002', name: 'column 2', type: 'numeric'},
-                    {id: '0003', name: 'column 3', type: 'integer'}], records: []
+                metadata: {
+                    columns: [
+                        {id: '0000', name: 'column 1', type: 'string'},
+                        {id: '0001', name: 'column 2', type: 'numeric'},
+                        {id: '0004', name: 'column 1', type: 'string'},
+                        {id: '0002', name: 'column 2', type: 'numeric'},
+                        {id: '0003', name: 'column 3', type: 'integer'}]
+                },
+                records: []
             };
 
             //when
@@ -93,7 +99,8 @@ describe('Datagrid service', function () {
         it('should return the rows containing non empty searched value', inject(function (DatagridService) {
             //given
             var data = {
-                columns: [], records: [
+                metadata: {columns: []},
+                records: [
                     {tdpId: 1, text: 'mon toto est ici'},
                     {tdpId: 2, text: 'ma tata est la'},
                     {tdpId: 3, text: 'la tata est ici'},
@@ -115,15 +122,18 @@ describe('Datagrid service', function () {
         it('should return every column id', inject(function (DatagridService) {
             //given
             stateMock.playground.data = {
-                columns: [
-                    {id: 'col1', name: 'column 1', type: 'string'},
-                    {id: 'col2', name: 'column 2', type: 'numeric'},
-                    {id: 'col3', name: 'column 3', type: 'integer'},
-                    {id: 'col4', name: 'column 4', type: 'float'},
-                    {id: 'col5', name: 'column 5', type: 'double'},
-                    {id: 'col6', name: 'column 6', type: 'boolean'},
-                    {id: 'col7', name: 'column 7', type: 'string'}
-                ], records: []
+                metadata: {
+                    columns: [
+                        {id: 'col1', name: 'column 1', type: 'string'},
+                        {id: 'col2', name: 'column 2', type: 'numeric'},
+                        {id: 'col3', name: 'column 3', type: 'integer'},
+                        {id: 'col4', name: 'column 4', type: 'float'},
+                        {id: 'col5', name: 'column 5', type: 'double'},
+                        {id: 'col6', name: 'column 6', type: 'boolean'},
+                        {id: 'col7', name: 'column 7', type: 'string'}
+                    ]
+                },
+                records: []
             };
 
             //when
@@ -142,15 +152,18 @@ describe('Datagrid service', function () {
         it('should return non numeric col ids', inject(function (DatagridService) {
             //given
             stateMock.playground.data = {
-                columns: [
-                    {id: 'col1', name: 'column 1', type: 'string'},
-                    {id: 'col2', name: 'column 2', type: 'numeric'},
-                    {id: 'col3', name: 'column 3', type: 'integer'},
-                    {id: 'col4', name: 'column 4', type: 'float'},
-                    {id: 'col5', name: 'column 5', type: 'double'},
-                    {id: 'col6', name: 'column 6', type: 'boolean'},
-                    {id: 'col7', name: 'column 7', type: 'string'}
-                ], records: []
+                metadata: {
+                    columns: [
+                        {id: 'col1', name: 'column 1', type: 'string'},
+                        {id: 'col2', name: 'column 2', type: 'numeric'},
+                        {id: 'col3', name: 'column 3', type: 'integer'},
+                        {id: 'col4', name: 'column 4', type: 'float'},
+                        {id: 'col5', name: 'column 5', type: 'double'},
+                        {id: 'col6', name: 'column 6', type: 'boolean'},
+                        {id: 'col7', name: 'column 7', type: 'string'}
+                    ]
+                },
+                records: []
             };
 
             //when
@@ -165,15 +178,17 @@ describe('Datagrid service', function () {
         it('should return non boolean col ids', inject(function (DatagridService) {
             //given
             stateMock.playground.data = {
-                columns: [
-                    {id: 'col1', name: 'column 1', type: 'string'},
-                    {id: 'col2', name: 'column 2', type: 'numeric'},
-                    {id: 'col3', name: 'column 3', type: 'integer'},
-                    {id: 'col4', name: 'column 4', type: 'float'},
-                    {id: 'col5', name: 'column 5', type: 'double'},
-                    {id: 'col6', name: 'column 6', type: 'boolean'},
-                    {id: 'col7', name: 'column 7', type: 'string'}
-                ], records: []
+                metadata: {
+                    columns: [
+                        {id: 'col1', name: 'column 1', type: 'string'},
+                        {id: 'col2', name: 'column 2', type: 'numeric'},
+                        {id: 'col3', name: 'column 3', type: 'integer'},
+                        {id: 'col4', name: 'column 4', type: 'float'},
+                        {id: 'col5', name: 'column 5', type: 'double'},
+                        {id: 'col6', name: 'column 6', type: 'boolean'},
+                        {id: 'col7', name: 'column 7', type: 'string'}
+                    ]
+                }, records: []
             };
 
             //when
@@ -191,15 +206,17 @@ describe('Datagrid service', function () {
         it('should return non boolean and non numeric col ids', inject(function (DatagridService) {
             //given
             stateMock.playground.data = {
-                columns: [
-                    {id: 'col1', name: 'column 1', type: 'string'},
-                    {id: 'col2', name: 'column 2', type: 'numeric'},
-                    {id: 'col3', name: 'column 3', type: 'integer'},
-                    {id: 'col4', name: 'column 4', type: 'float'},
-                    {id: 'col5', name: 'column 5', type: 'double'},
-                    {id: 'col6', name: 'column 6', type: 'boolean'},
-                    {id: 'col7', name: 'column 7', type: 'string'}
-                ], records: []
+                metadata: {
+                    columns: [
+                        {id: 'col1', name: 'column 1', type: 'string'},
+                        {id: 'col2', name: 'column 2', type: 'numeric'},
+                        {id: 'col3', name: 'column 3', type: 'integer'},
+                        {id: 'col4', name: 'column 4', type: 'float'},
+                        {id: 'col5', name: 'column 5', type: 'double'},
+                        {id: 'col6', name: 'column 6', type: 'boolean'},
+                        {id: 'col7', name: 'column 7', type: 'string'}
+                    ]
+                }, records: []
             };
 
             //when
@@ -213,15 +230,17 @@ describe('Datagrid service', function () {
         it('should return all numeric columns', inject(function (DatagridService) {
             //given
             stateMock.playground.data = {
-                columns: [
-                    {id: 'col1', name: 'column 1', type: 'string'},
-                    {id: 'col2', name: 'column 2', type: 'numeric'},
-                    {id: 'col3', name: 'column 3', type: 'integer'},
-                    {id: 'col4', name: 'column 4', type: 'float'},
-                    {id: 'col5', name: 'column 5', type: 'double'},
-                    {id: 'col6', name: 'column 6', type: 'boolean'},
-                    {id: 'col7', name: 'column 7', type: 'string'}
-                ], records: []
+                metadata: {
+                    columns: [
+                        {id: 'col1', name: 'column 1', type: 'string'},
+                        {id: 'col2', name: 'column 2', type: 'numeric'},
+                        {id: 'col3', name: 'column 3', type: 'integer'},
+                        {id: 'col4', name: 'column 4', type: 'float'},
+                        {id: 'col5', name: 'column 5', type: 'double'},
+                        {id: 'col6', name: 'column 6', type: 'boolean'},
+                        {id: 'col7', name: 'column 7', type: 'string'}
+                    ]
+                }, records: []
             };
 
             //when
@@ -238,17 +257,19 @@ describe('Datagrid service', function () {
         it('should return numeric columns excluding a specific column', inject(function (DatagridService) {
             //given
             stateMock.playground.data = {
-                columns: [
-                    {id: 'col1', name: 'column 1', type: 'string'},
-                    {id: 'col2', name: 'column 2', type: 'numeric'},
-                    {id: 'col3', name: 'column 3', type: 'integer'},
-                    {id: 'col4', name: 'column 4', type: 'float'},
-                    {id: 'col5', name: 'column 5', type: 'double'},
-                    {id: 'col6', name: 'column 6', type: 'boolean'},
-                    {id: 'col7', name: 'column 7', type: 'string'}
-                ], records: []
+                metadata: {
+                    columns: [
+                        {id: 'col1', name: 'column 1', type: 'string'},
+                        {id: 'col2', name: 'column 2', type: 'numeric'},
+                        {id: 'col3', name: 'column 3', type: 'integer'},
+                        {id: 'col4', name: 'column 4', type: 'float'},
+                        {id: 'col5', name: 'column 5', type: 'double'},
+                        {id: 'col6', name: 'column 6', type: 'boolean'},
+                        {id: 'col7', name: 'column 7', type: 'string'}
+                    ]
+                }, records: []
             };
-            var columnToExclude = stateMock.playground.data.columns[1];
+            var columnToExclude = stateMock.playground.data.metadata.columns[1];
 
             //when
             var allCols = DatagridService.getNumericColumns(columnToExclude);
@@ -279,7 +300,7 @@ describe('Datagrid service', function () {
             var executor = DatagridService.previewDataExecutor(diff);
 
             //then
-            expect(executor.columns).toBe(diff.columns);
+            expect(executor.metadata.columns).toBe(diff.metadata.columns);
             expect(executor.preview).toBe(true);
             expect(executor.instructions).toEqual([
                 {type: 'INSERT', row: {tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new'}, index: 2},
@@ -306,7 +327,7 @@ describe('Datagrid service', function () {
         it('should apply executor', inject(function (DatagridService) {
             //given
             var executor = {
-                columns: diff.columns,
+                metadata: diff.metadata,
                 preview: true,
                 instructions: [
                     {type: 'INSERT', row: {tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new'}, index: 2},
@@ -336,7 +357,7 @@ describe('Datagrid service', function () {
         it('should set focus on created columns when applying executor', inject(function (DatagridService) {
             //given
             var executor = {
-                columns: diff.columns,
+                metadata: diff.metadata,
                 preview: true,
                 instructions: [
                     {type: 'INSERT', row: {tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new'}, index: 2},
@@ -355,7 +376,7 @@ describe('Datagrid service', function () {
         it('should NOT set focus on any column when applying executor if there are no created columns', inject(function (DatagridService) {
             //given
             var executor = {
-                columns: originalData.columns,
+                metadata: originalData.metadata,
                 preview: true,
                 instructions: [
                     {type: 'INSERT', row: {tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new'}, index: 2},
@@ -374,7 +395,7 @@ describe('Datagrid service', function () {
         it('should return reverter on executor application', inject(function (DatagridService) {
             //given
             var executor = {
-                columns: diff.columns,
+                metadata: diff.metadata,
                 preview: true,
                 instructions: [
                     {type: 'INSERT', row: {tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new'}, index: 2},
@@ -387,7 +408,7 @@ describe('Datagrid service', function () {
             var reverter = DatagridService.execute(executor);
 
             //then
-            expect(reverter.columns).toBe(originalData.columns);
+            expect(reverter.metadata).toBe(originalData.metadata);
             expect(DatagridService.focusedColumn).toBe('0002');
             expect(reverter.preview).toBeFalsy();
             expect(reverter.instructions).toEqual([
@@ -400,7 +421,7 @@ describe('Datagrid service', function () {
         it('should replace service data', inject(function (DatagridService, StateService) {
             //given
             var executor = {
-                columns: diff.columns,
+                metadata: diff.metadata,
                 preview: true,
                 instructions: [
                     {type: 'INSERT', row: {tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new'}, index: 2},
@@ -415,7 +436,7 @@ describe('Datagrid service', function () {
             //then
 
             var modifiedData = {
-                columns: executor.columns,
+                metadata: executor.metadata,
                 records: originalData.records,
                 preview: executor.preview
             };

@@ -11,7 +11,7 @@ describe('Filter service', function () {
         stateMock = {
             playground: {
                 filter: {gridFilters: []},
-                data: {columns: columns}
+                data: {metadata: {columns: columns}}
             }
         };
         $provide.constant('state', stateMock);
@@ -168,10 +168,12 @@ describe('Filter service', function () {
                 expect(StateService.addGridFilter).not.toHaveBeenCalled();
                 var invalidValues = ['NA', 'N/A', 'N.A'];
                 var data = {
-                    columns: [
-                        {id: 'col0', quality: {invalidValues: []}},
-                        {id: 'col1', quality: {invalidValues: invalidValues}}
-                    ]
+                    metadata: {
+                        columns: [
+                            {id: 'col0', quality: {invalidValues: []}},
+                            {id: 'col1', quality: {invalidValues: invalidValues}}
+                        ]
+                    }
                 };
 
                 //when
@@ -247,10 +249,12 @@ describe('Filter service', function () {
                 expect(StateService.addGridFilter).not.toHaveBeenCalled();
                 var invalidValues = ['m', 'p'];
                 var data = {
-                    columns: [
-                        {id: 'col0', quality: {invalidValues: []}},
-                        {id: 'col1', quality: {invalidValues: invalidValues}}
-                    ]
+                    metadata: {
+                        columns: [
+                            {id: 'col0', quality: {invalidValues: []}},
+                            {id: 'col1', quality: {invalidValues: invalidValues}}
+                        ]
+                    }
                 };
 
                 //when

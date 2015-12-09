@@ -241,7 +241,7 @@
             }
 
             var colId = condition.field;
-            var colName = _.find(state.playground.data.columns, {id: colId}).name;
+            var colName = _.find(state.playground.data.metadata.columns, {id: colId}).name;
             return createFilter(type, colId, colName, editable, args, null, null);
         }
     }

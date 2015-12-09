@@ -2,12 +2,14 @@ describe('Lookup state service', function () {
     'use strict';
 
     var data = {
-        columns: [
-            {id: '0000', 'name': 'identif'},
-            {id: '0001', 'name': 'code'},
-            {id: '0002', 'name': 'firstname'},
-            {id: '0003', 'name': 'lastname'}
-        ],
+        metadata: {
+            columns: [
+                {id: '0000', 'name': 'identif'},
+                {id: '0001', 'name': 'code'},
+                {id: '0002', 'name': 'firstname'},
+                {id: '0003', 'name': 'lastname'}
+            ]
+        },
         records: [
             {tdpId: 0, firstname: 'Tata'},
             {tdpId: 1, firstname: 'Tetggggge'},
@@ -148,7 +150,7 @@ describe('Lookup state service', function () {
             LookupStateService.setData(data);
 
             //then
-            expect(lookupState.selectedColumn).toBe(data.columns[0]);
+            expect(lookupState.selectedColumn).toBe(data.metadata.columns[0]);
         }));
     });
 

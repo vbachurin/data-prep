@@ -76,7 +76,7 @@ describe('Datagrid directive', function () {
         beforeEach(inject(function () {
             //given
             createElement();
-            data = {columns: [{id: '0000'}, {id: '0001', tdpColMetadata: {id: '0001'}}], preview: false};
+            data = {metadata: {columns: [{id: '0000'}, {id: '0001', tdpColMetadata: {id: '0001'}}]}, preview: false};
 
             //when
             stateMock.playground.data = data;
@@ -113,7 +113,7 @@ describe('Datagrid directive', function () {
             describe('column creation', function () {
                 it('should create new columns', inject(function (DatagridColumnService) {
                     //then
-                    expect(DatagridColumnService.createColumns).toHaveBeenCalledWith(data.columns, data.preview);
+                    expect(DatagridColumnService.createColumns).toHaveBeenCalledWith(data.metadata.columns, data.preview);
                 }));
 
                 it('should reset renew all columns flag', inject(function (DatagridColumnService) {
@@ -131,7 +131,7 @@ describe('Datagrid directive', function () {
                     stateMock.playground.grid.selectedLine = 25;
 
                     //when
-                    stateMock.playground.data = {};
+                    stateMock.playground.data = {metadata:{}};
                     scope.$digest();
                     jasmine.clock().tick(1);
 
@@ -142,15 +142,15 @@ describe('Datagrid directive', function () {
                 it('should update selected column style', inject(function (DatagridService, DatagridStyleService) {
                     //given
                     stateMock.playground.grid.selectedColumn = {id: '0001'};
-                    expect(DatagridStyleService.updateColumnClass).not.toHaveBeenCalledWith(createdColumns, data.columns[1]);
+                    expect(DatagridStyleService.updateColumnClass).not.toHaveBeenCalledWith(createdColumns, data.metadata.columns[1]);
 
                     //when
-                    stateMock.playground.data = {};
+                    stateMock.playground.data = {metadata:{}};
                     scope.$digest();
                     jasmine.clock().tick(1);
 
                     //then
-                    expect(DatagridStyleService.updateColumnClass).toHaveBeenCalledWith(createdColumns, data.columns[1]);
+                    expect(DatagridStyleService.updateColumnClass).toHaveBeenCalledWith(createdColumns, data.metadata.columns[1]);
                 }));
             });
 
@@ -177,7 +177,7 @@ describe('Datagrid directive', function () {
                 expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
                 expect(DatagridGridService.navigateToFocusedColumn.calls.count()).toBe(0);
 
-                stateMock.playground.data = {};
+                stateMock.playground.data = {metadata:{}, };
                 scope.$digest();
                 jasmine.clock().tick(300);
 
@@ -209,7 +209,7 @@ describe('Datagrid directive', function () {
                 stateMock.playground.grid.selectedLine = {tdpId: 1};
 
                 //when
-                stateMock.playground.data = {};
+                stateMock.playground.data = {metadata:{}};
                 scope.$digest();
                 jasmine.clock().tick(1);
 
@@ -223,7 +223,7 @@ describe('Datagrid directive', function () {
                 expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
 
                 //when
-                stateMock.playground.data = {preview: true};
+                stateMock.playground.data = {metadata:{}, preview: true};
                 scope.$digest();
                 jasmine.clock().tick(1);
 
@@ -237,7 +237,7 @@ describe('Datagrid directive', function () {
         beforeEach(function () {
             //given
             createElement();
-            stateMock.playground.data = {columns: [{id: '0000'}, {id: '0001'}], preview: false};
+            stateMock.playground.data = {metadata: {columns: [{id: '0000'}, {id: '0001'}]}, preview: false};
             scope.$digest();
 
             //when
@@ -265,7 +265,7 @@ describe('Datagrid directive', function () {
         it('should resize grid canvas', inject(function () {
             //given
             createElement();
-            stateMock.playground.data = {columns: [{id: '0000'}, {id: '0001'}], preview: false};
+            stateMock.playground.data = {metadata: {columns: [{id: '0000'}, {id: '0001'}]}, preview: false};
             scope.$digest();
 
             jasmine.clock().tick(200);
@@ -285,7 +285,7 @@ describe('Datagrid directive', function () {
         beforeEach(function () {
             //given
             createElement();
-            stateMock.playground.data = {columns: [{id: '0000'}, {id: '0001'}], preview: false};
+            stateMock.playground.data = {metadata: {columns: [{id: '0000'}, {id: '0001'}]}, preview: false};
             scope.$digest();
 
             //when

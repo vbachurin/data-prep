@@ -6,11 +6,13 @@ describe('Transformation column param directive', function () {
         playground: {
             // available dataset/preparation columns
             data: {
-                columns: [
-                    {id: '0001', name: 'first name'},
-                    {id: '0002', name: 'last name'},
-                    {id: '0003', name: 'birth date'}
-                ]
+                metadata: {
+                    columns: [
+                        {id: '0001', name: 'first name'},
+                        {id: '0002', name: 'last name'},
+                        {id: '0003', name: 'birth date'}
+                    ]
+                }
             },
             grid: {
                 // selected column
@@ -22,7 +24,7 @@ describe('Transformation column param directive', function () {
     beforeEach(module('data-prep.transformation-form', function ($provide) {
 
         // set the selected column to the first one
-        stateMock.playground.grid.selectedColumn = stateMock.playground.data.columns[0];
+        stateMock.playground.grid.selectedColumn = stateMock.playground.data.metadata.columns[0];
 
         $provide.constant('state', stateMock);
     }));
@@ -58,7 +60,7 @@ describe('Transformation column param directive', function () {
 
         //then
         expect(element.find('.param-name').text().trim()).toBe('The Column to concatenate:');
-        expect(element.find('.param-input').find('option').length).toBe(stateMock.playground.data.columns.length - 1);
+        expect(element.find('.param-input').find('option').length).toBe(stateMock.playground.data.metadata.columns.length - 1);
 
     });
 });

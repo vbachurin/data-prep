@@ -15,7 +15,9 @@ describe('Transform column param controller', function () {
             playground: {
                 // available dataset/preparation columns
                 data: {
-                    columns: columns
+                    metadata: {
+                        columns: columns
+                    }
                 },
                 grid: {
                     // set the selected column to the first one
@@ -46,8 +48,8 @@ describe('Transform column param controller', function () {
 
         // then
         expect(ctrl.columns.length).toBe(2);
-        expect(ctrl.columns[0]).toBe(stateMock.playground.data.columns[1]);
-        expect(ctrl.columns[1]).toBe(stateMock.playground.data.columns[2]);
+        expect(ctrl.columns[0]).toBe(stateMock.playground.data.metadata.columns[1]);
+        expect(ctrl.columns[1]).toBe(stateMock.playground.data.metadata.columns[2]);
 
     });
 
@@ -56,12 +58,12 @@ describe('Transform column param controller', function () {
         var ctrl = createController();
 
         // then
-        expect(ctrl.parameter.value).toBe(stateMock.playground.data.columns[1].id);
+        expect(ctrl.parameter.value).toBe(stateMock.playground.data.metadata.columns[1].id);
     });
 
     it('should NOT set selected value when there is no columns', function () {
         //given
-        stateMock.playground.data.columns = [];
+        stateMock.playground.data.metadata.columns = [];
 
         // when
         var ctrl = createController();

@@ -147,12 +147,12 @@
             }
 
             //if there is already a selected column, we update the column metadata to reference one of the new columns
-            if (gridState.selectedColumn && data.columns) {
-                gridState.selectedColumn = _.find(data.columns, {id: gridState.selectedColumn.id}) || data.columns[0];
+            if (gridState.selectedColumn && data.metadata.columns) {
+                gridState.selectedColumn = _.find(data.metadata.columns, {id: gridState.selectedColumn.id}) || data.metadata.columns[0];
             }
             //the first column is selected by default
             else {
-                gridState.selectedColumn = data.columns[0];
+                gridState.selectedColumn = data.metadata.columns[0];
             }
             updateFilteredOccurrencesOnSelectedColumn();
         }

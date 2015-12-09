@@ -3,12 +3,14 @@ describe('Dataset Sheet Preview Service', function() {
 
     var slickGridMock, gridMockElement;
     var previewResponse = {
-        metadata: {sheetName: 'my sheet'},
-        columns: [
-            {id: '1', name: 'col1'},
-            {id: '2', name: 'col2'},
-            {id: '3', name: 'col3'}
-        ],
+        metadata: {
+            sheetName: 'my sheet',
+            columns: [
+                {id: '1', name: 'col1'},
+                {id: '2', name: 'col2'},
+                {id: '3', name: 'col3'}
+            ]
+        },
         records: [{1: 'value1', 2: 'value2', 3: 'value3'}]
     };
 
