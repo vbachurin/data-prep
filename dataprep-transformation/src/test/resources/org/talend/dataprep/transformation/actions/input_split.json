@@ -1,11 +1,13 @@
 {
-  "columns": [
-    {
-      "id": "birth",
-      "name": "birth",
-      "type": "date"
-    }
-  ],
+  "metadata": {
+    "columns": [
+      {
+        "id": "birth",
+        "name": "birth",
+        "type": "date"
+      }
+    ]
+  },
   "records": [
     {
       "birth": "02-07-1964"

@@ -1,124 +1,125 @@
 {
-  "metadata": null,
-  "columns": [
-    {
-      "name": "user_id",
-      "headerSize": 0,
-      "type": "string",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 100,
-        "invalidValues": []
+  "metadata": {
+    "columns": [
+      {
+        "name": "user_id",
+        "headerSize": 0,
+        "type": "string",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 100,
+          "invalidValues": []
+        },
+        "id": "0000",
+        "statistics": {}
       },
-      "id": "0000",
-      "statistics": {}
-    },
-    {
-      "name": "departement",
-      "headerSize": 0,
-      "type": "integer",
-      "quality": {
-        "empty": 2,
-        "invalid": 0,
-        "valid": 98,
-        "invalidValues": []
+      {
+        "name": "departement",
+        "headerSize": 0,
+        "type": "integer",
+        "quality": {
+          "empty": 2,
+          "invalid": 0,
+          "valid": 98,
+          "invalidValues": []
+        },
+        "id": "0001",
+        "statistics": {}
       },
-      "id": "0001",
-      "statistics": {}
-    },
-    {
-      "name": "birth",
-      "headerSize": 0,
-      "type": "date",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 100,
-        "invalidValues": []
+      {
+        "name": "birth",
+        "headerSize": 0,
+        "type": "date",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 100,
+          "invalidValues": []
+        },
+        "id": "0002",
+        "statistics": {}
       },
-      "id": "0002",
-      "statistics": {}
-    },
-    {
-      "name": "order_id",
-      "headerSize": 0,
-      "type": "string",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 100,
-        "invalidValues": []
+      {
+        "name": "order_id",
+        "headerSize": 0,
+        "type": "string",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 100,
+          "invalidValues": []
+        },
+        "id": "0003",
+        "statistics": {}
       },
-      "id": "0003",
-      "statistics": {}
-    },
-    {
-      "name": "order_date",
-      "headerSize": 0,
-      "type": "date",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 100,
-        "invalidValues": []
+      {
+        "name": "order_date",
+        "headerSize": 0,
+        "type": "date",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 100,
+          "invalidValues": []
+        },
+        "id": "0004",
+        "statistics": {}
       },
-      "id": "0004",
-      "statistics": {}
-    },
-    {
-      "name": "total",
-      "headerSize": 0,
-      "type": "double",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 100,
-        "invalidValues": []
+      {
+        "name": "total",
+        "headerSize": 0,
+        "type": "double",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 100,
+          "invalidValues": []
+        },
+        "id": "0005",
+        "statistics": {}
       },
-      "id": "0005",
-      "statistics": {}
-    },
-    {
-      "name": "nb_tshirts",
-      "headerSize": 0,
-      "type": "integer",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 100,
-        "invalidValues": []
+      {
+        "name": "nb_tshirts",
+        "headerSize": 0,
+        "type": "integer",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 100,
+          "invalidValues": []
+        },
+        "id": "0006",
+        "statistics": {}
       },
-      "id": "0006",
-      "statistics": {}
-    },
-    {
-      "name": "tshirt_price",
-      "headerSize": 0,
-      "type": "double",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 100,
-        "invalidValues": []
+      {
+        "name": "tshirt_price",
+        "headerSize": 0,
+        "type": "double",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 100,
+          "invalidValues": []
+        },
+        "id": "0007",
+        "statistics": {}
       },
-      "id": "0007",
-      "statistics": {}
-    },
-    {
-      "name": "category",
-      "headerSize": 0,
-      "type": "string",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 100,
-        "invalidValues": []
-      },
-      "id": "0008",
-      "statistics": {}
-    }
-  ],
+      {
+        "name": "category",
+        "headerSize": 0,
+        "type": "string",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 100,
+          "invalidValues": []
+        },
+        "id": "0008",
+        "statistics": {}
+      }
+    ]
+  },
   "records": [
     {
       "0000": "a4dc1548af",

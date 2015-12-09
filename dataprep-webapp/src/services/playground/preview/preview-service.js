@@ -128,7 +128,7 @@
         function initPreviewIdNeeded() {
             if(!originalData) {
                 originalData = {
-                    columns: state.playground.data.columns.slice(0),
+                    columns: state.playground.data.metadata.columns.slice(0),
                     records: state.playground.data.records.slice(0)
                 };
                 displayedTdpIds = getDisplayedTdpIds();

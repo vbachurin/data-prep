@@ -10,68 +10,68 @@
     "location": {
       "type": "http",
       "url": "http://estcequecestbientotleweekend.fr"
-    }
-  },
-  "columns": [
-    {
-      "id": "0000",
-      "name": "id",
-      "quality": {
-        "empty": 20,
-        "invalid": 26,
-        "valid": 54
-      },
-      "type": "integer"
     },
-    {
-      "id": "0001",
-      "name": "firstname",
-      "quality": {
-        "empty": 12,
-        "invalid": 26,
-        "valid": 62
+    "columns": [
+      {
+        "id": "0000",
+        "name": "id",
+        "quality": {
+          "empty": 20,
+          "invalid": 26,
+          "valid": 54
+        },
+        "type": "integer"
       },
-      "type": "string"
-    },
-    {
-      "id": "0002",
-      "name": "lastname",
-      "quality": {
-        "empty": 23,
-        "invalid": 27,
-        "valid": 50
+      {
+        "id": "0001",
+        "name": "firstname",
+        "quality": {
+          "empty": 12,
+          "invalid": 26,
+          "valid": 62
+        },
+        "type": "string"
       },
-      "type": "string"
-    },
-    {
-      "id": "0003",
-      "name": "age",
-      "quality": {
-        "empty": 15,
-        "invalid": 25,
-        "valid": 60
+      {
+        "id": "0002",
+        "name": "lastname",
+        "quality": {
+          "empty": 23,
+          "invalid": 27,
+          "valid": 50
+        },
+        "type": "string"
       },
-      "type": "integer"
-    },
-    {
-      "id": "0004",
-      "name": "date-of-birth",
-      "quality": {
-        "empty": 16,
-        "invalid": 26,
-        "valid": 58
+      {
+        "id": "0003",
+        "name": "age",
+        "quality": {
+          "empty": 15,
+          "invalid": 25,
+          "valid": 60
+        },
+        "type": "integer"
       },
-      "type": "string"
-    },
-    {
-      "id": "0005",
-      "name": "alive",
-      "quality": {
-        "empty": 8,
-        "invalid": 25,
-        "valid": 67
+      {
+        "id": "0004",
+        "name": "date-of-birth",
+        "quality": {
+          "empty": 16,
+          "invalid": 26,
+          "valid": 58
+        },
+        "type": "string"
       },
-      "type": "string"
-    }
-  ]
+      {
+        "id": "0005",
+        "name": "alive",
+        "quality": {
+          "empty": 8,
+          "invalid": 25,
+          "valid": 67
+        },
+        "type": "string"
+      }
+    ]
+  }
 }

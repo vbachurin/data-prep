@@ -87,7 +87,7 @@ public class CSVSerializer implements Serializer {
                 continue;
             }
 
-            List<ColumnMetadata> columns = metadata.getRow().getColumns();
+            List<ColumnMetadata> columns = metadata.getRowMetadata().getColumns();
             generator.writeStartObject();
             int columnsSize = columns.size();
             for (int i = 0; i < columnsSize; i++) {

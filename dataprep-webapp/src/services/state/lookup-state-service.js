@@ -49,9 +49,9 @@
             lookupState.dataView.setItems(data.records, 'tdpId');
             lookupState.dataView.endUpdate();
 
-            lookupState.selectedColumn = data.columns[0];
+            lookupState.selectedColumn = data.metadata.columns[0];
             lookupState.columnsToAdd = [];
-            lookupState.columnCheckboxes = _.map(data.columns, function(col) {
+            lookupState.columnCheckboxes = _.map(data.metadata.columns, function(col) {
                 return {
                     id: col.id,
                     name: col.name,

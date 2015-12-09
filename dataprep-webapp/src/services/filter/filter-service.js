@@ -63,7 +63,7 @@
         //
         // Example :
         //    return function(data) {                                                       // first level: it init the list of invalid values, based on the current data. It returns the predicate that use this list.
-        //        var column = _.find(data.columns, {id: '0001'});
+        //        var column = _.find(data.metadata.columns, {id: '0001'});
         //        var invalidValues = column.quality.invalidValues;
         //        return function (item) {                                                  // second level : returns true if the item is not in the invalid values list
         //            return item['0001'] && invalidValues.indexOf(item['0001']) === -1;
@@ -133,7 +133,7 @@
          */
         function createInvalidFilterFn(colId) {
             return function (data) {
-                var column = _.find(data.columns, {id: colId});
+                var column = _.find(data.metadata.columns, {id: colId});
                 var invalidValues = column.quality.invalidValues;
                 return function (item) {
                     return invalidValues.indexOf(item[colId]) > -1;
@@ -151,7 +151,7 @@
          */
         function createValidFilterFn(colId) {
             return function (data) {
-                var column = _.find(data.columns, {id: colId});
+                var column = _.find(data.metadata.columns, {id: colId});
                 var invalidValues = column.quality.invalidValues;
                 return function (item) {
                     return item[colId] && invalidValues.indexOf(item[colId]) === -1;

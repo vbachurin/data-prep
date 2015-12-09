@@ -2,8 +2,8 @@
 describe('Playground Service', function () {
     'use strict';
 
-    var datasetColumnsWithoutStatistics = {columns: [{id: '0001', statistics: {frequencyTable: []}}], records: [], data: []};
-    var datasetColumns = {columns: [{id: '0001', statistics: {frequencyTable: [{'toto': 2}]}}], records: [], data: []};
+    var datasetColumnsWithoutStatistics = {metadata: {columns: [{id: '0001', statistics: {frequencyTable: []}}]}, records: [], data: []};
+    var datasetColumns = {metadata: {columns: [{id: '0001', statistics: {frequencyTable: [{'toto': 2}]}}]}, records: [], data: []};
     var createdPreparation;
     var stateMock = {};
 

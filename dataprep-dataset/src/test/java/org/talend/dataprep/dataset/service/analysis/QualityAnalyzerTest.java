@@ -45,7 +45,7 @@ public class QualityAnalyzerTest extends DataSetBaseTest {
         final DataSetMetadata actual = dataSetMetadataRepository.get("1234");
         assertThat(actual.getLifecycle().qualityAnalyzed(), is(true));
         assertThat(actual.getContent().getNbRecords(), is(5));
-        for (ColumnMetadata column : actual.getRow().getColumns()) {
+        for (ColumnMetadata column : actual.getRowMetadata().getColumns()) {
             final Quality quality = column.getQuality();
             assertThat(quality.getValid(), is(5));
             assertThat(quality.getInvalid(), is(0));
@@ -66,8 +66,8 @@ public class QualityAnalyzerTest extends DataSetBaseTest {
         final DataSetMetadata actual = dataSetMetadataRepository.get(dsId);
         assertThat(actual.getLifecycle().qualityAnalyzed(), is(true));
         assertThat(actual.getContent().getNbRecords(), is(9));
-        assertThat(actual.getRow().getColumns().size(), is(2));
-        ColumnMetadata secondColumn = actual.getRow().getColumns().get(1);
+        assertThat(actual.getRowMetadata().getColumns().size(), is(2));
+        ColumnMetadata secondColumn = actual.getRowMetadata().getColumns().get(1);
         Quality quality = secondColumn.getQuality();
         assertThat(quality.getValid(), is(6));
         assertThat(quality.getInvalid(), is(2));

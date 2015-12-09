@@ -8,7 +8,7 @@ import org.talend.dataprep.api.dataset.location.LocalStoreLocation;
 import org.talend.dataprep.schema.SchemaParserResult;
 import org.talend.dataprep.schema.io.CSVSerializer;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
  * set content:
  * <ul>
- * <li>Metadata information: see {@link #getRow()}</li>
+ * <li>Metadata information: see {@link #getRowMetadata()}</li>
  * <li>Current progress on content processing:: see {@link #getLifecycle()}</li>
  * </ul>
  * 
@@ -32,7 +32,9 @@ public class DataSetMetadata implements Serializable {
     private String id;
 
     /** Row description. */
-    @JsonIgnore(true)
+    @JsonUnwrapped
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonProperty(value = "columns", required = false)
     private RowMetadata rowMetadata;
 
     /** Dataset life cycle status. */
@@ -128,8 +130,7 @@ public class DataSetMetadata implements Serializable {
     /**
      * @return the dataset row description.
      */
-    @JsonIgnore(true)
-    public RowMetadata getRow() {
+    public RowMetadata getRowMetadata() {
         return rowMetadata;
     }
 
@@ -551,8 +552,8 @@ public class DataSetMetadata implements Serializable {
             this.parameters = original.getContent().getParameters();
             this.encoding = original.getEncoding();
             List<ColumnMetadata.Builder> builders = new ArrayList<>();
-            if (original.getRow() != null) {
-                for (ColumnMetadata col : original.getRow().getColumns()) {
+            if (original.getRowMetadata() != null) {
+                for (ColumnMetadata col : original.getRowMetadata().getColumns()) {
                     builders.add(ColumnMetadata.Builder.column().copy(col));
                 }
             }

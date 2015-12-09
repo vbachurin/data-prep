@@ -5,7 +5,10 @@ import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -159,7 +162,7 @@ public abstract class PreparationCommand<T> extends GenericCommand<T> {
      * @return the resulting input stream records
      */
     protected InputStream getDatasetContent(final String dataSetId, Long sample) {
-        final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, dataSetId, false, true, true, sample);
+        final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, dataSetId, true, sample);
         return retrieveDataSet.execute();
     }
 

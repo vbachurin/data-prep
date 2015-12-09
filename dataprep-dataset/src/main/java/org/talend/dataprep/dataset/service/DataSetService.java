@@ -333,9 +333,6 @@ public class DataSetService {
                 completeWithUserData(dataSetMetadata);
                 dataSet.setMetadata(dataSetMetadata);
             }
-            if (columns) {
-                dataSet.setColumns(dataSetMetadata.getRow().getColumns());
-            }
 
             if(records) {
                 if (sample != null && sample > 0) {
@@ -376,7 +373,7 @@ public class DataSetService {
                     throws IOException {
         HttpResponseContext.header("Content-Type", MediaType.TEXT_PLAIN_VALUE);
         DataSet dataSet = get(true, true, true, null, dataSetId);
-		
+
         // if no metadata it's an empty one the get method has already set NO CONTENT http return code
         // so simply return!!
         if (dataSet.getMetadata() == null) {
@@ -549,7 +546,6 @@ public class DataSetService {
         DataSet dataSet = new DataSet();
         completeWithUserData(metadata);
         dataSet.setMetadata(metadata);
-        dataSet.setColumns(metadata.getRow().getColumns());
         return dataSet;
     }
 
@@ -574,7 +570,6 @@ public class DataSetService {
      * completed so content is not yet ready to be served.
      *
      * @param metadata If <code>true</code>, includes data set metadata information.
-     * @param columns If <code>true</code>, includes column metadata information (column types...).
      * @param sheetName the sheet name to preview
      * @param dataSetId A data set id.
      */
@@ -584,7 +579,6 @@ public class DataSetService {
     @ResponseBody
     public DataSet preview(
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata, //
-            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns, //
             @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName, //
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId //
     ) {
@@ -625,11 +619,11 @@ public class DataSetService {
 
             List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
 
-            if (dataSetMetadata.getRow() == null) {
+            if (dataSetMetadata.getRowMetadata() == null) {
                 dataSetMetadata.setRowMetadata(new RowMetadata(Collections.emptyList()));
             }
 
-            dataSetMetadata.getRow().setColumns(columnMetadatas);
+            dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
         } else {
             LOG.warn("dataset#{} has draft status but any SchemaParserResult");
         }
@@ -638,9 +632,6 @@ public class DataSetService {
         if (metadata) {
             completeWithUserData(dataSetMetadata);
             dataSet.setMetadata(dataSetMetadata);
-        }
-        if (columns) {
-            dataSet.setColumns(dataSetMetadata.getRow().getColumns());
         }
         dataSet.setRecords(contentStore.stream(dataSetMetadata).limit(100));
         return dataSet;
@@ -693,10 +684,10 @@ public class DataSetService {
 
                 if (sheetContentFound.isPresent()) {
                     List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
-                    if (previous.getRow() == null) {
+                    if (previous.getRowMetadata() == null) {
                         previous.setRowMetadata(new RowMetadata(Collections.emptyList()));
                     }
-                    previous.getRow().setColumns(columnMetadatas);
+                    previous.getRowMetadata().setColumns(columnMetadatas);
                 }
                 // Set the user-selected sheet name
                 previous.setSheetName(dataSetMetadata.getSheetName());
@@ -810,7 +801,7 @@ public class DataSetService {
                     parameters.getDomain());
 
             // get the column
-            final ColumnMetadata column = dataSetMetadata.getRow().getById(columnId);
+            final ColumnMetadata column = dataSetMetadata.getRowMetadata().getById(columnId);
             if (column == null) {
                 throw new TDPException(DataSetErrorCodes.COLUMN_DOES_NOT_EXIST, //
                         ExceptionContext.build() //
@@ -864,7 +855,6 @@ public class DataSetService {
         // compute statistics on a copy
         DataSet copy = new DataSet();
         copy.setMetadata(dataSetMetadata);
-        copy.setColumns(dataSetMetadata.getRow().getColumns());
         // Compute quality and statistics on sample only
         try (Stream<DataSetRow> stream = contentStore.sample(dataSetMetadata, sample)) {
             qualityAnalyzer.computeQuality(copy.getMetadata(), stream, sample);

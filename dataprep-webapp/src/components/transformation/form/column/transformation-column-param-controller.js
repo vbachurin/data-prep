@@ -21,7 +21,7 @@
          */
         var initColumns = function () {
             var currentColumn = state.playground.grid.selectedColumn;
-            vm.columns = _.filter(state.playground.data.columns, function(column) {
+            vm.columns = _.filter(state.playground.data.metadata.columns, function(column) {
                 return currentColumn !== column;
             });
         };

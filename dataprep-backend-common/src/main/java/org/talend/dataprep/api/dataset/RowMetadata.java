@@ -10,8 +10,10 @@ import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.diff.Flag;
+import org.talend.dataprep.api.dataset.json.ColumnContextDeserializer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Models metadata information for a row of a data set.
@@ -22,7 +24,8 @@ public class RowMetadata implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** List of row metadata. */
-    @JsonProperty("ColumnMetadata")
+    @JsonProperty("columns")
+    @JsonDeserialize(using = ColumnContextDeserializer.class)
     private List<ColumnMetadata> columns = new ArrayList<>();
 
     /**

@@ -68,7 +68,7 @@
                         //create columns, manage style and size, set columns in grid
                         clearTimeout(columnTimeout);
                         columnTimeout = setTimeout(function () {
-                            columns = LookupDatagridColumnService.createColumns(data.columns);
+                            columns = LookupDatagridColumnService.createColumns(data.metadata.columns);
 
                             selectedColumn = stateSelectedColumn ? _.find(columns, {id: stateSelectedColumn.id}) : null;
 

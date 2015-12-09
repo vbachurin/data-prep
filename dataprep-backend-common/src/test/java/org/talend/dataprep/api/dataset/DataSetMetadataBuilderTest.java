@@ -148,8 +148,8 @@ public class DataSetMetadataBuilderTest {
         builder.copy(build);
         final DataSetMetadata metadata = builder.build();
         assertEquals("1234", metadata.getId());
-        assertEquals("col0", metadata.getRow().getColumns().get(0).getName());
-        assertEquals("col1", metadata.getRow().getColumns().get(1).getName());
+        assertEquals("col0", metadata.getRowMetadata().getColumns().get(0).getName());
+        assertEquals("col1", metadata.getRowMetadata().getColumns().get(1).getName());
     }
 
     @Test

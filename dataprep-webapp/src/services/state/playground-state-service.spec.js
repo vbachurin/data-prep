@@ -118,11 +118,13 @@ describe('Playground state service', function () {
         it('should update columns statistics', inject(function(playgroundState, PlaygroundStateService) {
             //given
             playgroundState.data = {
-                columns: [
-                    {id: '0000', statistics: {}},
-                    {id: '0001', statistics: {}},
-                    {id: '0002', statistics: {}}
-                ]
+                metadata: {
+                    columns: [
+                        {id: '0000', statistics: {}},
+                        {id: '0001', statistics: {}},
+                        {id: '0002', statistics: {}}
+                    ]
+                }
             };
 
             var newColumns = [
@@ -135,9 +137,9 @@ describe('Playground state service', function () {
             PlaygroundStateService.updateColumnsStatistics(newColumns);
 
             //then
-            expect(playgroundState.data.columns[0].statistics).toBe(newColumns[0].statistics);
-            expect(playgroundState.data.columns[1].statistics).toBe(newColumns[1].statistics);
-            expect(playgroundState.data.columns[2].statistics).toBe(newColumns[2].statistics);
+            expect(playgroundState.data.metadata.columns[0].statistics).toBe(newColumns[0].statistics);
+            expect(playgroundState.data.metadata.columns[1].statistics).toBe(newColumns[1].statistics);
+            expect(playgroundState.data.metadata.columns[2].statistics).toBe(newColumns[2].statistics);
         }));
     });
 

@@ -25,713 +25,713 @@
     "sheetName": null,
     "draft": false,
     "schemaParserResult": null,
-    "encoding": "UTF-8"
+    "encoding": "UTF-8",
+    "columns": [
+      {
+        "name": "Postal",
+        "headerSize": 1,
+        "type": "string",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 50,
+          "invalidValues": []
+        },
+        "id": "0000",
+        "statistics": {
+          "count": 50,
+          "valid": 50,
+          "invalid": 0,
+          "empty": 0,
+          "max": "NaN",
+          "min": "NaN",
+          "mean": "NaN",
+          "variance": "NaN",
+          "duplicateCount": 0,
+          "distinctCount": 50,
+          "frequencyTable": [
+            {
+              "data": "DE",
+              "occurrences": 1
+            },
+            {
+              "data": "HI",
+              "occurrences": 1
+            },
+            {
+              "data": "TX",
+              "occurrences": 1
+            },
+            {
+              "data": "MA",
+              "occurrences": 1
+            },
+            {
+              "data": "MD",
+              "occurrences": 1
+            },
+            {
+              "data": "IA",
+              "occurrences": 1
+            },
+            {
+              "data": "ME",
+              "occurrences": 1
+            },
+            {
+              "data": "ID",
+              "occurrences": 1
+            },
+            {
+              "data": "MI",
+              "occurrences": 1
+            },
+            {
+              "data": "UT",
+              "occurrences": 1
+            },
+            {
+              "data": "MN",
+              "occurrences": 1
+            },
+            {
+              "data": "MO",
+              "occurrences": 1
+            },
+            {
+              "data": "IL",
+              "occurrences": 1
+            },
+            {
+              "data": "IN",
+              "occurrences": 1
+            },
+            {
+              "data": "MS",
+              "occurrences": 1
+            }
+          ],
+          "patternFrequencyTable": [
+            {
+              "pattern": "AA",
+              "occurrences": 50
+            }
+          ],
+          "quantiles": {
+            "median": "NaN",
+            "lowerQuantile": "NaN",
+            "upperQuantile": "NaN"
+          },
+          "histogram": [],
+          "textLengthSummary": {
+            "minimalLength": 2.0,
+            "maximalLength": 2.0,
+            "averageLength": 2.0
+          }
+        },
+        "domain": "US_STATE_CODE",
+        "domainLabel": "US State Code",
+        "domainFrequency": 50.0,
+        "semanticDomains": [
+          {
+            "id": "US_STATE_CODE",
+            "label": "US State Code",
+            "frequency": 100.0
+          },
+          {
+            "id": "COUNTRY_CODE_ISO2",
+            "label": "Country Code ISO2",
+            "frequency": 52.0
+          },
+          {
+            "id": "CITY",
+            "label": "City",
+            "frequency": 16.0
+          },
+          {
+            "id": "CIVILITY",
+            "label": "Civility",
+            "frequency": 2.0
+          },
+          {
+            "id": "FIRST_NAME",
+            "label": "First Name",
+            "frequency": 4.0
+          }
+        ],
+        "domainForced": false,
+        "typeForced": false
+      },
+      {
+        "name": "State",
+        "headerSize": 1,
+        "type": "string",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 50,
+          "invalidValues": []
+        },
+        "id": "0001",
+        "statistics": {
+          "count": 50,
+          "valid": 50,
+          "invalid": 0,
+          "empty": 0,
+          "max": "NaN",
+          "min": "NaN",
+          "mean": "NaN",
+          "variance": "NaN",
+          "duplicateCount": 0,
+          "distinctCount": 50,
+          "frequencyTable": [
+            {
+              "data": "North Carolina",
+              "occurrences": 1
+            },
+            {
+              "data": "Indiana",
+              "occurrences": 1
+            },
+            {
+              "data": "Wyoming",
+              "occurrences": 1
+            },
+            {
+              "data": "Utah",
+              "occurrences": 1
+            },
+            {
+              "data": "Arizona",
+              "occurrences": 1
+            },
+            {
+              "data": "Montana",
+              "occurrences": 1
+            },
+            {
+              "data": "Kentucky",
+              "occurrences": 1
+            },
+            {
+              "data": "California",
+              "occurrences": 1
+            },
+            {
+              "data": "Kansas",
+              "occurrences": 1
+            },
+            {
+              "data": "Delaware",
+              "occurrences": 1
+            },
+            {
+              "data": "Florida",
+              "occurrences": 1
+            },
+            {
+              "data": "Pennsylvania",
+              "occurrences": 1
+            },
+            {
+              "data": "Iowa",
+              "occurrences": 1
+            },
+            {
+              "data": "Mississippi",
+              "occurrences": 1
+            },
+            {
+              "data": "Illinois",
+              "occurrences": 1
+            }
+          ],
+          "patternFrequencyTable": [
+            {
+              "pattern": "Aaaaaaaa",
+              "occurrences": 11
+            },
+            {
+              "pattern": "Aaaaaaa",
+              "occurrences": 7
+            },
+            {
+              "pattern": "Aaaaaa",
+              "occurrences": 5
+            },
+            {
+              "pattern": "Aaaaaaaaa",
+              "occurrences": 4
+            },
+            {
+              "pattern": "Aaaaa",
+              "occurrences": 3
+            },
+            {
+              "pattern": "Aaaaa Aaaaaa",
+              "occurrences": 3
+            },
+            {
+              "pattern": "Aaaa",
+              "occurrences": 3
+            },
+            {
+              "pattern": "Aaa Aaaaaa",
+              "occurrences": 2
+            },
+            {
+              "pattern": "Aaaaaaaaaa",
+              "occurrences": 2
+            },
+            {
+              "pattern": "Aaaaaaaaaaa",
+              "occurrences": 2
+            },
+            {
+              "pattern": "Aaaaa Aaaaaaaa",
+              "occurrences": 2
+            },
+            {
+              "pattern": "Aaa Aaaaaaaaa",
+              "occurrences": 1
+            },
+            {
+              "pattern": "Aaa Aaaa",
+              "occurrences": 1
+            },
+            {
+              "pattern": "Aaaa Aaaaaaaa",
+              "occurrences": 1
+            },
+            {
+              "pattern": "AAAAAAA",
+              "occurrences": 1
+            }
+          ],
+          "quantiles": {
+            "median": "NaN",
+            "lowerQuantile": "NaN",
+            "upperQuantile": "NaN"
+          },
+          "histogram": [],
+          "textLengthSummary": {
+            "minimalLength": 4.0,
+            "maximalLength": 14.0,
+            "averageLength": 8.44
+          }
+        },
+        "domain": "US_STATE",
+        "domainLabel": "US State",
+        "domainFrequency": 50.0,
+        "semanticDomains": [
+          {
+            "id": "ADDRESS_LINE",
+            "label": "Address Line",
+            "frequency": 10.0
+          },
+          {
+            "id": "CITY",
+            "label": "City",
+            "frequency": 20.0
+          },
+          {
+            "id": "AIRPORT",
+            "label": "Airport",
+            "frequency": 4.0
+          },
+          {
+            "id": "COUNTRY",
+            "label": "Country",
+            "frequency": 2.0
+          },
+          {
+            "id": "US_STATE",
+            "label": "US State",
+            "frequency": 100.0
+          },
+          {
+            "id": "FIRST_NAME",
+            "label": "First Name",
+            "frequency": 12.0
+          }
+        ],
+        "domainForced": false,
+        "typeForced": false
+      },
+      {
+        "name": "Capital",
+        "headerSize": 1,
+        "type": "string",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 50,
+          "invalidValues": []
+        },
+        "id": "0002",
+        "statistics": {
+          "count": 50,
+          "valid": 50,
+          "invalid": 0,
+          "empty": 0,
+          "max": "NaN",
+          "min": "NaN",
+          "mean": "NaN",
+          "variance": "NaN",
+          "duplicateCount": 0,
+          "distinctCount": 50,
+          "frequencyTable": [
+            {
+              "data": "Topeka",
+              "occurrences": 1
+            },
+            {
+              "data": "Oklahoma City",
+              "occurrences": 1
+            },
+            {
+              "data": "Charleston",
+              "occurrences": 1
+            },
+            {
+              "data": "Annapolis",
+              "occurrences": 1
+            },
+            {
+              "data": "Saint Paul",
+              "occurrences": 1
+            },
+            {
+              "data": "Jackson",
+              "occurrences": 1
+            },
+            {
+              "data": "Austin",
+              "occurrences": 1
+            },
+            {
+              "data": "Helena",
+              "occurrences": 1
+            },
+            {
+              "data": "Jefferson City",
+              "occurrences": 1
+            },
+            {
+              "data": "Lincoln",
+              "occurrences": 1
+            },
+            {
+              "data": "Boston",
+              "occurrences": 1
+            },
+            {
+              "data": "Albany",
+              "occurrences": 1
+            },
+            {
+              "data": "Sacramento",
+              "occurrences": 1
+            },
+            {
+              "data": "Providence",
+              "occurrences": 1
+            },
+            {
+              "data": "Olympia",
+              "occurrences": 1
+            }
+          ],
+          "patternFrequencyTable": [
+            {
+              "pattern": "Aaaaaaa",
+              "occurrences": 11
+            },
+            {
+              "pattern": "Aaaaaa",
+              "occurrences": 8
+            },
+            {
+              "pattern": "Aaaaaaaa",
+              "occurrences": 7
+            },
+            {
+              "pattern": "Aaaaaaaaaa",
+              "occurrences": 6
+            },
+            {
+              "pattern": "Aaaaa",
+              "occurrences": 3
+            },
+            {
+              "pattern": "Aaaaaaaaa",
+              "occurrences": 3
+            },
+            {
+              "pattern": "Aaaaaa Aaaa",
+              "occurrences": 2
+            },
+            {
+              "pattern": "Aaaaaaaaaaa",
+              "occurrences": 2
+            },
+            {
+              "pattern": "Aaa Aaaaaa",
+              "occurrences": 1
+            },
+            {
+              "pattern": "Aaaaa Aa",
+              "occurrences": 1
+            },
+            {
+              "pattern": "Aaaa Aaaa Aaaa",
+              "occurrences": 1
+            },
+            {
+              "pattern": "Aaaaaaaa Aaaa",
+              "occurrences": 1
+            },
+            {
+              "pattern": "Aaaaa Aaaa",
+              "occurrences": 1
+            },
+            {
+              "pattern": "Aaaaaaaaa Aaaa",
+              "occurrences": 1
+            },
+            {
+              "pattern": "Aaaaa Aaaaa",
+              "occurrences": 1
+            }
+          ],
+          "quantiles": {
+            "median": "NaN",
+            "lowerQuantile": "NaN",
+            "upperQuantile": "NaN"
+          },
+          "histogram": [],
+          "textLengthSummary": {
+            "minimalLength": 5.0,
+            "maximalLength": 14.0,
+            "averageLength": 8.38
+          }
+        },
+        "domain": "CITY",
+        "domainLabel": "City",
+        "domainFrequency": 47.0,
+        "semanticDomains": [
+          {
+            "id": "",
+            "label": "",
+            "frequency": 4.0
+          },
+          {
+            "id": "CITY",
+            "label": "City",
+            "frequency": 94.0
+          },
+          {
+            "id": "AIRPORT",
+            "label": "Airport",
+            "frequency": 28.0
+          },
+          {
+            "id": "FIRST_NAME",
+            "label": "First Name",
+            "frequency": 20.0
+          }
+        ],
+        "domainForced": false,
+        "typeForced": false
+      },
+      {
+        "name": "MostPopulousCity",
+        "headerSize": 1,
+        "type": "string",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 50,
+          "invalidValues": []
+        },
+        "id": "0003",
+        "statistics": {
+          "count": 50,
+          "valid": 50,
+          "invalid": 0,
+          "empty": 0,
+          "max": "NaN",
+          "min": "NaN",
+          "mean": "NaN",
+          "variance": "NaN",
+          "duplicateCount": 1,
+          "distinctCount": 49,
+          "frequencyTable": [
+            {
+              "data": "Portland",
+              "occurrences": 2
+            },
+            {
+              "data": "Milwaukee",
+              "occurrences": 1
+            },
+            {
+              "data": "Oklahoma City",
+              "occurrences": 1
+            },
+            {
+              "data": "Charleston",
+              "occurrences": 1
+            },
+            {
+              "data": "Detroit",
+              "occurrences": 1
+            },
+            {
+              "data": "Charlotte",
+              "occurrences": 1
+            },
+            {
+              "data": "Albuquerque",
+              "occurrences": 1
+            },
+            {
+              "data": "Jackson",
+              "occurrences": 1
+            },
+            {
+              "data": "Bridgeport",
+              "occurrences": 1
+            },
+            {
+              "data": "New York City",
+              "occurrences": 1
+            },
+            {
+              "data": "Billings",
+              "occurrences": 1
+            },
+            {
+              "data": "Fargo",
+              "occurrences": 1
+            },
+            {
+              "data": "Memphis",
+              "occurrences": 1
+            },
+            {
+              "data": "Wilmington",
+              "occurrences": 1
+            },
+            {
+              "data": "Jacksonville",
+              "occurrences": 1
+            }
+          ],
+          "patternFrequencyTable": [
+            {
+              "pattern": "Aaaaaaa",
+              "occurrences": 9
+            },
+            {
+              "pattern": "Aaaaaaaaaa",
+              "occurrences": 7
+            },
+            {
+              "pattern": "Aaaaaaaa",
+              "occurrences": 7
+            },
+            {
+              "pattern": "Aaaaaaaaa",
+              "occurrences": 4
+            },
+            {
+              "pattern": "Aaaaa",
+              "occurrences": 3
+            },
+            {
+              "pattern": "Aaaaaa",
+              "occurrences": 3
+            },
+            {
+              "pattern": "Aaaaaaaaaaaa",
+              "occurrences": 3
+            },
+            {
+              "pattern": "Aaaaaa Aaaa",
+              "occurrences": 2
+            },
+            {
+              "pattern": "Aaaaaaaaaaa",
+              "occurrences": 2
+            },
+            {
+              "pattern": "Aaa Aaaa Aaaa",
+              "occurrences": 1
+            },
+            {
+              "pattern": "Aaaaaaaaaa aaaa",
+              "occurrences": 1
+            },
+            {
+              "pattern": "Aaa Aaaaaa",
+              "occurrences": 1
+            },
+            {
+              "pattern": "Aaa Aaaaa",
+              "occurrences": 1
+            },
+            {
+              "pattern": "Aaa Aaaaaaa *",
+              "occurrences": 1
+            },
+            {
+              "pattern": "Aaaa Aaaa Aaaa",
+              "occurrences": 1
+            }
+          ],
+          "quantiles": {
+            "median": "NaN",
+            "lowerQuantile": "NaN",
+            "upperQuantile": "NaN"
+          },
+          "histogram": [],
+          "textLengthSummary": {
+            "minimalLength": 5.0,
+            "maximalLength": 15.0,
+            "averageLength": 9.22
+          }
+        },
+        "domain": "CITY",
+        "domainLabel": "City",
+        "domainFrequency": 46.0,
+        "semanticDomains": [
+          {
+            "id": "",
+            "label": "",
+            "frequency": 8.0
+          },
+          {
+            "id": "CITY",
+            "label": "City",
+            "frequency": 92.0
+          },
+          {
+            "id": "AIRPORT",
+            "label": "Airport",
+            "frequency": 18.0
+          },
+          {
+            "id": "FIRST_NAME",
+            "label": "First Name",
+            "frequency": 10.0
+          }
+        ],
+        "domainForced": false,
+        "typeForced": false
+      }
+    ]
   },
-  "columns": [
-    {
-      "name": "Postal",
-      "headerSize": 1,
-      "type": "string",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 50,
-        "invalidValues": []
-      },
-      "id": "0000",
-      "statistics": {
-        "count": 50,
-        "valid": 50,
-        "invalid": 0,
-        "empty": 0,
-        "max": "NaN",
-        "min": "NaN",
-        "mean": "NaN",
-        "variance": "NaN",
-        "duplicateCount": 0,
-        "distinctCount": 50,
-        "frequencyTable": [
-          {
-            "data": "DE",
-            "occurrences": 1
-          },
-          {
-            "data": "HI",
-            "occurrences": 1
-          },
-          {
-            "data": "TX",
-            "occurrences": 1
-          },
-          {
-            "data": "MA",
-            "occurrences": 1
-          },
-          {
-            "data": "MD",
-            "occurrences": 1
-          },
-          {
-            "data": "IA",
-            "occurrences": 1
-          },
-          {
-            "data": "ME",
-            "occurrences": 1
-          },
-          {
-            "data": "ID",
-            "occurrences": 1
-          },
-          {
-            "data": "MI",
-            "occurrences": 1
-          },
-          {
-            "data": "UT",
-            "occurrences": 1
-          },
-          {
-            "data": "MN",
-            "occurrences": 1
-          },
-          {
-            "data": "MO",
-            "occurrences": 1
-          },
-          {
-            "data": "IL",
-            "occurrences": 1
-          },
-          {
-            "data": "IN",
-            "occurrences": 1
-          },
-          {
-            "data": "MS",
-            "occurrences": 1
-          }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "AA",
-            "occurrences": 50
-          }
-        ],
-        "quantiles": {
-          "median": "NaN",
-          "lowerQuantile": "NaN",
-          "upperQuantile": "NaN"
-        },
-        "histogram": [],
-        "textLengthSummary": {
-          "minimalLength": 2.0,
-          "maximalLength": 2.0,
-          "averageLength": 2.0
-        }
-      },
-      "domain": "US_STATE_CODE",
-      "domainLabel": "US State Code",
-      "domainFrequency": 50.0,
-      "semanticDomains": [
-        {
-          "id": "US_STATE_CODE",
-          "label": "US State Code",
-          "frequency": 100.0
-        },
-        {
-          "id": "COUNTRY_CODE_ISO2",
-          "label": "Country Code ISO2",
-          "frequency": 52.0
-        },
-        {
-          "id": "CITY",
-          "label": "City",
-          "frequency": 16.0
-        },
-        {
-          "id": "CIVILITY",
-          "label": "Civility",
-          "frequency": 2.0
-        },
-        {
-          "id": "FIRST_NAME",
-          "label": "First Name",
-          "frequency": 4.0
-        }
-      ],
-      "domainForced": false,
-      "typeForced": false
-    },
-    {
-      "name": "State",
-      "headerSize": 1,
-      "type": "string",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 50,
-        "invalidValues": []
-      },
-      "id": "0001",
-      "statistics": {
-        "count": 50,
-        "valid": 50,
-        "invalid": 0,
-        "empty": 0,
-        "max": "NaN",
-        "min": "NaN",
-        "mean": "NaN",
-        "variance": "NaN",
-        "duplicateCount": 0,
-        "distinctCount": 50,
-        "frequencyTable": [
-          {
-            "data": "North Carolina",
-            "occurrences": 1
-          },
-          {
-            "data": "Indiana",
-            "occurrences": 1
-          },
-          {
-            "data": "Wyoming",
-            "occurrences": 1
-          },
-          {
-            "data": "Utah",
-            "occurrences": 1
-          },
-          {
-            "data": "Arizona",
-            "occurrences": 1
-          },
-          {
-            "data": "Montana",
-            "occurrences": 1
-          },
-          {
-            "data": "Kentucky",
-            "occurrences": 1
-          },
-          {
-            "data": "California",
-            "occurrences": 1
-          },
-          {
-            "data": "Kansas",
-            "occurrences": 1
-          },
-          {
-            "data": "Delaware",
-            "occurrences": 1
-          },
-          {
-            "data": "Florida",
-            "occurrences": 1
-          },
-          {
-            "data": "Pennsylvania",
-            "occurrences": 1
-          },
-          {
-            "data": "Iowa",
-            "occurrences": 1
-          },
-          {
-            "data": "Mississippi",
-            "occurrences": 1
-          },
-          {
-            "data": "Illinois",
-            "occurrences": 1
-          }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "Aaaaaaaa",
-            "occurrences": 11
-          },
-          {
-            "pattern": "Aaaaaaa",
-            "occurrences": 7
-          },
-          {
-            "pattern": "Aaaaaa",
-            "occurrences": 5
-          },
-          {
-            "pattern": "Aaaaaaaaa",
-            "occurrences": 4
-          },
-          {
-            "pattern": "Aaaaa",
-            "occurrences": 3
-          },
-          {
-            "pattern": "Aaaaa Aaaaaa",
-            "occurrences": 3
-          },
-          {
-            "pattern": "Aaaa",
-            "occurrences": 3
-          },
-          {
-            "pattern": "Aaa Aaaaaa",
-            "occurrences": 2
-          },
-          {
-            "pattern": "Aaaaaaaaaa",
-            "occurrences": 2
-          },
-          {
-            "pattern": "Aaaaaaaaaaa",
-            "occurrences": 2
-          },
-          {
-            "pattern": "Aaaaa Aaaaaaaa",
-            "occurrences": 2
-          },
-          {
-            "pattern": "Aaa Aaaaaaaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaa Aaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaaa Aaaaaaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "AAAAAAA",
-            "occurrences": 1
-          }
-        ],
-        "quantiles": {
-          "median": "NaN",
-          "lowerQuantile": "NaN",
-          "upperQuantile": "NaN"
-        },
-        "histogram": [],
-        "textLengthSummary": {
-          "minimalLength": 4.0,
-          "maximalLength": 14.0,
-          "averageLength": 8.44
-        }
-      },
-      "domain": "US_STATE",
-      "domainLabel": "US State",
-      "domainFrequency": 50.0,
-      "semanticDomains": [
-        {
-          "id": "ADDRESS_LINE",
-          "label": "Address Line",
-          "frequency": 10.0
-        },
-        {
-          "id": "CITY",
-          "label": "City",
-          "frequency": 20.0
-        },
-        {
-          "id": "AIRPORT",
-          "label": "Airport",
-          "frequency": 4.0
-        },
-        {
-          "id": "COUNTRY",
-          "label": "Country",
-          "frequency": 2.0
-        },
-        {
-          "id": "US_STATE",
-          "label": "US State",
-          "frequency": 100.0
-        },
-        {
-          "id": "FIRST_NAME",
-          "label": "First Name",
-          "frequency": 12.0
-        }
-      ],
-      "domainForced": false,
-      "typeForced": false
-    },
-    {
-      "name": "Capital",
-      "headerSize": 1,
-      "type": "string",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 50,
-        "invalidValues": []
-      },
-      "id": "0002",
-      "statistics": {
-        "count": 50,
-        "valid": 50,
-        "invalid": 0,
-        "empty": 0,
-        "max": "NaN",
-        "min": "NaN",
-        "mean": "NaN",
-        "variance": "NaN",
-        "duplicateCount": 0,
-        "distinctCount": 50,
-        "frequencyTable": [
-          {
-            "data": "Topeka",
-            "occurrences": 1
-          },
-          {
-            "data": "Oklahoma City",
-            "occurrences": 1
-          },
-          {
-            "data": "Charleston",
-            "occurrences": 1
-          },
-          {
-            "data": "Annapolis",
-            "occurrences": 1
-          },
-          {
-            "data": "Saint Paul",
-            "occurrences": 1
-          },
-          {
-            "data": "Jackson",
-            "occurrences": 1
-          },
-          {
-            "data": "Austin",
-            "occurrences": 1
-          },
-          {
-            "data": "Helena",
-            "occurrences": 1
-          },
-          {
-            "data": "Jefferson City",
-            "occurrences": 1
-          },
-          {
-            "data": "Lincoln",
-            "occurrences": 1
-          },
-          {
-            "data": "Boston",
-            "occurrences": 1
-          },
-          {
-            "data": "Albany",
-            "occurrences": 1
-          },
-          {
-            "data": "Sacramento",
-            "occurrences": 1
-          },
-          {
-            "data": "Providence",
-            "occurrences": 1
-          },
-          {
-            "data": "Olympia",
-            "occurrences": 1
-          }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "Aaaaaaa",
-            "occurrences": 11
-          },
-          {
-            "pattern": "Aaaaaa",
-            "occurrences": 8
-          },
-          {
-            "pattern": "Aaaaaaaa",
-            "occurrences": 7
-          },
-          {
-            "pattern": "Aaaaaaaaaa",
-            "occurrences": 6
-          },
-          {
-            "pattern": "Aaaaa",
-            "occurrences": 3
-          },
-          {
-            "pattern": "Aaaaaaaaa",
-            "occurrences": 3
-          },
-          {
-            "pattern": "Aaaaaa Aaaa",
-            "occurrences": 2
-          },
-          {
-            "pattern": "Aaaaaaaaaaa",
-            "occurrences": 2
-          },
-          {
-            "pattern": "Aaa Aaaaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaaaa Aa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaaa Aaaa Aaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaaaaaaa Aaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaaaa Aaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaaaaaaaa Aaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaaaa Aaaaa",
-            "occurrences": 1
-          }
-        ],
-        "quantiles": {
-          "median": "NaN",
-          "lowerQuantile": "NaN",
-          "upperQuantile": "NaN"
-        },
-        "histogram": [],
-        "textLengthSummary": {
-          "minimalLength": 5.0,
-          "maximalLength": 14.0,
-          "averageLength": 8.38
-        }
-      },
-      "domain": "CITY",
-      "domainLabel": "City",
-      "domainFrequency": 47.0,
-      "semanticDomains": [
-        {
-          "id": "",
-          "label": "",
-          "frequency": 4.0
-        },
-        {
-          "id": "CITY",
-          "label": "City",
-          "frequency": 94.0
-        },
-        {
-          "id": "AIRPORT",
-          "label": "Airport",
-          "frequency": 28.0
-        },
-        {
-          "id": "FIRST_NAME",
-          "label": "First Name",
-          "frequency": 20.0
-        }
-      ],
-      "domainForced": false,
-      "typeForced": false
-    },
-    {
-      "name": "MostPopulousCity",
-      "headerSize": 1,
-      "type": "string",
-      "quality": {
-        "empty": 0,
-        "invalid": 0,
-        "valid": 50,
-        "invalidValues": []
-      },
-      "id": "0003",
-      "statistics": {
-        "count": 50,
-        "valid": 50,
-        "invalid": 0,
-        "empty": 0,
-        "max": "NaN",
-        "min": "NaN",
-        "mean": "NaN",
-        "variance": "NaN",
-        "duplicateCount": 1,
-        "distinctCount": 49,
-        "frequencyTable": [
-          {
-            "data": "Portland",
-            "occurrences": 2
-          },
-          {
-            "data": "Milwaukee",
-            "occurrences": 1
-          },
-          {
-            "data": "Oklahoma City",
-            "occurrences": 1
-          },
-          {
-            "data": "Charleston",
-            "occurrences": 1
-          },
-          {
-            "data": "Detroit",
-            "occurrences": 1
-          },
-          {
-            "data": "Charlotte",
-            "occurrences": 1
-          },
-          {
-            "data": "Albuquerque",
-            "occurrences": 1
-          },
-          {
-            "data": "Jackson",
-            "occurrences": 1
-          },
-          {
-            "data": "Bridgeport",
-            "occurrences": 1
-          },
-          {
-            "data": "New York City",
-            "occurrences": 1
-          },
-          {
-            "data": "Billings",
-            "occurrences": 1
-          },
-          {
-            "data": "Fargo",
-            "occurrences": 1
-          },
-          {
-            "data": "Memphis",
-            "occurrences": 1
-          },
-          {
-            "data": "Wilmington",
-            "occurrences": 1
-          },
-          {
-            "data": "Jacksonville",
-            "occurrences": 1
-          }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "Aaaaaaa",
-            "occurrences": 9
-          },
-          {
-            "pattern": "Aaaaaaaaaa",
-            "occurrences": 7
-          },
-          {
-            "pattern": "Aaaaaaaa",
-            "occurrences": 7
-          },
-          {
-            "pattern": "Aaaaaaaaa",
-            "occurrences": 4
-          },
-          {
-            "pattern": "Aaaaa",
-            "occurrences": 3
-          },
-          {
-            "pattern": "Aaaaaa",
-            "occurrences": 3
-          },
-          {
-            "pattern": "Aaaaaaaaaaaa",
-            "occurrences": 3
-          },
-          {
-            "pattern": "Aaaaaa Aaaa",
-            "occurrences": 2
-          },
-          {
-            "pattern": "Aaaaaaaaaaa",
-            "occurrences": 2
-          },
-          {
-            "pattern": "Aaa Aaaa Aaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaaaaaaaaa aaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaa Aaaaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaa Aaaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaa Aaaaaaa *",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaaa Aaaa Aaaa",
-            "occurrences": 1
-          }
-        ],
-        "quantiles": {
-          "median": "NaN",
-          "lowerQuantile": "NaN",
-          "upperQuantile": "NaN"
-        },
-        "histogram": [],
-        "textLengthSummary": {
-          "minimalLength": 5.0,
-          "maximalLength": 15.0,
-          "averageLength": 9.22
-        }
-      },
-      "domain": "CITY",
-      "domainLabel": "City",
-      "domainFrequency": 46.0,
-      "semanticDomains": [
-        {
-          "id": "",
-          "label": "",
-          "frequency": 8.0
-        },
-        {
-          "id": "CITY",
-          "label": "City",
-          "frequency": 92.0
-        },
-        {
-          "id": "AIRPORT",
-          "label": "Airport",
-          "frequency": 18.0
-        },
-        {
-          "id": "FIRST_NAME",
-          "label": "First Name",
-          "frequency": 10.0
-        }
-      ],
-      "domainForced": false,
-      "typeForced": false
-    }
-  ],
   "records": [
     {
       "0000": "AL",

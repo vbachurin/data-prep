@@ -43,7 +43,7 @@ public class SchemaAnalyzerTest extends DataSetBaseTest {
         Type[] expectedTypes = { Type.STRING, Type.STRING, Type.STRING, Type.DATE, Type.STRING };
         int i = 0;
         int j = 0;
-        for (ColumnMetadata column : actual.getRow().getColumns()) {
+        for (ColumnMetadata column : actual.getRowMetadata().getColumns()) {
             assertThat(column.getName(), is(expectedNames[i++]));
             assertThat(column.getType(), is(expectedTypes[j++].getName()));
         }
@@ -68,7 +68,7 @@ public class SchemaAnalyzerTest extends DataSetBaseTest {
         Type[] expectedTypes = { Type.STRING };
         int i = 0;
         int j = 0;
-        for (ColumnMetadata column : actual.getRow().getColumns()) {
+        for (ColumnMetadata column : actual.getRowMetadata().getColumns()) {
             assertThat(column.getName(), is(expectedNames[i++]));
             assertThat(column.getType(), is(expectedTypes[j++].getName()));
         }
@@ -94,7 +94,7 @@ public class SchemaAnalyzerTest extends DataSetBaseTest {
         String[] expectedDomains = { "FR_POSTAL_CODE" };
         int i = 0;
 
-        for (ColumnMetadata column : actual.getRow().getColumns()) {
+        for (ColumnMetadata column : actual.getRowMetadata().getColumns()) {
             assertThat(column.getName(), is(expectedNames[i]));
             assertThat(column.getType(), is(expectedTypes[i].getName()));
             assertThat(column.getDomain(), is(expectedDomains[i++]));
@@ -126,7 +126,7 @@ public class SchemaAnalyzerTest extends DataSetBaseTest {
         String[] expectedDomains = { "" };
         int i = 0;
 
-        for (ColumnMetadata column : actual.getRow().getColumns()) {
+        for (ColumnMetadata column : actual.getRowMetadata().getColumns()) {
             assertThat(column.getName(), is(expectedNames[i]));
             assertThat(column.getType(), is(expectedTypes[i].getName()));
             assertThat(column.getDomain(), is(expectedDomains[i++]));
@@ -151,7 +151,7 @@ public class SchemaAnalyzerTest extends DataSetBaseTest {
         Type[] expectedTypes = { Type.STRING, Type.INTEGER, Type.STRING };
         String[] expectedDomains = { "FIRST_NAME", "", "GENDER" };
         int i = 0;
-        for (ColumnMetadata column : actual.getRow().getColumns()) {
+        for (ColumnMetadata column : actual.getRowMetadata().getColumns()) {
             assertThat(column.getName(), is(expectedNames[i]));
             assertThat(column.getType(), is(expectedTypes[i].getName()));
             assertThat(column.getDomain(), is(expectedDomains[i]));
@@ -177,7 +177,7 @@ public class SchemaAnalyzerTest extends DataSetBaseTest {
         String[] expectedNames = { "id", "firstname", "lastname", "age", "date-of-birth", "alive" };
         Type[] expectedTypes = { Type.INTEGER, Type.STRING, Type.STRING, Type.INTEGER, Type.DATE, Type.BOOLEAN };
         int i = 0;
-        for (ColumnMetadata column : actual.getRow().getColumns()) {
+        for (ColumnMetadata column : actual.getRowMetadata().getColumns()) {
             assertThat(column.getName(), is(expectedNames[i]));
             assertThat(column.getType(), is(expectedTypes[i].getName()));
             i++;

@@ -137,7 +137,7 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 .parse(getRequest(inputStream, "#123"))
                     .getSheetContents().get(0).getColumnMetadatas();
 
-            dataSetMetadata.getRow().setColumns(columnMetadatas);
+            dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
 
         }
 
@@ -214,7 +214,7 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 .parse(getRequest(inputStream, "#7563"))
                     .getSheetContents().get(0).getColumnMetadatas();
 
-            dataSetMetadata.getRow().setColumns(columnMetadatas);
+            dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
 
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(8);
@@ -336,7 +336,7 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
             Assertions.assertThat(columnMetadata.getHeaderSize()).isEqualTo(1);
             Assertions.assertThat(columnMetadata.getName()).isEqualTo("telephone");
             Assertions.assertThat(columnMetadata.getType()).isEqualTo(Type.NUMERIC.getName());
-            dataSetMetadata.getRow().setColumns(columnMetadatas);
+            dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
         }
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {

@@ -53,11 +53,12 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
             try (Stream<DataSetRow> stream = store.stream(metadata)) {
                 LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
                 // Configure analyzers
-                final Analyzer<Analyzers.Result> analyzer = analyzerService.schemaAnalysis(metadata.getRow().getColumns());
+                final Analyzer<Analyzers.Result> analyzer = analyzerService
+                        .schemaAnalysis(metadata.getRowMetadata().getColumns());
                 // Determine schema for the content (on the 20 first rows).
                 stream.limit(20).map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
                 // Find the best suitable type
-                adapter.adapt(metadata.getRow().getColumns(), analyzer.getResult());
+                adapter.adapt(metadata.getRowMetadata().getColumns(), analyzer.getResult());
                 LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
                 metadata.getLifecycle().schemaAnalyzed(true);
                 repository.add(metadata);

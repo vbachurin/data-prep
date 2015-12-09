@@ -81,7 +81,7 @@
             if(!state.playground.dataset || state.playground.preparation || dataset.id !== state.playground.dataset.id) {
 
                 $rootScope.$emit('talend.loading.start');
-                return DatasetService.getContent(dataset.id, false)
+                return DatasetService.getContent(dataset.id, true)
                     .then(function(data) {
                         //TODO : temporary fix because asked to.
                         //TODO : when error status during import and get dataset content is managed by backend,

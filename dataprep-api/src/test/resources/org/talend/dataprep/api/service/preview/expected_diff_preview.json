@@ -1,41 +1,43 @@
 {
-  "columns": [
-    {
-      "id": "0000",
-      "name": "id",
-      "type": "integer"
-    },
-    {
-      "id": "0001",
-      "name": "firstname",
-      "type": "string"
-    },
-    {
-      "id": "0002",
-      "name": "lastname",
-      "type": "string"
-    },
-    {
-      "id": "0003",
-      "name": "age",
-      "type": "integer"
-    },
-    {
-      "id": "0004",
-      "name": "date-of-birth",
-      "type": "date"
-    },
-    {
-      "id": "0005",
-      "name": "alive",
-      "type": "boolean"
-    },
-    {
-      "id": "0006",
-      "name": "city",
-      "type": "string"
-    }
-  ],
+  "metadata": {
+    "columns": [
+      {
+        "id": "0000",
+        "name": "id",
+        "type": "integer"
+      },
+      {
+        "id": "0001",
+        "name": "firstname",
+        "type": "string"
+      },
+      {
+        "id": "0002",
+        "name": "lastname",
+        "type": "string"
+      },
+      {
+        "id": "0003",
+        "name": "age",
+        "type": "integer"
+      },
+      {
+        "id": "0004",
+        "name": "date-of-birth",
+        "type": "date"
+      },
+      {
+        "id": "0005",
+        "name": "alive",
+        "type": "boolean"
+      },
+      {
+        "id": "0006",
+        "name": "city",
+        "type": "string"
+      }
+    ]
+  },
   "records": [
     {
       "__tdpRowDiff": "delete",

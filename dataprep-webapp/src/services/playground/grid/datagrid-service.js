@@ -42,7 +42,7 @@
          * @description Get the last new created column
          */
         function getLastNewColumnId(columns) {
-            var ancientColumnsIds = _.map(state.playground.data.columns, 'id');
+            var ancientColumnsIds = _.map(state.playground.data.metadata.columns, 'id');
             var newColumnsIds = _.map(columns, 'id');
             var diffIds = _.difference(newColumnsIds, ancientColumnsIds);
 
@@ -57,8 +57,8 @@
          * @description Update the data in the datagrid
          */
         function updateData(data) {
-            if (state.playground.data.columns.length < data.columns.length) {
-                service.focusedColumn = getLastNewColumnId(data.columns);
+            if (state.playground.data.metadata.columns.length < data.metadata.columns.length) {
+                service.focusedColumn = getLastNewColumnId(data.metadata.columns);
             }
             StateService.setCurrentData(data);
         }
@@ -70,7 +70,7 @@
          * @ngdoc method
          * @name execute
          * @methodOf data-prep.services.playground.service:DatagridService
-         * @param {Object} executor The infos to apply on the dataset
+         * @param {Object} executor The info to apply on the dataset
          * @description Update the data in the datagrid with a set of instructions and the column list to apply.
          * This allows to update the dataset, with limited SlickGrid computation, for more performant operations than
          * setItems which compute everything on the whole dataset.
@@ -116,15 +116,15 @@
             var reverter = {
                 instructions: revertInstructions,
                 preview: state.playground.data.preview,
-                columns: state.playground.data.columns
+                metadata: state.playground.data.metadata
             };
 
-            if (state.playground.data.columns.length < executor.columns.length) {
-                service.focusedColumn = getLastNewColumnId(executor.columns);
+            if (state.playground.data.metadata.columns.length < executor.metadata.columns.length) {
+                service.focusedColumn = getLastNewColumnId(executor.metadata.columns);
             }
 
             StateService.setCurrentData({
-                columns: executor.columns,
+                metadata: executor.metadata,
                 records: state.playground.data.records,
                 preview: executor.preview
             });
@@ -141,7 +141,7 @@
          */
         function previewDataExecutor(data) {
             var executor = {
-                columns: data.columns,
+                metadata: data.metadata,
                 instructions: [],
                 preview: true
             };
@@ -182,7 +182,7 @@
          * @returns {Object[]} - the column list that match the desired filters (id & name)
          */
         function getColumns(excludeNumeric, excludeBoolean) {
-            var cols = state.playground.data.columns;
+            var cols = state.playground.data.metadata.columns;
 
             if (excludeNumeric) {
                 cols = _.filter(cols, function (col) {
@@ -269,7 +269,7 @@
          * @returns {array} The numeric columns
          */
         function getNumericColumns(columnToSkip) {
-            return _.chain(state.playground.data.columns)
+            return _.chain(state.playground.data.metadata.columns)
                 .filter(function (column) {
                     return !columnToSkip || column.id !== columnToSkip.id;
                 })

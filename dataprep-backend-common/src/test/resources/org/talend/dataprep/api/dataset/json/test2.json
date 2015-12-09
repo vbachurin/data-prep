@@ -23,22 +23,22 @@
     "location": {
       "type": "http",
       "url": "http://estcequecestbientotleweekend.fr"
-    }
-  },
-  "columns": [
-    {
-      "id": "0005",
-      "name": "column1",
-      "headerSize": 0,
-      "type": "string",
-      "quality": {
-        "empty": 0,
-        "invalid": 10,
-        "valid": 50,
-        "invalidValues": []
-      },
-      "statistics": {},
-      "domain": ""
-    }
-  ]
+    },
+    "columns": [
+      {
+        "id": "0005",
+        "name": "column1",
+        "headerSize": 0,
+        "type": "string",
+        "quality": {
+          "empty": 0,
+          "invalid": 10,
+          "valid": 50,
+          "invalidValues": []
+        },
+        "statistics": {},
+        "domain": ""
+      }
+    ]
+  }
 }

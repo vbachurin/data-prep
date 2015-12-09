@@ -1,41 +1,43 @@
 {
-  "columns": [
-    {
-      "id": "0",
-      "name": "id",
-      "type": "string"
-    },
-    {
-      "id": "1",
-      "name": "firstname",
-      "type": "string"
-    },
-    {
-      "id": "2",
-      "name": "lastname",
-      "type": "string"
-    },
-    {
-      "id": "3",
-      "name": "age",
-      "type": "integer"
-    },
-    {
-      "id": "4",
-      "name": "date-of-birth",
-      "type": "date"
-    },
-    {
-      "id": "5",
-      "name": "alive",
-      "type": "boolean"
-    },
-    {
-      "id": "6",
-      "name": "city",
-      "type": "string"
-    }
-  ],
+  "metadata": {
+    "columns": [
+      {
+        "id": "0",
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "id": "1",
+        "name": "firstname",
+        "type": "string"
+      },
+      {
+        "id": "2",
+        "name": "lastname",
+        "type": "string"
+      },
+      {
+        "id": "3",
+        "name": "age",
+        "type": "integer"
+      },
+      {
+        "id": "4",
+        "name": "date-of-birth",
+        "type": "date"
+      },
+      {
+        "id": "5",
+        "name": "alive",
+        "type": "boolean"
+      },
+      {
+        "id": "6",
+        "name": "city",
+        "type": "string"
+      }
+    ]
+  },
   "records": [
     {
       "0": "1",

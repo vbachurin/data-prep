@@ -2,12 +2,14 @@ describe('Grid state service', function () {
     'use strict';
 
     var data = {
-        columns: [
-            {id: '0000'},
-            {id: '0001'},
-            {id: '0002'},
-            {id: '0003'}
-        ],
+        metadata: {
+            columns: [
+                {id: '0000'},
+                {id: '0001'},
+                {id: '0002'},
+                {id: '0003'}
+            ]
+        },
         records: [
             {tdpId: 0, firstname: 'Tata'},
             {tdpId: 1, firstname: 'Tetggggge'},
@@ -25,12 +27,14 @@ describe('Grid state service', function () {
     };
 
     var previewData = {
-        columns: [
-            {id: '0000'},
-            {id: '0001'},
-            {id: '0002'},
-            {id: '0003'}
-        ],
+        metadata: {
+            columns: [
+                {id: '0000'},
+                {id: '0001'},
+                {id: '0002'},
+                {id: '0003'}
+            ]
+        },
         records: [
             {tdpId: 0, firstname: 'Tata'},
             {tdpId: 1, firstname: 'Tetggggge'},
@@ -189,7 +193,7 @@ describe('Grid state service', function () {
 
             //then
             expect(gridState.selectedColumn).not.toBe(oldMetadata);
-            expect(gridState.selectedColumn).toBe(data.columns[1]);
+            expect(gridState.selectedColumn).toBe(data.metadata.columns[1]);
         }));
 
         it('should update column selection metadata with the 1st column when actual selected column is not in the new columns', inject(function (gridState, GridStateService) {
@@ -202,7 +206,7 @@ describe('Grid state service', function () {
 
             //then
             expect(gridState.selectedColumn).not.toBe(oldMetadata);
-            expect(gridState.selectedColumn).toBe(data.columns[0]);
+            expect(gridState.selectedColumn).toBe(data.metadata.columns[0]);
         }));
 
         it('should update column selection metadata with the first column metadata when there is no selected column yet', inject(function (gridState, GridStateService) {
@@ -213,7 +217,7 @@ describe('Grid state service', function () {
             GridStateService.setData(data);
 
             //then
-            expect(gridState.selectedColumn).toBe(data.columns[0]);
+            expect(gridState.selectedColumn).toBe(data.metadata.columns[0]);
         }));
 
         it('should not change selected column when data is preview data', inject(function (gridState, GridStateService) {
@@ -337,7 +341,7 @@ describe('Grid state service', function () {
             };
 
             //when
-            GridStateService.setData({columns: [{id: '0003'}], records: filteredRecords});
+            GridStateService.setData({metadata: {columns: [{id: '0003'}]}, records: filteredRecords});
 
             //then
             expect(gridState.filteredRecords).toEqual(filteredRecords);
@@ -351,7 +355,7 @@ describe('Grid state service', function () {
             };
 
             //when
-            GridStateService.setData({columns: [{id: '0003'}], records: filteredRecords});
+            GridStateService.setData({metadata: {columns: [{id: '0003'}]}, records: filteredRecords});
 
             //then
             expect(gridState.filteredOccurences).toEqual({

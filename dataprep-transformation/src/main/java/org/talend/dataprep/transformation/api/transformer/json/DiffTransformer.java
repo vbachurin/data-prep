@@ -114,10 +114,13 @@ class DiffTransformer implements Transformer {
                     });
             writer.endArray();
             // Write metadata diff
+            writer.fieldName("metadata");
+            writer.startObject();
             writer.fieldName("columns");
             writer.write(diff.iterator().next());
             diff.clear();
             // End diff
+            writer.endObject();
             writer.endObject();
             writer.flush();
         } catch (IOException e) {
