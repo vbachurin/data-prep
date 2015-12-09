@@ -18,7 +18,7 @@
      * @requires data-prep.services.folder.service:FolderService
      * @requires data-prep.services.preparation.service:PreparationListService
      */
-    function DatasetListCtrl($scope, $stateParams, StateService, DatasetService, DatasetListSortService, PlaygroundService,
+    function DatasetListCtrl($scope, $translate, $stateParams, StateService, DatasetService, DatasetListSortService, PlaygroundService,
                              TalendConfirmService, MessageService, UploadWorkflowService, UpdateWorkflowService, FolderService, state, PreparationListService) {
         var vm = this;
 
@@ -360,10 +360,13 @@
                 var currentPath = pathParts[0];
             }
 
+            var rootFolder = {id: '', path: '', collapsed: false, name: $translate.instant('HOME_FOLDER')};
+
             FolderService.children()
                 .then(function(res) {
-                    vm.folders = res.data;
-                    _.forEach(vm.folders,function(folder){
+                    rootFolder.nodes = res.data;
+                    vm.folders = [rootFolder];
+                    _.forEach(vm.folders[0].nodes,function(folder){
                         folder.collapsed = true;
                         // recursive toggle until we reach the current folder
                         if (toggleToCurrentFolder && folder.id===currentPath){
