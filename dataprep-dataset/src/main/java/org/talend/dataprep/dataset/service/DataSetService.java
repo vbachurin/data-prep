@@ -52,13 +52,9 @@ import org.talend.dataprep.schema.SchemaParserResult;
 import org.talend.dataprep.security.Security;
 import org.talend.dataprep.user.store.UserDataRepository;
 
-<<<<<<< HEAD
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-=======
-import com.wordnik.swagger.annotations.*;
->>>>>>> TDP-738: Back end code review
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -241,11 +237,7 @@ public class DataSetService {
      * @param content The raw content of the data set (might be a CSV, XLS...) or the connection parameter in case of a
      * remote csv.
      * @return The new data id.
-<<<<<<< HEAD
-     * @see #get(boolean, boolean, Long, String)
-=======
-     * @see #get(boolean, boolean, boolean, Long, String, HttpServletResponse)
->>>>>>> TDP-738 : automatic chart update when backend has finished to compute statistics
+     * @see #get(boolean, boolean, boolean, Long, String)
      */
     @RequestMapping(value = "/datasets", method = POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a data set", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, notes = "Create a new data set based on content provided in POST body. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too. Returns the id of the newly created data set.")
@@ -382,24 +374,12 @@ public class DataSetService {
     @Timed
     @VolumeMetered
     public String clone(
-<<<<<<< HEAD
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015'.  if none the current name concat with ' Copy' will be used. Returns the id of the newly created data set.") @RequestParam(defaultValue = "", required = false) String name)
                     throws IOException {
         HttpResponseContext.header("Content-Type", MediaType.TEXT_PLAIN_VALUE);
-        DataSet dataSet = get(true, true, null, dataSetId);
-=======
-        @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
-        @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015'.  if none the current name concat with ' Copy' will be used. Returns the id of the newly created data set.")
-        @RequestParam(defaultValue = "", required = false) String name,
-        HttpServletResponse response) throws IOException {
-
-        response.setHeader( "Content-Type", MediaType.TEXT_PLAIN_VALUE ); //$NON-NLS-1$
-
-
-        DataSet dataSet = get(true, true, true, null, dataSetId, response);
->>>>>>> TDP-738 : automatic chart update when backend has finished to compute statistics
-
+        DataSet dataSet = get(true, true, true, null, dataSetId);
+		
         // if no metadata it's an empty one the get method has already set NO CONTENT http return code
         // so simply return!!
         if (dataSet.getMetadata() == null) {
