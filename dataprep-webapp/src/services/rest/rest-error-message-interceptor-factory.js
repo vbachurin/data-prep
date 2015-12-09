@@ -23,7 +23,9 @@
                     return $q.reject(rejection);
                 }
                 /*jshint camelcase: false */
-                MessageService.error(rejection.data.message_title, rejection.data.message);
+                if(rejection.data.message_title && rejection.data.message) {
+                    MessageService.error(rejection.data.message_title, rejection.data.message);
+                }
                 return $q.reject(rejection);
             }
         };

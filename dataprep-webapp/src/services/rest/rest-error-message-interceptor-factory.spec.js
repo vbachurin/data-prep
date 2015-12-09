@@ -40,7 +40,7 @@ describe('Rest message interceptor factory', function () {
     }));
 
 
-    it('should show expected error message when dataset deletion cannot be processed', inject(function ($rootScope, $http, MessageService) {
+    it('should show expected error message if exist', inject(function ($rootScope, $http, MessageService) {
         //given
         /*jshint camelcase: false */
         $httpBackend.expectGET('testService').respond(400, {message_title : 'TDP_API_DATASET_STILL_IN_USE_TITLE', message: 'TDP_API_DATASET_STILL_IN_USE' });
@@ -52,6 +52,20 @@ describe('Rest message interceptor factory', function () {
 
         //then
         expect(MessageService.error).toHaveBeenCalledWith('TDP_API_DATASET_STILL_IN_USE_TITLE', 'TDP_API_DATASET_STILL_IN_USE');
+    }));
+
+    it('should not show expected error message if not exist', inject(function ($rootScope, $http, MessageService) {
+        //given
+        /*jshint camelcase: false */
+        $httpBackend.expectGET('testService').respond(400, '');
+
+        //when
+        $http.get('testService');
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(MessageService.error).not.toHaveBeenCalled();
     }));
 
 });
