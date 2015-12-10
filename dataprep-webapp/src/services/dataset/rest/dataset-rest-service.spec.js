@@ -459,7 +459,7 @@ describe('Dataset Rest Service', function () {
             var dataset = {id: 'foobar'};
 
             $httpBackend
-                .expectGET(RestURLs.datasetUrl + '/clone/foobar')
+                .expectPUT(RestURLs.datasetUrl + '/clone/foobar')
                 .respond(200);
 
             //when
@@ -477,11 +477,11 @@ describe('Dataset Rest Service', function () {
             var newName = 'wine';
 
             $httpBackend
-                .expectGET(RestURLs.datasetUrl + '/clone/foobar?name=' + encodeURIComponent(newName))
+                .expectPUT(RestURLs.datasetUrl + '/clone/foobar?cloneName=' + encodeURIComponent(newName))
                 .respond(200);
 
             //when
-            DatasetRestService.clone(dataset, newName);
+            DatasetRestService.clone(dataset, null, newName);
             $httpBackend.flush();
             $rootScope.$digest();
 
