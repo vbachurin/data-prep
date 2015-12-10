@@ -86,11 +86,11 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
         // @formatter:off
 		parameters.add(SelectParameter.Builder.builder()
 				.name(PATTERN_PARAMETER)
-				.item("[a-z]+", "[a-z]+ (a word in lowercase)")
-				.item("[A-Z]+", "[A-Z]+ (a word in uppercase)")
-				.item("[0-9]+", "[0-9]+ (number)")
-				.item("[a-zA-Z]+", "[a-zA-Z]+ (any word, case insensitive)")
-				.item("[a-zA-Z0-9]+", "[a-zA-Z0-9]+ (any literal with alpha-num characters)")
+				.item("[a-z]+")
+				.item("[A-Z]+")
+				.item("[0-9]+")
+				.item("[a-zA-Z]+")
+				.item("[a-zA-Z0-9]+")
 				.item(CUSTOM, new Parameter(MANUAL_PATTERN_PARAMETER, REGEX, EMPTY))
 				.defaultValue("[a-zA-Z]+")
 				.build());
