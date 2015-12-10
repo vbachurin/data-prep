@@ -90,7 +90,7 @@
     "lowerQuantile": "NaN",
     "upperQuantile": "NaN"
   },
-  "histogram": [],
+  "histogram": null,
   "textLengthSummary": {
     "minimalLength": 0,
     "maximalLength": 0,

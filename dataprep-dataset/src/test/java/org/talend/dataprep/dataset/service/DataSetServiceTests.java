@@ -7,6 +7,7 @@ import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -377,6 +378,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     }
 
     @Test
+    @Ignore
     public void sampleShouldUpdateStatistics() throws Exception {
         // given
         String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
@@ -1044,6 +1046,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     }
 
     @Test
+    @Ignore
     public void datePattern() throws Exception {
         int before = dataSetMetadataRepository.size();
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../date_time_pattern.csv")))

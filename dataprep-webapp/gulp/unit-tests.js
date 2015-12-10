@@ -44,16 +44,14 @@ function runTests(singleRun, done, karmaConfPath, type) {
         devDependencies: true
     });
 
-    var reporters = ['progress'];
+    var reporters = ['progress', 'coverage'];
     var preprocessors = {};
 
     pathSrcHtml.forEach(function (path) {
         preprocessors[path] = ['ng-html2js'];
     });
-
     var srcJs = type ? filesToCover [type] : 'src/**/!(*spec|*mock).js';
     preprocessors[srcJs] = ['coverage'];
-    reporters.push('coverage');
 
     var localConfig = {
         configFile: path.join(__dirname, '/../', karmaConfPath),

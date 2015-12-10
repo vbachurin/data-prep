@@ -1,20 +1,12 @@
 package org.talend.dataprep.api.dataset.statistics;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.talend.dataprep.api.dataset.statistics.date.DateHistogramRange;
 
 import java.io.Serializable;
 
 /**
  * Histogram item. It represents the range and its occurrences
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = NumberHistogramRange.class, name = NumberHistogramRange.TYPE),
-        @JsonSubTypes.Type(value = DateHistogramRange.class, name = DateHistogramRange.TYPE)
-})
 public class HistogramRange<T> implements Serializable {
     /**
      * The number of element in the curent range
@@ -30,6 +22,7 @@ public class HistogramRange<T> implements Serializable {
 
     /**
      * Number of element getter
+     *
      * @return The number of elements
      */
     public long getOccurrences() {
@@ -38,6 +31,7 @@ public class HistogramRange<T> implements Serializable {
 
     /**
      * Number of elements setter
+     *
      * @param occurrences The new number of occurrences
      */
     public void setOccurrences(long occurrences) {
@@ -46,6 +40,7 @@ public class HistogramRange<T> implements Serializable {
 
     /**
      * Range getter
+     *
      * @return The range
      */
     public Range<T> getRange() {
@@ -54,6 +49,7 @@ public class HistogramRange<T> implements Serializable {
 
     /**
      * Range setter
+     *
      * @param range The new range
      */
     public void setRange(Range<T> range) {

@@ -4,9 +4,10 @@ describe('ColumnProfile controller', function () {
     var createController, scope;
 
     var stateMock;
-    var removeFilterFn = function() {};
+    var removeFilterFn = function () {
+    };
 
-    beforeEach(module('data-prep.column-profile', function($provide) {
+    beforeEach(module('data-prep.column-profile', function ($provide) {
         stateMock = {playground: {grid: {}}};
         $provide.constant('state', stateMock);
     }));
@@ -21,10 +22,11 @@ describe('ColumnProfile controller', function () {
         };
     }));
 
-    describe('filter', function() {
-        beforeEach(inject(function(FilterService, StatisticsService) {
+    describe('filter', function () {
+        beforeEach(inject(function ($q, FilterService, StatisticsService, PlaygroundService) {
             spyOn(FilterService, 'addFilterAndDigest').and.returnValue();
             spyOn(StatisticsService, 'getRangeFilterRemoveFn').and.returnValue(removeFilterFn);
+            spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
         }));
 
         it('should add a new "exact" filter', inject(function (FilterService) {
@@ -41,7 +43,10 @@ describe('ColumnProfile controller', function () {
             ctrl.addBarchartFilter(obj);
 
             //then
-            expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('exact', '0001', 'firstname', {phrase: 'Ulysse', caseSensitive: true});
+            expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('exact', '0001', 'firstname', {
+                phrase: 'Ulysse',
+                caseSensitive: true
+            });
         }));
 
         it('should add a new "range" filter from StatisticsService', inject(function (StatisticsService, FilterService) {
@@ -62,6 +67,24 @@ describe('ColumnProfile controller', function () {
             expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('inside_range', '0001', 'firstname', {interval: interval}, removeFilterFn);
         }));
 
+        it('should NOT add a "range" filter on date columns', inject(function (StatisticsService, FilterService) {
+            //given
+            var ctrl = createController();
+            var interval = ['1 jan 2015', '1 feb 2015'];
+
+            stateMock.playground.grid.selectedColumn = {
+                id: '0001',
+                name: 'birth',
+                type: 'date'
+            };
+
+            //when
+            ctrl.addRangeFilter(interval);
+
+            //then
+            expect(FilterService.addFilterAndDigest).not.toHaveBeenCalled();
+        }));
+
         it('should add a new "empty_records" filter from exact_filter on barchart click callback', inject(function (StatisticsService, FilterService) {
             //given
             var ctrl = createController();
@@ -80,7 +103,11 @@ describe('ColumnProfile controller', function () {
         }));
     });
 
-    describe('external bindings', function() {
+    describe('external bindings', function () {
+        beforeEach(inject(function ($q, PlaygroundService) {
+            spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
+        }));
+
         it('should bind histogram getter to StatisticsService.histogram', inject(function (StatisticsService) {
             //given
             var data = {};
@@ -105,8 +132,12 @@ describe('ColumnProfile controller', function () {
         }));
     });
 
-    describe('aggregation', function() {
-        it('should get the current aggregation name', inject(function(StatisticsService) {
+    describe('aggregation', function () {
+        beforeEach(inject(function ($q, PlaygroundService) {
+            spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
+        }));
+
+        it('should get the current aggregation name', inject(function (StatisticsService) {
             //given
             var ctrl = createController();
             StatisticsService.histogram = {
@@ -120,7 +151,7 @@ describe('ColumnProfile controller', function () {
             expect(aggregation).toBe('MAX');
         }));
 
-        it('should get the default aggregation name when there is no histogram', inject(function(StatisticsService) {
+        it('should get the default aggregation name when there is no histogram', inject(function (StatisticsService) {
             //given
             var ctrl = createController();
             StatisticsService.histogram = null;
@@ -132,7 +163,7 @@ describe('ColumnProfile controller', function () {
             expect(aggregation).toBe('LINE_COUNT');
         }));
 
-        it('should get the default aggregation name when histogram is not an aggregation', inject(function(StatisticsService) {
+        it('should get the default aggregation name when histogram is not an aggregation', inject(function (StatisticsService) {
             //given
             var ctrl = createController();
             StatisticsService.histogram = {data: []};
@@ -144,7 +175,7 @@ describe('ColumnProfile controller', function () {
             expect(aggregation).toBe('LINE_COUNT');
         }));
 
-        it('should change aggregation chart', inject(function(StatisticsService) {
+        it('should change aggregation chart', inject(function (StatisticsService) {
             //given
             spyOn(StatisticsService, 'processAggregation').and.returnValue();
             var ctrl = createController();
@@ -159,7 +190,7 @@ describe('ColumnProfile controller', function () {
             expect(StatisticsService.processAggregation).toHaveBeenCalledWith(column, aggregation);
         }));
 
-        it('should do nothing if the current histogram is already the wanted aggregation', inject(function(StatisticsService) {
+        it('should do nothing if the current histogram is already the wanted aggregation', inject(function (StatisticsService) {
             //given
             var column = {id: '0001'};
             var aggregation = {name: 'MAX'};
@@ -181,8 +212,8 @@ describe('ColumnProfile controller', function () {
         }));
     });
 
-    describe('statistics', function() {
-        it('should not update columns statistics when there are statistics charts to display', inject(function($q, PlaygroundService, StatisticsService) {
+    describe('statistics', function () {
+        it('should not update columns statistics when there are statistics charts to display', inject(function ($q, PlaygroundService, StatisticsService) {
             //given
             spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
             StatisticsService.histogram = {data: [{field: 'toto', value: 2}]};
@@ -194,10 +225,10 @@ describe('ColumnProfile controller', function () {
             expect(PlaygroundService.updateStatistics).not.toHaveBeenCalled();
         }));
 
-        it('should update statistics when there are no chart because of a lack of data', inject(function($q, PlaygroundService, StatisticsService) {
+        it('should update statistics when there are no histogram yet', inject(function ($q, PlaygroundService, StatisticsService) {
             //given
             spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
-            StatisticsService.histogram = {data: []};
+            StatisticsService.histogram = null;
 
             //when
             createController();
@@ -206,11 +237,11 @@ describe('ColumnProfile controller', function () {
             expect(PlaygroundService.updateStatistics).toHaveBeenCalled();
         }));
 
-        it('should retry statistics update when previous fetch has been rejected (stats not computed yet) with a delay of 1500ms', inject(function($q, $timeout, PlaygroundService, StatisticsService) {
+        it('should retry statistics update when previous fetch has been rejected (stats not computed yet) with a delay of 1500ms', inject(function ($q, $timeout, PlaygroundService, StatisticsService) {
             //given
             var retry = 0;
-            spyOn(PlaygroundService, 'updateStatistics').and.callFake(function() {
-                if(retry === 0) {
+            spyOn(PlaygroundService, 'updateStatistics').and.callFake(function () {
+                if (retry === 0) {
                     retry++;
                     return $q.reject();
                 }
@@ -218,7 +249,7 @@ describe('ColumnProfile controller', function () {
                     return $q.when();
                 }
             });
-            StatisticsService.histogram = {data: []};
+            StatisticsService.histogram = null;
 
             //when
             createController();

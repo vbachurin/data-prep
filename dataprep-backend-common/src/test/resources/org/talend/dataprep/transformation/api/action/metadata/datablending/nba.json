@@ -96,7 +96,7 @@
             "lowerQuantile": "NaN",
             "upperQuantile": "NaN"
           },
-          "histogram": [],
+          "histogram": null,
           "textLengthSummary": {
             "minimalLength": 7.0,
             "maximalLength": 9.0,
@@ -277,7 +277,7 @@
             "lowerQuantile": "NaN",
             "upperQuantile": "NaN"
           },
-          "histogram": [],
+          "histogram": null,
           "textLengthSummary": {
             "minimalLength": 9.0,
             "maximalLength": 22.0,
@@ -440,7 +440,7 @@
             "lowerQuantile": "NaN",
             "upperQuantile": "NaN"
           },
-          "histogram": [],
+          "histogram": null,
           "textLengthSummary": {
             "minimalLength": 5.0,
             "maximalLength": 14.0,
@@ -582,7 +582,7 @@
             "lowerQuantile": "NaN",
             "upperQuantile": "NaN"
           },
-          "histogram": [],
+          "histogram": null,
           "textLengthSummary": {
             "minimalLength": 2.0,
             "maximalLength": 4.0,
@@ -768,7 +768,7 @@
             "lowerQuantile": "NaN",
             "upperQuantile": "NaN"
           },
-          "histogram": [],
+          "histogram": null,
           "textLengthSummary": {
             "minimalLength": 9.0,
             "maximalLength": 26.0,
@@ -888,7 +888,7 @@
             "lowerQuantile": "NaN",
             "upperQuantile": "NaN"
           },
-          "histogram": [],
+          "histogram": null,
           "textLengthSummary": {
             "minimalLength": 6.0,
             "maximalLength": 6.0,
@@ -1027,7 +1027,7 @@
             "lowerQuantile": "NaN",
             "upperQuantile": "NaN"
           },
-          "histogram": [],
+          "histogram": null,
           "textLengthSummary": {
             "minimalLength": 20.0,
             "maximalLength": 24.0,
@@ -1146,7 +1146,7 @@
             "lowerQuantile": "NaN",
             "upperQuantile": "NaN"
           },
-          "histogram": [],
+          "histogram": null,
           "textLengthSummary": {
             "minimalLength": 4.0,
             "maximalLength": 5.0,
@@ -1221,168 +1221,151 @@
             "lowerQuantile": 1948.0,
             "upperQuantile": 1976.0
           },
-          "histogram": [
-            {
-              "occurrences": 5,
-              "range": {
-                "min": 1948.0,
-                "max": 1949.4
+          "histogram": {
+            "type": "number",
+            "items": [
+              {
+                "occurrences": 5,
+                "range": {
+                  "min": 1948.0,
+                  "max": 1949.4
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1949.4,
-                "max": 1950.8000000000002
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1949.4,
+                  "max": 1950.8000000000002
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1950.8000000000002,
-                "max": 1952.2000000000003
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1950.8000000000002,
+                  "max": 1952.2000000000003
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1952.2000000000003,
-                "max": 1953.6000000000004
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1952.2000000000003,
+                  "max": 1953.6000000000004
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1953.6000000000004,
-                "max": 1955.0000000000005
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1953.6000000000004,
+                  "max": 1955.0000000000005
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1955.0000000000005,
-                "max": 1956.4000000000005
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1955.0000000000005,
+                  "max": 1956.4000000000005
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1956.4000000000005,
-                "max": 1957.8000000000006
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1956.4000000000005,
+                  "max": 1957.8000000000006
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1957.8000000000006,
-                "max": 1959.2000000000007
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1957.8000000000006,
+                  "max": 1959.2000000000007
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1959.2000000000007,
-                "max": 1960.6000000000008
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1959.2000000000007,
+                  "max": 1960.6000000000008
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1960.6000000000008,
-                "max": 1962.000000000001
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1960.6000000000008,
+                  "max": 1962.000000000001
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1962.000000000001,
-                "max": 1963.400000000001
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1962.000000000001,
+                  "max": 1963.400000000001
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1963.400000000001,
-                "max": 1964.800000000001
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1963.400000000001,
+                  "max": 1964.800000000001
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1964.800000000001,
-                "max": 1966.2000000000012
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1964.800000000001,
+                  "max": 1966.2000000000012
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1966.2000000000012,
-                "max": 1967.6000000000013
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1966.2000000000012,
+                  "max": 1967.6000000000013
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1967.6000000000013,
-                "max": 1969.0000000000014
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1967.6000000000013,
+                  "max": 1969.0000000000014
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1969.0000000000014,
-                "max": 1970.4000000000015
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1969.0000000000014,
+                  "max": 1970.4000000000015
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1970.4000000000015,
-                "max": 1971.8000000000015
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1970.4000000000015,
+                  "max": 1971.8000000000015
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1971.8000000000015,
-                "max": 1973.2000000000016
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1971.8000000000015,
+                  "max": 1973.2000000000016
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 0,
-              "range": {
-                "min": 1973.2000000000016,
-                "max": 1974.6000000000017
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": 1973.2000000000016,
+                  "max": 1974.6000000000017
+                }
               },
-              "type": "number"
-            },
-            {
-              "occurrences": 4,
-              "range": {
-                "min": 1974.6000000000017,
-                "max": 1976.0
-              },
-              "type": "number"
-            }
-          ],
+              {
+                "occurrences": 4,
+                "range": {
+                  "min": 1974.6000000000017,
+                  "max": 1976.0
+                }
+              }
+            ]
+          },
           "textLengthSummary": {
             "minimalLength": "NaN",
             "maximalLength": "NaN",
