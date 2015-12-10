@@ -3,7 +3,7 @@
     <li ng-repeat="folder in folderCtrl.state.folder.foldersStack track by $index" id="folder_{{$index}}">
       <talend-dropdown>
         <div class="dropdown-container">
-          <a ng-click="folderCtrl.goToFolder(folder)">{{::folder.name}}</a>
+          <a ng-click="folderCtrl.goToFolder(folder)">{{folder.name}}</a>
           <span class="dropdown-action">
             <a class="dropdown-button" ng-click="folderCtrl.initMenuChildren(folder)"></a>
           </span>
