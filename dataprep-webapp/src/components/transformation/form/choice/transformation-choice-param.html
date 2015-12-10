@@ -5,7 +5,7 @@
 
         <div class="param-input">
             <select ng-model="choiceParamCtrl.parameter.value"
-                    ng-options="option.value as option.value for option in choiceParamCtrl.parameter.configuration.values"
+                    ng-options="option.value as option.label for option in choiceParamCtrl.parameter.configuration.values"
                     required></select>
         </div>
     </div>

@@ -10,7 +10,8 @@ public class I18N {
     @Bean
     public ResourceBundleMessageSource getResourceBundle() {
         ResourceBundleMessageSource source = new ResourceBundleMessageSource();
-        source.setBasenames("org.talend.dataprep.messages"); //$NON-NLS-1$
+        String[] baseNames = new String[] { "org.talend.dataprep.messages", "org.talend.dataprep.error_messages" };
+        source.setBasenames(baseNames); // $NON-NLS-1$
         source.setUseCodeAsDefaultMessage(true);
         return source;
     }

@@ -1,6 +1,7 @@
 package org.talend.dataprep.api.dataset.json;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.*;
@@ -48,7 +49,7 @@ public class DataSetJSONTest {
         try {
             final ObjectMapper mapper = builder.build();
             JsonParser parser = mapper.getFactory().createParser(json);
-            return mapper.reader(DataSet.class).readValue(parser);
+            return mapper.readerFor(DataSet.class).readValue(parser);
         } catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
@@ -89,7 +90,7 @@ public class DataSetJSONTest {
     @Test
     public void testRead1() throws Exception {
 
-        DataSet dataSet = from(DataSetJSONTest.class.getResourceAsStream("test1.json"));
+        DataSet dataSet = from(this.getClass().getResourceAsStream("test1.json"));
         assertNotNull(dataSet);
 
         final DataSetMetadata metadata = dataSet.getMetadata();
@@ -106,7 +107,7 @@ public class DataSetJSONTest {
         Date expectedDate = dateFormat.parse("02-17-2015 09:02");
         assertEquals(expectedDate, new Date(metadata.getCreationDate()));
 
-        List<ColumnMetadata> columns = dataSet.getColumns();
+        List<ColumnMetadata> columns = dataSet.getMetadata().getRowMetadata().getColumns();
         assertEquals(6, columns.size());
 
         ColumnMetadata firstColumn = columns.get(0);
@@ -152,7 +153,6 @@ public class DataSetJSONTest {
         StringWriter writer = new StringWriter();
         DataSet dataSet = new DataSet();
         dataSet.setMetadata(metadata);
-        dataSet.setColumns(metadata.getRow().getColumns());
         to(dataSet, writer);
         assertThat(writer.toString(), sameJSONAsFile(DataSetJSONTest.class.getResourceAsStream("test2.json")));
     }
@@ -171,11 +171,10 @@ public class DataSetJSONTest {
 
     @Test
     public void testColumnAtEnd() throws Exception {
-        DataSet dataSet = from(DataSetJSONTest.class.getResourceAsStream("test4.json"));
+        DataSet dataSet = from(this.getClass().getResourceAsStream("test4.json"));
         // There are 4 columns, but Jackson doesn't take them into account if at end of content. This is not "expected"
         // but known. This test ensure the known behavior remains the same.
         assertThat(dataSet.getMetadata(), nullValue());
-        assertThat(dataSet.getColumns().size(), is(0));
     }
 
     @Test
@@ -183,10 +182,10 @@ public class DataSetJSONTest {
         // given
         String[] columnNames = new String[] {"id", "firstname", "lastname", "state", "registration", "city", "birth", "nbCommands", "avgAmount"};
 
-        final InputStream input = DataSetJSONTest.class.getResourceAsStream("dataSetRowMetadata.json");
+        final InputStream input = this.getClass().getResourceAsStream("dataSetRowMetadata.json");
         final ObjectMapper mapper = builder.build();
         try (JsonParser parser = mapper.getFactory().createParser(input)) {
-            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
             final Iterator<DataSetRow> iterator = dataSet.getRecords().iterator();
 
             List<ColumnMetadata> actualColumns = new ArrayList<>();

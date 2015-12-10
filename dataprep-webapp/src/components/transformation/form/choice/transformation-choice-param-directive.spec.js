@@ -30,8 +30,8 @@ describe('Transformation choice params directive', function () {
             label: 'my choice',
             configuration: {
                 values: [
-                    {value: 'noParamChoice1'},
-                    {value: 'noParamChoice2'}
+                    {value: 'noParamChoice1', label: 'noParamChoice1'},
+                    {value: 'noParamChoice2', label: 'noParamChoice2_label'}
                 ]
             }
         };
@@ -45,7 +45,9 @@ describe('Transformation choice params directive', function () {
         expect(element.find('.param-input').eq(0).find('select').length).toBe(1);
         expect(element.find('.param-input').eq(0).find('option').length).toBe(2);
         expect(element.find('.param-input').eq(0).find('option').eq(0).text()).toBe('noParamChoice1');
-        expect(element.find('.param-input').eq(0).find('option').eq(1).text()).toBe('noParamChoice2');
+        expect(element.find('.param-input').eq(0).find('option').eq(0).attr('value')).toBe('string:noParamChoice1');
+        expect(element.find('.param-input').eq(0).find('option').eq(1).text()).toBe('noParamChoice2_label');
+        expect(element.find('.param-input').eq(0).find('option').eq(1).attr('value')).toBe('string:noParamChoice2');
     });
 
     it('should render an action with choice containing parameters', function() {

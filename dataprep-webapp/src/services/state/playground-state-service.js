@@ -89,7 +89,7 @@
         }
 
         function updateColumnsStatistics(columns) {
-            _.forEach(playgroundState.data.columns, function(col) {
+            _.forEach(playgroundState.data.metadata.columns, function(col) {
                 var correspondingColumn = _.find(columns, {id: col.id});
                 col.statistics = correspondingColumn.statistics;
             });

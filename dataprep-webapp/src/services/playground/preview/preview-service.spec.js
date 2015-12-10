@@ -7,20 +7,20 @@ describe('Preview Service', function () {
     var displayedTdpIds = [1,3,6,7,8];
     var originalData = {
         records: [
-            {tdpId : 0, firstname: 'Tata'},
-            {tdpId : 1, firstname: 'Tete'},
-            {tdpId : 2, firstname: 'Titi'},
-            {tdpId : 3, firstname: 'Toto'},
-            {tdpId : 4, firstname: 'Tutu'},
-            {tdpId : 5, firstname: 'Tyty'},
-            {tdpId : 6, firstname: 'Papa'},
-            {tdpId : 7, firstname: 'Pepe'},
-            {tdpId : 8, firstname: 'Pipi'},
-            {tdpId : 9, firstname: 'Popo'},
-            {tdpId : 10, firstname: 'Pupu'},
-            {tdpId : 11, firstname: 'Pypy'}
+            {tdpId: 0, firstname: 'Tata'},
+            {tdpId: 1, firstname: 'Tete'},
+            {tdpId: 2, firstname: 'Titi'},
+            {tdpId: 3, firstname: 'Toto'},
+            {tdpId: 4, firstname: 'Tutu'},
+            {tdpId: 5, firstname: 'Tyty'},
+            {tdpId: 6, firstname: 'Papa'},
+            {tdpId: 7, firstname: 'Pepe'},
+            {tdpId: 8, firstname: 'Pipi'},
+            {tdpId: 9, firstname: 'Popo'},
+            {tdpId: 10, firstname: 'Pupu'},
+            {tdpId: 11, firstname: 'Pypy'}
         ],
-        columns: [{id: '0000', name: 'lastname'}, {id: '0001', name: 'firstname'}]
+        metadata: {columns: [{id: '0000', name: 'lastname'}, {id: '0001', name: 'firstname'}]}
     };
 
     //diff result corresponding to gridRangeIndex
@@ -34,7 +34,7 @@ describe('Preview Service', function () {
                 {tdpId: 7, firstname: 'Pepe 2', __tdpDiff: {firstname: 'update'}}, //firstname is updated in preview
                 {tdpId: 8, firstname: 'Pipi'}
             ],
-            columns: [{id: '0000', name: 'lastname'}, {id: '0001', name: 'firstname'}]
+            metadata: {columns: [{id: '0000', name: 'lastname'}, {id: '0001', name: 'firstname'}]}
         }
     };
 

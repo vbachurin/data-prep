@@ -3,7 +3,16 @@
         <span class="title" title="{{actionsSuggestionsCtrl.state.playground.grid.selectedColumn.name}}">{{actionsSuggestionsCtrl.state.playground.grid.selectedColumn.name}}</span>
     </div>
 
-    <talend-tabs tab="actionsSuggestionsCtrl.suggestionService.tab">
+    <div id="actions-ghost"
+         ng-if="actionsSuggestionsCtrl.state.playground.suggestions.isLoading"
+         class="loading-container">
+        <div class="loading-msg">
+            <span class="wait-icon continuous-rotate" ><i data-icon="c" class="icon"></i></span>
+            <span class="wait-text" translate-once="REFRESHING_WAIT"></span>
+        </div>
+    </div>
+
+    <talend-tabs tab="actionsSuggestionsCtrl.suggestionService.tab" ng-if="!actionsSuggestionsCtrl.state.playground.suggestions.isLoading">
         <talend-tabs-item tab-title="Text">
             <div class="action-suggestion-tab-items watermark" translate-once="COMING_SOON"></div>
         </talend-tabs-item>
@@ -77,6 +86,4 @@
             <span translate-once="FILTERED_LINED"></span>
         </form>
     </div>
-
-
 </div>

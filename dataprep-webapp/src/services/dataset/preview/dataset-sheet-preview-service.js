@@ -74,7 +74,7 @@
          * @description Set new grid content
          */
         var setGridData = function(data) {
-            var columns = _.map(data.columns, function(col) {
+            var columns = _.map(data.metadata.columns, function(col) {
                 return {
                     id: col.id,
                     name: '<div class="grid-header">' +

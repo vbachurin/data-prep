@@ -81,7 +81,7 @@
             if(!state.playground.dataset || state.playground.preparation || dataset.id !== state.playground.dataset.id) {
 
                 $rootScope.$emit('talend.loading.start');
-                return DatasetService.getContent(dataset.id, false)
+                return DatasetService.getContent(dataset.id, true)
                     .then(function(data) {
                         //TODO : temporary fix because asked to.
                         //TODO : when error status during import and get dataset content is managed by backend,
@@ -178,26 +178,32 @@
          * @returns {Promise} The process promise
          */
         function updateStatistics() {
-            var getContent;
+            var getMetadata;
             if (state.playground.preparation) {
                 var lastActiveStep = RecipeService.getLastActiveStep();
                 var preparationId = state.playground.preparation.id;
                 var stepId = lastActiveStep ? lastActiveStep.transformation.stepId : 'head';
-                getContent = PreparationService.getContent.bind(null, preparationId, stepId);
+                getMetadata = PreparationService.getContent.bind(null, preparationId, stepId);
             }
             else {
-                getContent = DatasetService.getContent.bind(null, state.playground.dataset.id, false);
+                getMetadata = DatasetService.getMetadata.bind(null, state.playground.dataset.id);
             }
 
-            return getContent()
-                .then(function (content) {
-                    StateService.updateColumnsStatistics(content.columns);
+            return getMetadata()
+                .then(function(response) {
+                    if(!response.columns[0].statistics.frequencyTable.length) {
+                        return $q.reject();
+                    }
+                    return response;
+                })
+                .then(function (response) {
+                    StateService.updateColumnsStatistics(response.columns);
                 })
                 .then(StatisticsService.updateStatistics);
         }
 
         //------------------------------------------------------------------------------------------------------
-        //------------------------------------------------PREPARATION-------------------------------------------
+        //------------------------------------------------PREPARATIO*N-------------------------------------------
         //------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method

@@ -28,19 +28,6 @@ describe('Suggestions stats directive', function() {
         element.remove();
     });
 
-    it('should render loading element', inject(function() {
-        //given
-        stateMock.playground.suggestions.isLoading = true;
-
-        //when
-        createElement();
-
-        //then
-        expect(element.find('.suggestions-loading-div').length).toBe(1);
-        expect(element.find('bg-splitter').length).toBe(1);
-        expect(element.find('bg-splitter.ng-hide').length).toBe(1);
-    }));
-
     it('should render suggestions/stats splitter', inject(function() {
         //given
         stateMock.playground.suggestions.isLoading = false;

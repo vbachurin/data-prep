@@ -114,8 +114,7 @@ public class Aggregate extends GenericCommand<InputStream> {
         final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, //
                 client, //
                 datasetId, //
-                false, // metadata
-                true, // columns (allow metadata-based filters to work)
+                true, // metadata + columns (allow metadata-based filters to work)
                 sampleSize);
         return retrieveDataSet.execute();
     }

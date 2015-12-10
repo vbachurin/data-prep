@@ -1188,19 +1188,36 @@
         "configuration": {
           "values": [
             {
-              "value": ":"
+              "value": ":",
+              "label": ":"
             },
             {
-              "value": "@"
+              "value": "@",
+              "label": "@"
             },
             {
-              "value": " "
+              "value": " ",
+              "label": "<space>"
             },
             {
-              "value": ","
+              "value": "\t",
+              "label": "<tab>"
             },
             {
-              "value": "-"
+              "value": ",",
+              "label": ","
+            },
+            {
+              "value": "-",
+              "label": "-"
+            },
+            {
+              "value": "_",
+              "label": "_"
+            },
+            {
+              "value": ";",
+              "label": ";"
             },
             {
               "value": "other",

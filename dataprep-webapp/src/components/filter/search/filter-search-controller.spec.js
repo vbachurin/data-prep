@@ -5,58 +5,60 @@ describe('filter search controller', function() {
     var stateMock;
 
     var data = {
-        'columns': [
-            {
-                'id': '0000',
-                'name': 'id',
-                'quality': {
-                    'empty': 5,
-                    'invalid': 10,
-                    'valid': 72
+        'metadata': {
+            'columns': [
+                {
+                    'id': '0000',
+                    'name': 'id',
+                    'quality': {
+                        'empty': 5,
+                        'invalid': 10,
+                        'valid': 72
+                    },
+                    'type': 'number'
                 },
-                'type': 'number'
-            },
-            {
-                'id': '0001',
-                'name': 'Postal',
-                'quality': {
-                    'empty': 5,
-                    'invalid': 10,
-                    'valid': 72
+                {
+                    'id': '0001',
+                    'name': 'Postal',
+                    'quality': {
+                        'empty': 5,
+                        'invalid': 10,
+                        'valid': 72
+                    },
+                    'type': 'string'
                 },
-                'type': 'string'
-            },
-            {
-                'id': '0002',
-                'name': 'State',
-                'quality': {
-                    'empty': 5,
-                    'invalid': 10,
-                    'valid': 72
+                {
+                    'id': '0002',
+                    'name': 'State',
+                    'quality': {
+                        'empty': 5,
+                        'invalid': 10,
+                        'valid': 72
+                    },
+                    'type': 'string'
                 },
-                'type': 'string'
-            },
-            {
-                'id': '0003',
-                'name': 'Capital',
-                'quality': {
-                    'empty': 5,
-                    'invalid': 10,
-                    'valid': 72
+                {
+                    'id': '0003',
+                    'name': 'Capital',
+                    'quality': {
+                        'empty': 5,
+                        'invalid': 10,
+                        'valid': 72
+                    },
+                    'type': 'string'
                 },
-                'type': 'string'
-            },
-            {
-                'id': '0004',
-                'name': 'MostPopulousCity',
-                'quality': {
-                    'empty': 5,
-                    'invalid': 10,
-                    'valid': 72
-                },
-                'type': 'string'
-            }
-        ],
+                {
+                    'id': '0004',
+                    'name': 'MostPopulousCity',
+                    'quality': {
+                        'empty': 5,
+                        'invalid': 10,
+                        'valid': 72
+                    },
+                    'type': 'string'
+                }
+            ]
+        },
         'records': [
             {
                 '0000': '1',

@@ -20,6 +20,7 @@
 
             getDatasets: getDatasets,
             updateMetadata: updateMetadata,
+            getMetadata: getMetadata,
             getContent: getContent,
             getContentFromUrl: getContentFromUrl,
             getSheetPreview: getSheetPreview,
@@ -216,6 +217,22 @@
 
         /**
          * @ngdoc method
+         * @name getMetadata
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @description Get the dataset metadata
+         * @param {string} datasetId The dataset id
+         * @returns {Promise} The GET promise
+         */
+        function getMetadata(datasetId) {
+            var url = RestURLs.datasetUrl + '/' + datasetId + '/metadata';
+            return $http.get(url)
+                .then(function (res) {
+                    return res.data;
+                });
+        }
+
+        /**
+         * @ngdoc method
          * @name getLookupActions
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Get the dataset content from a complete URL
@@ -253,7 +270,7 @@
 
 
         //--------------------------------------------------------------------------------------------------------------
-        //------------------------------------------------Toogle Favorite-------------------------------------------------
+        //------------------------------------------------Toggle Favorite-----------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method

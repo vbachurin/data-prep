@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.user.store.UserDataRepository;
 
@@ -45,7 +45,7 @@ public class FileSystemUserDataRepository implements UserDataRepository {
 
         final File inputFile = getFile(userId);
         if (!inputFile.exists()) {
-            LOG.info("user data #{} not found in file system", userId);
+            LOG.debug("user data #{} not found in file system", userId);
             return null;
         }
 

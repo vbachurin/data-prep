@@ -5,7 +5,7 @@ describe('Transformation params directive', function () {
 
     beforeEach(module('data-prep.transformation-form', function ($provide) {
         stateMock = {playground: {
-            data: {columns: []},
+            data: {metadata: {columns: []}},
             grid: {selectedColumn: '0001'}
         }};
         $provide.constant('state', stateMock);

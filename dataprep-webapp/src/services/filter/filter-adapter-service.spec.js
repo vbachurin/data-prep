@@ -3,14 +3,20 @@ describe('Filter Adapter Service', function () {
 
     var stateMock;
     beforeEach(module('data-prep.services.filter', function ($provide) {
-        stateMock = {playground: {
-            data: {columns: [
-                {id: '0000', name: 'firstname'},
-                {id: '0001', name: 'lastname'},
-                {id: '0002', name: 'birthdate'},
-                {id: '0003', name: 'address'}
-            ]}
-        }};
+        stateMock = {
+            playground: {
+                data: {
+                    metadata: {
+                        columns: [
+                            {id: '0000', name: 'firstname'},
+                            {id: '0001', name: 'lastname'},
+                            {id: '0002', name: 'birthdate'},
+                            {id: '0003', name: 'address'}
+                        ]
+                    }
+                }
+            }
+        };
         $provide.constant('state', stateMock);
     }));
 

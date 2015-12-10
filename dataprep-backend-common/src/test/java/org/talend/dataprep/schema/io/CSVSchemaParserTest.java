@@ -38,7 +38,7 @@ public class CSVSchemaParserTest {
             SchemaParserResult result = parser.parse(new SchemaParser.Request(inputStream, datasetMetadata));
             List<ColumnMetadata> actual = result.getSheetContents().get(0).getColumnMetadatas();
 
-            Assert.assertEquals(datasetMetadata.getRow().getColumns(), actual);
+            Assert.assertEquals(datasetMetadata.getRowMetadata().getColumns(), actual);
         }
     }
 

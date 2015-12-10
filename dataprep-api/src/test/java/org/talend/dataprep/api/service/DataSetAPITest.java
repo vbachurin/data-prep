@@ -51,7 +51,7 @@ public class DataSetAPITest extends ApiServiceTestBase {
                 .queryParam("Content-Type", "text/csv").when().put("/api/datasets/" + dataSetId + "?name=testDataset").asString();
 
         // then, the content is updated
-        String dataSetContent = when().get("/api/datasets/" + dataSetId + "?metadata=false&columns=true").asString();
+        String dataSetContent = when().get("/api/datasets/" + dataSetId + "?metadata=true").asString();
         final String expectedContent = IOUtils.toString(this.getClass().getResourceAsStream("t-shirt_100.csv.expected.json"));
         assertThat(dataSetContent, sameJSONAs(expectedContent).allowingExtraUnexpectedFields());
     }
@@ -306,6 +306,19 @@ public class DataSetAPITest extends ApiServiceTestBase {
     }
 
     @Test
+    public void testDataSetGetMetadata() throws Exception {
+        // given
+        final String dataSetId = createDataset("dataset/dataset.csv", "test_metadata", "text/csv");
+
+        // when
+        final String content = when().get("/api/datasets/{id}/metadata", dataSetId).asString();
+
+        // then
+        final InputStream expected = PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_columns.json");
+        assertThat(content, sameJSONAsFile(expected));
+    }
+
+    @Test
     public void testDataSetGetWithSampleZeroOrFull() throws Exception {
         // given
         final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");
@@ -466,7 +479,7 @@ public class DataSetAPITest extends ApiServiceTestBase {
         assertNotNull(dataSetMetadata);
         assertNotNull(dataSetMetadata.getGovernance());
         assertEquals(DataSetGovernance.Certification.PENDING, dataSetMetadata.getGovernance().getCertificationStep());
-        assertThat(dataSetMetadata.getRow().getColumns(), not(empty()));
+        assertThat(dataSetMetadata.getRowMetadata().getColumns(), not(empty()));
 
         // when
         when().put("/api/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
@@ -476,7 +489,7 @@ public class DataSetAPITest extends ApiServiceTestBase {
         assertNotNull(dataSetMetadata);
         assertNotNull(dataSetMetadata.getGovernance());
         assertEquals(DataSetGovernance.Certification.CERTIFIED, dataSetMetadata.getGovernance().getCertificationStep());
-        assertThat(dataSetMetadata.getRow().getColumns(), not(empty()));
+        assertThat(dataSetMetadata.getRowMetadata().getColumns(), not(empty()));
     }
 
     @Test

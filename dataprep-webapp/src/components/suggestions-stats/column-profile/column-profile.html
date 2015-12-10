@@ -4,20 +4,20 @@
          ng-switch-when="false"
          ng-switch="!!columnProfileCtrl.histogram">
 
-        <button ng-switch-when="true"
-                ng-click="columnProfileCtrl.refresh()"
-                ng-disabled="columnProfileCtrl.refreshInProgress"
-                ng-switch="columnProfileCtrl.refreshInProgress">
-            <img ng-switch-when="false" src="/assets/images/refresh-small.png">
-            <span ng-switch-when="true"><i data-icon="c" class="icon continuous-rotate"></i></span>
-        </button>
+        <div ng-switch-when="true" id="chart-ghost" class="loading-container">
+            <img id="chart-ghost-img" src="/assets/images/refreshing-ghost-chart.png">
+            <div id="chart-ghost-message" class="loading-msg">
+                <span class="wait-icon continuous-rotate" ><i data-icon="c" class="icon"></i></span>
+                <span class="wait-text" translate-once="REFRESHING_WAIT"></span>
+            </div>
+        </div>
 
         <div ng-switch-when="false"
              class="watermark"
              translate-once="COMING_SOON"></div>
     </div>
 
-    <div ng-switch-when="true">
+    <div id="column-profile-chart" ng-switch-when="true">
         <div class="column-profile-aggregation">
             <talend-button-dropdown button-text="{{ columnProfileCtrl.getCurrentAggregation() | translate }} {{columnProfileCtrl.histogram.aggregationColumn.name}}">
                 <ul class="column-profile-aggregation-list">

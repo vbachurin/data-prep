@@ -84,12 +84,30 @@ public class CutTest {
     @Test
     public void test_TTP_663() throws IOException {
         // given
-        DataSetRow row = getRow("Wait for it...", "TSG-12345", "Done !");
-        DataSetRow expected = getRow("Wait for it...", "TSG-12345", "Done !");
+        DataSetRow row = getRow("Wait for it...", "The value that gets cut !", "Done !");
+        DataSetRow expected = getRow("Wait for it...", "The value that gets cut !", "Done !");
 
         Map<String, String> regexpParameters = ActionMetadataTestUtils.parseParameters(
                 SplitTest.class.getResourceAsStream("cutAction.json"));
         regexpParameters.put("pattern", "*");
+
+        // when
+        action.applyOnColumn(row, new TransformationContext(), regexpParameters, "0001");
+
+        // then
+        assertEquals(expected, row);
+    }
+
+
+    @Test
+    public void test_TTP_958() throws IOException {
+        // given
+        DataSetRow row = getRow("Wait for it...", "The value that gets cut !", "Done !");
+        DataSetRow expected = getRow("Wait for it...", "The value that gets cut !", "Done !");
+
+        Map<String, String> regexpParameters = ActionMetadataTestUtils.parseParameters(
+                SplitTest.class.getResourceAsStream("cutAction.json"));
+        regexpParameters.put("pattern", "");
 
         // when
         action.applyOnColumn(row, new TransformationContext(), regexpParameters, "0001");

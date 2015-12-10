@@ -404,7 +404,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
         // then
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.readTree(preparationContent);
-        JsonNode records = rootNode.findPath("records");
+        JsonNode records = rootNode.get("records");
         assertThat(records.size(), is(53));
     }
 
@@ -420,7 +420,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
         // then
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.readTree(preparationContent);
-        JsonNode records = rootNode.findPath("records");
+        JsonNode records = rootNode.get("records");
         assertThat(records.size(), is(100));
     }
 

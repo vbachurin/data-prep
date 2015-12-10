@@ -17,9 +17,14 @@ describe('Lookup datagrid directive', function() {
 
 
 	beforeEach(module('data-prep.lookup', function ($provide) {
-		stateMock = {playground: {
-			lookup: {dataView: dataViewMock}
-		}};
+        stateMock = {
+            playground: {
+                metadata: {
+                    columns: []
+                },
+                lookup: {dataView: dataViewMock}
+            }
+        };
 		$provide.constant('state', stateMock);
 	}));
 
@@ -70,7 +75,14 @@ describe('Lookup datagrid directive', function() {
 		beforeEach(inject(function() {
 			//given
 			createElement();
-			data = {columns: [{id: '0000'}, {id: '0001', tdpColMetadata: {id: '0001'}}]};
+            data = {
+                metadata: {
+                    columns: [
+                        {id: '0000'},
+                        {id: '0001', tdpColMetadata: {id: '0001'}}
+                    ]
+                }
+            };
 
 			//when
 			stateMock.playground.lookupData = data;
@@ -107,7 +119,7 @@ describe('Lookup datagrid directive', function() {
 			describe('column creation', function() {
 				it('should create new columns', inject(function(LookupDatagridColumnService) {
 					//then
-					expect(LookupDatagridColumnService.createColumns).toHaveBeenCalledWith(data.columns);
+					expect(LookupDatagridColumnService.createColumns).toHaveBeenCalledWith(data.metadata.columns);
 				}));
 
 				it('should reset renew all columns flag', inject(function(LookupDatagridColumnService) {
@@ -122,7 +134,7 @@ describe('Lookup datagrid directive', function() {
 					stateMock.playground.lookup.selectedColumn = {id: '0001'};
 
 					//when
-					stateMock.playground.lookupData = {};
+					stateMock.playground.lookupData = {metadata:{}};
 					scope.$digest();
 					jasmine.clock().tick(1);
 
@@ -133,15 +145,15 @@ describe('Lookup datagrid directive', function() {
 				it('should update selected column style', inject(function(LookupDatagridStyleService) {
 					//given
 					stateMock.playground.lookup.selectedColumn = {id: '0001'};
-					expect(LookupDatagridStyleService.updateColumnClass).not.toHaveBeenCalledWith(createdColumns, data.columns[1]);
+					expect(LookupDatagridStyleService.updateColumnClass).not.toHaveBeenCalledWith(createdColumns, data.metadata.columns[1]);
 
 					//when
-					stateMock.playground.lookupData = {};
+					stateMock.playground.lookupData = {metadata:{}};
 					scope.$digest();
 					jasmine.clock().tick(1);
 
 					//then
-					expect(LookupDatagridStyleService.updateColumnClass).toHaveBeenCalledWith(createdColumns, data.columns[1]);
+					expect(LookupDatagridStyleService.updateColumnClass).toHaveBeenCalledWith(createdColumns, data.metadata.columns[1]);
 				}));
 			});
 
@@ -159,12 +171,12 @@ describe('Lookup datagrid directive', function() {
 				stateMock.playground.lookup.selectedColumn = {id: '0001'};
 
 				//when
-				stateMock.playground.lookupData = {};
+				stateMock.playground.lookupData = {metadata:{}};
 				scope.$digest();
 
 				expect(LookupDatagridColumnService.createColumns.calls.count()).toBe(1);
 
-				stateMock.playground.lookupData = {};
+				stateMock.playground.lookupData = {metadata:{}};
 				scope.$digest();
 				jasmine.clock().tick(300);
 

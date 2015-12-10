@@ -28,12 +28,10 @@ import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
-import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @RestController
-@Api(value = "api", basePath = "/api", description = "Transformation API")
 public class TransformAPI extends APIService {
 
     @RequestMapping(value = "/api/transform/{id}", method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -49,7 +47,7 @@ public class TransformAPI extends APIService {
             HttpResponseContext.header( "Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             HttpClient client = getClient();
 
-            InputStream contentRetrieval = getCommand(DataSetGet.class, client, dataSetId, false, true, null).execute();
+            InputStream contentRetrieval = getCommand(DataSetGet.class, client, dataSetId, true, null).execute();
             HystrixCommand<InputStream> transformation = getCommand(Transform.class, client, contentRetrieval,
                     IOUtils.toString(body));
 
@@ -163,7 +161,7 @@ public class TransformAPI extends APIService {
             if (isNotBlank(dynamicParamsInput.getPreparationId())) {
                 inputData = getCommand(PreparationGetContent.class, getClient(), dynamicParamsInput.getPreparationId(), dynamicParamsInput.getStepId());
             } else {
-                inputData = getCommand(DataSetGet.class, getClient(), dynamicParamsInput.getDatasetId(), false, true, null);
+                inputData = getCommand(DataSetGet.class, getClient(), dynamicParamsInput.getDatasetId(), true, null);
             }
 
             // get params, passing content in the body

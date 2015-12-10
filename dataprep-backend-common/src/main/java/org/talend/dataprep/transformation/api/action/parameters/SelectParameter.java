@@ -82,6 +82,9 @@ public class SelectParameter extends Parameter implements Serializable {
         /** the item value. */
         private String value;
 
+        /** the item label. */
+        private String label;
+
         /** The optional inline parameter. */
         @JsonProperty("parameters")
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -95,6 +98,7 @@ public class SelectParameter extends Parameter implements Serializable {
          */
         public Item(String value, List<Parameter> parameters) {
             this.value = value;
+            this.label = value; // By default, use value as label, can be override with setter
             this.inlineParameters = parameters;
         }
 
@@ -119,6 +123,14 @@ public class SelectParameter extends Parameter implements Serializable {
          */
         public List<Parameter> getInlineParameters() {
             return inlineParameters;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public void setLabel(String label) {
+            this.label = label;
         }
     }
 
@@ -216,6 +228,19 @@ public class SelectParameter extends Parameter implements Serializable {
          */
         public SelectParameter.Builder item(String value) {
             this.items.add(new Item(value, emptyList()));
+            return this;
+        }
+
+        /**
+         * Add an item to the select parameter builder.
+         *
+         * @param value the item value.
+         * @return the builder to carry on building the column.
+         */
+        public SelectParameter.Builder item(String value, String label) {
+            final Item item = new Item(value, emptyList());
+            item.setLabel(label);
+            this.items.add(item);
             return this;
         }
 

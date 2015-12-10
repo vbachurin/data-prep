@@ -12,11 +12,9 @@ import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
-import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 @RestController
-@Api(value = "api", basePath = "/api", description = "Send feedback to Talend")
 public class MailServiceAPI extends APIService {
 
     @RequestMapping(value = "/api/mail", method = PUT)

@@ -10,11 +10,10 @@
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function ColumnProfileCtrl($scope, state, StatisticsService, FilterService, PlaygroundService) {
+    function ColumnProfileCtrl($scope, $timeout, state, StatisticsService, FilterService, PlaygroundService) {
         var vm = this;
         vm.statisticsService = StatisticsService;
         vm.chartConfig = {};
-        vm.refreshInProgress = false;
 
         //------------------------------------------------------------------------------------------------------
         //------------------------------------------------FILTER------------------------------------------------
@@ -198,16 +197,36 @@
         };
 
         //------------------------------------------------------------------------------------------------------
-        //-------------------------------------------------REFRESH----------------------------------------------
+        //----------------------------------------------CHART REFRESH-------------------------------------------
         //------------------------------------------------------------------------------------------------------
-        vm.refresh = function refresh() {
-            vm.refreshInProgress = true;
-            PlaygroundService.updateStatistics()
-                .finally(function () {
-                    vm.refreshInProgress = false;
-                });
-        };
+        /**
+         * @ngdoc method
+         * @name shouldFetchStatistics
+         * @methodOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @description Check if we have the statistics or we have to fetch them
+         */
+        function shouldFetchStatistics() {
+            return StatisticsService.histogram &&// no histogram means no data to display at all
+                !StatisticsService.histogram.data.length &&// has histogram but no data in it
+                !vm.stateDistribution; // and not a state distribution chart
+        }
 
+        /**
+         * @ngdoc method
+         * @name fetchStatistics
+         * @methodOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @description Fetch the statistics. If the update fails (no statistics yet) a retry is triggered after 1s
+         */
+        function fetchStatistics() {
+            PlaygroundService.updateStatistics()
+                .catch(function() {
+                    $timeout(fetchStatistics, 1500, false);
+                });
+        }
+
+        if(shouldFetchStatistics()) {
+            fetchStatistics();
+        }
         //------------------------------------------------------------------------------------------------------
         //-------------------------------------------------WATCHERS---------------------------------------------
         //------------------------------------------------------------------------------------------------------

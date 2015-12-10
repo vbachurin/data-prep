@@ -48,7 +48,7 @@ public class XlsWriterTest extends BaseFormatTest {
             final InputStream inputStream = XlsWriterTest.class.getResourceAsStream("export_dataset.json");
             final ObjectMapper mapper = builder.build();
             try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
-                final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+                final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
                 exporter.transform(dataSet, configuration);
             }
         }

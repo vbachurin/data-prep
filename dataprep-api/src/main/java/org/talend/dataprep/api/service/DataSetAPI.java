@@ -39,12 +39,10 @@ import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
-import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @RestController
-@Api(value = "api", basePath = "/api", description = "Data Preparation API")
 public class DataSetAPI extends APIService {
 
     /**
@@ -128,7 +126,6 @@ public class DataSetAPI extends APIService {
     public void get(
             @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
-            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
             @RequestParam(required = false, defaultValue = "full") @ApiParam(name = "sample", value = "Size of the wanted sample, if missing or 'full', the full dataset is returned") String sample, //
             final OutputStream output) {
         if (LOG.isDebugEnabled()) {
@@ -144,7 +141,7 @@ public class DataSetAPI extends APIService {
             sampleValue = null;
         }
         
-        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata, columns, sampleValue);
+        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata, sampleValue);
         try (InputStream content = retrievalCommand.execute()){
             IOUtils.copyLarge(content, output);
             output.flush();
@@ -154,6 +151,32 @@ public class DataSetAPI extends APIService {
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
+    }
+
+    /**
+     * Return the dataset metadata.
+     *
+     * @param id the wanted dataset metadata.
+     * @return the dataset metadata or no content if not found.
+     */
+    @RequestMapping(value = "/api/datasets/{id}/metadata", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get a data set metadata by id.", produces = APPLICATION_JSON_VALUE, notes = "Get a data set metadata based on given id.")
+    public DataSetMetadata getMetadata(@ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id) {
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Requesting dataset metadata #{} (pool: {})...", id, getConnectionManager().getTotalStats());
+        }
+
+        HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+        HttpClient client = getClient();
+
+        HystrixCommand<DataSetMetadata> getMetadataCommand = getCommand(DataSetGetMetadata.class, client, id);
+        final DataSetMetadata metadata = getMetadataCommand.execute();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Request dataset metadata #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
+        }
+        return metadata;
     }
 
     /**
@@ -199,7 +222,6 @@ public class DataSetAPI extends APIService {
     public void preview(
             @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
-            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
             @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
             final OutputStream output) {
         if (LOG.isDebugEnabled()) {
@@ -207,7 +229,7 @@ public class DataSetAPI extends APIService {
         }
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
-        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetPreview.class, client, id, metadata, columns, sheetName);
+        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetPreview.class, client, id, metadata, sheetName);
         try (InputStream content = retrievalCommand.execute()) {
             IOUtils.copyLarge(content, output);
             output.flush();
