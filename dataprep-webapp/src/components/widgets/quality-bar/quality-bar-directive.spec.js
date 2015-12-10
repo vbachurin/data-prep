@@ -26,7 +26,7 @@ describe('Quality bar directive', function() {
     });
 
     describe('with enter animation', function() {
-        it('step 1: should block transition', inject(function($rootScope) {
+        it(' should enable transition', inject(function($rootScope) {
             //given
             scope.quality = {
                 valid: 10,
@@ -40,10 +40,10 @@ describe('Quality bar directive', function() {
             $rootScope.$digest();
 
             //then
-            expect(controller.blockTransition).toBe(true);
+            expect(controller.blockTransition).toBe(false);
         }));
 
-        it('step 1: should reset the width object', inject(function($rootScope) {
+        it(' should reset the width object', inject(function($rootScope) {
             //given
             scope.quality = {
                 valid: 10,
@@ -64,25 +64,8 @@ describe('Quality bar directive', function() {
             });
         }));
 
-        it('step 2: should re enable animation after a short timeout', inject(function($rootScope, $timeout) {
-            //given
-            scope.quality = {
-                valid: 10,
-                invalid: 20,
-                empty: 70
-            };
-            scope.enterAnimation = true;
-            createElement();
 
-            //when
-            $rootScope.$digest();
-            $timeout.flush(1);
-
-            //then
-            expect(controller.blockTransition).toBe(false);
-        }));
-
-        it('step 3: compute percentage and width after a 300ms timeout', inject(function($rootScope, $timeout) {
+        it(' compute percentage and width after a 300ms timeout', inject(function($rootScope, $timeout) {
             //given
             scope.quality = {
                 valid: 10,
@@ -113,7 +96,23 @@ describe('Quality bar directive', function() {
             };
         }));
 
-        it('step 3: compute percentage and width with no animation', inject(function($rootScope) {
+        it(' should not enable transition', inject(function($rootScope) {
+            //given
+            scope.quality = {
+                valid: 10,
+                invalid: 20,
+                empty: 70
+            };
+            createElement();
+
+            //when
+            $rootScope.$digest();
+
+            //then
+            expect(controller.blockTransition).toBe(true);
+        }));
+
+        it('compute percentage and width with no animation', inject(function($rootScope) {
             //given
             scope.quality = {
                 valid: 10,

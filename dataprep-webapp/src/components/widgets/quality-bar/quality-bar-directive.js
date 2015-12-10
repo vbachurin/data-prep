@@ -9,10 +9,12 @@
      * @usage
      <quality-bar
              quality="quality"
-             enterAnimation="enableEnterAnimation">
+             enterAnimation="enableEnterAnimation"
+             hasMenu="true">
      </talend-tooltip>
      * @param {object} quality {empty: number, invalid: number, valid: number} The quality values
      * @param {string} enterAnimation Do not animate on enter if this flag === 'false'
+     * @param {string} hasMenu Do not show the menu if hasMenu === 'false'
      */
     function QualityBar($timeout) {
         return {
@@ -47,14 +49,13 @@
                  * @description [PRIVATE] Block animation, reset width to 0 and calculate the new width with animation enabling
                  */
                 var refreshBarsWithAnimation = function refreshBarsWithAnimation() {
-                    ctrl.blockTransition = true;
                     ctrl.width = {
                         invalid: 0,
                         empty: 0,
                         valid: 0
                     };
 
-                    $timeout(enableTransition, 0, false);
+                    enableTransition();
 
                     $timeout(function() {
                         ctrl.computePercent();
@@ -74,6 +75,7 @@
                     //Do NOT animate on first values and enterAnimation is false
                     if(initializing && ctrl.enterAnimation === 'false') {
                         initializing = false;
+                        ctrl.blockTransition = true;
                         ctrl.computePercent();
                         ctrl.computeQualityWidth();
                     }
