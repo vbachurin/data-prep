@@ -59,7 +59,7 @@
             setCurrentFolder: FolderStateService.setCurrentFolder,
             setCurrentFolderContent: FolderStateService.setCurrentFolderContent,
             setFoldersStack: FolderStateService.setFoldersStack,
-            setMenuChilds: FolderStateService.setMenuChilds
+            setMenuChildren: FolderStateService.setMenuChildren
         };
     }
 

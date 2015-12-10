@@ -13,12 +13,47 @@
 			// folder operations
 			create: createFolder,
 			getFolderContent: getFolderContent,
-			renameFolder: renameFolder
+			renameFolder: renameFolder,
+			children: children,
+			searchFolders: searchFolders
 		};
 
 		//----------------------------------------------
 		//   folders
 		//----------------------------------------------
+
+		/**
+		 * @ngdoc method
+		 * @name children
+		 * @methodOf data-prep.services.folder.service:FolderRestService
+		 * @description Get children of a folder
+		 * @param {string} path the path to get children
+		 * @returns {Promise} The GET promise
+		 */
+		function children(path){
+			var url = RestURLs.folderUrl;
+			if (path){
+				url += '?path=' + encodeURIComponent(path);
+			}
+			return $http.get(url);
+		}
+
+
+		/**
+		 * @ngdoc method
+		 * @name searchFolders
+		 * @methodOf data-prep.services.folder.service:FolderRestService
+		 * @description Search folders with a part of the name
+		 * @param {string} query the part of the name to search
+		 * @returns {Promise} The GET promise
+		 */
+		function searchFolders(query){
+			var url = RestURLs.folderUrl + '/search';
+			if (query){
+				url += '?pathName=' + encodeURIComponent(query);
+			}
+			return $http.get(url);
+		}
 
 		/**
 		 * @ngdoc method
@@ -36,7 +71,7 @@
 		 * @ngdoc method
 		 * @name getFolderContent
 		 * @methodOf data-prep.services.folder.service:FolderRestService
-		 * @description List the childs (folders or datasets) of a folder (or child of root folder)
+		 * @description List the children (folders or datasets) of a folder (or children of root folder)
 		 * @param {object} folder - the current folder
 		 * @param {string} sortType Sort by specified type
 		 * @param {string} sortOrder Sort in specified order
@@ -75,5 +110,5 @@
 	}
 
 	angular.module('data-prep.services.folder')
-		.service('FolderRestService', FolderRestService);
+			.service('FolderRestService', FolderRestService);
 })();

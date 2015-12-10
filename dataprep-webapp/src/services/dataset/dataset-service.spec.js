@@ -172,13 +172,14 @@ describe('Dataset Service', function () {
             it('should clone a dataset and return the http promise (with progress function)', inject(function ($rootScope, DatasetService, DatasetListService) {
                 //given
                 var dataset = DatasetListService.datasets[0];
+                var newFolder = {id:'/wine/beer'};
                 var name = 'my clone';
 
                 //when
-                DatasetService.clone(dataset, name);
+                DatasetService.clone(dataset, newFolder, name);
 
                 //then
-                expect(DatasetListService.clone).toHaveBeenCalledWith(dataset, name);
+                expect(DatasetListService.clone).toHaveBeenCalledWith(dataset, newFolder, name);
             }));
 
             it('should consolidate preparations and datasets', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {

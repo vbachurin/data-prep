@@ -1,3 +1,7 @@
+$selected-color: #c9d7e4;
+$hover-color: #c9d7e4;
+$border-color: #CECECE;
+
 .dataset {
   $button-background-color: $white;
   $button-color-text: $black;
@@ -78,3 +82,145 @@
     }
   }
 }
+
+
+.folders-modal {
+
+  $medium-screen: em(640) !default;
+  $large-screen: em(860) !default;
+
+  padding: 10px 20px;
+
+  @include display(flex);
+  @include flex-direction(column);
+  @include justify-content(flex-start);
+  @include flex-wrap(wrap);
+  @include align-items(stretch);
+
+  .search-folder-box{
+    margin-bottom: 4px;
+  }
+
+  form.search-bar {
+    $base-border-color: gainsboro !default;
+    $base-border-radius: 3px !default;
+    $base-line-height: 1.5em !default;
+    $action-color: #477DCA !default;
+    $dark-gray: #333 !default;
+    float: right;
+    position: relative;
+
+    $search-bar-border-color: $base-border-color;
+    $search-bar-border: 1px solid $search-bar-border-color;
+    $search-bar-background: lighten($search-bar-border-color, 10%);
+
+    input[type=search] {
+      background-color: white;
+      border-radius: $base-border-radius;
+      border-radius: $base-border-radius;
+      border: 1px solid $base-border-color;
+      display: block;
+      font-size: 1em;
+      font-style: italic;
+      margin: 0;
+      padding: ($base-spacing / 3) ($base-spacing / 3);
+      position: relative;
+      width: 100%;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    button[type=submit] {
+      @include button(flat, $action-color);
+      @include position(absolute, 0em 0em 0em null);
+      border-bottom-left-radius: 0;
+      border-top-left-radius: 0;
+      outline: none;
+      padding: 5px 10px;
+
+      img {
+        height: 12px;
+        opacity: 0.7;
+      }
+    }
+
+  }
+
+
+
+  .folders {
+
+    display: flex;
+    min-height: 400px;
+    max-height: 400px;
+    overflow: auto;
+    border: 1px solid $border-color;
+    padding: 2px;
+    position: relative;
+
+    width: 100%;
+    height: 36%;
+    margin: 0;
+
+    &.datagrid{
+      min-height: 200px;
+      .slick-header-columns {
+        min-height: 29px;
+      }
+    }
+  }
+
+
+  .hidden {
+    display: none;
+    visibility: hidden;
+  }
+
+  .folders-tree-root .folder-nodes {
+    padding-left: 2px;
+  }
+
+  .folder-nodes {
+    padding-left: 20px;
+  }
+
+  .folder-node {
+    cursor: none;
+  }
+
+  .folder-name {
+    color: $black;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .folderselected {
+    background-color: $selected-color;
+  }
+
+  .dropdown-button-down {
+    cursor: pointer;
+    color: $black;
+    &:before {
+      content: "\25BC";
+      margin-left: 2px;
+    }
+  }
+
+  .dropdown-button-right {
+    cursor: pointer;
+    color: $black;
+    &:before {
+      content: "\25B6";
+      margin-left: 2px;
+    }
+  }
+
+  .clone-name{
+    margin-top: 10px;
+  }
+}
+

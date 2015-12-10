@@ -107,4 +107,49 @@ describe('Folder Rest Service', function () {
 
     }));
 
+    it('should call get children folder of root', inject(function ($rootScope, FolderRestService, RestURLs) {
+        //given
+        var path = '';
+
+        $httpBackend
+            .expectGET(RestURLs.folderUrl)
+            .respond(200);
+
+        //when
+        FolderRestService.children(path);
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+    }));
+
+    it('should call get children folder', inject(function ($rootScope, FolderRestService, RestURLs) {
+        //given
+        var path = '/foo/bar';
+
+        $httpBackend
+            .expectGET(RestURLs.folderUrl + '?path=' + encodeURIComponent(path))
+            .respond(200);
+
+        //when
+        FolderRestService.children(path);
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+    }));
+
+    it('should call search', inject(function ($rootScope, FolderRestService, RestURLs) {
+        //given
+        var path = '/foo/bar';
+
+        $httpBackend
+            .expectGET(RestURLs.folderUrl + '/search?pathName=' + encodeURIComponent(path))
+            .respond(200);
+
+        //when
+        FolderRestService.searchFolders(path);
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+    }));
+
 });

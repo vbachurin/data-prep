@@ -1,13 +1,15 @@
 package org.talend.dataprep.api.service;
 
+import static com.jayway.restassured.RestAssured.when;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -24,10 +26,6 @@ import com.google.common.collect.Lists;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
-
-import static com.jayway.restassured.RestAssured.when;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 public class FolderAPITest extends ApiServiceTestBase {
 
@@ -96,11 +94,11 @@ public class FolderAPITest extends ApiServiceTestBase {
         List<Folder> folders = objectMapper.readValue(response.asString(), new TypeReference<List<Folder>>() {
         });
 
-        List<Folder> expected = Lists.newArrayList(Folder.Builder.folder().path("foo/beer").name( "beer" ).build(), //
-                Folder.Builder.folder().path("foo/wine").name( "wine" ).build());
+        List<Folder> expected = Lists.newArrayList(Folder.Builder.folder().path("foo/beer").name("beer").build(), //
+                Folder.Builder.folder().path("foo/wine").name("wine").build());
 
         Assertions.assertThat(folders).isNotNull().isNotEmpty().hasSize(2) //
-            .usingElementComparatorOnFields( "path", "name" ).containsAll(expected);
+                .usingElementComparatorOnFields("path", "name").containsAll(expected);
 
         // requesting all folders
         response = RestAssured.given() //
@@ -266,10 +264,9 @@ public class FolderAPITest extends ApiServiceTestBase {
         Assertions.assertThat(folderEntries).isNotNull().isEmpty();
     }
 
-
-    //-----------------------------------
+    // -----------------------------------
     // dataset list content
-    //-----------------------------------
+    // -----------------------------------
 
     @Test
     public void testDataSetListWithDateOrderWithinFolder() throws Exception {
@@ -277,14 +274,14 @@ public class FolderAPITest extends ApiServiceTestBase {
         // create folders
         // create beer under foo
         Response response = RestAssured.given() //
-            .queryParam("path", "foo/beer") //
-            .when() //
-            .put("/api/folders");
+                .queryParam("path", "foo/beer") //
+                .when() //
+                .put("/api/folders");
 
         response = RestAssured.given() //
-            .queryParam("path", "foo/bar") //
-            .when() //
-            .put("/api/folders");
+                .queryParam("path", "foo/bar") //
+                .when() //
+                .put("/api/folders");
 
         final ObjectMapper mapper = new ObjectMapper();
         // given
@@ -294,64 +291,63 @@ public class FolderAPITest extends ApiServiceTestBase {
         Thread.sleep(100);
         final String dataSetId3 = createDataset("dataset/dataset.csv", "cccc", "text/csv");
 
-        FolderEntry folderEntry = new FolderEntry( "dataset", dataSetId1, "/foo");
+        FolderEntry folderEntry = new FolderEntry("dataset", dataSetId1, "/foo");
 
         // create a folderentry in this directory
         response = RestAssured.given() //
-            .body(mapper.writer().writeValueAsBytes(folderEntry)) //
-            .contentType( ContentType.JSON) //
-            .when() //
-            .put("/api/folders/entries");
+                .body(mapper.writer().writeValueAsBytes(folderEntry)) //
+                .contentType(ContentType.JSON) //
+                .when() //
+                .put("/api/folders/entries");
 
-        folderEntry = new FolderEntry( "dataset", dataSetId3, "/foo");
+        folderEntry = new FolderEntry("dataset", dataSetId3, "/foo");
 
         // create a folderentry in this directory
         response = RestAssured.given() //
-            .body(mapper.writer().writeValueAsBytes(folderEntry)) //
-            .contentType( ContentType.JSON) //
-            .when() //
-            .put("/api/folders/entries");
+                .body(mapper.writer().writeValueAsBytes(folderEntry)) //
+                .contentType(ContentType.JSON) //
+                .when() //
+                .put("/api/folders/entries");
 
         // when (sort by date, order is desc)
         String list = when() //
-            .get("/api/folders/datasets?sort={sort}&order={order}&folder={folder}", "date", "desc", "foo")  //
-            .asString();
+                .get("/api/folders/datasets?sort={sort}&order={order}&folder={folder}", "date", "desc", "foo") //
+                .asString();
 
         // then
-        FolderContent folderContent = mapper.readValue( list, FolderContent.class );
+        FolderContent folderContent = mapper.readValue(list, FolderContent.class);
 
-        String[] expectedIds = new String[] {dataSetId3, dataSetId1};
+        String[] expectedIds = new String[] { dataSetId3, dataSetId1 };
         int i = 0;
         Iterator<DataSetMetadata> iterator = folderContent.getDatasets().iterator();
         while (iterator.hasNext()) {
             assertThat(iterator.next().getId(), is(expectedIds[i++]));
         }
 
-        Assertions.assertThat( folderContent.getFolders() ).isNotNull() //
-            .isNotEmpty().hasSize( 2 );
+        Assertions.assertThat(folderContent.getFolders()).isNotNull() //
+                .isNotEmpty().hasSize(2);
 
         // when (sort by date, order is desc)
         list = when() //
-            .get("/api/folders/datasets?sort={sort}&order={order}&folder={folder}", "date", "asc", "foo") //
-            .asString();
+                .get("/api/folders/datasets?sort={sort}&order={order}&folder={folder}", "date", "asc", "foo") //
+                .asString();
 
         // then
-        folderContent = mapper.readValue( list, FolderContent.class );
-        expectedIds = new String[] {dataSetId1, dataSetId3};
+        folderContent = mapper.readValue(list, FolderContent.class);
+        expectedIds = new String[] { dataSetId1, dataSetId3 };
         i = 0;
         iterator = folderContent.getDatasets().iterator();
         while (iterator.hasNext()) {
             assertThat(iterator.next().getId(), is(expectedIds[i++]));
         }
 
-
-        Assertions.assertThat( folderContent.getFolders() ).isNotNull() //
-            .isNotEmpty().hasSize( 2 );
+        Assertions.assertThat(folderContent.getFolders()).isNotNull() //
+                .isNotEmpty().hasSize(2);
 
         response = RestAssured.given() //
-            .queryParam("path", "foo") //
-            .when() //
-            .delete("/api/folders");
+                .queryParam("path", "foo") //
+                .when() //
+                .delete("/api/folders");
     }
 
     @Test
@@ -360,19 +356,19 @@ public class FolderAPITest extends ApiServiceTestBase {
         // create folders
         // create beer under foo
         Response response = RestAssured.given() //
-            .queryParam("path", "foo/beer") //
-            .when() //
-            .put("/api/folders");
+                .queryParam("path", "foo/beer") //
+                .when() //
+                .put("/api/folders");
 
-        Assertions.assertThat( response.getStatusCode() ).isEqualTo( 200 );
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
 
         // create bar under foo
         response = RestAssured.given() //
-            .queryParam("path", "foo/bar") //
-            .when() //
-            .put("/api/folders");
+                .queryParam("path", "foo/bar") //
+                .when() //
+                .put("/api/folders");
 
-        Assertions.assertThat( response.getStatusCode() ).isEqualTo( 200 );
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
 
         final ObjectMapper mapper = new ObjectMapper();
         // given
@@ -384,76 +380,73 @@ public class FolderAPITest extends ApiServiceTestBase {
 
         // when (sort by date, order is desc)
         String list = when() //
-            .get("/api/folders/datasets?sort={sort}&order={order}&folder={folder}", "name", "desc", "foo") //
-            .asString();
+                .get("/api/folders/datasets?sort={sort}&order={order}&folder={folder}", "name", "desc", "foo") //
+                .asString();
 
         // then
-        FolderContent folderContent = mapper.readValue( list, FolderContent.class );
-        String[] expectedIds = new String[] {dataSetId3, dataSetId1};
+        FolderContent folderContent = mapper.readValue(list, FolderContent.class);
+        String[] expectedIds = new String[] { dataSetId3, dataSetId1 };
         int i = 0;
         Iterator<DataSetMetadata> iterator = folderContent.getDatasets().iterator();
         while (iterator.hasNext()) {
             assertThat(iterator.next().getId(), is(expectedIds[i++]));
         }
 
-
-        Assertions.assertThat( folderContent.getFolders() ).isNotNull() //
-            .isNotEmpty().hasSize( 2 );
+        Assertions.assertThat(folderContent.getFolders()).isNotNull() //
+                .isNotEmpty().hasSize(2);
 
         // when (sort by date, order is desc)
         list = when() //
-            .get("/api/folders/datasets?sort={sort}&order={order}&folder={folder}", "date", "asc", "foo").asString();
+                .get("/api/folders/datasets?sort={sort}&order={order}&folder={folder}", "date", "asc", "foo").asString();
 
         // then
-        folderContent = mapper.readValue( list, FolderContent.class );
-        expectedIds = new String[] {dataSetId1, dataSetId3};
+        folderContent = mapper.readValue(list, FolderContent.class);
+        expectedIds = new String[] { dataSetId1, dataSetId3 };
         i = 0;
         iterator = folderContent.getDatasets().iterator();
         while (iterator.hasNext()) {
             assertThat(iterator.next().getId(), is(expectedIds[i++]));
         }
 
-
-        Assertions.assertThat( folderContent.getFolders() ).isNotNull() //
-            .isNotEmpty().hasSize( 2 );
-
+        Assertions.assertThat(folderContent.getFolders()).isNotNull() //
+                .isNotEmpty().hasSize(2);
 
         // test delete dataset
         response = when().delete("/api/datasets/" + dataSetId1);
 
-        Assertions.assertThat( response.getStatusCode() ).isEqualTo( 200 );
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
 
         list = when() //
-            .get("/api/folders/datasets?sort={sort}&order={order}&folder={folder}", "date", "asc", "foo").asString();
+                .get("/api/folders/datasets?sort={sort}&order={order}&folder={folder}", "date", "asc", "foo").asString();
 
         // then
-        folderContent = mapper.readValue( list, FolderContent.class );
+        folderContent = mapper.readValue(list, FolderContent.class);
 
-        expectedIds = new String[] {dataSetId3};
+        expectedIds = new String[] { dataSetId3 };
         i = 0;
         iterator = folderContent.getDatasets().iterator();
         while (iterator.hasNext()) {
             assertThat(iterator.next().getId(), is(expectedIds[i++]));
         }
 
-        Assertions.assertThat( folderContent.getDatasets() ).isNotNull() //
-            .isNotEmpty().hasSize( 1 );
+        Assertions.assertThat(folderContent.getDatasets()).isNotNull() //
+                .isNotEmpty().hasSize(1);
 
         // rename folder foo to beer
-        response =  RestAssured.given() //
-            .queryParam( "path", "foo" ) //
-            .queryParam( "newPath", "beer" ) //
-            .put("/api/folders/rename");
+        response = RestAssured.given() //
+                .queryParam("path", "foo") //
+                .queryParam("newPath", "beer") //
+                .put("/api/folders/rename");
 
-        Assertions.assertThat( response.getStatusCode() ).isEqualTo( 200 );
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
 
         list = when() //
-            .get("/api/folders/datasets?sort={sort}&order={order}&folder={folder}", "date", "asc", "beer").asString();
+                .get("/api/folders/datasets?sort={sort}&order={order}&folder={folder}", "date", "asc", "beer").asString();
 
         // then
-        folderContent = mapper.readValue( list, FolderContent.class );
+        folderContent = mapper.readValue(list, FolderContent.class);
 
-        expectedIds = new String[] {dataSetId3};
+        expectedIds = new String[] { dataSetId3 };
         i = 0;
         iterator = folderContent.getDatasets().iterator();
         while (iterator.hasNext()) {
@@ -461,13 +454,66 @@ public class FolderAPITest extends ApiServiceTestBase {
         }
 
         response = RestAssured.given() //
-            .queryParam("path", "beer") //
-            .when() //
-            .delete("/api/folders");
+                .queryParam("path", "beer") //
+                .when() //
+                .delete("/api/folders");
 
-        Assertions.assertThat( response.getStatusCode() ).isEqualTo( 200 );
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
+    }
 
+    @Test
+    public void add_then_search_folders() throws Exception {
 
+        createFolder("foo");
+
+        createFolder("bar");
+
+        createFolder("foo/beer");
+
+        createFolder("foo/wine");
+
+        createFolder("foo/wine/toto");
+
+        createFolder("foo/wine/titi");
+
+        createFolder("foo/wine/thetiti");
+
+        createFolder("foo/wine/yupTITI");
+
+        createFolder("foo/wine/yeahTITI");
+
+        createFolder("foo/wine/Goodwine");
+
+        createFolder("foo/wine/verygoodWInE");
+
+        assertOnSearch("foo", 1);
+
+        assertOnSearch("wine", 3);
+
+        assertOnSearch("tIti", 4);
+
+        assertOnSearch("GoOd", 2);
+
+    }
+
+    protected void assertOnSearch(String searchQuery, int expectedSize) throws Exception {
+
+        Response response = RestAssured.given() //
+                .queryParam("pathName", searchQuery).when() //
+                .get("/api/folders/search");
+        List<Folder> folders = objectMapper.readValue(response.asString(), new TypeReference<List<Folder>>() {
+        });
+
+        Assertions.assertThat(folders).hasSize(expectedSize);
+
+    }
+
+    protected void createFolder(String path) {
+        Response response = RestAssured.given() //
+                .queryParam("path", path).when() //
+                .put("/api/folders");
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
     }
 
 }

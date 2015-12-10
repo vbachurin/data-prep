@@ -205,6 +205,7 @@ describe('Folder services', function () {
 
     beforeEach(inject(function($q, FolderRestService, StateService) {
         spyOn(FolderRestService, 'create').and.returnValue($q.when());
+        spyOn(FolderRestService, 'children').and.returnValue($q.when());
         spyOn(FolderRestService, 'renameFolder').and.returnValue($q.when());
         spyOn(StateService, 'setFoldersStack').and.returnValue();
 
@@ -248,21 +249,21 @@ describe('Folder services', function () {
     //}));
 
 
-    it('should populateMenuChilds', inject(function ($q, $rootScope, FolderService, StateService, FolderRestService) {
+    it('should populateMenuChildren', inject(function ($q, $rootScope, FolderService, StateService, FolderRestService) {
         //Given
         var content ={data: {
             folders: [{id : 'toto', path: 'toto', name: 'toto'}]
         }};
         spyOn(FolderRestService, 'getFolderContent').and.returnValue($q.when(content));
-        spyOn(StateService, 'setMenuChilds').and.returnValue();
+        spyOn(StateService, 'setMenuChildren').and.returnValue();
 
         //when
-        FolderService.populateMenuChilds({id : 'toto', path: 'toto', name: 'toto'});
+        FolderService.populateMenuChildren({id : 'toto', path: 'toto', name: 'toto'});
         $rootScope.$digest();
 
         //then
         expect(FolderRestService.getFolderContent).toHaveBeenCalledWith({id : 'toto', path: 'toto', name: 'toto'});
-        expect(StateService.setMenuChilds).toHaveBeenCalledWith([{id : 'toto', path: 'toto', name: 'toto'}]);
+        expect(StateService.setMenuChildren).toHaveBeenCalledWith([{id : 'toto', path: 'toto', name: 'toto'}]);
     }));
 
     it('should getFolderContent', inject(function ($q, $rootScope, FolderService, StateService, FolderRestService, DatasetListSortService, PreparationListService) {
@@ -288,14 +289,14 @@ describe('Folder services', function () {
         expect(FolderRestService.getFolderContent).toHaveBeenCalledWith({id : '1/2', path: 'toto', name: 'toto'}, 'name', 'asc');
         expect(StateService.setCurrentFolder).toHaveBeenCalledWith({id : '1/2', path: 'toto', name: 'toto'});
         expect(StateService.setCurrentFolderContent).toHaveBeenCalledWith({
-            folders: [{id : 'toto', path: 'toto', name: 'toto'}],
-            datasets: [datasetresult]
-        });
+                                                                              folders: [{id : 'toto', path: 'toto', name: 'toto'}],
+                                                                              datasets: [datasetresult]
+                                                                          });
         expect(StateService.setFoldersStack).toHaveBeenCalledWith([
-            {id:'', path:'', name: 'HOME_FOLDER'},
-            {id : '1', path: '1', name: '1'},
-            {id : '1/2', path: '1/2', name: '2'}
-        ]);
+                                                                      {id:'', path:'', name: 'HOME_FOLDER'},
+                                                                      {id : '1', path: '1', name: '1'},
+                                                                      {id : '1/2', path: '1/2', name: '2'}
+                                                                  ]);
     }));
 
     it('should getFolderContent for root folder', inject(function ($q, $rootScope, FolderService, StateService, FolderRestService, DatasetListSortService, PreparationListService) {
@@ -321,9 +322,9 @@ describe('Folder services', function () {
         expect(FolderRestService.getFolderContent).toHaveBeenCalledWith(undefined, 'name', 'asc');
         expect(StateService.setCurrentFolder).toHaveBeenCalledWith({id:'', path:'', name: 'HOME_FOLDER'});
         expect(StateService.setCurrentFolderContent).toHaveBeenCalledWith({
-            folders: [{id : 'toto', path: 'toto', name: 'toto'}],
-            datasets: [datasetresult]
-        });
+                                                                              folders: [{id : 'toto', path: 'toto', name: 'toto'}],
+                                                                              datasets: [datasetresult]
+                                                                          });
         expect(StateService.setFoldersStack).toHaveBeenCalledWith([{id:'', path:'', name: 'HOME_FOLDER'}]);
     }));
 
@@ -372,9 +373,9 @@ describe('Folder services', function () {
         expect(FolderRestService.getFolderContent).toHaveBeenCalledWith(undefined, 'name', 'asc');
         expect(StateService.setCurrentFolder).toHaveBeenCalledWith({id:'', path:'', name: 'HOME_FOLDER'});
         expect(StateService.setCurrentFolderContent).toHaveBeenCalledWith({
-            folders: [{id : 'toto', path: 'toto', name: 'toto'}],
-            datasets: [datasetResultPreparationNull]
-        });
+                                                                              folders: [{id : 'toto', path: 'toto', name: 'toto'}],
+                                                                              datasets: [datasetResultPreparationNull]
+                                                                          });
         expect(StateService.setFoldersStack).toHaveBeenCalledWith([{id:'', path:'', name: 'HOME_FOLDER'}]);
     }));
 
@@ -408,6 +409,24 @@ describe('Folder services', function () {
 
         //then
         expect(stateMock.folder.currentFolderContent.datasets[0].defaultPreparation).toBe(null);
+    }));
+
+    it('should call rest children with a path', inject(function ($rootScope, FolderService, FolderRestService) {
+        //when
+        FolderService.children('/foo');
+        $rootScope.$digest();
+
+        //then
+        expect(FolderRestService.children).toHaveBeenCalledWith('/foo');
+    }));
+
+    it('should call rest children w/o  path', inject(function ($rootScope, FolderService, FolderRestService) {
+        //when
+        FolderService.children();
+        $rootScope.$digest();
+
+        //then
+        expect(FolderRestService.children).toHaveBeenCalled();
     }));
 
 });

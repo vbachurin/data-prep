@@ -1,7 +1,8 @@
 package org.talend.dataprep.dataset.service;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 
 import java.io.IOException;
@@ -26,8 +27,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.talend.daikon.exception.ExceptionContext;
-import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
+import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.user.UserData;
@@ -389,21 +390,32 @@ public class DataSetService {
     }
 
     /**
-     * Creates a new data set and returns the new data set id as text in the response.
-     *
-     * @param name An optional name for the new data set (might be <code>null</code>).
+     * Clone to a new data set and returns the new data set id as text in the response.
+     * @param cloneName the name of the cloned dataset
+     * @param folderPath the folder path to clone the dataset
      * @return The new data id.
      */
-    @RequestMapping(value = "/datasets/clone/{id}", method = GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/datasets/clone/{id}", method = PUT, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Clone a data set", produces = MediaType.TEXT_PLAIN_VALUE, notes = "Clone a new data set based on the given id. Returns the id of the newly created data set.")
     @Timed
     @VolumeMetered
     public String clone(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
-            @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015'.  if none the current name concat with ' Copy' will be used. Returns the id of the newly created data set.") @RequestParam(defaultValue = "", required = false) String name)
+            @ApiParam(value = "The name of the cloned dataset.") @RequestParam(defaultValue = "", required = false) String cloneName,
+            @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "", required = false) String folderPath)
                     throws IOException {
+
         HttpResponseContext.header("Content-Type", MediaType.TEXT_PLAIN_VALUE);
+
         DataSet dataSet = get(true, null, dataSetId);
+
+        // use a default name if empty (original name + " Copy" )
+        if (StringUtils.isEmpty( cloneName)){
+            cloneName = dataSet.getMetadata().getName() + " Copy";
+        }
+
+        // just because the lambda need a final variable.... grhhh :-)
+        String newDatasetName = cloneName;
 
         // if no metadata it's an empty one the get method has already set NO CONTENT http return code
         // so simply return!!
@@ -411,20 +423,30 @@ public class DataSetService {
             return StringUtils.EMPTY;
         }
 
+        // first check if the name is already used in the target folder
+        final Iterable<FolderEntry> entries = folderRepository.entries(folderPath, "dataset");
+
+        entries.forEach(folderEntry -> {
+            DataSetMetadata dataSetEntry = dataSetMetadataRepository.get(folderEntry.getContentId());
+            if (dataSetEntry != null && StringUtils.equals(newDatasetName, dataSetEntry.getName())) {
+                final ExceptionContext context = ExceptionContext.build() //
+                        .put("id", folderEntry.getContentId()) //
+                        .put("folder", folderPath) //
+                        .put("name", newDatasetName);
+                throw new TDPException(DataSetErrorCodes.DATASET_NAME_ALREADY_USED, context, true);
+            }
+        });
+
         final String newId = UUID.randomUUID().toString();
 
-        if (StringUtils.isEmpty(name)) {
-            name = dataSet.getMetadata().getName() + " Copy";
-        }
-
-        dataSet.getMetadata().setName(name);
+        dataSet.getMetadata().setName(cloneName);
 
         final Marker marker = Markers.dataset(newId);
         LOG.debug(marker, "Cloning...");
 
         DataSetMetadata dataSetMetadata = metadata() //
                 .id(newId) //
-                .name(name) //
+                .name(cloneName) //
                 .author(security.getUserId()) //
                 .location(dataSet.getMetadata().getLocation()) //
                 .created(System.currentTimeMillis()) //
@@ -439,6 +461,11 @@ public class DataSetService {
         LOG.debug(marker, "Content stored.");
 
         queueEvents(newId);
+
+        // create associated folderEntry
+        FolderEntry folderEntry = new FolderEntry("dataset", newId, folderPath);
+        folderRepository.addFolderEntry(folderEntry);
+
         LOG.debug(marker, "Cloned!");
 
         return newId;

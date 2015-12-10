@@ -92,6 +92,13 @@
                 <a data-icon="h" class="btn-icon btn-transparent"></a>
 
                 <div class="divider btn-transparent"></div>
+
+                <a data-icon="B"
+                   class="btn-icon btn-transparent"
+                   translate-once-title="CLONE_ACTION"
+                   translate-values="{type: 'dataset', name: dataset.name}"
+                   ng-click="datasetListCtrl.openFolderChoice(dataset)"></a>
+
                 <a data-icon="e"
                    class="btn-icon btn-transparent"
                    translate-once-title="DELETE_ACTION"
@@ -132,6 +139,76 @@
                 </button>
             </div>
         </form>
+    </talend-modal>
+
+
+    <talend-modal fullscreen="false"
+                  close-button="true"
+                  state="datasetListCtrl.folderDestinationModal">
+
+        <div class="modal-title" translate-once="CHOOSE_FOLDER_DESTINATION" translate-values="{type: 'dataset', name: dataset.name}">
+        </div>
+
+        <div class="folders-modal">
+            <div class="search-folder-box">
+                <form class="search-bar" id="search-folder-form">
+                    <input type="search" ng-model="datasetListCtrl.searchFolderQuery" ng-change="datasetListCtrl.onSearchFolderQueryChange()"
+                           translate-once-placeholder="FIND_FOLDER"/>
+                    <button type="submit" ng-click="datasetListCtrl.searchFolders()">
+                        <img src="assets/images/folder/search-icon.png">
+                    </button>
+                </form>
+            </div>
+            <div class="folders">
+                <div ng-if="datasetListCtrl.displayFoldersList">
+                    <ul class="folders-list">
+                        <li ng-repeat="node in datasetListCtrl.foldersFound"
+                            ng-class="{folderselected: node.selected}">
+                            <img src="assets/images/folder/folder_close_small-icon.png"/>
+                            <span ng-click="datasetListCtrl.chooseFolder(node)" class="folder-name">{{node.path}}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <script type="text/ng-template" id="folder_node_render.html">
+                    <div class="folder-node"
+                         ng-class="{folderselected: node.selected}">
+                        <a class="inventory-icon inventory-folder" ng-click="datasetListCtrl.toggle(node)"
+                           ng-class="{'dropdown-button-right': node.collapsed, 'dropdown-button-down': !node.collapsed}">
+                            <img ng-if="!node.collapsed" src="assets/images/folder/folder_open_small-icon.png"/>
+                            <img ng-if="node.collapsed" src="assets/images/folder/folder_close_small-icon.png"/>
+                        </a>
+                        <span ng-click="datasetListCtrl.chooseFolder(node)" class="folder-name">{{node.name}}</span>
+                    </div>
+                    <ol class="folder-nodes" ng-model="node.nodes" ng-class="{hidden: node.collapsed}">
+                        <li ng-repeat="node in node.nodes" class="folder-node" ng-include="'folder_node_render.html'"></li>
+                    </ol>
+                </script>
+
+                <div class="folders-tree" id="folders-tree-root" ng-if="!datasetListCtrl.displayFoldersList">
+                  <ol class="folder-nodes" ng-model="datasetListCtrl.folders">
+                    <li ng-repeat="node in datasetListCtrl.folders" class="folder-node" ng-include="'folder_node_render.html'"></li>
+                  </ol>
+                </div>
+            </div>
+        </div>
+        <form name="datasetListCtrl.cloneNameForm" ng-submit="datasetListCtrl.cloneNameForm.$valid">
+            <div class="clone-name">
+                <span translate-once="DATASET_NAME"></span>
+                <input type="text"
+                       ng-model="datasetListCtrl.cloneName"
+                       can-be-blank="false"/>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL">
+                </button>
+                <button class="btn-primary modal-primary-button" translate-once="COPY_HERE_ACTION"
+                        ng-disabled="datasetListCtrl.cloneNameForm.$invalid"
+                        ng-click="datasetListCtrl.clone()">
+                </button>
+            </div>
+        </form>
+
     </talend-modal>
 
 </div>

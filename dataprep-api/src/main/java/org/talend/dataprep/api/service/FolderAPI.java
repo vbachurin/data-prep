@@ -11,10 +11,23 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.folder.FolderContent;
 import org.talend.dataprep.api.folder.FolderEntry;
-import org.talend.dataprep.api.service.command.folder.*;
+import org.talend.dataprep.api.service.command.folder.AllFoldersList;
+import org.talend.dataprep.api.service.command.folder.CreateChildFolder;
+import org.talend.dataprep.api.service.command.folder.CreateFolderEntry;
+import org.talend.dataprep.api.service.command.folder.FolderDataSetList;
+import org.talend.dataprep.api.service.command.folder.FolderEntriesList;
+import org.talend.dataprep.api.service.command.folder.FoldersList;
+import org.talend.dataprep.api.service.command.folder.RemoveFolder;
+import org.talend.dataprep.api.service.command.folder.RemoveFolderEntry;
+import org.talend.dataprep.api.service.command.folder.RenameFolder;
+import org.talend.dataprep.api.service.command.folder.SearchFolders;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -30,13 +43,33 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class FolderAPI extends APIService {
 
     @RequestMapping(value = "/api/folders", method = GET)
-    @ApiOperation(value = "List childs folders of the parameter if null list root childs.", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List children folders of the parameter if null list root children.", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
-    public void childs(@RequestParam(required = false) String path, final OutputStream output) {
+    public void children(@RequestParam(required = false) String path, final OutputStream output) {
         try {
             final HystrixCommand<InputStream> foldersList = getCommand(FoldersList.class, getClient(), path);
             HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             IOUtils.copyLarge(foldersList.execute(), output);
+            output.flush();
+        } catch (Exception e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDERS, e);
+        }
+    }
+
+    /**
+     * no javadoc here so see description in @ApiOperation notes.
+     * 
+     * @param pathName
+     * @return
+     */
+    @RequestMapping(value = "/api/folders/search", method = GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Search Folders with parameter as part of the name", produces = MediaType.APPLICATION_JSON_VALUE, notes = "")
+    @Timed
+    public void search(@RequestParam(required = false) String pathName, final OutputStream output) {
+        try {
+            final HystrixCommand<InputStream> searchFolders = getCommand(SearchFolders.class, getClient(), pathName);
+            HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            IOUtils.copyLarge(searchFolders.execute(), output);
             output.flush();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDERS, e);
@@ -92,6 +125,7 @@ public class FolderAPI extends APIService {
 
     /**
      * no javadoc here so see description in @ApiOperation notes.
+     * 
      * @param path
      * @param newPath
      */
@@ -99,16 +133,16 @@ public class FolderAPI extends APIService {
     @ApiOperation(value = "Rename a Folder")
     @Timed
     @VolumeMetered
-    public void renameFolder(@RequestParam String path, @RequestParam String newPath){
+    public void renameFolder(@RequestParam String path, @RequestParam String newPath) {
 
-        if ( StringUtils.isEmpty( path) //
-            || StringUtils.isEmpty(newPath) //
-            || StringUtils.containsOnly(path, "/")) {
+        if (StringUtils.isEmpty(path) //
+                || StringUtils.isEmpty(newPath) //
+                || StringUtils.containsOnly(path, "/")) {
 
             throw new TDPException(APIErrorCodes.UNABLE_TO_RENAME_FOLDER);
         }
         try {
-            final HystrixCommand<Void> renameFolder = getCommand( RenameFolder.class, getClient(), path, newPath);
+            final HystrixCommand<Void> renameFolder = getCommand(RenameFolder.class, getClient(), path, newPath);
             renameFolder.execute();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_RENAME_FOLDER, e);
@@ -204,7 +238,7 @@ public class FolderAPI extends APIService {
         }
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
-        HystrixCommand<FolderContent> listCommand = getCommand( FolderDataSetList.class, client, sort, order, folder);
+        HystrixCommand<FolderContent> listCommand = getCommand(FolderDataSetList.class, client, sort, order, folder);
         try {
             return listCommand.execute();
         } catch (Exception e) {

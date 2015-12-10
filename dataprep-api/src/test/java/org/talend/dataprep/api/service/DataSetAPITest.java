@@ -15,12 +15,15 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import com.jayway.restassured.RestAssured;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.talend.daikon.exception.json.JsonErrorCode;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
@@ -184,6 +187,7 @@ public class DataSetAPITest extends ApiServiceTestBase {
 
     @Test
     public void testDataSetCreate_clone() throws Exception {
+
         // given
         final String dataSetId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
         InputStream expected = PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_metadata.json");
@@ -194,17 +198,94 @@ public class DataSetAPITest extends ApiServiceTestBase {
         // then
         assertThat( contentAsString, sameJSONAsFile( expected ) );
 
+        String cloneName = "foo bar";
 
-        final String clonedDataSetId = when().get("/api/datasets/clone/{id}", dataSetId).asString();
+        final String clonedDataSetId = given() //
+            .queryParam( "cloneName", cloneName) //
+            .when() //
+            .put("/api/datasets/clone/{id}", dataSetId) //
+            .asString();
 
         Assertions.assertThat( clonedDataSetId ).isNotEmpty().isNotEqualTo( dataSetId );
 
-        contentAsString = when().get("/api/datasets/{id}?metadata=true&columns=false", clonedDataSetId).asString();
+        Response response = when().get("/api/datasets/{id}?metadata=true&columns=false", clonedDataSetId);
+
+        contentAsString = response.asString();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        DataSet dataSet = objectMapper.readValue( contentAsString, DataSet.class );
+
+        DataSetMetadata dataSetMetadata = dataSet.getMetadata();
+
+        Assertions.assertThat( dataSetMetadata.getName() ).isEqualTo( cloneName );
+
+        Assert.assertEquals( HttpStatus.OK.value(), response.getStatusCode() );
 
         expected = PreparationAPITest.class.getResourceAsStream( "dataset/expected_dataset_with_metadata_clone.json" );
 
         // then
         assertThat( contentAsString, sameJSONAsFile( expected ) );
+
+    }
+
+    @Test
+    public void testDataSetCreate_clone_already_exists() throws Exception {
+
+        // create beer folder
+        Response response = RestAssured.given() //
+            .queryParam("path", "beer").when() //
+            .put("/api/folders");
+
+        Assert.assertEquals( HttpStatus.OK.value(), response.getStatusCode() );
+
+        // given
+        final String dataSetId = createDataset("dataset/dataset.csv", "tagada", "text/csv", "beer");
+        InputStream expected = PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_metadata.json");
+
+        // when
+        String contentAsString = when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
+
+        // then
+        assertThat( contentAsString, sameJSONAsFile( expected ) );
+
+        String cloneName = "foo bar";
+
+        String clonedDataSetId = given() //
+            .queryParam("folderPath", "foo") //
+            .queryParam( "cloneName", cloneName) //
+            .when() //
+            .put("/api/datasets/clone/{id}", dataSetId) //
+            .asString();
+
+        Assert.assertEquals( HttpStatus.OK.value(), response.getStatusCode() );
+
+        Assertions.assertThat( clonedDataSetId ).isNotEmpty().isNotEqualTo( dataSetId );
+
+        response = when().get("/api/datasets/{id}?metadata=true&columns=false", clonedDataSetId);
+
+        contentAsString = response.asString();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        DataSet dataSet = objectMapper.readValue( contentAsString, DataSet.class );
+
+        DataSetMetadata dataSetMetadata = dataSet.getMetadata();
+
+        Assertions.assertThat( dataSetMetadata.getName() ).isEqualTo( cloneName );
+
+        expected = PreparationAPITest.class.getResourceAsStream( "dataset/expected_dataset_with_metadata_clone.json" );
+
+        // then
+        assertThat( contentAsString, sameJSONAsFile( expected ) );
+
+        response = given() //
+            .queryParam("folderPath", "foo") //
+            .queryParam( "cloneName", cloneName) //
+            .when() //
+            .put("/api/datasets/clone/{id}", dataSetId);
+
+        Assert.assertEquals( HttpStatus.BAD_REQUEST.value(), response.getStatusCode() );
 
     }
 
