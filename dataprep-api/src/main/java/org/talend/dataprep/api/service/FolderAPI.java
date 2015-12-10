@@ -11,23 +11,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.folder.FolderContent;
 import org.talend.dataprep.api.folder.FolderEntry;
-import org.talend.dataprep.api.service.command.folder.AllFoldersList;
-import org.talend.dataprep.api.service.command.folder.CreateChildFolder;
-import org.talend.dataprep.api.service.command.folder.CreateFolderEntry;
-import org.talend.dataprep.api.service.command.folder.FolderDataSetList;
-import org.talend.dataprep.api.service.command.folder.FolderEntriesList;
-import org.talend.dataprep.api.service.command.folder.FoldersList;
-import org.talend.dataprep.api.service.command.folder.RemoveFolder;
-import org.talend.dataprep.api.service.command.folder.RemoveFolderEntry;
-import org.talend.dataprep.api.service.command.folder.RenameFolder;
-import org.talend.dataprep.api.service.command.folder.SearchFolders;
+import org.talend.dataprep.api.service.command.folder.*;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -132,7 +119,6 @@ public class FolderAPI extends APIService {
     @RequestMapping(value = "/api/folders/rename", method = PUT)
     @ApiOperation(value = "Rename a Folder")
     @Timed
-    @VolumeMetered
     public void renameFolder(@RequestParam String path, @RequestParam String newPath) {
 
         if (StringUtils.isEmpty(path) //
@@ -178,9 +164,8 @@ public class FolderAPI extends APIService {
      * @return
      */
     @RequestMapping(value = "/api/folders/entries/{contentType}/{id}", method = DELETE)
-    @ApiOperation(value = "Remove a FolderEntry")
+    @ApiOperation(value = "Remove a Folder Entry")
     @Timed
-    @VolumeMetered
     public void deleteFolderEntry(@PathVariable(value = "id") String contentId,
             @PathVariable(value = "contentType") String contentType, //
             @RequestParam String path) {
@@ -228,7 +213,6 @@ public class FolderAPI extends APIService {
     @RequestMapping(value = "/api/folders/datasets", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all datasets within the folder and sorted by key/date", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
-    @VolumeMetered
     public FolderContent datasets(
             @ApiParam(value = "Folder id to search datasets") @RequestParam(defaultValue = "", required = false) String folder,
             @ApiParam(value = "Sort key (by name or date), defaults to 'date'.") @RequestParam(defaultValue = "DATE", required = false) String sort,
