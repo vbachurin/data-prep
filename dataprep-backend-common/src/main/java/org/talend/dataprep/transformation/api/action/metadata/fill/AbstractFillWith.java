@@ -18,13 +18,14 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
 import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
 import org.talend.dataprep.transformation.api.action.metadata.date.DatePattern;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
-public abstract class AbstractFillWith extends ActionMetadata {
+public abstract class AbstractFillWith extends ActionMetadata implements OtherColumnParameters {
 
     public static final String DEFAULT_VALUE_PARAMETER = "default_value"; //$NON-NLS-1$
 
@@ -33,22 +34,6 @@ public abstract class AbstractFillWith extends ActionMetadata {
     private static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
     private static final String DEFAULT_DATE_VALUE = DEFAULT_FORMATTER.format(LocalDateTime.of(1970, Month.JANUARY, 1, 10, 0));
-
-    /**
-     * The selected column id.
-     */
-    public static final String SELECTED_COLUMN_PARAMETER = "selected_column"; //$NON-NLS-1$
-
-    /**
-     * Mode: tells if fill value is taken from another column or is a constant
-     */
-    public static final String MODE_PARAMETER = "mode"; //$NON-NLS-1$
-
-    /**
-     * Constant to represents mode where we fill with a constant.
-     */
-    public static final String OTHER_COLUMN_MODE = "other_column_mode"; //$NON-NLS-1$
-    public static final String CONSTANT_MODE = "constant_mode"; //$NON-NLS-1$
 
     /**
      * Component that parses dates.

@@ -94,7 +94,7 @@ public class ConcatTest {
         row.getRowMetadata().getById("0000").setName("source");
         row.getRowMetadata().getById("0001").setName("selected");
 
-        parameters.put(Concat.MODE_PARAMETER, Concat.CONCAT_WITH_CONSTANT);
+        parameters.put(Concat.MODE_PARAMETER, Concat.CONSTANT_MODE);
         parameters.remove(Concat.SELECTED_COLUMN_PARAMETER);
 
         // when
@@ -138,7 +138,7 @@ public class ConcatTest {
     public void should_apply_without_other_column() {
         // given
         DataSetRow row = getRow("first", "second", "Done !");
-        parameters.put(Concat.MODE_PARAMETER, Concat.CONCAT_WITH_CONSTANT);
+        parameters.put(Concat.MODE_PARAMETER, Concat.CONSTANT_MODE);
 
         // when
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());

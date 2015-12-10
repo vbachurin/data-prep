@@ -21,6 +21,7 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
@@ -31,7 +32,8 @@ import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
  */
 @Component(NumericOperations.ACTION_BEAN_PREFIX + NumericOperations.ACTION_NAME)
 @Scope("prototype")
-public class NumericOperations extends ActionMetadata implements ColumnAction {
+public class NumericOperations extends ActionMetadata implements ColumnAction, OtherColumnParameters {
+
     private static final String PLUS = "+";
     private static final String MINUS = "-";
     private static final String MULTIPLY = "x";
@@ -48,11 +50,6 @@ public class NumericOperations extends ActionMetadata implements ColumnAction {
     public static final String MODE_PARAMETER = "mode"; //$NON-NLS-1$
 
     /**
-     * The selected column id.
-     */
-    public static final String SELECTED_COLUMN_PARAMETER = "selected_column"; //$NON-NLS-1$
-
-    /**
      * The operator to use.
      */
     public static final String OPERATOR_PARAMETER = "operator"; //$NON-NLS-1$
@@ -61,11 +58,6 @@ public class NumericOperations extends ActionMetadata implements ColumnAction {
      * The operand to use.
      */
     public static final String OPERAND_PARAMETER = "operand"; //$NON-NLS-1$
-
-    /**
-     * Constant to represents mode where we compute against a constant.
-     */
-    public static final String CONSTANT_MODE = "Constant";
 
     /**
      * @see ActionMetadata#getName()
@@ -106,7 +98,7 @@ public class NumericOperations extends ActionMetadata implements ColumnAction {
         parameters.add(SelectParameter.Builder.builder()
                         .name(MODE_PARAMETER)
                         .item(CONSTANT_MODE, new Parameter(OPERAND_PARAMETER, ParameterType.STRING, "2"))
-                        .item("Another column", new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, StringUtils.EMPTY, false, false))
+                        .item(OTHER_COLUMN_MODE, new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, StringUtils.EMPTY, false, false))
                         .defaultValue(CONSTANT_MODE)
                         .build()
         );
