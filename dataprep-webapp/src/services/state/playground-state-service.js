@@ -65,6 +65,7 @@
         function setData(data) {
             playgroundState.data = data;
             GridStateService.setData(data);
+            GridStateService.setFilter(filterState.gridFilters, playgroundState.data);
         }
 
         function setLookupData(data) {

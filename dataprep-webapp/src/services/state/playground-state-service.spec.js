@@ -60,12 +60,15 @@ describe('Playground state service', function () {
             var data = {
                records: []
             };
+            var filters = [{}, {}];
+            filterStateMock.gridFilters = filters;
 
             //when
             PlaygroundStateService.setData(data);
 
             //then
             expect(GridStateService.setData).toHaveBeenCalledWith(data);
+            expect(GridStateService.setFilter).toHaveBeenCalledWith(filters, data);
         }));
 
         it('should set preparation in state', inject(function(playgroundState, PlaygroundStateService) {
