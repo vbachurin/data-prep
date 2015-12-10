@@ -147,7 +147,7 @@ public class FillWithBooleanIfInvalidTest {
                 this.getClass().getResourceAsStream("fillInvalidBooleanAction.json"));
 
         // when
-        parameters.put(AbstractFillWith.MODE_PARAMETER, AbstractFillWith.COLUMN_MODE);
+        parameters.put(AbstractFillWith.MODE_PARAMETER, AbstractFillWith.OTHER_COLUMN_MODE);
         parameters.put(AbstractFillWith.SELECTED_COLUMN_PARAMETER, "0003");
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 

@@ -143,7 +143,7 @@ public class FillWithNumericIfInvalidTest {
                 this.getClass().getResourceAsStream("fillInvalidIntegerAction.json"));
 
         // when
-        parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.COLUMN_MODE);
+        parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.OTHER_COLUMN_MODE);
         parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0003");
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 

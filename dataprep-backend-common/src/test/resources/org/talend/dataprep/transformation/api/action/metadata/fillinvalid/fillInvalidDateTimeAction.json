@@ -6,7 +6,7 @@
         "default_value": "09/07/2015 13:31:36",
         "scope": "column",
         "column_id": "0002",
-        "mode": "Constant",
+        "mode": "constant_mode",
         "column_name": "date"
       }
     }

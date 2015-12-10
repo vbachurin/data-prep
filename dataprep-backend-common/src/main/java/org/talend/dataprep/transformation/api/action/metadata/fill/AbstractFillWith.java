@@ -35,20 +35,20 @@ public abstract class AbstractFillWith extends ActionMetadata {
     private static final String DEFAULT_DATE_VALUE = DEFAULT_FORMATTER.format(LocalDateTime.of(1970, Month.JANUARY, 1, 10, 0));
 
     /**
-     * Mode: tells if fill value is taken from another column or is a constant
-     */
-    public static final String MODE_PARAMETER = "mode"; //$NON-NLS-1$
-
-    /**
      * The selected column id.
      */
     public static final String SELECTED_COLUMN_PARAMETER = "selected_column"; //$NON-NLS-1$
 
     /**
+     * Mode: tells if fill value is taken from another column or is a constant
+     */
+    public static final String MODE_PARAMETER = "mode"; //$NON-NLS-1$
+
+    /**
      * Constant to represents mode where we fill with a constant.
      */
-    public static final String CONSTANT_MODE = "Constant";
-    public static final String COLUMN_MODE = "Another column";
+    public static final String OTHER_COLUMN_MODE = "other_column_mode"; //$NON-NLS-1$
+    public static final String CONSTANT_MODE = "constant_mode"; //$NON-NLS-1$
 
     /**
      * Component that parses dates.
@@ -141,7 +141,7 @@ public abstract class AbstractFillWith extends ActionMetadata {
         parameters.add(SelectParameter.Builder.builder()
                         .name(MODE_PARAMETER)
                         .item(CONSTANT_MODE, constantParameter)
-                        .item(COLUMN_MODE, new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, StringUtils.EMPTY, false, false))
+                        .item(OTHER_COLUMN_MODE, new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, StringUtils.EMPTY, false, false))
                         .defaultValue(CONSTANT_MODE)
                         .build()
         );

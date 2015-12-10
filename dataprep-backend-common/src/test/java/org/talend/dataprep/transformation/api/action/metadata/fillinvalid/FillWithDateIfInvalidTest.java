@@ -197,7 +197,7 @@ public class FillWithDateIfInvalidTest extends AbstractMetadataBaseTest {
                 this.getClass().getResourceAsStream("fillInvalidDateTimeAction.json"));
 
         // when
-        parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.COLUMN_MODE);
+        parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.OTHER_COLUMN_MODE);
         parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0003");
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
