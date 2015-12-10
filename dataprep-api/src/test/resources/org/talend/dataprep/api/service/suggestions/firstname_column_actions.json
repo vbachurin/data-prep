@@ -1319,28 +1319,28 @@
         "configuration": {
           "values": [
             {
-              "value": "[a-z]*"
+              "value": "[a-z]+",
+              "label": "[a-z]+ (a word in lowercase)"
             },
             {
-              "value": "[A-Z]*"
+              "value": "[A-Z]+",
+              "label": "[A-Z]+ (a word in uppercase)"
             },
             {
-              "value": "[0-9]*"
+              "value": "[0-9]+",
+              "label": "[0-9]+ (number)"
             },
             {
-              "value": "[a-zA-Z]*"
+              "value": "[a-zA-Z]+",
+              "label": "[a-zA-Z]+ (any word, case insensitive)"
             },
             {
-              "value": "[a-zA-Z0-9]*"
+              "value": "[a-zA-Z0-9]+",
+              "label": "[a-zA-Z0-9]+ (any literal with alpha-num characters)"
             },
             {
-              "value": " *"
-            },
-            {
-              "value": ".*"
-            },
-            {
-              "value": "other",
+              "value": "custom",
+              "label": "other (design your custom pattern)",
               "parameters": [
                 {
                   "name": "manual_pattern",
@@ -1354,7 +1354,7 @@
           ],
           "multiple": false
         },
-        "default": "[a-zA-Z]*"
+        "default": "[a-zA-Z]+"
       }
     ],
     "dynamic": false

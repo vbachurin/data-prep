@@ -5,7 +5,7 @@
       "parameters": {
         "column_id": "0001",
         "column_name": "steps",
-        "proposed_pattern": "other",
+        "proposed_pattern": "custom",
         "manual_pattern": "[a-zA-Z]*",
         "scope": "column"
       }

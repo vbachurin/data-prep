@@ -224,6 +224,21 @@ public class SelectParameter extends Parameter implements Serializable {
          * Add an item to the select parameter builder.
          *
          * @param value the item value.
+         * @param label the item label
+         * @param parameter the item optional parameter.
+         * @return the builder to carry on building the column.
+         */
+        public SelectParameter.Builder item(String value, String label, Parameter... parameter) {
+            final Item item = new Item(value, Arrays.asList(parameter));
+            item.setLabel(label);
+            this.items.add(item);
+            return this;
+        }
+
+        /**
+         * Add an item to the select parameter builder.
+         *
+         * @param value the item value.
          * @return the builder to carry on building the column.
          */
         public SelectParameter.Builder item(String value) {
@@ -235,6 +250,7 @@ public class SelectParameter extends Parameter implements Serializable {
          * Add an item to the select parameter builder.
          *
          * @param value the item value.
+         * @param label the item label
          * @return the builder to carry on building the column.
          */
         public SelectParameter.Builder item(String value, String label) {

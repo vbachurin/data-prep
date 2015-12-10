@@ -49,7 +49,9 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
     /**
      * The pattern manually specified by the user. Should be used only if PATTERN_PARAMETER value is 'other'.
      */
-    public static final String MANUAL_PATTERN_PARAMETER = "manual_pattern"; //$NON-NLS-1$
+    private static final String MANUAL_PATTERN_PARAMETER = "manual_pattern"; //$NON-NLS-1$
+
+    public static final String CUSTOM = "custom";
 
     public static final String COMPILED_PATTERN = "compiled_pattern";
 
@@ -84,15 +86,13 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
         // @formatter:off
 		parameters.add(SelectParameter.Builder.builder()
 				.name(PATTERN_PARAMETER)
-				.item("[a-z]*")
-				.item("[A-Z]*")
-				.item("[0-9]*")
-				.item("[a-zA-Z]*")
-				.item("[a-zA-Z0-9]*")
-				.item(" *")
-				.item(".*")
-				.item("other", new Parameter(MANUAL_PATTERN_PARAMETER, REGEX, EMPTY))
-				.defaultValue("[a-zA-Z]*")
+				.item("[a-z]+", "[a-z]+ (a word in lowercase)")
+				.item("[A-Z]+", "[A-Z]+ (a word in uppercase)")
+				.item("[0-9]+", "[0-9]+ (number)")
+				.item("[a-zA-Z]+", "[a-zA-Z]+ (any word, case insensitive)")
+				.item("[a-zA-Z0-9]+", "[a-zA-Z0-9]+ (any literal with alpha-num characters)")
+				.item(CUSTOM, "other (design your custom pattern)", new Parameter(MANUAL_PATTERN_PARAMETER, REGEX, EMPTY))
+				.defaultValue("[a-zA-Z]+")
 				.build());
 		// @formatter:on
         return parameters;
@@ -103,7 +103,7 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
      * @return the pattern to use according to the given parameters.
      */
     private String getPattern(Map<String, String> parameters) {
-        return ("other").equals(parameters.get(PATTERN_PARAMETER)) ? parameters.get(MANUAL_PATTERN_PARAMETER)
+        return (CUSTOM).equals(parameters.get(PATTERN_PARAMETER)) ? parameters.get(MANUAL_PATTERN_PARAMETER)
                 : parameters.get(PATTERN_PARAMETER);
     }
 
