@@ -5,9 +5,9 @@
       "parameters": {
         "column_id": "0001",
         "column_name": "steps",
-        "from_mode": "From index",
+        "from_mode": "from_index",
         "from_index": "5",
-        "to_mode": "To index",
+        "to_mode": "to_index",
         "to_index":"12",
         "scope": "column"
       }

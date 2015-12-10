@@ -261,8 +261,11 @@ public class SubstringTest {
     public void should_substring_strange_bounds_2() throws IOException {
         //given
         parameters.put(FROM_INDEX_PARAMETER, "7");
-        parameters.put(TO_MODE_PARAMETER, "To end");
+        parameters.put(TO_MODE_PARAMETER, Substring.TO_END);
         parameters.put(TO_INDEX_PARAMETER, "");
+
+
+
 
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
@@ -321,7 +324,7 @@ public class SubstringTest {
     @Test
     public void should_substring_begining() throws IOException {
         //given
-        parameters.put(FROM_MODE_PARAMETER, "From beginning");
+        parameters.put(FROM_MODE_PARAMETER, Substring.FROM_BEGINNING);
 
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
@@ -349,7 +352,7 @@ public class SubstringTest {
     @Test
     public void should_substring_end() throws IOException {
         //given
-        parameters.put(TO_MODE_PARAMETER, "To end");
+        parameters.put(TO_MODE_PARAMETER, Substring.TO_END);
 
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");

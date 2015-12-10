@@ -32,9 +32,9 @@ public class Substring extends ActionMetadata implements ColumnAction {
      */
     private static final String APPENDIX = "_substring"; //$NON-NLS-1$
 
-    private static final String FROM_BEGINNING = "From beginning"; //$NON-NLS-1$
+    protected static final String FROM_BEGINNING = "from_beginning"; //$NON-NLS-1$
 
-    private static final String TO_END = "To end"; //$NON-NLS-1$
+    protected static final String TO_END = "to_end"; //$NON-NLS-1$
 
     protected static final String FROM_MODE_PARAMETER = "from_mode"; //$NON-NLS-1$
 
@@ -71,7 +71,7 @@ public class Substring extends ActionMetadata implements ColumnAction {
         parameters.add(SelectParameter.Builder.builder() //
                 .name(FROM_MODE_PARAMETER) //
                 .item(FROM_BEGINNING) //
-                .item("From index", new Parameter(FROM_INDEX_PARAMETER, ParameterType.INTEGER, "0")) //
+                .item(FROM_INDEX_PARAMETER, new Parameter(FROM_INDEX_PARAMETER, ParameterType.INTEGER, "0")) //
                 .defaultValue(FROM_BEGINNING) //
                 .build());
 
@@ -79,8 +79,8 @@ public class Substring extends ActionMetadata implements ColumnAction {
         parameters.add(SelectParameter.Builder.builder() //
                 .name(TO_MODE_PARAMETER) //
                 .item(TO_END) //
-                .item("To index", new Parameter(TO_INDEX_PARAMETER, ParameterType.INTEGER, "5")) //
-                .defaultValue("To index") //
+                .item(TO_INDEX_PARAMETER, new Parameter(TO_INDEX_PARAMETER, ParameterType.INTEGER, "5")) //
+                .defaultValue(TO_INDEX_PARAMETER) //
                 .build());
 
         return parameters;
