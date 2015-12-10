@@ -1991,11 +1991,12 @@
       {
         "name": "other_column?",
         "type": "select",
-        "default": "Another column",
+        "default": "other_column_mode",
         "configuration": {
           "values": [
             {
-              "value": "Another column",
+              "value": "other_column_mode",
+              "label": "Another column",
               "parameters": [
                 {
                   "name": "selected_column",
@@ -2014,7 +2015,8 @@
               ]
             },
             {
-              "value": "No other column"
+              "value": "constant_mode",
+              "label": "No other column"
             }
           ],
           "multiple": false

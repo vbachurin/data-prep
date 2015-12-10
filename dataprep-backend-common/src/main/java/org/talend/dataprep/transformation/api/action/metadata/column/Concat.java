@@ -62,8 +62,8 @@ public class Concat extends ActionMetadata implements ColumnAction {
      * Say either we concatenate to another column or not (constant mode).
      */
     public static final String OTHER_COLUMN_PARAMETER = "other_column?"; //$NON-NLS-1$
-    public static final String CONCAT_WITH_ANOTHER_COLUMN = "Another column"; //$NON-NLS-1$
-    public static final String CONCAT_WITH_CONSTANT = "No other column"; //$NON-NLS-1$
+    public static final String CONCAT_WITH_ANOTHER_COLUMN = "other_column_mode"; //$NON-NLS-1$
+    public static final String CONCAT_WITH_CONSTANT = "constant_mode"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getName()

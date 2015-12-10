@@ -91,7 +91,7 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
 				.item("[0-9]+", "[0-9]+ (number)")
 				.item("[a-zA-Z]+", "[a-zA-Z]+ (any word, case insensitive)")
 				.item("[a-zA-Z0-9]+", "[a-zA-Z0-9]+ (any literal with alpha-num characters)")
-				.item(CUSTOM, "other (design your custom pattern)", new Parameter(MANUAL_PATTERN_PARAMETER, REGEX, EMPTY))
+				.item(CUSTOM, new Parameter(MANUAL_PATTERN_PARAMETER, REGEX, EMPTY))
 				.defaultValue("[a-zA-Z]+")
 				.build());
 		// @formatter:on
