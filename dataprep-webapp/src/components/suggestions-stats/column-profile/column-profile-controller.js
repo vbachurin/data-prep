@@ -210,8 +210,7 @@
          * @description Check if we have the statistics or we have to fetch them
          */
         function shouldFetchStatistics() {
-            return StatisticsService.histogram &&// no histogram means no data to display at all
-                !StatisticsService.histogram.data.length &&// has histogram but no data in it
+            return !StatisticsService.histogram &&// no histogram means no statistics yet whereas empty histogram means no data to display
                 !vm.stateDistribution; // and not a state distribution chart
         }
 

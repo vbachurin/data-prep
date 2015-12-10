@@ -1,20 +1,11 @@
-<div class="column-profile" ng-switch="!!(columnProfileCtrl.histogram.data.length || columnProfileCtrl.stateDistribution)">
+<div class="column-profile" ng-switch="!!(columnProfileCtrl.histogram || columnProfileCtrl.stateDistribution)">
 
-    <div id="column-profile-refresh"
-         ng-switch-when="false"
-         ng-switch="!!columnProfileCtrl.histogram">
-
-        <div ng-switch-when="true" id="chart-ghost" class="loading-container">
-            <img id="chart-ghost-img" src="/assets/images/refreshing-ghost-chart.png">
-            <div id="chart-ghost-message" class="loading-msg">
-                <span class="wait-icon continuous-rotate" ><i data-icon="c" class="icon"></i></span>
-                <span class="wait-text" translate-once="REFRESHING_WAIT"></span>
-            </div>
+    <div id="chart-ghost" class="loading-container" ng-switch-when="false">
+        <img id="chart-ghost-img" src="/assets/images/refreshing-ghost-chart.png">
+        <div id="chart-ghost-message" class="loading-msg">
+            <span class="wait-icon continuous-rotate" ><i data-icon="c" class="icon"></i></span>
+            <span class="wait-text" translate-once="REFRESHING_WAIT"></span>
         </div>
-
-        <div ng-switch-when="false"
-             class="watermark"
-             translate-once="COMING_SOON"></div>
     </div>
 
     <div id="column-profile-chart" ng-switch-when="true">

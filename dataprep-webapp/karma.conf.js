@@ -26,6 +26,9 @@ module.exports = function(config) {
             stripPrefix: 'src/',
             moduleName: 'htmlTemplates'
         },
+        coverageReporter: {
+            dir: 'coverage/'
+        },
         junitReporter    : {
             outputFile : 'target/surefire-reports/TEST-karma-results.xml'
         }

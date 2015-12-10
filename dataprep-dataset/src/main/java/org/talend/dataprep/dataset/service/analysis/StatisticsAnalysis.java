@@ -73,7 +73,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
                     return; // no acknowledge to allow re-poll.
                 }
 
-                if (metadata.getRow().getColumns().isEmpty()) {
+                if (metadata.getRowMetadata().getColumns().isEmpty()) {
                     LOGGER.debug("Skip statistics of dataset {} (no column information).", metadata.getId());
                     return;
                 }

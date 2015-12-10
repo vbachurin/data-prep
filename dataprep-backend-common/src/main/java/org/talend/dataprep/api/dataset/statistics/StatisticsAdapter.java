@@ -9,8 +9,9 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.Quality;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
-import org.talend.dataprep.api.dataset.statistics.date.DateHistogramRange;
+import org.talend.dataprep.api.dataset.statistics.date.DateHistogram;
 import org.talend.dataprep.api.dataset.statistics.date.StreamDateHistogramStatistics;
+import org.talend.dataprep.api.dataset.statistics.number.NumberHistogram;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
@@ -28,6 +29,7 @@ import org.talend.datascience.common.inference.type.DataType;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -223,13 +225,13 @@ public class StatisticsAdapter {
     private void injectNumberHistogram(final ColumnMetadata column, final Analyzers.Result result) {
         if (NUMERIC.isAssignableFrom(column.getType()) && result.exist(StreamNumberHistogramStatistics.class)) {
             final Statistics statistics = column.getStatistics();
-            final StreamNumberHistogramStatistics histogramStatistics = result.get(StreamNumberHistogramStatistics.class);
+            final Map<org.talend.dataquality.statistics.numeric.histogram.Range, Long> histogramStatistics = result.get(StreamNumberHistogramStatistics.class).getHistogram();
             final NumberFormat format = DecimalFormat.getInstance(ENGLISH);
 
             // Set histogram ranges
-            statistics.getHistogram().clear();
-            histogramStatistics.getHistogram().forEach((rangeValues, occurrence) -> {
-                final NumberHistogramRange range = new NumberHistogramRange();
+            final Histogram<Double> histogram = new NumberHistogram();
+            histogramStatistics.forEach((rangeValues, occurrence) -> {
+                final HistogramRange<Double> range = new HistogramRange<>();
                 try {
                     range.getRange().setMax(new Double(format.format(rangeValues.getUpper())));
                     range.getRange().setMin(new Double(format.format(rangeValues.getLower())));
@@ -239,22 +241,26 @@ public class StatisticsAdapter {
                     range.getRange().setMin(rangeValues.getLower());
                 }
                 range.setOccurrences(occurrence);
-                statistics.getHistogram().add(range);
+                histogram.getItems().add(range);
             });
+            statistics.setHistogram(histogram);
         }
     }
 
     private void injectDateHistogram(final ColumnMetadata column, final Analyzers.Result result) {
         if (DATE.isAssignableFrom(column.getType()) && result.exist(StreamDateHistogramStatistics.class)) {
             final Statistics statistics = column.getStatistics();
-            final StreamDateHistogramStatistics histogramStatistics = result.get(StreamDateHistogramStatistics.class);
-            histogramStatistics.getHistogram().forEach((range, occurrence) -> {
-                final DateHistogramRange dateRange = new DateHistogramRange();
+            final Map<Range<LocalDate>, Long> histogramStatistics = result.get(StreamDateHistogramStatistics.class).getHistogram();
+
+            final Histogram<LocalDate> histogram = new DateHistogram();
+            histogramStatistics.forEach((range, occurrence) -> {
+                final HistogramRange<LocalDate> dateRange = new HistogramRange<>();
                 dateRange.getRange().setMin(range.getMin());
                 dateRange.getRange().setMax(range.getMax());
                 dateRange.setOccurrences(occurrence);
-                statistics.getHistogram().add(dateRange);
+                histogram.getItems().add(dateRange);
             });
+            statistics.setHistogram(histogram);
         }
     }
 

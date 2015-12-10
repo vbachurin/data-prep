@@ -3,6 +3,7 @@ package org.talend.dataprep.api.dataset.statistics;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -126,13 +127,14 @@ public class StatisticsUtilsTest {
         adaptColumn(integerColumn, DataType.Type.INTEGER);
 
         //then
-        assertEquals(2, integerColumn.getStatistics().getHistogram().size());
-        assertEquals(1, integerColumn.getStatistics().getHistogram().get(0).getOccurrences());
-        assertEquals(1, ((NumberHistogramRange)integerColumn.getStatistics().getHistogram().get(0)).getRange().getMin(), 0);
-        assertEquals(1, ((NumberHistogramRange)integerColumn.getStatistics().getHistogram().get(0)).getRange().getMax(), 0);
-        assertEquals(1, integerColumn.getStatistics().getHistogram().get(1).getOccurrences());
-        assertEquals(2, ((NumberHistogramRange)integerColumn.getStatistics().getHistogram().get(1)).getRange().getMin(), 0);
-        assertEquals(2, ((NumberHistogramRange)integerColumn.getStatistics().getHistogram().get(1)).getRange().getMax(), 0);
+        final List<HistogramRange<Double>> histogramRanges = ((Histogram<Double>)integerColumn.getStatistics().getHistogram()).getItems();
+        assertEquals(2, histogramRanges .size());
+        assertEquals(1, histogramRanges.get(0).getOccurrences());
+        assertEquals(1, histogramRanges.get(0).getRange().getMin(), 0);
+        assertEquals(1, histogramRanges.get(0).getRange().getMax(), 0);
+        assertEquals(1, histogramRanges.get(1).getOccurrences());
+        assertEquals(2, histogramRanges.get(1).getRange().getMin(), 0);
+        assertEquals(2, histogramRanges.get(1).getRange().getMax(), 0);
     }
 
     @Test

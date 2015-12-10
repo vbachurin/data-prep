@@ -7,22 +7,24 @@ describe('Statistics service', function () {
         'id': '0000',
         'statistics': {
             'frequencyTable': [],
-            'histogram': [
-                {
-                    'occurrences': 5,
-                    'range': {
-                        'min': 0,
-                        'max': 10
+            'histogram': {
+                items: [
+                    {
+                        'occurrences': 5,
+                        'range': {
+                            'min': 0,
+                            'max': 10
+                        }
+                    },
+                    {
+                        'occurrences': 15,
+                        'range': {
+                            'min': 10,
+                            'max': 20
+                        }
                     }
-                },
-                {
-                    'occurrences': 15,
-                    'range': {
-                        'min': 10,
-                        'max': 20
-                    }
-                }
-            ],
+                ]
+            },
             count: 4,
             distinctCount: 5,
             duplicateCount: 6,
@@ -33,6 +35,105 @@ describe('Statistics service', function () {
             max: 11,
             mean: 12,
             variance: 13,
+            quantiles: {
+                lowerQuantile: 'NaN'
+            }
+        }
+    };
+
+    var barChartDateCol = {
+        'domain': 'barchartAndDate',
+        'type': 'date',
+        'id': '0000',
+        'statistics': {
+            frequencyTable: [],
+            histogram: {
+                items: [
+                    {
+                        'occurrences': 15,
+                        'range': {
+                            'min': {
+                                dayOfMonth: 1,
+                                monthValue: 1,
+                                year: 2015
+                            },
+                            'max': {
+                                dayOfMonth: 1,
+                                monthValue: 2,
+                                year: 2015
+                            }
+                        }
+                    },
+                    {
+                        'occurrences': 5,
+                        'range': {
+                            'min': {
+                                dayOfMonth: 1,
+                                monthValue: 2,
+                                year: 2015
+                            },
+                            'max': {
+                                dayOfMonth: 1,
+                                monthValue: 3,
+                                year: 2015
+                            }
+                        }
+                    }
+                ]
+            },
+            patternFrequencyTable: [
+                {
+                    pattern: 'd/M/yyyy',
+                    frequency: 15
+                },
+                {
+                    pattern: 'M/d/yyyy',
+                    frequency: 5
+                }
+            ],
+            count: 20,
+            distinctCount: 14,
+            duplicateCount: 6,
+            empty: 0,
+            invalid: 0,
+            valid: 0,
+            min: 'NaN',
+            max: 'NaN',
+            mean: 'NaN',
+            variance: 'NaN',
+            quantiles: {
+                lowerQuantile: 'NaN'
+            }
+        }
+    };
+
+    var barChartDateColWithoutHistogram = {
+        'domain': 'barchartAndDate',
+        'type': 'date',
+        'id': '0000',
+        'statistics': {
+            frequencyTable: [],
+            histogram: null,
+            patternFrequencyTable: [
+                {
+                    pattern: 'd/M/yyyy',
+                    frequency: 15
+                },
+                {
+                    pattern: 'M/d/yyyy',
+                    frequency: 5
+                }
+            ],
+            count: 20,
+            distinctCount: 14,
+            duplicateCount: 6,
+            empty: 0,
+            invalid: 0,
+            valid: 0,
+            min: 'NaN',
+            max: 'NaN',
+            mean: 'NaN',
+            variance: 'NaN',
             quantiles: {
                 lowerQuantile: 'NaN'
             }
@@ -410,52 +511,102 @@ describe('Statistics service', function () {
                 });
             }));
 
-            it('should set the range data frequency when column type is "number" with filters', inject(function (StatisticsService) {
-                //given
-                stateMock.playground.grid.selectedColumn = barChartNumCol;
-                stateMock.playground.grid.filteredOccurences = {1: 2, 3: 4, 11: 1};
-                StatisticsService.statistics = {
-                    common: {
-                        COUNT: 4,
-                        DISTINCT_COUNT: 5,
-                        DUPLICATE_COUNT: 6,
-                        VALID: 9,
-                        EMPTY: 7,
-                        INVALID: 8
-                    }, specific: {MIN: 10, MAX: 11, MEAN: 12, VARIANCE: 13}
-                };
-                expect(StatisticsService.histogram).toBeFalsy();
+            describe('number', function() {
+                it('should set the range data frequency when column type is "number" with filters', inject(function (StatisticsService) {
+                    //given
+                    stateMock.playground.grid.selectedColumn = barChartNumCol;
+                    stateMock.playground.grid.filteredOccurences = {1: 2, 3: 4, 11: 1};
+                    StatisticsService.statistics = {
+                        common: {
+                            COUNT: 4,
+                            DISTINCT_COUNT: 5,
+                            DUPLICATE_COUNT: 6,
+                            VALID: 9,
+                            EMPTY: 7,
+                            INVALID: 8
+                        }, specific: {MIN: 10, MAX: 11, MEAN: 12, VARIANCE: 13}
+                    };
+                    expect(StatisticsService.histogram).toBeFalsy();
 
-                //when
-                StatisticsService.processData();
-                //then
-                expect(StatisticsService.histogram.data[0].filteredOccurrences).toBe(6); //[0, 10[
-                expect(StatisticsService.histogram.data[0].data).toEqual([barChartNumCol.statistics.histogram[0].range.min, barChartNumCol.statistics.histogram[0].range.max]);
-                expect(StatisticsService.histogram.data[1].filteredOccurrences).toBe(1); //[10, 20[
-                expect(StatisticsService.histogram.data[1].data).toEqual([barChartNumCol.statistics.histogram[1].range.min, barChartNumCol.statistics.histogram[1].range.max]);
-            }));
+                    //when
+                    StatisticsService.processData();
+                    //then
+                    expect(StatisticsService.histogram.data[0].filteredOccurrences).toBe(6); //[0, 10[
+                    expect(StatisticsService.histogram.data[0].data).toEqual([barChartNumCol.statistics.histogram.items[0].range.min, barChartNumCol.statistics.histogram.items[0].range.max]);
+                    expect(StatisticsService.histogram.data[1].filteredOccurrences).toBe(1); //[10, 20[
+                    expect(StatisticsService.histogram.data[1].data).toEqual([barChartNumCol.statistics.histogram.items[1].range.min, barChartNumCol.statistics.histogram.items[1].range.max]);
+                }));
 
-            it('should set histogram vertical mode to true when column type is "number"', inject(function (StatisticsService) {
-                //given
-                stateMock.playground.grid.selectedColumn = barChartNumCol;
-                StatisticsService.statistics = {
-                    common: {
-                        COUNT: 4,
-                        DISTINCT_COUNT: 5,
-                        DUPLICATE_COUNT: 6,
-                        VALID: 9,
-                        EMPTY: 7,
-                        INVALID: 8
-                    }, specific: {MIN: 10, MAX: 11, MEAN: 12, VARIANCE: 13}
-                };
-                expect(StatisticsService.histogram).toBeFalsy();
+                it('should set histogram vertical mode to true when column type is "number"', inject(function (StatisticsService) {
+                    //given
+                    stateMock.playground.grid.selectedColumn = barChartNumCol;
+                    StatisticsService.statistics = {
+                        common: {
+                            COUNT: 4,
+                            DISTINCT_COUNT: 5,
+                            DUPLICATE_COUNT: 6,
+                            VALID: 9,
+                            EMPTY: 7,
+                            INVALID: 8
+                        }, specific: {MIN: 10, MAX: 11, MEAN: 12, VARIANCE: 13}
+                    };
+                    expect(StatisticsService.histogram).toBeFalsy();
 
-                //when
-                StatisticsService.processData();
+                    //when
+                    StatisticsService.processData();
 
-                //then
-                expect(StatisticsService.histogram.vertical).toBe(true);
-            }));
+                    //then
+                    expect(StatisticsService.histogram.vertical).toBe(true);
+                }));
+            });
+
+            describe('date', function() {
+                it('should NOT set the range histogram when there is no histogram', inject(function (StatisticsService) {
+                    //given
+                    stateMock.playground.grid.selectedColumn = barChartDateColWithoutHistogram;
+                    StatisticsService.statistics = {};
+                    expect(StatisticsService.histogram).toBeFalsy();
+
+                    //when
+                    StatisticsService.processData();
+
+                    //then
+                    expect(StatisticsService.histogram).toBeFalsy();
+                }));
+
+                it('should set the range data frequency when column type is "date" with filters', inject(function (StatisticsService) {
+                    //given
+                    stateMock.playground.grid.selectedColumn = barChartDateCol;
+                    stateMock.playground.grid.filteredOccurences = {'05/01/2015': 6, '12/01/2015': 4, 'aze': 2, '02/25/2015': 3};
+                    StatisticsService.statistics = {};
+                    expect(StatisticsService.histogram).toBeFalsy();
+
+                    //when
+                    StatisticsService.processData();
+
+                    //then
+                    expect(StatisticsService.histogram.data[0].occurrences).toBe(15); //['01/01/2015', '01/02/2015'[
+                    expect(StatisticsService.histogram.data[0].filteredOccurrences).toBe(10); //['01/01/2015', '01/02/2015'[
+                    expect(StatisticsService.histogram.data[0].data).toEqual(['Jan 1, 2015', 'Feb 1, 2015']);
+                    expect(StatisticsService.histogram.data[1].occurrences).toBe(5); //['01/02/2015', '01/03/2015'[
+                    expect(StatisticsService.histogram.data[1].filteredOccurrences).toBe(3); //['01/02/2015', '01/03/2015'[
+                    expect(StatisticsService.histogram.data[1].data).toEqual(['Feb 1, 2015', 'Mar 1, 2015']);
+                }));
+
+                it('should set histogram vertical mode to true when column type is "date"', inject(function (StatisticsService) {
+                    //given
+                    stateMock.playground.grid.selectedColumn = barChartDateCol;
+                    stateMock.playground.grid.filteredOccurences = {'05/01/2015': 10, '12/01/2015': 5, 'aze': 3, '02/25/2015': 5};
+                    StatisticsService.statistics = {};
+                    expect(StatisticsService.histogram).toBeFalsy();
+
+                    //when
+                    StatisticsService.processData();
+
+                    //then
+                    expect(StatisticsService.histogram.vertical).toBe(true);
+                }));
+            });
         });
 
         it('should reset charts data when column type is not supported', inject(function (StatisticsService) {
@@ -494,7 +645,8 @@ describe('Statistics service', function () {
                     variance: 13,
                     quantiles: {
                         lowerQuantile: 'NaN'
-                    }
+                    },
+                    histogram: {items: []}
                 }
             };
 

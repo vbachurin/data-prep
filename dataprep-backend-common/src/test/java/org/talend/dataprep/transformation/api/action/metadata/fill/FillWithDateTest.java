@@ -33,7 +33,6 @@ public class FillWithDateTest extends AbstractMetadataBaseTest {
     @Autowired
     private FillWithValue action;
 
-
     /**
      * Set the action up.
      */

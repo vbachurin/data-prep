@@ -131,7 +131,11 @@
          * @description Adapt the numeric range data to fit histogram format
          */
         function initRangeHistogram(histoData) {
-            var rangeData = _.map(histoData, function (histDatum) {
+            if(!histoData) {
+                return;
+            }
+
+            var rangeData = _.map(histoData.items, function (histDatum) {
                 var min = histDatum.range.min;
                 var max = histDatum.range.max;
                 var isInRangeLimits = function(value) {
@@ -157,7 +161,11 @@
          * @description Adapt the date range data to fit histogram format
          */
         function initDateRangeHistogram(histoData) {
-            var rangeData = _.map(histoData, function (histDatum) {
+            if(!histoData) {
+                return;
+            }
+
+            var rangeData = _.map(histoData.items, function (histDatum) {
                 var minDate = new Date(histDatum.range.min.year, histDatum.range.min.monthValue - 1, histDatum.range.min.dayOfMonth);
                 var maxDate = new Date(histDatum.range.max.year, histDatum.range.max.monthValue - 1, histDatum.range.max.dayOfMonth);
                 var minTimestamp = minDate.getTime();
@@ -216,6 +224,10 @@
          * @description Set the frequency table that fit the histogram format (filter is managed in frontend)
          */
         function initClassicHistogram(key, label, dataTable) {
+            if(!dataTable || !dataTable.length) {
+                return;
+            }
+
             var adaptedData = _.map(dataTable, function (rec) {
                 rec.formattedValue = TextFormatService.adaptToGridConstraints(rec.data);
                 rec.filteredOccurrences = getClassicFilteredOccurrence(rec.data);
@@ -299,6 +311,10 @@
          * and the active/inactive bars of the vertical barchart
          */
         function initRangeLimits() {
+            if(!service.histogram) {
+                return;
+            }
+
             var column = state.playground.grid.selectedColumn;
             var statistics = column.statistics;
             var currentRangeFilter = _.find(state.playground.filter.gridFilters, function (filter) {
