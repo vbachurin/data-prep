@@ -135,7 +135,7 @@ public class StackedTransformer implements Transformer {
 
             TransformationContext context = new TransformationContext();
             ExtendedStream<DataSetRow> records = BaseTransformer.baseTransform(input.getRecords(), allActions, context).map(r -> {
-                if (!input.getColumns().isEmpty()) {
+                if (input.getMetadata() != null) {
                     // Use analyzer (for empty values, semantic...)
                     if (!r.isDeleted()) {
                         final DataSetRow row = r.order(r.getRowMetadata().getColumns());
@@ -200,8 +200,13 @@ public class StackedTransformer implements Transformer {
             // Analyzer may not be initialized when all rows were deleted.
             analyzer.end();
             adapter.adapt(row.getRowMetadata().getColumns(), analyzer.getResult());
-            writer.fieldName("columns");
-            writer.write(row.getRowMetadata());
+            writer.fieldName("metadata");
+            writer.startObject();
+            {
+                writer.fieldName("columns");
+                writer.write(row.getRowMetadata());
+            }
+            writer.endObject();
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
         }
