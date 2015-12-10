@@ -5,7 +5,7 @@
       "parameters": {
         "column_id": "tagada",
         "default_value": "True",
-        "mode": "Constant",
+        "mode": "constant_mode",
         "scope": "column"
       }
     }

@@ -725,7 +725,7 @@
         "configuration": {
           "values": [
             {
-              "value": "Constant",
+              "value": "constant_mode",
               "parameters": [
                 {
                   "name": "default_value",
@@ -739,7 +739,7 @@
               ]
             },
             {
-              "value": "Another column",
+              "value": "other_column_mode",
               "parameters": [
                 {
                   "name": "selected_column",
@@ -755,7 +755,7 @@
           ],
           "multiple": false
         },
-        "default": "Constant"
+        "default": "constant_mode"
       }
     ],
     "dynamic": false
@@ -800,7 +800,7 @@
         "configuration": {
           "values": [
             {
-              "value": "Constant",
+              "value": "constant_mode",
               "parameters": [
                 {
                   "name": "default_value",
@@ -814,7 +814,7 @@
               ]
             },
             {
-              "value": "Another column",
+              "value": "other_column_mode",
               "parameters": [
                 {
                   "name": "selected_column",
@@ -830,7 +830,7 @@
           ],
           "multiple": false
         },
-        "default": "Constant"
+        "default": "constant_mode"
       }
     ],
     "dynamic": false
@@ -1057,10 +1057,10 @@
         "configuration": {
           "values": [
             {
-              "value": "From beginning"
+              "value": "from_beginning"
             },
             {
-              "value": "From index",
+              "value": "from_index",
               "parameters": [
                 {
                   "name": "from_index",
@@ -1074,7 +1074,7 @@
           ],
           "multiple": false
         },
-        "default": "From beginning"
+        "default": "from_beginning"
       },
       {
         "name": "to_mode",
@@ -1084,10 +1084,10 @@
         "configuration": {
           "values": [
             {
-              "value": "To end"
+              "value": "to_end"
             },
             {
-              "value": "To index",
+              "value": "to_index",
               "parameters": [
                 {
                   "name": "to_index",
@@ -1101,7 +1101,7 @@
           ],
           "multiple": false
         },
-        "default": "To index"
+        "default": "to_index"
       }
     ],
     "dynamic": false
@@ -1520,7 +1520,7 @@
         "configuration": {
           "values": [
             {
-              "value": "Constant",
+              "value": "constant_mode",
               "parameters": [
                 {
                   "name": "default_value",
@@ -1534,7 +1534,7 @@
               ]
             },
             {
-              "value": "Another column",
+              "value": "other_column_mode",
               "parameters": [
                 {
                   "name": "selected_column",
@@ -1550,7 +1550,7 @@
           ],
           "multiple": false
         },
-        "default": "Constant"
+        "default": "constant_mode"
       }
     ],
     "dynamic": false
@@ -1794,7 +1794,7 @@
         "configuration": {
           "values": [
             {
-              "value": "Constant",
+              "value": "constant_mode",
               "parameters": [
                 {
                   "name": "operand",
@@ -1806,7 +1806,7 @@
               ]
             },
             {
-              "value": "Another column",
+              "value": "other_column_mode",
               "parameters": [
                 {
                   "name": "selected_column",
@@ -1820,7 +1820,7 @@
           ],
           "multiple": false
         },
-        "default": "Constant"
+        "default": "constant_mode"
       }
     ],
     "dynamic": false
@@ -2005,7 +2005,7 @@
         "default": ""
       },
       {
-        "name": "other_column?",
+        "name": "mode",
         "type": "select",
         "default": "other_column_mode",
         "configuration": {
