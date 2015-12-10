@@ -6,31 +6,14 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Writer;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.command.common.HttpResponse;
-import org.talend.dataprep.api.service.command.dataset.CloneDataSet;
-import org.talend.dataprep.api.service.command.dataset.CreateDataSet;
-import org.talend.dataprep.api.service.command.dataset.CreateOrUpdateDataSet;
-import org.talend.dataprep.api.service.command.dataset.DataSetDelete;
-import org.talend.dataprep.api.service.command.dataset.DataSetGet;
-import org.talend.dataprep.api.service.command.dataset.DataSetGetMetadata;
-import org.talend.dataprep.api.service.command.dataset.DataSetList;
-import org.talend.dataprep.api.service.command.dataset.DataSetPreview;
-import org.talend.dataprep.api.service.command.dataset.DatasetCertification;
-import org.talend.dataprep.api.service.command.dataset.SetFavorite;
-import org.talend.dataprep.api.service.command.dataset.UpdateColumn;
-import org.talend.dataprep.api.service.command.dataset.UpdateDataSet;
+import org.talend.dataprep.api.service.command.dataset.*;
 import org.talend.dataprep.api.service.command.transformation.SuggestDataSetActions;
 import org.talend.dataprep.api.service.command.transformation.SuggestLookupActions;
 import org.talend.dataprep.exception.TDPException;
@@ -193,28 +176,22 @@ public class DataSetAPI extends APIService {
         @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
         @ApiParam(value = "The name of the cloned dataset.") @RequestParam(defaultValue = "", required = false) String cloneName,
         @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "", required = false) String folderPath,
-        HttpServletResponse response) {
-
+        final OutputStream output) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Cloning dataset (pool: {} )...", getConnectionManager().getTotalStats());
         }
-
         HttpClient client = getClient();
-        HystrixCommand<HttpResponse> creation = getCommand( CloneDataSet.class, client, id, folderPath, cloneName);
+        HystrixCommand<HttpResponse> creation = getCommand(CloneDataSet.class, client, id, folderPath, cloneName);
         HttpResponse result = creation.execute();
         LOG.debug("Dataset clone done.");
-
         try {
-            response.setStatus(result.getStatusCode());
-            response.setHeader("Content-Type", result.getContentType());
-            Writer writer = response.getWriter();
-            IOUtils.write(result.getHttpContent(), writer);
-            writer.flush();
+            HttpResponseContext.status(HttpStatus.valueOf(result.getStatusCode()));
+            HttpResponseContext.header("Content-Type", result.getContentType());
+            IOUtils.write(result.getHttpContent(), output);
+            output.flush();
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
-
-
     }
 
     @RequestMapping(value = "/api/datasets/preview/{id}", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)

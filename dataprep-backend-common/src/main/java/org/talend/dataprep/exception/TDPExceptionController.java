@@ -29,9 +29,10 @@ public class TDPExceptionController {
     @ExceptionHandler(TDPException.class)
     @ResponseBody
     public String handleError(TDPException e) {
-
         if (!e.isError()) {
-            LOGGER.error( "An error occurred", e );
+            LOGGER.error("An error occurred", e);
+        } else if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("An error occurred", e);
         }
         HttpResponseContext.status(HttpStatus.valueOf(e.getCode().getHttpStatus()));
         HttpResponseContext.header("Content-Type", MediaType.APPLICATION_JSON_VALUE);
