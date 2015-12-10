@@ -1,5 +1,6 @@
 package org.talend.dataprep.schema.io;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -39,6 +40,26 @@ public class CSVSchemaParserTest {
             List<ColumnMetadata> actual = result.getSheetContents().get(0).getColumnMetadatas();
 
             Assert.assertEquals(datasetMetadata.getRowMetadata().getColumns(), actual);
+        }
+    }
+
+    /**
+     * When trying to guess the columns data type an IndexOutOfBoundsException should not be thrown.
+     * @throws IOException
+     */
+    @Test
+    public void TDP_898() throws IOException {
+        String str = "c1;c2"+System.lineSeparator()+"1;2;false";
+        try (InputStream inputStream = new ByteArrayInputStream(str.getBytes())) {
+            DataSetMetadata datasetMetadata = IoTestUtils.getSimpleDataSetMetadata("c1", "c2");
+            try {
+                SchemaParserResult result = parser.parse(new SchemaParser.Request(inputStream, datasetMetadata));
+            }
+            catch(IndexOutOfBoundsException exc){
+                Assert.fail("Should not throw an IndexOutOfBoundsException, when parsing!");
+            }
+
+
         }
     }
 
