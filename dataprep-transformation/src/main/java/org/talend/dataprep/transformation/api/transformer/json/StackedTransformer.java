@@ -83,7 +83,7 @@ public class StackedTransformer implements Transformer {
      *
      * @param row the current row.
      * @return the configured analyzer.
-     * @see SimpleTransformer#currentAnalysisStatus
+     * @see StackedTransformer#currentAnalysisStatus
      */
     private Analyzer<Analyzers.Result> configureAnalyzer(DataSetRow row) {
         switch (currentAnalysisStatus) {
