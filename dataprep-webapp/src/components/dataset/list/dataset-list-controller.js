@@ -215,6 +215,18 @@
                 if (dataset.renaming) {
                     return;
                 }
+                var nameAlreadyUsed = false;
+                _.forEach(vm.datasetService.datasetsList(), function(dataset){
+                    if (cleanName === dataset.name){
+                        nameAlreadyUsed = true;
+                        return;
+                    }
+                });
+
+                if (nameAlreadyUsed){
+                    MessageService.error('DATASET_NAME_ALREADY_USED_TITLE', 'DATASET_NAME_ALREADY_USED');
+                    return;
+                }
 
                 dataset.renaming = true;
                 var oldName = dataset.name;

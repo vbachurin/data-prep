@@ -485,20 +485,30 @@ describe('Dataset list controller', function () {
             expect(DatasetService.update).not.toHaveBeenCalledWith(dataset);
         }));
 
+        it('should not call service to rename dataset with an already existed name', inject(function ($q, DatasetService, MessageService) {
 
-        it('should rename folder', inject(function ($q, FolderService) {
             //given
-            spyOn(FolderService, 'renameFolder').and.returnValue($q.when(true));
-            spyOn(FolderService, 'getFolderContent').and.returnValue($q.when(true));
+            spyOn(DatasetService, 'datasetsList').and.callFake(function () {
+                return [{id: 'ab45f893d8e923', name: 'Us states'}];
+            });
+            spyOn(DatasetService, 'update').and.returnValue($q.when(true));
             var ctrl = createController();
+            var name = 'foo';
+            var dataset = {name: name};
 
             //when
-            ctrl.renameFolder ('toto/1', '2');
+            ctrl.rename(dataset, 'Us states');
             scope.$digest();
+
             //then
-            expect(FolderService.renameFolder).toHaveBeenCalledWith('toto/1', 'toto/2');
-            expect(FolderService.getFolderContent).toHaveBeenCalledWith(theCurrentFolder);
+            expect(dataset.name).toBe(name);
+            expect(DatasetService.datasetsList).toHaveBeenCalled();
+            expect(DatasetService.update).not.toHaveBeenCalled();
+            expect(MessageService.error).toHaveBeenCalledWith('DATASET_NAME_ALREADY_USED_TITLE', 'DATASET_NAME_ALREADY_USED');
         }));
+
+
+
 
     });
 
@@ -696,6 +706,20 @@ describe('Dataset list controller', function () {
             //then
             expect(FolderService.searchFolders).toHaveBeenCalledWith('fff');
 
+        }));
+
+        it('should rename folder', inject(function ($q, FolderService) {
+            //given
+            spyOn(FolderService, 'renameFolder').and.returnValue($q.when(true));
+            spyOn(FolderService, 'getFolderContent').and.returnValue($q.when(true));
+            var ctrl = createController();
+
+            //when
+            ctrl.renameFolder ('toto/1', '2');
+            scope.$digest();
+            //then
+            expect(FolderService.renameFolder).toHaveBeenCalledWith('toto/1', 'toto/2');
+            expect(FolderService.getFolderContent).toHaveBeenCalledWith(theCurrentFolder);
         }));
 
     });
