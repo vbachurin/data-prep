@@ -2195,15 +2195,16 @@
         "name": "padding_position",
         "type": "select",
         "implicit": false,
-        "canBeBlank": false,
-        "default": "Left",
+        "canBeBlank":
+        false,
+        "default": "left",
         "configuration": {
           "values": [
             {
-              "value": "Left"
+              "value": "left"
             },
             {
-              "value": "Right"
+              "value": "right"
             }
           ],
           "multiple": false

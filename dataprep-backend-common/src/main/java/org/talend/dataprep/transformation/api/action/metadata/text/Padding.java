@@ -41,9 +41,9 @@ public class Padding extends ActionMetadata implements ColumnAction {
      */
     public static final String PADDING_POSITION_PARAMETER = "padding_position"; //$NON-NLS-1$
 
-    public static final String LEFT_POSITION = "Left";
+    public static final String LEFT_POSITION = "left";
 
-    public static final String RIGHT_POSITION = "Right";
+    public static final String RIGHT_POSITION = "right";
 
     /**
      * @see ActionMetadata#getName()

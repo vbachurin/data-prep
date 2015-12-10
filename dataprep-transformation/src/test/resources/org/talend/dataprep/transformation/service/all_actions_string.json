@@ -2196,14 +2196,14 @@
         "type": "select",
         "implicit": false,
         "canBeBlank": false,
-        "default": "Left",
+        "default": "left",
         "configuration": {
           "values": [
             {
-              "value": "Left"
+              "value": "left"
             },
             {
-              "value": "Right"
+              "value": "right"
             }
           ],
           "multiple": false
