@@ -511,7 +511,7 @@ describe('Statistics service', function () {
                 });
             }));
 
-            describe('number', function() {
+            describe('number', function () {
                 it('should set the range data frequency when column type is "number" with filters', inject(function (StatisticsService) {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartNumCol;
@@ -532,9 +532,17 @@ describe('Statistics service', function () {
                     StatisticsService.processData();
                     //then
                     expect(StatisticsService.histogram.data[0].filteredOccurrences).toBe(6); //[0, 10[
-                    expect(StatisticsService.histogram.data[0].data).toEqual([barChartNumCol.statistics.histogram.items[0].range.min, barChartNumCol.statistics.histogram.items[0].range.max]);
+                    expect(StatisticsService.histogram.data[0].data).toEqual({
+                        type: 'number',
+                        min: barChartNumCol.statistics.histogram.items[0].range.min,
+                        max: barChartNumCol.statistics.histogram.items[0].range.max
+                    });
                     expect(StatisticsService.histogram.data[1].filteredOccurrences).toBe(1); //[10, 20[
-                    expect(StatisticsService.histogram.data[1].data).toEqual([barChartNumCol.statistics.histogram.items[1].range.min, barChartNumCol.statistics.histogram.items[1].range.max]);
+                    expect(StatisticsService.histogram.data[1].data).toEqual({
+                        type: 'number',
+                        min: barChartNumCol.statistics.histogram.items[1].range.min,
+                        max: barChartNumCol.statistics.histogram.items[1].range.max
+                    });
                 }));
 
                 it('should set histogram vertical mode to true when column type is "number"', inject(function (StatisticsService) {
@@ -560,7 +568,7 @@ describe('Statistics service', function () {
                 }));
             });
 
-            describe('date', function() {
+            describe('date', function () {
                 it('should NOT set the range histogram when there is no histogram', inject(function (StatisticsService) {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColWithoutHistogram;
@@ -577,7 +585,12 @@ describe('Statistics service', function () {
                 it('should set the range data frequency when column type is "date" with filters', inject(function (StatisticsService) {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateCol;
-                    stateMock.playground.grid.filteredOccurences = {'05/01/2015': 6, '12/01/2015': 4, 'aze': 2, '02/25/2015': 3};
+                    stateMock.playground.grid.filteredOccurences = {
+                        '05/01/2015': 6,
+                        '12/01/2015': 4,
+                        'aze': 2,
+                        '02/25/2015': 3
+                    };
                     StatisticsService.statistics = {};
                     expect(StatisticsService.histogram).toBeFalsy();
 
@@ -587,16 +600,31 @@ describe('Statistics service', function () {
                     //then
                     expect(StatisticsService.histogram.data[0].occurrences).toBe(15); //['01/01/2015', '01/02/2015'[
                     expect(StatisticsService.histogram.data[0].filteredOccurrences).toBe(10); //['01/01/2015', '01/02/2015'[
-                    expect(StatisticsService.histogram.data[0].data).toEqual(['Jan 1, 2015', 'Feb 1, 2015']);
+                    expect(StatisticsService.histogram.data[0].data).toEqual({
+                        type: 'date',
+                        label: '[Jan 1, 2015, Feb 1, 2015[',
+                        min: new Date(2015, 0, 1),
+                        max: new Date(2015, 1, 1)
+                    });
                     expect(StatisticsService.histogram.data[1].occurrences).toBe(5); //['01/02/2015', '01/03/2015'[
                     expect(StatisticsService.histogram.data[1].filteredOccurrences).toBe(3); //['01/02/2015', '01/03/2015'[
-                    expect(StatisticsService.histogram.data[1].data).toEqual(['Feb 1, 2015', 'Mar 1, 2015']);
+                    expect(StatisticsService.histogram.data[1].data).toEqual({
+                        type: 'date',
+                        label: '[Feb 1, 2015, Mar 1, 2015[',
+                        min: new Date(2015, 1, 1),
+                        max: new Date(2015, 2, 1)
+                    });
                 }));
 
                 it('should set histogram vertical mode to true when column type is "date"', inject(function (StatisticsService) {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateCol;
-                    stateMock.playground.grid.filteredOccurences = {'05/01/2015': 10, '12/01/2015': 5, 'aze': 3, '02/25/2015': 5};
+                    stateMock.playground.grid.filteredOccurences = {
+                        '05/01/2015': 10,
+                        '12/01/2015': 5,
+                        'aze': 3,
+                        '02/25/2015': 5
+                    };
                     StatisticsService.statistics = {};
                     expect(StatisticsService.histogram).toBeFalsy();
 

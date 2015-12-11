@@ -14,10 +14,10 @@ describe('verticalBarchart directive', function () {
     beforeEach(module('talend.widget'));
     beforeEach(inject(function ($rootScope, $compile) {
         statsData = [
-            {'data': [0, 5], 'occurrences': 9},
-            {'data': [5, 10], 'occurrences': 8},
-            {'data': [10, 15], 'occurrences': 6},
-            {'data': [15, 20], 'occurrences': 5}
+            {'data': {min: 0, max: 5}, 'occurrences': 9},
+            {'data': {min: 5, max: 10}, 'occurrences': 8},
+            {'data': {min: 10, max: 15}, 'occurrences': 6},
+            {'data': {min: 15, max: 20}, 'occurrences': 5}
         ];
 
         createElement = function () {

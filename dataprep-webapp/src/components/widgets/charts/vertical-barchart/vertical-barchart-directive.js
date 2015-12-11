@@ -41,170 +41,184 @@
                 activeLimits: '='
             },
             link: function (scope, element, attrs) {
-                var xField = scope.keyField;//data
+                var xField = scope.keyField;
                 var yField = scope.valueField;
                 var yField2 = scope.valueField2;
                 var labelTooltip = scope.keyLabel;
                 var activeLimits = scope.activeLimits;
                 var renderTimeout, updateBarsTimeout;
-                var tip;
                 var finishedRendering = false;
+                var containerId = '#' + attrs.id;
 
-                function renderVBarchart(statData) {
-                    var container = attrs.id;
-                    var width = +attrs.width;
-                    var height = +attrs.height;
+                // Define chart sizes and margin
+                var margin = {top: 20, right: 20, bottom: 10, left: 15};
+                var containerWidth = +attrs.width;
+                var containerHeight = +attrs.height;
+                var width = containerWidth - margin.left - margin.right;
+                var height = containerHeight - margin.top - margin.bottom;
 
-                    //the left and right margins MUST be the same as the rangeSlider ones
-                    var margin = {top: 20, right: 20, bottom: 10, left: 15},
-                        w = width - margin.left - margin.right,
-                        h = height - margin.top - margin.bottom;
+                //------------------------------------------------------------------------------------------------------
+                //----------------------------------------------- Tooltip ----------------------------------------------
+                //------------------------------------------------------------------------------------------------------
+                var tooltip = d3.tip()
+                    .attr('class', 'vertical-barchart-cls d3-tip')
+                    .offset([0, -11])
+                    .direction('w')
+                    .html(getTooltipContent);
 
-                    var x = d3.scale.ordinal()
-                        .rangeRoundBands([0, w], 0.2);
-                    var y = d3.scale.linear()
-                        .range([h, 0]);
+                function getTooltipContent(data) {
+                    var range = data[xField];
+                    var uniqueValue = range.min === range.max;
+                    var title = (uniqueValue ? 'Value: ' : 'Range: ');
+                    var value = range.label || (uniqueValue ? range.min : '[' + range.min + ', ' + range.max + '[');
 
-                    tip = d3.tip()
-                        .attr('class', 'vertical-barchart-cls d3-tip')
-                        .offset([0, -11])
-                        .direction('w')
-                        .html(function (d) {
-                            var interval =  d[xField];
-                            var uniqueValue = interval[0] === interval[1];
-                            return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + d[yField2] + ' / ' + d[yField] + '</span>' +
-                                '<br/>' +
-                                '<br/>' +
-                                '<strong>' + (uniqueValue ? 'Value:' : 'Range:') + '</strong> ' +
-                                '<span style="color:yellow">' + (uniqueValue ? interval[0] : '[' + interval + '[') + '</span>';
-                        });
+                    return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + getSecondaryValue(data) + ' / ' + getPrimaryValue(data) + '</span>' +
+                        '<br/>' +
+                        '<br/>' +
+                        '<strong>' + title + '</strong> ' +
+                        '<span style="color:yellow">' + value + '</span>';
+                }
 
-                    var svg = d3.select('#' + container).append('svg')
+                //------------------------------------------------------------------------------------------------------
+                //------------------------------------------ Data adaptation -------------------------------------------
+                //------------------------------------------------------------------------------------------------------
+                function getInterval(data) {
+                    var range = getRangeInfos(data);
+                    return [range.min, range.max];
+                }
+
+                function getRangeInfos(data) {
+                   return data[xField];
+                }
+
+                function getPrimaryValue(data) {
+                    return data[yField];
+                }
+
+                function getSecondaryValue(data) {
+                    return data[yField2] || 0;
+                }
+
+                //------------------------------------------------------------------------------------------------------
+                //---------------------------------------- Chart manipulation ------------------------------------------
+                //------------------------------------------------------------------------------------------------------
+                // Axis scale definitions
+                var xScale = d3.scale.ordinal().rangeRoundBands([0, width], 0.2);
+                var yScale = d3.scale.linear().range([height, 0]);
+
+                function createContainer() {
+                    var svg = d3.select(containerId)
+                        .append('svg')
                         .attr('class', 'vertical-barchart-cls')
-                        .attr('width', w + margin.left + margin.right)
-                        .attr('height', h + margin.top + margin.bottom)
+                        .attr('width', containerWidth)
+                        .attr('height', containerHeight)
                         .append('g')
                         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+                    svg.call(tooltip);
 
-                    svg.call(tip);
+                    return svg;
+                }
 
-                    // Parse numbers, and sort by value.
-                    statData.forEach(function (d) {
-                        d[yField] = +d[yField];
-                    });
+                function configureAxisScales(statData) {
+                    xScale.domain(statData.map(getInterval));
+                    yScale.domain([0, d3.max(statData, getPrimaryValue)]);
+                }
 
-                    // Set the scale domain.
-                    x.domain(statData.map(function (d) {
-                        return d[xField];
-                    }));
-                    y.domain([0, d3.max(statData, function (d) {
-                        return d[yField];
-                    })]);
-
-                    svg.append('g').selectAll('.bar')
+                function drawBars(svg, selector, statData, getValue, className) {
+                    svg.append('g')
+                        .selectAll(selector)
                         .data(statData)
-                        .enter().append('rect')
-                        .attr('class', 'bar')
+                        .enter()
+                        .append('rect')
+                        .attr('class', className)
                         .attr('x', function (d) {
-                            return x(d[xField]);
+                            return xScale(getInterval(d));
                         })
-                        .attr('width', x.rangeBand())
+                        .attr('width', xScale.rangeBand())
                         .attr('y', function () {
-                            return y(0);
+                            return yScale(0);
                         })
                         .attr('height', 0)
                         .transition().ease('cubic').delay(function (d, i) {
                             return i * 10;
                         })
                         .attr('height', function (d) {
-                            return h - y(d[yField]);
+                            return height - yScale(getValue(d));
                         })
                         .attr('y', function (d) {
-                            return y(d[yField]);
+                            return yScale(getValue(d));
                         });
+                }
 
-                    svg.append('g').selectAll('.filterBar')
-                        .data(statData)
-                        .enter().append('rect')
-                        .attr('class', 'filterBar')
-                        .attr('x', function (d) {
-                            return x(d[xField]);
-                        })
-                        .attr('width', x.rangeBand())
-                        .attr('y', function () {
-                            return y(0);
-                        })
-                        .attr('height', 0)
-                        .transition().ease('cubic').delay(function (d, i) {
-                            return i * 10;
-                        })
-                        .attr('height', function (d) {
-                            if (typeof d[yField2] !== 'undefined') {
-                                return h - y(d[yField2]);
-                            }
-                            return h - y(0);
-                        })
-                        .attr('y', function (d) {
-                            if (typeof d[yField2] !== 'undefined') {
-                                return y(d[yField2]);
-                            }
-                            return y(0);
-                        });
+                function drawHorizontalGrid(svg) {
+                    var minSizeBetweenGrid = 18;
+                    var ticksNbre = yScale.domain()[1] > 10 ? Math.ceil(height / minSizeBetweenGrid): yScale.domain()[1];
 
-
-                    scope.buckets = d3.selectAll('rect.bar');
-                    /****************** Horizontal grid **********************/
-                    var ticksNbre = (y.domain()[1]) > 10 ? Math.ceil(h / 18): y.domain()[1];
-                    var hGrid = svg.append('g')
+                    svg.append('g')
+                        //draw grid lines
                         .attr('class', 'grid')
                         .call(d3.svg.axis()
-                            .scale(y)
+                            .scale(yScale)
                             .orient('right')
-                            .tickSize(w, 0, 0)
+                            .tickSize(width, 0, 0)
                             .tickFormat(d3.format(',d'))
                             .ticks(ticksNbre)
-                    );
-
-                    hGrid.selectAll('.tick text')
+                        )
+                        //place text
+                        .selectAll('.tick text')
                         .attr('y', -5)
-                        .attr('x', w / 2)
+                        .attr('x', width / 2)
                         .attr('dy', '.15em')
                         .style('text-anchor', 'middle');
+                }
 
-                    /********************* Y axis label *********************/
+                function drawYAxis(svg) {
                     svg.append('g')
                         .append('text')
-                        .attr('x', -h / 2)
+                        .attr('x', -height / 2)
                         .attr('y', -2)
                         .attr('transform', 'rotate(-90)')
                         .style('text-anchor', 'middle')
                         .text(labelTooltip);
+                }
 
-                    /************background Rect*********/
-                    var bgBar = svg.selectAll('g.bg-rect')
+                function drawHoverBars(svg, statData) {
+                    svg.selectAll('g.bg-rect')
                         .data(statData)
-                        .enter().append('g')
+                        .enter()
+                        .append('g')
                         .attr('transform', function (d) {
-                            return 'translate(' + (x(d[xField]) - 2) + ', 0)';
-                        });
-
-                    bgBar.append('rect')
-                        .attr('width', x.rangeBand() + 4)
-                        .attr('height', h)
+                            return 'translate(' + (xScale(getInterval(d)) - 2) + ', 0)';
+                        })
+                        .append('rect')
+                        .attr('width', xScale.rangeBand() + 4)
+                        .attr('height', height)
                         .attr('class', 'bg-rect')
                         .style('opacity', 0)
-                        .attr('z-index', 100)
                         .on('mouseenter', function (d) {
                             d3.select(this).style('opacity', 0.4);
-                            tip.show(d);
+                            tooltip.show(d);
                         })
                         .on('mouseleave', function (d) {
                             d3.select(this).style('opacity', 0);
-                            tip.hide(d);
+                            tooltip.hide(d);
                         })
                         .on('click', function (d) {
-                            scope.onClick({interval: d.data});
+                            scope.onClick({interval: getRangeInfos(d)});
                         });
+                }
+
+                function renderVBarchart(statData) {
+                    var svg = createContainer();
+                    configureAxisScales(statData);
+                    drawBars(svg, '.bar', statData, getPrimaryValue, 'bar');
+                    drawBars(svg, '.filterBar', statData, getSecondaryValue, 'filterBar');
+
+                    drawHorizontalGrid(svg);
+                    drawYAxis(svg);
+                    drawHoverBars(svg, statData);
+
+                    scope.buckets = d3.selectAll('rect.bar');
                     finishedRendering = true;
                 }
 
@@ -214,17 +228,13 @@
                             .delay(function (d, i) {
                                 return i * 10;
                             })
-                            .style('opacity', function (d, i) {
-                                if (((d.data)[0] >= activeLimits[0] && (d.data)[1] <= activeLimits[1]) ||
-                                    ((d.data)[0] < activeLimits[1] && (d.data)[1] > activeLimits[0])
-                                ) {
-                                    if (d3.select(scope.buckets[0][i]).style('opacity') === '.4') {
-                                        return '1';
-                                    }
-                                }
-                                else {
-                                    return '.4';
-                                }
+                            .style('opacity', function (d) {
+                                var range = getRangeInfos(d);
+                                var rangeMin = range.min;
+                                var rangeMax = range.max;
+                                var minLimit = activeLimits[0];
+                                var maxLimit = activeLimits[1];
+                                return rangeMin === minLimit || (rangeMin < maxLimit && rangeMax > minLimit) ? '1' : '.4';
                             });
                     }
                 }

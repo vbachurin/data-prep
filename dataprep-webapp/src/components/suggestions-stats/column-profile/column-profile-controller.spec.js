@@ -52,7 +52,10 @@ describe('ColumnProfile controller', function () {
         it('should add a new "range" filter from StatisticsService', inject(function (StatisticsService, FilterService) {
             //given
             var ctrl = createController();
-            var interval = [5, 15];
+            var interval = {
+                min: 5,
+                max: 15
+            };
 
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
@@ -64,7 +67,7 @@ describe('ColumnProfile controller', function () {
 
             //then
             expect(StatisticsService.getRangeFilterRemoveFn).toHaveBeenCalled();
-            expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('inside_range', '0001', 'firstname', {interval: interval}, removeFilterFn);
+            expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('inside_range', '0001', 'firstname', {interval: [5, 15]}, removeFilterFn);
         }));
 
         it('should NOT add a "range" filter on date columns', inject(function (StatisticsService, FilterService) {

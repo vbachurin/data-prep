@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.dataset.statistics;
+package org.talend.dataprep.api.dataset.statistics.number;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.junit.Test;
+import org.talend.dataprep.api.dataset.statistics.number.StreamNumberHistogramStatistics;
 import org.talend.dataquality.statistics.numeric.histogram.Range;
 
 public class StreamNumberHistogramStatisticsTest {
