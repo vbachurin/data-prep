@@ -7,10 +7,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.talend.dataprep.i18n.MessagesBundle;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.talend.dataprep.i18n.MessagesBundle;
 
 /**
  * Parameter that should be displayed as a select box in the UI.
@@ -92,10 +93,13 @@ public class SelectParameter extends Parameter implements Serializable {
         private List<Parameter> inlineParameters;
 
         /**
-         * Create a select Item.
+         * Create a select Item. The item's label will be by default looked up with key ("choice." + value). You may
+         * override this behavior using {@link #setLabel(String)}.
          *
          * @param value the item value.
          * @param parameters the item optional parameters.
+         * @see MessagesBundle#getString(String)
+         * @see #setLabel(String)
          */
         public Item(String value, List<Parameter> parameters) {
             this.value = value;
@@ -226,6 +230,7 @@ public class SelectParameter extends Parameter implements Serializable {
          *
          * @param value the item value.
          * @return the builder to carry on building the column.
+         * @see Item#setLabel(String) to override default translated label.
          */
         public SelectParameter.Builder item(String value) {
             this.items.add(new Item(value, emptyList()));

@@ -168,11 +168,11 @@ public class Concat extends ActionMetadata implements ColumnAction, OtherColumnP
      * parameters and there's a matching column. If the parameter is invalid, an exception is thrown.
      *
      * @param parameters where to look the parameter value.
-     * @param row the row metadata where to look for the column.
+     * @param rowMetadata the row metadata where to look for the column.
      */
-    private void checkSelectedColumnParameter(Map<String, String> parameters, DataSetRow row) {
+    private void checkSelectedColumnParameter(Map<String, String> parameters, RowMetadata rowMetadata) {
         if (parameters.get(MODE_PARAMETER).equals(OTHER_COLUMN_MODE)
-                && (!parameters.containsKey(SELECTED_COLUMN_PARAMETER) || row.getRowMetadata().getById(
+                && (!parameters.containsKey(SELECTED_COLUMN_PARAMETER) || rowMetadata.getById(
                         parameters.get(SELECTED_COLUMN_PARAMETER)) == null)) {
             throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER, ExceptionContext.build().put("paramName",
                     SELECTED_COLUMN_PARAMETER));
