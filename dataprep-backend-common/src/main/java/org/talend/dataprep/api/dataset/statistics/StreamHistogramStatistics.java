@@ -12,10 +12,7 @@
 // ============================================================================
 package org.talend.dataprep.api.dataset.statistics;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import org.talend.dataquality.statistics.numeric.histogram.Range;
 
@@ -37,7 +34,7 @@ public class StreamHistogramStatistics {
     /**
      * The number of regulars of this histogram which must be power of 2.
      */
-    public int numberOfBins = DEFAULT_BIN_NUMBER;
+    private int numberOfBins = DEFAULT_BIN_NUMBER;
 
     /**
      * Internal representation of the histogram in its regular version.
@@ -273,14 +270,11 @@ public class StreamHistogramStatistics {
     }
 
     /**
-     * Return the histogram map where Key is the range and value is the frequency.<br>
-     * Key will be of form [d, d]
-     *
-     * @return
+     * @return the histogram map where Key is the range and value is the frequency. Key will be of form [d, d].
      */
     private Map<Range, Long> getSingularHistogram() {
         Map<Range, Long> result = new LinkedHashMap<>();
-        TreeMap<Number, Long> bins = new TreeMap<>(this.singulars);
+        SortedMap<Number, Long> bins = new TreeMap<>(this.singulars);
         for (Number n : bins.keySet()) {
             double d = (double) n;
             Range r = new Range(d, d);
@@ -352,9 +346,7 @@ public class StreamHistogramStatistics {
     }
 
     /**
-     * Return the maximum number of bins of this histogram.
-     *
-     * @return
+     * @return the maximum number of bins of this histogram.
      */
     public int getNumberOfBins() {
         return numberOfBins;

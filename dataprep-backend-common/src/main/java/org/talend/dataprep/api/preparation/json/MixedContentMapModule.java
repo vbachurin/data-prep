@@ -52,7 +52,6 @@ public class MixedContentMapModule extends SimpleModule {
                 } else if (value.charAt(0) == '{' || value.charAt(0) == '[') {
                     // check that it's a real json array or object
                     try {
-                        // builder.build().reader().readTree(value);
                         new ObjectMapper().reader().readTree(value);
                         jsonGenerator.writeRawValue(value);
                     }

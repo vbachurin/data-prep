@@ -1,5 +1,10 @@
 package org.talend.dataprep.api.service.command.folder;
 
+import static org.talend.dataprep.api.service.command.common.Defaults.asNull;
+import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_DELETE_FOLDER;
+
+import java.net.URISyntaxException;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -13,16 +18,11 @@ import org.talend.dataprep.api.service.command.common.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 
-import java.net.URISyntaxException;
-
-import static org.talend.dataprep.api.service.command.common.Defaults.asNull;
-import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_DELETE_FOLDER;
-
 @Component
 @Scope("request")
 public class RemoveFolder extends GenericCommand<Void> {
 
-    private RemoveFolder(HttpClient client, String path) {
+    public RemoveFolder(HttpClient client, String path) {
         super(APIService.DATASET_GROUP, client);
         execute(() -> onExecute(path));
         onError(e -> new TDPException(UNABLE_TO_DELETE_FOLDER, e, ExceptionContext.build()));

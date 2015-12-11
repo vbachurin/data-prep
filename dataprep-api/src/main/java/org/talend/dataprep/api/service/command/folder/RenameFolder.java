@@ -6,7 +6,6 @@ import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_DELETE
 import java.net.URISyntaxException;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
@@ -24,7 +23,7 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 public class RenameFolder
     extends GenericCommand<Void> {
 
-    private RenameFolder( HttpClient client, String path, String newPath) {
+    public RenameFolder(HttpClient client, String path, String newPath) {
         super(APIService.DATASET_GROUP, client);
         execute(() -> onExecute(path, newPath));
         onError(e -> new TDPException(UNABLE_TO_DELETE_FOLDER, e, ExceptionContext.build()));

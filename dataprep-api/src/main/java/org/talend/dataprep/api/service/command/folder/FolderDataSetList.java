@@ -36,7 +36,7 @@ import com.netflix.hystrix.HystrixCommand;
 @Scope("request")
 public class FolderDataSetList extends GenericCommand<FolderContent> {
 
-    private FolderDataSetList(HttpClient client, String sort, String order, String folder) {
+    public FolderDataSetList(HttpClient client, String sort, String order, String folder) {
         super(PreparationAPI.TRANSFORM_GROUP, client);
         execute(() -> onExecute(sort, order, folder));
         onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_LIST_DATASETS, e));

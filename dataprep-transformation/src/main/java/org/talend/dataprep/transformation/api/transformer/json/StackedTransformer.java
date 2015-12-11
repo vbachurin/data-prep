@@ -1,16 +1,12 @@
 package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
@@ -54,10 +50,6 @@ public class StackedTransformer implements Transformer {
     @Autowired
     private WriterRegistrationService writersService;
 
-    /** The data-prep jackson builder. */
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
-
     @Autowired
     private AnalyzerService analyzerService;
     private enum AnalysisStatus {
@@ -94,6 +86,7 @@ public class StackedTransformer implements Transformer {
                     emptyInitialAnalysisBuffer(row);
                 }
             case FULL_ANALYSIS:
+        default:
                 // Nothing to do
         }
         return analyzer;
@@ -137,7 +130,7 @@ public class StackedTransformer implements Transformer {
             ExtendedStream<DataSetRow> records = BaseTransformer.baseTransform(input.getRecords(), allActions, context)
                     .map(r -> analyzeRecords(input, r));
             // Write records
-            Stack<DataSetRow> processingRows = new Stack<>();
+            Deque<DataSetRow> processingRows = new ArrayDeque<>();
             writer.startObject();
             records.mapOnce(r -> startRecords(writer, r), r -> r) //
                 .forEach(r -> writeRecords(writer, processingRows, r));
@@ -161,9 +154,16 @@ public class StackedTransformer implements Transformer {
         }
     }
 
-    private void writeRecords(TransformerWriter writer, Stack<DataSetRow> processingRows, DataSetRow r) {
+    /**
+     * Write transformed records.
+     *
+     * @param writer the writer to use.
+     * @param processingRows the stack of processing rows.
+     * @param r the current row to write.
+     */
+    private void writeRecords(TransformerWriter writer, Deque<DataSetRow> processingRows, DataSetRow r) {
         try {
-            if (!processingRows.empty()) {
+            if (processingRows.size() > 0) {
                 processingRows.pop();
             }
             if (r.shouldWrite()) {
@@ -176,12 +176,10 @@ public class StackedTransformer implements Transformer {
     }
 
     private DataSetRow analyzeRecords(DataSet input, DataSetRow r) {
-        if (input.getMetadata() != null) {
-            // Use analyzer (for empty values, semantic...)
-            if (!r.isDeleted()) {
-                final DataSetRow row = r.order(r.getRowMetadata().getColumns());
-                configureAnalyzer(row).analyze(row.toArray(DataSetRow.SKIP_TDP_ID));
-            }
+        // Use analyzer (for empty values, semantic...)
+        if (input.getMetadata() != null && !r.isDeleted()) {
+            final DataSetRow row = r.order(r.getRowMetadata().getColumns());
+            configureAnalyzer(row).analyze(row.toArray(DataSetRow.SKIP_TDP_ID));
         }
         return r;
     }
@@ -226,6 +224,9 @@ public class StackedTransformer implements Transformer {
     }
 
     private static class NullAnalyzer implements Analyzer<Analyzers.Result> {
+
+        private static final long serialVersionUID = 1L;
+
         @Override
         public void init() {
             // Nothing to do
