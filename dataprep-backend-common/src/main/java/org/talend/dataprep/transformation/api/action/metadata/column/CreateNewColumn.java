@@ -123,7 +123,7 @@ public class CreateNewColumn extends ActionMetadata implements ColumnAction {
      */
     @Override
     public void applyOnColumn(DataSetRow row, ActionContext context) {
-        final RowMetadata rowMetadata = context.getInputRowMetadata();
+        final RowMetadata rowMetadata = row.getRowMetadata();
         final String columnId = context.getColumnId();
         final Map<String, String> parameters = context.getParameters();
 
