@@ -1,7 +1,6 @@
 package org.talend.dataprep.api.service.command.folder;
 
 import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream;
-import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_LIST_FOLDERS;
 import static org.talend.dataprep.exception.error.APIErrorCodes.UNABLE_TO_LIST_FOLDER_ENTRIES;
 
 import java.io.InputStream;
@@ -25,7 +24,7 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 @Scope("request")
 public class FolderEntriesList extends GenericCommand<InputStream> {
 
-    private FolderEntriesList(HttpClient client, String path, String contentType) {
+    public FolderEntriesList(HttpClient client, String path, String contentType) {
         super(APIService.DATASET_GROUP, client);
         execute(() -> onExecute(path, contentType));
         onError(e -> new TDPException(UNABLE_TO_LIST_FOLDER_ENTRIES, e, ExceptionContext.build()));

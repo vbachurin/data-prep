@@ -31,7 +31,7 @@ import org.talend.datascience.common.inference.type.DataType;
 @Component
 public class StatisticsAdapter {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(StatisticsAdapter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsAdapter.class);
 
     /**
      * Defines the minimum threshold for a semantic type suggestion. Defaults to 40% if not defined.
@@ -91,7 +91,7 @@ public class StatisticsAdapter {
                 // TDP-471: Don't pick semantic type if lower than a threshold.
                 final Optional<Map.Entry<CategoryFrequency, Long>> entry = foundSemanticTypes.entrySet().stream()
                         .filter(e -> !e.getKey().getCategoryName().isEmpty())
-                        .max((o1, o2) -> ((int) (o1.getKey().getFrequency() - o2.getKey().getFrequency())));
+                        .max((o1, o2) -> (int) (o1.getKey().getFrequency() - o2.getKey().getFrequency()));
                 if (entry.isPresent()) {
                     // TODO (TDP-734) Take into account limit of the semantic analyzer.
                     final float percentage = entry.get().getKey().getFrequency();
@@ -104,7 +104,7 @@ public class StatisticsAdapter {
                             currentColumn.setDomainLabel(category.getDisplayName());
                             currentColumn.setDomainFrequency(percentage);
                         } catch (IllegalArgumentException e) {
-                            LOGGER.error("Could not find {} in known categories.", categoryId);
+                            LOGGER.error("Could not find {} in known categories.", categoryId, e);
                         }
                     } else {
                         // Ensure the domain is cleared if percentage is lower than threshold (earlier analysis - e.g.
@@ -201,14 +201,4 @@ public class StatisticsAdapter {
         }
     }
 
-    private static long normalize(Statistics statistics, Number value) {
-        long percentage;
-        final long count = statistics.getCount();
-        if (count > 0) {
-            percentage = (value.longValue() * 100) / count;
-        } else {
-            percentage = value.longValue();
-        }
-        return percentage;
-    }
 }

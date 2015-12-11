@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -87,10 +88,10 @@ public class SimpleFilterService implements FilterService {
                     final double columnValue = Double.parseDouble(r.get(columnName));
                     final double min = Double.parseDouble(start);
                     final double max = Double.parseDouble(end);
-                    if (min != max) {
+                    if (NumberUtils.compare(min, max) != 0) {
                         return columnValue >= min && columnValue < max;
                     } else {
-                        return columnValue == min;
+                        return NumberUtils.compare(columnValue, min) == 0;
                     }
                 });
             } else if (currentNode.has("and")) {

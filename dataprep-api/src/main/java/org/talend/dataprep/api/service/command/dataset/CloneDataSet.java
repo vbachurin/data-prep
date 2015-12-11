@@ -1,6 +1,8 @@
 package org.talend.dataprep.api.service.command.dataset;
 
-import java.io.InputStream;
+import static org.talend.dataprep.api.service.command.common.Defaults.asString;
+import static org.talend.dataprep.api.service.command.common.Defaults.emptyString;
+
 import java.net.URISyntaxException;
 
 import org.apache.http.client.HttpClient;
@@ -15,8 +17,6 @@ import org.talend.dataprep.api.service.command.common.GenericCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.APIErrorCodes;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-
-import static org.talend.dataprep.api.service.command.common.Defaults.*;
 
 /**
  * Command to clone a dataset.
@@ -45,7 +45,7 @@ public class CloneDataSet extends GenericCommand<String> {
                 throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
             }
         });
-        onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e,
+        onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e,
                 ExceptionContext.build().put("id", dataSetId)));
         on(HttpStatus.NO_CONTENT, HttpStatus.ACCEPTED).then(emptyString());
         on(HttpStatus.OK).then(asString());

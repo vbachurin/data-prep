@@ -144,7 +144,7 @@ public class Action implements Serializable {
          * @return the built row action.
          */
         public Action build() {
-            DataSetRowAction action = new DataSetRowAction() {
+            DataSetRowAction newAction = new DataSetRowAction() {
                 @Override
                 public DataSetRow apply(DataSetRow dataSetRow, ActionContext actionContext) {
                     return rowAction.apply(dataSetRow, actionContext);
@@ -155,7 +155,7 @@ public class Action implements Serializable {
                     compile.accept(actionContext);
                 }
             };
-            return new Action(action);
+            return new Action(newAction);
         }
 
         public Builder withCompile(Consumer<ActionContext> compile) {

@@ -49,10 +49,12 @@ public class FolderEntry extends Identifiable implements Serializable {
         return this.getId();
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }

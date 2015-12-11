@@ -398,6 +398,7 @@ public class DataSetRow implements Cloneable {
 
         @Override
         public void setDeleted(boolean deleted) {
+            // UnmodifiableDataSetRow means unmodifiable
         }
 
         @Override
@@ -417,6 +418,7 @@ public class DataSetRow implements Cloneable {
 
         @Override
         public void clear() {
+            // UnmodifiableDataSetRow means unmodifiable
         }
 
         @Override
@@ -456,6 +458,7 @@ public class DataSetRow implements Cloneable {
 
         @Override
         public void setTdpId(Long tdpId) {
+            // UnmodifiableDataSetRow means unmodifiable
         }
 
         @Override
