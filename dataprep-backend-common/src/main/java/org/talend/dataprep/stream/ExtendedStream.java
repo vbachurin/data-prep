@@ -18,6 +18,15 @@ public class ExtendedStream<T> implements Stream<T> {
         return new ExtendedStream<>(stream);
     }
 
+    /**
+     * Maps stream with a one-shot run for the first stream element ("once") and use another function ("other") for
+     * remaining elements in stream.
+     *
+     * @param once The map function to apply on first element.
+     * @param other The map function to apply on remaining stream elements.
+     * @param <R> The type outcome of <code>once</code> and <code>other</code>.
+     * @return A Stream with elements typed as &lt;R&gt;.
+     */
     public <R> ExtendedStream<R> mapOnce(Function<T, ? extends R> once, Function<T, ? extends R> other) {
         Function<T, ? extends R> mapOnce = r -> {
             if (isMappedOnce.add(once)) {

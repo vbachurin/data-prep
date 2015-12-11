@@ -134,46 +134,13 @@ public class StackedTransformer implements Transformer {
             final TransformerWriter writer = writersService.getWriter(configuration.formatId(), configuration.output(), configuration.getArguments());
 
             TransformationContext context = new TransformationContext();
-            ExtendedStream<DataSetRow> records = BaseTransformer.baseTransform(input.getRecords(), allActions, context).map(r -> {
-                if (input.getMetadata() != null) {
-                    // Use analyzer (for empty values, semantic...)
-                    if (!r.isDeleted()) {
-                        final DataSetRow row = r.order(r.getRowMetadata().getColumns());
-                        configureAnalyzer(row).analyze(row.toArray(DataSetRow.SKIP_TDP_ID));
-                    }
-                }
-                return r;
-            });
+            ExtendedStream<DataSetRow> records = BaseTransformer.baseTransform(input.getRecords(), allActions, context)
+                    .map(r -> analyzeRecords(input, r));
             // Write records
             Stack<DataSetRow> processingRows = new Stack<>();
             writer.startObject();
-            records.mapOnce(r -> {
-                try {
-                    // Write metadata if writer asks for it
-                    if (writer.requireMetadataForHeader()) {
-                        writeMetadata(writer, r);
-                    }
-                    // Now starts records
-                    writer.fieldName("records");
-                    writer.startArray();
-                } catch (IOException e) {
-                    throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
-                }
-                return r;
-            }, r -> r) //
-            .forEach(r -> {
-                try {
-                    if (!processingRows.empty()) {
-                        processingRows.pop();
-                    }
-                    if (r.shouldWrite()) {
-                        writer.write(r);
-                    }
-                    processingRows.push(r);
-                } catch (IOException e) {
-                    throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
-                }
-            });
+            records.mapOnce(r -> startRecords(writer, r), r -> r) //
+                .forEach(r -> writeRecords(writer, processingRows, r));
             writer.endArray();
             //
             if (!writer.requireMetadataForHeader()) {
@@ -192,6 +159,46 @@ public class StackedTransformer implements Transformer {
                 LOGGER.warn("Unable to close analyzer after transformation.", e);
             }
         }
+    }
+
+    private void writeRecords(TransformerWriter writer, Stack<DataSetRow> processingRows, DataSetRow r) {
+        try {
+            if (!processingRows.empty()) {
+                processingRows.pop();
+            }
+            if (r.shouldWrite()) {
+                writer.write(r);
+            }
+            processingRows.push(r);
+        } catch (IOException e) {
+            throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
+        }
+    }
+
+    private DataSetRow analyzeRecords(DataSet input, DataSetRow r) {
+        if (input.getMetadata() != null) {
+            // Use analyzer (for empty values, semantic...)
+            if (!r.isDeleted()) {
+                final DataSetRow row = r.order(r.getRowMetadata().getColumns());
+                configureAnalyzer(row).analyze(row.toArray(DataSetRow.SKIP_TDP_ID));
+            }
+        }
+        return r;
+    }
+
+    private DataSetRow startRecords(TransformerWriter writer, DataSetRow r) {
+        try {
+            // Write metadata if writer asks for it
+            if (writer.requireMetadataForHeader()) {
+                writeMetadata(writer, r);
+            }
+            // Now starts records
+            writer.fieldName("records");
+            writer.startArray();
+        } catch (IOException e) {
+            throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
+        }
+        return r;
     }
 
     private DataSetRow writeMetadata(TransformerWriter writer, DataSetRow row) {
