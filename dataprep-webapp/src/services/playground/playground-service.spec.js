@@ -13,7 +13,7 @@ describe('Playground Service', function () {
 
     beforeEach(inject(function ($injector, $q, StateService, DatasetService, RecipeService, DatagridService,
                                 PreparationService, TransformationCacheService, SuggestionService,
-                                HistoryService, StatisticsService, PreviewService) {
+                                HistoryService, StatisticsService, PreviewService, ExportService) {
         stateMock.playground = {};
         createdPreparation = {id: '32cd7869f8426465e164ab85'};
 
@@ -33,6 +33,7 @@ describe('Playground Service', function () {
         spyOn(StatisticsService, 'reset').and.returnValue();
         spyOn(SuggestionService, 'reset').and.returnValue();
         spyOn(TransformationCacheService, 'invalidateCache').and.returnValue();
+        spyOn(ExportService, 'reset').and.returnValue();
     }));
 
     it('should set new name to the preparation', inject(function ($rootScope, PlaygroundService, PreparationService) {
@@ -58,7 +59,10 @@ describe('Playground Service', function () {
         var dataset = {id: 'e85afAa78556d5425bc2'};
         var assertNewPreparationInitialization, assertNewPreparationNotInitialized;
 
-        beforeEach(inject(function ($rootScope, PlaygroundService, DatasetService, RecipeService, DatagridService, TransformationCacheService, SuggestionService, HistoryService, StatisticsService, PreviewService, StateService) {
+        beforeEach(inject(function ($rootScope, PlaygroundService, DatasetService,
+                                    RecipeService, DatagridService, TransformationCacheService,
+                                    SuggestionService, HistoryService, StatisticsService,
+                                    PreviewService, StateService, ExportService) {
             spyOn($rootScope, '$emit').and.returnValue();
 
             assertNewPreparationInitialization = function () {
@@ -72,6 +76,7 @@ describe('Playground Service', function () {
                 expect(HistoryService.clear).toHaveBeenCalled();
                 expect(StatisticsService.reset).toHaveBeenCalledWith(true, true, true);
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
+                expect(ExportService.reset).toHaveBeenCalled();
             };
             assertNewPreparationNotInitialized = function () {
                 expect(StateService.resetPlayground).not.toHaveBeenCalled();
@@ -84,6 +89,7 @@ describe('Playground Service', function () {
                 expect(HistoryService.clear).not.toHaveBeenCalled();
                 expect(StatisticsService.reset).not.toHaveBeenCalled();
                 expect(PreviewService.reset).not.toHaveBeenCalled();
+                expect(ExportService.reset).not.toHaveBeenCalled();
             };
 
             jasmine.clock().install();

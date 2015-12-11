@@ -14,6 +14,7 @@
      * @requires data-prep.services.state
      * @requires data-prep.services.statistics
      * @requires data-prep.services.utils
+     * @requires data-prep.services.export
      */
     angular.module('data-prep.services.playground', [
         'data-prep.services.dataset',
@@ -25,6 +26,7 @@
         'data-prep.services.statistics',
         'data-prep.services.state',
         'data-prep.services.utils',
-        'data-prep.services.lookup'
+        'data-prep.services.lookup',
+        'data-prep.services.export'
     ]);
 })();

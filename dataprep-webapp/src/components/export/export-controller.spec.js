@@ -20,6 +20,11 @@ describe('Export controller', function() {
                     {'value': ' ', 'labelKey': 'SEPARATOR_SPACE'},
                     {'value': ',', 'labelKey': 'SEPARATOR_COMMA'}
                 ]
+            },{
+                'name': 'fileName',
+                'labelKey': 'EXPORT_FILENAME"',
+                'type': 'text',
+                'defaultValue': {'value': ';', 'labelKey': 'EXPORT_FILENAME_DEFAULT'}
             }]
         },
         {
@@ -38,12 +43,16 @@ describe('Export controller', function() {
         }
     ];
     var currentParameters = {exportType: 'XLSX'};
-    var currentType = exportTypes[2];
 
     var stateMock;
 
     beforeEach(module('data-prep.export', function($provide) {
-        stateMock = {playground: {}};
+        stateMock = {
+            playground: {
+                preparation : {name: 'prepname'},
+                exportParameters : { exportType: 'CSV', 'exportParameters.csvSeparator': ';' , 'exportParameters.fileName': 'prepname' }
+            }
+        };
         $provide.constant('state', stateMock);
     }));
 
@@ -129,43 +138,68 @@ describe('Export controller', function() {
             scope.$digest();
 
             //then
-            expect(ctrl.currentExportParameters).toBe(currentParameters);
-            expect(ctrl.currentExportType).toBe(currentType);
+            expect(ctrl.exportService.currentExportType).toBeFalsy();
+            expect(ctrl.exportService.currentExportParameters).toBeFalsy();
         });
     });
 
     it('should reset params with saved one and reset current export type accordingly', function() {
         //given
         var ctrl = createController();
-        expect(ctrl.currentExportType).toBeFalsy();
-        expect(ctrl.currentExportParameters).toBeFalsy();
+        ctrl.exportService.currentExportType = {exportType: 'XLS'} ;
+        ctrl.exportService.currentExportParameters = {filename: 'test'};
 
         //when
-        ctrl.resetCurrentParameters();
+        ctrl.exportService.reset();
 
         //then
-        expect(ctrl.currentExportParameters).toBe(currentParameters);
-        expect(ctrl.currentExportType).toBe(currentType);
+        expect(ctrl.exportService.currentExportType).toBeFalsy();
+        expect(ctrl.exportService.currentExportParameters).toBeFalsy();
     });
 
     describe('on new type selection', function() {
-        it('should init type with params', function() {
+        it('should update parameters (type)', function() {
             //given
             var ctrl = createController();
             scope.$apply();
 
             var csvType = exportTypes[0];
-            var csvParams = {exportType: 'CSV', 'exportParameters.csvSeparator': ';'}; //with separator default value
+            var csvParams = { exportType: 'CSV', 'exportParameters.csvSeparator': ';' , 'exportParameters.fileName': 'prepname' }; //with separator default value
 
-            expect(ctrl.currentExportType).not.toBe(csvType);
-            expect(ctrl.currentExportParameters).not.toEqual(csvParams);
+            expect(ctrl.exportService.currentExportType).not.toBe(csvType);
+            expect(ctrl.exportService.currentExportParameters).not.toEqual(csvParams);
 
             //when
             ctrl.changeTypeAndExport(csvType);
 
             //then
-            expect(ctrl.currentExportType).toBe(csvType);
-            expect(ctrl.currentExportParameters).toEqual(csvParams);
+            expect(ctrl.exportService.currentExportType).toBe(csvType);
+            expect(ctrl.exportService.currentExportParameters).toEqual(csvParams);
+        });
+
+        it('should update parameters (type + fileName)', function() {
+            //given
+            var ctrl = createController();
+            scope.$apply();
+
+            stateMock.playground.exportParameters = null;
+            stateMock.playground.preparation = null;
+            stateMock.playground.dataset = {
+                name: '48da64513c43a548e678bc99'
+            };
+
+            var csvType = exportTypes[0];
+            var csvParams = { exportType: 'CSV', 'exportParameters.csvSeparator': ';' , 'exportParameters.fileName': '48da64513c43a548e678bc99' }; //with separator default value
+
+            expect(ctrl.exportService.currentExportType).not.toBe(csvType);
+            expect(ctrl.exportService.currentExportParameters).not.toEqual(csvParams);
+
+            //when
+            ctrl.changeTypeAndExport(csvType);
+
+            //then
+            expect(ctrl.exportService.currentExportType).toBe(csvType);
+            expect(ctrl.exportService.currentExportParameters).toEqual(csvParams);
         });
 
         it('should show modal on type with parameters', function() {
@@ -183,61 +217,26 @@ describe('Export controller', function() {
             expect(ctrl.showModal).toBe(true);
             expect(form.submit).not.toHaveBeenCalled();
         });
-
-        it('should save new export type', function() {
-            //given
-            var ctrl = createController();
-            scope.$apply();
-
-            var tableauType = exportTypes[1];
-            var tableauParams = {exportType: 'TABLEAU'};
-
-            expect(ctrl.currentExportType).not.toBe(tableauType);
-            expect(ctrl.currentExportParameters).not.toEqual(tableauParams);
-
-            //when
-            ctrl.changeTypeAndExport(tableauType);
-
-            //then
-            expect(ctrl.currentExportType).toBe(tableauType);
-            expect(ctrl.currentExportParameters).toEqual(tableauParams);
-        });
-
-        it('should launch export on type with no parameters, after a $timeout', inject(function($timeout) {
-            //given
-            var ctrl = createController();
-            scope.$apply();
-
-            var tableauType = exportTypes[1];
-
-            //when
-            ctrl.changeTypeAndExport(tableauType);
-            $timeout.flush(); //The $timeout is necessary to let angular init the form inputs in the next digest
-
-            //then
-            expect(form.submit).toHaveBeenCalled();
-        }));
     });
 
     describe('on parameters validation', function() {
         it('should save current export parameters', inject(function(ExportService) {
             //given
             var ctrl = createController();
-            var parameters = {exportType: 'CSV', 'exportParameters.csvSeparator': ','};
-            ctrl.currentExportParameters = parameters;
+            ctrl.exportService.currentExportType = exportTypes[0];
 
             //when
             ctrl.saveEditionAndExport();
 
             //then
-            expect(ExportService.setParameters).toHaveBeenCalledWith(parameters);
+            expect(ExportService.setParameters).toHaveBeenCalledWith(exportTypes[0]);
         }));
 
         it('should launch export after a $timeout', inject(function($timeout) {
             //given
             var ctrl = createController();
             var parameters = {exportType: 'CSV', 'exportParameters.csvSeparator': ','};
-            ctrl.currentExportParameters = parameters;
+            ctrl.exportService.currentExportParameters = parameters;
 
             //when
             ctrl.saveEditionAndExport();
@@ -249,26 +248,43 @@ describe('Export controller', function() {
     });
 
     describe('on export', function() {
-        it('should set action in form', inject(function(RestURLs) {
+        it('should set action in form', inject(function(RestURLs, $timeout) {
             //given
             var ctrl = createController();
+            ctrl.exportService.currentExportType = exportTypes[0];
 
             //when
             ctrl.export();
+            $timeout.flush();
 
             //then
             expect(form.action).toBe(RestURLs.exportUrl);
         }));
 
-        it('should submit form', function() {
+        it('should submit form', inject(function($timeout) {
             //given
             var ctrl = createController();
+            ctrl.exportService.currentExportType = exportTypes[0];
 
             //when
             ctrl.export();
+            $timeout.flush();
 
             //then
             expect(form.submit).toHaveBeenCalled();
-        });
+        }));
+
+        it('should cancel parameters', inject(function() {
+            //given
+            var ctrl = createController();
+            spyOn(ctrl.exportService, 'getType').and.returnValue(exportTypes[0]);
+
+            //when
+            ctrl.cancelCurrentParameters ();
+
+            //then
+            expect(ctrl.exportService.currentExportType).toBe(exportTypes[0]);
+            expect(ctrl.exportService.currentExportParameters).toEqual({ exportType: 'CSV', 'exportParameters.csvSeparator': ';' , 'exportParameters.fileName': 'prepname' });
+        }));
     });
 });
