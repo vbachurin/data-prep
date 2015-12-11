@@ -1,35 +1,34 @@
 <talend-button-dropdown button-text="{{'EXPORT' | translate }}" button-action="exportCtrl.export()">
     <ul>
-        <li ng-repeat="exportType in exportCtrl.exportTypes" ng-click="exportCtrl.changeTypeAndExport(exportType)">{{exportType.id}}</li>
+        <li ng-repeat="exportType in exportCtrl.exportService.exportTypes" ng-click="exportCtrl.changeTypeAndExport(exportType)">{{exportType.id}}</li>
     </ul>
 </talend-button-dropdown>
 
 <talend-modal fullscreen="false"
               state="exportCtrl.showModal"
-              close-button="true"
-              on-close="exportCtrl.resetCurrentParameters()">
+              close-button="true">
 
-    <div class="export-parameter" ng-repeat="parameter in exportCtrl.currentExportType.parameters track by $index">
+    <div class="export-parameter" ng-repeat="parameter in exportCtrl.exportService.currentExportType.parameters track by $index">
         <p>{{ parameter.labelKey | translate }}</p>
         <div ng-if="parameter.type == 'radio'">
-            <input ng-model="exportCtrl.currentExportParameters['exportParameters.' + parameter.name]"
+            <input ng-model="exportCtrl.exportService.currentExportParameters['exportParameters.' + parameter.name]"
                    type="radio"
                    value="{{parameter.defaultValue.value}}"/>{{ parameter.defaultValue.labelKey | translate }}( {{parameter.defaultValue.value}} )
           <span ng-repeat="parameterValue in parameter.values track by $index">
-            <input ng-model="exportCtrl.currentExportParameters['exportParameters.' + parameter.name]"
+            <input ng-model="exportCtrl.exportService.currentExportParameters['exportParameters.' + parameter.name]"
                    type="radio"
                    value="{{parameterValue.value}}" >{{ parameterValue.labelKey | translate }}( {{parameterValue.value}} )
           </span>
         </div>
         <div ng-if="parameter.type == 'text'">
-          <input ng-model="exportCtrl.currentExportParameters['exportParameters.' + parameter.name]"
+          <input ng-model="exportCtrl.exportService.currentExportParameters['exportParameters.' + parameter.name]"
                  type="text"
                  value="{{parameter.defaultValue.value}}"/>
         </div>
     </div>
 
     <div class="modal-buttons">
-        <button class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL"></button>
+        <button class="talend-modal-close btn-secondary modal-secondary-button" ng-click="exportCtrl.cancelCurrentParameters()" translate-once="CANCEL"></button>
         <button class="talend-modal-close btn-primary modal-primary-button" ng-click="exportCtrl.saveEditionAndExport()" translate-once="EXPORT"></button>
     </div>
 </talend-modal>
@@ -39,7 +38,7 @@
     <input type="hidden" name="stepId" value="{{ exportCtrl.stepId }}" />
     <input type="hidden" name="datasetId" value="{{ exportCtrl.datasetId }}" />
 
-    <input ng-repeat="(key, value) in exportCtrl.currentExportParameters track by $index"
+    <input ng-repeat="(key, value) in exportCtrl.state.playground.exportParameters track by $index"
            name="{{key}}"
            value="{{value}}"
            type="hidden"/>

@@ -17,33 +17,16 @@
         vm.recipeService = RecipeService;
         vm.exportService = ExportService;
 
-        /**
-         * @ngdoc property
-         * @name currentExportType
-         * @propertyOf data-prep.export.controller:ExportCtrl
-         * @description Current export type
-         * @type {Object}
-         */
-        vm.currentExportType = null;
-
-        /**
-         * @ngdoc property
-         * @name currentExportParameters
-         * @propertyOf data-prep.export.controller:ExportCtrl
-         * @description Current export parameters model, bound to form inputs
-         * @type {Object}
-         */
-        vm.currentExportParameters = null;
 
         /**
          * @ngdoc method
-         * @name resetCurrentParameters
+         * @name cancelCurrentParameters
          * @methodOf data-prep.export.controller:ExportCtrl
-         * @description Reset current export parameters with the saved one from localStorage
+         * @description cancel current export parameters with the saved one from localStorage
          */
-        vm.resetCurrentParameters = function resetCurrentParameters() {
-            vm.currentExportParameters = ExportService.getParameters();
-            vm.currentExportType = ExportService.getType(vm.currentExportParameters.exportType);
+        vm.cancelCurrentParameters = function cancelCurrentParameters() {
+            vm.exportService.currentExportType = vm.exportService.getType(vm.exportService.getParameters().id);
+            vm.exportService.currentExportParameters = _.cloneDeep(vm.state.playground.exportParameters);
         };
 
         /**
@@ -55,31 +38,16 @@
          * If the export type has parameters, we init the form and display a modal
          */
         vm.changeTypeAndExport = function (exportType) {
-            var parameters = {exportType: exportType.id};
-            vm.currentExportType = exportType;
-            vm.currentExportParameters = parameters;
-            
-            if (exportType.parameters) {
-                _.forEach(exportType.parameters, function(param) {
-                    parameters['exportParameters.' + param.name] = param.defaultValue.value;
-                    //hack for fileName as we don't know it with exportTypes parameters
-                    //so if empty use the dataset.name
-                    if (param.name === 'fileName'){
-                        var allParameters = ExportService.getParameters();
-                        if (allParameters && allParameters['exportParameters.fileName']){
-                            parameters['exportParameters.' + param.name] = allParameters['exportParameters.fileName'];
-                        } else if (vm.state.playground.preparation && vm.state.playground.preparation.name) {
-                            parameters['exportParameters.' + param.name] = vm.state.playground.preparation.name;
-                        } else {
-                            parameters['exportParameters.' + param.name] = vm.state.playground.dataset.name;
-                        }
-                    }
-                });
+            vm.exportService.currentExportType = exportType;
+            if (vm.exportService.currentExportType.parameters) {
+
+                if(vm.state.playground.exportParameters){
+                    vm.exportService.currentExportParameters = _.cloneDeep(vm.state.playground.exportParameters);
+                    vm.exportService.currentExportParameters.exportType = vm.exportService.currentExportType.id;
+                } else {
+                    updateExportParameters();
+                }
                 vm.showModal = true;
-            }
-            else {
-                ExportService.setParameters(parameters);
-                $timeout(vm.export);
             }
         };
 
@@ -90,24 +58,56 @@
          * @description Save the currently edited export parameters and launch the export
          */
         vm.saveEditionAndExport = function saveEditionAndExport() {
-            ExportService.setParameters(vm.currentExportParameters);
-            $timeout(vm.export);
+            vm.exportService.setParameters(vm.exportService.currentExportType);
+            vm.export();
         };
 
         /**
          * @ngdoc method
          * @name export
          * @methodOf data-prep.export.controller:ExportCtrl
-         * @description Launch the export
+         * @description Launch the export (with new name if rename)
          */
         vm.export = function () {
-            vm.form.action = RestURLs.exportUrl;
-            vm.form.submit();
+            if(!vm.exportService.currentExportParameters){
+                updateExportParameters();
+            }
+
+            vm.state.playground.exportParameters = _.cloneDeep(vm.exportService.currentExportParameters);
+
+            $timeout(function(){
+                vm.form.action = RestURLs.exportUrl;
+                vm.form.submit();
+            });
+
         };
 
+        /**
+         * @ngdoc method
+         * @name updateExportParameters
+         * @methodOf data-prep.export.controller:ExportCtrl
+         * @description Update export parameters
+         */
+        function updateExportParameters() {
+            vm.exportService.currentExportParameters = {exportType: vm.exportService.currentExportType.id};
+            _.forEach(vm.exportService.currentExportType.parameters, function(param) {
+                vm.exportService.currentExportParameters['exportParameters.' + param.name] = param.defaultValue.value;
+                //hack for fileName as we don't know it with exportTypes parameters
+                //so if empty use the dataset.name
+                if (param.name === 'fileName'){
+                    if (vm.state.playground.preparation && vm.state.playground.preparation.name) {
+                        vm.exportService.currentExportParameters['exportParameters.' + param.name] = vm.state.playground.preparation.name;
+                    } else {
+                        vm.exportService.currentExportParameters['exportParameters.' + param.name] = vm.state.playground.dataset.name;
+                    }
+                }
+            });
+        }
+
+
         // get types list
-        ExportService.refreshTypes()
-            .then(vm.resetCurrentParameters);
+        vm.exportService.refreshTypes()
+            .then(vm.exportService.resetCurrentParameters);
     }
 
     /**

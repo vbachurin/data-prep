@@ -18,11 +18,12 @@
      * @requires data-prep.services.onboarding:OnboardingService
      * @requires data-prep.services.utils.service:MessageService
      * @requires data-prep.services.utils:TextFormatService
+     * @requires data-prep.services.export.service:ExportService
      */
     function PlaygroundService($rootScope, $q, state, DatasetService, DatagridService, PreviewService,
                                RecipeService, TransformationCacheService, SuggestionService, PreparationService,
                                StatisticsService, HistoryService, StateService,
-                               OnboardingService, MessageService, TextFormatService) {
+                               OnboardingService, MessageService, TextFormatService, ExportService) {
         var DEFAULT_NAME = 'Preparation draft';
 
         var service = {
@@ -65,6 +66,7 @@
             SuggestionService.reset();
             HistoryService.clear();
             PreviewService.reset(false);
+            ExportService.reset();
         }
 
         /**
