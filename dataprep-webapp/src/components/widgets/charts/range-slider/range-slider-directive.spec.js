@@ -210,7 +210,7 @@ describe('rangeSlider directive', function () {
 
                     //then
                     expect(ctrl.brush.extent()).toEqual([8, 10]);
-                    expect(scope.brushEnd).toHaveBeenCalledWith([8, 10]);
+                    expect(scope.brushEnd).toHaveBeenCalledWith({min: 8, max: 10});
                     expect(minInput[0].value).toBe('8');
                 });
 
@@ -235,7 +235,7 @@ describe('rangeSlider directive', function () {
                     minInput.trigger(enterKeyUpEvent);
 
                     //then
-                    expect(scope.brushEnd).toHaveBeenCalledWith([8, 10]);
+                    expect(scope.brushEnd).toHaveBeenCalledWith({min: 8, max: 10});
                 });
 
                 it('should cancel the entered value when value is incorrect', inject(function ($timeout) {
@@ -332,7 +332,7 @@ describe('rangeSlider directive', function () {
                     maxInput.trigger(tabKeyUpEvent);
 
                     //then
-                    expect(scope.brushEnd).toHaveBeenCalledWith([8, 10]);
+                    expect(scope.brushEnd).toHaveBeenCalledWith({min: 8, max: 10});
                 });
 
                 it('should invert min and max if min > max at brush end callback', function () {
@@ -355,7 +355,7 @@ describe('rangeSlider directive', function () {
                     maxInput.trigger(tabKeyUpEvent);
 
                     //then
-                    expect(scope.brushEnd).toHaveBeenCalledWith([8, 10]);
+                    expect(scope.brushEnd).toHaveBeenCalledWith({min: 8, max: 10});
                 });
 
                 it('should cancel the typed value when value is incorrect', inject(function ($timeout) {
@@ -475,7 +475,7 @@ describe('rangeSlider directive', function () {
                     maxInput.trigger(blurEvent);
 
                     //then
-                    expect(scope.brushEnd).toHaveBeenCalledWith([5, 17]);
+                    expect(scope.brushEnd).toHaveBeenCalledWith({min: 5, max: 17});
                 });
             });
 

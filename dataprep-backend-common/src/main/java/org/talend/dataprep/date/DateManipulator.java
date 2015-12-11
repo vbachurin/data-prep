@@ -16,7 +16,7 @@ public class DateManipulator {
      * Supported pace for date ranges
      */
     public enum Pace {
-        DAY(86400000L), TWO_DAYS(172800000L), WEEK(604800000L), TWO_WEEK(1209600000L), MONTH(2678400000L), TWO_MONTH(5356800000L), QUARTER(7884000000L), HALF_YEAR(15768000000L), YEAR(31536000000L), DECADE(315360000000L), CENTURY(3153600000000L);
+        DAY(86400000L), WEEK(604800000L), MONTH(2678400000L), QUARTER(7884000000L), HALF_YEAR(15768000000L), YEAR(31536000000L), DECADE(315360000000L), CENTURY(3153600000000L);
 
         /**
          * Number of milliseconds that represents the pace
@@ -90,18 +90,13 @@ public class DateManipulator {
                 return getFirstDayOfHalfYear(date);
             case QUARTER:
                 return getFirstDayOfQuarter(date);
-            case TWO_MONTH:
-                return getFirstDayOfOddMonth(date);
             case MONTH:
                 return date.with(TemporalAdjusters.firstDayOfMonth());
-            case TWO_WEEK:
-                return getFirstDayOfOddWeek(date);
             case WEEK:
                 return date.with(DayOfWeek.MONDAY);
-            case TWO_DAYS:
-                return getOddDay(date);
+            default:
+                return date;
         }
-        return date;
     }
 
     /**
@@ -123,16 +118,10 @@ public class DateManipulator {
                 return localDate.plus(6, ChronoUnit.MONTHS);
             case QUARTER:
                 return localDate.plus(3, ChronoUnit.MONTHS);
-            case TWO_MONTH:
-                return localDate.plus(2, ChronoUnit.MONTHS);
             case MONTH:
                 return localDate.plus(1, ChronoUnit.MONTHS);
-            case TWO_WEEK:
-                return localDate.plus(2, ChronoUnit.WEEKS);
             case WEEK:
                 return localDate.plus(1, ChronoUnit.WEEKS);
-            case TWO_DAYS:
-                return localDate.plus(2, ChronoUnit.DAYS);
             case DAY:
                 return localDate.plus(1, ChronoUnit.DAYS);
         }
@@ -209,53 +198,6 @@ public class DateManipulator {
                             .withMonth(OCTOBER.getValue())
                             .with(TemporalAdjusters.firstDayOfMonth());
             }
-        });
-    }
-
-    /**
-     * Compute the first day of the first odd month that is equals or before the given date
-     *
-     * @param localDate The reference date
-     * @return The first day of the odd month
-     */
-    private LocalDate getFirstDayOfOddMonth(final LocalDate localDate) {
-        return localDate.with(temporal -> {
-            int monthValue = localDate.getMonthValue();
-            monthValue = monthValue % 2 != 0 ? monthValue : monthValue - 1;
-            return LocalDate.from(temporal)
-                    .withMonth(monthValue)
-                    .with(TemporalAdjusters.firstDayOfMonth());
-        });
-    }
-
-    /**
-     * Compute the first day of the first odd week that is equals or before the given date
-     *
-     * @param localDate The reference date
-     * @return The first day of the odd week
-     */
-    private LocalDate getFirstDayOfOddWeek(final LocalDate localDate) {
-        return localDate.with(temporal -> {
-            final int week = localDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
-            final boolean isOddWeek = week % 2 != 0;
-            return isOddWeek ?
-                    localDate.with(DayOfWeek.MONDAY) :
-                    LocalDate.from(temporal).minus(1, ChronoUnit.WEEKS).with(DayOfWeek.MONDAY);
-        });
-    }
-
-    /**
-     * Compute the first odd day that is equals or before the given date
-     *
-     * @param localDate The reference date
-     * @return The odd day
-     */
-    private LocalDate getOddDay(final LocalDate localDate) {
-        return localDate.with(temporal -> {
-            final boolean isOddDay = localDate.getDayOfYear() % 2 != 0;
-            return isOddDay ?
-                    localDate :
-                    LocalDate.from(temporal).minus(1, ChronoUnit.DAYS);
         });
     }
 }

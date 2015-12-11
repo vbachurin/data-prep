@@ -2,6 +2,7 @@ package org.talend.dataprep.api.dataset.statistics.date;
 
 import org.talend.dataprep.api.dataset.statistics.Histogram;
 import org.talend.dataprep.api.dataset.statistics.HistogramRange;
+import org.talend.dataprep.date.DateManipulator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class DateHistogram implements Histogram<LocalDate> {
     public static final String TYPE = "date";
 
     private final List<HistogramRange<LocalDate>> items = new ArrayList<>();
+    private DateManipulator.Pace pace;
 
     @Override
     public List<HistogramRange<LocalDate>> getItems() {
@@ -34,5 +36,13 @@ public class DateHistogram implements Histogram<LocalDate> {
     @Override
     public int hashCode() {
         return items.hashCode();
+    }
+
+    public void setPace(DateManipulator.Pace pace) {
+        this.pace = pace;
+    }
+
+    public DateManipulator.Pace getPace() {
+        return pace;
     }
 }

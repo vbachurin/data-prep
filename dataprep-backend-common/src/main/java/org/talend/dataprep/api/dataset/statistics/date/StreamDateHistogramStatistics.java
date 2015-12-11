@@ -1,12 +1,13 @@
 package org.talend.dataprep.api.dataset.statistics.date;
 
+import org.talend.dataprep.api.dataset.statistics.Histogram;
+import org.talend.dataprep.api.dataset.statistics.HistogramRange;
 import org.talend.dataprep.api.dataset.statistics.Range;
 import org.talend.dataprep.date.DateManipulator;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -108,20 +109,21 @@ public class StreamDateHistogramStatistics {
     }
 
     /**
-     * Get histograms as a map.
+     * Get histograms
      *
-     * @return the histogram map where Key is the range and value is the frequency. <br>
+     * @return the histogram
      * Note that the returned ranges are in pattern of [Min, Min+Pace[ - [Min+Pace, Min+Pace*2[ - ...[Max-binSize,Max[.
      */
-    public Map<Range<LocalDate>, Long> getHistogram() {
+    public Histogram<LocalDate> getHistogram() {
         if(min == null) {
-            return new HashMap<>(0);
+            return null;
         }
 
         final DateManipulator.Pace pace = dateManipulator.getSuitablePace(min, max, numberOfBins);
         final Map<Range<LocalDate>, Long> paceBin = bins.get(pace);
 
-        final Map<Range<LocalDate>, Long> result = new LinkedHashMap<>(numberOfBins);
+        final DateHistogram histogram = new DateHistogram();
+        histogram.setPace(pace);
         LocalDate nextRangeStart = dateManipulator.getSuitableStartingDate(min, pace);
 
         while (max.isAfter(nextRangeStart) || max.equals(nextRangeStart)) {
@@ -129,12 +131,16 @@ public class StreamDateHistogramStatistics {
             final LocalDate rangeEnd = dateManipulator.getNext(nextRangeStart, pace);
             final Range<LocalDate> range = new Range<>(rangeStart, rangeEnd);
             final Long rangeValue = paceBin.get(range);
-            result.put(range, rangeValue != null ? rangeValue : 0L);
+
+            final HistogramRange<LocalDate> dateRange = new HistogramRange<>();
+            dateRange.setRange(range);
+            dateRange.setOccurrences(rangeValue != null ? rangeValue : 0L);
+            histogram.getItems().add(dateRange);
 
             nextRangeStart = rangeEnd;
         }
 
-        return result;
+        return histogram;
     }
 
     /**

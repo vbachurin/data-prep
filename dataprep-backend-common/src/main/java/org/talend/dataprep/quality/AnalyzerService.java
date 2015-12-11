@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
-import org.talend.dataprep.api.dataset.statistics.StreamNumberHistogramAnalyzer;
+import org.talend.dataprep.api.dataset.statistics.number.StreamNumberHistogramAnalyzer;
 import org.talend.dataprep.api.dataset.statistics.date.StreamDateHistogramAnalyzer;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;

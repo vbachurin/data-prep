@@ -53,7 +53,7 @@
             }
 
             var removeFilterFn = StatisticsService.getRangeFilterRemoveFn();
-            FilterService.addFilterAndDigest('inside_range', selectedColumn.id, selectedColumn.name, {interval: interval.slice(0)}, removeFilterFn);
+            FilterService.addFilterAndDigest('inside_range', selectedColumn.id, selectedColumn.name, {interval: [interval.min, interval.max]}, removeFilterFn);
         };
 
         //------------------------------------------------------------------------------------------------------

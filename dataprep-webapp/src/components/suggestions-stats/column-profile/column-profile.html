@@ -34,32 +34,34 @@
             </div>
         </div>
 
-        <horizontal-barchart id="hBarChart"
-                             ng-if="!columnProfileCtrl.histogram.vertical"
-                             width="300"
-                             height="400"
-                             on-click="columnProfileCtrl.addBarchartFilter"
-                             visu-data="columnProfileCtrl.histogram.data"
-                             value-field="formattedValue"
-                             value-field-2="filteredOccurrences"
-                             key-field="{{columnProfileCtrl.histogram.key}}"
-                             key-label="{{columnProfileCtrl.histogram.label}}"></horizontal-barchart>
+        <div style="min-height: 160px;">
+            <horizontal-barchart id="hBarChart"
+                                 ng-if="!columnProfileCtrl.histogram.vertical"
+                                 width="300"
+                                 height="400"
+                                 on-click="columnProfileCtrl.addBarchartFilter"
+                                 visu-data="columnProfileCtrl.histogram.data"
+                                 value-field="formattedValue"
+                                 value-field-2="filteredOccurrences"
+                                 key-field="{{columnProfileCtrl.histogram.key}}"
+                                 key-label="{{columnProfileCtrl.histogram.label}}"></horizontal-barchart>
 
-        <vertical-barchart id="vBarChart"
-                           ng-if="columnProfileCtrl.histogram.vertical"
-                           width="300"
-                           height="150"
-                           on-click="columnProfileCtrl.addRangeFilter(interval)"
-                           visu-data="columnProfileCtrl.histogram.data"
-                           value-field="{{columnProfileCtrl.histogram.key}}"
-                           value-field-2="filteredOccurrences"
-                           key-field="data"
-                           active-limits="columnProfileCtrl.histogram.activeLimits"
-                           key-label="{{columnProfileCtrl.histogram.label}}"></vertical-barchart>
+            <vertical-barchart id="vBarChart"
+                               ng-if="columnProfileCtrl.histogram.vertical"
+                               width="300"
+                               height="150"
+                               on-click="columnProfileCtrl.addRangeFilter(interval)"
+                               visu-data="columnProfileCtrl.histogram.data"
+                               value-field="{{columnProfileCtrl.histogram.key}}"
+                               value-field-2="filteredOccurrences"
+                               key-field="data"
+                               active-limits="columnProfileCtrl.histogram.activeLimits"
+                               key-label="{{columnProfileCtrl.histogram.label}}"></vertical-barchart>
 
-        <highchart id="geochart"
-                   ng-if="columnProfileCtrl.stateDistribution"
-                   config="columnProfileCtrl.chartConfig"></highchart>
+            <highchart id="geochart"
+                       ng-if="columnProfileCtrl.stateDistribution"
+                       config="columnProfileCtrl.chartConfig"></highchart>
+        </div>
 
         <range-slider id="rangeSliderId"
                       width="300"

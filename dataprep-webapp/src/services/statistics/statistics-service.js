@@ -144,7 +144,11 @@
                         ((numberValue === min) || (numberValue > min && numberValue < max));
                 };
                 return {
-                    'data': [histDatum.range.min, histDatum.range.max],
+                    'data': {
+                        type: 'number',
+                        min: histDatum.range.min,
+                        max: histDatum.range.max
+                    },
                     'occurrences': histDatum.occurrences,
                     'filteredOccurrences': getRangeFilteredOccurrence(isInRangeLimits)
                 };
@@ -190,15 +194,75 @@
                     var time = parsedMoment.toDate().getTime();
                     return time === minTimestamp || (time > minTimestamp && time < maxTimestamp);
                 };
-                var dateFilter = $filter('date');
+
                 return {
-                    'data': [dateFilter(minDate), dateFilter(maxDate)],
+                    'data': {
+                        type: 'date',
+                        label: getDateLabel(histoData.pace, minDate, maxDate),
+                        min: minDate,
+                        max: maxDate
+                    },
                     'occurrences': histDatum.occurrences,
                     'filteredOccurrences': getRangeFilteredOccurrence(isInDateLimits)
                 };
             });
 
             initVerticalHistogram('occurrences', 'Occurrences', rangeData);
+        }
+
+        /**
+         * @ngdoc method
+         * @name getDateFormat
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {String} pace The histogram time pace
+         * @param {Date} startDate The range starting date
+         * @description Returns the date pattern that fit the pace at the starting date
+         */
+        function getDateFormat(pace, startDate) {
+            switch(pace) {
+                case 'CENTURY':
+                case 'DECADE':
+                case 'YEAR':
+                    return 'yyyy';
+                case 'HALF_YEAR':
+                    return '\'H\'' + (startDate.getMonth() / 6 + 1) + ' yyyy';
+                case 'QUARTER':
+                    return 'Q' + (startDate.getMonth() / 3 + 1) + ' yyyy';
+                case 'TWO_MONTH':
+                case 'MONTH':
+                    return 'MMM yyyy';
+                case 'TWO_WEEK':
+                case 'WEEK':
+                    return 'Www yyyy';
+                default:
+                    return 'mediumDate';
+            }
+        }
+
+        /**
+         * @ngdoc method
+         * @name getDateLabel
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {string} pace The histogram time pace
+         * @param {Date} minDate The range starting date
+         * @param {Date} maxDate The range ending date
+         * @description Returns the range label
+         */
+        function getDateLabel(pace, minDate, maxDate) {
+            var dateFilter = $filter('date');
+            var format = getDateFormat(pace, minDate);
+
+            switch(pace) {
+                case 'YEAR':
+                case 'HALF_YEAR':
+                case 'QUARTER':
+                case 'MONTH':
+                case 'WEEK':
+                case 'DAY':
+                    return dateFilter(minDate, format);
+                default:
+                    return '[' + dateFilter(minDate, format) + ', ' + dateFilter(maxDate, format) + '[';
+            }
         }
 
         /**

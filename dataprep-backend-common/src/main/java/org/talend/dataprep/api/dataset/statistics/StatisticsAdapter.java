@@ -12,6 +12,7 @@ import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.dataset.statistics.date.DateHistogram;
 import org.talend.dataprep.api.dataset.statistics.date.StreamDateHistogramStatistics;
 import org.talend.dataprep.api.dataset.statistics.number.NumberHistogram;
+import org.talend.dataprep.api.dataset.statistics.number.StreamNumberHistogramStatistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
@@ -249,18 +250,8 @@ public class StatisticsAdapter {
 
     private void injectDateHistogram(final ColumnMetadata column, final Analyzers.Result result) {
         if (DATE.isAssignableFrom(column.getType()) && result.exist(StreamDateHistogramStatistics.class)) {
-            final Statistics statistics = column.getStatistics();
-            final Map<Range<LocalDate>, Long> histogramStatistics = result.get(StreamDateHistogramStatistics.class).getHistogram();
-
-            final Histogram<LocalDate> histogram = new DateHistogram();
-            histogramStatistics.forEach((range, occurrence) -> {
-                final HistogramRange<LocalDate> dateRange = new HistogramRange<>();
-                dateRange.getRange().setMin(range.getMin());
-                dateRange.getRange().setMax(range.getMax());
-                dateRange.setOccurrences(occurrence);
-                histogram.getItems().add(dateRange);
-            });
-            statistics.setHistogram(histogram);
+            final Histogram<LocalDate> histogram = result.get(StreamDateHistogramStatistics.class).getHistogram();
+            column.getStatistics().setHistogram(histogram);
         }
     }
 
