@@ -9,15 +9,15 @@ import org.talend.dataprep.i18n.MessagesBundle;
  */
 public class ErrorMessage {
 
-    /**
+    /**œ
      * The suffix of messages specified in the properties file.
      */
-    private static String MESSAGE_SUFFIX = ".MESSAGE";
+    public static String MESSAGE_SUFFIX = ".MESSAGE";
 
     /**
      * The suffix of title messages specified in the properties file.
      */
-    private static String TITLE_SUFFIX = ".TITLE";
+    public static String TITLE_SUFFIX = ".TITLE";
 
     /**
      * Returns the desired message to send to the frontend according to the specified error code.

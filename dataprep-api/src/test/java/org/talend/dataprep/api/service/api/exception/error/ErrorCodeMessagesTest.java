@@ -1,0 +1,85 @@
+package org.talend.dataprep.api.service.api.exception.error;
+
+import org.elasticsearch.common.lang3.StringUtils;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.talend.dataprep.api.Application;
+import org.talend.dataprep.exception.error.*;
+import org.talend.dataprep.i18n.MessagesBundle;
+
+/**
+ * Test that each error code has a message and a message title in the (default language) error message properties file.
+ *
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = Application.class)
+@IntegrationTest
+@WebAppConfiguration
+public class ErrorCodeMessagesTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ErrorCodeMessagesTest.class);
+
+    /**
+     * Asserts that the specified errorCode exits in the error_message properties.
+     * @param code
+     */
+    private void assertErrorCodeMessageExists(final String code) {
+        String suffixedCode = code + ErrorMessage.MESSAGE_SUFFIX;
+        String message = MessagesBundle.getString(suffixedCode);
+        Assert.assertFalse(StringUtils.isEmpty(message) || suffixedCode.equals(message));
+    }
+
+    private void assertErrorCodeMessageTitleExists(final String code) {
+        String suffixedCode = code + ErrorMessage.TITLE_SUFFIX;
+        String title = MessagesBundle.getString(suffixedCode);
+        Assert.assertFalse(StringUtils.isEmpty(title) || suffixedCode.equals(title));
+    }
+
+    @Test
+    public void testCommonErrorCodeMessages() {
+        for (CommonErrorCodes code : CommonErrorCodes.values()) {
+            assertErrorCodeMessageExists(code.getCode());
+            assertErrorCodeMessageTitleExists(code.getCode());
+        }
+    }
+
+    @Test
+    public void testAPIErrorCodeMessages() {
+        for (APIErrorCodes code : APIErrorCodes.values()) {
+            assertErrorCodeMessageExists(code.getCode());
+            assertErrorCodeMessageTitleExists(code.getCode());
+        }
+    }
+
+    @Test
+    public void testDatasetErrorCodeMessages() {
+        for (DataSetErrorCodes code : DataSetErrorCodes.values()) {
+            assertErrorCodeMessageExists(code.getCode());
+            assertErrorCodeMessageTitleExists(code.getCode());
+        }
+    }
+
+    @Test
+    public void testTransformationErrorCodeMessages() {
+        for (TransformationErrorCodes code : TransformationErrorCodes.values()) {
+            assertErrorCodeMessageExists(code.getCode());
+            assertErrorCodeMessageTitleExists(code.getCode());
+        }
+    }
+
+    @Test
+    public void testPreparationErrorCodeMessages() {
+        for (PreparationErrorCodes code : PreparationErrorCodes.values()) {
+            assertErrorCodeMessageExists(code.getCode());
+            assertErrorCodeMessageTitleExists(code.getCode());
+        }
+    }
+
+}
