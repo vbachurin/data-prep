@@ -216,7 +216,7 @@
                     return;
                 }
                 var nameAlreadyUsed = false;
-                _.forEach(vm.datasetService.datasetsList(), function(dataset){
+                _.forEach(vm.currentFolderContent.datasets, function(dataset){
                     if (cleanName === dataset.name){
                         nameAlreadyUsed = true;
                         return;
