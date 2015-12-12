@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
@@ -54,16 +54,14 @@ public class TypeChange extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final String columnId = context.getColumnId();
+        final Map<String, String> parameters = context.getParameters();
         LOGGER.debug("TypeChange for columnId {} with parameters {} ", columnId, parameters);
         final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
-        if (columnMetadata == null) {
-            // FIXME exception?
-            return;
-        }
         final String newType = parameters.get(NEW_TYPE_PARAMETER_KEY);
         if (StringUtils.isNotEmpty(newType)) {
             columnMetadata.setType(newType);
@@ -75,6 +73,7 @@ public class TypeChange extends ActionMetadata implements ColumnAction {
             // We must set this to fix TDP-838: we force the domain to empty
             columnMetadata.setDomainForced(true);
         }
+        context.setActionStatus(ActionContext.ActionStatus.DONE);
     }
 
     @Override

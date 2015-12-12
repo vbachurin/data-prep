@@ -13,20 +13,19 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
 public class DomainChangeTest {
 
     private DomainChange domainChange;
 
     private ColumnMetadata columnMetadata;
-
-    private TransformationContext transformationContext;
+    private Map<String, String> parameters;
 
     @Before
     public void init() {
         domainChange = new DomainChange();
-        transformationContext = new TransformationContext();
         columnMetadata = ColumnMetadata.Builder.column() //
                 .type(Type.INTEGER) //
                 .computedId("0002") //
@@ -34,6 +33,10 @@ public class DomainChangeTest {
                 .domainFrequency(1) //
                 .domainLabel("French Beer") //
                 .build();
+        parameters = new HashMap<>();
+        parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "column");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0002");
+        parameters.put(NEW_DOMAIN_ID_PARAMETER_KEY, "AUS_BEER");
     }
 
     @Test
@@ -49,11 +52,8 @@ public class DomainChangeTest {
 
         final DataSetRow row = new DataSetRow(rowMetadata, values);
 
-        final Map<String, String> parameters = new HashMap<>();
-        parameters.put(NEW_DOMAIN_ID_PARAMETER_KEY, "AUS_BEER");
-
         // when
-        domainChange.applyOnColumn(row, transformationContext, parameters, "0002");
+        ActionTestWorkbench.test(row, domainChange.create(parameters).getRowAction());
 
         // then
         final ColumnMetadata column = row.getRowMetadata().getColumns().get(0);
@@ -73,11 +73,8 @@ public class DomainChangeTest {
 
         final DataSetRow row = new DataSetRow(rowMetadata, values);
 
-        final Map<String, String> parameters = new HashMap<>();
-        parameters.put(NEW_DOMAIN_ID_PARAMETER_KEY, "AUS_BEER");
-
         // when
-        domainChange.applyOnColumn(row, transformationContext, parameters, "0002");
+        ActionTestWorkbench.test(row, domainChange.create(parameters).getRowAction());
 
         // then
         assertThat(row.getRowMetadata().getById("0002").isDomainForced()).isTrue();

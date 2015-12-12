@@ -26,6 +26,40 @@
 
 </div>
 
-<quality-bar
-        quality="datagridHeaderCtrl.column.quality"
-        column="datagridHeaderCtrl.column"></quality-bar>
+<quality-bar enter-animation="true"
+             has-menu="true"
+             quality="datagridHeaderCtrl.column.quality">
+
+    <div class="valid-menu-item">
+        <li ng-click="datagridHeaderCtrl.filterService.addFilter('valid_records', datagridHeaderCtrl.column.id, datagridHeaderCtrl.column.name)">
+            <a><span translate-once="SELECT_VALID_RECORDS"></span> {{ datagridHeaderCtrl.column.name | uppercase }}</a>
+        </li>
+    </div>
+
+    <div class="empty-menu-items">
+        <li ng-click="datagridHeaderCtrl.filterService.addFilter('empty_records', datagridHeaderCtrl.column.id, datagridHeaderCtrl.column.name)">
+            <a><span translate-once="SELECT_EMPTY_RECORDS"></span> {{ datagridHeaderCtrl.column.name | uppercase}}</a>
+        </li>
+        <li class="divider"></li>
+        <li class="coming-soon"><a><span translate-once="FILL_EMPTY_WITH_TOP_VALUE"></span></a></li>
+        <li class="coming-soon"><a><span translate-once="FILL_EMPTY_WITH_BOTTOM_VALUE"></span></a></li>
+
+        <li ng-repeat="transfo in datagridHeaderCtrl.state.playground.suggestions.column.transformationsForEmptyCells track by $index" ng-click="datagridHeaderCtrl.transformationApplicationService.append(transfo, 'column')">
+            <a>{{transfo.label}}</a>
+        </li>
+    </div>
+
+    <div class="invalid-menu-items">
+        <li ng-click="datagridHeaderCtrl.filterService.addFilter('invalid_records', datagridHeaderCtrl.column.id, datagridHeaderCtrl.column.name)">
+            <a><span translate-once="SELECT_INVALID_RECORDS"></span> {{ datagridHeaderCtrl.column.name | uppercase}}</a>
+        </li>
+        <li class="divider"></li>
+        <li class="coming-soon"><a><span translate-once="REPLACE_INVALID_WITH_TOP_VALUE"></span></a></li>
+        <li class="coming-soon"><a><span translate-once="REPLACE_INVALID_WITH_BOTTOM_VALUE"></span></a></li>
+
+        <li ng-repeat="transfo in datagridHeaderCtrl.state.playground.suggestions.column.transformationsForInvalidCells track by $index" ng-click="datagridHeaderCtrl.transformationApplicationService.append(transfo, 'column')">
+            <a>{{transfo.label}}</a>
+        </li>
+    </div>
+
+</quality-bar>

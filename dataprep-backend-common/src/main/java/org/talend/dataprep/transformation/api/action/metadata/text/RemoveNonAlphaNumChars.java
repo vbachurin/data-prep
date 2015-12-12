@@ -1,12 +1,11 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
-import java.util.Map;
-
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
@@ -44,17 +43,18 @@ public class RemoveNonAlphaNumChars extends ActionMetadata implements ColumnActi
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final String columnId = context.getColumnId();
         final String toCut = row.get(columnId);
         row.set(columnId, apply(toCut));
     }
 
     protected String apply(String from) {
         if (from == null) {
-            return "";
+            return StringUtils.EMPTY;
         }
         return from.replaceAll("[\\p{Punct}£µ§€¥]", "");
     }

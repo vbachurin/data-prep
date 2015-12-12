@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
@@ -45,10 +45,7 @@ public class DeleteOnValueTest {
     @Before
     public void init() throws IOException {
         action = new DeleteOnValue();
-
-        parameters = ActionMetadataTestUtils.parseParameters( //
-                //
-                DeleteOnValueTest.class.getResourceAsStream("deleteOnValueAction.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(DeleteOnValueTest.class.getResourceAsStream("deleteOnValueAction.json"));
     }
 
     @Test
@@ -72,7 +69,7 @@ public class DeleteOnValueTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertTrue(row.isDeleted());
@@ -89,7 +86,7 @@ public class DeleteOnValueTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertTrue(row.isDeleted());
@@ -106,7 +103,7 @@ public class DeleteOnValueTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertTrue(row.isDeleted());
@@ -123,7 +120,7 @@ public class DeleteOnValueTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertTrue(row.isDeleted());
@@ -145,7 +142,7 @@ public class DeleteOnValueTest {
         regexpParameters.put("value", ".*Berlin.*");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), regexpParameters, "city");
+        ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
 
         // then
         assertTrue(row.isDeleted());
@@ -167,7 +164,7 @@ public class DeleteOnValueTest {
         regexpParameters.put("value", "*");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), regexpParameters, "city");
+        ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
 
         // then
         assertFalse(row.isDeleted());
@@ -190,7 +187,7 @@ public class DeleteOnValueTest {
         regexpParameters.put("value", "");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), regexpParameters, "city");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertFalse(row.isDeleted());
@@ -206,7 +203,7 @@ public class DeleteOnValueTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertFalse(row.isDeleted());
@@ -222,7 +219,7 @@ public class DeleteOnValueTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertFalse(row.isDeleted());
@@ -239,7 +236,7 @@ public class DeleteOnValueTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertFalse(row.isDeleted());

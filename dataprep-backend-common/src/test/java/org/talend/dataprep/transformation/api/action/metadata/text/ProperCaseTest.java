@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
@@ -45,10 +45,7 @@ public class ProperCaseTest {
     @Before
     public void init() throws IOException {
         action = new ProperCase();
-
-        parameters = ActionMetadataTestUtils.parseParameters( //
-                //
-                ProperCaseTest.class.getResourceAsStream("properCaseAction.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(ProperCaseTest.class.getResourceAsStream("properCaseAction.json"));
     }
 
     @Test
@@ -71,7 +68,7 @@ public class ProperCaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "band");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals("The Beatles", row.get("band"));
@@ -85,7 +82,7 @@ public class ProperCaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "band");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals("The Beatles", row.get("band"));
@@ -99,7 +96,7 @@ public class ProperCaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "band");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals("the beatles", row.get("bando"));

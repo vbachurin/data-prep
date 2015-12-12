@@ -3,9 +3,7 @@ package org.talend.dataprep.api.service.command.dataset;
 import static org.talend.dataprep.api.service.command.common.Defaults.*;
 
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;

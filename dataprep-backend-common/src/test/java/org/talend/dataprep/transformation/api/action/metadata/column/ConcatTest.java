@@ -16,7 +16,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
@@ -64,7 +64,7 @@ public class ConcatTest {
         DataSetRow row = getRow("first", "second", "Done !");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         DataSetRow expected = getRow("first", "second", "Done !", "<first-second>");
@@ -79,7 +79,7 @@ public class ConcatTest {
         row.getRowMetadata().getById("0001").setName("selected");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         final ColumnMetadata expected = ColumnMetadata.Builder.column().id(3).name("source_selected").type(Type.STRING).build();
@@ -94,11 +94,11 @@ public class ConcatTest {
         row.getRowMetadata().getById("0000").setName("source");
         row.getRowMetadata().getById("0001").setName("selected");
 
-        parameters.put(Concat.OTHER_COLUMN_PARAMETER, Concat.CONCAT_WITH_CONSTANT);
+        parameters.put(Concat.MODE_PARAMETER, Concat.CONSTANT_MODE);
         parameters.remove(Concat.SELECTED_COLUMN_PARAMETER);
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         final ColumnMetadata expected = ColumnMetadata.Builder.column().id(3).name("<source>").type(Type.STRING).build();
@@ -113,7 +113,7 @@ public class ConcatTest {
         parameters.remove(Concat.SEPARATOR_PARAMETER);
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         DataSetRow expected = getRow("first", "second", "Done !", "<firstsecond>");
@@ -127,7 +127,7 @@ public class ConcatTest {
         parameters.remove(Concat.PREFIX_PARAMETER);
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         DataSetRow expected = getRow("first", "second", "Done !", "first-second>");
@@ -138,10 +138,10 @@ public class ConcatTest {
     public void should_apply_without_other_column() {
         // given
         DataSetRow row = getRow("first", "second", "Done !");
-        parameters.put(Concat.OTHER_COLUMN_PARAMETER, Concat.CONCAT_WITH_CONSTANT);
+        parameters.put(Concat.MODE_PARAMETER, Concat.CONSTANT_MODE);
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         DataSetRow expected = getRow("first", "second", "Done !", "<first>");
@@ -155,7 +155,7 @@ public class ConcatTest {
         parameters.remove(Concat.SUFFIX_PARAMETER);
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         DataSetRow expected = getRow("first", "second", "Done !", "<first-second");
@@ -171,7 +171,7 @@ public class ConcatTest {
         parameters.remove(Concat.SUFFIX_PARAMETER);
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         DataSetRow expected = getRow("first", "second", "Done !", "firstsecond");
@@ -185,7 +185,7 @@ public class ConcatTest {
         parameters.remove(Concat.SELECTED_COLUMN_PARAMETER);
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
     }
 
     @Test(expected = TDPException.class)
@@ -195,7 +195,7 @@ public class ConcatTest {
         parameters.put(Concat.SELECTED_COLUMN_PARAMETER, "123548");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0000");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
     }
 
     @Test

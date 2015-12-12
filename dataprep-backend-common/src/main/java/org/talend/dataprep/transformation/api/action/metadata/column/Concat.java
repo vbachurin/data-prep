@@ -12,10 +12,11 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
@@ -25,17 +26,12 @@ import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
  * The new column content is "prefix + column_source + separator + selected_column + suffix"
  */
 @Component(Concat.ACTION_BEAN_PREFIX + Concat.CONCAT_ACTION_NAME)
-public class Concat extends ActionMetadata implements ColumnAction {
+public class Concat extends ActionMetadata implements ColumnAction, OtherColumnParameters {
 
     /**
      * The action name.
      */
     public static final String CONCAT_ACTION_NAME = "concat"; //$NON-NLS-1$
-
-    /**
-     * The selected column id.
-     */
-    public static final String SELECTED_COLUMN_PARAMETER = "selected_column"; //$NON-NLS-1$
 
     /**
      * The optional new column prefix content.
@@ -56,14 +52,6 @@ public class Concat extends ActionMetadata implements ColumnAction {
      * The separator use in the new column name.
      */
     public static final String COLUMN_NAMES_SEPARATOR = "_"; //$NON-NLS-1$
-
-
-    /**
-     * Say either we concatenate to another column or not (constant mode).
-     */
-    public static final String OTHER_COLUMN_PARAMETER = "other_column?"; //$NON-NLS-1$
-    public static final String CONCAT_WITH_ANOTHER_COLUMN = "Another column"; //$NON-NLS-1$
-    public static final String CONCAT_WITH_CONSTANT = "No other column"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getName()
@@ -92,12 +80,12 @@ public class Concat extends ActionMetadata implements ColumnAction {
 
         parameters.add(SelectParameter.Builder
                 .builder()
-                .name(OTHER_COLUMN_PARAMETER)
-                .item(CONCAT_WITH_ANOTHER_COLUMN,
+                .name(MODE_PARAMETER)
+                .item(OTHER_COLUMN_MODE,
                         new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, StringUtils.EMPTY, false, false),
                         new Parameter(SEPARATOR_PARAMETER, ParameterType.STRING, StringUtils.EMPTY)) //
-                .item(CONCAT_WITH_CONSTANT) //
-                .defaultValue(CONCAT_WITH_ANOTHER_COLUMN) //
+                .item(CONSTANT_MODE) //
+                .defaultValue(OTHER_COLUMN_MODE) //
                 .build());
 
         parameters.add(new Parameter(SUFFIX_PARAMETER, ParameterType.STRING, StringUtils.EMPTY));
@@ -113,19 +101,29 @@ public class Concat extends ActionMetadata implements ColumnAction {
         return true;
     }
 
+    @Override
+    public void compile(ActionContext actionContext) {
+        super.compile(actionContext);
+        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
+            checkSelectedColumnParameter(actionContext.getParameters(), actionContext.getInputRowMetadata());
+            actionContext.setActionStatus(ActionContext.ActionStatus.OK);
+        }
+    }
+
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
-        RowMetadata rowMetadata = row.getRowMetadata();
-        ColumnMetadata sourceColumn = rowMetadata.getById(columnId);
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final RowMetadata rowMetadata = row.getRowMetadata();
+        final String columnId = context.getColumnId();
+        final Map<String, String> parameters = context.getParameters();
+        final ColumnMetadata sourceColumn = rowMetadata.getById(columnId);
 
-        checkSelectedColumnParameter(parameters, row);
 
         final String newColumnName = evalNewColumnName(sourceColumn.getName(), rowMetadata, parameters);
 
-        String concatColumn = context.in(this).column(newColumnName, rowMetadata, (r) -> {
+        String concatColumn = context.column(newColumnName, (r) -> {
             final ColumnMetadata c = ColumnMetadata.Builder //
                     .column() //
                     .name(newColumnName) //
@@ -142,7 +140,7 @@ public class Concat extends ActionMetadata implements ColumnAction {
 
         newValue += sourceValue;
 
-        if (parameters.get(OTHER_COLUMN_PARAMETER).equals(CONCAT_WITH_ANOTHER_COLUMN)) {
+        if (parameters.get(MODE_PARAMETER).equals(OTHER_COLUMN_MODE)) {
             ColumnMetadata selectedColumn = rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER));
             String selectedColumnValue = row.get(selectedColumn.getId());
             newValue += getParameter(parameters, SEPARATOR_PARAMETER, StringUtils.EMPTY) + selectedColumnValue;
@@ -157,7 +155,7 @@ public class Concat extends ActionMetadata implements ColumnAction {
         final String prefix = getParameter(parameters, PREFIX_PARAMETER, StringUtils.EMPTY);
         final String suffix = getParameter(parameters, SUFFIX_PARAMETER, StringUtils.EMPTY);
 
-        if (parameters.get(OTHER_COLUMN_PARAMETER).equals(CONCAT_WITH_ANOTHER_COLUMN)) {
+        if (parameters.get(MODE_PARAMETER).equals(OTHER_COLUMN_MODE)) {
             ColumnMetadata selectedColumn = rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER));
             return sourceColumnName + COLUMN_NAMES_SEPARATOR + selectedColumn.getName();
         } else {
@@ -170,11 +168,11 @@ public class Concat extends ActionMetadata implements ColumnAction {
      * parameters and there's a matching column. If the parameter is invalid, an exception is thrown.
      *
      * @param parameters where to look the parameter value.
-     * @param row the row where to look for the column.
+     * @param rowMetadata the row metadata where to look for the column.
      */
-    private void checkSelectedColumnParameter(Map<String, String> parameters, DataSetRow row) {
-        if (parameters.get(OTHER_COLUMN_PARAMETER).equals(CONCAT_WITH_ANOTHER_COLUMN)
-                && (!parameters.containsKey(SELECTED_COLUMN_PARAMETER) || row.getRowMetadata().getById(
+    private void checkSelectedColumnParameter(Map<String, String> parameters, RowMetadata rowMetadata) {
+        if (parameters.get(MODE_PARAMETER).equals(OTHER_COLUMN_MODE)
+                && (!parameters.containsKey(SELECTED_COLUMN_PARAMETER) || rowMetadata.getById(
                         parameters.get(SELECTED_COLUMN_PARAMETER)) == null)) {
             throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER, ExceptionContext.build().put("paramName",
                     SELECTED_COLUMN_PARAMETER));

@@ -27,7 +27,7 @@
     "threedubmedia.jquery.event": "*",
     "angular-mass-autocomplete": "~0.2.2",
     "highcharts-ng": "~0.0.8",
-    "highcharts": "~4.1.4",
+    "highcharts-release": "~4.1.4",
     "highmaps-release": "~1.1.4",
     "d3": "~3.5.5",
     "d3-tip": "~0.6.7",

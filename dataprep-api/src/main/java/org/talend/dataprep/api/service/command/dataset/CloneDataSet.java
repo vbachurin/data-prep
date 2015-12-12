@@ -55,6 +55,7 @@ public class CloneDataSet extends GenericCommand<HttpResponse> {
                 throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
             }
         });
+
         onError((e) -> new TDPException(APIErrorCodes.UNABLE_TO_COPY_DATASET_CONTENT, e,
                 ExceptionContext.build().put("id", dataSetId)));
 

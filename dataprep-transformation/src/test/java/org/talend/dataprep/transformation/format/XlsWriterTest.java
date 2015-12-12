@@ -85,7 +85,7 @@ public class XlsWriterTest extends BaseFormatTest {
          * "alive" : "false", "city" : "Smallville" }
          */
 
-        assertThat(row.getCell(0).getStringCellValue()).isEqualTo("1");
+        assertThat(row.getCell(0).getNumericCellValue()).isEqualTo(1);
         assertThat(row.getCell(1).getStringCellValue()).isEqualTo("Clark");
         assertThat(row.getCell(2).getStringCellValue()).isEqualTo("Kent");
         assertThat(row.getCell(3).getNumericCellValue()).isEqualTo((double) 42);
@@ -99,7 +99,7 @@ public class XlsWriterTest extends BaseFormatTest {
          * { "id" : "6", "firstname" : "Ray", "lastname" : "Palmer", "age" : "93", "date-of-birth" : "01/05/1951",
          * "alive" : "true", "city" : "Star city" }
          */
-        assertThat(row.getCell(0).getStringCellValue()).isEqualTo("6");
+        assertThat(row.getCell(0).getNumericCellValue()).isEqualTo(6);
         assertThat(row.getCell(1).getStringCellValue()).isEqualTo("Ray");
         assertThat(row.getCell(2).getStringCellValue()).isEqualTo("Palmer");
         assertThat(row.getCell(3).getNumericCellValue()).isEqualTo((double) 93);

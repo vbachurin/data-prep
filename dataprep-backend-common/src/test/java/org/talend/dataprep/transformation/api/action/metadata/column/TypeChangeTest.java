@@ -4,6 +4,7 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.talend.dataprep.transformation.api.action.metadata.column.TypeChange.NEW_TYPE_PARAMETER_KEY;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,20 +14,23 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
 public class TypeChangeTest {
 
     private TypeChange typeChange;
 
-    private TransformationContext transformationContext;
+    private ActionContext transformationContext;
 
     private ColumnMetadata columnMetadata;
+    private Map<String, String> parameters;
 
     @Before
     public void init() {
         typeChange = new TypeChange();
-        transformationContext = new TransformationContext();
         columnMetadata = ColumnMetadata.Builder.column() //
                 .type(Type.INTEGER) //
                 .computedId("0002") //
@@ -34,6 +38,12 @@ public class TypeChangeTest {
                 .domainFrequency(1) //
                 .domainLabel("French Beer") //
                 .build();
+        final RowMetadata rowMetadata = new RowMetadata(Collections.singletonList(columnMetadata));
+        transformationContext = new ActionContext(new TransformationContext(), rowMetadata);
+        parameters = new HashMap<>();
+        parameters.put(NEW_TYPE_PARAMETER_KEY, "string");
+        parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "column");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0002");
     }
 
     @Test
@@ -49,11 +59,8 @@ public class TypeChangeTest {
 
         final DataSetRow row = new DataSetRow(rowMetadata, values);
 
-        final Map<String, String> parameters = new HashMap<>();
-        parameters.put(NEW_TYPE_PARAMETER_KEY, "string");
-
         // when
-        typeChange.applyOnColumn(row, transformationContext, parameters, "0002");
+        ActionTestWorkbench.test(row, typeChange.create(parameters).getRowAction());
 
         // then
         final ColumnMetadata column = row.getRowMetadata().getColumns().get(0);
@@ -73,11 +80,8 @@ public class TypeChangeTest {
 
         final DataSetRow row = new DataSetRow(rowMetadata, values);
 
-        final Map<String, String> parameters = new HashMap<>();
-        parameters.put(NEW_TYPE_PARAMETER_KEY, "string");
-
         // when
-        typeChange.applyOnColumn(row, transformationContext, parameters, "0002");
+        ActionTestWorkbench.test(row, typeChange.create(parameters).getRowAction());
 
         // then
         final ColumnMetadata column = row.getRowMetadata().getColumns().get(0);
@@ -99,11 +103,8 @@ public class TypeChangeTest {
 
         final DataSetRow row = new DataSetRow(rowMetadata, values);
 
-        final Map<String, String> parameters = new HashMap<>();
-        parameters.put(NEW_TYPE_PARAMETER_KEY, "string");
-
         // when
-        typeChange.applyOnColumn(row, transformationContext, parameters, "0002");
+        ActionTestWorkbench.test(row, typeChange.create(parameters).getRowAction());
 
         // then
         assertThat(row.getRowMetadata().getById("0002").isTypeForced()).isTrue();

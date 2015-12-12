@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
@@ -45,10 +45,7 @@ public class TrimTest {
     @Before
     public void init() throws IOException {
         action = new Trim();
-
-        parameters = ActionMetadataTestUtils.parseParameters( //
-                //
-                TrimTest.class.getResourceAsStream("trimAction.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(TrimTest.class.getResourceAsStream("trimAction.json"));
     }
 
     @Test
@@ -71,7 +68,7 @@ public class TrimTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "band");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals("the beatles", row.get("band"));
@@ -85,7 +82,7 @@ public class TrimTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "band");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals("The  Beatles", row.get("band"));
@@ -99,7 +96,7 @@ public class TrimTest {
         final DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "band");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals("the beatles", row.get("bando"));

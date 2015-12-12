@@ -3,18 +3,20 @@ package org.talend.dataprep.transformation.api.action.metadata.text;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Strings;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
+
+import com.google.common.base.Strings;
 
 @Component(Padding.ACTION_BEAN_PREFIX + Padding.ACTION_NAME)
 public class Padding extends ActionMetadata implements ColumnAction {
@@ -39,9 +41,9 @@ public class Padding extends ActionMetadata implements ColumnAction {
      */
     public static final String PADDING_POSITION_PARAMETER = "padding_position"; //$NON-NLS-1$
 
-    public static final String LEFT_POSITION = "Left";
+    public static final String LEFT_POSITION = "left";
 
-    public static final String RIGHT_POSITION = "Right";
+    public static final String RIGHT_POSITION = "right";
 
     /**
      * @see ActionMetadata#getName()
@@ -91,10 +93,12 @@ public class Padding extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final String columnId = context.getColumnId();
+        final Map<String, String> parameters = context.getParameters();
         final String original = row.get(columnId);
 
         final int size = Integer.parseInt(parameters.get(SIZE_PARAMETER));
@@ -106,7 +110,7 @@ public class Padding extends ActionMetadata implements ColumnAction {
 
     protected String apply(String from, int size, char padding_char, String position) {
         if (from == null) {
-            return "";
+            return StringUtils.EMPTY;
         }
 
         if (position.equals(LEFT_POSITION)) {

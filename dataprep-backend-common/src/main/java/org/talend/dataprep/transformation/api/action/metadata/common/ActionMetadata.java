@@ -1,24 +1,29 @@
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
 import static org.talend.dataprep.api.preparation.Action.Builder.builder;
-import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.*;
+import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.ROW_ID;
+import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.SCOPE;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.filter.FilterService;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionScope;
 import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -139,30 +144,6 @@ public abstract class ActionMetadata {
     }
 
     /**
-     * Get the columnId from parameters
-     *
-     * @param parameters the transformation parameters
-     * @return the column id
-     */
-    private String getColumnId(final Map<String, String> parameters) {
-        return parameters.get(COLUMN_ID.getKey());
-    }
-
-    /**
-     * Get the rowId from parameters
-     *
-     * @param parameters the transformation parameters
-     * @return the row id
-     */
-    private Long getRowId(final Map<String, String> parameters) {
-        final String rowIdAsString = parameters.get(ROW_ID.getKey());
-        if (StringUtils.isNotBlank(rowIdAsString)) {
-            return Long.parseLong(rowIdAsString);
-        }
-        return null;
-    }
-
-    /**
      * Get the scope category from parameters
      *
      * @param parameters the transformation parameters
@@ -179,7 +160,25 @@ public abstract class ActionMetadata {
      * @return A {@link Predicate filter} for data set rows.
      */
     protected Predicate<DataSetRow> getFilter(Map<String, String> parameters) {
-        return filterService.build(parameters.get(ImplicitParameters.FILTER.getKey()));
+        final Predicate<DataSetRow> predicate;
+        if (filterService == null) {
+            predicate = r -> true;
+        } else {
+            predicate = filterService.build(parameters.get(ImplicitParameters.FILTER.getKey()));
+        }
+        final ScopeCategory scope = getScope(parameters);
+        if (scope == ScopeCategory.CELL || scope == ScopeCategory.LINE) {
+            final Long rowId;
+            final String rowIdAsString = parameters.get(ROW_ID.getKey());
+            if (StringUtils.isNotBlank(rowIdAsString)) {
+                rowId = Long.parseLong(rowIdAsString);
+            } else {
+                rowId = null;
+            }
+            return predicate.and(r -> ObjectUtils.equals(r.getTdpId(), rowId));
+        } else {
+            return predicate;
+        }
     }
 
     /**
@@ -204,6 +203,37 @@ public abstract class ActionMetadata {
     }
 
     /**
+     * Called by transformation process <b>before</b> the first transformation occurs. This method allows action
+     * implementation to compute reusable objects in actual transformation execution. Implementations may also indicate
+     * that action is not applicable and should be discarded (
+     * {@link org.talend.dataprep.transformation.api.action.context.ActionContext.ActionStatus#CANCELED}.
+     * 
+     * @param actionContext The action context that contains the parameters and allows compile step to change action
+     * status.
+     * @see ActionContext#setActionStatus(ActionContext.ActionStatus)
+     */
+    public void compile(ActionContext actionContext) {
+        final RowMetadata input = actionContext.getInputRowMetadata();
+        final ScopeCategory scope = actionContext.getScope();
+        if (scope != null) {
+            switch (scope) {
+            case CELL:
+            case COLUMN:
+                // Stop action if: there's actually column information in input AND column is not found
+                if (input != null && !input.getColumns().isEmpty() && input.getById(actionContext.getColumnId()) == null) {
+                    actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
+                    return;
+                }
+                break;
+            case LINE:
+            case DATASET:
+                break;
+            }
+        }
+        actionContext.setActionStatus(ActionContext.ActionStatus.OK);
+    }
+
+    /**
      * Creates an {@link Action action} based on provided parameters.
      *
      * @param parameters Action-dependent parameters, can be empty.
@@ -211,14 +241,18 @@ public abstract class ActionMetadata {
      * {@link DataSetMetadataAction metadata action}.
      */
     public final Action create(final Map<String, String> parameters) {
-        validator.checkScopeConsistency(this, parameters);
+        if (validator != null) {
+            validator.checkScopeConsistency(this, parameters);
+        }
+        final Map<String, String> parametersCopy = new HashMap<>(parameters);
+        final ScopeCategory scope = getScope(parametersCopy);
+        final Predicate<DataSetRow> filter = getFilter(parametersCopy);
 
-        final Long rowId = getRowId(parameters);
-        final String columnId = getColumnId(parameters);
-        final ScopeCategory scope = getScope(parameters);
-        final Predicate<DataSetRow> filter = getFilter(parameters);
-
-        return builder().withRow((row, context) -> {
+        return builder().withCompile((actionContext) -> {
+            actionContext.setParameters(parametersCopy);
+            compile(actionContext);
+        })
+        .withRow((row, context) -> {
             if (implicitFilter() && !filter.test(row)) {
                 // Return non-modifiable row since it didn't pass the filter (but metadata might be modified).
                 row = row.unmodifiable();
@@ -226,20 +260,16 @@ public abstract class ActionMetadata {
             // Select the correct method to call depending on scope.
             switch (scope) {
             case CELL:
-                if (rowId != null && rowId.equals(row.getTdpId())) {
-                    ((CellAction) this).applyOnCell(row, context, parameters, rowId, columnId);
-                }
-                break;
-            case COLUMN:
-                ((ColumnAction) this).applyOnColumn(row, context, parameters, columnId);
+                ((CellAction) this).applyOnCell(row, context);
                 break;
             case LINE:
-                if (rowId != null && rowId.equals(row.getTdpId())) {
-                    ((RowAction) this).applyOnLine(row, context, parameters, rowId);
-                }
+                ((RowAction) this).applyOnLine(row, context);
+                break;
+            case COLUMN:
+                ((ColumnAction) this).applyOnColumn(row, context);
                 break;
             case DATASET:
-                ((DataSetAction) this).applyOnDataSet(row, context, parameters);
+                ((DataSetAction) this).applyOnDataSet(row, context);
                 break;
             default:
                 LOGGER.warn("Is there a new action scope ??? {}", scope);

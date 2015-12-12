@@ -11,7 +11,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
@@ -32,9 +32,9 @@ public class Substring extends ActionMetadata implements ColumnAction {
      */
     private static final String APPENDIX = "_substring"; //$NON-NLS-1$
 
-    private static final String FROM_BEGINNING = "From beginning"; //$NON-NLS-1$
+    protected static final String FROM_BEGINNING = "from_beginning"; //$NON-NLS-1$
 
-    private static final String TO_END = "To end"; //$NON-NLS-1$
+    protected static final String TO_END = "to_end"; //$NON-NLS-1$
 
     protected static final String FROM_MODE_PARAMETER = "from_mode"; //$NON-NLS-1$
 
@@ -71,7 +71,7 @@ public class Substring extends ActionMetadata implements ColumnAction {
         parameters.add(SelectParameter.Builder.builder() //
                 .name(FROM_MODE_PARAMETER) //
                 .item(FROM_BEGINNING) //
-                .item("From index", new Parameter(FROM_INDEX_PARAMETER, ParameterType.INTEGER, "0")) //
+                .item(FROM_INDEX_PARAMETER, new Parameter(FROM_INDEX_PARAMETER, ParameterType.INTEGER, "0")) //
                 .defaultValue(FROM_BEGINNING) //
                 .build());
 
@@ -79,8 +79,8 @@ public class Substring extends ActionMetadata implements ColumnAction {
         parameters.add(SelectParameter.Builder.builder() //
                 .name(TO_MODE_PARAMETER) //
                 .item(TO_END) //
-                .item("To index", new Parameter(TO_INDEX_PARAMETER, ParameterType.INTEGER, "5")) //
-                .defaultValue("To index") //
+                .item(TO_INDEX_PARAMETER, new Parameter(TO_INDEX_PARAMETER, ParameterType.INTEGER, "5")) //
+                .defaultValue(TO_INDEX_PARAMETER) //
                 .build());
 
         return parameters;
@@ -95,14 +95,15 @@ public class Substring extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
         // create the new column
         final RowMetadata rowMetadata = row.getRowMetadata();
+        final String columnId = context.getColumnId();
         final ColumnMetadata column = rowMetadata.getById(columnId);
-        final String substringColumn = context.in(this).column(column.getName() + APPENDIX, rowMetadata, (r) -> {
+        final String substringColumn = context.column(column.getName() + APPENDIX, (r) -> {
             final ColumnMetadata c = ColumnMetadata.Builder //
                     .column() //
                     .name(column.getName() + APPENDIX) //
@@ -121,6 +122,7 @@ public class Substring extends ActionMetadata implements ColumnAction {
         if (value == null) {
             return;
         }
+        final Map<String, String> parameters = context.getParameters();
         final int realFromIndex = getStartIndex(parameters, value);
         final int realToIndex = getEndIndex(parameters, value);
 

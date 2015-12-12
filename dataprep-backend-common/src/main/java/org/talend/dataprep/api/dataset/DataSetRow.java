@@ -25,7 +25,7 @@ public class DataSetRow implements Cloneable {
     public static final Predicate<Map.Entry<String, String>> SKIP_TDP_ID = e -> !DataSetRow.TDP_ID.equals(e.getKey());
 
     /** Metadata information (columns...) about this DataSetRow */
-    private final RowMetadata rowMetadata;
+    private RowMetadata rowMetadata;
 
     /** Values of the dataset row. */
     private SortedMap<String, String> values = new TreeMap<>();
@@ -60,7 +60,7 @@ public class DataSetRow implements Cloneable {
     public DataSetRow(Map<String, String> values) {
         this.values.putAll(values);
         List<ColumnMetadata> columns = values.keySet().stream() //
-                .map(columnName -> ColumnMetadata.Builder.column().name(columnName).type(Type.STRING).build()) //
+                .map(columnName -> ColumnMetadata.Builder.column().computedId(columnName).name(columnName).type(Type.STRING).build()) //
                 .collect(Collectors.toList());
         rowMetadata = new RowMetadata(columns);
     }
@@ -344,6 +344,10 @@ public class DataSetRow implements Cloneable {
         return this;
     }
 
+    public void setRowMetadata(RowMetadata rowMetadata) {
+        this.rowMetadata = rowMetadata;
+    }
+
     /**
      * A wrapper implementation of {@link DataSetRow} that prevents changes on previous values and set empty string for
      * all new columns. This implementation allows modification on {@link RowMetadata}.
@@ -394,6 +398,7 @@ public class DataSetRow implements Cloneable {
 
         @Override
         public void setDeleted(boolean deleted) {
+            // UnmodifiableDataSetRow means unmodifiable
         }
 
         @Override
@@ -413,6 +418,7 @@ public class DataSetRow implements Cloneable {
 
         @Override
         public void clear() {
+            // UnmodifiableDataSetRow means unmodifiable
         }
 
         @Override
@@ -452,6 +458,7 @@ public class DataSetRow implements Cloneable {
 
         @Override
         public void setTdpId(Long tdpId) {
+            // UnmodifiableDataSetRow means unmodifiable
         }
 
         @Override

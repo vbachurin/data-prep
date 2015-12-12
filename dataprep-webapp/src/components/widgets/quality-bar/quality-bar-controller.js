@@ -3,23 +3,20 @@
 
     /**
      * @ngdoc controller
-     * @name data-prep.quality-bar.controller:QualityBarCtrl
+     * @name talend.widget.controller:QualityBarCtrl
      * @description Quality bar controller
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.transformation.service:TransformationApplicationService
      */
-    function QualityBarCtrl(state, FilterService, TransformationApplicationService, ColumnSuggestionService) {
+    function QualityBarCtrl() {
         var MIN_QUALITY_WIDTH = 10;
         var vm = this;
-
-        vm.columnSuggestionService = ColumnSuggestionService;
-        vm.state = state;
 
         /**
          * @ngdoc method
          * @name getMinimalPercent
-         * @methodOf data-prep.quality-bar.controller:QualityBarCtrl
+         * @methodOf talend.widget.controller:QualityBarCtrl
          * @param {string} type The bar type
          * @description [PRIVATE] Return the adapted width to have a min value if the real value is greater than 0
          */
@@ -32,13 +29,14 @@
             if (percent < MIN_QUALITY_WIDTH) {
                 return MIN_QUALITY_WIDTH;
             }
+
             return percent;
         };
 
         /**
          * @ngdoc method
          * @name reduce
-         * @methodOf data-prep.quality-bar.controller:QualityBarCtrl
+         * @methodOf talend.widget.controller:QualityBarCtrl
          * @param {object} widthObject Object containing the 3 bars width
          * @description [PRIVATE] Return the modifiable object keys sorted by object value desc.
          * An entry is modifiable if the value is greater than the minimum width
@@ -61,7 +59,7 @@
         /**
          * @ngdoc method
          * @name reduce
-         * @methodOf data-prep.quality-bar.controller:QualityBarCtrl
+         * @methodOf talend.widget.controller:QualityBarCtrl
          * @param {object} widthObject Object containing the 3 bars width
          * @param {number} amount The amount to remove from the bars
          * @description [PRIVATE] Reduce the bars width to fit 100%. The amount value is removed.
@@ -88,7 +86,7 @@
         /**
          * @ngdoc method
          * @name computeWidth
-         * @methodOf data-prep.quality-bar.controller:QualityBarCtrl
+         * @methodOf talend.widget.controller:QualityBarCtrl
          * @description [PRIVATE] Compute quality bars width
          * WARNING : the percentages must be computed before this function call
          */
@@ -110,7 +108,7 @@
         /**
          * @ngdoc method
          * @name computePercent
-         * @methodOf data-prep.quality-bar.controller:QualityBarCtrl
+         * @methodOf talend.widget.controller:QualityBarCtrl
          * @description [PRIVATE] Compute quality bars percentage
          */
         vm.computePercent = function computePercent() {
@@ -126,59 +124,15 @@
         /**
          * @ngdoc method
          * @name hashQuality
-         * @methodOf data-prep.quality-bar.controller:QualityBarCtrl
+         * @methodOf talend.widget.controller:QualityBarCtrl
          * @description [PRIVATE] Calculate a simple hash from concatenating values
          */
         vm.hashQuality = function hashQuality() {
             return vm.quality.empty + '' + vm.quality.invalid + '' + vm.quality.valid;
         };
-
-        /**
-         * @ngdoc method
-         * @name filterValidRecords
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @description Create a filter for all valid records on the given column.
-         * @param {object} column - the column to filter
-         */
-        vm.filterValidRecords = function (column) {
-            FilterService.addFilter('valid_records', column.id, column.name);
-        };
-
-        /**
-         * @ngdoc method
-         * @name filterInvalidRecords
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @description Create a filter for invalid records on the given column.
-         * @param {object} column - the column to filter
-         */
-        vm.filterInvalidRecords = function (column) {
-            FilterService.addFilter('invalid_records', column.id, column.name);
-        };
-
-        /**
-         * @ngdoc method
-         * @name filterEmptyRecords
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @description Create a filter for empty records on the given column.
-         * @param {object} column - the column to filter
-         */
-        vm.filterEmptyRecords = function (column) {
-            FilterService.addFilter('empty_records', column.id, column.name);
-        };
-
-        /**
-         * @ngdoc method
-         * @name applyActionOnColumn
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @description Apply a given transformation on the current column
-         * @param {Object} action The action to apply
-         */
-        vm.applyActionOnColumn = function applyActionOnColumn(action) {
-            TransformationApplicationService.append(action, 'column');
-        };
     }
 
-    angular.module('data-prep.quality-bar')
+    angular.module('talend.widget')
         .controller('QualityBarCtrl', QualityBarCtrl);
 
 })();

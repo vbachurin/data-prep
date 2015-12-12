@@ -15,8 +15,9 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.metadata.fill.FillIfEmpty;
 import org.talend.dataprep.transformation.api.action.metadata.fill.FillInvalid;
 
@@ -57,9 +58,9 @@ public class FillWithStringIfInvalidTest {
 
         Map<String, String> parameters = ActionMetadataTestUtils
                 .parseParameters(this.getClass().getResourceAsStream("fillInvalidStringAction.json"));
-
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0003");
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0003");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals("beer", row.get("0003"));
@@ -85,9 +86,9 @@ public class FillWithStringIfInvalidTest {
 
         Map<String, String> parameters = ActionMetadataTestUtils
                 .parseParameters(this.getClass().getResourceAsStream("fillInvalidStringAction.json"));
-
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0003");
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0003");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals("wine", row.get("0003"));
@@ -112,9 +113,9 @@ public class FillWithStringIfInvalidTest {
                 this.getClass().getResourceAsStream("fillInvalidStringAction.json"));
 
         // when
-        parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.COLUMN_MODE);
+        parameters.put(FillIfEmpty.MODE_PARAMETER, FillIfEmpty.OTHER_COLUMN_MODE);
         parameters.put(FillIfEmpty.SELECTED_COLUMN_PARAMETER, "0003");
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0002");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         Assert.assertEquals("Something", row.get("0002"));

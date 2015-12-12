@@ -57,6 +57,21 @@ public class MessagesBundle implements ApplicationContextAware {
     }
 
     /**
+     * Returns the i18n string that corresponds to <code>code</code>. If no i18n string is to be found, returns
+     * <code>defaultMessage</code>.
+     *
+     * @param code A i18n key.
+     * @param defaultMessage the default message to use if <code>code</code> is not present
+     * @return The i18n message associated with <code>code</code>. Returns <code>null</code> if <code>code</code> is
+     * <code>null</code>.
+     * @see LocaleContextHolder#getLocale()
+     */
+    public static String getString(String code, String defaultMessage) {
+        Locale locale = LocaleContextHolder.getLocale();
+        return source.getMessage(code, new String[0], defaultMessage, locale);
+    }
+
+    /**
      * <p>
      * Similarly to {@link #getString(String)}, returns the i18n string that corresponds to <code>code</code>. If no
      * i18n string is to be found, returns <code>code</code>.

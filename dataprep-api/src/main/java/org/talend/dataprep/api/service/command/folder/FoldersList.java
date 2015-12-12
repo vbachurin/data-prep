@@ -24,14 +24,14 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 @Scope("prototype")
 public class FoldersList extends GenericCommand<InputStream> {
 
-    private FoldersList(HttpClient client, String path) {
+    public FoldersList(HttpClient client, String path) {
         super(APIService.DATASET_GROUP, client);
         execute(() -> onExecute(path));
         onError(e -> new TDPException(UNABLE_TO_LIST_FOLDERS, e, ExceptionContext.build()));
         on(HttpStatus.OK).then(pipeStream());
     }
 
-    private FoldersList(HttpClient client) {
+    public FoldersList(HttpClient client) {
         super(APIService.DATASET_GROUP, client);
         execute(() -> onExecute(null));
         onError(e -> new TDPException(UNABLE_TO_LIST_FOLDERS, e, ExceptionContext.build()));

@@ -86,7 +86,7 @@
         "configuration": {
           "values": [
             {
-              "value": "Constant",
+              "value": "constant_mode",
               "parameters": [
                 {
                   "name": "default_value",
@@ -111,7 +111,7 @@
               ]
             },
             {
-              "value": "Another column",
+              "value": "other_column_mode",
               "parameters": [
                 {
                   "name": "selected_column",
@@ -127,7 +127,7 @@
           ],
           "multiple": false
         },
-        "default": "Constant"
+        "default": "constant_mode"
       }
     ],
     "dynamic": false
@@ -260,7 +260,7 @@
         "configuration": {
           "values": [
             {
-              "value": "Constant",
+              "value": "constant_mode",
               "parameters": [
                 {
                   "name": "default_value",
@@ -285,7 +285,7 @@
               ]
             },
             {
-              "value": "Another column",
+              "value": "other_column_mode",
               "parameters": [
                 {
                   "name": "selected_column",
@@ -301,7 +301,7 @@
           ],
           "multiple": false
         },
-        "default": "Constant"
+        "default": "constant_mode"
       }
     ],
     "dynamic": false

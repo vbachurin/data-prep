@@ -715,7 +715,7 @@
         "configuration": {
           "values": [
             {
-              "value": "Constant",
+              "value": "constant_mode",
               "parameters": [
                 {
                   "name": "default_value",
@@ -729,7 +729,7 @@
               ]
             },
             {
-              "value": "Another column",
+              "value": "other_column_mode",
               "parameters": [
                 {
                   "name": "selected_column",
@@ -745,7 +745,7 @@
           ],
           "multiple": false
         },
-        "default": "Constant"
+        "default": "constant_mode"
       }
     ],
     "dynamic": false
@@ -790,7 +790,7 @@
         "configuration": {
           "values": [
             {
-              "value": "Constant",
+              "value": "constant_mode",
               "parameters": [
                 {
                   "name": "default_value",
@@ -804,7 +804,7 @@
               ]
             },
             {
-              "value": "Another column",
+              "value": "other_column_mode",
               "parameters": [
                 {
                   "name": "selected_column",
@@ -820,7 +820,7 @@
           ],
           "multiple": false
         },
-        "default": "Constant"
+        "default": "constant_mode"
       }
     ],
     "dynamic": false
@@ -1047,10 +1047,10 @@
         "configuration": {
           "values": [
             {
-              "value": "From beginning"
+              "value": "from_beginning"
             },
             {
-              "value": "From index",
+              "value": "from_index",
               "parameters": [
                 {
                   "name": "from_index",
@@ -1064,7 +1064,7 @@
           ],
           "multiple": false
         },
-        "default": "From beginning"
+        "default": "from_beginning"
       },
       {
         "name": "to_mode",
@@ -1074,10 +1074,10 @@
         "configuration": {
           "values": [
             {
-              "value": "To end"
+              "value": "to_end"
             },
             {
-              "value": "To index",
+              "value": "to_index",
               "parameters": [
                 {
                   "name": "to_index",
@@ -1091,7 +1091,7 @@
           ],
           "multiple": false
         },
-        "default": "To index"
+        "default": "to_index"
       }
     ],
     "dynamic": false
@@ -1319,28 +1319,28 @@
         "configuration": {
           "values": [
             {
-              "value": "[a-z]*"
+              "value": "[a-z]+",
+              "label": "[a-z]+ (a word in lowercase)"
             },
             {
-              "value": "[A-Z]*"
+              "value": "[A-Z]+",
+              "label": "[A-Z]+ (a word in uppercase)"
             },
             {
-              "value": "[0-9]*"
+              "value": "[0-9]+",
+              "label": "[0-9]+ (number)"
             },
             {
-              "value": "[a-zA-Z]*"
+              "value": "[a-zA-Z]+",
+              "label": "[a-zA-Z]+ (any word, case insensitive)"
             },
             {
-              "value": "[a-zA-Z0-9]*"
+              "value": "[a-zA-Z0-9]+",
+              "label": "[a-zA-Z0-9]+ (any literal with alpha-num characters)"
             },
             {
-              "value": " *"
-            },
-            {
-              "value": ".*"
-            },
-            {
-              "value": "other",
+              "value": "custom",
+              "label": "other (design your custom pattern)",
               "parameters": [
                 {
                   "name": "manual_pattern",
@@ -1354,7 +1354,7 @@
           ],
           "multiple": false
         },
-        "default": "[a-zA-Z]*"
+        "default": "[a-zA-Z]+"
       }
     ],
     "dynamic": false
@@ -1504,7 +1504,7 @@
         "configuration": {
           "values": [
             {
-              "value": "Constant",
+              "value": "constant_mode",
               "parameters": [
                 {
                   "name": "default_value",
@@ -1518,7 +1518,7 @@
               ]
             },
             {
-              "value": "Another column",
+              "value": "other_column_mode",
               "parameters": [
                 {
                   "name": "selected_column",
@@ -1534,7 +1534,7 @@
           ],
           "multiple": false
         },
-        "default": "Constant"
+        "default": "constant_mode"
       }
     ],
     "dynamic": false
@@ -1778,7 +1778,7 @@
         "configuration": {
           "values": [
             {
-              "value": "Constant",
+              "value": "constant_mode",
               "parameters": [
                 {
                   "name": "operand",
@@ -1790,7 +1790,7 @@
               ]
             },
             {
-              "value": "Another column",
+              "value": "other_column_mode",
               "parameters": [
                 {
                   "name": "selected_column",
@@ -1804,7 +1804,7 @@
           ],
           "multiple": false
         },
-        "default": "Constant"
+        "default": "constant_mode"
       }
     ],
     "dynamic": false
@@ -1989,13 +1989,14 @@
         "default": ""
       },
       {
-        "name": "other_column?",
+        "name": "mode",
         "type": "select",
-        "default": "Another column",
+        "default": "other_column_mode",
         "configuration": {
           "values": [
             {
-              "value": "Another column",
+              "value": "other_column_mode",
+              "label": "Another column",
               "parameters": [
                 {
                   "name": "selected_column",
@@ -2014,7 +2015,8 @@
               ]
             },
             {
-              "value": "No other column"
+              "value": "constant_mode",
+              "label": "No other column"
             }
           ],
           "multiple": false
@@ -2193,15 +2195,16 @@
         "name": "padding_position",
         "type": "select",
         "implicit": false,
-        "canBeBlank": false,
-        "default": "Left",
+        "canBeBlank":
+        false,
+        "default": "left",
         "configuration": {
           "values": [
             {
-              "value": "Left"
+              "value": "left"
             },
             {
-              "value": "Right"
+              "value": "right"
             }
           ],
           "multiple": false
@@ -2241,6 +2244,69 @@
         "implicit": true,
         "canBeBlank": true,
         "default": ""
+      }
+    ]
+  },
+  {
+    "category": "column_metadata",
+    "name": "create_new_column",
+    "dynamic": false,
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": ""
+      },
+      {
+        "name": "filter",
+        "type": "filter",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": ""
+      },
+      {
+        "name": "mode_new_column",
+        "type": "select",
+        "default": "Another column",
+        "configuration": {
+          "values": [
+            {
+              "value": "Another column",
+              "parameters": [
+                {
+                  "name": "selected_column",
+                  "type": "column",
+                  "implicit": false,
+                  "canBeBlank": false,
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "value": "A constant"
+            },
+            {
+              "value": "Nothing, this column will be empty"
+            }
+          ],
+          "multiple": false
+        }
       }
     ]
   }

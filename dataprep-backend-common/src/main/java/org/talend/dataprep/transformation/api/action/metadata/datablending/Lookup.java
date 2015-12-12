@@ -8,9 +8,12 @@ import static org.talend.dataprep.transformation.api.action.parameters.Parameter
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
@@ -21,9 +24,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.error.TransformationErrorCodes;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.DataSetAction;
@@ -41,6 +42,7 @@ public class Lookup extends ActionMetadata implements DataSetAction {
 
     /** The action name. */
     public static final String LOOKUP_ACTION_NAME = "lookup"; //$NON-NLS-1$
+    public static final Logger LOGGER = LoggerFactory.getLogger(Lookup.class);
 
     /** Lookup parameters */
     protected enum Parameters {
@@ -68,8 +70,11 @@ public class Lookup extends ActionMetadata implements DataSetAction {
 
     /** Adapted value of the name parameter. */
     private String adaptedNameValue = EMPTY;
+
     /** Adapted value of the dataset_id parameter. */
+
     private String adaptedDatasetIdValue = EMPTY;
+
     /** Adapted value of the url parameter. */
     private String adaptedUrlValue = EMPTY;
 
@@ -130,37 +135,44 @@ public class Lookup extends ActionMetadata implements DataSetAction {
         return this;
     }
 
+    @Override
+    public void compile(ActionContext actionContext) {
+        super.compile(actionContext);
+        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
+            List<LookupSelectedColumnParameter> colsToAdd = getColsToAdd(actionContext.getParameters());
+            if (colsToAdd.isEmpty()) {
+                actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
+            }
+        }
+    }
+
     /**
-     * @see DataSetAction#applyOnDataSet(DataSetRow, TransformationContext, Map)
+     * @see DataSetAction#applyOnDataSet(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnDataSet(DataSetRow row, TransformationContext context, Map<String, String> parameters) {
+    public void applyOnDataSet(DataSetRow row, ActionContext context) {
 
         // read parameters
+        final Map<String, String> parameters = context.getParameters();
         String columnId = parameters.get(COLUMN_ID.getKey());
         String joinValue = row.get(columnId);
         String joinOn = parameters.get(LOOKUP_JOIN_ON.getKey());
 
         // get the rowMatcher from context
-        LookupRowMatcher rowMatcher = (LookupRowMatcher) context.in(this).get("rowMatcher", parameters,
+        LookupRowMatcher rowMatcher = context.get("rowMatcher",
                 (p) -> applicationContext.getBean(LookupRowMatcher.class, p.get(LOOKUP_DS_URL.getKey())));
 
         // get the matching lookup row
         DataSetRow matchingRow = rowMatcher.getMatchingRow(joinOn, joinValue);
 
         // get the columns to add
-        List<LookupSelectedColumnParameter> colsToAdd;
-        try {
-            colsToAdd = getColsToAdd(parameters);
-        } catch (IOException e) {
-            throw new TDPException(TransformationErrorCodes.BAD_LOOKUP_PARAMETER, e);
-        }
+        List<LookupSelectedColumnParameter> colsToAdd = getColsToAdd(parameters);
 
         final RowMetadata rowMetadata = row.getRowMetadata();
         colsToAdd.forEach(toAdd -> {
 
             // create the new column
-            String newColId = context.in(this).column(matchingRow.getRowMetadata().getById(toAdd.getId()).getName(), rowMetadata,
+            String newColId = context.column(matchingRow.getRowMetadata().getById(toAdd.getId()).getName(),
                     (r) -> {
                 final ColumnMetadata colMetadata = ColumnMetadata.Builder //
                         .column() //
@@ -184,10 +196,15 @@ public class Lookup extends ActionMetadata implements DataSetAction {
      * @return the list of columns to merge.
      * @throws IOException if an error occurs while parsing the json array.
      */
-    private List<LookupSelectedColumnParameter> getColsToAdd(Map<String, String> parameters) throws IOException {
-        final String cols = parameters.get(LOOKUP_SELECTED_COLS.getKey());
-        return builder.build().readValue(cols, new TypeReference<List<LookupSelectedColumnParameter>>() {
-        });
+    private List<LookupSelectedColumnParameter> getColsToAdd(Map<String, String> parameters) {
+        try {
+            final String cols = parameters.get(LOOKUP_SELECTED_COLS.getKey());
+            return builder.build().readValue(cols, new TypeReference<List<LookupSelectedColumnParameter>>() {
+            });
+        } catch (IOException e) {
+            LOGGER.debug("Unable to parse parameter.", e);
+            return Collections.emptyList();
+        }
     }
 
 }

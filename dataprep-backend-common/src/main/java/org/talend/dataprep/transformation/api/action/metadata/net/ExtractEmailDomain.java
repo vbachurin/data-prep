@@ -3,15 +3,13 @@ package org.talend.dataprep.transformation.api.action.metadata.net;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.api.type.Type.STRING;
 
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
@@ -68,26 +66,25 @@ public class ExtractEmailDomain extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final String columnId = context.getColumnId();
         final String originalValue = row.get(columnId);
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
         // Perform metadata level actions (add local + domain columns).
-        final String local = context.in(this).column(
+        final String local = context.column(
                 column.getName() + LOCAL,
-                rowMetadata,
                 (r) -> {
                     final ColumnMetadata newColumn = column().name(column.getName() + LOCAL).type(Type.STRING).build();
                     rowMetadata.insertAfter(columnId, newColumn);
                     return newColumn;
                 }
         );
-        final String domain = context.in(this).column(
+        final String domain = context.column(
                 column.getName() + DOMAIN,
-                rowMetadata,
                 (r) -> {
                     final ColumnMetadata newColumn = column().name(column.getName() + DOMAIN).type(Type.STRING).build();
                     rowMetadata.insertAfter(local, newColumn);

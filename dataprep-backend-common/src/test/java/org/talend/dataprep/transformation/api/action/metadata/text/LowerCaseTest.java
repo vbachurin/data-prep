@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
@@ -45,10 +45,7 @@ public class LowerCaseTest {
     @Before
     public void init() throws IOException {
         action = new LowerCase();
-
-        parameters = ActionMetadataTestUtils.parseParameters( //
-                //
-                LowerCaseTest.class.getResourceAsStream("lowercase.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(LowerCaseTest.class.getResourceAsStream("lowercase.json"));
     }
 
     @Test
@@ -81,7 +78,7 @@ public class LowerCaseTest {
         expectedValues.put("joined", "May 20th 2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "entity");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -103,7 +100,7 @@ public class LowerCaseTest {
         expectedValues.put("joined", "May 20th 2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "entity");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());

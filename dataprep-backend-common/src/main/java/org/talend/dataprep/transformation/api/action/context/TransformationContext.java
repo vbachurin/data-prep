@@ -1,6 +1,7 @@
 package org.talend.dataprep.transformation.api.action.context;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -8,7 +9,8 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
-import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
 /**
@@ -27,10 +29,12 @@ public final class TransformationContext {
     private static final Logger LOGGER = LoggerFactory.getLogger(TransformationContext.class);
 
     /** Map of action context for each action instance within a transformation. */
-    private final Map<ActionMetadata, ActionContext> contexts = new HashMap<>();
+    private final Map<DataSetRowAction, ActionContext> contexts = new HashMap<>();
 
     /** The context itself. */
     private Map<String, Object> context;
+
+    private DataSetRow previousRow = new DataSetRow(Collections.emptyMap());
 
     /**
      * Default empty constructor.
@@ -60,23 +64,6 @@ public final class TransformationContext {
     }
 
     /**
-     * Returns a transformation context specific to the current action. Use this to create columns (see
-     * {@link ActionContext#column(String, RowMetadata, Function)} for more details.
-     *
-     * @param actionMetadata An instance of action used as key for finding context
-     * @return An {@link ActionContext context} ready to be used.
-     */
-    public ActionContext in(ActionMetadata actionMetadata) {
-        if (contexts.containsKey(actionMetadata)) {
-            return contexts.get(actionMetadata);
-        } else {
-            ActionContext actionContext = new ActionContext(this);
-            contexts.put(actionMetadata, actionContext);
-            return actionContext;
-        }
-    }
-
-    /**
      * @return all the action contexts.
      */
     public Collection<ActionContext> getAllActionsContexts() {
@@ -87,23 +74,57 @@ public final class TransformationContext {
         contexts.replaceAll((actionMetadata, actionContext) -> actionContext.asImmutable());
     }
 
-
     /**
      * Cleanup transformation context.
      */
     public void cleanup() {
-        final Collection<ActionContext> contexts = this.getAllActionsContexts();
         for (ActionContext context : getAllActionsContexts()) {
-            for (Object contextEntry : context.getContextEntries()) {
-                if (contextEntry instanceof DisposableBean) {
-                    try {
-                        ((DisposableBean) contextEntry).destroy();
-                    } catch (Exception error) {
-                        LOGGER.warn("error cleaning action context {}", contextEntry, error);
-                    }
-                }
-            }
-
+            context.getContextEntries().stream().filter(contextEntry -> contextEntry instanceof DisposableBean)
+                    .forEach(contextEntry -> {
+                        try {
+                            ((DisposableBean) contextEntry).destroy();
+                        } catch (Exception error) {
+                            LOGGER.warn("error cleaning action context {}", contextEntry, error);
+                        }
+                    });
         }
+    }
+
+    /**
+     * Returns a transformation context specific to the current action. Use this to create columns (see
+     * {@link ActionContext#column(String, Function)} for more details.
+     *
+     * @param action
+     */
+    public ActionContext create(DataSetRowAction action) {
+        if (contexts.containsKey(action)) {
+            return contexts.get(action);
+        } else {
+            ActionContext actionContext = new ActionContext(this);
+            contexts.put(action, actionContext);
+            return actionContext;
+        }
+    }
+
+    /**
+     * Returns a transformation context specific to the current action. Use this to create columns (see
+     * {@link ActionContext#column(String, Function)} for more details.
+     *
+     * @param action
+     */
+    public ActionContext in(DataSetRowAction action) {
+        if (contexts.containsKey(action)) {
+            return contexts.get(action);
+        } else {
+            throw new IllegalStateException("No action context found for '" + action + "'.");
+        }
+    }
+
+    public void setPreviousRow(DataSetRow previousRow) {
+        this.previousRow = previousRow;
+    }
+
+    public DataSetRow getPreviousRow() {
+        return previousRow;
     }
 }

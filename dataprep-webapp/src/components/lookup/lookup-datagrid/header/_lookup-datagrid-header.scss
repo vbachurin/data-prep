@@ -48,3 +48,9 @@ $datagrid-header-bkg: $dark-gray;
     margin-right: 0px;
   }
 }
+
+.whole-grid-header {
+  .quality-bar {
+    border-bottom: 1px solid silver;
+  }
+}

@@ -2,12 +2,13 @@ package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -15,10 +16,14 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
+import org.talend.dataprep.stream.ExtendedStream;
 import org.talend.dataprep.transformation.api.action.ActionParser;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
@@ -59,7 +64,7 @@ class DiffTransformer implements Transformer {
         final TransformerWriter writer = writersService.getWriter(configuration.formatId(), configuration.output(),
                 configuration.getArguments());
 
-        //parse and extract diff configuration
+        // parse and extract diff configuration
         final ParsedActions referenceActions = actionParser.parse(previewConfiguration.getReferenceActions());
         InternalTransformationContext reference = new InternalTransformationContext(referenceActions,
                 previewConfiguration.getReferenceContext());
@@ -68,17 +73,13 @@ class DiffTransformer implements Transformer {
         InternalTransformationContext preview = new InternalTransformationContext(previewActions,
                 previewConfiguration.getPreviewContext());
 
-        //extract TDP ids infos
+        // extract TDP ids infos
         final List<Long> indexes = previewConfiguration.getIndexes();
         final boolean isIndexLimited = indexes != null && !indexes.isEmpty();
         final Long minIndex = isIndexLimited ? indexes.stream().mapToLong(Long::longValue).min().getAsLong() : 0L;
         final Long maxIndex = isIndexLimited ? indexes.stream().mapToLong(Long::longValue).max().getAsLong() : Long.MAX_VALUE;
 
         try {
-            // defensive programming
-            if (reference.getAction() == null) {
-                throw new IllegalStateException("No old action to perform for preview.");
-            }
             // Start diff
             writer.startObject();
             // Records
@@ -90,7 +91,8 @@ class DiffTransformer implements Transformer {
                     .filter(isWithinWantedIndexes(minIndex, maxIndex)) //
                     .map(createClone()) //
                     .map(rows -> { // Apply actions and generate diff
-                        if (firstTransformation.getAndSet(false)) { // First transformation, keep track of metadata changes
+                        if (firstTransformation.getAndSet(false)) { // First transformation, keep track of metadata
+                                                                    // changes
                             reference.apply(rows[0]);
                             preview.apply(rows[1]);
                             rows[1].getRowMetadata().diff(rows[0].getRowMetadata());
@@ -125,8 +127,7 @@ class DiffTransformer implements Transformer {
             writer.flush();
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
-        }
- finally {
+        } finally {
             // cleanup context (to make sure resources are properly closed)
             reference.getContext().cleanup();
             preview.getContext().cleanup();
@@ -158,20 +159,13 @@ class DiffTransformer implements Transformer {
 
     private class InternalTransformationContext {
 
-        ParsedActions parsedActions;
+        private final ParsedActions parsedActions;
 
-        private BiFunction<DataSetRow, TransformationContext, DataSetRow> action;
-
-        private TransformationContext context;
+        private final TransformationContext context;
 
         public InternalTransformationContext(ParsedActions parsedActions, TransformationContext context) {
             this.parsedActions = parsedActions;
-            this.action = parsedActions.asUniqueRowTransformer();
             this.context = context;
-        }
-
-        public BiFunction<DataSetRow, TransformationContext, DataSetRow> getAction() {
-            return action;
         }
 
         public TransformationContext getContext() {
@@ -179,7 +173,19 @@ class DiffTransformer implements Transformer {
         }
 
         public DataSetRow apply(DataSetRow dataSetRow) {
-            return action.apply(dataSetRow, context);
+            DataSetRow current = dataSetRow;
+            final List<Action> allActions = parsedActions.getAllActions();
+            final Iterator<DataSetRowAction> rowTransformers = parsedActions.getRowTransformers().iterator();
+            for (Action action : allActions) {
+                final ActionContext actionContext = context.create(action.getRowAction());
+                actionContext.setParameters(action.getParameters());
+                final DataSetRowAction rowAction = rowTransformers.next();
+                rowAction.compile(actionContext);
+                if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
+                    current = rowAction.apply(current, actionContext);
+                }
+            }
+            return current;
         }
 
     }

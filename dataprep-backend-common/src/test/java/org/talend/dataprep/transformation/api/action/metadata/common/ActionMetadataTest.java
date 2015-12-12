@@ -26,6 +26,8 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
@@ -160,11 +162,10 @@ public class ActionMetadataTest {
         final DataSetRow row = new DataSetRow(rowValues);
         row.setTdpId(58L);
 
-        final TransformationContext context = new TransformationContext();
         final Action action = cellTransformation.create(parameters);
 
         // when
-        action.getRowAction().apply(row, context);
+        ActionTestWorkbench.test(row, action.getRowAction());
 
         // then
         assertThat(row.get("0001"), is("TOTO"));
@@ -183,11 +184,10 @@ public class ActionMetadataTest {
         final DataSetRow row = new DataSetRow(rowValues);
         row.setTdpId(60L);
 
-        final TransformationContext context = new TransformationContext();
         final Action action = cellTransformation.create(parameters);
 
         // when
-        action.getRowAction().apply(row, context);
+        ActionTestWorkbench.test(row, action.getRowAction());
 
         // then
         assertThat(row.get("0001"), is("toto"));
@@ -206,7 +206,7 @@ public class ActionMetadataTest {
         final DataSetRow row = new DataSetRow(rowValues);
         row.setTdpId(58L);
 
-        final TransformationContext context = new TransformationContext();
+        final ActionContext context = new ActionContext(new TransformationContext(), row.getRowMetadata());
         final Action action = lineTransformation.create(parameters);
 
         // when
@@ -230,7 +230,7 @@ public class ActionMetadataTest {
         final DataSetRow row = new DataSetRow(rowValues);
         row.setTdpId(60L);
 
-        final TransformationContext context = new TransformationContext();
+        final ActionContext context = new ActionContext(new TransformationContext(), row.getRowMetadata());
         final Action action = lineTransformation.create(parameters);
 
         // when
@@ -254,11 +254,10 @@ public class ActionMetadataTest {
         final DataSetRow row = new DataSetRow(rowValues);
         row.setTdpId(58L);
 
-        final TransformationContext context = new TransformationContext();
         final Action action = columnTransformation.create(parameters);
 
         // when
-        action.getRowAction().apply(row, context);
+        ActionTestWorkbench.test(row, action.getRowAction());
 
         // then
         assertThat(row.get("0001"), is("TOTO"));
@@ -276,11 +275,10 @@ public class ActionMetadataTest {
         rowValues.put("0002", "tata");
         final DataSetRow row = new DataSetRow(rowValues);
 
-        final TransformationContext context = new TransformationContext();
         final Action action = tableTransformation.create(parameters);
 
         // when
-        action.getRowAction().apply(row, context);
+        ActionTestWorkbench.test(row, action.getRowAction());
 
         // then
         assertThat(row.get("0001"), is("TOTO"));
@@ -312,8 +310,8 @@ class CellTransformation extends ActionMetadata implements CellAction {
     }
 
     @Override
-    public void applyOnCell(DataSetRow row, TransformationContext context, Map<String, String> parameters, Long rowId,
-            String columnId) {
+    public void applyOnCell(DataSetRow row, ActionContext context) {
+        final String columnId = context.getColumnId();
         final String value = row.get(columnId);
         row.set(columnId, value.toUpperCase());
     }
@@ -339,7 +337,7 @@ class LineTransformation extends ActionMetadata implements RowAction {
     }
 
     @Override
-    public void applyOnLine(DataSetRow row, TransformationContext context, Map<String, String> parameters, Long rowId) {
+    public void applyOnLine(DataSetRow row, ActionContext context) {
         for (final Map.Entry<String, Object> entry : row.values().entrySet()) {
             row.set(entry.getKey(), entry.getValue().toString().toUpperCase());
         }
@@ -366,7 +364,8 @@ class ColumnTransformation extends ActionMetadata implements ColumnAction {
     }
 
     @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final String columnId = context.getColumnId();
         final String value = row.get(columnId);
         row.set(columnId, value.toUpperCase());
     }
@@ -392,7 +391,7 @@ class TableTransformation extends ActionMetadata implements DataSetAction {
     }
 
     @Override
-    public void applyOnDataSet(DataSetRow row, TransformationContext context, Map<String, String> parameters) {
+    public void applyOnDataSet(DataSetRow row, ActionContext context) {
         for (final Map.Entry<String, Object> entry : row.values().entrySet()) {
             row.set(entry.getKey(), entry.getValue().toString().toUpperCase());
         }

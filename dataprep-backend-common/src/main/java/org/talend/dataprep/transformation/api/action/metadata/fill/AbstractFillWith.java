@@ -16,15 +16,16 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
 import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
 import org.talend.dataprep.transformation.api.action.metadata.date.DatePattern;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
-public abstract class AbstractFillWith extends ActionMetadata {
+public abstract class AbstractFillWith extends ActionMetadata implements OtherColumnParameters {
 
     public static final String DEFAULT_VALUE_PARAMETER = "default_value"; //$NON-NLS-1$
 
@@ -33,22 +34,6 @@ public abstract class AbstractFillWith extends ActionMetadata {
     private static final DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
     private static final String DEFAULT_DATE_VALUE = DEFAULT_FORMATTER.format(LocalDateTime.of(1970, Month.JANUARY, 1, 10, 0));
-
-    /**
-     * Mode: tells if fill value is taken from another column or is a constant
-     */
-    public static final String MODE_PARAMETER = "mode"; //$NON-NLS-1$
-
-    /**
-     * The selected column id.
-     */
-    public static final String SELECTED_COLUMN_PARAMETER = "selected_column"; //$NON-NLS-1$
-
-    /**
-     * Constant to represents mode where we fill with a constant.
-     */
-    public static final String CONSTANT_MODE = "Constant";
-    public static final String COLUMN_MODE = "Another column";
 
     /**
      * Component that parses dates.
@@ -60,16 +45,16 @@ public abstract class AbstractFillWith extends ActionMetadata {
 
     public abstract boolean shouldBeProcessed (String value, ColumnMetadata colMetadata);
 
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final Map<String, String> parameters = context.getParameters();
         checkParameters(parameters, row);
 
+        final String columnId = context.getColumnId();
         final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
 
         final String value = row.get(columnId);
         if (shouldBeProcessed(value, columnMetadata)) {
-
-            String newValue = "";
-
+            String newValue;
             // First, get raw new value regarding mode (constant or other column):
             if (parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE)) {
                 newValue = parameters.get(DEFAULT_VALUE_PARAMETER);
@@ -141,7 +126,7 @@ public abstract class AbstractFillWith extends ActionMetadata {
         parameters.add(SelectParameter.Builder.builder()
                         .name(MODE_PARAMETER)
                         .item(CONSTANT_MODE, constantParameter)
-                        .item(COLUMN_MODE, new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, StringUtils.EMPTY, false, false))
+                        .item(OTHER_COLUMN_MODE, new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, StringUtils.EMPTY, false, false))
                         .defaultValue(CONSTANT_MODE)
                         .build()
         );

@@ -1,6 +1,5 @@
 package org.talend.dataprep.transformation.api.action.metadata.bool;
 
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
@@ -11,15 +10,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hamcrest.text.IsEmptyString;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionScope;
 
 /**
  * Test class for Negate action.
@@ -38,10 +35,7 @@ public class NegateTest {
      */
     public NegateTest() throws IOException {
         action = new Negate();
-
-        parameters = ActionMetadataTestUtils.parseParameters( //
-                //
-                NegateTest.class.getResourceAsStream("negateAction.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(NegateTest.class.getResourceAsStream("negateAction.json"));
     }
 
     @Test
@@ -71,7 +65,7 @@ public class NegateTest {
         DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "active");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertThat(row.get("active"), is("False"));
@@ -87,7 +81,7 @@ public class NegateTest {
         DataSetRow row = new DataSetRow(values);
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "active");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertThat(row.get("active"), is("True"));

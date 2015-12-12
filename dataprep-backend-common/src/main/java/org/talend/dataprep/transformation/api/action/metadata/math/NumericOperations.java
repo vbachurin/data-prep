@@ -17,10 +17,11 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.OtherColumnParameters;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.ParameterType;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
@@ -31,7 +32,8 @@ import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
  */
 @Component(NumericOperations.ACTION_BEAN_PREFIX + NumericOperations.ACTION_NAME)
 @Scope("prototype")
-public class NumericOperations extends ActionMetadata implements ColumnAction {
+public class NumericOperations extends ActionMetadata implements ColumnAction, OtherColumnParameters {
+
     private static final String PLUS = "+";
     private static final String MINUS = "-";
     private static final String MULTIPLY = "x";
@@ -48,11 +50,6 @@ public class NumericOperations extends ActionMetadata implements ColumnAction {
     public static final String MODE_PARAMETER = "mode"; //$NON-NLS-1$
 
     /**
-     * The selected column id.
-     */
-    public static final String SELECTED_COLUMN_PARAMETER = "selected_column"; //$NON-NLS-1$
-
-    /**
      * The operator to use.
      */
     public static final String OPERATOR_PARAMETER = "operator"; //$NON-NLS-1$
@@ -61,11 +58,6 @@ public class NumericOperations extends ActionMetadata implements ColumnAction {
      * The operand to use.
      */
     public static final String OPERAND_PARAMETER = "operand"; //$NON-NLS-1$
-
-    /**
-     * Constant to represents mode where we compute against a constant.
-     */
-    public static final String CONSTANT_MODE = "Constant";
 
     /**
      * @see ActionMetadata#getName()
@@ -106,7 +98,7 @@ public class NumericOperations extends ActionMetadata implements ColumnAction {
         parameters.add(SelectParameter.Builder.builder()
                         .name(MODE_PARAMETER)
                         .item(CONSTANT_MODE, new Parameter(OPERAND_PARAMETER, ParameterType.STRING, "2"))
-                        .item("Another column", new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, StringUtils.EMPTY, false, false))
+                        .item(OTHER_COLUMN_MODE, new Parameter(SELECTED_COLUMN_PARAMETER, ParameterType.COLUMN, StringUtils.EMPTY, false, false))
                         .defaultValue(CONSTANT_MODE)
                         .build()
         );
@@ -123,12 +115,21 @@ public class NumericOperations extends ActionMetadata implements ColumnAction {
         return Type.NUMERIC.isAssignableFrom(columnType);
     }
 
+    @Override
+    public void compile(ActionContext actionContext) {
+        super.compile(actionContext);
+        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
+            checkParameters(actionContext.getParameters(), actionContext.getInputRowMetadata());
+        }
+    }
+
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(final DataSetRow row, final TransformationContext context, final Map<String, String> parameters, final String columnId) {
-        checkParameters(parameters, row);
+    public void applyOnColumn(final DataSetRow row, final ActionContext context) {
+        final Map<String, String> parameters = context.getParameters();
+        final String columnId = context.getColumnId();
 
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata sourceColumn = rowMetadata.getById(columnId);
@@ -147,8 +148,7 @@ public class NumericOperations extends ActionMetadata implements ColumnAction {
         }
 
         // column creation
-        final String newColumnId = context.in(this).column("result",
-                rowMetadata,
+        final String newColumnId = context.column("result",
                 (r) -> {
                     final ColumnMetadata c = ColumnMetadata.Builder //
                             .column() //
@@ -206,15 +206,15 @@ public class NumericOperations extends ActionMetadata implements ColumnAction {
      * the parameter is invalid, an exception is thrown.
      *
      * @param parameters where to look the parameter value.
-     * @param row        the row where to look for the column.
+     * @param rowMetadata        the row where to look for the column.
      */
-    private void checkParameters(Map<String, String> parameters, DataSetRow row) {
+    private void checkParameters(Map<String, String> parameters, RowMetadata rowMetadata) {
         if (parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE) && !parameters.containsKey(OPERAND_PARAMETER)) {
             throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER, ExceptionContext.build().put("paramName",
                     OPERAND_PARAMETER));
         }
         else if (!parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE) &&
-                (!parameters.containsKey(SELECTED_COLUMN_PARAMETER) || row.getRowMetadata().getById(parameters.get(SELECTED_COLUMN_PARAMETER)) == null)) {
+                (!parameters.containsKey(SELECTED_COLUMN_PARAMETER) || rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER)) == null)) {
             throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER, ExceptionContext.build().put("paramName",
                     SELECTED_COLUMN_PARAMETER));
         }

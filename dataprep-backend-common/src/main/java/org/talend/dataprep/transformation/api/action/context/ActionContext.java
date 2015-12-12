@@ -8,22 +8,55 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
 /**
  * Context for an action within a transformation. Hence, several instance of the same action can have their own context.
  */
 public class ActionContext {
 
+
+
+    public enum ActionStatus {
+        /**
+         * Indicate action is good for usage and transformation process should continue using this action.
+         */
+        OK,
+        /**
+         * Indicates an action no longer needs to be executed.
+         */
+        DONE,
+        /**
+         * Indicates action is "canceled": transformation process should discard action from execution and won't execute
+         * it.
+         */
+        CANCELED
+    }
     /** Link to the transformation context. */
     private final TransformationContext parent;
 
     /** A map of object (used to reuse objects across row process). */
     private Map<String, Object> context = new HashMap<>();
 
+    private RowMetadata outputRowMetadata;
+
+    private RowMetadata inputRowMetadata;
+
+    private Map<String, String> parameters = Collections.emptyMap();
+
+    private ActionStatus actionStatus;
+
+    public ActionContext(TransformationContext parent, RowMetadata rowMetadata) {
+        this.parent = parent;
+        this.inputRowMetadata = rowMetadata;
+    }
+
     /**
      * Default constructor.
-     * 
+     *
      * @param parent the parent transformation context.
      */
     public ActionContext(TransformationContext parent) {
@@ -46,19 +79,18 @@ public class ActionContext {
      * <b>Note</b>It is up to the caller to insert column in a {@link org.talend.dataprep.api.dataset.RowMetadata row}.
      * </p>
      *
+     * @param name A column name as string. All values are accepted, no collision with other action can occur.
      * @param create A {@link Function function} that provides a new {@link ColumnMetadata} in case no column with
      * <code>name</code> was previously created. Function is <b>not</b> allowed to return <code>null</code>.
-     * @param rowMetadata The row metadata use to create column if missing.
-     * @param name A column name as string. All values are accepted, no collision with other action can occur.
      * @return A {@link ColumnMetadata column} id with name <code>name</code>.
      * @throws IllegalArgumentException In case the <code>supplier</code> returned a <code>null</code> instance.
      */
-    public String column(String name, RowMetadata rowMetadata, Function<RowMetadata, ColumnMetadata> create) {
+    public String column(String name, Function<RowMetadata, ColumnMetadata> create) {
         String key = getColumnKey(name);
         if (context.containsKey(key)) {
             return ((ColumnMetadata) context.get(key)).getId();
         } else {
-            final ColumnMetadata columnMetadata = create.apply(rowMetadata);
+            final ColumnMetadata columnMetadata = create.apply(inputRowMetadata);
             if (columnMetadata == null) {
                 throw new IllegalArgumentException("Cannot use a null column for '" + name + "'");
             }
@@ -81,16 +113,28 @@ public class ActionContext {
      * Return the object from the context or use the supplier to create it and cache it.
      *
      * @param key the object key.
-     * @param parameters the parameters used by the supplier.
+     * @return the object (stored in the context).
+     */
+    public <T> T get(String key) {
+        if (context.containsKey(key)) {
+            return (T) context.get(key);
+        }
+        throw new IllegalArgumentException("Key '" + key + "' does not exist.");
+    }
+
+    /**
+     * Return the object from the context or use the supplier to create it and cache it.
+     *
+     * @param key the object key.
      * @param supplier the supplier to use to create the object in case it is not found in the context.
      * @return the object (stored in the context).
      */
-    public Object get(String key, Map<String, String> parameters, Function<Map<String, String>, Object> supplier) {
+    public <T> T get(String key, Function<Map<String, String>, T> supplier) {
         if (context.containsKey(key)) {
-            return context.get(key);
+            return (T) context.get(key);
         }
 
-        final Object value = supplier.apply(parameters);
+        final T value = supplier.apply(parameters);
         context.put(key, value);
         return value;
     }
@@ -108,7 +152,70 @@ public class ActionContext {
      */
     public ActionContext asImmutable() {
         final ActionContext actionContext = new ActionContext(parent);
+        actionContext.setInputRowMetadata(inputRowMetadata);
+        actionContext.setOutputRowMetadata(outputRowMetadata);
         actionContext.context = Collections.unmodifiableMap(this.context);
         return actionContext;
+    }
+
+    public RowMetadata getInputRowMetadata() {
+        return inputRowMetadata;
+    }
+
+    public void setOutputRowMetadata(RowMetadata outputRowMetadata) {
+        this.outputRowMetadata = outputRowMetadata;
+    }
+
+    public RowMetadata getOutputRowMetadata() {
+        return outputRowMetadata;
+    }
+
+    public void setInputRowMetadata(RowMetadata inputRowMetadata) {
+        this.inputRowMetadata = inputRowMetadata;
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
+    public String getColumnId() {
+        return parameters.get(ImplicitParameters.COLUMN_ID.getKey());
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    public Long getRowId() {
+        return Long.parseLong(parameters.get(ImplicitParameters.ROW_ID.getKey()));
+    }
+
+    public DataSetRow getPreviousRow() {
+        return parent.getPreviousRow();
+    }
+
+    public ScopeCategory getScope() {
+        final String scopeParameter = parameters.get(ImplicitParameters.SCOPE.getKey());
+        if (scopeParameter != null) {
+            return ScopeCategory.valueOf(scopeParameter.toUpperCase());
+        }
+        return null;
+    }
+
+    /**
+     * @return The {@link ActionStatus status} of the action.
+     */
+    public ActionStatus getActionStatus() {
+        return actionStatus;
+    }
+
+    /**
+     * Changes the action status: implementation of actions may want to interrupt computation (no more changes to be
+     * done).
+     *
+     * @param actionStatus The new action status, one of {@link ActionStatus}.
+     */
+    public void setActionStatus(ActionStatus actionStatus) {
+        this.actionStatus = actionStatus;
     }
 }

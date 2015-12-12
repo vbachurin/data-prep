@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.talend.dataprep.i18n.MessagesBundle;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -91,14 +93,17 @@ public class SelectParameter extends Parameter implements Serializable {
         private List<Parameter> inlineParameters;
 
         /**
-         * Create a select Item.
+         * Create a select Item. The item's label will be by default looked up with key ("choice." + value). You may
+         * override this behavior using {@link #setLabel(String)}.
          *
          * @param value the item value.
          * @param parameters the item optional parameters.
+         * @see MessagesBundle#getString(String)
+         * @see #setLabel(String)
          */
         public Item(String value, List<Parameter> parameters) {
             this.value = value;
-            this.label = value; // By default, use value as label, can be override with setter
+            this.label = MessagesBundle.getString("choice." + value, value);
             this.inlineParameters = parameters;
         }
 
@@ -225,6 +230,7 @@ public class SelectParameter extends Parameter implements Serializable {
          *
          * @param value the item value.
          * @return the builder to carry on building the column.
+         * @see Item#setLabel(String) to override default translated label.
          */
         public SelectParameter.Builder item(String value) {
             this.items.add(new Item(value, emptyList()));
@@ -235,6 +241,7 @@ public class SelectParameter extends Parameter implements Serializable {
          * Add an item to the select parameter builder.
          *
          * @param value the item value.
+         * @param label the item label
          * @return the builder to carry on building the column.
          */
         public SelectParameter.Builder item(String value, String label) {

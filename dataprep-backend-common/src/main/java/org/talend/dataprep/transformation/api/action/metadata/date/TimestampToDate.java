@@ -6,12 +6,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
@@ -30,6 +31,7 @@ public class TimestampToDate extends ActionMetadata implements ColumnAction, Dat
      * The column appendix.
      */
     public static final String APPENDIX = "_as_date"; //$NON-NLS-1$
+    public static final String COMPILED_DATE_PATTERN = "compiled_datePattern";
 
     /**
      * @see ActionMetadata#getName()
@@ -65,23 +67,31 @@ public class TimestampToDate extends ActionMetadata implements ColumnAction, Dat
         return parameters;
     }
 
-    /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
-     */
     @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
-        DatePattern newPattern = DatePattern.ISO_LOCAL_DATE_TIME;
+    public void compile(ActionContext actionContext) {
+        super.compile(actionContext);
         try {
-            newPattern = getDateFormat(parameters);
+            final DatePattern dateFormat = getDateFormat(actionContext.getParameters());
+            actionContext.get(COMPILED_DATE_PATTERN, (p) -> dateFormat);
         } catch (IllegalArgumentException e) {
             // Nothing to do, when pattern is invalid, use the default pattern.
+            actionContext.get(COMPILED_DATE_PATTERN, (p) -> DatePattern.ISO_LOCAL_DATE_TIME);
         }
+    }
+
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
+     */
+    @Override
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final String columnId = context.getColumnId();
+        final Map<String, String> parameters = context.getParameters();
 
         // create new column and append it after current column
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
 
-        final String newColumn = context.in(this).column(column.getName() + APPENDIX, rowMetadata, (r) -> {
+        final String newColumn = context.column(column.getName() + APPENDIX, (r) -> {
             final Type type;
             if ("custom".equals(parameters.get(NEW_PATTERN))) {
                 // Custom pattern might not be detected as a valid date, create the new column as string for the most
@@ -101,7 +111,7 @@ public class TimestampToDate extends ActionMetadata implements ColumnAction, Dat
         });
         
         final String value = row.get(columnId);
-        row.set(newColumn, getTimeStamp(value, newPattern.getFormatter()));
+        row.set(newColumn, getTimeStamp(value, context.<DatePattern>get(COMPILED_DATE_PATTERN).getFormatter()));
     }
 
     protected String getTimeStamp(String from, DateTimeFormatter dateTimeFormatter) {
@@ -110,7 +120,7 @@ public class TimestampToDate extends ActionMetadata implements ColumnAction, Dat
             return dateTimeFormatter.format(date);
         } catch (NumberFormatException e) {
             // empty value if the date cannot be parsed
-            return "";
+            return StringUtils.EMPTY;
         }
     }
 

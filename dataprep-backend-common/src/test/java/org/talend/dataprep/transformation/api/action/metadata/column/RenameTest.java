@@ -26,10 +26,9 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -49,10 +48,7 @@ public class RenameTest {
     @Before
     public void init() throws IOException {
         action = new Rename();
-
-        parameters = ActionMetadataTestUtils.parseParameters( //
-                //
-                CopyColumnTest.class.getResourceAsStream("renameAction.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(CopyColumnTest.class.getResourceAsStream("renameAction.json"));
     }
 
     @Test
@@ -108,7 +104,7 @@ public class RenameTest {
         expected.add(renamedMetadata);
 
         //when
-        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expected, rowMetadata.getColumns());

@@ -29,7 +29,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
@@ -49,10 +49,7 @@ public class ComputeLengthTest {
     @Before
     public void init() throws IOException {
         action = new ComputeLength();
-
-        parameters = ActionMetadataTestUtils.parseParameters( //
-                //
-                ComputeLengthTest.class.getResourceAsStream("computeLengthAction.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(ComputeLengthTest.class.getResourceAsStream("computeLengthAction.json"));
     }
 
     @Test
@@ -86,7 +83,7 @@ public class ComputeLengthTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -111,7 +108,7 @@ public class ComputeLengthTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -137,8 +134,7 @@ public class ComputeLengthTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction(), action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -163,7 +159,7 @@ public class ComputeLengthTest {
         expected.add(createMetadata("0002", "last update"));
 
         //when
-        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expected, rowMetadata.getColumns());
@@ -189,8 +185,7 @@ public class ComputeLengthTest {
         expected.add(createMetadata("0002", "last update"));
 
         //when
-        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
-        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction(), action.create(parameters).getRowAction());
 
         //then
         assertEquals(expected, rowMetadata.getColumns());

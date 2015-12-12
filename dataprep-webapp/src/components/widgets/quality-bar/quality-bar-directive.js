@@ -3,39 +3,39 @@
 
     /**
      * @ngdoc directive
-     * @name data-prep.quality-bar.directive:lookupQualityBar
+     * @name data-prep.quality-bar.directive:QualityBar
      * @description Quality bar tooltip
      * @restrict E
      * @usage
-     <talend-quality-bar
+     <quality-bar
              quality="quality"
-             column="column"
-             enterAnimation="enableEnterAnimation">
+             enterAnimation="enableEnterAnimation"
+             hasMenu="true">
      </talend-tooltip>
      * @param {object} quality {empty: number, invalid: number, valid: number} The quality values
-     * @param {object} column The quality target column
      * @param {string} enterAnimation Do not animate on enter if this flag === 'false'
+     * @param {string} hasMenu Do not show the menu if hasMenu === 'false'
      */
-    function LookupQualityBar($timeout) {
+    function QualityBar($timeout) {
         return {
             restrict: 'E',
-            templateUrl: 'components/lookup/lookup-datagrid/quality-bar/lookup-quality-bar.html',
-            replace: true,
+            templateUrl: 'components/widgets/quality-bar/quality-bar.html',
             scope: {
+                enterAnimation: '@',
                 quality: '=',
-                column: '=',
-                enterAnimation: '@'
+                hasMenu: '='
             },
+            transclude: true,
             bindToController: true,
-            controller: 'LookupQualityBarCtrl',
-            controllerAs: 'lookupQualityBarCtrl',
+            controller: 'QualityBarCtrl',
+            controllerAs: 'qualityBarCtrl',
             link: function(scope, iElement, iAttrs, ctrl) {
                 var initializing = true;
 
                 /**
                  * @ngdoc method
                  * @name enableTransition
-                 * @methodOf data-prep.quality-bar.directive:QualityBar
+                 * @methodOf talend.widget.directive:QualityBar
                  * @description [PRIVATE] Enable animation
                  */
                 var enableTransition = function enableTransition() {
@@ -45,29 +45,29 @@
                 /**
                  * @ngdoc method
                  * @name refreshBarsWithAnimation
-                 * @methodOf data-prep.quality-bar.directive:QualityBar
+                 * @methodOf talend.widget.directive:QualityBar
                  * @description [PRIVATE] Block animation, reset width to 0 and calculate the new width with animation enabling
                  */
                 var refreshBarsWithAnimation = function refreshBarsWithAnimation() {
-                    ctrl.blockTransition = true;
                     ctrl.width = {
                         invalid: 0,
                         empty: 0,
                         valid: 0
                     };
 
-                    $timeout(enableTransition);
+                    enableTransition();
 
                     $timeout(function() {
                         ctrl.computePercent();
                         ctrl.computeQualityWidth();
-                    }, 300);
+                        scope.$digest();
+                    }, 300, false);
                 };
 
                 /**
                  * @ngdoc method
                  * @name refreshBars
-                 * @methodOf data-prep.quality-bar.directive:QualityBar
+                 * @methodOf talend.widget.directive:QualityBar
                  * @description [PRIVATE] Refresh the quality bars infos (percent and width)
                  * When enterAnimation === 'false', we do NOT animate on first render
                  */
@@ -75,6 +75,7 @@
                     //Do NOT animate on first values and enterAnimation is false
                     if(initializing && ctrl.enterAnimation === 'false') {
                         initializing = false;
+                        ctrl.blockTransition = true;
                         ctrl.computePercent();
                         ctrl.computeQualityWidth();
                     }
@@ -84,10 +85,22 @@
                 };
 
                 scope.$watch(ctrl.hashQuality, refreshBars);
+
+                if(ctrl.hasMenu){
+                    $timeout(function(){
+                        var validMenuContent = iElement.find('.valid-menu-item >');
+                        var emptyMenuContent = iElement.find('.empty-menu-items >');
+                        var invalidMenuContent = iElement.find('.invalid-menu-items >');
+
+                        iElement.find('.valid-partition .quality-bar-menu').eq(0).append(validMenuContent);
+                        iElement.find('.empty-partition .quality-bar-menu').eq(0).append(emptyMenuContent);
+                        iElement.find('.invalid-partition .quality-bar-menu').eq(0).append(invalidMenuContent);
+                    }, 300, false);
+                }
             }
         };
     }
 
-    angular.module('data-prep.lookup-quality-bar')
-        .directive('lookupQualityBar', LookupQualityBar);
+    angular.module('talend.widget')
+        .directive('qualityBar', QualityBar);
 })();

@@ -80,6 +80,7 @@ public class StreamHistogramAnalyzer extends NumericalStatisticsAnalyzer<StreamH
 
     @Override
     public void end() {
+        // nothing to do here
     }
 
     @Override

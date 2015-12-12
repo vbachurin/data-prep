@@ -14,12 +14,11 @@ package org.talend.dataprep.transformation.api.action.metadata.math;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Map;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
@@ -38,8 +37,8 @@ public abstract class AbstractRound extends ActionMetadata implements ColumnActi
     }
 
     @Override
-    public void applyOnColumn(final DataSetRow row, final TransformationContext context, final Map<String, String> parameters,
-            final String columnId) {
+    public void applyOnColumn(final DataSetRow row, final ActionContext context) {
+        final String columnId = context.getColumnId();
         final String value = row.get(columnId);
         if (value == null) {
             return;

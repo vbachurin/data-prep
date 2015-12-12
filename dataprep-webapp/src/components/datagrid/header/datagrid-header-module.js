@@ -9,15 +9,17 @@
      * @requires data-prep.transformation-menu
      * @requires data-prep.services.utils
      * @requires data-prep.services.playground
+     * @requires data-prep.services.filter
      * @requires data-prep.services.transformation
-     * @requires data-prep.quality-bar
+     * @requires data-prep.services.state
      */
     angular.module('data-prep.datagrid-header', [
         'talend.widget',
         'data-prep.transformation-menu',
         'data-prep.services.utils',
         'data-prep.services.playground',
+        'data-prep.services.filter',
         'data-prep.services.transformation',
-        'data-prep.quality-bar'
+        'data-prep.services.state'
     ]);
 })();

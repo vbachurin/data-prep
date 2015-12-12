@@ -5,7 +5,7 @@
       "parameters": {
         "column_id": "city",
         "default_value": "Minas Tirith",
-        "mode": "Constant",
+        "mode": "constant_mode",
         "scope": "column"
       }
     }

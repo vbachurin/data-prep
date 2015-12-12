@@ -30,9 +30,10 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
 /**
  * Test class for Split action. Creates one consumer, and test it.
@@ -49,10 +50,7 @@ public class SubstringTest {
     @Before
     public void init() throws IOException {
         action = new Substring();
-
-        parameters = ActionMetadataTestUtils.parseParameters( //
-                //
-                SubstringTest.class.getResourceAsStream("substringAction.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(SubstringTest.class.getResourceAsStream("substringAction.json"));
     }
 
     @Test
@@ -86,7 +84,7 @@ public class SubstringTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -111,7 +109,7 @@ public class SubstringTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -136,7 +134,7 @@ public class SubstringTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -161,7 +159,7 @@ public class SubstringTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -190,7 +188,7 @@ public class SubstringTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -220,7 +218,7 @@ public class SubstringTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -249,7 +247,7 @@ public class SubstringTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -263,8 +261,11 @@ public class SubstringTest {
     public void should_substring_strange_bounds_2() throws IOException {
         //given
         parameters.put(FROM_INDEX_PARAMETER, "7");
-        parameters.put(TO_MODE_PARAMETER, "To end");
+        parameters.put(TO_MODE_PARAMETER, Substring.TO_END);
         parameters.put(TO_INDEX_PARAMETER, "");
+
+
+
 
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
@@ -279,7 +280,7 @@ public class SubstringTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -306,11 +307,11 @@ public class SubstringTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         parameters.put(FROM_INDEX_PARAMETER, "1");
         parameters.put(TO_INDEX_PARAMETER, "6");
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -323,7 +324,7 @@ public class SubstringTest {
     @Test
     public void should_substring_begining() throws IOException {
         //given
-        parameters.put(FROM_MODE_PARAMETER, "From beginning");
+        parameters.put(FROM_MODE_PARAMETER, Substring.FROM_BEGINNING);
 
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
@@ -338,7 +339,7 @@ public class SubstringTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -351,7 +352,7 @@ public class SubstringTest {
     @Test
     public void should_substring_end() throws IOException {
         //given
-        parameters.put(TO_MODE_PARAMETER, "To end");
+        parameters.put(TO_MODE_PARAMETER, Substring.TO_END);
 
         final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
@@ -366,7 +367,7 @@ public class SubstringTest {
         expectedValues.put("0002", "01/01/2015");
 
         //when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -392,13 +393,14 @@ public class SubstringTest {
         expectedValues.put("0004", "ips");
         expectedValues.put("0002", "01/01/2015");
 
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //when
         parameters.put("column_id", "0003");
         parameters.put(FROM_INDEX_PARAMETER, "1");
         parameters.put(TO_INDEX_PARAMETER, "4");
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0003");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), "0003");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expectedValues, row.values());
@@ -420,7 +422,7 @@ public class SubstringTest {
         expected.add(createMetadata("0002", "last update"));
 
         //when
-        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
 
         //then
         assertEquals(expected, rowMetadata.getColumns());
@@ -444,8 +446,7 @@ public class SubstringTest {
         expected.add(createMetadata("0002", "last update"));
 
         //when
-        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
-        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction(), action.create(parameters).getRowAction());
 
         //then
         assertEquals(expected, row.getRowMetadata().getColumns());

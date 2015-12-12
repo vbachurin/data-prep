@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
@@ -34,13 +34,14 @@ public abstract class AbstractDelete extends ActionMetadata implements ColumnAct
     public abstract boolean toDelete(final ColumnMetadata colMetadata, final Map<String, String> parsedParameters, final String value);
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
      */
     @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        final String columnId = context.getColumnId();
         final String value = row.get(columnId);
         final ColumnMetadata colMetadata = row.getRowMetadata().getById(columnId);
-        if (toDelete(colMetadata, parameters, value)) {
+        if (toDelete(colMetadata, context.getParameters(), value)) {
             row.setDeleted(true);
         }
     }

@@ -5,8 +5,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.http.client.HttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,7 +47,7 @@ public class VersionServiceAPI extends APIService {
      * 
      * @return an array of service versions
      */
-    public Version[] allVersions(HttpServletRequest request) {
+    public Version[] allVersions() {
         Version[] versions = new Version[4];
         ManifestInfo manifestInfo = ManifestInfo.getInstance();
 

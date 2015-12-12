@@ -18,10 +18,7 @@ import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +26,8 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
@@ -50,7 +49,6 @@ public class MatchesPatternTest {
     @Before
     public void init() throws IOException {
         action = new MatchesPattern();
-
         parameters = ActionMetadataTestUtils.parseParameters(MatchesPatternTest.class.getResourceAsStream("matchesPattern.json"));
     }
 
@@ -66,9 +64,6 @@ public class MatchesPatternTest {
         assertThat(action.getCategory(), is(ActionCategory.STRINGS.getDisplayName()));
     }
 
-    /**
-     * @see Split#create(Map)
-     */
     @Test
     public void shouldMatchPattern() {
         // given
@@ -85,69 +80,58 @@ public class MatchesPatternTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expectedValues, row.values());
     }
 
-    /**
-     * @see Split#create(Map)
-     */
     @Test
     public void shouldOrNotMatchPattern() {
-        assertFalse(action.computeNewValue(" ", "[a-zA-Z]*"));
-        assertTrue(action.computeNewValue("aA", "[a-zA-Z]*"));
+        assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]*")));
+        assertTrue(action.computeNewValue("aA", buildPatternActionContext("[a-zA-Z]*")));
 
-        assertFalse(action.computeNewValue("Ouch !", "[a-zA-Z0-9]*"));
-        assertTrue(action.computeNewValue("Houba 2 fois", "[a-zA-Z0-9 ]*"));
+        assertFalse(action.computeNewValue("Ouch !", buildPatternActionContext("[a-zA-Z0-9]*")));
+        assertTrue(action.computeNewValue("Houba 2 fois", buildPatternActionContext("[a-zA-Z0-9 ]*")));
     }
 
-    /**
-     * @see Split#create(Map)
-     */
     @Test
     public void shouldNotMatchPattern() {
-        assertFalse(action.computeNewValue(" ", "[a-zA-Z]*"));
-        assertFalse(action.computeNewValue("aaaa8", "[a-zA-Z]*"));
-        assertFalse(action.computeNewValue(" a8 ", "[a-zA-Z]*"));
-        assertFalse(action.computeNewValue("aa:", "[a-zA-Z]*"));
+        assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]*")));
+        assertFalse(action.computeNewValue("aaaa8", buildPatternActionContext("[a-zA-Z]*")));
+        assertFalse(action.computeNewValue(" a8 ", buildPatternActionContext("[a-zA-Z]*")));
+        assertFalse(action.computeNewValue("aa:", buildPatternActionContext("[a-zA-Z]*")));
     }
 
-    /**
-     * @see Split#create(Map)
-     */
     @Test
     public void shouldMatchOrNotoEmptyString() {
-        assertTrue(action.computeNewValue("", ".*"));
-        assertTrue(action.computeNewValue("", "[a-zA-Z]*"));
-        assertFalse(action.computeNewValue(" ", "[a-zA-Z]*"));
-        assertTrue(action.computeNewValue(" ", "[a-zA-Z ]*"));
+        assertTrue(action.computeNewValue("", buildPatternActionContext(".*")));
+        assertTrue(action.computeNewValue("", buildPatternActionContext("[a-zA-Z]*")));
+        assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]*")));
+        assertTrue(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z ]*")));
     }
 
-    /**
-     * @see Split#create(Map)
-     */
+    private ActionContext buildPatternActionContext(String regex) {
+        ActionContext context = new ActionContext(new TransformationContext());
+        context.setParameters(Collections.singletonMap(MatchesPattern.PATTERN_PARAMETER, regex));
+        action.compile(context);
+        return context;
+    }
+
     @Test
     public void shouldMatchEmptyStringEmptyPattern() {
-        assertFalse(action.computeNewValue("", ""));
-        assertFalse(action.computeNewValue("  ", ""));
-        assertFalse(action.computeNewValue("un petit texte", ""));
+        assertFalse(action.computeNewValue("", buildPatternActionContext("")));
+        assertFalse(action.computeNewValue("  ", buildPatternActionContext("")));
+        assertFalse(action.computeNewValue("un petit texte", buildPatternActionContext("")));
     }
 
-    /**
-     * @see Split#create(Map)
-     */
     @Test
     public void shouldNotMatchBadPattern() {
-        assertFalse(action.computeNewValue("", "*"));
-        assertFalse(action.computeNewValue("  ", "*"));
-        assertFalse(action.computeNewValue("un petit texte", "*"));
+        assertFalse(action.computeNewValue("", buildPatternActionContext("*")));
+        assertFalse(action.computeNewValue("  ", buildPatternActionContext("*")));
+        assertFalse(action.computeNewValue("un petit texte", buildPatternActionContext("*")));
     }
 
-    /**
-     * @see Split#create(Map)
-     */
     @Test
     public void shouldMatchPatternTwice() {
         // given
@@ -165,16 +149,12 @@ public class MatchesPatternTest {
         expectedValues.put("0002", "01/01/2015");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction(), action.create(parameters).getRowAction());
 
         // then
         assertEquals(expectedValues, row.values());
     }
 
-    /**
-     * @see ComputeLength#create(Map)
-     */
     @Test
     public void shouldUpdateMetadata() {
         // given
@@ -191,15 +171,12 @@ public class MatchesPatternTest {
         expected.add(createMetadata("0002", "last update"));
 
         // when
-        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expected, rowMetadata.getColumns());
     }
 
-    /**
-     * @see ComputeLength#create(Map)
-     */
     @Test
     public void shouldUpdateMetadataTwice() {
         // given
@@ -217,8 +194,7 @@ public class MatchesPatternTest {
         expected.add(createMetadata("0002", "last update"));
 
         // when
-        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
-        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction(), action.create(parameters).getRowAction());
 
         // then
         assertEquals(expected, rowMetadata.getColumns());

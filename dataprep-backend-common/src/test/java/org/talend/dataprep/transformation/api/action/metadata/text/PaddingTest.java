@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
@@ -44,10 +44,7 @@ public class PaddingTest {
     @Before
     public void init() throws IOException {
         action = new Padding();
-
-        parameters = ActionMetadataTestUtils.parseParameters( //
-                //
-                PaddingTest.class.getResourceAsStream("paddingAction.json"));
+        parameters = ActionMetadataTestUtils.parseParameters(PaddingTest.class.getResourceAsStream("paddingAction.json"));
     }
 
     @Test
@@ -80,7 +77,7 @@ public class PaddingTest {
         expectedValues.put("joined", "May 20th 2015");
 
         // when
-        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals(expectedValues, row.values());
