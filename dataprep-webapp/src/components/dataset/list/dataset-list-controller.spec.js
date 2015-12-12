@@ -487,12 +487,9 @@ describe('Dataset list controller', function () {
 
         it('should not call service to rename dataset with an already existed name', inject(function ($q, DatasetService, MessageService) {
 
-            //given
-            spyOn(DatasetService, 'datasetsList').and.callFake(function () {
-                return [{id: 'ab45f893d8e923', name: 'Us states'}];
-            });
             spyOn(DatasetService, 'update').and.returnValue($q.when(true));
             var ctrl = createController();
+            ctrl.currentFolderContent.datasets = [{id: 'ab45f893d8e923', name: 'Us states'}];
             var name = 'foo';
             var dataset = {name: name};
 
@@ -502,7 +499,6 @@ describe('Dataset list controller', function () {
 
             //then
             expect(dataset.name).toBe(name);
-            expect(DatasetService.datasetsList).toHaveBeenCalled();
             expect(DatasetService.update).not.toHaveBeenCalled();
             expect(MessageService.error).toHaveBeenCalledWith('DATASET_NAME_ALREADY_USED_TITLE', 'DATASET_NAME_ALREADY_USED');
         }));
