@@ -97,6 +97,7 @@ public class AnalyzerService implements DisposableBean {
         // Configure quality & semantic analysis (if column metadata information is present in stream).
         final DataType.Type[] types = TypeUtils.convert(columns);
         final HistogramParameter histogramParameter = getNumberHistogramParameter(columns); // Set min and max for each column in histogram
+        final DateTimePatternFrequencyAnalyzer dateTimePatternFrequency = getDateTimePatternFrequencyAnalyzer(columns);
 
         // Configure value quality analysis
         final Analyzer<Analyzers.Result> analyzer = Analyzers.with(
@@ -110,37 +111,7 @@ public class AnalyzerService implements DisposableBean {
                 new QuantileAnalyzer(types),                                        // Quantile analysis
                 new SummaryAnalyzer(types),                                         // Summary (min, max, mean, variance)
                 new StreamNumberHistogramAnalyzer(types, histogramParameter),       // Number Histogram
-                new StreamDateHistogramAnalyzer(columns, types));                   // Date Histogram
-        analyzer.init();
-        return analyzer;
-    }
-
-    public Analyzer<Analyzers.Result> baseAnalysis(List<ColumnMetadata> columns) {
-        // Configure value quality analysis
-        final Analyzer<Analyzers.Result> analyzer = Analyzers.with(
-                getQualityAnalyzer(columns),                            // Value quality (invalid values...)
-                getDataTypeAnalyzer(columns),                           // Type analysis (especially useful for new columns).
-                new CardinalityAnalyzer(),                              // Cardinality (distinct + duplicate)
-                new DataTypeFrequencyAnalyzer(),                        // Raw data Frequency analysis
-                getPatternFrequencyAnalyzer(columns),                   // Pattern Frequency analysis
-                new TextLengthAnalyzer(),                               // Text length analysis (for applicable columns)
-                new SemanticAnalyzer(newCategoryRecognizer()));         // Semantic analysis
-        analyzer.init();
-        return analyzer;
-    }
-
-    public Analyzer<Analyzers.Result> computedStatisticsAnalysis(List<ColumnMetadata> columns) {
-        // Configure quality & semantic analysis (if column metadata information is present in stream).
-        final DataType.Type[] types = TypeUtils.convert(columns);
-        // Set min and max for each column in histogram
-        final HistogramParameter histogramParameter = getNumberHistogramParameter(columns);
-
-        // Configure value quality analysis
-        final Analyzer<Analyzers.Result> analyzer = Analyzers.with(
-                new QuantileAnalyzer(types),                                        // Quantile analysis
-                new SummaryAnalyzer(types),                                         // Summary (min, max, mean, variance)
-                new StreamNumberHistogramAnalyzer(types, histogramParameter),       // Number Histogram
-                new StreamDateHistogramAnalyzer(columns, types));                   // Date Histogram
+                new StreamDateHistogramAnalyzer(types, dateTimePatternFrequency));  // Date Histogram
         analyzer.init();
         return analyzer;
     }
@@ -159,9 +130,7 @@ public class AnalyzerService implements DisposableBean {
     public AbstractPatternFrequencyAnalyzer getPatternFrequencyAnalyzer(List<ColumnMetadata> columns) {
 
         // deal with specific date, even custom date pattern
-        final DateTimePatternFrequencyAnalyzer dateTimePatternFrequencyAnalyzer = new DateTimePatternFrequencyAnalyzer();
-        final List<String> mostUsedDatePatterns = getMostUsedDatePatterns(columns);
-        dateTimePatternFrequencyAnalyzer.addCustomDateTimePatterns(mostUsedDatePatterns);
+        final DateTimePatternFrequencyAnalyzer dateTimePatternFrequencyAnalyzer = getDateTimePatternFrequencyAnalyzer(columns);
 
         // warning, the order is important
         List<AbstractPatternFrequencyAnalyzer> patternFrequencyAnalyzers = new ArrayList<>();
@@ -170,6 +139,13 @@ public class AnalyzerService implements DisposableBean {
         patternFrequencyAnalyzers.add(new LatinExtendedCharPatternFrequencyAnalyzer());
 
         return new CompositePatternFrequencyAnalyzer(patternFrequencyAnalyzers);
+    }
+
+    private DateTimePatternFrequencyAnalyzer getDateTimePatternFrequencyAnalyzer(final List<ColumnMetadata> columns) {
+        final DateTimePatternFrequencyAnalyzer dateTimePatternFrequencyAnalyzer = new DateTimePatternFrequencyAnalyzer();
+        final List<String> mostUsedDatePatterns = getMostUsedDatePatterns(columns);
+        dateTimePatternFrequencyAnalyzer.addCustomDateTimePatterns(mostUsedDatePatterns);
+        return dateTimePatternFrequencyAnalyzer;
     }
 
     public Analyzer<Analyzers.Result> qualityAnalysis(List<ColumnMetadata> columns) {

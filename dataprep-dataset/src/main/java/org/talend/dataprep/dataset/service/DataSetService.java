@@ -879,9 +879,6 @@ public class DataSetService {
             qualityAnalyzer.computeQuality(copy.getMetadata(), stream, sample);
         }
         try (Stream<DataSetRow> stream = contentStore.sample(dataSetMetadata, sample)) {
-            statisticsAnalysis.computeBaseStatistics(copy.getMetadata(), stream);
-        }
-        try (Stream<DataSetRow> stream = contentStore.sample(dataSetMetadata, sample)) {
             statisticsAnalysis.computeStatistics(copy.getMetadata(), stream);
         }
     }
