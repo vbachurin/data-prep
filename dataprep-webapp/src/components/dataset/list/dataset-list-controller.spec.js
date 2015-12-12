@@ -510,12 +510,14 @@ describe('Dataset list controller', function () {
 
     describe('clone', function () {
 
-        beforeEach(inject(function ($q, MessageService,FolderService,DatasetService) {
+        beforeEach(inject(function ($q, MessageService,FolderService,DatasetService,PreparationListService) {
             spyOn(MessageService, 'success').and.returnValue();
+            spyOn(FolderService, 'getFolderContent').and.returnValue($q.when(true));
             spyOn(DatasetService,'clone').and.returnValue($q.when(true));
+            spyOn(PreparationListService, 'refreshMetadataInfos').and.returnValue($q.when(true));
         }));
 
-        it('should call clone service', inject(function (DatasetService) {
+        it('should call clone service', inject(function (DatasetService,FolderService,PreparationListService) {
             //given
             var folder = {id:'foo'};
             var cloneName = 'bar';
@@ -532,9 +534,10 @@ describe('Dataset list controller', function () {
 
             //then
             expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder, cloneName);
+            expect(FolderService.getFolderContent).toHaveBeenCalled();
         }));
 
-        it('should display message on success', inject(function (MessageService,DatasetService) {
+        it('should display message on success', inject(function (MessageService,DatasetService,FolderService,PreparationListService) {
             //given
             var folder = {id:'foo'};
             var ctrl = createController();
@@ -552,6 +555,7 @@ describe('Dataset list controller', function () {
             //then
             expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder, cloneName);
             expect(MessageService.success).toHaveBeenCalledWith('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
+            expect(FolderService.getFolderContent).toHaveBeenCalled();
         }));
     });
 

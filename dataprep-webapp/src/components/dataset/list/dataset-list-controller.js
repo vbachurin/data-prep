@@ -192,7 +192,7 @@
                         MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
 
                         // force going to current folder to refresh the content
-                        vm.goToFolder(state.folder.currentFolder).then(function(){
+                        FolderService.getFolderContent(state.folder.currentFolder).then(function(){
                             PreparationListService.refreshMetadataInfos(state.folder.currentFolderContent.datasets)
                                 .then(function(preparations){
                                     FolderService.refreshDefaultPreparationForCurrentFolder(preparations);
