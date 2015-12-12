@@ -3,6 +3,8 @@ package org.talend.dataprep.api.dataset.statistics.date;
 import org.apache.commons.lang.NotImplementedException;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
+import org.talend.dataquality.statistics.frequency.pattern.DateTimePatternFrequencyAnalyzer;
+import org.talend.dataquality.statistics.frequency.pattern.PatternFrequencyStatistics;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.ResizableList;
 import org.talend.datascience.common.inference.type.DataType.Type;
@@ -11,6 +13,7 @@ import org.talend.datascience.common.inference.type.TypeInferenceUtils;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -37,41 +40,18 @@ public class StreamDateHistogramAnalyzer implements Analyzer<StreamDateHistogram
     private final Type[] types;
 
     /**
-     * The columns metadata
+     * A date pattern analyzer
      */
-    private final List<ColumnMetadata> columns;
-
-    /**
-     * The list of date formatters, for each column, based on the list of patterns
-     */
-    private final Map<ColumnMetadata, List<DateTimeFormatter>> dateFormatters;
+    private final DateTimePatternFrequencyAnalyzer dateTimePatternFrequencyAnalyzer;
 
     /**
      * Constructor
-     *
-     * @param columns The columns metadata
      * @param types   The columns data types
+     * @param dateTimePatternFrequencyAnalyzer
      */
-    public StreamDateHistogramAnalyzer(final List<ColumnMetadata> columns, final Type[] types) {
-        this.columns = columns;
+    public StreamDateHistogramAnalyzer(final Type[] types, final DateTimePatternFrequencyAnalyzer dateTimePatternFrequencyAnalyzer) {
         this.types = types;
-        this.dateFormatters = columns.stream()
-                .filter(col -> DATE.isAssignableFrom(col.getType()))
-                .collect(Collectors.toMap(Function.identity(), col -> {
-                    final List<PatternFrequency> patterns = col.getStatistics().getPatternFrequencies();
-                    return patterns.stream()
-                            .map(PatternFrequency::getPattern)
-                            .filter(pattern -> !pattern.isEmpty())
-                            .map(pattern -> {
-                                try {
-                                    return DateTimeFormatter.ofPattern(pattern);
-                                } catch (final Exception e) {
-                                    return null;
-                                }
-                            })
-                            .filter(formatter -> formatter != null)
-                            .collect(toList());
-                }));
+        this.dateTimePatternFrequencyAnalyzer = dateTimePatternFrequencyAnalyzer;
     }
 
     @Override
@@ -85,14 +65,15 @@ public class StreamDateHistogramAnalyzer implements Analyzer<StreamDateHistogram
         stats.resize(record.length);
 
         for (int index = 0; index < types.length; ++index) {
-            final ColumnMetadata column = this.columns.get(index);
             final Type type = this.types[index];
             final String value = record[index];
             if (type != Type.DATE || !TypeInferenceUtils.isValid(type, value)) {
                 continue;
             }
 
-            final LocalDate adaptedValue = convertToDate(column, value);
+            dateTimePatternFrequencyAnalyzer.analyze(record);
+            final PatternFrequencyStatistics frequencyPatterns = dateTimePatternFrequencyAnalyzer.getResult().get(index);
+            final LocalDate adaptedValue = convertToDate(frequencyPatterns, value);
             if (adaptedValue == null) {
                 continue;
             }
@@ -106,20 +87,21 @@ public class StreamDateHistogramAnalyzer implements Analyzer<StreamDateHistogram
     /**
      * Convert the String value to Date
      *
-     * @param column The column metadata.
+     * @param patternFrequencyStatistics The date pattern statistics.
      * @param value  The value to convert.
      * @return The resulting date.
      */
-    private LocalDate convertToDate(final ColumnMetadata column, final String value) {
-        return dateFormatters.get(column).stream()
-                .map(formatter -> {
+    private LocalDate convertToDate(final PatternFrequencyStatistics patternFrequencyStatistics, final String value) {
+        return patternFrequencyStatistics.getTopK(20).keySet().stream()
+                .map(pattern -> {
                     try {
+                        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
                         return LocalDate.parse(value, formatter);
-                    } catch (final DateTimeParseException e) {
+                    } catch (final Exception e) {
                         return null;
                     }
                 })
-                .filter(res -> res != null)
+                .filter(date -> date != null)
                 .findFirst()
                 .orElse(null);
     }
