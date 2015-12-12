@@ -48,7 +48,6 @@ public class Folder implements Serializable {
         return this.getPath();
     }
 
-    @Override
     public void setId(String id) {
         this.setPath(id);
     }
