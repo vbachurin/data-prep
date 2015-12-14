@@ -12,6 +12,9 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCate
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.RowAction;
 
+/**
+ * Delete the line which id matches TdpId in context. This id/filtering is managed by ActionMetadata.
+ */
 @Component(Delete.ACTION_BEAN_PREFIX + Delete.DELETE_ACTION_NAME)
 public class Delete extends ActionMetadata implements RowAction {
 
@@ -67,9 +70,7 @@ public class Delete extends ActionMetadata implements RowAction {
 
     @Override
     public void applyOnLine(DataSetRow row, ActionContext context) {
-        if (row.getTdpId().equals(context.getRowId())) {
-            row.setDeleted(true);
-        }
+        row.setDeleted(true);
     }
 
     @Override
