@@ -22,38 +22,10 @@
                 if(rejection.config.timeout && rejection.config.timeout.$$state.value === 'user cancel') {
                     return $q.reject(rejection);
                 }
-
-                if(rejection.status === 0) {
-                    MessageService.error('SERVER_ERROR_TITLE', 'SERVICE_UNAVAILABLE');
+                /*jshint camelcase: false */
+                if(rejection.data.message_title && rejection.data.message) {
+                    MessageService.error(rejection.data.message_title, rejection.data.message);
                 }
-
-                else if(rejection.status === 500) {
-                    MessageService.error('SERVER_ERROR_TITLE', 'GENERIC_ERROR');
-                }
-
-                else if(rejection.data && rejection.data.code) {
-
-                    if(rejection.data.code === 'TDP_API_DATASET_STILL_IN_USE') {
-                        MessageService.error('SERVER_ERROR_TITLE', 'DELETE_DATASET_ERROR');
-                    }
-                    else if(rejection.data.code === 'TDP_PS_PREPARATION_STEP_CANNOT_BE_DELETED_IN_SINGLE_MODE') {
-                        MessageService.error('PREPARATION_STEP_DELETE_MODE_NOT_AUTHORIZED_TITLE', 'PREPARATION_STEP_DELETE_MODE_NOT_AUTHORIZED');
-                    }
-                    else if(rejection.data.code === 'TDP_DSS_UNSUPPORTED_CONTENT') {
-                        MessageService.error('UNSUPPORTED_CONTENT_TITLE', 'UNSUPPORTED_CONTENT');
-                    }
-                    else if(rejection.data.code === 'TDP_API_UNABLE_TO_CREATE_DATASET') {
-                        MessageService.error('IMPORT_ERROR_TITLE', 'IMPORT_ERROR');
-                    }
-                    else if(rejection.data.code === 'TDP_API_UNABLE_TO_CREATE_OR_UPDATE_DATASET') {
-                        MessageService.error('UPDATE_ERROR_TITLE', 'UPDATE_ERROR');
-                    }
-                    else {
-                        MessageService.error('SERVER_ERROR_TITLE', 'GENERIC_ERROR');
-                    }
-                }
-
-
                 return $q.reject(rejection);
             }
         };

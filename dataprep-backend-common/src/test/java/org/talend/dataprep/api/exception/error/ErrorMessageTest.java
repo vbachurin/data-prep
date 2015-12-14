@@ -156,7 +156,7 @@ public class ErrorMessageTest {
 
         // then
         String errorExpected = "{\"code\":\"" + errorCode.getProduct() + '_' + errorCode.getGroup() + '_' + errorCode.getCode()
-                + "\",\"message\":\"" + "This actions cannot be deleted alone because other following actions depends on it"
+                + "\",\"message\":\"" + "This action cannot be deleted alone because other following actions depends on it"
                 + "\",\"message_title\":Delete action not authorized,\"context\":{}}";
         StringWriter stringWriter = new StringWriter();
         exception.writeTo(stringWriter);

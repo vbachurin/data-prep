@@ -9,6 +9,12 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
+/**
+ * This action is used to delete lines that match a filter.
+ *
+ * With no filter, it will delete all lines!
+ *
+ */
 @Component(DeleteLines.ACTION_BEAN_PREFIX + DeleteLines.DELETE_LINES_ACTION_NAME)
 public class DeleteLines extends ActionMetadata implements ColumnAction {
 
