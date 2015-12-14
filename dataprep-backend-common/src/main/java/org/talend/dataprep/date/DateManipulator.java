@@ -50,8 +50,8 @@ public class DateManipulator {
      * @param maxNumberOfParts The maximum number of parts
      * @return The suitable pace to use in the range
      */
-    public DateManipulator.Pace getSuitablePace(final LocalDate min, final LocalDate max, final int maxNumberOfParts) {
-        final long allRangeTimetamp = Duration.between(min.atStartOfDay(), max.atStartOfDay()).toMillis();
+    public DateManipulator.Pace getSuitablePace(final LocalDateTime min, final LocalDateTime max, final int maxNumberOfParts) {
+        final long allRangeTimetamp = Duration.between(min, max).toMillis();
         return Arrays.stream(Pace.values())
                 .filter(pace -> (allRangeTimetamp / pace.getTime()) < (maxNumberOfParts - 1))
                 .findFirst()
@@ -78,24 +78,24 @@ public class DateManipulator {
      * @param pace The pace representing the range
      * @return The starting range date
      */
-    public LocalDate getSuitableStartingDate(final LocalDate date, final DateManipulator.Pace pace) {
+    public LocalDateTime getSuitableStartingDate(final LocalDateTime date, final DateManipulator.Pace pace) {
         switch (pace) {
             case CENTURY:
                 return getFirstDayOfCentury(date);
             case DECADE:
                 return getFirstDayOfDecade(date);
             case YEAR:
-                return date.with(TemporalAdjusters.firstDayOfYear());
+                return getFirstDayOfYear(date);
             case HALF_YEAR:
                 return getFirstDayOfHalfYear(date);
             case QUARTER:
                 return getFirstDayOfQuarter(date);
             case MONTH:
-                return date.with(TemporalAdjusters.firstDayOfMonth());
+                return getFirstDayOfMonth(date);
             case WEEK:
-                return date.with(DayOfWeek.MONDAY);
+                return getFirstDayOfWeek(date);
             default:
-                return date;
+                return getStartOfDay(date);
         }
     }
 
@@ -106,7 +106,7 @@ public class DateManipulator {
      * @param pace      The pace to add
      * @return The day = localDate + pace
      */
-    public LocalDate getNext(final LocalDate localDate, final Pace pace) {
+    public LocalDateTime getNext(final LocalDateTime localDate, final Pace pace) {
         switch (pace) {
             case CENTURY:
                 return localDate.plus(100, ChronoUnit.YEARS);
@@ -134,11 +134,12 @@ public class DateManipulator {
      * @param localDate The reference date
      * @return The first day of the date century
      */
-    private LocalDate getFirstDayOfCentury(final LocalDate localDate) {
+    private LocalDateTime getFirstDayOfCentury(final LocalDateTime localDate) {
         return localDate.with(temporal -> {
             final int year = localDate.getYear() / 100 * 100;
             return LocalDate.from(temporal)
                     .withYear(year)
+                    .atStartOfDay()
                     .with(TemporalAdjusters.firstDayOfYear());
         });
     }
@@ -149,13 +150,26 @@ public class DateManipulator {
      * @param localDate The reference date
      * @return The first day of the date decade
      */
-    private LocalDate getFirstDayOfDecade(final LocalDate localDate) {
+    private LocalDateTime getFirstDayOfDecade(final LocalDateTime localDate) {
         return localDate.with(temporal -> {
             final int year = localDate.getYear() / 10 * 10;
             return LocalDate.from(temporal)
                     .withYear(year)
+                    .atStartOfDay()
                     .with(TemporalAdjusters.firstDayOfYear());
         });
+    }
+
+    /**
+     * Compute the first day of the date year
+     *
+     * @param localDate The reference date
+     * @return The first day of the date year
+     */
+    private LocalDateTime getFirstDayOfYear(final LocalDateTime localDate) {
+        return localDate.with(temporal -> LocalDate.from(temporal)
+                .atStartOfDay()
+                .with(TemporalAdjusters.firstDayOfYear()));
     }
 
     /**
@@ -164,11 +178,12 @@ public class DateManipulator {
      * @param localDate The reference date
      * @return The first day of the date half year
      */
-    private LocalDate getFirstDayOfHalfYear(final LocalDate localDate) {
+    private LocalDateTime getFirstDayOfHalfYear(final LocalDateTime localDate) {
         return localDate.with(temporal -> {
             final Month semesterMonth = localDate.getMonth().getValue() < JULY.getValue() ? JANUARY : JULY;
             return LocalDate.from(temporal)
                     .withMonth(semesterMonth.getValue())
+                    .atStartOfDay()
                     .with(TemporalAdjusters.firstDayOfMonth());
         });
     }
@@ -179,25 +194,64 @@ public class DateManipulator {
      * @param localDate The reference date
      * @return The first day of the date quarter
      */
-    private LocalDate getFirstDayOfQuarter(final LocalDate localDate) {
+    private LocalDateTime getFirstDayOfQuarter(final LocalDateTime localDate) {
         return localDate.with(temporal -> {
             int currentQuarter = YearMonth.from(temporal).get(QUARTER_OF_YEAR);
             switch (currentQuarter) {
                 case 1:
-                    return LocalDate.from(temporal).with(TemporalAdjusters.firstDayOfYear());
+                    return LocalDate.from(temporal)
+                            .atStartOfDay()
+                            .with(TemporalAdjusters.firstDayOfYear());
                 case 2:
                     return LocalDate.from(temporal)
+                            .atStartOfDay()
                             .withMonth(APRIL.getValue())
                             .with(TemporalAdjusters.firstDayOfMonth());
                 case 3:
                     return LocalDate.from(temporal)
+                            .atStartOfDay()
                             .withMonth(JULY.getValue())
                             .with(TemporalAdjusters.firstDayOfMonth());
                 default:
                     return LocalDate.from(temporal)
+                            .atStartOfDay()
                             .withMonth(OCTOBER.getValue())
                             .with(TemporalAdjusters.firstDayOfMonth());
             }
         });
+    }
+
+    /**
+     * Compute the first day of the date month
+     *
+     * @param localDate The reference date
+     * @return The first day of the date month
+     */
+    private LocalDateTime getFirstDayOfMonth(final LocalDateTime localDate) {
+        return localDate.with(temporal -> LocalDate.from(temporal)
+                .atStartOfDay()
+                .with(TemporalAdjusters.firstDayOfMonth()));
+    }
+
+    /**
+     * Compute the first day of the date week
+     *
+     * @param localDate The reference date
+     * @return The first day of the date week
+     */
+    private LocalDateTime getFirstDayOfWeek(final LocalDateTime localDate) {
+        return localDate.with(temporal -> LocalDate.from(temporal)
+                .atStartOfDay()
+                .with(DayOfWeek.MONDAY));
+    }
+
+    /**
+     * Compute the start of the provided date
+     *
+     * @param localDate The reference date
+     * @return The start of the provided date
+     */
+    private LocalDateTime getStartOfDay(final LocalDateTime localDate) {
+        return localDate.with(temporal -> LocalDate.from(temporal).atStartOfDay());
     }
 }

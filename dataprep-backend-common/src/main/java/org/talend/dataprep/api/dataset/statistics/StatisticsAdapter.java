@@ -31,6 +31,7 @@ import org.talend.datascience.common.inference.type.DataType;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -250,7 +251,7 @@ public class StatisticsAdapter {
 
     private void injectDateHistogram(final ColumnMetadata column, final Analyzers.Result result) {
         if (DATE.isAssignableFrom(column.getType()) && result.exist(StreamDateHistogramStatistics.class)) {
-            final Histogram<LocalDate> histogram = result.get(StreamDateHistogramStatistics.class).getHistogram();
+            final Histogram<LocalDateTime> histogram = result.get(StreamDateHistogramStatistics.class).getHistogram();
             column.getStatistics().setHistogram(histogram);
         }
     }

@@ -26,7 +26,7 @@ import com.google.common.collect.Lists;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
-import org.talend.dataprep.date.LocalDateModule;
+import org.talend.dataprep.date.LocalDateTimeModule;
 
 public class FolderAPITest extends ApiServiceTestBase {
 
@@ -285,7 +285,7 @@ public class FolderAPITest extends ApiServiceTestBase {
                 .put("/api/folders");
 
         final ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new LocalDateModule());
+        mapper.registerModule(new LocalDateTimeModule());
         // given
         final String dataSetId1 = createDataset("dataset/dataset.csv", "aaaa", "text/csv");
         Thread.sleep(100);
@@ -373,7 +373,7 @@ public class FolderAPITest extends ApiServiceTestBase {
         Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
 
         final ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new LocalDateModule());
+        mapper.registerModule(new LocalDateTimeModule());
         // given
         final String dataSetId1 = createDataset("dataset/dataset.csv", "aaaa", "text/csv", "/foo");
         Thread.sleep(100);

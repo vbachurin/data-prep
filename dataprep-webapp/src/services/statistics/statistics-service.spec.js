@@ -48,6 +48,7 @@ describe('Statistics service', function () {
         'statistics': {
             frequencyTable: [],
             histogram: {
+                pace: 'MONTH',
                 items: [
                     {
                         'occurrences': 15,
@@ -76,6 +77,408 @@ describe('Statistics service', function () {
                                 dayOfMonth: 1,
                                 monthValue: 3,
                                 year: 2015
+                            }
+                        }
+                    }
+                ]
+            },
+            patternFrequencyTable: [
+                {
+                    pattern: 'd/M/yyyy',
+                    frequency: 15
+                },
+                {
+                    pattern: 'M/d/yyyy',
+                    frequency: 5
+                }
+            ],
+            count: 20,
+            distinctCount: 14,
+            duplicateCount: 6,
+            empty: 0,
+            invalid: 0,
+            valid: 0,
+            min: 'NaN',
+            max: 'NaN',
+            mean: 'NaN',
+            variance: 'NaN',
+            quantiles: {
+                lowerQuantile: 'NaN'
+            }
+        }
+    };
+
+    var barChartDateColYEAR = {
+        'domain': 'barchartAndDate',
+        'type': 'date',
+        'id': '0000',
+        'statistics': {
+            frequencyTable: [],
+            histogram: {
+                pace: 'YEAR',
+                items: [
+                    {
+                        'occurrences': 15,
+                        'range': {
+                            'min': {
+                                dayOfMonth: 1,
+                                monthValue: 1,
+                                year: 2014
+                            },
+                            'max': {
+                                dayOfMonth: 1,
+                                monthValue: 1,
+                                year: 2015
+                            }
+                        }
+                    },
+                    {
+                        'occurrences': 5,
+                        'range': {
+                            'min': {
+                                dayOfMonth: 1,
+                                monthValue: 1,
+                                year: 2015
+                            },
+                            'max': {
+                                dayOfMonth: 1,
+                                monthValue: 1,
+                                year: 2016
+                            }
+                        }
+                    }
+                ]
+            },
+            patternFrequencyTable: [
+                {
+                    pattern: 'd/M/yyyy',
+                    frequency: 15
+                },
+                {
+                    pattern: 'M/d/yyyy',
+                    frequency: 5
+                }
+            ],
+            count: 20,
+            distinctCount: 14,
+            duplicateCount: 6,
+            empty: 0,
+            invalid: 0,
+            valid: 0,
+            min: 'NaN',
+            max: 'NaN',
+            mean: 'NaN',
+            variance: 'NaN',
+            quantiles: {
+                lowerQuantile: 'NaN'
+            }
+        }
+    };
+
+    var barChartDateColHAFLYEAR = {
+        'domain': 'barchartAndDate',
+        'type': 'date',
+        'id': '0000',
+        'statistics': {
+            frequencyTable: [],
+            histogram: {
+                pace: 'HALF_YEAR',
+                items: [
+                    {
+                        'occurrences': 15,
+                        'range': {
+                            'min': {
+                                dayOfMonth: 1,
+                                monthValue: 1,
+                                year: 2014
+                            },
+                            'max': {
+                                dayOfMonth: 1,
+                                monthValue: 7,
+                                year: 2014
+                            }
+                        }
+                    },
+                    {
+                        'occurrences': 5,
+                        'range': {
+                            'min': {
+                                dayOfMonth: 1,
+                                monthValue: 7,
+                                year: 2014
+                            },
+                            'max': {
+                                dayOfMonth: 1,
+                                monthValue: 1,
+                                year: 2015
+                            }
+                        }
+                    }
+                ]
+            },
+            patternFrequencyTable: [
+                {
+                    pattern: 'd/M/yyyy',
+                    frequency: 15
+                },
+                {
+                    pattern: 'M/d/yyyy',
+                    frequency: 5
+                }
+            ],
+            count: 20,
+            distinctCount: 14,
+            duplicateCount: 6,
+            empty: 0,
+            invalid: 0,
+            valid: 0,
+            min: 'NaN',
+            max: 'NaN',
+            mean: 'NaN',
+            variance: 'NaN',
+            quantiles: {
+                lowerQuantile: 'NaN'
+            }
+        }
+    };
+
+    var barChartDateColQUARTER = {
+        'domain': 'barchartAndDate',
+        'type': 'date',
+        'id': '0000',
+        'statistics': {
+            frequencyTable: [],
+            histogram: {
+                pace: 'QUARTER',
+                items: [
+                    {
+                        'occurrences': 15,
+                        'range': {
+                            'min': {
+                                dayOfMonth: 1,
+                                monthValue: 1,
+                                year: 2014
+                            },
+                            'max': {
+                                dayOfMonth: 1,
+                                monthValue: 4,
+                                year: 2014
+                            }
+                        }
+                    },
+                    {
+                        'occurrences': 5,
+                        'range': {
+                            'min': {
+                                dayOfMonth: 1,
+                                monthValue: 4,
+                                year: 2014
+                            },
+                            'max': {
+                                dayOfMonth: 1,
+                                monthValue: 7,
+                                year: 2014
+                            }
+                        }
+                    }
+                ]
+            },
+            patternFrequencyTable: [
+                {
+                    pattern: 'd/M/yyyy',
+                    frequency: 15
+                },
+                {
+                    pattern: 'M/d/yyyy',
+                    frequency: 5
+                }
+            ],
+            count: 20,
+            distinctCount: 14,
+            duplicateCount: 6,
+            empty: 0,
+            invalid: 0,
+            valid: 0,
+            min: 'NaN',
+            max: 'NaN',
+            mean: 'NaN',
+            variance: 'NaN',
+            quantiles: {
+                lowerQuantile: 'NaN'
+            }
+        }
+    };
+
+    var barChartDateColMONTH = {
+        'domain': 'barchartAndDate',
+        'type': 'date',
+        'id': '0000',
+        'statistics': {
+            frequencyTable: [],
+            histogram: {
+                pace: 'MONTH',
+                items: [
+                    {
+                        'occurrences': 15,
+                        'range': {
+                            'min': {
+                                dayOfMonth: 1,
+                                monthValue: 1,
+                                year: 2015
+                            },
+                            'max': {
+                                dayOfMonth: 1,
+                                monthValue: 2,
+                                year: 2015
+                            }
+                        }
+                    },
+                    {
+                        'occurrences': 5,
+                        'range': {
+                            'min': {
+                                dayOfMonth: 1,
+                                monthValue: 2,
+                                year: 2015
+                            },
+                            'max': {
+                                dayOfMonth: 1,
+                                monthValue: 3,
+                                year: 2015
+                            }
+                        }
+                    }
+                ]
+            },
+            patternFrequencyTable: [
+                {
+                    pattern: 'd/M/yyyy',
+                    frequency: 15
+                },
+                {
+                    pattern: 'M/d/yyyy',
+                    frequency: 5
+                }
+            ],
+            count: 20,
+            distinctCount: 14,
+            duplicateCount: 6,
+            empty: 0,
+            invalid: 0,
+            valid: 0,
+            min: 'NaN',
+            max: 'NaN',
+            mean: 'NaN',
+            variance: 'NaN',
+            quantiles: {
+                lowerQuantile: 'NaN'
+            }
+        }
+    };
+
+    var barChartDateColWEEK = {
+        'domain': 'barchartAndDate',
+        'type': 'date',
+        'id': '0000',
+        'statistics': {
+            frequencyTable: [],
+            histogram: {
+                pace: 'WEEK',
+                items: [
+                    {
+                        'occurrences': 15,
+                        'range': {
+                            'min': {
+                                dayOfMonth: 4,
+                                monthValue: 1,
+                                year: 2016
+                            },
+                            'max': {
+                                dayOfMonth: 11,
+                                monthValue: 1,
+                                year: 2016
+                            }
+                        }
+                    },
+                    {
+                        'occurrences': 5,
+                        'range': {
+                            'min': {
+                                dayOfMonth: 11,
+                                monthValue: 1,
+                                year: 2016
+                            },
+                            'max': {
+                                dayOfMonth: 18,
+                                monthValue: 1,
+                                year: 2016
+                            }
+                        }
+                    }
+                ]
+            },
+            patternFrequencyTable: [
+                {
+                    pattern: 'd/M/yyyy',
+                    frequency: 15
+                },
+                {
+                    pattern: 'M/d/yyyy',
+                    frequency: 5
+                }
+            ],
+            count: 20,
+            distinctCount: 14,
+            duplicateCount: 6,
+            empty: 0,
+            invalid: 0,
+            valid: 0,
+            min: 'NaN',
+            max: 'NaN',
+            mean: 'NaN',
+            variance: 'NaN',
+            quantiles: {
+                lowerQuantile: 'NaN'
+            }
+        }
+    };
+
+    var barChartDateColDAY = {
+        'domain': 'barchartAndDate',
+        'type': 'date',
+        'id': '0000',
+        'statistics': {
+            frequencyTable: [],
+            histogram: {
+                pace: 'DAY',
+                items: [
+                    {
+                        'occurrences': 15,
+                        'range': {
+                            'min': {
+                                dayOfMonth: 1,
+                                monthValue: 1,
+                                year: 2016
+                            },
+                            'max': {
+                                dayOfMonth: 2,
+                                monthValue: 1,
+                                year: 2016
+                            }
+                        }
+                    },
+                    {
+                        'occurrences': 5,
+                        'range': {
+                            'min': {
+                                dayOfMonth: 2,
+                                monthValue: 1,
+                                year: 2016
+                            },
+                            'max': {
+                                dayOfMonth: 3,
+                                monthValue: 1,
+                                year: 2016
                             }
                         }
                     }
@@ -602,7 +1005,7 @@ describe('Statistics service', function () {
                     expect(StatisticsService.histogram.data[0].filteredOccurrences).toBe(10); //['01/01/2015', '01/02/2015'[
                     expect(StatisticsService.histogram.data[0].data).toEqual({
                         type: 'date',
-                        label: '[Jan 1, 2015, Feb 1, 2015[',
+                        label: 'Jan 2015',
                         min: new Date(2015, 0, 1),
                         max: new Date(2015, 1, 1)
                     });
@@ -610,7 +1013,7 @@ describe('Statistics service', function () {
                     expect(StatisticsService.histogram.data[1].filteredOccurrences).toBe(3); //['01/02/2015', '01/03/2015'[
                     expect(StatisticsService.histogram.data[1].data).toEqual({
                         type: 'date',
-                        label: '[Feb 1, 2015, Mar 1, 2015[',
+                        label: 'Feb 2015',
                         min: new Date(2015, 1, 1),
                         max: new Date(2015, 2, 1)
                     });
@@ -633,6 +1036,138 @@ describe('Statistics service', function () {
 
                     //then
                     expect(StatisticsService.histogram.vertical).toBe(true);
+                }));
+
+                it('should adapt date range label to year', inject(function (StatisticsService) {
+                    //given
+                    stateMock.playground.grid.selectedColumn = barChartDateColYEAR;
+
+                    //when
+                    StatisticsService.processData();
+
+                    //then
+                    expect(StatisticsService.histogram.data[0].data).toEqual({
+                        type: 'date',
+                        label: '2014',
+                        min: new Date(2014, 0, 1),
+                        max: new Date(2015, 0, 1)
+                    });
+                    expect(StatisticsService.histogram.data[1].data).toEqual({
+                        type: 'date',
+                        label: '2015',
+                        min: new Date(2015, 0, 1),
+                        max: new Date(2016, 0, 1)
+                    });
+                }));
+
+                it('should adapt date range label to half year', inject(function (StatisticsService) {
+                    //given
+                    stateMock.playground.grid.selectedColumn = barChartDateColHAFLYEAR;
+
+                    //when
+                    StatisticsService.processData();
+
+                    //then
+                    expect(StatisticsService.histogram.data[0].data).toEqual({
+                        type: 'date',
+                        label: 'H1 2014',
+                        min: new Date(2014, 0, 1),
+                        max: new Date(2014, 6, 1)
+                    });
+                    expect(StatisticsService.histogram.data[1].data).toEqual({
+                        type: 'date',
+                        label: 'H2 2014',
+                        min: new Date(2014, 6, 1),
+                        max: new Date(2015, 0, 1)
+                    });
+                }));
+
+                it('should adapt date range label to quarter', inject(function (StatisticsService) {
+                    //given
+                    stateMock.playground.grid.selectedColumn = barChartDateColQUARTER;
+
+                    //when
+                    StatisticsService.processData();
+
+                    //then
+                    expect(StatisticsService.histogram.data[0].data).toEqual({
+                        type: 'date',
+                        label: 'Q1 2014',
+                        min: new Date(2014, 0, 1),
+                        max: new Date(2014, 3, 1)
+                    });
+                    expect(StatisticsService.histogram.data[1].data).toEqual({
+                        type: 'date',
+                        label: 'Q2 2014',
+                        min: new Date(2014, 3, 1),
+                        max: new Date(2014, 6, 1)
+                    });
+                }));
+
+                it('should adapt date range label to month', inject(function (StatisticsService) {
+                    //given
+                    stateMock.playground.grid.selectedColumn = barChartDateColMONTH;
+
+                    //when
+                    StatisticsService.processData();
+
+                    //then
+                    expect(StatisticsService.histogram.data[0].data).toEqual({
+                        type: 'date',
+                        label: 'Jan 2015',
+                        min: new Date(2015, 0, 1),
+                        max: new Date(2015, 1, 1)
+                    });
+                    expect(StatisticsService.histogram.data[1].data).toEqual({
+                        type: 'date',
+                        label: 'Feb 2015',
+                        min: new Date(2015, 1, 1),
+                        max: new Date(2015, 2, 1)
+                    });
+                }));
+
+                it('should adapt date range label to week', inject(function (StatisticsService) {
+                    //given
+                    stateMock.playground.grid.selectedColumn = barChartDateColWEEK;
+
+                    //when
+                    StatisticsService.processData();
+
+                    //then
+                    expect(StatisticsService.histogram.data[0].data).toEqual({
+                        type: 'date',
+                        label: 'W01 2016',
+                        min: new Date(2016, 0, 4),
+                        max: new Date(2016, 0, 11)
+                    });
+                    expect(StatisticsService.histogram.data[1].data).toEqual({
+                        type: 'date',
+                        label: 'W02 2016',
+                        min: new Date(2016, 0, 11),
+                        max: new Date(2016, 0, 18)
+                    });
+                }));
+
+                it('should adapt date range label to day', inject(function (StatisticsService) {
+                    //given
+                    stateMock.playground.grid.selectedColumn = barChartDateColDAY;
+
+                    //when
+                    StatisticsService.processData();
+
+                    //then
+                    expect(StatisticsService.histogram.data[0].data).toEqual({
+                        type: 'date',
+                        label: 'Jan 1, 2016',
+                        min: new Date(2016, 0, 1),
+                        max: new Date(2016, 0, 2)
+                    });
+                    expect(StatisticsService.histogram.data[1].data).toEqual({
+                        type: 'date',
+                        label: 'Jan 2, 2016',
+                        min: new Date(2016, 0, 2),
+                        max: new Date(2016, 0, 3)
+                    });
                 }));
             });
         });
