@@ -3,7 +3,14 @@ package org.talend.dataprep.schema.xls;
 import static org.talend.dataprep.api.type.Type.*;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.OptionalLong;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -52,10 +59,10 @@ public class XlsSchemaParser implements SchemaParser {
 
         if (!sheetContents.isEmpty()) {
             return sheetContents.size() == 1 ? //
-            SchemaParserResult.Builder.parserResult() //
-                    .sheetContents(sheetContents) //
-                    .draft(false) //
-                    .build() //
+                    SchemaParserResult.Builder.parserResult() //
+                            .sheetContents(sheetContents) //
+                            .draft(false) //
+                            .build() //
                     : //
                     SchemaParserResult.Builder.parserResult() //
                             .sheetContents(sheetContents) //
@@ -200,8 +207,7 @@ public class XlsSchemaParser implements SchemaParser {
         String guessedType;
         if (duplicatedMax.size() == 1) {
             guessedType = duplicatedMax.get(0);
-        }
- else {
+        } else {
             // as we have more than one type we guess ANY
             guessedType = ANY.getName();
         }
