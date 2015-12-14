@@ -5,6 +5,7 @@ import static org.talend.dataprep.api.service.command.common.Defaults.pipeStream
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.function.BiFunction;
 
@@ -13,6 +14,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -27,9 +29,9 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 @Scope("request")
 public class DataSetPreview extends GenericCommand<InputStream> {
 
-    public DataSetPreview(HttpClient client, String dataSetId, boolean metadata, boolean columns, String sheetName) {
+    public DataSetPreview(HttpClient client, String dataSetId, boolean metadata, String sheetName) {
         super(PreparationAPI.TRANSFORM_GROUP, client);
-        execute(() -> onExecute(dataSetId, metadata, columns, sheetName));
+        execute(() -> onExecute(dataSetId, metadata, sheetName));
         onError(e -> new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e,
                 ExceptionContext.build().put("id", dataSetId)));
         on(HttpStatus.ACCEPTED, HttpStatus.NO_CONTENT).then(emptyStream());
@@ -43,17 +45,18 @@ public class DataSetPreview extends GenericCommand<InputStream> {
         on(HttpStatus.MOVED_PERMANENTLY, HttpStatus.FOUND).then(move);
     }
 
-    private HttpRequestBase onExecute(String dataSetId, boolean metadata, boolean columns, String sheetName) {
+    private HttpRequestBase onExecute(String dataSetId, boolean metadata, String sheetName) {
         try {
-            StringBuilder url = new StringBuilder(
-                    datasetServiceUrl + "/datasets/" + dataSetId + "/preview/?metadata=" + metadata + "&columns=" + columns);
+
+            URIBuilder uriBuilder = new URIBuilder( datasetServiceUrl + "/datasets/" + dataSetId + "/preview/" );
+            uriBuilder.addParameter( "metadata", Boolean.toString( metadata ) );
             if (StringUtils.isNotEmpty(sheetName)) {
                 // yup this sheet name can contains weird characters space, great french accents or even chinese
                 // characters
-                url.append("&sheetName=").append(URLEncoder.encode(sheetName, "UTF-8"));
+                uriBuilder.addParameter("sheetName",sheetName );
             }
-            return new HttpGet(url.toString());
-        } catch (UnsupportedEncodingException e) {
+            return new HttpGet(uriBuilder.build());
+        } catch (URISyntaxException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
