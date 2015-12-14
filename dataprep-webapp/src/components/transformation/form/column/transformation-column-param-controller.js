@@ -33,8 +33,10 @@
          * @description [PRIVATE] Init select default value
          */
         var initDefaultValue = function () {
-            if (vm.columns.length) {
-                vm.parameter.value = vm.columns[0].id;
+            if(!vm.parameter.value){
+                if (vm.columns.length) {
+                    vm.parameter.value = vm.columns[0].id;
+                }
             }
         };
 

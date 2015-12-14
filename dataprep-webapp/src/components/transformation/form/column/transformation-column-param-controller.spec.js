@@ -29,46 +29,78 @@ describe('Transform column param controller', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function ($rootScope, $controller) {
-        parameter = {};
-        scope = $rootScope.$new();
+    describe('with undefined parameter value', function(){
+        beforeEach(inject(function ($rootScope, $controller) {
+            parameter = {};
+            scope = $rootScope.$new();
 
-        createController = function () {
-            var ctrlFn = $controller('TransformColumnParamCtrl', {
-                $scope: scope
-            }, true);
-            ctrlFn.instance.parameter = parameter;
-            return ctrlFn();
-        };
-    }));
+            createController = function () {
+                var ctrlFn = $controller('TransformColumnParamCtrl', {
+                    $scope: scope
+                }, true);
+                ctrlFn.instance.parameter = parameter;
+                return ctrlFn();
+            };
+        }));
 
-    it('should remove current column', function () {
-        // when
-        var ctrl = createController();
+        it('should remove current column', function () {
+            // when
+            var ctrl = createController();
 
-        // then
-        expect(ctrl.columns.length).toBe(2);
-        expect(ctrl.columns[0]).toBe(stateMock.playground.data.metadata.columns[1]);
-        expect(ctrl.columns[1]).toBe(stateMock.playground.data.metadata.columns[2]);
+            // then
+            expect(ctrl.columns.length).toBe(2);
+            expect(ctrl.columns[0]).toBe(stateMock.playground.data.metadata.columns[1]);
+            expect(ctrl.columns[1]).toBe(stateMock.playground.data.metadata.columns[2]);
+
+        });
+
+        it('should set selected value to first column when value is undefined', function () {
+            // when
+            var ctrl = createController();
+
+            // then
+            expect(ctrl.parameter.value).toBe(stateMock.playground.data.metadata.columns[1].id);
+        });
+
+        it('should NOT set selected value when there is no columns and value does NOT exist', function () {
+            //given
+            stateMock.playground.data.metadata.columns = [];
+
+            // when
+            var ctrl = createController();
+
+            // then
+            expect(ctrl.parameter.value).toBeFalsy();
+        });
+    });
+
+    describe('with undefined parameter value', function(){
+        beforeEach(inject(function ($rootScope, $controller) {
+            parameter = {
+                value: '0002'
+            };
+            scope = $rootScope.$new();
+
+            createController = function () {
+                var ctrlFn = $controller('TransformColumnParamCtrl', {
+                    $scope: scope
+                }, true);
+                ctrlFn.instance.parameter = parameter;
+                return ctrlFn();
+            };
+        }));
+
+        it('should NOT set selected value when value already exists and columns does NOT exist', function () {
+            //given
+            stateMock.playground.data.metadata.columns = [{id: '0001', name: 'first name'}];
+
+            // when
+            var ctrl = createController();
+
+            // then
+            expect(ctrl.parameter.value).toBe('0002');
+        });
 
     });
 
-    it('should set selected value to first column', function () {
-        // when
-        var ctrl = createController();
-
-        // then
-        expect(ctrl.parameter.value).toBe(stateMock.playground.data.metadata.columns[1].id);
-    });
-
-    it('should NOT set selected value when there is no columns', function () {
-        //given
-        stateMock.playground.data.metadata.columns = [];
-
-        // when
-        var ctrl = createController();
-
-        // then
-        expect(ctrl.parameter.value).toBeFalsy();
-    });
 });
