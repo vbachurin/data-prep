@@ -9,7 +9,7 @@ import org.talend.dataprep.i18n.MessagesBundle;
  */
 public class ErrorMessage {
 
-    /**œ
+    /**
      * The suffix of messages specified in the properties file.
      */
     public static String MESSAGE_SUFFIX = ".MESSAGE";
