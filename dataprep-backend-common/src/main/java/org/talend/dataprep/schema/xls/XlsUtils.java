@@ -12,7 +12,9 @@ import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -33,7 +35,7 @@ public class XlsUtils {
         // Utility class should not have a public constructor.
     }
 
-    public static String getCellValueAsString(Cell cell) {
+    public static String getCellValueAsString( Cell cell, FormulaEvaluator formulaEvaluator) {
         if (cell == null) {
             return StringUtils.EMPTY;
         }
@@ -45,7 +47,7 @@ public class XlsUtils {
         case Cell.CELL_TYPE_ERROR:
             return "Cell Error type";
         case Cell.CELL_TYPE_FORMULA:
-            return cell.getCellFormula();
+            return getCellValueAsString(cell, formulaEvaluator.evaluate(cell) );
         case Cell.CELL_TYPE_NUMERIC:
             return getNumericValue(cell);
         case Cell.CELL_TYPE_STRING:
@@ -55,12 +57,44 @@ public class XlsUtils {
         }
     }
 
+    private static String getCellValueAsString(Cell cell, CellValue cellValue) {
+        if (cellValue == null) {
+            return StringUtils.EMPTY;
+        }
+        switch (cell.getCellType()) {
+            case Cell.CELL_TYPE_BLANK:
+                return "";
+            case Cell.CELL_TYPE_BOOLEAN:
+                return cellValue.getBooleanValue() ? Boolean.TRUE.toString() : Boolean.FALSE.toString();
+            case Cell.CELL_TYPE_ERROR:
+                return "Cell Error type";
+            case Cell.CELL_TYPE_NUMERIC:
+                return getNumericValue(cell, cellValue);
+            case Cell.CELL_TYPE_STRING:
+                return StringUtils.trim(cell.getStringCellValue());
+            default:
+                return "Unknown Cell Type: " + cell.getCellType();
+        }
+    }
+
     /**
      * Return the numeric value.
      *
      * @param cell the cell to extract the value from.
      * @return the numeric value from the cell.
      */
+    private static String getNumericValue(Cell cell, CellValue cellValue) {
+        // Date is typed as numeric
+        if (HSSFDateUtil.isCellDateFormatted(cell)) { // TODO configurable??
+            DateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+            return sdf.format(cellValue.getNumberValue());
+        }
+        // Numeric type (use data formatter to get number format right)
+        DataFormatter formatter = new HSSFDataFormatter(Locale.ENGLISH);
+        return formatter.formatCellValue(cell);
+    }
+
+
     private static String getNumericValue(Cell cell) {
         // Date is typed as numeric
         if (HSSFDateUtil.isCellDateFormatted(cell)) { // TODO configurable??
@@ -71,7 +105,6 @@ public class XlsUtils {
         DataFormatter formatter = new HSSFDataFormatter(Locale.ENGLISH);
         return formatter.formatCellValue(cell);
     }
-
 
     /**
      * Return the {@link Workbook workbook} to be found in the stream (assuming stream contains an Excel file). If
