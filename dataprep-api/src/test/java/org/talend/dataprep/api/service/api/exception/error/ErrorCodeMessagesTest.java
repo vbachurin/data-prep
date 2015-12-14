@@ -34,13 +34,13 @@ public class ErrorCodeMessagesTest {
     private void assertErrorCodeMessageExists(final String code) {
         String suffixedCode = code + ErrorMessage.MESSAGE_SUFFIX;
         String message = MessagesBundle.getString(suffixedCode);
-        Assert.assertFalse(StringUtils.isEmpty(message) || suffixedCode.equals(message));
+        Assert.assertFalse("The following error code: "+code+ " is not associated with a body message",StringUtils.isEmpty(message) || suffixedCode.equals(message));
     }
 
     private void assertErrorCodeMessageTitleExists(final String code) {
         String suffixedCode = code + ErrorMessage.TITLE_SUFFIX;
         String title = MessagesBundle.getString(suffixedCode);
-        Assert.assertFalse(StringUtils.isEmpty(title) || suffixedCode.equals(title));
+        Assert.assertFalse("The following error code: "+code+ " is not associated with a title message", StringUtils.isEmpty(title) || suffixedCode.equals(title));
     }
 
     @Test
