@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -43,7 +43,7 @@ public class XlsWriter implements TransformerWriter {
     public XlsWriter(final OutputStream output) {
         this.outputStream = output;
 
-        this.workbook = new HSSFWorkbook();
+        this.workbook = new XSSFWorkbook();
         // TODO sheet name as an option?
         this.sheet = this.workbook.createSheet("sheet1");
     }
