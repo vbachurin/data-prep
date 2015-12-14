@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.preparation.Identifiable;
 import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.preparation.store.PreparationRepository;
@@ -72,14 +71,6 @@ public class FileSystemPreparationRepository implements PreparationRepository {
             return;
         }
 
-        // save the head step in case of preparation
-        if (object instanceof Preparation) {
-            Preparation preparation = (Preparation) object;
-            if (preparation.getHead() != null) {
-                add(preparation.getHead());
-            }
-        }
-
         final File outputFile = getIdentifiableFile(object);
 
         try (GZIPOutputStream output = new GZIPOutputStream(new FileOutputStream(outputFile))) {
@@ -110,15 +101,6 @@ public class FileSystemPreparationRepository implements PreparationRepository {
         } catch (IOException e) {
             LOG.error("error reading preparation file {}", from.getAbsolutePath(), e);
             return null;
-        }
-
-        // in case of preparation, load the step from its id
-        if (result instanceof Preparation) {
-            Preparation preparation = (Preparation) result;
-            if (StringUtils.isNotBlank(preparation.getHeadId())) {
-                final Step head = get(preparation.getHeadId(), Step.class);
-                preparation.setHead(head);
-            }
         }
 
         return result;

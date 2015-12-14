@@ -40,7 +40,7 @@ public class HdfsDataSetLocator implements DataSetLocator {
     public DataSetLocation getLocation(InputStream connectionParameters) throws IOException {
         ObjectMapper mapper = builder.build();
         JsonParser parser = mapper.getFactory().createParser(connectionParameters);
-        return mapper.reader(DataSetLocation.class).readValue(parser);
+        return mapper.readerFor(DataSetLocation.class).readValue(parser);
     }
 
 }

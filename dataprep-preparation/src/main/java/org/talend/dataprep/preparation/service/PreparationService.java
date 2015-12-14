@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -59,7 +60,7 @@ public class PreparationService {
     private Security security;
 
     @RequestMapping(value = "/preparations", method = GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations ids the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
+    @ApiOperation(value = "List all preparations id", notes = "Returns the list of preparations ids the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
     @Timed
     public List<String> list() {
         LOGGER.debug("Get list of preparations (summary).");
@@ -69,18 +70,20 @@ public class PreparationService {
     @RequestMapping(value = "/preparations", method = GET, params = "dataSetId", produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations for the given DataSet id", notes = "Returns the list of preparations for the given Dataset id the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
     @Timed
-    public Collection<Preparation> listByDataSet(@RequestParam("dataSetId") @ApiParam("dataSetId") String dataSetId) {
+    public Collection<PreparationDetails> listByDataSet(@RequestParam("dataSetId") @ApiParam("dataSetId") String dataSetId) {
         Collection<Preparation> preparations = preparationRepository.getByDataSet(dataSetId);
+
         LOGGER.debug("{} preparation(s) use dataset {}.", preparations.size(), dataSetId);
-        return preparations;
+        return getDetails(preparations);
     }
 
     @RequestMapping(value = "/preparations/all", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations the current user is allowed to see. Creation date is always displayed in UTC time zone. This operation return all details on the preparations.")
     @Timed
-    public Collection<Preparation> listAll() {
+    public Collection<PreparationDetails> listAll() {
         LOGGER.debug("Get list of preparations (with details).");
-        return preparationRepository.listAll(Preparation.class);
+        final Collection<Preparation> preparations = preparationRepository.listAll(Preparation.class);
+        return getDetails(preparations);
     }
 
     @RequestMapping(value = "/preparations", method = PUT, produces = TEXT_PLAIN_VALUE, consumes = APPLICATION_JSON_VALUE)
@@ -88,7 +91,7 @@ public class PreparationService {
     @Timed
     public String create(@ApiParam("preparation") @RequestBody final Preparation preparation) {
         LOGGER.debug("Create new preparation for data set {}", preparation.getDataSetId());
-        preparation.setHead(ROOT_STEP);
+        preparation.setHeadId(ROOT_STEP.id());
         preparation.setAuthor(security.getUserId());
         preparationRepository.add(preparation);
         LOGGER.debug("Created new preparation: {}", preparation);
@@ -124,9 +127,10 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get preparation details", notes = "Return the details of the preparation with provided id.")
     @Timed
-    public Preparation get(@ApiParam("id") @PathVariable("id") String id) {
+    public PreparationDetails get(@ApiParam("id") @PathVariable("id") String id) {
         LOGGER.debug("Get content of preparation details for #{}.", id);
-        return preparationRepository.get(id, Preparation.class);
+        final Preparation preparation = preparationRepository.get(id, Preparation.class);
+        return getDetails(preparation);
     }
 
     @RequestMapping(value = "/preparations/clone/{id}", method = PUT, produces = TEXT_PLAIN_VALUE)
@@ -149,7 +153,7 @@ public class PreparationService {
     public List<String> getSteps(@ApiParam("id") @PathVariable("id") String id) {
         LOGGER.debug("Get steps of preparation for #{}.", id);
         final Step step = getStep(id);
-        return PreparationUtils.listStepsIds(step, preparationRepository);
+        return PreparationUtils.listStepsIds(step.id(), preparationRepository);
     }
 
     /**
@@ -158,23 +162,20 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/actions", method = POST, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Adds an action to a preparation", notes = "Append an action at end of the preparation with given id.")
     @Timed
-    public void appendSteps(@PathVariable("id")
-    final String id, //
-            @RequestBody
-    final AppendStep stepsToAppend) {
+    public void appendSteps(@PathVariable("id") final String id, @RequestBody final AppendStep stepsToAppend) {
         checkActionStepConsistency(stepsToAppend);
 
         LOGGER.debug("Adding actions to preparation #{}", id);
 
         final Preparation preparation = getPreparation(id);
-        LOGGER.debug("Current head for preparation #{}: {}", id, preparation.getHead());
+        LOGGER.debug("Current head for preparation #{}: {}", id, preparation.getHeadId());
 
         final List<AppendStep> actionsSteps = new ArrayList<>(1);
         actionsSteps.add(stepsToAppend);
 
         // rebuild history from head
-        replaceHistory(preparation, preparation.getHead().id(), actionsSteps);
-        LOGGER.debug("Added head to preparation #{}: head is now {}", id, preparation.getHead().id());
+        replaceHistory(preparation, preparation.getHeadId(), actionsSteps);
+        LOGGER.debug("Added head to preparation #{}: head is now {}", id, preparation.getHeadId());
     }
 
     /**
@@ -200,7 +201,7 @@ public class PreparationService {
 
         LOGGER.debug("Modifying actions in preparation #{}", preparationId);
         final Preparation preparation = getPreparation(preparationId);
-        LOGGER.debug("Current head for preparation #{}: {}", preparationId, preparation.getHead());
+        LOGGER.debug("Current head for preparation #{}: {}", preparationId, preparation.getHeadId());
 
         // Get steps from "step to modify" to the head
         final List<String> steps = extractSteps(preparation, stepToModifyId); // throws an exception if stepId is not in
@@ -226,7 +227,7 @@ public class PreparationService {
         // Rebuild history from modified step
         final Step stepToModify = getStep(stepToModifyId);
         replaceHistory(preparation, stepToModify.getParent(), actionsSteps);
-        LOGGER.debug("Modified head of preparation #{}: head is now {}", preparation.getHead().getId());
+        LOGGER.debug("Modified head of preparation #{}: head is now {}", preparation.getHeadId());
     }
 
     /**
@@ -338,7 +339,7 @@ public class PreparationService {
      */
     private static String getStepId(final String version, final Preparation preparation) {
         if ("head".equalsIgnoreCase(version)) { //$NON-NLS-1$
-            return preparation.getHead().id();
+            return preparation.getHeadId();
         } else if ("origin".equalsIgnoreCase(version)) { //$NON-NLS-1$
             return ROOT_STEP.id();
         }
@@ -422,7 +423,7 @@ public class PreparationService {
      * @throws TDPException If 'fromStepId' is not a step of the provided preparation
      */
     private List<String> extractSteps(final Preparation preparation, final String fromStepId) {
-        final List<String> steps = PreparationUtils.listStepsIds(preparation.getHead(), fromStepId, preparationRepository);
+        final List<String> steps = PreparationUtils.listStepsIds(preparation.getHeadId(), fromStepId, preparationRepository);
         if (!fromStepId.equals(steps.get(0))) {
             throw new TDPException(PREPARATION_STEP_DOES_NOT_EXIST,
                     ExceptionContext.build().put("id", preparation.getId()).put("stepId", fromStepId));
@@ -443,7 +444,7 @@ public class PreparationService {
      * @return True if 'stepId' is considered as the preparation head
      */
     private boolean isPreparationHead(final Preparation preparation, final String stepId) {
-        return stepId == null || "head".equals(stepId) || "origin".equals(stepId) || preparation.getHead().getId().equals(stepId);
+        return stepId == null || "head".equals(stepId) || "origin".equals(stepId) || preparation.getHeadId().equals(stepId);
     }
 
     /**
@@ -580,7 +581,7 @@ public class PreparationService {
      * @param head The head step
      */
     private void setPreparationHead(final Preparation preparation, final Step head) {
-        preparation.setHead(head);
+        preparation.setHeadId(head.id());
         preparation.updateLastModificationDate();
         preparationRepository.add(preparation);
     }
@@ -610,7 +611,7 @@ public class PreparationService {
      */
     private void appendStepToHead(final Preparation preparation, final AppendStep step) {
         // Add new actions after head
-        final Step head = preparation.getHead();
+        final Step head = preparationRepository.get(preparation.getHeadId(), Step.class);
         final PreparationActions headContent = preparationRepository.get(head.getContent(), PreparationActions.class);
         final PreparationActions newContent = headContent.append(step.getActions());
         preparationRepository.add(newContent);
@@ -622,4 +623,26 @@ public class PreparationService {
         // Update preparation head step
         setPreparationHead(preparation, newStep);
     }
+
+    /**
+     * Convenient method to convert &lt;Collection>Preparation&gt; to Collection&lt;PreparationDetails&gt;.
+     *
+     * @param preparations the preparations to cast.
+     * @return the preparations details that match the given preparations.
+     */
+    private Collection<PreparationDetails> getDetails(Collection<Preparation> preparations) {
+        return preparations.stream().map(this::getDetails).collect(Collectors.toSet());
+    }
+
+    /**
+     * Convenient method to convert Preparation to PreparationDetails.
+     *
+     * @param preparation the preparation to cast.
+     * @return the preparation details that matches the given preparation.
+     */
+    private PreparationDetails getDetails(Preparation preparation) {
+        return new PreparationDetails(preparation);
+    }
+
+
 }

@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.preparation.store.PreparationRepository;
@@ -25,13 +26,14 @@ import com.fasterxml.jackson.databind.SerializerProvider;
  * Serialize preparations in json.
  */
 @Component
-public class PreparationJsonSerializer extends JsonSerializer<Preparation> {
+public class PreparationDetailsJsonSerializer extends JsonSerializer<PreparationDetails> {
 
     /** This class' logger. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PreparationJsonSerializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PreparationDetailsJsonSerializer.class);
 
     /** Where to find the preparations. */
     @Autowired(required = false)
+    @Lazy
     private PreparationRepository versionRepository;
 
     /** The list of actions to apply in preparations. */
@@ -44,8 +46,10 @@ public class PreparationJsonSerializer extends JsonSerializer<Preparation> {
      * @see JsonSerializer#serialize(Object, JsonGenerator, SerializerProvider)
      */
     @Override
-    public void serialize(Preparation preparation, JsonGenerator generator, SerializerProvider serializerProvider)
+    public void serialize(PreparationDetails details, JsonGenerator generator, SerializerProvider serializerProvider)
             throws IOException {
+
+        final Preparation preparation = details.getPreparation();
         generator.writeStartObject();
         {
             generator.writeStringField("id", preparation.id()); //$NON-NLS-1$
@@ -54,30 +58,26 @@ public class PreparationJsonSerializer extends JsonSerializer<Preparation> {
             generator.writeStringField("name", preparation.getName()); //$NON-NLS-1$
             generator.writeNumberField("creationDate", preparation.getCreationDate()); //$NON-NLS-1$
             generator.writeNumberField("lastModificationDate", preparation.getLastModificationDate()); //$NON-NLS-1$
-            if (preparation.getHead() != null) {
-                generator.writeStringField("headId", preparation.getHead().getId());
+            if (preparation.getHeadId() != null && versionRepository != null) {
+                final List<Step> steps = PreparationUtils.listSteps(preparation.getHeadId(), versionRepository);
 
-                if (versionRepository != null) {
-                    final List<Step> steps = PreparationUtils.listSteps(preparation.getHead(), versionRepository);
+                // Steps ids
+                final List<String> ids = steps.stream().map(Step::id).collect(toList());
+                generator.writeObjectField("steps", ids); //$NON-NLS-1$
 
-                    // Steps ids
-                    final List<String> ids = steps.stream().map(Step::id).collect(toList());
-                    generator.writeObjectField("steps", ids); //$NON-NLS-1$
+                // Steps diff metadata
+                final List<StepDiff> diffs = steps.stream().filter(isNotRootStep).map(Step::getDiff).collect(toList());
+                generator.writeObjectField("diff", diffs); //$NON-NLS-1$
 
-                    // Steps diff metadata
-                    final List<StepDiff> diffs = steps.stream().filter(isNotRootStep).map(Step::getDiff).collect(toList());
-                    generator.writeObjectField("diff", diffs); //$NON-NLS-1$
+                // Actions
+                final Step head = versionRepository.get(preparation.getHeadId(), Step.class);
+                final PreparationActions prepActions = versionRepository.get(head.getContent(), PreparationActions.class);
+                final List<Action> actions = prepActions.getActions();
+                generator.writeObjectField("actions", actions); //$NON-NLS-1$
 
-                    // Actions
-                    final Step head = versionRepository.get(preparation.getHead().id(), Step.class);
-                    final PreparationActions prepActions = versionRepository.get(head.getContent(), PreparationActions.class);
-                    final List<Action> actions = prepActions.getActions();
-                    generator.writeObjectField("actions", actions); //$NON-NLS-1$
+                // Actions metadata
+                writeActionMetadata(generator, actions, preparation);
 
-                    // Actions metadata
-                    writeActionMetadata(generator, actions, preparation);
-
-                }
             } else {
                 LOGGER.debug("No version repository available, unable to serialize steps for preparation {}.", preparation.id());
             }

@@ -1,7 +1,6 @@
 package org.talend.dataprep.preparation.store.file;
 
 import static org.junit.Assert.*;
-import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
 import java.util.Arrays;
@@ -166,8 +165,7 @@ public class FileSystemPreparationRepositoryTest {
      * @return a preparation with a root step an a the given dataset id.
      */
     private Preparation getPreparation(String datasetId) {
-        Preparation preparation = new Preparation(datasetId, Step.ROOT_STEP);
-        preparation.setHead(new Step(ROOT_STEP.id(), ROOT_CONTENT.getId()));
+        Preparation preparation = new Preparation(datasetId, Step.ROOT_STEP.id());
         preparation.setName("prep-" + datasetId);
         return preparation;
     }

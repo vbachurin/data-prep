@@ -1,9 +1,9 @@
 package org.talend.dataprep.preparation;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
-import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
 import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.Is;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +41,7 @@ public class PreparationTest {
     public void testDefaultPreparation() throws Exception {
         final Preparation preparation = Preparation.defaultPreparation("12345");
         assertThat(preparation.id(), is("ec718238e9bfe45f58031313b79501a3cc55b186"));
-        assertThat(preparation.getHead().id(), is(ROOT_STEP.id()));
+        assertThat(preparation.getHeadId(), is(ROOT_STEP.id()));
     }
 
     @Test
@@ -55,7 +54,7 @@ public class PreparationTest {
 
     @Test
     public void testTimestamp() throws Exception {
-        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        Preparation preparation = new Preparation("1234", ROOT_STEP.id());
         final long time0 = preparation.getLastModificationDate();
         TimeUnit.MILLISECONDS.sleep(50);
         preparation.updateLastModificationDate();
@@ -66,7 +65,7 @@ public class PreparationTest {
     @Test
     public void testId_withName() throws Exception {
         // Preparation id with name
-        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        Preparation preparation = new Preparation("1234", ROOT_STEP.id());
         preparation.setName("My Preparation");
         final String id0 = preparation.getId();
         assertThat(id0, is("e34f3448d71dac403df5305a04086fc88054aa15"));
@@ -90,10 +89,10 @@ public class PreparationTest {
         final Step s = new Step(ROOT_STEP.id(), newContent.id());
         repository.add(s);
 
-        Preparation preparation = new Preparation("1234", s);
+        Preparation preparation = new Preparation("1234", s.id());
         repository.add(preparation);
 
-        MatcherAssert.assertThat(preparation.id(), Is.is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
+        assertThat(preparation.id(), Is.is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
     }
 
     @Test
@@ -106,10 +105,10 @@ public class PreparationTest {
         final Step s = new Step(ROOT_STEP.id(), newContent.id());
         repository.add(s);
 
-        final Preparation preparation = new Preparation("1234", s);
+        final Preparation preparation = new Preparation("1234", s.id());
         repository.add(preparation);
 
-        MatcherAssert.assertThat(preparation.id(), Is.is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
+        assertThat(preparation.id(), Is.is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
     }
 
     @Test
@@ -129,10 +128,10 @@ public class PreparationTest {
         repository.add(s2);
 
         // Preparation
-        final Preparation preparation = new Preparation("1234", s2);
+        final Preparation preparation = new Preparation("1234", s2.id());
         repository.add(preparation);
 
-        MatcherAssert.assertThat(preparation.id(), Is.is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
+        assertThat(preparation.id(), Is.is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
     }
 
     @Test
@@ -145,7 +144,7 @@ public class PreparationTest {
         theOtherOne.setDataSetId("ds#123456");
         theOtherOne.setLastModificationDate(theOtherOne.getCreationDate() + 12345682);
         theOtherOne.setName("my preparation name");
-        theOtherOne.setHead(ROOT_STEP);
+        theOtherOne.setHeadId(ROOT_STEP.id());
 
         Preparation actual = source.merge(theOtherOne);
 
@@ -162,7 +161,7 @@ public class PreparationTest {
         source.setDataSetId("ds#65478");
         source.setLastModificationDate(source.getCreationDate() + 2658483);
         source.setName("banquet");
-        source.setHead(ROOT_STEP);
+        source.setHeadId(ROOT_STEP.id());
 
         Preparation actual = source.merge(theOtherOne);
 

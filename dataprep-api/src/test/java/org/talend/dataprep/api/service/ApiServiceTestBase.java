@@ -94,7 +94,7 @@ public abstract class ApiServiceTestBase {
 
     protected AggregationParameters getAggregationParameters(String input) throws IOException {
         InputStream parametersInput = this.getClass().getResourceAsStream(input);
-        return builder.build().reader(AggregationParameters.class).readValue(parametersInput);
+        return builder.build().readerFor(AggregationParameters.class).readValue(parametersInput);
     }
 
     protected String createDataset(final String file, final String name, final String type) throws IOException {

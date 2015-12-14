@@ -40,7 +40,7 @@ public class CommonAPI extends APIService {
     /**
      * Describe the supported error codes.
      * 
-     * @param response the http response.
+     * @param output the http response.
      */
     @RequestMapping(value = "/api/errors", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all supported errors.", notes = "Returns the list of all supported errors.")
@@ -116,7 +116,7 @@ public class CommonAPI extends APIService {
      */
     private void writeErrorsFromApi(JsonGenerator generator, InputStream input) throws IOException {
         final ObjectMapper objectMapper = builder.build();
-        Iterator<JsonErrorCodeDescription> iterator = objectMapper.reader(JsonErrorCodeDescription.class).readValues(input);
+        Iterator<JsonErrorCodeDescription> iterator = objectMapper.readerFor(JsonErrorCodeDescription.class).readValues(input);
         while (iterator.hasNext()) {
             final JsonErrorCodeDescription description = iterator.next();
             generator.writeObject(description);

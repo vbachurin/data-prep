@@ -127,7 +127,7 @@ public class GenericCommand<T> extends HystrixCommand<T> {
         return (req, res) -> {
             final int statusCode = res.getStatusLine().getStatusCode();
             try {
-                JsonErrorCode code = builder.build().reader(JsonErrorCode.class).readValue(res.getEntity().getContent());
+                JsonErrorCode code = builder.build().readerFor(JsonErrorCode.class).readValue(res.getEntity().getContent());
                 code.setHttpStatus(statusCode);
                 final TDPException cause = new TDPException(code);
                 throw onError.apply(cause);

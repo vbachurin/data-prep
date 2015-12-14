@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -57,7 +56,7 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
         repository.add(metadata);
 
         // when
-        DataSetMetadata update = builder.build().reader(DataSetMetadata.class)
+        DataSetMetadata update = builder.build().readerFor(DataSetMetadata.class)
                 .readValue(this.getClass().getResourceAsStream("dataset_2.json"));
         update = DataSetMetadata.Builder.metadata().copy(update).id(id).build();
 
@@ -161,7 +160,7 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
      * @throws IOException if an error occurs reading the json source file.
      */
     public DataSetMetadata getMetadata(String id) throws IOException {
-        DataSetMetadata original = builder.build().reader(DataSetMetadata.class)
+        DataSetMetadata original = builder.build().readerFor(DataSetMetadata.class)
                 .readValue(this.getClass().getResourceAsStream("dataset.json"));
         return DataSetMetadata.Builder.metadata().copy(original).id(id).build();
     }

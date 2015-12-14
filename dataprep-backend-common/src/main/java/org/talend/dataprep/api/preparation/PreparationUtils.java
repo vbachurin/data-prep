@@ -21,23 +21,23 @@ public class PreparationUtils {
 
     /**
      * Return a list of all steps ids from root step to the provided step
-     * @param step          The last step to get
+     * @param stepId        The last step id to get
      * @param repository    The identifiable repository
      * @return The list of step ids from root to step
      */
-    public static List<String> listStepsIds(final Step step, final PreparationRepository repository) {
-        return listStepsIds(step, PreparationActions.ROOT_CONTENT.getId(), repository);
+    public static List<String> listStepsIds(final String stepId, final PreparationRepository repository) {
+        return listStepsIds(stepId, PreparationActions.ROOT_CONTENT.getId(), repository);
     }
 
     /**
      * Return a list of all steps ids from limit step to the provided step
-     * @param step          The last step to get
+     * @param stepId        The last step to get
      * @param limit         The starting step
      * @param repository    The identifiable repository
      * @return The list of step ids from starting (limit) to step
      */
-    public static List<String> listStepsIds(final Step step, final String limit, final PreparationRepository repository) {
-        return listSteps(step, limit, repository).stream()
+    public static List<String> listStepsIds(final String stepId, final String limit, final PreparationRepository repository) {
+        return listSteps(repository.get(stepId, Step.class), limit, repository).stream()
                 .map(Step::id)
                 .collect(toList());
     }
@@ -49,14 +49,14 @@ public class PreparationUtils {
      * listSteps(step, PreparationActions.ROOT_CONTENT.getId(), repository);
      * </code>
      *
-     * @param step A {@link Step step}.
+     * @param headStepId The head step id.
      * @param repository A {@link PreparationRepository version} repository.
      * @return A list of {@link Step step} id. Empty list if <code>step</code> parameter is <code>null</code>.
      * @see Step#id()
      * @see Step#getParent()
      */
-    public static List<Step> listSteps(Step step, PreparationRepository repository) {
-        return listSteps(step, PreparationActions.ROOT_CONTENT.getId(), repository);
+    public static List<Step> listSteps(String headStepId, PreparationRepository repository) {
+        return listSteps(repository.get(headStepId, Step.class), PreparationActions.ROOT_CONTENT.getId(), repository);
     }
 
     /**
@@ -96,17 +96,18 @@ public class PreparationUtils {
         __listSteps(steps, limit, repository.get(step.getParent(), Step.class), repository);
     }
 
-    private static void prettyPrint(PreparationRepository repository, Step step, OutputStream out) {
-        if (step == null) {
+    private static void prettyPrint(PreparationRepository repository, String stepId, OutputStream out) {
+        if (stepId == null) {
             return;
         }
         try {
+            Step step = repository.get(stepId, Step.class);
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
             writer.append("\t\tStep (").append(step.id()).append(")").append("\n");
             writer.flush();
             PreparationActions blob = repository.get(step.getContent(), PreparationActions.class);
             prettyPrint(blob, out);
-            prettyPrint(repository, repository.get(step.getParent(), Step.class), out);
+            prettyPrint(repository, step.getParent(), out);
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PRINT_PREPARATION, e);
         }
@@ -137,7 +138,7 @@ public class PreparationUtils {
             writer.append("\tCreation date: ").append(String.valueOf(preparation.getCreationDate())).append("\n");
             writer.append("\tSteps:").append("\n");
             writer.flush();
-            prettyPrint(repository, preparation.getHead(), out);
+            prettyPrint(repository, preparation.getHeadId(), out);
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PRINT_PREPARATION, e);
         }

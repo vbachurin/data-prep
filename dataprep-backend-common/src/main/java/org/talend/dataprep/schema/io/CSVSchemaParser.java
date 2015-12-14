@@ -51,7 +51,7 @@ public class CSVSchemaParser implements SchemaParser {
                 return SchemaParserResult.Builder.parserResult() //
                         .sheetContents(sheetContents).build();
             }
-            LOGGER.debug("Columns found: {}", columns);
+            LOGGER.debug("Columns found: {}", (Object)columns);
             // By default, consider all columns as Strings (to be refined by deeper analysis).
             LOGGER.debug("Setting default type for columns...");
             for (int i = 0; i < columns.length; i++) {
