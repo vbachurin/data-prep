@@ -9,6 +9,7 @@ import org.talend.daikon.exception.error.ErrorCode;
 
 public enum CommonErrorCodes implements ErrorCode {
     UNEXPECTED_EXCEPTION(500),
+    UNEXPECTED_SERVICE_EXCEPTION(500, "message"),
     UNABLE_TO_PARSE_JSON(400),
     UNABLE_TO_GET_SERVICE_VERSION(400),
     UNABLE_TO_WRITE_JSON(500),

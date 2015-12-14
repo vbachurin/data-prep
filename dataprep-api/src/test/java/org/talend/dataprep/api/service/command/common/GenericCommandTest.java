@@ -4,6 +4,8 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.talend.dataprep.api.service.command.common.Defaults.asString;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.apache.http.client.HttpClient;
@@ -193,6 +195,27 @@ public class GenericCommandTest {
             assertThat(lastException, nullValue());
             // underlying is returned as is (passthrough method).
             assertThat(e.getCode().getCode(), is(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON.getCode()));
+        }
+    }
+
+    @Test
+    public void testUnexpected() throws Exception {
+        // Given
+        GenericCommand<String> command = getCommand("http://localhost:" + port + "/command/test/unexpected",
+                Defaults.passthrough());
+        try {
+            // When
+            command.run();
+        } catch (TDPException e) {
+            // Then error() wasn't called, lastException must be null
+            assertThat(lastException, nullValue());
+            // underlying is returned as is (passthrough method).
+            assertThat(e.getCode().getCode(), is(CommonErrorCodes.UNEXPECTED_SERVICE_EXCEPTION.getCode()));
+            final Iterator<Map.Entry<String, Object>> entries = e.getContext().entries().iterator();
+            assertThat(entries.hasNext(), is(true));
+            final Map.Entry<String, Object> next = entries.next();
+            assertThat(next.getKey(), is("message"));
+            assertThat(String.valueOf(next.getValue()), is("Unable to execute an operation"));
         }
     }
 
