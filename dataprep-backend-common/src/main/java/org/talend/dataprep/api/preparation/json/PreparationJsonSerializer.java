@@ -54,26 +54,30 @@ public class PreparationJsonSerializer extends JsonSerializer<Preparation> {
             generator.writeStringField("name", preparation.getName()); //$NON-NLS-1$
             generator.writeNumberField("creationDate", preparation.getCreationDate()); //$NON-NLS-1$
             generator.writeNumberField("lastModificationDate", preparation.getLastModificationDate()); //$NON-NLS-1$
-            if (versionRepository != null && preparation.getStep() != null) {
-                final List<Step> steps = PreparationUtils.listSteps(preparation.getStep(), versionRepository);
+            if (preparation.getHead() != null) {
+                generator.writeStringField("headId", preparation.getHead().getId());
 
-                // Steps ids
-                final List<String> ids = steps.stream().map(Step::id).collect(toList());
-                generator.writeObjectField("steps", ids); //$NON-NLS-1$
+                if (versionRepository != null) {
+                    final List<Step> steps = PreparationUtils.listSteps(preparation.getHead(), versionRepository);
 
-                // Steps diff metadata
-                final List<StepDiff> diffs = steps.stream().filter(isNotRootStep).map(Step::getDiff).collect(toList());
-                generator.writeObjectField("diff", diffs); //$NON-NLS-1$
+                    // Steps ids
+                    final List<String> ids = steps.stream().map(Step::id).collect(toList());
+                    generator.writeObjectField("steps", ids); //$NON-NLS-1$
 
-                // Actions
-                final Step head = versionRepository.get(preparation.getStep().id(), Step.class);
-                final PreparationActions prepActions = versionRepository.get(head.getContent(), PreparationActions.class);
-                final List<Action> actions = prepActions.getActions();
-                generator.writeObjectField("actions", actions); //$NON-NLS-1$
+                    // Steps diff metadata
+                    final List<StepDiff> diffs = steps.stream().filter(isNotRootStep).map(Step::getDiff).collect(toList());
+                    generator.writeObjectField("diff", diffs); //$NON-NLS-1$
 
-                // Actions metadata
-                writeActionMetadata(generator, actions, preparation);
+                    // Actions
+                    final Step head = versionRepository.get(preparation.getHead().id(), Step.class);
+                    final PreparationActions prepActions = versionRepository.get(head.getContent(), PreparationActions.class);
+                    final List<Action> actions = prepActions.getActions();
+                    generator.writeObjectField("actions", actions); //$NON-NLS-1$
 
+                    // Actions metadata
+                    writeActionMetadata(generator, actions, preparation);
+
+                }
             } else {
                 LOGGER.debug("No version repository available, unable to serialize steps for preparation {}.", preparation.id());
             }

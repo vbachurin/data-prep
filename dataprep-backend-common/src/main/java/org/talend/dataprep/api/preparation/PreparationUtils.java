@@ -137,7 +137,7 @@ public class PreparationUtils {
             writer.append("\tCreation date: ").append(String.valueOf(preparation.getCreationDate())).append("\n");
             writer.append("\tSteps:").append("\n");
             writer.flush();
-            prettyPrint(repository, preparation.getStep(), out);
+            prettyPrint(repository, preparation.getHead(), out);
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PRINT_PREPARATION, e);
         }

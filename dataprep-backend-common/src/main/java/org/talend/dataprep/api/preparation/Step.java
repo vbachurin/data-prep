@@ -7,6 +7,9 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.annotation.PersistenceConstructor;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Step extends Identifiable implements Serializable {
 
     /** Serialization UID. */
@@ -24,9 +27,12 @@ public class Step extends Identifiable implements Serializable {
 
     private StepDiff diff;
 
-    public Step(final String parentId, final String contentId) {
+    //@formatter:off
+    @JsonCreator
+    public Step(@JsonProperty("parentId") final String parentId, @JsonProperty("contentId") final String contentId) {
        this(parentId, contentId, null);
     }
+    //@formatter:on
 
     @PersistenceConstructor
     public Step(final String parentId, final String contentId, final StepDiff diff) {

@@ -88,7 +88,7 @@ public class PreparationService {
     @Timed
     public String create(@ApiParam("preparation") @RequestBody final Preparation preparation) {
         LOGGER.debug("Create new preparation for data set {}", preparation.getDataSetId());
-        preparation.setStep(ROOT_STEP);
+        preparation.setHead(ROOT_STEP);
         preparation.setAuthor(security.getUserId());
         preparationRepository.add(preparation);
         LOGGER.debug("Created new preparation: {}", preparation);
@@ -167,14 +167,14 @@ public class PreparationService {
         LOGGER.debug("Adding actions to preparation #{}", id);
 
         final Preparation preparation = getPreparation(id);
-        LOGGER.debug("Current head for preparation #{}: {}", id, preparation.getStep());
+        LOGGER.debug("Current head for preparation #{}: {}", id, preparation.getHead());
 
         final List<AppendStep> actionsSteps = new ArrayList<>(1);
         actionsSteps.add(stepsToAppend);
 
         // rebuild history from head
-        replaceHistory(preparation, preparation.getStep().id(), actionsSteps);
-        LOGGER.debug("Added head to preparation #{}: head is now {}", id, preparation.getStep().id());
+        replaceHistory(preparation, preparation.getHead().id(), actionsSteps);
+        LOGGER.debug("Added head to preparation #{}: head is now {}", id, preparation.getHead().id());
     }
 
     /**
@@ -200,7 +200,7 @@ public class PreparationService {
 
         LOGGER.debug("Modifying actions in preparation #{}", preparationId);
         final Preparation preparation = getPreparation(preparationId);
-        LOGGER.debug("Current head for preparation #{}: {}", preparationId, preparation.getStep());
+        LOGGER.debug("Current head for preparation #{}: {}", preparationId, preparation.getHead());
 
         // Get steps from "step to modify" to the head
         final List<String> steps = extractSteps(preparation, stepToModifyId); // throws an exception if stepId is not in
@@ -226,7 +226,7 @@ public class PreparationService {
         // Rebuild history from modified step
         final Step stepToModify = getStep(stepToModifyId);
         replaceHistory(preparation, stepToModify.getParent(), actionsSteps);
-        LOGGER.debug("Modified head of preparation #{}: head is now {}", preparation.getStep().getId());
+        LOGGER.debug("Modified head of preparation #{}: head is now {}", preparation.getHead().getId());
     }
 
     /**
@@ -338,7 +338,7 @@ public class PreparationService {
      */
     private static String getStepId(final String version, final Preparation preparation) {
         if ("head".equalsIgnoreCase(version)) { //$NON-NLS-1$
-            return preparation.getStep().id();
+            return preparation.getHead().id();
         } else if ("origin".equalsIgnoreCase(version)) { //$NON-NLS-1$
             return ROOT_STEP.id();
         }
@@ -422,7 +422,7 @@ public class PreparationService {
      * @throws TDPException If 'fromStepId' is not a step of the provided preparation
      */
     private List<String> extractSteps(final Preparation preparation, final String fromStepId) {
-        final List<String> steps = PreparationUtils.listStepsIds(preparation.getStep(), fromStepId, preparationRepository);
+        final List<String> steps = PreparationUtils.listStepsIds(preparation.getHead(), fromStepId, preparationRepository);
         if (!fromStepId.equals(steps.get(0))) {
             throw new TDPException(PREPARATION_STEP_DOES_NOT_EXIST,
                     ExceptionContext.build().put("id", preparation.getId()).put("stepId", fromStepId));
@@ -443,7 +443,7 @@ public class PreparationService {
      * @return True if 'stepId' is considered as the preparation head
      */
     private boolean isPreparationHead(final Preparation preparation, final String stepId) {
-        return stepId == null || "head".equals(stepId) || "origin".equals(stepId) || preparation.getStep().getId().equals(stepId);
+        return stepId == null || "head".equals(stepId) || "origin".equals(stepId) || preparation.getHead().getId().equals(stepId);
     }
 
     /**
@@ -580,7 +580,7 @@ public class PreparationService {
      * @param head The head step
      */
     private void setPreparationHead(final Preparation preparation, final Step head) {
-        preparation.setStep(head);
+        preparation.setHead(head);
         preparation.updateLastModificationDate();
         preparationRepository.add(preparation);
     }
@@ -610,7 +610,7 @@ public class PreparationService {
      */
     private void appendStepToHead(final Preparation preparation, final AppendStep step) {
         // Add new actions after head
-        final Step head = preparation.getStep();
+        final Step head = preparation.getHead();
         final PreparationActions headContent = preparationRepository.get(head.getContent(), PreparationActions.class);
         final PreparationActions newContent = headContent.append(step.getActions());
         preparationRepository.add(newContent);

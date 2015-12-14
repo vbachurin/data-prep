@@ -1,5 +1,16 @@
 package org.talend.dataprep.preparation;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.lessThan;
+import static org.junit.Assert.assertEquals;
+import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
+import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.Is;
 import org.junit.Test;
@@ -16,17 +27,6 @@ import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.lessThan;
-import static org.junit.Assert.assertEquals;
-import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
-import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
-import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
-
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PreparationTest.class)
@@ -42,7 +42,7 @@ public class PreparationTest {
     public void testDefaultPreparation() throws Exception {
         final Preparation preparation = Preparation.defaultPreparation("12345");
         assertThat(preparation.id(), is("ec718238e9bfe45f58031313b79501a3cc55b186"));
-        assertThat(preparation.getStep().id(), is(ROOT_STEP.id()));
+        assertThat(preparation.getHead().id(), is(ROOT_STEP.id()));
     }
 
     @Test
@@ -145,7 +145,7 @@ public class PreparationTest {
         theOtherOne.setDataSetId("ds#123456");
         theOtherOne.setLastModificationDate(theOtherOne.getCreationDate() + 12345682);
         theOtherOne.setName("my preparation name");
-        theOtherOne.setStep(ROOT_STEP);
+        theOtherOne.setHead(ROOT_STEP);
 
         Preparation actual = source.merge(theOtherOne);
 
@@ -162,7 +162,7 @@ public class PreparationTest {
         source.setDataSetId("ds#65478");
         source.setLastModificationDate(source.getCreationDate() + 2658483);
         source.setName("banquet");
-        source.setStep(ROOT_STEP);
+        source.setHead(ROOT_STEP);
 
         Preparation actual = source.merge(theOtherOne);
 

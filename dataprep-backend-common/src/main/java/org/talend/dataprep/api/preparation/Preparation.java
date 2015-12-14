@@ -10,34 +10,56 @@ import java.util.Objects;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Preparation extends Identifiable implements Serializable {
 
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
 
+    /** The dataset id. */
     private String dataSetId;
 
+    /** The author name. */
     private String author;
 
+    /** The preparatio name. */
     private String name;
 
+    /** The creation date. */
     private long creationDate;
 
+    /** The last modification date. */
     private long lastModificationDate;
 
-    private Step step;
+    /** Head step. */
+    private Step head;
 
+    /** The head id. */
+    @JsonProperty("headId")
+    private String headId;
+
+    /** List of the steps id for this preparation. */
     private List<String> steps;
 
+    /**
+     * Default empty constructor.
+     */
     public Preparation() {
         this.creationDate = System.currentTimeMillis();
         this.lastModificationDate = this.creationDate;
     }
 
-    public Preparation(String dataSetId, Step step) {
+    /**
+     * Create a preparation out of the given parameters.
+     *
+     * @param dataSetId the dataset id.
+     * @param head the head step.
+     */
+    public Preparation(String dataSetId, Step head) {
         this();
         this.dataSetId = dataSetId;
-        this.step = step;
+        this.setHead(head);
     }
 
     /**
@@ -97,12 +119,17 @@ public class Preparation extends Identifiable implements Serializable {
         this.lastModificationDate = lastModificationDate;
     }
 
-    public Step getStep() {
-        return step;
+    public Step getHead() {
+        return head;
     }
 
-    public void setStep(Step step) {
-        this.step = step;
+    public void setHead(Step head) {
+        this.head = head;
+        this.headId = head == null ? null : head.id();
+    }
+
+    public String getHeadId() {
+        return this.headId;
     }
 
     @Override
@@ -125,8 +152,14 @@ public class Preparation extends Identifiable implements Serializable {
 
     @Override
     public String toString() {
-        return "Preparation {" + "id='" + id() + '\'' + ", dataSetId='" + dataSetId + '\'' + ", author='" + author + '\''
-                + ", creationDate=" + creationDate + ", lastModificationDate=" + lastModificationDate + ", step=" + step + '}';
+        return "Preparation {" + //
+                "id='" + id() + '\'' + //
+                ", dataSetId='" + dataSetId + '\'' + //
+                ", author='" + author + '\'' + //
+                ", creationDate=" + creationDate + //
+                ", lastModificationDate=" + lastModificationDate + //
+                ", headId='" + headId + '\'' + //
+                ", head=" + head + '}';
     }
 
     public void updateLastModificationDate() {
@@ -140,7 +173,7 @@ public class Preparation extends Identifiable implements Serializable {
         merge.name = other.name != null ? other.name : name;
         merge.creationDate = min(other.creationDate, creationDate);
         merge.lastModificationDate = max(other.lastModificationDate, lastModificationDate);
-        merge.step = other.step != null ? other.step : step;
+        merge.head = other.head != null ? other.head : head;
         return merge;
     }
 
@@ -161,7 +194,7 @@ public class Preparation extends Identifiable implements Serializable {
                 Objects.equals(dataSetId, that.dataSetId) &&
                 Objects.equals(author, that.author) &&
                 Objects.equals(name, that.name) &&
-                Objects.equals(step, that.step);
+ Objects.equals(head, that.head);
     }
 
     /**
@@ -169,6 +202,6 @@ public class Preparation extends Identifiable implements Serializable {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(dataSetId, author, name, creationDate, lastModificationDate, step);
+        return Objects.hash(dataSetId, author, name, creationDate, lastModificationDate, head);
     }
 }

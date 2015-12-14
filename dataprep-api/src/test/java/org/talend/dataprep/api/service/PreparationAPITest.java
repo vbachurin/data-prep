@@ -282,7 +282,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
         applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
 
         Preparation preparation = preparationRepository.get(preparationId, Preparation.class);
-        final String newHead = preparation.getStep().getParent();
+        final String newHead = preparation.getHead().getParent();
 
         //when
         given().when()//
@@ -292,7 +292,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
 
         //then
         preparation = preparationRepository.get(preparationId, Preparation.class);
-        assertThat(preparation.getStep().id(), is(newHead));
+        assertThat(preparation.getHead().id(), is(newHead));
     }
 
     @Test

@@ -1,6 +1,7 @@
 package org.talend.dataprep.preparation.store.file;
 
 import static org.junit.Assert.*;
+import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
 import java.util.Arrays;
@@ -24,6 +25,8 @@ import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.preparation.PreparationTest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 /**
  * Unit test for the FileSystemPreparationRepository.
  * 
@@ -31,7 +34,7 @@ import org.talend.dataprep.preparation.PreparationTest;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = FileSystemPreparationRepositoryTest.class)
-@ComponentScan(basePackages = "org.talend.dataprep.preparation.store.file")
+@ComponentScan(basePackages = "org.talend.dataprep")
 @TestPropertySource(inheritLocations = false, inheritProperties = false, properties = { "preparation.store=file",
         "preparation.store.file.location=target/test/store/preparation" })
 public class FileSystemPreparationRepositoryTest {
@@ -59,7 +62,7 @@ public class FileSystemPreparationRepositoryTest {
     }
 
     @Test
-    public void shouldGetPreparationThatWasAdded() {
+    public void shouldGetPreparationThatWasAdded() throws JsonProcessingException {
         Preparation expected = getPreparation("7561486");
         repository.add(expected);
         final Preparation actual = repository.get(expected.id(), Preparation.class);
@@ -131,7 +134,7 @@ public class FileSystemPreparationRepositoryTest {
         final Collection<Preparation> actual = repository.listAll(Preparation.class);
 
         assertEquals(ids.size(), actual.size());
-        preparations.stream().forEach(preparation -> actual.contains(preparation));
+        preparations.stream().forEach(actual::contains);
     }
 
     @Test
@@ -164,7 +167,7 @@ public class FileSystemPreparationRepositoryTest {
      */
     private Preparation getPreparation(String datasetId) {
         Preparation preparation = new Preparation(datasetId, Step.ROOT_STEP);
-        preparation.setStep(new Step(ROOT_STEP.id(), preparation.getId()));
+        preparation.setHead(new Step(ROOT_STEP.id(), ROOT_CONTENT.getId()));
         preparation.setName("prep-" + datasetId);
         return preparation;
     }

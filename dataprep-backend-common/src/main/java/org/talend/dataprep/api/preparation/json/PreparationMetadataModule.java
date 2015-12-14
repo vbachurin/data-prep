@@ -15,6 +15,7 @@ public class PreparationMetadataModule extends SimpleModule {
     @Autowired
     PreparationJsonSerializer preparationJsonSerializer;
 
+
     public PreparationMetadataModule() {
         super(Preparation.class.getName(), new Version(1, 0, 0, null, null, null));
     }

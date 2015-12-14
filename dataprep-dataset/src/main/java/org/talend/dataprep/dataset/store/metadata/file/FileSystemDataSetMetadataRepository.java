@@ -1,16 +1,23 @@
 package org.talend.dataprep.dataset.store.metadata.file;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -23,8 +30,7 @@ import org.talend.dataprep.lock.DistributedLock;
 /**
  * File system implementation of the DataSetMetadataRepository.
  *
- * Unfortunately, json serialization cannot be used because it's too much API oriented and the default jackson setup
- * ignores RowMetadata from DataSetMetadata. Hence, simple class serialization is performed.
+ * DatasetMetadata are saved as gzipped json files.
  */
 @Component
 @ConditionalOnProperty(name = "dataset.metadata.store", havingValue = "file")
@@ -32,6 +38,10 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
 
     /** This class' logger. */
     private static final Logger LOG = LoggerFactory.getLogger(FileSystemDataSetMetadataRepository.class);
+
+    /** The dataprep ready jackson builder. */
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
 
     /** Where to store the dataset metadata */
     @Value("${dataset.metadata.store.file.location}")
@@ -50,8 +60,8 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
 
         final File file = getFile(metadata.getId());
 
-        try (ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(file))) {
-            output.writeObject(metadata);
+        try (GZIPOutputStream output = new GZIPOutputStream(new FileOutputStream(file))) {
+            builder.build().writer().writeValue(output, metadata);
         } catch (IOException e) {
             LOG.error("Error saving {}", metadata, e);
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_METADATA, e,
@@ -71,9 +81,9 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
             return null;
         }
 
-        try (ObjectInputStream input = new ObjectInputStream(new FileInputStream(file))) {
-            return (DataSetMetadata) input.readObject();
-        } catch (ClassNotFoundException | IOException e) {
+        try (GZIPInputStream input = new GZIPInputStream(new FileInputStream(file))) {
+            return builder.build().readerFor(DataSetMetadata.class).readValue(input);
+        } catch (IOException e) {
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_METADATA, e, ExceptionContext.build().put("id", id));
         }
     }
@@ -110,19 +120,10 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
         final File[] files = folder.listFiles();
         if (files == null) {
             return Collections.emptyList();
-        } else {
-            final Stream<DataSetMetadata> stream = Arrays.stream(files).map(f -> {
-
-                try (ObjectInputStream input = new ObjectInputStream(new FileInputStream(f))) {
-                    return (DataSetMetadata) input.readObject();
-                } catch (ClassNotFoundException | IOException e) {
-                    LOG.error("error reading metadata file {}", f.getAbsolutePath(), e);
-                    throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_METADATA, e);
-                }
-
-            });
-            return stream::iterator;
         }
+
+        final Stream<DataSetMetadata> stream = Arrays.stream(files).map(f -> get(f.getName()));
+        return stream::iterator;
     }
 
     /**
