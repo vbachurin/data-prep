@@ -591,7 +591,6 @@ describe('Dataset list controller', function () {
             expect(FolderService.children).toHaveBeenCalled();
             expect(ctrl.folderDestinationModal).toBe(true);
             expect(ctrl.datasetToClone).toBe(datasets[0]);
-            expect(ctrl.displayFoldersList).toBe(false);
             expect(ctrl.foldersFound).toEqual([]);
             expect(ctrl.searchFolderQuery).toBe('');
 
@@ -609,7 +608,6 @@ describe('Dataset list controller', function () {
 
             //then
             expect(FolderService.searchFolders).toHaveBeenCalledWith(ctrl.searchFolderQuery);
-            expect(ctrl.displayFoldersList).toBe(true);
         }));
 
         it('choose folder should marker folder as selected',function () {
@@ -679,34 +677,6 @@ describe('Dataset list controller', function () {
             expect(folder.nodes[1].collapsed).toBe(true);
             expect(folder.collapsed).toBe(false);
         });
-
-        it('should not call search for only 2 characters', inject(function (FolderService) {
-            // given
-            var ctrl = createController();
-            ctrl.searchFolderQuery = 'ff';
-
-            // when
-            ctrl.onSearchFolderQueryChange();
-            scope.$digest();
-
-            //then
-            expect(FolderService.searchFolders).not.toHaveBeenCalled();
-
-        }));
-
-        it('should call search for 3 characters', inject(function (FolderService) {
-            // given
-            var ctrl = createController();
-            ctrl.searchFolderQuery = 'fff';
-
-            // when
-            ctrl.onSearchFolderQueryChange();
-            scope.$digest();
-
-            //then
-            expect(FolderService.searchFolders).toHaveBeenCalledWith('fff');
-
-        }));
 
         it('should rename folder', inject(function ($q, FolderService) {
             //given

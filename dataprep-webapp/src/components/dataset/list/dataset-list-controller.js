@@ -72,11 +72,6 @@
         vm.sortOrderSelected = DatasetListSortService.getOrderItem();
 
         /**
-         * @type {boolean} display or not folder search result
-         */
-        vm.displayFoldersList = false;
-
-        /**
          * @type {Array} folder found after a search
          */
         vm.foldersFound = [];
@@ -205,7 +200,6 @@
                         vm.datasetToClone = null;
                         vm.folderDestination = null;
                         vm.foldersFound = [];
-                        vm.displayFoldersList = false;
                         vm.cloneName = '';
                     });
         };
@@ -369,7 +363,6 @@
          */
         vm.openFolderChoice = function(dataset) {
             vm.datasetToClone = dataset;
-            vm.displayFoldersList = false;
             vm.foldersFound = [];
             vm.searchFolderQuery = '';
             vm.cloneName = dataset.name + ' Copy';
@@ -386,17 +379,19 @@
             FolderService.children()
                 .then(function(res) {
                     rootFolder.nodes = res.data;
+                    vm.chooseFolder(rootFolder);
+
                     vm.folders = [rootFolder];
                     _.forEach(vm.folders[0].nodes,function(folder){
                         folder.collapsed = true;
                         // recursive toggle until we reach the current folder
                         if (toggleToCurrentFolder && folder.id===currentPath){
                             vm.toggle(folder, pathParts.length>0?_.slice(pathParts,1):null,currentPath);
+                            vm.chooseFolder(folder);
                         }
                     });
                     vm.folderDestinationModal = true;
                 });
-
         };
 
         /**
@@ -422,9 +417,9 @@
                                 _.forEach(node.nodes,function(folder){
                                     if(folder.id===currentPath) {
                                         vm.toggle(folder,pathParts.length>0?_.slice(pathParts,1):null, currentPath);
+                                        vm.chooseFolder(folder);
                                     }
                                 });
-
                             }
                         });
 
@@ -473,20 +468,6 @@
             }
         };
 
-        /**
-         * @ngdoc method
-         * @name updateSearchFolderQuery
-         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description trigger when searchFolderQuery get changed trigger a search only if search folder query has a minimum of 3 characters
-         */
-        vm.onSearchFolderQueryChange = function(){
-            if (vm.searchFolderQuery && vm.searchFolderQuery.length>2){
-                vm.searchFolders();
-            } else {
-                vm.foldersFound = [];
-                vm.displayFoldersList = false;
-            }
-        };
 
         /**
          * @ngdoc method
@@ -498,7 +479,6 @@
             FolderService.searchFolders(vm.searchFolderQuery)
                 .then(function(response){
                     vm.foldersFound = response.data;
-                    vm.displayFoldersList = true;
                 });
         };
 
