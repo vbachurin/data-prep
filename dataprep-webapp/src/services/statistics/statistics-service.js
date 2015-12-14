@@ -228,10 +228,8 @@
                     return '\'H\'' + (startDate.getMonth() / 6 + 1) + ' yyyy';
                 case 'QUARTER':
                     return 'Q' + (startDate.getMonth() / 3 + 1) + ' yyyy';
-                case 'TWO_MONTH':
                 case 'MONTH':
                     return 'MMM yyyy';
-                case 'TWO_WEEK':
                 case 'WEEK':
                     return 'Www yyyy';
                 default:

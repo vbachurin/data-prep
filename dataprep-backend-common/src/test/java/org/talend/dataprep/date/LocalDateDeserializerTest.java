@@ -7,6 +7,7 @@ import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static java.time.Month.JANUARY;
 import static org.hamcrest.Matchers.is;
@@ -20,15 +21,18 @@ public class LocalDateDeserializerTest {
         final JsonParser parser = jsonFactory.createParser("{" +
                 "   \"dayOfMonth\": 5," +
                 "   \"month\": \"JANUARY\"," +
-                "   \"year\": 2015" +
+                "   \"year\": 2015," +
+                "   \"hour\": 5," +
+                "   \"minute\": 6," +
+                "   \"second\": 56" +
                 "}");
         parser.setCodec(new ObjectMapper(jsonFactory));
-        final LocalDateDeserializer deserializer = new LocalDateDeserializer();
+        final LocalDateTimeDeserializer deserializer = new LocalDateTimeDeserializer();
 
         //when
-        final LocalDate result = deserializer.deserialize(parser, null);
+        final LocalDateTime result = deserializer.deserialize(parser, null);
 
         //then
-        MatcherAssert.assertThat(result, is(LocalDate.of(2015, JANUARY, 5)));
+        MatcherAssert.assertThat(result, is(LocalDateTime.of(2015, JANUARY, 5, 5, 6, 56)));
     }
 }

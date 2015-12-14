@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
@@ -15,6 +16,7 @@ import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadataUtils;
+import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 import org.talend.dataquality.semantic.recognizer.CategoryRecognizerBuilder;
 import org.talend.dataquality.semantic.statistics.SemanticAnalyzer;
@@ -51,6 +53,9 @@ import static org.talend.dataprep.api.type.Type.NUMERIC;
  */
 @Service
 public class AnalyzerService implements DisposableBean {
+
+    @Autowired
+    private DateParser dateParser;
 
     /**
      * This class' logger.
@@ -93,11 +98,10 @@ public class AnalyzerService implements DisposableBean {
         return new ValueQualityAnalyzer(dataTypeQualityAnalyzer, semanticQualityAnalyzer, true);
     }
 
-    public Analyzer<Analyzers.Result> full(List<ColumnMetadata> columns) {
+    public Analyzer<Analyzers.Result> full(final List<ColumnMetadata> columns) {
         // Configure quality & semantic analysis (if column metadata information is present in stream).
         final DataType.Type[] types = TypeUtils.convert(columns);
         final HistogramParameter histogramParameter = getNumberHistogramParameter(columns); // Set min and max for each column in histogram
-        final DateTimePatternFrequencyAnalyzer dateTimePatternFrequency = getDateTimePatternFrequencyAnalyzer(columns);
 
         // Configure value quality analysis
         final Analyzer<Analyzers.Result> analyzer = Analyzers.with(
@@ -111,7 +115,36 @@ public class AnalyzerService implements DisposableBean {
                 new QuantileAnalyzer(types),                                        // Quantile analysis
                 new SummaryAnalyzer(types),                                         // Summary (min, max, mean, variance)
                 new StreamNumberHistogramAnalyzer(types, histogramParameter),       // Number Histogram
-                new StreamDateHistogramAnalyzer(types, dateTimePatternFrequency));  // Date Histogram
+                new StreamDateHistogramAnalyzer(columns, types, dateParser));       // Date Histogram
+        analyzer.init();
+        return analyzer;
+    }
+
+    public Analyzer<Analyzers.Result> baseAnalysis(final List<ColumnMetadata> columns) {
+        // Configure value quality analysis
+        final Analyzer<Analyzers.Result> analyzer = Analyzers.with(
+                getQualityAnalyzer(columns),                                        // Value quality (invalid values...)
+                getDataTypeAnalyzer(columns),                                       // Type analysis (especially useful for new columns).
+                new CardinalityAnalyzer(),                                          // Cardinality (distinct + duplicate)
+                new DataTypeFrequencyAnalyzer(),                                    // Raw data Frequency analysis
+                getPatternFrequencyAnalyzer(columns),                               // Pattern Frequency analysis
+                new SemanticAnalyzer(newCategoryRecognizer()));                     // Semantic analysis
+        analyzer.init();
+        return analyzer;
+    }
+
+    public Analyzer<Analyzers.Result> advancedAnalysis(final List<ColumnMetadata> columns) {
+        // Configure quality & semantic analysis (if column metadata information is present in stream).
+        final DataType.Type[] types = TypeUtils.convert(columns);
+        final HistogramParameter histogramParameter = getNumberHistogramParameter(columns); // Set min and max for each column in histogram
+
+        // Configure value quality analysis
+        final Analyzer<Analyzers.Result> analyzer = Analyzers.with(
+                new TextLengthAnalyzer(),                                           // Text length analysis (for applicable columns)
+                new QuantileAnalyzer(types),                                        // Quantile analysis
+                new SummaryAnalyzer(types),                                         // Summary (min, max, mean, variance)
+                new StreamNumberHistogramAnalyzer(types, histogramParameter),       // Number Histogram
+                new StreamDateHistogramAnalyzer(columns, types, dateParser));       // Date Histogram
         analyzer.init();
         return analyzer;
     }

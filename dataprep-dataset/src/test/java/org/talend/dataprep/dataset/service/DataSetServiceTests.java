@@ -22,7 +22,7 @@ import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.DataSetBaseTest;
-import org.talend.dataprep.date.LocalDateModule;
+import org.talend.dataprep.date.LocalDateTimeModule;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.schema.csv.CSVFormatGuess;
 import org.talend.dataprep.schema.csv.CSVFormatGuesser;
@@ -309,7 +309,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         String content = response.asString();
 
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new LocalDateModule());
+        objectMapper.registerModule(new LocalDateTimeModule());
         DataSet dataSet = objectMapper.readerFor(DataSet.class).readValue(content.getBytes());
 
         Assertions.assertThat(dataSet.getMetadata().getName()).isNotEmpty().contains("Copy");
@@ -1061,7 +1061,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         assertThat(column.getType(), is("date"));
         assertThat(column.getDomain(), is(""));
         ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new LocalDateModule());
+        mapper.registerModule(new LocalDateTimeModule());
         final Statistics statistics = mapper.readerFor(Statistics.class).readValue(DataSetServiceTests.class.getResourceAsStream("../date_time_pattern_expected.json"));
         assertThat(column.getStatistics(), CoreMatchers.equalTo(statistics));
     }
