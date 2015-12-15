@@ -3,11 +3,15 @@ package org.talend.dataprep.transformation.api.action.metadata.text;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jackson.JacksonUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -43,6 +47,14 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
     public static final String REPLACE_ENTIRE_CELL_PARAMETER = "replace_entire_cell"; //$NON-NLS-1$
 
     private static final String COMPILED_PATTERN = "compiled_pattern";
+    protected static final String OPERATOR = "operator";
+    protected static final String TOKEN = "token";
+
+    protected static final String REGEX_MODE = "regex";
+    protected static final String EQUALS_MODE = "equals";
+    protected static final String CONTAINS_MODE = "contains";
+    protected static final String STARTS_WITH_MODE = "starts_with";
+    protected static final String ENDS_WITH_MODE = "ends_with";
 
     /**
      * @see ActionMetadata#getName()
@@ -85,21 +97,32 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
         super.compile(actionContext);
         if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
             final Map<String, String> parameters = actionContext.getParameters();
-            String regexp = parameters.get(CELL_VALUE_PARAMETER);
-            if (regexp == null || regexp.length() == 0) {
+            String value = parameters.get(CELL_VALUE_PARAMETER);
+
+            if (value == null || value.length() == 0) {
                 actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
                 return;
             }
-            final Boolean replaceEntireCell = Boolean.valueOf(parameters.get(REPLACE_ENTIRE_CELL_PARAMETER));
-            if (replaceEntireCell) {
-                regexp = ".*" + regexp + ".*";
-            }
-            final String actualPattern = regexp;
-            // regex validity check
+
             try {
-                actionContext.get(COMPILED_PATTERN, (p) -> Pattern.compile(actualPattern));
-            } catch (Exception e) {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode root = mapper.readTree(value);
+                parameters.put(OPERATOR, root.get(OPERATOR).asText());
+                parameters.put(TOKEN, root.get(TOKEN).asText());
+            } catch (IOException e) {
                 actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
+                return;
+            }
+
+            // regex validity check
+            final Boolean regexMode = (parameters.get(OPERATOR).equals(REGEX_MODE));
+            if (regexMode) {
+                String actualPattern = ".*" + parameters.get(TOKEN) + ".*";
+                try {
+                    actionContext.get(COMPILED_PATTERN, (p) -> Pattern.compile(actualPattern));
+                } catch (Exception e) {
+                    actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
+                }
             }
         }
     }
@@ -125,17 +148,43 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
             return originalValue;
         }
         final Map<String, String> parameters = context.getParameters();
+
+        String operator = parameters.get(OPERATOR);
+        String token = parameters.get(TOKEN);
+        if (token==null || token.length()==0){
+            return originalValue;
+        }
         String replacement = parameters.get(REPLACE_VALUE_PARAMETER);
         boolean replaceEntireCell = Boolean.valueOf(parameters.get(REPLACE_ENTIRE_CELL_PARAMETER));
-        final Matcher matcher = context.<Pattern>get(COMPILED_PATTERN).matcher(originalValue);
-        if (replaceEntireCell) {
-            if (matcher.matches()) {
+
+        boolean matches= false;
+        switch (operator) {
+        case EQUALS_MODE:
+            matches = originalValue.equals(token);
+            break;
+        case CONTAINS_MODE:
+            matches = originalValue.contains(token);
+            break;
+        case STARTS_WITH_MODE:
+            matches = originalValue.startsWith(token);
+            break;
+        case ENDS_WITH_MODE:
+            matches = originalValue.endsWith(token);
+            break;
+        case REGEX_MODE:
+            final Matcher matcher = context.<Pattern>get(COMPILED_PATTERN).matcher(originalValue);
+            matches = matcher.matches();
+            break;
+        }
+
+        if (matches) {
+            if (replaceEntireCell) {
                 return replacement;
             } else {
-                return originalValue;
+                return originalValue.replaceAll(token, replacement);
             }
         } else {
-            return matcher.replaceAll(replacement);
+            return originalValue;
         }
     }
 
