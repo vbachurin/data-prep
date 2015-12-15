@@ -14,7 +14,6 @@
                ng-click="recipeCtrl.remove(step)"
                class="remove-icon animated"></i>
             {{$index + 1}}. {{::step.transformation.label}}
-            <!--<span class="recipe-description">{{::step.transformation.label}}</span>-->
 
             <span ng-switch-when="column">
                 <span translate-once="RECIPE_ITEM_ON_COL" translate-values="{columnName: step.column.name.toUpperCase()}"></span>
