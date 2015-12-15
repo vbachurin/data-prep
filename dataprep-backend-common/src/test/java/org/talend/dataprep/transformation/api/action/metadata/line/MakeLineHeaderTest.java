@@ -1,28 +1,20 @@
 package org.talend.dataprep.transformation.api.action.metadata.line;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.i18n.MessagesBundle;
-import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
-import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
-import org.talend.dataprep.transformation.api.action.metadata.delete.Delete;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.DATA_CLEANSING;
+import org.junit.Before;
+import org.junit.Test;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(MessagesBundle.class)
 public class MakeLineHeaderTest {
 
     private MakeLineHeader action;
@@ -30,7 +22,6 @@ public class MakeLineHeaderTest {
     @Before
     public void init() throws IOException {
         action = new MakeLineHeader();
-        PowerMockito.mockStatic(MessagesBundle.class);
     }
 
     @Test

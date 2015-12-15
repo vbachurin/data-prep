@@ -47,13 +47,12 @@ public class MakeLineHeader extends ActionMetadata implements RowAction {
 
     @Override
     public void applyOnLine(DataSetRow row, ActionContext context) {
-        LOGGER.debug("Make line header for rowId {} with parameters {} ", context.getRowId(), context.getParameters());
-
-        for (ColumnMetadata column : row.getRowMetadata().getColumns()) {
-            column.setName(row.get(column.getId()));
-        }
-        context.setOutputRowMetadata(row.getRowMetadata().clone());
         if (getFilter(context.getParameters()).test(row)) {
+            LOGGER.debug("Make line header for rowId {} with parameters {} ", context.getRowId(), context.getParameters());
+            for (ColumnMetadata column : row.getRowMetadata().getColumns()) {
+                column.setName(row.get(column.getId()));
+            }
+            context.setOutputRowMetadata(row.getRowMetadata().clone());
             row.setDeleted(true);
             context.setActionStatus(ActionContext.ActionStatus.DONE);
         }
