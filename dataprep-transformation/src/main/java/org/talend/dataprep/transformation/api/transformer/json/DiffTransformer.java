@@ -2,10 +2,8 @@ package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -16,14 +14,11 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
-import org.talend.dataprep.stream.ExtendedStream;
+import org.talend.dataprep.transformation.BaseTransformer;
 import org.talend.dataprep.transformation.api.action.ActionParser;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
@@ -85,27 +80,21 @@ class DiffTransformer implements Transformer {
             // Records
             writer.fieldName("records");
             writer.startArray();
-            final AtomicBoolean firstTransformation = new AtomicBoolean(true);
             final Set<RowMetadata> diff = new HashSet<>(1);
+
             input.getRecords() //
                     .filter(isWithinWantedIndexes(minIndex, maxIndex)) //
                     .map(createClone()) //
                     .map(rows -> { // Apply actions and generate diff
-                        if (firstTransformation.getAndSet(false)) { // First transformation, keep track of metadata
-                                                                    // changes
-                            reference.apply(rows[0]);
-                            preview.apply(rows[1]);
-                            rows[1].getRowMetadata().diff(rows[0].getRowMetadata());
-                            diff.add(rows[1].getRowMetadata().clone()); // <- remembers diff for later
-                        } else { // Only apply actions on remaining rows
-                            reference.apply(rows[0]);
-                            preview.apply(rows[1]);
-                        }
+                        reference.apply(rows[0]);
+                        preview.apply(rows[1]);
                         return rows;
                     }) //
                     .filter(shouldWriteDiff(indexes)) //
                     .forEach(rows -> {
                         try {
+                            rows[1].getRowMetadata().diff(rows[0].getRowMetadata());
+                            diff.add(rows[1].getRowMetadata());
                             rows[1].diff(rows[0]);
                             if (rows[1].shouldWrite()) {
                                 writer.write(rows[1]);
@@ -173,19 +162,7 @@ class DiffTransformer implements Transformer {
         }
 
         public DataSetRow apply(DataSetRow dataSetRow) {
-            DataSetRow current = dataSetRow;
-            final List<Action> allActions = parsedActions.getAllActions();
-            final Iterator<DataSetRowAction> rowTransformers = parsedActions.getRowTransformers().iterator();
-            for (Action action : allActions) {
-                final ActionContext actionContext = context.create(action.getRowAction());
-                actionContext.setParameters(action.getParameters());
-                final DataSetRowAction rowAction = rowTransformers.next();
-                rowAction.compile(actionContext);
-                if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
-                    current = rowAction.apply(current, actionContext);
-                }
-            }
-            return current;
+            return BaseTransformer.baseTransform(Stream.of(dataSetRow), parsedActions.getRowTransformers(), context).findFirst().get();
         }
 
     }

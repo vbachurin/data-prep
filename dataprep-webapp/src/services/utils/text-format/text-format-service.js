@@ -9,7 +9,10 @@
     function TextFormatService() {
         return {
             adaptToGridConstraints: adaptToGridConstraints,
-            escapeRegex: escapeRegex
+            escapeRegex: escapeRegex,
+            escapeRegexpExceptStar: escapeRegexpExceptStar,
+            convertPatternToRegexp: convertPatternToRegexp,
+            convertJavaDateFormatToMomentDateFormat: convertJavaDateFormatToMomentDateFormat
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -25,6 +28,17 @@
          */
         function escapeRegex(value) {
             return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '[$&]');
+        }
+
+        /**
+         * @ngdoc method
+         * @name escapeRegExpExceptStar
+         * @methodOf data-prep.services.utils:TextFormatService
+         * @description Escape all regexp characters except * wildcard, and adapt * wildcard to regexp (* --> .*)
+         * @param {string} str The string to escape
+         */
+        function escapeRegexpExceptStar(str) {
+            return str.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, '\\$&').replace(/\*/g, '.*');
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -104,6 +118,67 @@
          */
         function escapeHtmlTags(value) {
             return (value + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+
+        /**
+         * @ngdoc method
+         * @name convertPatternToRegexp
+         * @methodOf data-prep.services.utils:TextFormatService
+         * @description Convert pattern to regex
+         * @param {string} pattern The pattern
+         */
+        function convertPatternToRegexp(pattern) {
+            var regexp = '';
+            for (var i = 0, len = pattern.length; i < len; i++) {
+                switch(pattern[i]){
+                    case 'A':
+                        regexp += '[A-Z]';
+                        break;
+                    case'a':
+                        regexp += '[a-z]';
+                        break;
+                    case'9':
+                        regexp += '[0-9]';
+                        break;
+                    default:
+                        regexp += escapeRegex(pattern[i]);
+                }
+            }
+            return '^' + regexp + '$';
+        }
+
+        /**
+         * @ngdoc method
+         * @name convertJavaDateFormatToMomentDateFormat
+         * @methodOf data-prep.services.utils:TextFormatService
+         * @description convert Java Date Format To Moment Date Format
+         * @param {string} javaDateFormat The Java Date Format
+         */
+        function convertJavaDateFormatToMomentDateFormat(javaDateFormat) {
+            var openQuote = false;
+            var pattern = javaDateFormat;
+
+            // simple quote (') is used in java petterns to escape things. In moment, we use brackets ([])
+            // escaped quotes ('') should be converted to simple quote
+            // words between quotes ('content') should be converted to words between brackets ([content])
+            pattern = pattern.replace(/\'\'/g, '#tdpQuote')     //escape ('') to a unique replacement word
+                .replace(/\'/g, function() {                    //deal with word between quotes --> words between brackets
+                    openQuote = !openQuote;
+                    return openQuote ? '[' : ']';
+                })
+                .replace(/#tdpQuote/g, '\'');                   //replace original ('') to simple quotes
+
+            // toMomentFormatString will modify all the characters (even those between branckets)
+            // we save those escaped parts, convert the pattern and replace the parts that should be escaped
+            var patternEscapedParts = pattern.match(/\[.*\]/g);
+            pattern = moment().toMomentFormatString(pattern);
+            var escapedPartIndex = 0;
+            pattern = pattern.replace(/\[.*\]/g, function() {
+                return patternEscapedParts[escapedPartIndex++];
+            });
+
+            return pattern;
         }
     }
 

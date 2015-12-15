@@ -55,7 +55,7 @@ public class TransformerFactoryTest {
         final ObjectMapper mapper = builder.build();
         final InputStream inputStream = TransformerFactoryTest.class.getResourceAsStream("../../format/export_dataset.json");
         try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
-            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
 
             // when
             transformer.transform(dataSet, configuration);

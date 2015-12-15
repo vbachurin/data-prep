@@ -43,7 +43,7 @@ describe('Export directive', function () {
     var stateMock;
 
     beforeEach(module('data-prep.export', function($provide) {
-        stateMock = {playground: {}};
+        stateMock = {playground: {exportParameters : { exportType: 'CSV', 'exportParameters.csvSeparator': ';' , 'exportParameters.fileName': 'prepname' }}};
         $provide.constant('state', stateMock);
     }));
     beforeEach(module('htmlTemplates'));

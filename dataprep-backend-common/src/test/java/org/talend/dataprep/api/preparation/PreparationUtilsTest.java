@@ -1,9 +1,17 @@
 package org.talend.dataprep.api.preparation;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.fail;
+import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.io.output.NullOutputStream;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.core.Is;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,23 +21,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.preparation.store.PreparationRepository;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
-import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
-import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -58,7 +49,7 @@ public class PreparationUtilsTest {
         repository.add(step2);
 
         //when
-        List<String> ids = PreparationUtils.listStepsIds(step1, repository);
+        List<String> ids = PreparationUtils.listStepsIds(step1.id(), repository);
 
         //then
         assertThat(ids, hasItem(ROOT_STEP.id()));
@@ -66,7 +57,7 @@ public class PreparationUtilsTest {
         assertThat(ids, not(hasItem(step2.id())));
 
         //when
-        ids = PreparationUtils.listStepsIds(step2, repository);
+        ids = PreparationUtils.listStepsIds(step2.id(), repository);
 
         //then
         assertThat(ids, hasItem(ROOT_STEP.id()));
@@ -90,7 +81,7 @@ public class PreparationUtilsTest {
         repository.add(step2);
 
         //when
-        List<String> ids = PreparationUtils.listStepsIds(step2, step1.getId(), repository);
+        List<String> ids = PreparationUtils.listStepsIds(step2.id(), step1.getId(), repository);
 
         //then
         assertThat(ids, not(hasItem(ROOT_STEP.id())));
@@ -98,7 +89,7 @@ public class PreparationUtilsTest {
         assertThat(ids, hasItem(step2.id()));
 
         //when
-        ids = PreparationUtils.listStepsIds(step2, step2.getId(), repository);
+        ids = PreparationUtils.listStepsIds(step2.id(), step2.getId(), repository);
 
         //then
         assertThat(ids, not(hasItem(ROOT_STEP.id())));
@@ -122,7 +113,7 @@ public class PreparationUtilsTest {
         repository.add(step2);
 
         //when
-        List<Step> steps = PreparationUtils.listSteps(step1, repository);
+        List<Step> steps = PreparationUtils.listSteps(step1.id(), repository);
 
         //then
         assertThat(steps, hasItem(ROOT_STEP));
@@ -130,7 +121,7 @@ public class PreparationUtilsTest {
         assertThat(steps, not(hasItem(step2)));
 
         //when
-        steps = PreparationUtils.listSteps(step2, repository);
+        steps = PreparationUtils.listSteps(step2.id(), repository);
 
         //then
         assertThat(steps, hasItem(ROOT_STEP));
@@ -194,7 +185,7 @@ public class PreparationUtilsTest {
         final List<Action> actions = getSimpleAction("uppercase", "column_name", "lastname");
         final PreparationActions newContent = new PreparationActions(actions);
         final Step step = new Step(ROOT_STEP.id(), newContent.id());
-        final Preparation preparation = new Preparation("1234", step);
+        final Preparation preparation = new Preparation("1234", step.id());
 
         repository.add(newContent);
         repository.add(step);

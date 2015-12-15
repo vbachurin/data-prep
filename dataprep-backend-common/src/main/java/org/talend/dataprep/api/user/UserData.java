@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
@@ -45,7 +46,8 @@ public class UserData implements Serializable {
      * 
      * @param userId the used id.
      */
-    public UserData(String userId) {
+    @JsonCreator
+    public UserData(@JsonProperty("userId") String userId) {
         this.userId = userId;
     }
 

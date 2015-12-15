@@ -46,5 +46,52 @@
         "default":""
       }
     ]
+  },
+  {
+    "category":"data cleansing",
+    "label":"Make as header",
+    "name":"make_line_header",
+    "dynamic":false,
+    "actionScope":[
+
+    ],
+    "parameters":[
+      {
+        "name":"column_id",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The column to which you want to apply this action",
+        "label":"Column",
+        "default":""
+      },
+      {
+        "name":"row_id",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The row to which you want to apply this action",
+        "label":"Row",
+        "default":""
+      },
+      {
+        "name":"scope",
+        "type":"string",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"The transformation scope (CELL | LINE | COLUMN | DATASET)",
+        "label":"Scope",
+        "default":""
+      },
+      {
+        "name":"filter",
+        "type":"filter",
+        "implicit":true,
+        "canBeBlank":true,
+        "description":"An optional filter to apply action on matching values only.",
+        "label":"Filter",
+        "default":""
+      }
+    ]
   }
 ]

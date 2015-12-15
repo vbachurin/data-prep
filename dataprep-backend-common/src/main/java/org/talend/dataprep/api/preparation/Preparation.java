@@ -15,29 +15,45 @@ public class Preparation extends Identifiable implements Serializable {
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
 
+    /** The dataset id. */
     private String dataSetId;
 
+    /** The author name. */
     private String author;
 
+    /** The preparation name. */
     private String name;
 
+    /** The creation date. */
     private long creationDate;
 
+    /** The last modification date. */
     private long lastModificationDate;
 
-    private Step step;
+    /** The head id. */
+    private String headId;
 
+    /** List of the steps id for this preparation. */
     private List<String> steps;
 
+    /**
+     * Default empty constructor.
+     */
     public Preparation() {
         this.creationDate = System.currentTimeMillis();
         this.lastModificationDate = this.creationDate;
     }
 
-    public Preparation(String dataSetId, Step step) {
+    /**
+     * Create a preparation out of the given parameters.
+     *
+     * @param dataSetId the dataset id.
+     * @param headId the head step id.
+     */
+    public Preparation(String dataSetId, String headId) {
         this();
         this.dataSetId = dataSetId;
-        this.step = step;
+        this.headId = headId;
     }
 
     /**
@@ -46,7 +62,7 @@ public class Preparation extends Identifiable implements Serializable {
      * @return A {@link Preparation preparation} where head is set to {@link Step#ROOT_STEP root step}.
      */
     public static Preparation defaultPreparation(String dataSetId) {
-        return new Preparation(dataSetId, Step.ROOT_STEP);
+        return new Preparation(dataSetId, Step.ROOT_STEP.id());
     }
 
     public List<String> getSteps() {
@@ -97,12 +113,18 @@ public class Preparation extends Identifiable implements Serializable {
         this.lastModificationDate = lastModificationDate;
     }
 
-    public Step getStep() {
-        return step;
+    /**
+     * @return the HeadId
+     */
+    public String getHeadId() {
+        return headId;
     }
 
-    public void setStep(Step step) {
-        this.step = step;
+    /**
+     * @param headId the headId to set.
+     */
+    public void setHeadId(String headId) {
+        this.headId = headId;
     }
 
     @Override
@@ -125,8 +147,13 @@ public class Preparation extends Identifiable implements Serializable {
 
     @Override
     public String toString() {
-        return "Preparation {" + "id='" + id() + '\'' + ", dataSetId='" + dataSetId + '\'' + ", author='" + author + '\''
-                + ", creationDate=" + creationDate + ", lastModificationDate=" + lastModificationDate + ", step=" + step + '}';
+        return "Preparation {" + //
+                "id='" + id() + '\'' + //
+                ", dataSetId='" + dataSetId + '\'' + //
+                ", author='" + author + '\'' + //
+                ", creationDate=" + creationDate + //
+                ", lastModificationDate=" + lastModificationDate + //
+                ", headId='" + headId +"'}";
     }
 
     public void updateLastModificationDate() {
@@ -140,7 +167,7 @@ public class Preparation extends Identifiable implements Serializable {
         merge.name = other.name != null ? other.name : name;
         merge.creationDate = min(other.creationDate, creationDate);
         merge.lastModificationDate = max(other.lastModificationDate, lastModificationDate);
-        merge.step = other.step != null ? other.step : step;
+        merge.headId = other.headId != null ? other.headId : headId;
         return merge;
     }
 
@@ -161,7 +188,7 @@ public class Preparation extends Identifiable implements Serializable {
                 Objects.equals(dataSetId, that.dataSetId) &&
                 Objects.equals(author, that.author) &&
                 Objects.equals(name, that.name) &&
-                Objects.equals(step, that.step);
+                Objects.equals(headId, that.headId);
     }
 
     /**
@@ -169,6 +196,6 @@ public class Preparation extends Identifiable implements Serializable {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(dataSetId, author, name, creationDate, lastModificationDate, step);
+        return Objects.hash(dataSetId, author, name, creationDate, lastModificationDate, headId);
     }
 }

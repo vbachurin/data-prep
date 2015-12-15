@@ -2,13 +2,15 @@ package org.talend.dataprep.dataset.store.metadata.file;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.TestPropertySource;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -20,6 +22,10 @@ import org.talend.dataprep.dataset.DataSetBaseTest;
 @TestPropertySource(properties = { "dataset.metadata.store=file",
         "dataset.metadata.store.file.location=target/test/store/metadata" })
 public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
+
+    /** Where to store the dataset metadata. */
+    @Value("${dataset.metadata.store.file.location}")
+    private String storeLocation;
 
     /** The repository to test. */
     @Autowired
@@ -48,6 +54,31 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
     }
 
     @Test
+    public void shouldReturnNullWhenGetEncounterAnError() throws Exception {
+
+        String datasetId = "43874232515345";
+        File metadataFile = new File(storeLocation + '/' + datasetId);
+
+        try {
+            // given
+            repository.add(getMetadata(datasetId));
+
+            // when
+
+            FileOutputStream fos = new FileOutputStream(metadataFile);
+            fos.write("invalid content in dataset metadata file".getBytes());
+            fos.close();
+
+            final DataSetMetadata actual = repository.get(datasetId);
+
+            // then
+            assertNull(actual);
+        } finally {
+            metadataFile.delete();
+        }
+    }
+
+    @Test
     public void shouldUpdateExistingEntry() throws IOException {
 
         String id = "75396";
@@ -57,7 +88,7 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
         repository.add(metadata);
 
         // when
-        DataSetMetadata update = builder.build().reader(DataSetMetadata.class)
+        DataSetMetadata update = builder.build().readerFor(DataSetMetadata.class)
                 .readValue(this.getClass().getResourceAsStream("dataset_2.json"));
         update = DataSetMetadata.Builder.metadata().copy(update).id(id).build();
 
@@ -161,7 +192,7 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
      * @throws IOException if an error occurs reading the json source file.
      */
     public DataSetMetadata getMetadata(String id) throws IOException {
-        DataSetMetadata original = builder.build().reader(DataSetMetadata.class)
+        DataSetMetadata original = builder.build().readerFor(DataSetMetadata.class)
                 .readValue(this.getClass().getResourceAsStream("dataset.json"));
         return DataSetMetadata.Builder.metadata().copy(original).id(id).build();
     }

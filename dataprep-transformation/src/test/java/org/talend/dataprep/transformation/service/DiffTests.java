@@ -6,8 +6,6 @@ import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import com.jayway.restassured.response.Response;
-
 /**
  * Diff integration tests.
  */
@@ -55,7 +53,7 @@ public class DiffTests extends TransformationServiceBaseTests {
                 .asString();
 
         // then
-        assertEquals("{\"createdColumns\":[\"0002\"]}", response, false);
+        assertEquals("{\"createdColumns\":[\"0003\"]}", response, false);
     }
 
     @Test

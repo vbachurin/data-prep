@@ -51,11 +51,9 @@ function runTests(singleRun, done, karmaConfPath, type) {
         preprocessors[path] = ['ng-html2js'];
     });
 
-    if (singleRun) {
-        var srcJs = type ? filesToCover [type] : 'src/**/!(*spec|*mock).js';
-        preprocessors[srcJs] = ['coverage'];
-        reporters.push('coverage')
-    }
+    var srcJs = type ? filesToCover [type] : 'src/**/!(*spec|*mock).js';
+    preprocessors[srcJs] = ['coverage'];
+    reporters.push('coverage');
 
     var localConfig = {
         configFile: path.join(__dirname, '/../', karmaConfPath),

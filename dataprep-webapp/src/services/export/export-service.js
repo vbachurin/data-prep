@@ -14,10 +14,40 @@
         this.exportTypes = [];
 
         /**
+         * @ngdoc property
+         * @name currentExportType
+         * @propertyOf data-prep.services.export.service:ExportService
+         * @description Current export type
+         * @type {Object}
+         */
+        this.currentExportType = null;
+
+        /**
+         * @ngdoc property
+         * @name currentExportParameters
+         * @propertyOf data-prep.services.export.service:ExportService
+         * @description Current export parameters model, bound to form inputs
+         * @type {Object}
+         */
+        this.currentExportParameters = null;
+
+        /**
+         * @ngdoc method
+         * @name resetCurrentParameters
+         * @methodOf data-prep.export.controller:ExportCtrl
+         * @description Reset current export parameters with the saved one from localStorage
+         */
+        this.reset = function reset() {
+            self.currentExportType = self.getType(self.getParameters().id);
+            self.currentExportParameters =  null;
+        };
+
+
+        /**
          * @ngdoc method
          * @name getParameters
          * @methodOf data-prep.services.export.service:ExportService
-         * @description Get the saved export parameters from localStorage
+         * @description Get the saved export type from localStorage
          */
         this.getParameters = function getParameters() {
             var params = $window.localStorage.getItem(EXPORT_PARAMS_KEY);
@@ -28,7 +58,7 @@
          * @ngdoc method
          * @name setParameters
          * @methodOf data-prep.services.export.service:ExportService
-         * @description Save export parameters in localStorage
+         * @description Save export type in localStorage
          */
         this.setParameters = function setParameters(params) {
             $window.localStorage.setItem(EXPORT_PARAMS_KEY, JSON.stringify(params));
@@ -56,7 +86,7 @@
             var exportType = _.find(self.exportTypes, function(type) {
                 return type.defaultExport === 'true';
             });
-            self.setParameters({exportType: exportType.id});
+            self.setParameters(exportType);
         };
 
         /**

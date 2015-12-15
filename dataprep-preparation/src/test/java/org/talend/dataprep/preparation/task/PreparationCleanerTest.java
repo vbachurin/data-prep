@@ -4,14 +4,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.mock.env.MockPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.context.WebApplicationContext;
@@ -43,7 +41,7 @@ public class PreparationCleanerTest {
         final Step firstStep = new Step(ROOT_STEP.getId(), "first");
         final Step secondStep = new Step(firstStep.getId(), "second");
         final Step orphanStep = new Step(secondStep.getId(), "orphan");
-        final Preparation preparation = new Preparation("1", secondStep);
+        final Preparation preparation = new Preparation("1", secondStep.id());
 
         repository.add(firstStep);
         repository.add(secondStep);
@@ -78,8 +76,8 @@ public class PreparationCleanerTest {
         final Step secondStep = new Step(firstStep.getId(), "second");
         final Step thirdStep = new Step(secondStep.getId(), "third");
 
-        final Preparation firstPreparation = new Preparation("1", firstStep);
-        final Preparation secondPreparation = new Preparation("2", thirdStep);
+        final Preparation firstPreparation = new Preparation("1", firstStep.id());
+        final Preparation secondPreparation = new Preparation("2", thirdStep.id());
 
         repository.add(firstStep);
         repository.add(secondStep);

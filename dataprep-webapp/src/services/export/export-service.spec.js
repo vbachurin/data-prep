@@ -31,7 +31,7 @@ describe('Export service', function() {
         },
         {
             'mimeType': 'application/vnd.ms-excel',
-            'extension': '.xlss',
+            'extension': '.xlsx',
             'id': 'XLSX',
             'needParameters': 'false',
             'defaultExport': 'true'
@@ -50,7 +50,7 @@ describe('Export service', function() {
 
     it('should get parameters from localStorage', inject(function($window, ExportService) {
         //given
-        var expectedParameters = {exportType: 'XLS'};
+        var expectedParameters = {exportType: 'XLSX'};
         $window.localStorage.setItem(EXPORT_PARAMS_KEY, JSON.stringify(expectedParameters));
 
         //when
@@ -111,7 +111,7 @@ describe('Export service', function() {
     it('should save default type parameters in localStorage when there are no saved params yet', inject(function($rootScope, $window, ExportService) {
         //given
         $window.localStorage.removeItem(EXPORT_PARAMS_KEY);
-        var defaultParameters = {exportType: 'XLSX'};
+        var defaultParameters = {'mimeType': 'application/vnd.ms-excel','extension':'.xlsx','id':'XLSX','needParameters':'false','defaultExport':'true'};
         var defaultParametersAsString = JSON.stringify(defaultParameters);
 
         //when
@@ -134,5 +134,25 @@ describe('Export service', function() {
 
         //then
         expect($window.localStorage.getItem(EXPORT_PARAMS_KEY)).toBe(parametersAsString);
+    }));
+
+    it('should reset parameters', inject(function($window, ExportService) {
+        //given
+        var expectedParameters = {id: 'XLSX'};
+        $window.localStorage.setItem(EXPORT_PARAMS_KEY, JSON.stringify(expectedParameters));
+        ExportService.exportTypes = exportTypes;
+
+        //when
+        ExportService.reset();
+
+        //then
+        expect(ExportService.currentExportType).toEqual({
+            'mimeType': 'application/vnd.ms-excel',
+            'extension': '.xlsx',
+            'id': 'XLSX',
+            'needParameters': 'false',
+            'defaultExport': 'true'
+        });
+        expect(ExportService.currentExportParameters).toBeFalsy();
     }));
 });

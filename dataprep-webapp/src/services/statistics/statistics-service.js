@@ -21,6 +21,7 @@
             histogram: null,
             stateDistribution: null,
             statistics: null,
+            patterns: null,
 
             //update range
             initRangeLimits: initRangeLimits,
@@ -36,7 +37,10 @@
             reset: reset,                                   // reset charts/statistics/cache
 
             //TODO temporary method to be replaced with new geo chart
-            getGeoDistribution: getGeoDistribution
+            getGeoDistribution: getGeoDistribution,
+
+            //Pattern
+            valueMatchPatternFn: valueMatchPatternFn
         };
 
         return service;
@@ -110,15 +114,15 @@
         function getRangeFilteredOccurrence(min, max) {
             return _.chain(state.playground.grid.filteredOccurences)
                 .keys()
-                .filter(function(key) {
+                .filter(function (key) {
                     var numberValue = Number(key);
                     return !isNaN(numberValue) &&
                         ((numberValue === min) || (numberValue > min && numberValue < max));
                 })
-                .map(function(key) {
+                .map(function (key) {
                     return state.playground.grid.filteredOccurences[key];
                 })
-                .reduce(function(accu, value) {
+                .reduce(function (accu, value) {
                     return accu + value;
                 }, 0)
                 .value();
@@ -347,7 +351,74 @@
         //-------------------------------------------------3- Pattern---------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
 
-        //Currently there are no stats to be brought on the pattern data
+        /**
+         * @ngdoc method
+         * @name updateFilteredPatternsFrequency
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description update patterns statistics
+         * @param {string} column The column to be updated
+         */
+        function updateFilteredPatternsFrequency(column) {
+            service.patterns = [];
+
+            _.forEach(column.statistics.patternFrequencyTable, function (patternFrequency) {
+                var pattern = patternFrequency.pattern;
+                var matchingFn = valueMatchPatternFn(pattern);
+
+                var filteredOccurrences = _.chain(state.playground.grid.filteredRecords)
+                    .pluck(column.id)
+                    .filter(matchingFn)
+                    .groupBy(function (value) {
+                        return value;
+                    })
+                    .mapValues('length')
+                    .reduce(function (accu, value) {
+                        return accu + value;
+                    }, 0)
+                    .value();
+
+                var patternsFiltered = _.extend({}, patternFrequency, {filteredOccurrences: filteredOccurrences});
+                service.patterns.push(patternsFiltered);
+            });
+        }
+
+        function isDatePattern(pattern) {
+            return (pattern.indexOf('d') > -1 ||
+            pattern.indexOf('M') > -1 ||
+            pattern.indexOf('y') > -1 ||
+            pattern.indexOf('H') > -1 ||
+            pattern.indexOf('h') > -1 ||
+            pattern.indexOf('m') > -1 ||
+            pattern.indexOf('s') > -1);
+        }
+
+        function valueMatchDatePatternFn(pattern) {
+            var datePattern = TextFormatService.convertJavaDateFormatToMomentDateFormat(pattern);
+            return function(value) {
+                return value && moment(value, datePattern, true).isValid();
+            };
+        }
+
+        function valueMatchRegexFn(pattern) {
+            var regex = TextFormatService.convertPatternToRegexp(pattern);
+            return function(value) {
+                return value && value.match(regex);
+            };
+        }
+
+        function valueMatchPatternFn(pattern) {
+            if(pattern === '') {
+                return function(value) {
+                    return value === '';
+                };
+            }
+            else if(isDatePattern(pattern)) {
+                return valueMatchDatePatternFn(pattern);
+            }
+            else {
+                return valueMatchRegexFn(pattern);
+            }
+        }
 
         //--------------------------------------------------------------------------------------------------------------
         //-------------------------------------------------4- Others----------------------------------------------------
@@ -563,7 +634,7 @@
          * @description Removes all the data to disable all visualization
          */
         function getAggregationColumns() {
-            if(state.playground.data) {
+            if (state.playground.data) {
                 var column = state.playground.grid.selectedColumn;
                 //TODO JSO : put a cache again that is invalidated when one of the columns change
                 return DatagridService.getNumericColumns(column);
@@ -588,7 +659,8 @@
             var aggregatedColumn = columnAggregation && _.findWhere(getAggregationColumns(), {id: columnAggregation.aggregationColumnId});
             var aggregation = columnAggregation && columnAggregation.aggregation;
 
-            service.processAggregation(aggregatedColumn, aggregation);
+            processAggregation(aggregatedColumn, aggregation);
+            updateFilteredPatternsFrequency(column);
         }
 
         /**

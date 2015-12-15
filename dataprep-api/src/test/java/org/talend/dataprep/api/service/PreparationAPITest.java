@@ -15,6 +15,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.cache.ContentCacheKey;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -282,7 +283,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
         applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
 
         Preparation preparation = preparationRepository.get(preparationId, Preparation.class);
-        final String newHead = preparation.getStep().getParent();
+        final String newHead = preparationRepository.get(preparation.getHeadId(), Step.class).getParent();
 
         //when
         given().when()//
@@ -292,7 +293,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
 
         //then
         preparation = preparationRepository.get(preparationId, Preparation.class);
-        assertThat(preparation.getStep().id(), is(newHead));
+        assertThat(preparation.getHeadId(), is(newHead));
     }
 
     @Test
@@ -319,7 +320,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
         // given
         final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparationContentGet", "text/csv");
         String json = given().get("/api/preparations/{preparation}/details", preparationId).asString();
-        Preparation preparation = builder.build().reader(Preparation.class).readValue(json);
+        Preparation preparation = builder.build().readerFor(Preparation.class).readValue(json);
 
         final InputStream expected = PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_columns.json");
 
@@ -338,7 +339,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
         // given
         final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparationContentGet", "text/csv");
         String json = given().get("/api/preparations/{preparation}/details", preparationId).asString();
-        Preparation preparation = builder.build().reader(Preparation.class).readValue(json);
+        Preparation preparation = builder.build().readerFor(Preparation.class).readValue(json);
         List<String> steps = preparation.getSteps();
 
         assertThat(steps.size(), is(1));

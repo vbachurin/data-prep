@@ -5,9 +5,15 @@
      * @ngdoc service
      * @name data-prep.services.filter.service:FilterService
      * @description Filter service. This service provide the entry point to datagrid filters
+     * @requires data-prep.services.filter.service:FilterAdapterService
      * @requires data-prep.services.playground.service:DatagridService
+     * @requires data-prep.services.state.service:StateService
+     * @requires data-prep.services.statistics.service:StatisticsService
+     * @requires data-prep.services.playground.service:DatagridService
+     * @requires data-prep.services.utils.service:ConverterService
+     * @requires data-prep.services.utils.service:TextFormatService
      */
-    function FilterService($timeout, state, StateService, FilterAdapterService, DatagridService, ConverterService, StatisticsService) {
+    function FilterService($timeout, state, StateService, FilterAdapterService, DatagridService, StatisticsService, ConverterService, TextFormatService) {
         var service = {
             //utils
             getColumnsContaining: getColumnsContaining,
@@ -24,14 +30,6 @@
         //--------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------UTILS------------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
-        /**
-         * Escape all regexp characters except * wildcard, and adapt * wildcard to regexp (* --> .*)
-         * @param {string} str The string to escape
-         * @returns {*}
-         */
-        function escapeRegExpExceptStar(str) {
-            return str.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, '\\$&').replace(/\*/g, '.*');
-        }
 
         /**
          * @ngdoc method
@@ -46,7 +44,7 @@
                 return [];
             }
 
-            var regexp = new RegExp(escapeRegExpExceptStar(phrase));
+            var regexp = new RegExp(TextFormatService.escapeRegexpExceptStar(phrase));
             var canBeNumeric = !isNaN(phrase.replace(/\*/g, ''));
             var canBeBoolean = 'true'.match(regexp) || 'false'.match(regexp);
 
@@ -82,7 +80,7 @@
          */
         function createContainFilterFn(colId, phrase) {
             var lowerCasePhrase = phrase.toLowerCase();
-            var regexp = new RegExp(escapeRegExpExceptStar(lowerCasePhrase));
+            var regexp = new RegExp(TextFormatService.escapeRegexpExceptStar(lowerCasePhrase));
 
             return function () {
                 return function (item) {
@@ -199,6 +197,24 @@
             };
         }
 
+        /**
+         * @ngdoc method
+         * @name createMatchFilterFn
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {string} colId The column id
+         * @param {string} pattern The filter pattern
+         * @description Create a 'match' filter function
+         * @returns {function} The predicate function
+         */
+        function createMatchFilterFn(colId, pattern) {
+            var valueMatchPatternFn = StatisticsService.valueMatchPatternFn(pattern);
+            return function () {
+                return function (item) {
+                    return valueMatchPatternFn(item[colId]);
+                };
+            };
+        }
+
         //--------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------FILTER LIFE------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
@@ -291,6 +307,20 @@
                         return _.isEqual(sameColAndTypeFilter.args.interval, args.interval);
                     };
                     break;
+                case 'matches':
+                    createFilter = function createFilter() {
+                        filterFn = createMatchFilterFn(colId, args.pattern);
+                        return FilterAdapterService.createFilter(type, colId, colName, false, args, filterFn, removeFilterFn);
+                    };
+
+                    updateFilter = function updateFilter() {
+                        service.updateFilter(sameColAndTypeFilter, args.pattern);
+                    };
+
+                    filterExists = function filterExists() {
+                        return sameColAndTypeFilter.args.pattern === args.pattern;
+                    };
+                    break;
             }
 
             if(!sameColAndTypeFilter) {
@@ -348,6 +378,11 @@
                 case 'inside_range':
                     newArgs.interval = newValue;
                     newFilterFn = createRangeFilterFn(oldFilter.colId, newValue);
+                    editableFilter = false;
+                    break;
+                case 'matches':
+                    newArgs.pattern = newValue;
+                    newFilterFn = createMatchFilterFn(oldFilter.colId, newValue);
                     editableFilter = false;
                     break;
             }

@@ -27,14 +27,15 @@
                 keyField: '@',
                 valueField: '@',
                 valueField2: '@',
-                keyLabel:'@'
+                keyLabel: '@',
+                frontBarClass: '@'
             },
             link: function (scope, element, attrs) {
-                var xField = scope.keyField;//occurences
+                var xField = scope.keyField;
                 var yField = scope.valueField;
                 var yField2 = scope.valueField2;
                 var renderTimeout;
-				var tip;
+                var tip;
 
                 function renderHBarchart(statData) {
                     var container = attrs.id;
@@ -51,33 +52,33 @@
                     var xAxis = d3.svg.axis().scale(x).tickFormat(d3.format('d')).orient('top').tickSize(-h).ticks(Math.abs(x.range()[1] - x.range()[0]) / 50),
                         yAxis = d3.svg.axis().scale(y).orient('left').tickSize(0);
 
-                    if(!scope.keyField) {
+                    if (!scope.keyField) {
                         scope.keyField = 'occurrences'; //Value by default
                     }
 
-                    if(!scope.keyLabel) {
+                    if (!scope.keyLabel) {
                         scope.keyLabel = 'Occurrences'; //Value by default
                     }
 
                     xField = scope.keyField;
 
-					tip = d3.tip()
-						.attr('class', 'horizontal-barchart-cls d3-tip')
-						.offset([-10, 0])
-						.html(function(d) {
+                    tip = d3.tip()
+                        .attr('class', 'horizontal-barchart-cls d3-tip')
+                        .offset([-10, 0])
+                        .html(function (d) {
 
                             if (typeof d[yField2] !== 'undefined') {
-                                return 	'<strong>'+ scope.keyLabel +':</strong> <span style="color:yellow">' + d[yField2] + ' / ' + d[xField] + '</span>'+
-                                    '<br/>'+
-                                    '<br/>'+
-                                    '<strong>Record:</strong> <span style="color:yellow">'+ d[yField] + '</span>';
+                                return '<strong>' + scope.keyLabel + ':</strong> <span style="color:yellow">' + d[yField2] + ' / ' + d[xField] + '</span>' +
+                                    '<br/>' +
+                                    '<br/>' +
+                                    '<strong>Record:</strong> <span style="color:yellow">' + d[yField] + '</span>';
                             }
-                            return 	'<strong>'+ scope.keyLabel +':</strong> <span style="color:yellow">' + d[xField] + '</span>'+
-                                '<br/>'+
-                                '<br/>'+
-                                '<strong>Record:</strong> <span style="color:yellow">'+ d[yField] + '</span>';
+                            return '<strong>' + scope.keyLabel + ':</strong> <span style="color:yellow">' + d[xField] + '</span>' +
+                                '<br/>' +
+                                '<br/>' +
+                                '<strong>Record:</strong> <span style="color:yellow">' + d[yField] + '</span>';
 
-						});
+                        });
 
                     var svg = d3.select('#' + container).append('svg')
                         .attr('class', 'horizontal-barchart-cls')
@@ -117,30 +118,17 @@
                         bar.append('rect')
                             .attr('height', y.rangeBand())
                             .attr('width', x(0))
-                            .transition().delay(function (d,i){ return i * 30;})
-                            .attr('width', function(d) { return x(d[xField]);});
-
-                        frontBar = svg.selectAll('g.frontBar')
-                            .data(statData)
-                            .enter().append('g')
-                            .attr('class', 'frontBar')
-                            .attr('transform', function (d) {
-                                return 'translate(0,' + y(d[yField]) +')';
+                            .transition().delay(function (d, i) {
+                                return i * 30;
+                            })
+                            .attr('width', function (d) {
+                                return x(d[xField]);
                             });
 
-                        frontBar.append('rect')
-                            .attr('height', y.rangeBand())
-                            .attr('width', x(0))
-                            .transition().delay(function (d,i){ return i * 30;})
-                            .attr('width', function(d) {
-                                return x(d[yField2]);
-                            });
-                    } else {
-
-                        frontBar = svg.selectAll('g.frontBar')
+                        frontBar = svg.selectAll('g.' + scope.frontBarClass ? scope.frontBarClass : 'frontBar')
                             .data(statData)
                             .enter().append('g')
-                            .attr('class', 'frontBar')
+                            .attr('class', scope.frontBarClass ? scope.frontBarClass : 'frontBar')
                             .attr('transform', function (d) {
                                 return 'translate(0,' + y(d[yField]) + ')';
                             });
@@ -148,28 +136,51 @@
                         frontBar.append('rect')
                             .attr('height', y.rangeBand())
                             .attr('width', x(0))
-                            .transition().delay(function (d,i){ return i * 30;})
-                            .attr('width', function(d) { return x(d[xField]);});
+                            .transition().delay(function (d, i) {
+                                return i * 30;
+                            })
+                            .attr('width', function (d) {
+                                return x(d[yField2]);
+                            });
+                    } else {
+
+                        frontBar = svg.selectAll('g.' + scope.frontBarClass ? scope.frontBarClass : 'frontBar')
+                            .data(statData)
+                            .enter().append('g')
+                            .attr('class', scope.frontBarClass ? scope.frontBarClass : 'frontBar')
+                            .attr('transform', function (d) {
+                                return 'translate(0,' + y(d[yField]) + ')';
+                            });
+
+                        frontBar.append('rect')
+                            .attr('height', y.rangeBand())
+                            .attr('width', x(0))
+                            .transition().delay(function (d, i) {
+                                return i * 30;
+                            })
+                            .attr('width', function (d) {
+                                return x(d[xField]);
+                            });
                     }
 
                     svg.append('g')
                         .attr('class', 'x axis')
                         .call(xAxis);
 
-                    svg.selectAll('.tick text').style('text-anchor','end');
+                    svg.selectAll('.tick text').style('text-anchor', 'end');
 
                     svg.append('g')
                         .attr('class', 'y axis')
                         .call(yAxis);
 
                     frontBar.append('foreignObject')
-						.attr('width', w)
-						.attr('height', y.rangeBand())
-						.append('xhtml:div')
-						.attr('class', 'foreign-object-body')
-						.html(function(d){
-							return d[yField] ? d[yField]:'(EMPTY)';
-						});
+                        .attr('width', w)
+                        .attr('height', y.rangeBand())
+                        .append('xhtml:div')
+                        .attr('class', 'foreign-object-body')
+                        .html(function (d) {
+                            return d[yField] ? d[yField] : '(EMPTY)';
+                        });
 
                     /************btgrect*********/
                     var bgBar = svg.selectAll('g.bg-rect')

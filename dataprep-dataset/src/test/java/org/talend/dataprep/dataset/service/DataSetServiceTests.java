@@ -4,9 +4,6 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static com.jayway.restassured.path.json.JsonPath.from;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
@@ -494,10 +491,6 @@ public class DataSetServiceTests extends DataSetBaseTest {
                 .body(IOUtils
                         .toByteArray(DataSetServiceTests.class.getResourceAsStream("../Talend_Desk-Tableau_de_Bord-011214.xls")))
                 .when().post("/datasets").asString();
-
-
-        // TODO Vincent: see if this step is necessary
-        // final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
 
         ObjectMapper objectMapper = new ObjectMapper();
 

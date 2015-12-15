@@ -1,6 +1,6 @@
-.horizontal-barchart-cls{
+.horizontal-barchart-cls {
   font-family: $inconsolota;
-  .bg-rect{
+  .bg-rect {
     fill: $medium-gray;
     cursor: pointer;
   }
@@ -9,14 +9,44 @@
     fill: $light-blue;
   }
 
-  .frontBar rect {
-    fill: $dark-blue ;
+  .frontBar {
+    rect {
+      fill: $dark-blue;
+    }
+    .foreign-object-body {
+      background-color: rgba(255, 255, 255, 0);
+      font-size: .8em;
+      color: $dark-green;
+      padding-top: 3px;
+      padding-left: 10px;
+      font-family: $inconsolota;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
   }
 
-  .frontBar text.value {
-    font-size: .8em;
-    fill: $dark-green;
+  .frontBarGreen {
+    rect {
+      fill: #B3AF76;
+    }
+    .foreign-object-body {
+      background-color: rgba(255, 255, 255, 0);
+      font-size: .8em;
+      color: #55580D;
+      padding-top: 3px;
+      padding-left: 10px;
+      font-family: $inconsolota;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
   }
+
+  //.frontBarGreen text.value {
+  //  font-size: .8em;
+  //  fill: ;
+  //}
 
   .axis {
     shape-rendering: crispEdges;
@@ -49,18 +79,6 @@
     background-color: #E9E9E9;
     border: 1px dotted #BABABA;
     white-space: pre;
-  }
-
-  .foreign-object-body{
-    background-color: rgba(255, 255, 255, 0);
-    font-size: .8em;
-    color: $dark-green;
-    padding-top:3px;
-    padding-left:10px;
-    font-family: $inconsolota;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
   }
 
   &.d3-tip {

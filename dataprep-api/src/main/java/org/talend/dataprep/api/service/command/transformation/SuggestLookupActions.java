@@ -72,7 +72,7 @@ public class SuggestLookupActions extends ChainedCommand<InputStream, String> {
             // read suggested actions from previous command
             ArrayNode suggestedActions = null;
             try {
-                suggestedActions = (ArrayNode) builder.build().reader(Actions.class).readTree(getInput());
+                suggestedActions = (ArrayNode) builder.build().readerFor(Actions.class).readTree(getInput());
 
                 // list datasets from this command's response
                 List<DataSetMetadata> dataSets = null;
