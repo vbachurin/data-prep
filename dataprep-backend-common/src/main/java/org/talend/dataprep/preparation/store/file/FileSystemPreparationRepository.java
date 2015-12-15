@@ -98,7 +98,7 @@ public class FileSystemPreparationRepository implements PreparationRepository {
             }
 
         } catch (ClassNotFoundException | IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_PREPARATION, e, ExceptionContext.build().put("id", id));
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_GET_PREPARATION, e, ExceptionContext.build().put("id", id));
         }
     }
 

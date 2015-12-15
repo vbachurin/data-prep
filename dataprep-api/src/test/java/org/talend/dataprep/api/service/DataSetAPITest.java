@@ -500,9 +500,28 @@ public class DataSetAPITest extends ApiServiceTestBase {
         // then
         final Response response = given().body(datasetContent).when().post("/api/datasets");
         assertThat(response.getStatusCode(), is(400));
-        JsonErrorCode code = builder.build().reader(JsonErrorCode.class).readValue(response.getBody().print());
+        JsonErrorCode code = builder.build().readValue(response.asString(), JsonErrorCode.class);
         assertThat(code.getCode(), is(DataSetErrorCodes.UNSUPPORTED_CONTENT.getCode()));
         assertThat(dataSetMetadataRepository.size(), is(metadataCount)); // No data set metadata should be created
     }
+
+    @Test
+    public void preview_xls_multi_sheet() throws Exception {
+
+        // then
+        Response response = given() //
+            .body(IOUtils.toByteArray(DataSetAPITest.class.getResourceAsStream("dataset/Talend_Desk-Tableau_de_Bord-011214.xls"))) //
+            .when().post("/api/datasets");
+
+        assertThat(response.getStatusCode(), is(200));
+        String datasetId = response.asString();
+        // call preview to ensure no error
+        response = given().when().get("/api/datasets/preview/{id}", datasetId);
+
+        assertThat(response.getStatusCode(), is(200));
+
+    }
+
+
 
 }

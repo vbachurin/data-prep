@@ -170,7 +170,9 @@ public class TransformationService {
             response.setHeader("Content-Disposition", "attachment; filename=\"" + name + format.getExtension() + "\"");
 
             Configuration configuration = Configuration.builder() //
-                    .format(format.getName()).args(arguments).output(response.getOutputStream()) //
+                    .format(format.getName()) //
+                    .args(arguments) //
+                    .output(response.getOutputStream()) //
                     .actions(decodedActions) //
                     .build();
             factory.get(configuration).transform(dataSet, configuration);

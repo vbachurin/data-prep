@@ -31,13 +31,13 @@ describe('Export controller', function() {
         },
         {
             'mimeType': 'application/vnd.ms-excel',
-            'extension': '.xls',
-            'id': 'XLS',
+            'extension': '.xlsx',
+            'id': 'XLSX',
             'needParameters': 'false',
             'defaultExport': 'true'
         }
     ];
-    var currentParameters = {exportType: 'XLS'};
+    var currentParameters = {exportType: 'XLSX'};
     var currentType = exportTypes[2];
 
     var stateMock;

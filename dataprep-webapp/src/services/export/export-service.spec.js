@@ -31,8 +31,8 @@ describe('Export service', function() {
         },
         {
             'mimeType': 'application/vnd.ms-excel',
-            'extension': '.xls',
-            'id': 'XLS',
+            'extension': '.xlss',
+            'id': 'XLSX',
             'needParameters': 'false',
             'defaultExport': 'true'
         }
@@ -74,7 +74,7 @@ describe('Export service', function() {
     it('should save parameters in localStorage', inject(function($window, ExportService) {
         //given
         $window.localStorage.removeItem(EXPORT_PARAMS_KEY);
-        var parameters = {exportType: 'XLS'};
+        var parameters = {exportType: 'XLSX'};
         var parametersAsString = JSON.stringify(parameters);
 
         //when
@@ -90,7 +90,7 @@ describe('Export service', function() {
         var xlsType = exportTypes[2];
 
         //when
-        var type = ExportService.getType('XLS');
+        var type = ExportService.getType('XLSX');
 
         //then
         expect(type).toBe(xlsType);
@@ -111,7 +111,7 @@ describe('Export service', function() {
     it('should save default type parameters in localStorage when there are no saved params yet', inject(function($rootScope, $window, ExportService) {
         //given
         $window.localStorage.removeItem(EXPORT_PARAMS_KEY);
-        var defaultParameters = {exportType: 'XLS'};
+        var defaultParameters = {exportType: 'XLSX'};
         var defaultParametersAsString = JSON.stringify(defaultParameters);
 
         //when

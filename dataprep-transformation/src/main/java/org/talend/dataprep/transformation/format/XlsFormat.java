@@ -8,18 +8,18 @@ import org.springframework.stereotype.Component;
 /**
  * XLS format type.
  */
-@Component("format#" + XlsFormat.XLS)
+@Component("format#" + XlsFormat.XLSX)
 public class XlsFormat extends ExportFormat {
 
     /** XLS format type name. */
-    public static final String XLS = "XLS";
+    public static final String XLSX = "XLSX";
 
     /**
      * Default constructor.
      */
     //@formatter:off
     public XlsFormat() {
-        super(XLS, "application/vnd.ms-excel", ".xls", true, true,
+        super(XLSX, "application/vnd.ms-excel", ".xlsx", true, true,
                 Collections.singletonList(
                         new Parameter( Parameter.FILENAME_PARAMETER, //
                             "EXPORT_FILENAME",  //

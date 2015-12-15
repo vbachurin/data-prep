@@ -36,11 +36,11 @@ public class XlsWriterTest extends BaseFormatTest {
     @Test
     public void write_simple_xls_file() throws Exception {
         // given
-        Path path = Files.createTempFile("datarep-foo", "xls");
+        Path path = Files.createTempFile("datarep-foo", "xlsx");
         Files.deleteIfExists(path);
         try (final OutputStream outputStream = Files.newOutputStream(path)) {
             final Configuration configuration = Configuration.builder() //
-                    .format(XlsFormat.XLS) //
+                    .format(XlsFormat.XLSX) //
                     .output(outputStream) //
                     .actions("") //
                     .build();

@@ -78,7 +78,13 @@ public enum DataSetErrorCodes implements ErrorCode {
      *
      * @see org.talend.dataprep.schema.UnsupportedFormatGuess
      */
-    UNSUPPORTED_CONTENT(400);
+    UNSUPPORTED_CONTENT(400),
+    /**
+     * Error return when the uploaded content is mal formatted .
+     *
+     */
+    MALFORMATTED_CONTENT(400);
+
 
     /** The http status to use. */
     private int httpStatus;

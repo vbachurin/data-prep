@@ -60,6 +60,20 @@ describe('Playground state service', function () {
             var data = {
                records: []
             };
+
+            //when
+            PlaygroundStateService.setData(data);
+
+            //then
+            expect(GridStateService.setData).toHaveBeenCalledWith(data);
+        }));
+
+        it('should set filters again on data change in grid to refresh statefull filters (ex: invalid filters)', inject(function(playgroundState, PlaygroundStateService, GridStateService) {
+            //given
+            expect(GridStateService.setData).not.toHaveBeenCalled();
+            var data = {
+               records: []
+            };
             var filters = [{}, {}];
             filterStateMock.gridFilters = filters;
 
@@ -67,7 +81,6 @@ describe('Playground state service', function () {
             PlaygroundStateService.setData(data);
 
             //then
-            expect(GridStateService.setData).toHaveBeenCalledWith(data);
             expect(GridStateService.setFilter).toHaveBeenCalledWith(filters, data);
         }));
 

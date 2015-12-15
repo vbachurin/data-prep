@@ -43,7 +43,7 @@ public class BaseTests extends TransformationServiceBaseTests {
             actual.add(types.get(i).get("id").asText());
         }
 
-        List<String> expected = Arrays.asList("XLS", "CSV");
+        List<String> expected = Arrays.asList("XLSX", "CSV");
         Assertions.assertThat(actual).isNotNull().isNotEmpty().containsAll( expected );
 
     }
