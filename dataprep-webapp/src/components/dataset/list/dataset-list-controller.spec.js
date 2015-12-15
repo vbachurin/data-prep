@@ -517,7 +517,7 @@ describe('Dataset list controller', function () {
             spyOn(PreparationListService, 'refreshMetadataInfos').and.returnValue($q.when(true));
         }));
 
-        it('should call clone service', inject(function (DatasetService,FolderService,PreparationListService) {
+        it('should call clone service', inject(function (DatasetService,FolderService) {
             //given
             var folder = {id:'foo'};
             var cloneName = 'bar';
@@ -537,7 +537,7 @@ describe('Dataset list controller', function () {
             expect(FolderService.getFolderContent).toHaveBeenCalled();
         }));
 
-        it('should display message on success', inject(function (MessageService,DatasetService,FolderService,PreparationListService) {
+        it('should display message on success', inject(function (MessageService,DatasetService,FolderService) {
             //given
             var folder = {id:'foo'};
             var ctrl = createController();
