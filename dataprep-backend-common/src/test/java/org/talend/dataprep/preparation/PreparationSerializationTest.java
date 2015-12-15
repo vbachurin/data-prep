@@ -18,10 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.talend.dataprep.api.preparation.Action;
-import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.preparation.PreparationActions;
-import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -78,17 +75,17 @@ public class PreparationSerializationTest {
     }
 
     @Test
-    public void preparationSteps() throws Exception {
-        Preparation preparation = new Preparation("12345", Step.ROOT_STEP);
+    public void preparationDetailsSteps() throws Exception {
+        Preparation preparation = new Preparation("12345", Step.ROOT_STEP.id());
         preparation.setAuthor("myAuthor");
         final StringWriter output = new StringWriter();
-        builder.build().writer().writeValue(output, preparation);
-        final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("stepsPreparation.json");
+        builder.build().writer().writeValue(output, new PreparationDetails(preparation));
+        final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("preparationDetailsSteps.json");
         assertThat(output.toString(), sameJSONAsFile(expected));
     }
 
     @Test
-    public void preparationStepsWithActions() throws Exception {
+    public void preparationDetailsStepsWithActions() throws Exception {
         // Add a step
         final List<Action> actions = PreparationTest.getSimpleAction("uppercase", "column_name", "lastname");
         final PreparationActions newContent1 = ROOT_CONTENT.append(actions);
@@ -96,10 +93,10 @@ public class PreparationSerializationTest {
         final Step s1 = new Step(ROOT_STEP.id(), newContent1.id());
         repository.add(s1);
         // Use it in preparation
-        Preparation preparation = new Preparation("12345", s1);
+        Preparation preparation = new Preparation("12345", s1.id());
         final StringWriter output = new StringWriter();
-        builder.build().writer().writeValue(output, preparation);
-        final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("stepsWithActionsPreparation.json");
+        builder.build().writer().writeValue(output, new PreparationDetails(preparation));
+        final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("preparationDetailsWithStepsAndActions.json");
         assertThat(output.toString(), sameJSONAsFile(expected));
     }
 }

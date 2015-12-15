@@ -3,8 +3,8 @@ package org.talend.dataprep.preparation.service;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
@@ -79,53 +79,80 @@ public class PreparationServiceTest {
     //------------------------------------------------------------------------------------------------------------------
     @Test
     public void should_list_all_preparations() throws Exception {
-        //given
+        // given
         when().get("/preparations/all").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
 
-        final Preparation preparation = new Preparation("1234", ROOT_STEP);
+        final Preparation preparation = new Preparation("1234", ROOT_STEP.id());
         preparation.setCreationDate(0);
         preparation.setLastModificationDate(12345);
         repository.add(preparation);
 
-        //when
+        // when
         final Response response = when().get("/preparations/all");
 
-        //then
-        response.then()
-                .statusCode(HttpStatus.OK.value())
-                .body(sameJSONAs("[{\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\",\"dataSetId\":\"1234\",\"author\":null,\"name\":null,\"creationDate\":0,\"lastModificationDate\":12345,\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"],\"diff\":[],\"actions\":[],\"metadata\":[]}]"));
+        // then
+        response.then().statusCode(HttpStatus.OK.value())
+                .body(sameJSONAs("[{\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\"," + "\"dataSetId\":\"1234\","
+                        + "\"author\":null," + "\"name\":null," + "\"creationDate\":0," + "\"lastModificationDate\":12345,"
+                        + "\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"]," + "\"diff\":[]," + "\"actions\":[],"
+                        + "\"metadata\":[]" + "}]"));
 
-        //given
-        final Preparation preparation1 = new Preparation("5678", ROOT_STEP);
+        // given
+        final Preparation preparation1 = new Preparation("5678", ROOT_STEP.id());
         preparation1.setCreationDate(500);
         preparation1.setLastModificationDate(456789);
         repository.add(preparation1);
 
-        //when
+        // when
         final Response responseMultiple = when().get("/preparations/all");
 
-        //then
+        // then
+        //@formatter:off
         responseMultiple.then()
                 .statusCode(HttpStatus.OK.value())
                 .body(sameJSONAs(
-                        "[{\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\",\"dataSetId\":\"1234\",\"author\":null,\"name\":null,\"creationDate\":0,\"lastModificationDate\":12345,\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"],\"diff\":[],\"actions\":[],\"metadata\":[]}, {\"id\":\"1de0ffaa4e00437dd0c7e1097caf5e5657440ee5\",\"dataSetId\":\"5678\",\"author\":null,\"name\":null,\"creationDate\":500,\"lastModificationDate\":456789,\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"],\"diff\":[],\"actions\":[],\"metadata\":[]}]")
+                        "[" +
+                         "{\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\"," +
+                                "\"dataSetId\":\"1234\"," +
+                                "\"author\":null," +
+                                "\"name\":null," +
+                                "\"creationDate\":0," +
+                                "\"lastModificationDate\":12345," +
+                                "\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"]," +
+                                "\"diff\":[]," +
+                                "\"actions\":[]," +
+                                "\"metadata\":[]" +
+                          "}," +
+                          "{\"id\":\"1de0ffaa4e00437dd0c7e1097caf5e5657440ee5\"," +
+                                "\"dataSetId\":\"5678\"," +
+                                "\"author\":null," +
+                                "\"name\":null," +
+                                "\"creationDate\":500," +
+                                "\"lastModificationDate\":456789," +
+                                "\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"]," +
+                                "\"diff\":[]," +
+                                "\"actions\":[]," +
+                                "\"metadata\":[]" +
+                          "}" +
+                          "]")
                         .allowingAnyArrayOrdering());
+        //@formatter:on
     }
 
     @Test
     public void list() throws Exception {
         when().get("/preparations").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
-        repository.add(new Preparation("1234", ROOT_STEP));
+        repository.add(new Preparation("1234", ROOT_STEP.id()));
         when().get("/preparations").then().statusCode(HttpStatus.OK.value())
                 .body(sameJSONAs("[\"ae242b07084aa7b8341867a8be1707f4d52501d1\"]"));
-        repository.add(new Preparation("5678", ROOT_STEP));
+        repository.add(new Preparation("5678", ROOT_STEP.id()));
         List<String> list = when().get("/preparations").jsonPath().getList("");
         assertThat(list, hasItems("ae242b07084aa7b8341867a8be1707f4d52501d1", "1de0ffaa4e00437dd0c7e1097caf5e5657440ee5"));
     }
 
     @Test
     public void get() throws Exception {
-        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        Preparation preparation = new Preparation("1234", ROOT_STEP.id());
         preparation.setCreationDate( 0 );
         preparation.setLastModificationDate( 12345 );
         repository.add(preparation);
@@ -136,7 +163,7 @@ public class PreparationServiceTest {
 
     @Test
     public void cloning() throws Exception {
-        Preparation preparation = new Preparation("56789", ROOT_STEP);
+        Preparation preparation = new Preparation("56789", ROOT_STEP.id());
         preparation.setName("beer");
         preparation.setCreationDate(1);
         preparation.setLastModificationDate(6789);
@@ -149,7 +176,7 @@ public class PreparationServiceTest {
         ObjectMapper objectMapper = new ObjectMapper() //
             .configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE );
 
-        Preparation result = objectMapper.reader( Preparation.class ).readValue(preparationDetails);
+        Preparation result = objectMapper.readerFor( Preparation.class ).readValue(preparationDetails);
 
         Assertions.assertThat(result).isEqualToComparingOnlyGivenFields(preparation, //
                 "name", "lastModificationDate", "creationDate");
@@ -160,7 +187,7 @@ public class PreparationServiceTest {
 
         String preparationDetailsClone = when().get("/preparations/{id}", cloneId).asString();
 
-        Preparation clone = objectMapper.reader( Preparation.class ).readValue(preparationDetailsClone);
+        Preparation clone = objectMapper.readerFor(Preparation.class ).readValue(preparationDetailsClone);
 
         Assertions.assertThat( clone.getCreationDate() ).isGreaterThan( result.getCreationDate() );
         Assertions.assertThat( clone.getLastModificationDate() ).isGreaterThan( result.getLastModificationDate() );
@@ -306,7 +333,7 @@ public class PreparationServiceTest {
         final String secondStepId = applyTransformation(preparationId, "lower_case.json");
 
         Preparation preparation = repository.get(preparationId, Preparation.class);
-        assertThat(preparation.getStep().id(), is(secondStepId));
+        assertThat(preparation.getHeadId(), is(secondStepId));
 
         //when
         given().when()//
@@ -316,7 +343,7 @@ public class PreparationServiceTest {
 
         //then
         preparation = repository.get(preparationId, Preparation.class);
-        assertThat(preparation.getStep().id(), is(firstStepId));
+        assertThat(preparation.getHeadId(), is(firstStepId));
     }
 
     @Test
@@ -326,7 +353,7 @@ public class PreparationServiceTest {
         final String firstStepId = applyTransformation(preparationId, "upper_case.json");
 
         Preparation preparation = repository.get(preparationId, Preparation.class);
-        assertThat(preparation.getStep().id(), is(firstStepId));
+        assertThat(preparation.getHeadId(), is(firstStepId));
 
         //when
         final Response response = given().when()//
@@ -349,7 +376,7 @@ public class PreparationServiceTest {
         Preparation preparation = repository.get(preparationId, Preparation.class);
         final long oldModificationDate = preparation.getLastModificationDate();
 
-        assertThat(preparation.getStep().id(), is(ROOT_STEP.getId()));
+        assertThat(preparation.getHeadId(), is(ROOT_STEP.getId()));
 
         // when
         applyTransformation(preparationId, "copy_lastname.json");
@@ -358,7 +385,7 @@ public class PreparationServiceTest {
         final String expectedStepId = "907741a33bba6e7b3c6c2e4e7d1305c6bd0644b8";
 
         preparation = repository.get(preparation.id(), Preparation.class);
-        assertThat(preparation.getStep().id(), is(expectedStepId));
+        assertThat(preparation.getHeadId(), is(expectedStepId));
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
 
         final Step head = repository.get(expectedStepId, Step.class);
@@ -374,7 +401,7 @@ public class PreparationServiceTest {
         Preparation preparation = repository.get(preparationId, Preparation.class);
         final long oldModificationDate = preparation.getLastModificationDate();
 
-        assertThat(preparation.getStep().id(), is(ROOT_STEP.getId()));
+        assertThat(preparation.getHeadId(), is(ROOT_STEP.getId()));
 
         // when
         applyTransformation(preparationId, "copy_lastname_filter.json");
@@ -383,7 +410,7 @@ public class PreparationServiceTest {
         final String expectedStepId = "1306e2ac2526530ec8cd75206eeaa4191eafe4fa";
 
         preparation = repository.get(preparation.id(), Preparation.class);
-        assertThat(preparation.getStep().id(), is(expectedStepId));
+        assertThat(preparation.getHeadId(), is(expectedStepId));
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
 
         final Step head = repository.get(expectedStepId, Step.class);
@@ -400,7 +427,7 @@ public class PreparationServiceTest {
         final String preparationId = createPreparation("1234", "my preparation");
         final Preparation preparation = repository.get(preparationId, Preparation.class);
 
-        assertThat(preparation.getStep().id(), is(ROOT_STEP.getId()));
+        assertThat(preparation.getHeadId(), is(ROOT_STEP.getId()));
 
         // when
         applyTransformation(preparationId, "copy_lastname.json");
@@ -453,7 +480,7 @@ public class PreparationServiceTest {
         // then
         final String expectedStepId = "971ff04a46557df17bc1302f2fa2dbcac935086b";
         preparation = repository.get(preparationId, Preparation.class);
-        assertThat(preparation.getStep().id(), is(expectedStepId));
+        assertThat(preparation.getHeadId(), is(expectedStepId));
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
 
         final Step head = repository.get(expectedStepId, Step.class);
@@ -479,7 +506,7 @@ public class PreparationServiceTest {
         // then
         final String expectedStepId = "3086490ebc8ac72475d249010b0ff67c38ae3454";
         preparation = repository.get(preparationId, Preparation.class);
-        assertThat(preparation.getStep().id(), is(expectedStepId));
+        assertThat(preparation.getHeadId(), is(expectedStepId));
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
 
         final Step head = repository.get(expectedStepId, Step.class);
@@ -508,7 +535,7 @@ public class PreparationServiceTest {
         final String expectedSecondStepId = "3fdaae0ccfd3bfd869790999670106535cdbccf1";
 
         preparation = repository.get(preparationId, Preparation.class);
-        assertThat(preparation.getStep().id(), is(expectedSecondStepId));
+        assertThat(preparation.getHeadId(), is(expectedSecondStepId));
         assertThat(preparation.getLastModificationDate(), is(greaterThanOrEqualTo(oldModificationDate)));
 
         final Step head = repository.get(expectedSecondStepId, Step.class);
@@ -541,7 +568,7 @@ public class PreparationServiceTest {
 
         // then
         final Preparation preparation = repository.get(preparationId, Preparation.class);
-        final List<String> stepIds = PreparationUtils.listStepsIds(preparation.getStep(), repository);
+        final List<String> stepIds = PreparationUtils.listStepsIds(preparation.getHeadId(), repository);
         assertThatStepHasCreatedColumns(stepIds.get(1), "0007"); // id < 0009 : do not change
         assertThatStepHasCreatedColumns(stepIds.get(2), "0008", "0009", "0010"); // +1 column
         assertThatStepHasCreatedColumns(stepIds.get(3), "0011"); // id >= 0009 : shift +1
@@ -591,7 +618,7 @@ public class PreparationServiceTest {
 
         // then
         final Preparation preparation = repository.get(preparationId, Preparation.class);
-        final String headId = preparation.getStep().id();
+        final String headId = preparation.getHeadId();
 
         head = repository.get(headId, Step.class);
         headActions = repository.get(head.getContent(), PreparationActions.class);
@@ -623,7 +650,7 @@ public class PreparationServiceTest {
 
         // then
         final Preparation preparation = repository.get(preparationId, Preparation.class);
-        final String newHeadStepId = preparation.getStep().id();
+        final String newHeadStepId = preparation.getHeadId();
 
         head = repository.get(newHeadStepId, Step.class);
         headActions = repository.get(head.getContent(), PreparationActions.class);
@@ -660,7 +687,7 @@ public class PreparationServiceTest {
 
         // then
         final Preparation preparation = repository.get(preparationId, Preparation.class);
-        final String newHeadStepId = preparation.getStep().id();
+        final String newHeadStepId = preparation.getHeadId();
 
         head = repository.get(newHeadStepId, Step.class);
         headActions = repository.get(head.getContent(), PreparationActions.class);
@@ -744,7 +771,7 @@ public class PreparationServiceTest {
      * @return The preparation id
      */
     private String createPreparation(final String datasetId, final String name) {
-        final Preparation preparation = new Preparation(datasetId, ROOT_STEP);
+        final Preparation preparation = new Preparation(datasetId, ROOT_STEP.id());
         preparation.setName(name);
         preparation.setCreationDate(0);
         repository.add(preparation);
@@ -767,7 +794,7 @@ public class PreparationServiceTest {
                 .statusCode(200);
 
         final Preparation preparation = repository.get(preparationId, Preparation.class);
-        return preparation.getStep().id();
+        return preparation.getHeadId();
     }
 
     /**

@@ -41,7 +41,7 @@ public class ActionMetadataTestUtils {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new MixedContentMapModule());
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        Actions parsedAction = mapper.reader(Actions.class).readValue(input);
+        Actions parsedAction = mapper.readerFor(Actions.class).readValue(input);
         return parsedAction.getActions().get(0).getParameters();
     }
 

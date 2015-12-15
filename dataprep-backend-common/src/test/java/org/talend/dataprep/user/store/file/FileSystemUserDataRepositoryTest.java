@@ -24,7 +24,7 @@ import org.talend.dataprep.api.user.UserData;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = FileSystemUserDataRepositoryTest.class)
-@ComponentScan(basePackages = "org.talend.dataprep.user.store.file")
+@ComponentScan(basePackages = "org.talend.dataprep")
 @TestPropertySource(inheritLocations = false, inheritProperties = false, properties = { "user.data.store:file",
         "user.data.store.file.location:target/test/store/userdata" })
 public class FileSystemUserDataRepositoryTest {

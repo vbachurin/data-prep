@@ -39,7 +39,7 @@ public class PreparationCleaner {
     private Set<String> getPreparationStepIds() {
         return repository.listAll(Preparation.class)
                 .stream()
-                .flatMap(prep -> PreparationUtils.listStepsIds(prep.getStep(), repository).stream())
+                .flatMap(prep -> PreparationUtils.listStepsIds(prep.getHeadId(), repository).stream())
                 .collect(toSet());
     }
 

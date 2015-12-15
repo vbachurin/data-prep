@@ -49,7 +49,7 @@ public class ActionParser {
                 return IDLE_CONSUMER;
             }
             // Parse action JSON
-            final Actions parsedActions = builder.build().reader(Actions.class).readValue(actions);
+            final Actions parsedActions = builder.build().readerFor(Actions.class).readValue(actions);
             // Create closures from parsed actions
             List<DataSetRowAction> rowActions = new ArrayList<>();
             final List<Action> allActions = parsedActions.getActions();

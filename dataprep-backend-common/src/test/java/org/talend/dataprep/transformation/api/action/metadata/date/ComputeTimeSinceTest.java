@@ -421,7 +421,7 @@ public class ComputeTimeSinceTest extends BaseDateTests {
         List<ColumnMetadata> columns = new ArrayList<>(3);
         columns.add(ColumnMetadata.Builder.column().name("recipe").type(Type.STRING).build());
         ObjectMapper mapper = new ObjectMapper();
-        final Statistics statistics = mapper.reader(Statistics.class).readValue(ComputeTimeSinceTest.class.getResourceAsStream(statisticsFileName));
+        final Statistics statistics = mapper.readerFor(Statistics.class).readValue(ComputeTimeSinceTest.class.getResourceAsStream(statisticsFileName));
         columns.add(ColumnMetadata.Builder.column().name("last update").type(Type.DATE).statistics(statistics).build());
         columns.add(ColumnMetadata.Builder.column().name("steps").type(Type.STRING).build());
 
@@ -439,7 +439,7 @@ public class ComputeTimeSinceTest extends BaseDateTests {
     private ColumnMetadata createMetadata(String id, String name, Type type, String statisticsFileName) throws IOException {
         ColumnMetadata column = createMetadata(id, name, type);
         ObjectMapper mapper = new ObjectMapper();
-        final Statistics statistics = mapper.reader(Statistics.class).readValue(ComputeTimeSinceTest.class.getResourceAsStream(statisticsFileName));
+        final Statistics statistics = mapper.readerFor(Statistics.class).readValue(ComputeTimeSinceTest.class.getResourceAsStream(statisticsFileName));
         column.setStatistics(statistics);
         return column;
     }

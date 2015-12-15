@@ -24,6 +24,18 @@ public class PreparationActions extends Identifiable implements Serializable {
 
     private final List<Action> actions;
 
+    /**
+     * Default empty constructor.
+     */
+    public PreparationActions() {
+        this(Collections.emptyList());
+    }
+
+    /**
+     * Create the PreparationActions with the given actions.
+     * 
+     * @param actions the actions for this preparation.
+     */
     public PreparationActions(final List<Action> actions) {
         this.actions = unmodifiableList(actions);
     }

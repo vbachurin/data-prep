@@ -121,7 +121,7 @@ public abstract class PreparationCommand<T> extends GenericCommand<T> {
         final HttpGet preparationRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + preparationId);
         try {
             InputStream content = client.execute(preparationRetrieval).getEntity().getContent();
-            return builder.build().reader(Preparation.class).readValue(content);
+            return builder.build().readerFor(Preparation.class).readValue(content);
         } finally {
             preparationRetrieval.releaseConnection();
         }
@@ -196,7 +196,7 @@ public abstract class PreparationCommand<T> extends GenericCommand<T> {
         try {
             InputStream content = client.execute(actionsRetrieval).getEntity().getContent();
             return builder.build() //
-                    .reader(new TypeReference<List<Action>>() { //
+                    .readerFor(new TypeReference<List<Action>>() { //
                     }) //
                     .readValue(content);
         } finally {

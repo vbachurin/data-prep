@@ -177,7 +177,7 @@ public class ExtractDateTokensTest extends BaseDateTests {
         input.add(createMetadata("0002"));
         final RowMetadata rowMetadata = new RowMetadata(input);
         ObjectMapper mapper = new ObjectMapper();
-        final Statistics statistics = mapper.reader(Statistics.class).readValue(ChangeDatePatternTest.class.getResourceAsStream("statistics_yyyy-MM-dd.json"));
+        final Statistics statistics = mapper.readerFor(Statistics.class).readValue(ChangeDatePatternTest.class.getResourceAsStream("statistics_yyyy-MM-dd.json"));
         input.get(1).setStatistics(statistics);
 
         // when
