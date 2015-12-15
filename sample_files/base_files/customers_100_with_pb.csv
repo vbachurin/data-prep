@@ -12,7 +12,7 @@ id;firstname;lastname;state;registration;city;birth;nbCommands;avgAmount
 11;Grover;Wilson;NJ;11-14-2008;Hartford;03-10-1957;0;0
 12;Zachary;  Adams  ;  MI  ;14-10-2007;Atlant;22-11-1969;;89.7
 13;Richard;"  Coolidge
-foobar  ";KY;02-09-07;;01-07-1959;62;56.3
+foobar  ";KY;02-09-07;   ;01-07-1959;62;56.3
 14;Gerald;Clinton  ;XX;27-06-07;SACRAMENTO;26-06-1980;88;
 15;George;Hoover  ;TN;05-11-07;Sacramento;26-08-1948;39;-38.6
 16;Franklin;     Polk;WK;15-12-07;Madison;07-05-1958;77;10
