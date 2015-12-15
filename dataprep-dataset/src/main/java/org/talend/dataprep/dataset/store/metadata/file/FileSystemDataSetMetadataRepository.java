@@ -84,7 +84,8 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
         try (GZIPInputStream input = new GZIPInputStream(new FileInputStream(file))) {
             return builder.build().readerFor(DataSetMetadata.class).readValue(input);
         } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_METADATA, e, ExceptionContext.build().put("id", id));
+            LOG.error("unable to load dataset {}", id, e);
+            return null;
         }
     }
 
@@ -122,7 +123,7 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
             return Collections.emptyList();
         }
 
-        final Stream<DataSetMetadata> stream = Arrays.stream(files).map(f -> get(f.getName()));
+        final Stream<DataSetMetadata> stream = Arrays.stream(files).map(f -> get(f.getName())).filter(m -> m != null);
         return stream::iterator;
     }
 
@@ -133,6 +134,9 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
     public void clear() {
         // Remove all data set (but use lock for remaining asynchronous processes).
         for (DataSetMetadata metadata : list()) {
+            if (metadata == null) {
+                continue;
+            }
             final DistributedLock lock = createDatasetMetadataLock(metadata.getId());
             try {
                 lock.lock();

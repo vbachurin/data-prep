@@ -2,12 +2,15 @@ package org.talend.dataprep.dataset.store.metadata.file;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.TestPropertySource;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -19,6 +22,10 @@ import org.talend.dataprep.dataset.DataSetBaseTest;
 @TestPropertySource(properties = { "dataset.metadata.store=file",
         "dataset.metadata.store.file.location=target/test/store/metadata" })
 public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
+
+    /** Where to store the dataset metadata. */
+    @Value("${dataset.metadata.store.file.location}")
+    private String storeLocation;
 
     /** The repository to test. */
     @Autowired
@@ -44,6 +51,31 @@ public class FileSystemDataSetMetadataRepositoryTest extends DataSetBaseTest {
 
         // then
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldReturnNullWhenGetEncounterAnError() throws Exception {
+
+        String datasetId = "43874232515345";
+        File metadataFile = new File(storeLocation + '/' + datasetId);
+
+        try {
+            // given
+            repository.add(getMetadata(datasetId));
+
+            // when
+
+            FileOutputStream fos = new FileOutputStream(metadataFile);
+            fos.write("invalid content in dataset metadata file".getBytes());
+            fos.close();
+
+            final DataSetMetadata actual = repository.get(datasetId);
+
+            // then
+            assertNull(actual);
+        } finally {
+            metadataFile.delete();
+        }
     }
 
     @Test
