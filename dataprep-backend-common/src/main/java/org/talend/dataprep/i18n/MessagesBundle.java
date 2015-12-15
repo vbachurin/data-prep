@@ -53,7 +53,7 @@ public class MessagesBundle implements ApplicationContextAware {
      * @see LocaleContextHolder#getLocale()
      */
     public static String getString(String code) {
-        return getString(code, (Object)new String[0]);
+        return getString(code, new String[0]);
     }
 
     /**
