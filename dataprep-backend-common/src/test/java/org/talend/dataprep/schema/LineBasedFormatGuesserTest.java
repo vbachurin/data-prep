@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +34,6 @@ public class LineBasedFormatGuesserTest extends AbstractSchemaTestUtils {
         Assert.assertNotNull(actual);
         assertTrue(actual.getFormatGuess() instanceof UnsupportedFormatGuess);
     }
-
 
     @Test(expected = IllegalArgumentException.class)
     public void read_null_csv_file() throws Exception {
@@ -140,6 +140,7 @@ public class LineBasedFormatGuesserTest extends AbstractSchemaTestUtils {
 
     @Test
     public void shouldComputeScore() {
+
         // given
         Separator sep = new Separator('s');
         incrementCount(12, 1, sep);
@@ -148,13 +149,24 @@ public class LineBasedFormatGuesserTest extends AbstractSchemaTestUtils {
         incrementCount(11, 4, sep);
         incrementCount(13, 5, sep);
         incrementCount(12, 6, sep);
+        Separator sep2 = new Separator(' ');
+        incrementCount(1, 1, sep2);
+        incrementCount(1, 2, sep2);
+        incrementCount(1, 3, sep2);
+        incrementCount(1, 4, sep2);
+        incrementCount(1, 5, sep2);
+        incrementCount(1, 6, sep2);
+
+        ArrayList<Separator> separators = new ArrayList<>();
+        separators.add(sep);
+        separators.add(sep2);
 
         // when
-        guesser.computeScore(sep, 6);
+        Map<Separator, Double> scores = guesser.computeScores(separators, 6);
 
         // then
-        assertEquals(9.66, sep.getAveragePerLine(), 0.01);
-        assertEquals(6.27, sep.getStandardDeviation(), 0.01); // https://www.mathsisfun.com/data/standard-deviation-calculator.html
+        assertEquals(0.1458016414, scores.get(sep), 0.000000001);
+        assertEquals(0, scores.get(sep2), 0.0);
     }
 
     private void incrementCount(int count, int lineNumber, Separator separator) {

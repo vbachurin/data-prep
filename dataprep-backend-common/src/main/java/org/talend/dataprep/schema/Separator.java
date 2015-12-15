@@ -10,20 +10,16 @@ public class Separator {
 
     /** The value char. */
     private char value;
+
     /** Total count of separators. */
     private int totalCount = 0;
-    /** Average per line. */
-    private double averagePerLine = 0;
 
     /** Current line count. */
     private Map<Integer, Long> countPerLine = new HashMap<>();
 
-    /** The standard deviation. */
-    private double standardDeviation;
-
     /**
      * Constructor.
-     * 
+     *
      * @param separator the value to use.
      */
     public Separator(char separator) {
@@ -31,17 +27,10 @@ public class Separator {
     }
 
     /**
-     * @return the value.
+     * @return the value.Math.log(frequency)
      */
     public char getSeparator() {
         return value;
-    }
-
-    /**
-     * @return the total count.
-     */
-    public int getTotalCount() {
-        return totalCount;
     }
 
     /**
@@ -57,30 +46,38 @@ public class Separator {
     }
 
     /**
-     * Return the count for the given line.
-     * 
-     * @param lineNumber the wanted line for the count.
-     * @return the count for the given line.
+     * Computes the entropy of the current separator according to the specified number of lines used as the sample size.
+     * The score is based upon <a href="https://fr.wikipedia.org/wiki/Entropie_de_Shannon">Shanon entropy</a>.
+     *
+     * Lower is the entropy better it is, i.e, the number of occurrence of the separator remains stable from while
+     * processing the lines, which means that the separator has a huge probability of being the wanted one.
+     *
+     * @param numberOfLines
+     * @return
      */
-    public double getCount(int lineNumber) {
-        if (countPerLine.containsKey(lineNumber)) {
-            return countPerLine.get(lineNumber);
+    public double entropy(int numberOfLines) {
+        HashMap<Long, Long> separatorCountOccurrences = new HashMap<>();
+
+        if (numberOfLines <= 0) {
+            throw (new IllegalArgumentException("The number of lines must be strictly positive"));
         }
-        return 0;
-    }
 
-    /**
-     * @return the average per line.
-     */
-    public double getAveragePerLine() {
-        return averagePerLine;
-    }
+        if (countPerLine.isEmpty()) {
+            return Double.MAX_VALUE;
+        }
 
-    /**
-     * @param averagePerLine the average per line to set.
-     */
-    public void setAveragePerLine(double averagePerLine) {
-        this.averagePerLine = averagePerLine;
+        for (Long separatorCount : countPerLine.values()) {
+            // increment the number of occurrence of the separatorCount
+            Long separatorCountOccurrence = separatorCountOccurrences.get(separatorCount);
+            separatorCountOccurrence = separatorCountOccurrence == null ? 1L : separatorCountOccurrence + 1;
+            separatorCountOccurrences.put(separatorCount, separatorCountOccurrence);
+        }
+
+        double entropy = separatorCountOccurrences.values().stream().mapToDouble(s -> (double) s / numberOfLines) //
+                .map(s -> s * Math.log(s)).sum();
+
+        entropy = (-entropy * Math.log(2)) / numberOfLines;
+        return entropy;
     }
 
     /**
@@ -88,20 +85,6 @@ public class Separator {
      */
     @Override
     public String toString() {
-        return "Separator{" + "value=" + value + ", totalCount=" + totalCount + ", averagePerLine=" + averagePerLine + '}';
-    }
-
-    /**
-     * @param standardDeviation the standard deviation.
-     */
-    public void setStandardDeviation(double standardDeviation) {
-        this.standardDeviation = standardDeviation;
-    }
-
-    /**
-     * @return the StandardDeviation
-     */
-    public double getStandardDeviation() {
-        return standardDeviation;
+        return "Separator{" + "value=" + value + ", totalCount=" + totalCount + "}";
     }
 }

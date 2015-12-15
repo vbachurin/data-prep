@@ -1,6 +1,5 @@
 package org.talend.dataprep.schema;
 
-
 import java.io.*;
 import java.util.*;
 
@@ -51,6 +50,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
 
     /** A list of supported separators for a CSV content */
     private Set<Character> validSeparators = new HashSet<Character>() {
+
         {
             add(' ');
             add('\t');
@@ -180,7 +180,8 @@ public class LineBasedFormatGuesser implements FormatGuesser {
         // easy case where there's no choice
         if (separators.isEmpty()) {
             if (lineCount > 0) {
-                // There are some lines processed, but no separator (a one-column content?), so pick a default separator.
+                // There are some lines processed, but no separator (a one-column content?), so pick a default
+                // separator.
                 return new Separator(',');
             }
             return null;
@@ -192,37 +193,30 @@ public class LineBasedFormatGuesser implements FormatGuesser {
         }
 
         // compute the score for each separator
-        separators.forEach(s -> computeScore(s, lineCount));
+        Map<Separator, Double> separatorMap = computeScores(separators, lineCount);
 
         // filter and sort separators
         // @formatter:off
-        return separators.stream().filter(separator -> separator.getAveragePerLine() >= 1) // remove irrelevant separators
-                .sorted((s0, s1) -> Double.compare(s1.getAveragePerLine(), s0.getAveragePerLine())) // sort by average (the highest the better)
-                .sorted((s0, s1) -> Double.compare(s0.getStandardDeviation(), s1.getStandardDeviation())) // sort by sddev (the lowest the better)
-                .filter(sep -> validSeparators.contains(sep.getSeparator())) // filter out invalid separators
+        Separator result = separatorMap.entrySet().stream()
+                .filter(sep -> validSeparators.contains(sep.getKey().getSeparator())) // filter out invalid separators
+                .sorted((s0, s1) -> Double.compare(s0.getValue(), s1.getValue())) // sort by entropy (the lowest the better)
                 .findFirst() //
-                .get();
+                .get().getKey();
         // @formatter:on
+        return result;
     }
 
     /**
-     * Compute the score (average per line and standard deviation) for each separator.
-     *
-     * @param separator the separator to compute the score for.
-     * @param lineCount how many lines have been read.
+     * Compute the score of each separator based upon the entropy of the separator and the specified number of lines.
+     * 
+     * @param separators the list of separators
+     * @param lineCount the number of lines read in the file
+     * @return
      */
-    protected void computeScore(Separator separator, double lineCount) {
-        // compute average per line
-        double averagePerLine = separator.getTotalCount() / lineCount;
-        separator.setAveragePerLine(averagePerLine);
-
-        // compute the standard deviation
-        double sum = 0;
-        for (int currentLine = 1; currentLine <= lineCount; currentLine++) {
-            final double currentLineCount = separator.getCount(currentLine);
-            sum += currentLineCount * Math.pow(currentLine - averagePerLine, 2);
-        }
-        separator.setStandardDeviation(Math.sqrt(sum / separator.getTotalCount()));
+    protected Map<Separator, Double> computeScores(List<Separator> separators, int lineCount) {
+        HashMap<Separator, Double> separatorMap = new HashMap<>();
+        separators.stream().forEach(s -> separatorMap.put(s, s.entropy(lineCount)));
+        return separatorMap;
     }
 
     /**
@@ -242,7 +236,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
 
         /**
          * Default constructor.
-         * 
+         *
          * @param informantChar the char to use to detect wrong encoding.
          */
         public WrongEncodingDetector(int informantChar) {
@@ -251,7 +245,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
 
         /**
          * Check the given char.
-         * 
+         *
          * @param read the char that was read.
          * @param totalChars the total number of chars.
          * @throws IOException if encoding is assumed false.
