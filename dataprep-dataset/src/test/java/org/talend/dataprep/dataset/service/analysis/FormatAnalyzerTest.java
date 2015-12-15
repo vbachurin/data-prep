@@ -68,7 +68,7 @@ public class FormatAnalyzerTest extends DataSetBaseTest {
     }
 
     @Test
-    public void testXLSAnalysis() throws Exception {
+    public void testXLSXAnalysis() throws Exception {
         final DataSetMetadata metadata = metadata().id("1234").build();
         dataSetMetadataRepository.add(metadata);
         contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../tagada.xls"));
