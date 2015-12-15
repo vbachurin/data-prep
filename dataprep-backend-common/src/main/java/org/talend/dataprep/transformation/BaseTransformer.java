@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.stream.ExtendedStream;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
@@ -49,15 +50,18 @@ public class BaseTransformer {
                 // Apply compiled actions on data
                 DataSetRow current = r;
                 final Iterator<DataSetRowAction> iterator = allActions.iterator();
+                RowMetadata lastInputMetadata = null;
                 while (iterator.hasNext()) {
                     final DataSetRowAction action = iterator.next();
                     final ActionContext actionContext = context.in(action);
+                    actionContext.setInputRowMetadata(lastInputMetadata == null ? actionContext.getInputRowMetadata() : lastInputMetadata);
                     current.setRowMetadata(actionContext.getInputRowMetadata());
                     if (actionContext.getActionStatus() != ActionContext.ActionStatus.DONE) {
                         // Only apply action if it hasn't indicated it's DONE.
                         current = action.apply(current, actionContext);
                     }
                     current.setRowMetadata(actionContext.getOutputRowMetadata());
+                    lastInputMetadata = actionContext.getOutputRowMetadata();
                     // Check whether we should continue using this action or not
                     final ActionContext.ActionStatus actionStatus = actionContext.getActionStatus();
                     switch (actionStatus) {
