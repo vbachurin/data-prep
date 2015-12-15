@@ -6,6 +6,7 @@ $subheader-background: $light-gray;
   background-color: $subheader-background;
   border-bottom: 1px solid $light-gray;
   box-shadow: $box-shadow;
+  height: 58px;
 
   .subheader-wrapper {
     @include outer-container;

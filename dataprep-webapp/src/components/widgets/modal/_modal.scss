@@ -10,6 +10,7 @@
   $light-gray: #DDD !default;
   $medium-screen: em(640) !default;
   $large-screen: em(860) !default;
+  $x-large-screen: em(1824) !default;
   $base-font-color: $dark-gray !default;
   $background-transparent: rgba(0,0,0, 0.70);
 
@@ -54,12 +55,19 @@
     @include position(absolute, 0px 0px 0px 0px);
     background: $background-transparent;
     opacity: 0;
-    padding-top: 0.6em;
     text-align: left;
     visibility: hidden;
     z-index: 100;
 
+    @include media($medium-screen) {
+      padding-top: 2em;
+    }
+
     @include media($large-screen) {
+      padding-top: 4em;
+    }
+
+    @include media($x-large-screen) {
       padding-top: 6em;
     }
 
