@@ -2,6 +2,18 @@
   "metadata": {
     "columns": [
       {
+        "name": "city",
+        "headerSize": 0,
+        "type": "string",
+        "quality": {
+          "empty": 0,
+          "invalid": 0,
+          "valid": 2,
+          "invalidValues": []
+        },
+        "id": "city"
+      },
+      {
         "name": "firstname",
         "headerSize": 0,
         "type": "string",
