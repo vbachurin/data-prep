@@ -369,7 +369,7 @@
                 var currentPath = pathParts[0];
             }
 
-            var rootFolder = {id: '', path: '', collapsed: false, name: $translate.instant('HOME_FOLDER')};
+            var rootFolder = {id: '', path: '/', collapsed: false, name: $translate.instant('HOME_FOLDER')};
 
             FolderService.children()
                 .then(function(res) {
@@ -467,10 +467,31 @@
          * @description Search folders
          */
         vm.searchFolders = function(){
-            FolderService.searchFolders(vm.searchFolderQuery)
-                .then(function(response){
-                    vm.foldersFound = response.data;
-                });
+
+            vm.foldersFound = [];
+            if(vm.searchFolderQuery){
+                //Add the root folder if it matches the filter
+                var n = $translate.instant('HOME_FOLDER').indexOf(vm.searchFolderQuery);
+
+                FolderService.searchFolders(vm.searchFolderQuery)
+                    .then(function(response){
+                        console.log(response);
+                        if(n > -1){
+                            var rootFolder = {id: '', path: '/', name: $translate.instant('HOME_FOLDER')};
+                            vm.foldersFound = [_.extend(rootFolder, response.data)];
+                        } else {
+                            vm.foldersFound = response.data;
+                        }
+                        console.log(vm.foldersFound);
+
+                        if(vm.foldersFound.length > 0){
+                            vm.chooseFolder(vm.foldersFound[0]); //Select by default first folder
+                        }
+                    });
+            } else {
+                vm.chooseFolder(vm.folders[0]);  //Select by default first folder
+            }
+
         };
 
         // load the datasets

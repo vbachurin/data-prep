@@ -575,7 +575,7 @@ describe('Dataset list controller', function () {
             ];
 
             spyOn(FolderService, 'children').and.returnValue($q.when(childrenFolders));
-            spyOn(FolderService, 'searchFolders').and.returnValue($q.when(foldersFromSearch));
+            spyOn(FolderService, 'searchFolders').and.returnValue($q.when({data :foldersFromSearch}));
 
         }));
 
@@ -599,8 +599,15 @@ describe('Dataset list controller', function () {
 
         it('should call search folders service', inject(function (FolderService) {
             //given
+            var foldersFromSearch = [
+                {path: 'folder-1', name: 'folder-1'},
+                {path: 'folder-1/sub-1', name: 'sub-1'},
+                {path: 'folder-1/sub-2/folder-1-beer', name: 'folder-1-beer'}
+            ];
+
             var ctrl = createController();
             ctrl.searchFolderQuery = 'beer';
+            spyOn(ctrl, 'chooseFolder').and.returnValue();
 
             //when
             ctrl.searchFolders();
@@ -608,6 +615,8 @@ describe('Dataset list controller', function () {
 
             //then
             expect(FolderService.searchFolders).toHaveBeenCalledWith(ctrl.searchFolderQuery);
+            expect(ctrl.foldersFound).toEqual(foldersFromSearch);
+            expect(ctrl.chooseFolder).toHaveBeenCalledWith(foldersFromSearch[0]);
         }));
 
         it('choose folder should marker folder as selected',function () {
