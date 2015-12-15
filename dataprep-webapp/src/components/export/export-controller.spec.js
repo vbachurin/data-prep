@@ -146,7 +146,7 @@ describe('Export controller', function() {
     it('should reset params with saved one and reset current export type accordingly', function() {
         //given
         var ctrl = createController();
-        ctrl.exportService.currentExportType = {exportType: 'XLS'} ;
+        ctrl.exportService.currentExportType = {exportType: 'XLSX'} ;
         ctrl.exportService.currentExportParameters = {filename: 'test'};
 
         //when
