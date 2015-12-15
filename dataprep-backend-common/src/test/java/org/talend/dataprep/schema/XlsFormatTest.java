@@ -69,8 +69,8 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
-.parse(getRequest(inputStream, "#456"))
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser() //
+                    .parse(getRequest(inputStream, "#456")) //
                     .getSheetContents().get(0).getColumnMetadatas();
 
             logger.debug("columnMetadatas: {}", columnMetadatas);
@@ -109,8 +109,8 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         }
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
-.parse(getRequest(inputStream, "#852"))
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser() //
+                    .parse(getRequest(inputStream, "#852")) //
                     .getSheetContents().get(0).getColumnMetadatas();
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(17);
@@ -133,8 +133,8 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
-.parse(getRequest(inputStream, "#123"))
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser() //
+                    .parse(getRequest(inputStream, "#123")) //
                     .getSheetContents().get(0).getColumnMetadatas();
 
             dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
@@ -210,8 +210,8 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
-.parse(getRequest(inputStream, "#7563"))
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser() //
+                    .parse(getRequest(inputStream, "#7563")) //
                     .getSheetContents().get(0).getColumnMetadatas();
 
             dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
@@ -266,8 +266,8 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         }
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
-.parse(getRequest(inputStream, "#951"))
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser() //
+                    .parse(getRequest(inputStream, "#951")) //
                     .getSheetContents().get(0).getColumnMetadatas();
 
             logger.debug("columnMetadatas: {}", columnMetadatas);
