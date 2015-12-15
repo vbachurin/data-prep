@@ -10,8 +10,8 @@
         return {
             adaptToGridConstraints: adaptToGridConstraints,
             escapeRegex: escapeRegex,
+            escapeRegexpExceptStar: escapeRegexpExceptStar,
             convertPatternToRegexp: convertPatternToRegexp,
-            escapeRegExpExceptStar: escapeRegExpExceptStar,
             convertJavaDateFormatToMomentDateFormat: convertJavaDateFormatToMomentDateFormat
         };
 
@@ -28,6 +28,17 @@
          */
         function escapeRegex(value) {
             return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '[$&]');
+        }
+
+        /**
+         * @ngdoc method
+         * @name escapeRegExpExceptStar
+         * @methodOf data-prep.services.utils:TextFormatService
+         * @description Escape all regexp characters except * wildcard, and adapt * wildcard to regexp (* --> .*)
+         * @param {string} str The string to escape
+         */
+        function escapeRegexpExceptStar(str) {
+            return str.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, '\\$&').replace(/\*/g, '.*');
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -115,23 +126,23 @@
          * @name convertPatternToRegexp
          * @methodOf data-prep.services.utils:TextFormatService
          * @description Convert pattern to regex
-         * @param {string} value The pattern
+         * @param {string} pattern The pattern
          */
         function convertPatternToRegexp(pattern) {
             var regexp = '';
             for (var i = 0, len = pattern.length; i < len; i++) {
                 switch(pattern[i]){
                     case 'A':
-                        regexp = regexp + '[A-Z]';
+                        regexp += '[A-Z]';
                         break;
                     case'a':
-                        regexp = regexp + '[a-z]';
+                        regexp += '[a-z]';
                         break;
                     case'9':
-                        regexp = regexp + '[0-9]';
+                        regexp += '[0-9]';
                         break;
                     default:
-                        regexp = regexp + escapeRegExpExceptStar(pattern[i]);
+                        regexp += escapeRegex(pattern[i]);
                 }
             }
             return '^' + regexp + '$';
@@ -139,35 +150,32 @@
 
         /**
          * @ngdoc method
-         * @name escapeRegExpExceptStar
-         * @methodOf data-prep.services.utils:TextFormatService
-         * @description Escape all regexp characters except * wildcard, and adapt * wildcard to regexp (* --> .*)
-         * @param {string} str The string to escape
-         */
-        function escapeRegExpExceptStar(str) {
-            return str.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, '\\$&').replace(/\*/g, '.*');
-        }
-
-        /**
-         * @ngdoc method
          * @name convertJavaDateFormatToMomentDateFormat
          * @methodOf data-prep.services.utils:TextFormatService
          * @description convert Java Date Format To Moment Date Format
-         * @param {string} str The Java Date Format
+         * @param {string} javaDateFormat The Java Date Format
          */
         function convertJavaDateFormatToMomentDateFormat(javaDateFormat) {
-            var end = false;
+            var openQuote = false;
             var pattern = javaDateFormat;
-            pattern = pattern.replace(/\'/g, function() { //quote problems => replace quotes by brackets (ex : 'T' => [T], ''y => [']y, 'o''clock' => [o'clock])
-                return (end = !end) ? '[' : ']';
-            }).replace(/\[\]/g, '[\']').replace(/\]\[/g, '\'');
 
-            //Convert java date format to moment.js date format by escaping contents in brackets
-            var stringsNotToBeReplaced = pattern.match(/\[.*?\]/g);
-            var i = 0;
+            // simple quote (') is used in java petterns to escape things. In moment, we use brackets ([])
+            // escaped quotes ('') should be converted to simple quote
+            // words between quotes ('content') should be converted to words between brackets ([content])
+            pattern = pattern.replace(/\'\'/g, '#tdpQuote')     //escape ('') to a unique replacement word
+                .replace(/\'/g, function() {                    //deal with word between quotes --> words between brackets
+                    openQuote = !openQuote;
+                    return openQuote ? '[' : ']';
+                })
+                .replace(/#tdpQuote/g, '\'');                   //replace original ('') to simple quotes
+
+            // toMomentFormatString will modify all the characters (even those between branckets)
+            // we save those escaped parts, convert the pattern and replace the parts that should be escaped
+            var patternEscapedParts = pattern.match(/\[.*\]/g);
             pattern = moment().toMomentFormatString(pattern);
-            pattern = pattern.replace(/\[.*?\]/g, function() {
-                return stringsNotToBeReplaced[i++];
+            var escapedPartIndex = 0;
+            pattern = pattern.replace(/\[.*\]/g, function() {
+                return patternEscapedParts[escapedPartIndex++];
             });
 
             return pattern;

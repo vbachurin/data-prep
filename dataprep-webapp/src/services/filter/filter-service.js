@@ -5,9 +5,15 @@
      * @ngdoc service
      * @name data-prep.services.filter.service:FilterService
      * @description Filter service. This service provide the entry point to datagrid filters
+     * @requires data-prep.services.filter.service:FilterAdapterService
      * @requires data-prep.services.playground.service:DatagridService
+     * @requires data-prep.services.state.service:StateService
+     * @requires data-prep.services.statistics.service:StatisticsService
+     * @requires data-prep.services.playground.service:DatagridService
+     * @requires data-prep.services.utils.service:ConverterService
+     * @requires data-prep.services.utils.service:TextFormatService
      */
-    function FilterService($timeout, state, StateService, FilterAdapterService, DatagridService, ConverterService, StatisticsService, TextFormatService) {
+    function FilterService($timeout, state, StateService, FilterAdapterService, DatagridService, StatisticsService, ConverterService, TextFormatService) {
         var service = {
             //utils
             getColumnsContaining: getColumnsContaining,
@@ -38,7 +44,7 @@
                 return [];
             }
 
-            var regexp = new RegExp(TextFormatService.escapeRegExpExceptStar(phrase));
+            var regexp = new RegExp(TextFormatService.escapeRegexpExceptStar(phrase));
             var canBeNumeric = !isNaN(phrase.replace(/\*/g, ''));
             var canBeBoolean = 'true'.match(regexp) || 'false'.match(regexp);
 
@@ -74,7 +80,7 @@
          */
         function createContainFilterFn(colId, phrase) {
             var lowerCasePhrase = phrase.toLowerCase();
-            var regexp = new RegExp(TextFormatService.escapeRegExpExceptStar(lowerCasePhrase));
+            var regexp = new RegExp(TextFormatService.escapeRegexpExceptStar(lowerCasePhrase));
 
             return function () {
                 return function (item) {
@@ -201,21 +207,10 @@
          * @returns {function} The predicate function
          */
         function createMatchFilterFn(colId, pattern) {
-
-            var datePattern = (pattern.indexOf('d') > -1 ||  // if date format???
-                pattern.indexOf('M') > -1 ||
-                pattern.indexOf('y') > -1 ||
-                pattern.indexOf('H') > -1 ||
-                pattern.indexOf('h') > -1 ||
-                pattern.indexOf('m') > -1 ||
-                pattern.indexOf('s') > -1);
-
-            if (datePattern) {
-                pattern = TextFormatService.convertJavaDateFormatToMomentDateFormat(pattern);
-            }
+            var valueMatchPatternFn = StatisticsService.valueMatchPatternFn(pattern);
             return function () {
                 return function (item) {
-                    return StatisticsService.checkValueMatchPattern(item[colId], pattern, datePattern);
+                    return valueMatchPatternFn(item[colId]);
                 };
             };
         }

@@ -31,7 +31,7 @@
                                      width="300"
                                      height="400"
                                      on-click="statsDetailsCtrl.addPatternFilter"
-                                     visu-data="statsDetailsCtrl.patternFrequencyTable.data"
+                                     visu-data="statsDetailsCtrl.patternFrequencyTable"
                                      key-field="occurrences"
                                      value-field="pattern"
                                      value-field-2="filteredOccurrences"
@@ -46,8 +46,7 @@
                         id="boxplotId"
                         width="300"
                         height="400"
-                        boxplot-data="statsDetailsCtrl.boxPlot"
-                        ></boxplot-chart>
+                        boxplot-data="statsDetailsCtrl.boxPlot"></boxplot-chart>
             </div>
         </talend-tabs-item>
     </talend-tabs>

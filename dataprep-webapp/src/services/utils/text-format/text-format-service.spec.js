@@ -71,5 +71,42 @@ describe('Text format service', function () {
             //then
             expect(result).toBe('azerty[ ][-][ ][[][]][ ][{][}][ ][(][)][ ][*][+][?][.][,][\\][^][$][|][#][ ]qwerty');
         }));
+
+        it('should escape regex special chars except star (used as wildcard)', inject(function(TextFormatService) {
+            //given
+            var value = 'azerty - [] {} () *+?.,\\^$|# qwerty';
+
+            //when
+            var result = TextFormatService.escapeRegexpExceptStar(value);
+
+            //then
+            expect(result).toBe('azerty \\- \\[\\] \\{\\} \\(\\) .*\\+\\?\\.,\\\\\\^\\$\\|# qwerty');
+        }));
+    });
+
+    describe('date pattern', function() {
+        it('should convert pattern to regexp with escaped special chars', inject(function(TextFormatService) {
+            //given
+            var pattern = 'a A 9 5-8 *$';
+            var expectedRegexp = '^[a-z][ ][A-Z][ ][0-9][ ]5[-]8[ ][*][$]$';
+
+            //when
+            var result = TextFormatService.convertPatternToRegexp(pattern);
+
+            //then
+            expect(result).toBe(expectedRegexp);
+        }));
+
+        it('should java date pattern to moment pattern', inject(function(TextFormatService) {
+            //given
+            var pattern = 'd/M/yyyy \'o\'\'clock\' mcdo';
+            var expectedPattern = 'D/M/YYYY [o\'clock] mcDo';
+
+            //when
+            var result = TextFormatService.convertJavaDateFormatToMomentDateFormat(pattern);
+
+            //then
+            expect(result).toBe(expectedPattern);
+        }));
     });
 });
