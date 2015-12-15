@@ -187,12 +187,7 @@
                         MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
 
                         // force going to current folder to refresh the content
-                        FolderService.getFolderContent(state.folder.currentFolder).then(function(){
-                            PreparationListService.refreshMetadataInfos(state.folder.currentFolderContent.datasets)
-                                .then(function(preparations){
-                                    FolderService.refreshDefaultPreparationForCurrentFolder(preparations);
-                                });
-                        });
+                        FolderService.getFolderContent(state.folder.currentFolder);
 
                     }).finally(function () {
                         // reset some values to initial values
@@ -438,16 +433,12 @@
          * @param {object} folder - the folder to use for cloning the dataset
          */
         vm.chooseFolder = function(folder){
-            if (folder.selected===true){
-                folder.selected=false;
-            } else {
-                var previousSelected = vm.folderDestination;
-                if (previousSelected){
-                    previousSelected.selected = false;
-                }
-                vm.folderDestination = folder;
-                folder.selected=true;
+            var previousSelected = vm.folderDestination;
+            if (previousSelected){
+                previousSelected.selected = false;
             }
+            vm.folderDestination = folder;
+            folder.selected=true;
         };
 
         /**

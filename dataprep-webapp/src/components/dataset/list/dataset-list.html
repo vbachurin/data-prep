@@ -124,7 +124,8 @@
     <talend-modal fullscreen="false"
                   close-button="true"
                   state="datasetListCtrl.folderNameModal"
-                  ng-if="datasetListCtrl.folderNameModal">
+                  ng-if="datasetListCtrl.folderNameModal"
+                  disable-enter="true">
         <span translate-once="ENTER_FOLDER_NAME"></span>
         <form name="datasetListCtrl.folderNameForm" ng-submit="datasetListCtrl.folderNameForm.$valid && datasetListCtrl.addFolder()">
             <input type="text"
@@ -142,11 +143,11 @@
         </form>
     </talend-modal>
 
-
     <talend-modal fullscreen="false"
                   close-button="true"
                   state="datasetListCtrl.folderDestinationModal"
-                  ng-if="datasetListCtrl.folderDestinationModal">
+                  ng-if="datasetListCtrl.folderDestinationModal"
+                  disable-enter="true">
 
         <div class="folders-modal-content">
             <div class="modal-title" translate-once="CHOOSE_FOLDER_DESTINATION" translate-values="{type: 'dataset', name: dataset.name}">
@@ -196,7 +197,7 @@
                     </div>
                 </div>
             </div>
-            <form name="datasetListCtrl.cloneNameForm" ng-submit="datasetListCtrl.cloneNameForm.$valid">
+            <form name="datasetListCtrl.cloneNameForm" ng-submit="datasetListCtrl.cloneNameForm.$valid && datasetListCtrl.clone()">
                 <div class="clone-name">
                     <span translate-once="DATASET_NAME"></span>
                     <input type="text"
@@ -207,17 +208,12 @@
                     <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL">
                     </button>
                     <button class="btn-primary modal-primary-button" translate-once="COPY_HERE_ACTION"
-                            ng-disabled="datasetListCtrl.cloneNameForm.$invalid"
-                            ng-click="datasetListCtrl.clone()">
+                            ng-disabled="datasetListCtrl.cloneNameForm.$invalid">
                     </button>
                 </div>
             </form>
         </div>
-
     </talend-modal>
-
-
-
 </div>
 
 
