@@ -174,9 +174,10 @@
                 var maxDate = new Date(histDatum.range.max.year, histDatum.range.max.monthValue - 1, histDatum.range.max.dayOfMonth);
                 var minTimestamp = minDate.getTime();
                 var maxTimestamp = maxDate.getTime();
-                var patterns = _.map(state.playground.grid.selectedColumn.statistics.patternFrequencyTable, function(patternFreq) {
-                    return moment().toMomentFormatString(patternFreq.pattern);
-                });
+                var patterns = _.chain(state.playground.grid.selectedColumn.statistics.patternFrequencyTable)
+                    .pluck('pattern')
+                    .map(TextFormatService.convertJavaDateFormatToMomentDateFormat);
+
                 var isInDateLimits = function(value) {
                     var parsedMoment = _.chain(patterns)
                         .map(function(pattern) {
