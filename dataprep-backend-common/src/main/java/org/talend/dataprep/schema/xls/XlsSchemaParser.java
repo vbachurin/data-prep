@@ -247,8 +247,6 @@ public class XlsSchemaParser implements SchemaParser {
 
             String currentType;
 
-
-
             while (cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
 

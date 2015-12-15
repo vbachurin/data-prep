@@ -47,9 +47,9 @@ public class XlsUtils {
         case Cell.CELL_TYPE_ERROR:
             return "Cell Error type";
         case Cell.CELL_TYPE_FORMULA:
-            return getCellValueAsString(cell, formulaEvaluator.evaluate(cell) );
+            return getCellValueAsString(cell, formulaEvaluator.evaluate(cell), true );
         case Cell.CELL_TYPE_NUMERIC:
-            return getNumericValue(cell);
+            return getNumericValue(cell, null, false);
         case Cell.CELL_TYPE_STRING:
             return StringUtils.trim(cell.getStringCellValue());
         default:
@@ -57,11 +57,11 @@ public class XlsUtils {
         }
     }
 
-    private static String getCellValueAsString(Cell cell, CellValue cellValue) {
+    private static String getCellValueAsString(Cell cell, CellValue cellValue, boolean fromFormula) {
         if (cellValue == null) {
             return StringUtils.EMPTY;
         }
-        switch (cell.getCellType()) {
+        switch (cellValue.getCellType()) {
             case Cell.CELL_TYPE_BLANK:
                 return "";
             case Cell.CELL_TYPE_BOOLEAN:
@@ -69,7 +69,7 @@ public class XlsUtils {
             case Cell.CELL_TYPE_ERROR:
                 return "Cell Error type";
             case Cell.CELL_TYPE_NUMERIC:
-                return getNumericValue(cell, cellValue);
+                return getNumericValue(cell, null, fromFormula);
             case Cell.CELL_TYPE_STRING:
                 return StringUtils.trim(cell.getStringCellValue());
             default:
@@ -83,19 +83,7 @@ public class XlsUtils {
      * @param cell the cell to extract the value from.
      * @return the numeric value from the cell.
      */
-    private static String getNumericValue(Cell cell, CellValue cellValue) {
-        // Date is typed as numeric
-        if (HSSFDateUtil.isCellDateFormatted(cell)) { // TODO configurable??
-            DateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-            return sdf.format(cellValue.getNumberValue());
-        }
-        // Numeric type (use data formatter to get number format right)
-        DataFormatter formatter = new HSSFDataFormatter(Locale.ENGLISH);
-        return formatter.formatCellValue(cell);
-    }
-
-
-    private static String getNumericValue(Cell cell) {
+    private static String getNumericValue(Cell cell, CellValue cellValue, boolean fromFormula) {
         // Date is typed as numeric
         if (HSSFDateUtil.isCellDateFormatted(cell)) { // TODO configurable??
             DateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
@@ -103,8 +91,14 @@ public class XlsUtils {
         }
         // Numeric type (use data formatter to get number format right)
         DataFormatter formatter = new HSSFDataFormatter(Locale.ENGLISH);
-        return formatter.formatCellValue(cell);
+
+        if (cellValue == null){
+            return formatter.formatCellValue(cell);
+        }
+
+        return fromFormula ? cellValue.formatAsString() : formatter.formatCellValue(cell);
     }
+
 
     /**
      * Return the {@link Workbook workbook} to be found in the stream (assuming stream contains an Excel file). If

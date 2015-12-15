@@ -6,10 +6,7 @@ import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -55,6 +52,30 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
     @Test(expected = IllegalArgumentException.class)
     public void read_null_xls_file() throws Exception {
         formatGuesser.guess(null, "UTF-8").getFormatGuess();
+    }
+
+    protected List<Map<String, String>> getValuesFromFile(String fileName, FormatGuess formatGuess,
+            DataSetMetadata dataSetMetadata) throws Exception {
+
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+
+            InputStream jsonStream = formatGuess.getSerializer().serialize(inputStream, dataSetMetadata);
+
+            String json = IOUtils.toString(jsonStream);
+
+            logger.debug("json: {}", json);
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, TreeMap.class);
+
+            List<Map<String, String>> values = mapper.readValue(json, collectionType);
+
+            logger.debug("values: {}", values);
+
+            return values;
+        }
+
     }
 
     @Test
@@ -269,7 +290,7 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
             List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
-.parse(getRequest(inputStream, "#951"))
+                    .parse(getRequest(inputStream, "#951"))
                     .getSheetContents().get(0).getColumnMetadatas();
 
             logger.debug("columnMetadatas: {}", columnMetadatas);
@@ -430,8 +451,8 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize( 10 );
 
             ColumnMetadata columnMetadataDate = columnMetadatas.stream() //
-                .filter( columnMetadata -> columnMetadata.getName().equalsIgnoreCase( "date" ) ) //
-                .findFirst().get();
+                    .filter( columnMetadata -> columnMetadata.getName().equalsIgnoreCase( "date" ) ) //
+                    .findFirst().get();
 
             Assertions.assertThat( columnMetadataDate.getType() ).isEqualTo( "date" );
 
@@ -455,5 +476,54 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
     }
 
+    @Test
+    public void read_evaluate_formulas() throws Exception {
+
+        String fileName = "000_DTA_DailyTimeLog.xlsm";
+
+        FormatGuess formatGuess;
+
+        XlsSchemaParser xlsSchemaParser = new XlsSchemaParser();
+
+        String sheetName = "WEEK SUMMARY";
+
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+            formatGuess = formatGuesser.guess(getRequest(inputStream, UUID.randomUUID().toString()), "UTF-8").getFormatGuess();
+            Assert.assertNotNull(formatGuess);
+            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
+            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
+        }
+
+        DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").sheetName(sheetName).build();
+
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+
+            List<SchemaParserResult.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(getRequest(inputStream, "#8"));
+
+            List<ColumnMetadata> columnMetadatas = sheetContents.stream()
+                    .filter(sheetContent -> sheetName.equals(sheetContent.getName())).findFirst().get().getColumnMetadatas();
+
+            logger.debug("columnMetadatas: {}", columnMetadatas);
+
+            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(32);
+
+            dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
+        }
+
+        List<Map<String, String>> values = getValuesFromFile(fileName, formatGuess, dataSetMetadata);
+
+        logger.debug("values: {}", values);
+
+        Assertions.assertThat(values.get(4).get("0003")).isNotEmpty().isEqualTo("26-Oct-2015");
+
+        Assertions.assertThat(values.get(5).get("0003")).isNotEmpty().isEqualTo("MONDAY");
+
+        Assertions.assertThat(values.get(7).get("0003")).isNotEmpty().isEqualTo("8.0");
+
+        Assertions.assertThat(values.get(30).get("0003")).isNotEmpty().isEqualTo("6.0");
+
+        Assertions.assertThat(values.get(31).get("0003")).isNotEmpty().isEqualTo("18.5");
+
+    }
 
 }
