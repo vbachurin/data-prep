@@ -26,7 +26,7 @@
          */
         vm.cancelCurrentParameters = function cancelCurrentParameters() {
             vm.exportService.currentExportType = vm.exportService.getType(vm.exportService.getParameters().id);
-            vm.exportService.currentExportParameters = _.cloneDeep(vm.state.playground.exportParameters);
+            vm.exportService.currentExportParameters = _.extend({}, vm.state.playground.exportParameters);
         };
 
         /**
@@ -42,7 +42,7 @@
             if (vm.exportService.currentExportType.parameters) {
 
                 if(vm.state.playground.exportParameters){
-                    vm.exportService.currentExportParameters = _.cloneDeep(vm.state.playground.exportParameters);
+                    vm.exportService.currentExportParameters = _.extend({}, vm.state.playground.exportParameters);
                     vm.exportService.currentExportParameters.exportType = vm.exportService.currentExportType.id;
                 } else {
                     updateExportParameters();
@@ -73,7 +73,7 @@
                 updateExportParameters();
             }
 
-            vm.state.playground.exportParameters = _.cloneDeep(vm.exportService.currentExportParameters);
+            vm.state.playground.exportParameters = _.extend({}, vm.exportService.currentExportParameters);
 
             $timeout(function(){
                 vm.form.action = RestURLs.exportUrl;
