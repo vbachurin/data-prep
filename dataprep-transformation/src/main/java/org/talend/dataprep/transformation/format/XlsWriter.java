@@ -1,6 +1,6 @@
 package org.talend.dataprep.transformation.format;
 
-import static org.talend.dataprep.transformation.format.XlsFormat.XLS;
+import static org.talend.dataprep.transformation.format.XlsFormat.XLSX;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,7 +21,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 
 @Scope("prototype")
-@Component("writer#" + XLS)
+@Component("writer#" + XLSX)
 public class XlsWriter implements TransformerWriter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XlsWriter.class);
