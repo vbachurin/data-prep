@@ -12,15 +12,14 @@
 // ============================================================================
 package org.talend.dataprep.api.dataset.statistics.number;
 
+import java.util.List;
+
 import org.apache.commons.lang.NotImplementedException;
 import org.talend.dataquality.statistics.numeric.NumericalStatisticsAnalyzer;
-import org.talend.dataquality.statistics.numeric.histogram.HistogramParameter;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.ResizableList;
 import org.talend.datascience.common.inference.type.DataType.Type;
 import org.talend.datascience.common.inference.type.TypeInferenceUtils;
-
-import java.util.List;
 
 /**
  * Number histogram analyzer. It processes all the records and compute the statistics for each.
@@ -34,14 +33,10 @@ public class StreamNumberHistogramAnalyzer extends NumericalStatisticsAnalyzer<S
     /**
      * Constructor
      *
-     * @param types              data types
-     * @param histogramParameter Histogram analyzer's parameter
+     * @param types data types
      */
-    public StreamNumberHistogramAnalyzer(Type[] types, HistogramParameter histogramParameter) {
+    public StreamNumberHistogramAnalyzer(Type[] types) {
         super(types);
-        if (histogramParameter == null) {
-            throw new IllegalArgumentException("Histogram analyzer's parameter should is null.");
-        }
     }
 
     @Override
