@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jackson.JacksonUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -23,38 +23,55 @@ import org.talend.dataprep.transformation.api.action.metadata.common.CellAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+/**
+ * Replace the content or part of a cell by a value.
+ */
 @Component(ReplaceOnValue.ACTION_BEAN_PREFIX + ReplaceOnValue.REPLACE_ON_VALUE_ACTION_NAME)
 public class ReplaceOnValue extends ActionMetadata implements ColumnAction, CellAction {
 
-    /**
-     * The action name.
-     */
+    /** The dataprep ready jackson builder. */
+    @Autowired
+    @Lazy // needed to prevent a circular dependency
+    private Jackson2ObjectMapperBuilder builder;
+
+    /** The action name. */
     public static final String REPLACE_ON_VALUE_ACTION_NAME = "replace_on_value"; //$NON-NLS-1$
 
-    /**
-     * Value to match
-     */
+    /** Value to match. */
     public static final String CELL_VALUE_PARAMETER = "cell_value"; //$NON-NLS-1$
 
-    /**
-     * Replace Value
-     */
+    /** Replace Value. */
     public static final String REPLACE_VALUE_PARAMETER = "replace_value"; //$NON-NLS-1$
 
-    /**
-     * Scope Value
-     */
+    /** Scope Value (replace the entire cell or only the part that matches). */
     public static final String REPLACE_ENTIRE_CELL_PARAMETER = "replace_entire_cell"; //$NON-NLS-1$
 
-    private static final String COMPILED_PATTERN = "compiled_pattern";
+    /** The operator parameter name. */
     protected static final String OPERATOR = "operator";
+
+    /** The token parameter name. */
     protected static final String TOKEN = "token";
 
+    /** The regex mode parameter name. */
     protected static final String REGEX_MODE = "regex";
+
+    /** The value of the 'equals' operator. */
     protected static final String EQUALS_MODE = "equals";
+
+    /** The value of the 'contains' operator. */
     protected static final String CONTAINS_MODE = "contains";
+
+    /** The starts with parameter name. */
     protected static final String STARTS_WITH_MODE = "starts_with";
+
+    /** The ends with parmeter name. */
     protected static final String ENDS_WITH_MODE = "ends_with";
+
+    /** The compiled regex pattern name within the action context. */
+    private static final String COMPILED_PATTERN = "compiled_pattern";
 
     /**
      * @see ActionMetadata#getName()
@@ -92,6 +109,9 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
+    /**
+     * @see ActionMetadata#compile(ActionContext)
+     */
     @Override
     public void compile(ActionContext actionContext) {
         super.compile(actionContext);
@@ -105,10 +125,10 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
             }
 
             try {
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode root = mapper.readTree(value);
-                parameters.put(OPERATOR, root.get(OPERATOR).asText());
-                parameters.put(TOKEN, root.get(TOKEN).asText());
+                final ReplaceOnValueParameter replaceOnValueParameter = builder.build().readValue(value,
+                        ReplaceOnValueParameter.class);
+                parameters.put(OPERATOR, replaceOnValueParameter.getOperator());
+                parameters.put(TOKEN, replaceOnValueParameter.getToken());
             } catch (IOException e) {
                 actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
                 return;
@@ -127,6 +147,28 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
         }
     }
 
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
+     */
+    @Override
+    public void applyOnColumn(DataSetRow row, ActionContext context) {
+        apply(row, context);
+    }
+
+    /**
+     * @see CellAction#applyOnCell(DataSetRow, ActionContext)
+     */
+    @Override
+    public void applyOnCell(DataSetRow row, ActionContext context) {
+        apply(row, context);
+    }
+
+    /**
+     * Apply the action.
+     *
+     * @param row the row where to apply the action.
+     * @param context the action context.
+     */
     private void apply(DataSetRow row, ActionContext context) {
         final String value = row.get(context.getColumnId());
 
@@ -139,14 +181,23 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
         row.set(context.getColumnId(), newValue);
     }
 
+    /**
+     * Compute the new action based on the current action context.
+     * 
+     * @param context the action context.
+     * @param originalValue the original value.
+     * @return the new value to set based on the parameters within the action context.
+     */
     protected String computeNewValue(ActionContext context, String originalValue) {
         if (originalValue == null) {
             return null;
         }
+
         // There are direct calls to this method from unit tests, normally such checks are done during transformation.
         if (context.getActionStatus() != ActionContext.ActionStatus.OK) {
             return originalValue;
         }
+
         final Map<String, String> parameters = context.getParameters();
 
         String operator = parameters.get(OPERATOR);
@@ -154,10 +205,11 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
         if (token==null || token.length()==0){
             return originalValue;
         }
+
         String replacement = parameters.get(REPLACE_VALUE_PARAMETER);
         boolean replaceEntireCell = Boolean.valueOf(parameters.get(REPLACE_ENTIRE_CELL_PARAMETER));
 
-        boolean matches= false;
+        boolean matches = false;
         switch (operator) {
         case EQUALS_MODE:
             matches = originalValue.equals(token);
@@ -189,18 +241,42 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
     }
 
     /**
-     * @see ColumnAction#applyOnColumn(DataSetRow, ActionContext)
+     * Class used to simplify the json parsing of the parameter for this action.
      */
-    @Override
-    public void applyOnColumn(DataSetRow row, ActionContext context) {
-        apply(row, context);
+    public static class ReplaceOnValueParameter {
+
+        /** The token. */
+        private String token;
+
+        /** The operator. */
+        private String operator;
+
+        /**
+         * Constructor.
+         * 
+         * @param token the token.
+         * @param operator the operator.
+         */
+        @JsonCreator
+        public ReplaceOnValueParameter(@JsonProperty("token") String token, @JsonProperty("operator") String operator) {
+            this.token = token;
+            this.operator = operator;
+        }
+
+        /**
+         * @return the Token
+         */
+        public String getToken() {
+            return token;
+        }
+
+        /**
+         * @return the Operator
+         */
+        public String getOperator() {
+            return operator;
+        }
+
     }
 
-    /**
-     * @see CellAction#applyOnCell(DataSetRow, ActionContext)
-     */
-    @Override
-    public void applyOnCell(DataSetRow row, ActionContext context) {
-        apply(row, context);
-    }
 }

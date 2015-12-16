@@ -16,6 +16,7 @@ import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.junit.Assert.assertEquals;
 import static org.talend.dataprep.api.type.Type.BOOLEAN;
 import static org.talend.dataprep.api.type.Type.STRING;
 import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.*;
@@ -26,22 +27,24 @@ import java.util.List;
 import java.util.Map;
 
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
-import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Test class for Replace value action
  */
-public class ReplaceOnValueTest {
+public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
 
-    private ReplaceOnValue action = new ReplaceOnValue();
+    @Autowired
+    private ReplaceOnValue action;
 
     private ActionContext buildPatternActionContext(String regex, String replacement, boolean replace) {
         ActionContext context = new ActionContext(new TransformationContext());
@@ -52,6 +55,16 @@ public class ReplaceOnValueTest {
         context.setParameters(parameters);
         action.compile(context);
         return context;
+    }
+
+    @Test
+    public void test_action_name() throws Exception {
+        assertEquals("replace_on_value", action.getName());
+    }
+
+    @Test
+    public void test_category() throws Exception {
+        assertEquals("strings", action.getCategory());
     }
 
     @Test
@@ -126,41 +139,70 @@ public class ReplaceOnValueTest {
      */
     @Test
     public void test_TDP_951() {
-        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FR", ReplaceOnValue.EQUALS_MODE), "EN", false), "XXX_FR_YYY"));
-        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FR", ReplaceOnValue.EQUALS_MODE), "EN", true), "XXX_FR_YYY"));
+        assertEquals("XXX_FR_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FR", ReplaceOnValue.EQUALS_MODE), "EN", false), "XXX_FR_YYY"));
+        assertEquals("XXX_FR_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FR", ReplaceOnValue.EQUALS_MODE), "EN", true), "XXX_FR_YYY"));
 
-        Assert.assertEquals("Barfoo", action.computeNewValue(buildPatternActionContext(generateJson("Foobar", ReplaceOnValue.EQUALS_MODE), "Barfoo", false), "Foobar"));
-        Assert.assertEquals("Barfoo", action.computeNewValue(buildPatternActionContext(generateJson("Foobar", ReplaceOnValue.EQUALS_MODE), "Barfoo", true), "Foobar"));
+        assertEquals("Barfoo", action.computeNewValue(
+                buildPatternActionContext(generateJson("Foobar", ReplaceOnValue.EQUALS_MODE), "Barfoo", false), "Foobar"));
+        assertEquals("Barfoo", action.computeNewValue(
+                buildPatternActionContext(generateJson("Foobar", ReplaceOnValue.EQUALS_MODE), "Barfoo", true), "Foobar"));
 
 
-        Assert.assertEquals("XXX_EN_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FR", ReplaceOnValue.CONTAINS_MODE), "EN", false), "XXX_FR_YYY"));
-        Assert.assertEquals("EN", action.computeNewValue(buildPatternActionContext(generateJson("FR", ReplaceOnValue.CONTAINS_MODE), "EN", true), "XXX_FR_YYY"));
-        Assert.assertEquals("XXX_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FR_", ReplaceOnValue.CONTAINS_MODE), "", false), "XXX_FR_YYY"));
+        assertEquals("XXX_EN_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FR", ReplaceOnValue.CONTAINS_MODE), "EN", false), "XXX_FR_YYY"));
+        assertEquals("EN", action.computeNewValue(
+                buildPatternActionContext(generateJson("FR", ReplaceOnValue.CONTAINS_MODE), "EN", true), "XXX_FR_YYY"));
+        assertEquals("XXX_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FR_", ReplaceOnValue.CONTAINS_MODE), "", false), "XXX_FR_YYY"));
 
-        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FR", ReplaceOnValue.STARTS_WITH_MODE), "EN", false), "XXX_FR_YYY"));
-        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FR", ReplaceOnValue.STARTS_WITH_MODE), "EN", true), "XXX_FR_YYY"));
-        Assert.assertEquals("EN_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FR", ReplaceOnValue.STARTS_WITH_MODE), "EN", false), "FR_YYY"));
-        Assert.assertEquals("EN", action.computeNewValue(buildPatternActionContext(generateJson("FR", ReplaceOnValue.STARTS_WITH_MODE), "EN", true), "FR_YYY"));
+        assertEquals("XXX_FR_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FR", ReplaceOnValue.STARTS_WITH_MODE), "EN", false), "XXX_FR_YYY"));
+        assertEquals("XXX_FR_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FR", ReplaceOnValue.STARTS_WITH_MODE), "EN", true), "XXX_FR_YYY"));
+        assertEquals("EN_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FR", ReplaceOnValue.STARTS_WITH_MODE), "EN", false), "FR_YYY"));
+        assertEquals("EN", action.computeNewValue(
+                buildPatternActionContext(generateJson("FR", ReplaceOnValue.STARTS_WITH_MODE), "EN", true), "FR_YYY"));
 
-        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FR", ReplaceOnValue.ENDS_WITH_MODE), "EN", false), "XXX_FR_YYY"));
-        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FR", ReplaceOnValue.ENDS_WITH_MODE), "EN", true), "XXX_FR_YYY"));
-        Assert.assertEquals("XXX_EN", action.computeNewValue(buildPatternActionContext(generateJson("FR", ReplaceOnValue.ENDS_WITH_MODE), "EN", false), "XXX_FR"));
-        Assert.assertEquals("EN", action.computeNewValue(buildPatternActionContext(generateJson("FR", ReplaceOnValue.ENDS_WITH_MODE), "EN", true), "XXX_FR"));
+        assertEquals("XXX_FR_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FR", ReplaceOnValue.ENDS_WITH_MODE), "EN", false), "XXX_FR_YYY"));
+        assertEquals("XXX_FR_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FR", ReplaceOnValue.ENDS_WITH_MODE), "EN", true), "XXX_FR_YYY"));
+        assertEquals("XXX_EN", action.computeNewValue(
+                buildPatternActionContext(generateJson("FR", ReplaceOnValue.ENDS_WITH_MODE), "EN", false), "XXX_FR"));
+        assertEquals("EN", action.computeNewValue(
+                buildPatternActionContext(generateJson("FR", ReplaceOnValue.ENDS_WITH_MODE), "EN", true), "XXX_FR"));
 
         // Nothing to do because doesn't match:
-        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FOO", ReplaceOnValue.EQUALS_MODE), "EN", false), "XXX_FR_YYY"));
-        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FOO", ReplaceOnValue.EQUALS_MODE), "EN", true), "XXX_FR_YYY"));
-        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FOO", ReplaceOnValue.CONTAINS_MODE), "EN", false), "XXX_FR_YYY"));
-        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FOO", ReplaceOnValue.CONTAINS_MODE), "EN", true), "XXX_FR_YYY"));
-        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FOO", ReplaceOnValue.STARTS_WITH_MODE), "EN", false), "XXX_FR_YYY"));
-        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FOO", ReplaceOnValue.STARTS_WITH_MODE), "EN", true), "XXX_FR_YYY"));
-        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FOO", ReplaceOnValue.ENDS_WITH_MODE), "EN", false), "XXX_FR_YYY"));
-        Assert.assertEquals("XXX_FR_YYY", action.computeNewValue(buildPatternActionContext(generateJson("FOO", ReplaceOnValue.ENDS_WITH_MODE), "EN", true), "XXX_FR_YYY"));
+        assertEquals("XXX_FR_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FOO", ReplaceOnValue.EQUALS_MODE), "EN", false), "XXX_FR_YYY"));
+        assertEquals("XXX_FR_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FOO", ReplaceOnValue.EQUALS_MODE), "EN", true), "XXX_FR_YYY"));
+        assertEquals("XXX_FR_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FOO", ReplaceOnValue.CONTAINS_MODE), "EN", false), "XXX_FR_YYY"));
+        assertEquals("XXX_FR_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FOO", ReplaceOnValue.CONTAINS_MODE), "EN", true), "XXX_FR_YYY"));
+        assertEquals("XXX_FR_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FOO", ReplaceOnValue.STARTS_WITH_MODE), "EN", false), "XXX_FR_YYY"));
+        assertEquals("XXX_FR_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FOO", ReplaceOnValue.STARTS_WITH_MODE), "EN", true), "XXX_FR_YYY"));
+        assertEquals("XXX_FR_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FOO", ReplaceOnValue.ENDS_WITH_MODE), "EN", false), "XXX_FR_YYY"));
+        assertEquals("XXX_FR_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("FOO", ReplaceOnValue.ENDS_WITH_MODE), "EN", true), "XXX_FR_YYY"));
 
-        Assert.assertEquals("XXX_foobar_YYY", action.computeNewValue(buildPatternActionContext(generateJson("t.t.", ReplaceOnValue.REGEX_MODE), "foobar", false), "XXX_toto_YYY"));
-        Assert.assertEquals("XXX_foobar_YYY", action.computeNewValue(buildPatternActionContext(generateJson("t.t.", ReplaceOnValue.REGEX_MODE), "foobar", false), "XXX_titi_YYY"));
-        Assert.assertEquals("XXX_ZZ_YYY", action.computeNewValue(buildPatternActionContext(generateJson("_[a-z ]*_", ReplaceOnValue.REGEX_MODE), "_ZZ_", false), "XXX_this is a string_YYY"));
-        Assert.assertEquals("foobar", action.computeNewValue(buildPatternActionContext(generateJson("t.t.", ReplaceOnValue.REGEX_MODE), "foobar", true), "XXX_toto_YYY"));
+        assertEquals("XXX_foobar_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("t.t.", ReplaceOnValue.REGEX_MODE), "foobar", false), "XXX_toto_YYY"));
+        assertEquals("XXX_foobar_YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("t.t.", ReplaceOnValue.REGEX_MODE), "foobar", false), "XXX_titi_YYY"));
+        assertEquals("XXX_ZZ_YYY",
+                action.computeNewValue(
+                        buildPatternActionContext(generateJson("_[a-z ]*_", ReplaceOnValue.REGEX_MODE), "_ZZ_", false),
+                        "XXX_this is a string_YYY"));
+        assertEquals("foobar", action.computeNewValue(
+                buildPatternActionContext(generateJson("t.t.", ReplaceOnValue.REGEX_MODE), "foobar", true), "XXX_toto_YYY"));
     }
 
     @Test
@@ -279,9 +321,9 @@ public class ReplaceOnValueTest {
     public void test_TDP_663() {
         for (String op : new String[] { ReplaceOnValue.REGEX_MODE, ReplaceOnValue.EQUALS_MODE, ReplaceOnValue.CONTAINS_MODE,
                 ReplaceOnValue.STARTS_WITH_MODE, ReplaceOnValue.ENDS_WITH_MODE }) {
-            Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue(
+            assertEquals("password swordfish with Halle Berry", action.computeNewValue(
                     buildPatternActionContext(generateJson("*", op), "replaced", false), "password swordfish with Halle Berry"));
-            Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue(
+            assertEquals("password swordfish with Halle Berry", action.computeNewValue(
                     buildPatternActionContext(generateJson("*", op), "replaced", true), "password swordfish with Halle Berry"));
         }
     }
@@ -290,9 +332,9 @@ public class ReplaceOnValueTest {
     public void test_TDP_958_emptyPattern() {
         for (String op : new String[] { ReplaceOnValue.REGEX_MODE, ReplaceOnValue.EQUALS_MODE, ReplaceOnValue.CONTAINS_MODE,
                 ReplaceOnValue.STARTS_WITH_MODE, ReplaceOnValue.ENDS_WITH_MODE }) {
-            Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue(
+            assertEquals("password swordfish with Halle Berry", action.computeNewValue(
                     buildPatternActionContext(generateJson("", op), "replaced", false), "password swordfish with Halle Berry"));
-            Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue(
+            assertEquals("password swordfish with Halle Berry", action.computeNewValue(
                     buildPatternActionContext(generateJson("", op), "replaced", true), "password swordfish with Halle Berry"));
         }
     }
@@ -301,9 +343,9 @@ public class ReplaceOnValueTest {
     public void test_TDP_958_invalidPattern() {
         for (String op : new String[] { ReplaceOnValue.REGEX_MODE, ReplaceOnValue.EQUALS_MODE, ReplaceOnValue.CONTAINS_MODE,
                 ReplaceOnValue.STARTS_WITH_MODE, ReplaceOnValue.ENDS_WITH_MODE }) {
-            Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue(
+            assertEquals("password swordfish with Halle Berry", action.computeNewValue(
                     buildPatternActionContext(generateJson("^(", op), "replaced", false), "password swordfish with Halle Berry"));
-            Assert.assertEquals("password swordfish with Halle Berry", action.computeNewValue(
+            assertEquals("password swordfish with Halle Berry", action.computeNewValue(
                     buildPatternActionContext(generateJson("^(", op), "replaced", true), "password swordfish with Halle Berry"));
         }
     }

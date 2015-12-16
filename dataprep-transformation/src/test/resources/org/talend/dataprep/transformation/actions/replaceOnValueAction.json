@@ -4,7 +4,10 @@
       "action": "replace_on_value",
       "parameters": {
         "column_id": "lastname",
-        "cell_value": "{\"token\":\"Mitchell\", \"operator\":\"equals\"}",
+        "cell_value": {
+          "token": "Mitchell",
+          "operator": "equals"
+        },
         "replace_value": "Jimmy",
         "scope": "column"
       }

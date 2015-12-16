@@ -1,11 +1,11 @@
 (function() {
     'use strict';
 
-    function escape(value) {
+    /*function escape(value) {
         return value.replace(/[[\]{}()*+?.\\^$|/]/g, '[$&]');
-    }
+    }*/
 
-    function unescape(value) {
+    /*function unescape(value) {
         return value
             .replace(/\[\{]/g, '{')
             .replace(/\[}]/g, '}')
@@ -22,15 +22,15 @@
             .replace(/\[\/]/g, '/')
             .replace(/\[]]/g, ']')
             .replace(/\[\[]/g, '[');
-    }
+    }*/
 
-    function removeEscapedSpecialChar(value) {
+    /*function removeEscapedSpecialChar(value) {
         return value.replace(/[[][[\]{}()*+?.\\^$|/][\]]/g, '');
-    }
+    }*/
 
-    function hasSpecialChar(value) {
-        return removeEscapedSpecialChar(value).match(/.*[[\]{}()*+?.\\^$|/].*/);
-    }
+    /*function hasSpecialChar(value) {
+        return removeEscapedSpecialChar(value).match(/.*[[\]{}()*+?.\\^$|/].*!/);
+    }*/
 
 
     /**
@@ -43,7 +43,7 @@
 
         var equals = {
             key: '=',
-            label: $translate.instant('EQUALS'),
+            label: $translate.instant('EQUALS')/*,
             adapt: function adapt(value) {
                 return escape(value);
             },
@@ -52,12 +52,12 @@
             },
             clean: function clean(value) {
                 return unescape(value);
-            }
+            }*/
         };
 
         var contains = {
             key: '≅',
-            label: $translate.instant('CONTAINS'),
+            label: $translate.instant('CONTAINS')/*,
             extract: function extract(value) {
                 return value.substring(2, value.length - 2);
             },
@@ -69,12 +69,12 @@
             },
             clean: function clean(value) {
                 return unescape(this.extract(value));
-            }
+            }*/
         };
 
         var startsWith = {
             key: '>',
-            label: $translate.instant('STARTS_WITH'),
+            label: $translate.instant('STARTS_WITH')/*,
             extract: function extract(value) {
                 return value.substring(1, value.length - 2);
             },
@@ -86,12 +86,12 @@
             },
             clean: function clean(value) {
                 return unescape(this.extract(value));
-            }
+            }*/
         };
 
         var endsWith = {
             key: '<',
-            label: $translate.instant('ENDS_WITH'),
+            label: $translate.instant('ENDS_WITH')/*,
             extract: function extract(value) {
                 return value.substring(2, value.length - 1);
             },
@@ -103,12 +103,12 @@
             },
             clean: function clean(value) {
                 return unescape(this.extract(value));
-            }
+            }*/
         };
 
         var regex = {
             key: '^\\',
-            label: $translate.instant('REGEX'),
+            label: $translate.instant('REGEX')/*,
             adapt: function adapt(value) {
                 return value;
             },
@@ -117,7 +117,7 @@
             },
             clean: function clean(value) {
                 return value;
-            }
+            }*/
         };
 
         /**
@@ -134,7 +134,8 @@
          * @propertyOf talend.widget.controller:EditableRegexCtrl
          * @description The selected regex type. This is initialized with 'equals' type
          */
-        vm.selectedType = vm.value ? getRegexType(vm.value) : equals;
+        //vm.selectedType = vm.value ? getRegexType(vm.value) : equals;
+        vm.selectedType = equals;
 
         /**
          * @ngdoc property
@@ -142,7 +143,7 @@
          * @propertyOf talend.widget.controller:EditableRegexCtrl
          * @description The entered text. This is initialized with empty string
          */
-        vm.regex = vm.value ? vm.selectedType.clean(vm.value) : '';
+        vm.regex = vm.value ? vm.value : '';
 
         vm.updateModel = updateModel;
         vm.setSelectedType = setSelectedType;
@@ -154,7 +155,8 @@
          * @description Update the model bound with ngModel, depending on selected type and entered text
          */
         function updateModel() {
-            vm.value = vm.regex ? vm.selectedType.adapt(vm.regex) : vm.regex;
+            //vm.value = vm.regex ? vm.selectedType.adapt(vm.regex) : vm.regex;
+            vm.value = vm.regex;
         }
 
         /**
@@ -168,17 +170,17 @@
             updateModel();
         }
 
-        /**
+/*        /!**
          * @ngdoc method
          * @name setSelectedType
          * @methodOf talend.widget.controller:EditableRegexCtrl
          * @description Change selected type and trigger model update
-         */
+         *!/
         function getRegexType(value) {
             return _.find(vm.types, function(type) {
                 return type.match(value);
             });
-        }
+        }*/
     }
 
     angular.module('talend.widget')
