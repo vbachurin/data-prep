@@ -208,14 +208,14 @@
          * @description Rename a dataset
          */
         vm.rename = function rename(dataset, name) {
-            var cleanName = name ? name.trim() : '';
+            var cleanName = name ? name.trim().toLowerCase() : '';
             if (cleanName) {
                 if (dataset.renaming) {
                     return;
                 }
                 var nameAlreadyUsed = false;
                 _.forEach(state.folder.currentFolderContent.datasets, function(dataset){
-                    if (cleanName === dataset.name){
+                    if (cleanName === dataset.name.toLowerCase()){
                         nameAlreadyUsed = true;
                         return;
                     }
