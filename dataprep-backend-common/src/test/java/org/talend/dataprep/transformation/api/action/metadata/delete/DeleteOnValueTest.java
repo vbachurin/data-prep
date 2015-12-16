@@ -21,30 +21,39 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
 
 /**
  * Test class for DeleteOnValue action. Creates one consumer, and test it.
  *
  * @see DeleteOnValue
  */
-public class DeleteOnValueTest {
+public class DeleteOnValueTest extends AbstractMetadataBaseTest {
 
     /** The action to test. */
+    @Autowired
     private DeleteOnValue action;
 
+    /** The dataprep ready jackson builder. */
+    @Autowired
+    public Jackson2ObjectMapperBuilder builder;
+    
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        action = new DeleteOnValue();
         parameters = ActionMetadataTestUtils.parseParameters(DeleteOnValueTest.class.getResourceAsStream("deleteOnValueAction.json"));
     }
 
@@ -137,9 +146,8 @@ public class DeleteOnValueTest {
         final DataSetRow row = new DataSetRow(values);
 
         Map<String, String> regexpParameters = ActionMetadataTestUtils.parseParameters( //
-                //
                 DeleteOnValueTest.class.getResourceAsStream("deleteOnValueAction.json"));
-        regexpParameters.put("value", ".*Berlin.*");
+        regexpParameters.put("value", generateJson(".*Berlin.*", RegexParametersHelper.REGEX_MODE));
 
         // when
         ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
@@ -161,7 +169,7 @@ public class DeleteOnValueTest {
         Map<String, String> regexpParameters = ActionMetadataTestUtils.parseParameters( //
                 //
                 DeleteOnValueTest.class.getResourceAsStream("deleteOnValueAction.json"));
-        regexpParameters.put("value", "*");
+        regexpParameters.put("value", generateJson("*", RegexParametersHelper.REGEX_MODE));
 
         // when
         ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
@@ -178,13 +186,12 @@ public class DeleteOnValueTest {
         // given
         final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
-        values.put("city", "AAA Berlin BBB"); // notice the space after 'Berlin '
+        values.put("city", "AAA Ber BBB"); // notice the space after 'Berlin '
         final DataSetRow row = new DataSetRow(values);
 
         Map<String, String> regexpParameters = ActionMetadataTestUtils.parseParameters( //
-                //
                 DeleteOnValueTest.class.getResourceAsStream("deleteOnValueAction.json"));
-        regexpParameters.put("value", "");
+        regexpParameters.put("value", generateJson("", RegexParametersHelper.REGEX_MODE));
 
         // when
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
@@ -192,7 +199,7 @@ public class DeleteOnValueTest {
         // then
         assertFalse(row.isDeleted());
         assertEquals("David Bowie", row.get("name"));
-        assertEquals("AAA Berlin BBB", row.get("city"));
+        assertEquals("AAA Ber BBB", row.get("city"));
     }
 
     @Test
@@ -232,7 +239,7 @@ public class DeleteOnValueTest {
         //given
         final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
-        values.put("city", "üBerlin");
+        values.put("city", "youhou");
         final DataSetRow row = new DataSetRow(values);
 
         //when
@@ -241,7 +248,7 @@ public class DeleteOnValueTest {
         //then
         assertFalse(row.isDeleted());
         assertEquals("David Bowie", row.get("name"));
-        assertEquals("üBerlin", row.get("city"));
+        assertEquals("youhou", row.get("city"));
     }
 
     @Test
@@ -258,4 +265,13 @@ public class DeleteOnValueTest {
         assertFalse(action.acceptColumn(getColumn(Type.ANY)));
     }
 
+    private String generateJson(String token, String operator) {
+        RegexParametersHelper.ReplaceOnValueParameter r = new RegexParametersHelper.ReplaceOnValueParameter(token, operator);
+        try {
+            return builder.build().writeValueAsString(r);
+        } catch (JsonProcessingException e) {
+            return "";
+        }
+    }
+    
 }

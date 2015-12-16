@@ -40,14 +40,15 @@ public class RegexParametersHelper {
     /** The ends with parmeter name. */
     public static final String ENDS_WITH_MODE = "ends_with";
 
-    private static final ReplaceOnValueParameter EMPTY = new ReplaceOnValueParameter("",EQUALS_MODE);
+    public static final ReplaceOnValueParameter EMPTY = new ReplaceOnValueParameter("", EQUALS_MODE);
 
     public String getEmptyParamAsString() {
-        try {
+/*        try {
             return builder.build().writeValueAsString(EMPTY);
         } catch (JsonProcessingException e) {
             return "";
-        }
+        }*/
+        return "";
     }
 
     public ReplaceOnValueParameter build(String jsonString) {
@@ -55,11 +56,7 @@ public class RegexParametersHelper {
             throw new InvalidParameterException(jsonString + " is not a valid json");
         }
         try {
-            final ReplaceOnValueParameter replaceOnValueParameter = builder.build().readValue(jsonString, ReplaceOnValueParameter.class);
-            if (!replaceOnValueParameter.isValid()){
-                throw new InvalidParameterException(jsonString + " contains an invalid regex");
-            }
-            return replaceOnValueParameter;
+            return builder.build().readValue(jsonString, ReplaceOnValueParameter.class);
         } catch (IOException e) {
             throw new InvalidParameterException(e.getMessage());
         }
@@ -109,7 +106,7 @@ public class RegexParametersHelper {
             // regex validity check
             final Boolean regexMode = this.operator.equals(REGEX_MODE);
 
-            if (regexMode) {
+            if (regexMode && pattern == null) {
                 String actualPattern = ".*" + this.token + ".*";
                 try {
                     pattern = Pattern.compile(actualPattern);
@@ -126,6 +123,10 @@ public class RegexParametersHelper {
                 return false;
             }
 
+            if (!isValid()) {
+                return false;
+            }
+            
             boolean matches = false;
             switch (this.getOperator()) {
             case EQUALS_MODE:
