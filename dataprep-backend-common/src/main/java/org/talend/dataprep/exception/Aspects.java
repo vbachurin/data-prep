@@ -38,16 +38,16 @@ class Aspects {
             throw hre;
         } catch (Exception e) {
             LOG.error("Unexpected exception occurred in '" + pjp.getSignature().toShortString() + "'", e);
-            final ExceptionContext.ExceptionContextBuilder builder = ExceptionContext.withBuilder();
+            final ExceptionContext context = ExceptionContext.build();
             if(apiOperation != null && !StringUtils.isEmpty(apiOperation.value())) {
                 // Build message as a "Unable to " + <api operation description> (with first character as lower case).
                 String messageSuffix = apiOperation.value();
                 if (Character.isUpperCase(messageSuffix.charAt(0))) {
                     messageSuffix = Character.toLowerCase(messageSuffix.charAt(0)) + messageSuffix.substring(1);
                 }
-                builder.put("message", "Unable to " + messageSuffix);
+                context.put("message", "Unable to " + messageSuffix);
             }
-            throw new TDPException(CommonErrorCodes.UNEXPECTED_SERVICE_EXCEPTION, e, builder.build());
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_SERVICE_EXCEPTION, e, context);
         }
     }
 
