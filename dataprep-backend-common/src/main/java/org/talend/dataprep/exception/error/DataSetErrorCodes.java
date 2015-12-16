@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.talend.daikon.exception.error.ErrorCode;
 import org.talend.dataprep.api.dataset.DataSetLifecycle;
+import org.talend.dataprep.schema.unsupported.UnsupportedFormatGuess;
 
 /**
  * Dataset error codes.
@@ -71,7 +72,7 @@ public enum DataSetErrorCodes implements ErrorCode {
                                                      * Error return when the uploaded content is not supported by any
                                                      * {@link org.talend.dataprep.schema.FormatGuesser guesser}.
                                                      * 
-                                                     * @see org.talend.dataprep.schema.UnsupportedFormatGuess
+                                                     * @see UnsupportedFormatGuess
                                                      */
     UNSUPPORTED_CONTENT(400),
                                                     /**

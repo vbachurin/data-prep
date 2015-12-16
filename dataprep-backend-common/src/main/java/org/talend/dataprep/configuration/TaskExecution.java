@@ -4,13 +4,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.talend.dataprep.schema.csv.CSVSerializer;
 
 @Configuration
 public class TaskExecution {
 
     /**
      * @return A {@link TaskExecutor} for non-blocking CSV serialization.
-     * @see org.talend.dataprep.schema.io.CSVSerializer
+     * @see CSVSerializer
      */
     @Bean(name = "serializer#csv#executor")
     TaskExecutor getTaskExecutor() {

@@ -1,7 +1,8 @@
-package org.talend.dataprep.schema;
+package org.talend.dataprep.schema.csv;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.schema.FormatGuesser;
+import org.talend.dataprep.schema.SchemaParser;
+import org.talend.dataprep.schema.unsupported.UnsupportedFormatGuess;
 
 /**
  * <h3>CSV implementation of the formatGuesser</h3>
@@ -29,10 +33,10 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
  * @see FormatGuesser
  */
 @Component
-public class LineBasedFormatGuesser implements FormatGuesser {
+public class CSVFormatGuesser implements FormatGuesser {
 
     /** This class' logger. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(LineBasedFormatGuesser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CSVFormatGuesser.class);
 
     /** Detectors used to check the encoding. */
     private List<WrongEncodingDetector> detectors = Arrays.asList( //
@@ -50,7 +54,6 @@ public class LineBasedFormatGuesser implements FormatGuesser {
 
     /** A list of supported separators for a CSV content */
     private Set<Character> validSeparators = new HashSet<Character>() {
-
         {
             add(' ');
             add('\t');
@@ -192,31 +195,21 @@ public class LineBasedFormatGuesser implements FormatGuesser {
             return separators.get(0);
         }
 
-        // compute the score for each separator
-        Map<Separator, Double> separatorMap = computeScores(separators, lineCount);
 
-        // filter and sort separators
-        // @formatter:off
-        Separator result = separatorMap.entrySet().stream()
-                .filter(sep -> validSeparators.contains(sep.getKey().getSeparator())) // filter out invalid separators
-                .sorted((s0, s1) -> Double.compare(s0.getValue(), s1.getValue())) // sort by entropy (the lowest the better)
+        // filter separators
+        final List<Separator> filteredSeparators = separators.stream() //
+                .filter(sep -> validSeparators.contains(sep.getSeparator())) // filter out invalid separators
+                .collect(Collectors.toList());
+
+        // compute each separator score
+        Entropy entropy = new Entropy(lineCount);
+        filteredSeparators.forEach(entropy::accept); // compute each separator score
+
+        // sort separator and return the first
+        return filteredSeparators.stream() //
+                .sorted((s0, s1) -> Double.compare(s0.score, s1.score)) // sort by entropy (the lowest the better)
                 .findFirst() //
-                .get().getKey();
-        // @formatter:on
-        return result;
-    }
-
-    /**
-     * Compute the score of each separator based upon the entropy of the separator and the specified number of lines.
-     * 
-     * @param separators the list of separators
-     * @param lineCount the number of lines read in the file
-     * @return
-     */
-    protected Map<Separator, Double> computeScores(List<Separator> separators, int lineCount) {
-        HashMap<Separator, Double> separatorMap = new HashMap<>();
-        separators.stream().forEach(s -> separatorMap.put(s, s.entropy(lineCount)));
-        return separatorMap;
+                .get();
     }
 
     /**

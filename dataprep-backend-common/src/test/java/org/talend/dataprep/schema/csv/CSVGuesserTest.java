@@ -1,4 +1,4 @@
-package org.talend.dataprep.schema;
+package org.talend.dataprep.schema.csv;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -6,24 +6,26 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.talend.dataprep.schema.AbstractSchemaTestUtils;
+import org.talend.dataprep.schema.FormatGuesser;
+import org.talend.dataprep.schema.unsupported.UnsupportedFormatGuess;
 
 /**
  * Unit test for the LineBasedFormatGuesser.
  * 
- * @see LineBasedFormatGuesser
+ * @see CSVFormatGuesser
  */
-public class LineBasedFormatGuesserTest extends AbstractSchemaTestUtils {
+public class CSVGuesserTest extends AbstractSchemaTestUtils {
 
     /** The format guesser to test. */
     @Autowired
-    LineBasedFormatGuesser guesser;
+    CSVFormatGuesser guesser;
 
     /**
      * Text file
@@ -79,7 +81,7 @@ public class LineBasedFormatGuesserTest extends AbstractSchemaTestUtils {
             Assert.assertNotNull(actual);
             assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
             char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
-            assertEquals(separator, ';');
+            assertEquals(';', separator);
         }
     }
 
@@ -138,42 +140,6 @@ public class LineBasedFormatGuesserTest extends AbstractSchemaTestUtils {
         assertTrue(separatorMap.isEmpty());
     }
 
-    @Test
-    public void shouldComputeScore() {
-
-        // given
-        Separator sep = new Separator('s');
-        incrementCount(12, 1, sep);
-        incrementCount(10, 2, sep);
-        // nothing on the third line
-        incrementCount(11, 4, sep);
-        incrementCount(13, 5, sep);
-        incrementCount(12, 6, sep);
-        Separator sep2 = new Separator(' ');
-        incrementCount(1, 1, sep2);
-        incrementCount(1, 2, sep2);
-        incrementCount(1, 3, sep2);
-        incrementCount(1, 4, sep2);
-        incrementCount(1, 5, sep2);
-        incrementCount(1, 6, sep2);
-
-        ArrayList<Separator> separators = new ArrayList<>();
-        separators.add(sep);
-        separators.add(sep2);
-
-        // when
-        Map<Separator, Double> scores = guesser.computeScores(separators, 6);
-
-        // then
-        assertEquals(0.1458016414, scores.get(sep), 0.000000001);
-        assertEquals(0, scores.get(sep2), 0.0);
-    }
-
-    private void incrementCount(int count, int lineNumber, Separator separator) {
-        for (int i = 0; i < count; i++) {
-            separator.incrementCount(lineNumber);
-        }
-    }
 
     /**
      * Have a look at https://jira.talendforge.org/browse/TDP-1060

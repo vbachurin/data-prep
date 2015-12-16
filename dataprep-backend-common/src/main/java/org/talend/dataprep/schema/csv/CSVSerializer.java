@@ -1,4 +1,4 @@
-package org.talend.dataprep.schema.io;
+package org.talend.dataprep.schema.csv;
 
 import java.io.*;
 import java.util.List;
@@ -15,7 +15,6 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.schema.CSVFormatGuess;
 import org.talend.dataprep.schema.Serializer;
 
 import au.com.bytecode.opencsv.CSVReader;

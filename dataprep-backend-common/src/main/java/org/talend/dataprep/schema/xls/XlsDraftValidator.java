@@ -1,4 +1,4 @@
-package org.talend.dataprep.schema.io;
+package org.talend.dataprep.schema.xls;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;

@@ -1,9 +1,11 @@
-package org.talend.dataprep.schema;
+package org.talend.dataprep.schema.csv;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.talend.dataprep.schema.io.CSVSchemaParser;
-import org.talend.dataprep.schema.io.CSVSerializer;
+import org.talend.dataprep.schema.DraftValidator;
+import org.talend.dataprep.schema.FormatGuess;
+import org.talend.dataprep.schema.SchemaParser;
+import org.talend.dataprep.schema.Serializer;
 
 @Service(CSVFormatGuess.BEAN_ID)
 public class CSVFormatGuess implements FormatGuess {

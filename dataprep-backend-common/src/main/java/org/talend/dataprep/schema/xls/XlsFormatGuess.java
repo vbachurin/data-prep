@@ -1,10 +1,11 @@
-package org.talend.dataprep.schema;
+package org.talend.dataprep.schema.xls;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.schema.io.XlsDraftValidator;
-import org.talend.dataprep.schema.io.XlsSchemaParser;
-import org.talend.dataprep.schema.io.XlsSerializer;
+import org.talend.dataprep.schema.DraftValidator;
+import org.talend.dataprep.schema.FormatGuess;
+import org.talend.dataprep.schema.SchemaParser;
+import org.talend.dataprep.schema.Serializer;
 
 @Component(XlsFormatGuess.BEAN_ID)
 public class XlsFormatGuess implements FormatGuess {
