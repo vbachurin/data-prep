@@ -45,10 +45,17 @@ public abstract class AbstractFillWith extends ActionMetadata implements OtherCo
 
     public abstract boolean shouldBeProcessed (String value, ColumnMetadata colMetadata);
 
+    @Override
+    public void compile(ActionContext actionContext) {
+        super.compile(actionContext);
+        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
+            final RowMetadata input = actionContext.getInputRowMetadata();
+            checkParameters(actionContext.getParameters(), input);
+        }
+    }
+
     public void applyOnColumn(DataSetRow row, ActionContext context) {
         final Map<String, String> parameters = context.getParameters();
-        checkParameters(parameters, row);
-
         final String columnId = context.getColumnId();
         final ColumnMetadata columnMetadata = row.getRowMetadata().getById(columnId);
 
@@ -140,9 +147,9 @@ public abstract class AbstractFillWith extends ActionMetadata implements OtherCo
      * the parameter is invalid, an exception is thrown.
      *
      * @param parameters where to look the parameter value.
-     * @param row        the row where to look for the column.
+     * @param rowMetadata        the row metadata where to look for the column.
      */
-    private void checkParameters(Map<String, String> parameters, DataSetRow row) {
+    private void checkParameters(Map<String, String> parameters, RowMetadata rowMetadata) {
         if (!parameters.containsKey(MODE_PARAMETER)) {
             throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER, ExceptionContext.build().put("paramName",
                     MODE_PARAMETER));
@@ -153,7 +160,7 @@ public abstract class AbstractFillWith extends ActionMetadata implements OtherCo
                     DEFAULT_VALUE_PARAMETER));
         }
         else if (!parameters.get(MODE_PARAMETER).equals(CONSTANT_MODE) &&
-                (!parameters.containsKey(SELECTED_COLUMN_PARAMETER) || row.getRowMetadata().getById(parameters.get(SELECTED_COLUMN_PARAMETER)) == null)) {
+                (!parameters.containsKey(SELECTED_COLUMN_PARAMETER) || rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER)) == null)) {
             throw new TDPException(CommonErrorCodes.BAD_ACTION_PARAMETER, ExceptionContext.build().put("paramName",
                     SELECTED_COLUMN_PARAMETER));
         }
