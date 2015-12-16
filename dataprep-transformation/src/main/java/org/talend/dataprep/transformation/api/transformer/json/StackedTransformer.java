@@ -85,6 +85,7 @@ public class StackedTransformer implements Transformer {
                 } else {
                     emptyInitialAnalysisBuffer(row);
                 }
+            break;
             case FULL_ANALYSIS:
         default:
                 // Nothing to do

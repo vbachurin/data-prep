@@ -1,4 +1,4 @@
-package org.talend.dataprep.schema.io;
+package org.talend.dataprep.schema.csv;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.schema.IoTestUtils;
 import org.talend.dataprep.schema.SchemaParser;
 import org.talend.dataprep.schema.SchemaParserResult;
 
@@ -31,8 +32,7 @@ public class CSVSchemaParserTest {
 
     @Test
     public void should_parse_csv() throws IOException {
-        String fileName = "org/talend/dataprep/schema/simple.csv";
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
+        try (InputStream inputStream = this.getClass().getResourceAsStream("simple.csv")) {
 
             DataSetMetadata datasetMetadata = IoTestUtils.getSimpleDataSetMetadata("first name", "last name");
 

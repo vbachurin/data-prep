@@ -21,7 +21,12 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.log.Markers;
-import org.talend.dataprep.schema.*;
+import org.talend.dataprep.schema.FormatGuess;
+import org.talend.dataprep.schema.FormatGuesser;
+import org.talend.dataprep.schema.SchemaParser;
+import org.talend.dataprep.schema.SchemaParserResult;
+import org.talend.dataprep.schema.unsupported.UnsupportedFormatGuess;
+import org.talend.dataprep.schema.unsupported.UnsupportedFormatGuesser;
 
 /**
  * Analyzes the raw content of a dataset and determine the best format (XLS, CSV...) for the data set raw content. It

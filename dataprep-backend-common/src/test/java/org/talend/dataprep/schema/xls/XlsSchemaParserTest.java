@@ -1,4 +1,4 @@
-package org.talend.dataprep.schema.io;
+package org.talend.dataprep.schema.xls;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.schema.IoTestUtils;
 import org.talend.dataprep.schema.SchemaParser;
 import org.talend.dataprep.schema.SchemaParserResult;
 
@@ -32,9 +33,8 @@ public class XlsSchemaParserTest {
 
     @Test
     public void should_parse_xls() throws IOException {
-        String fileName = "org/talend/dataprep/schema/simple.xls";
         final List<String> expected = Arrays.asList("Film", "Producer");
-        checkColumnsName(fileName, expected);
+        checkColumnsName("simple.xls", expected);
     }
 
     /**
@@ -42,9 +42,8 @@ public class XlsSchemaParserTest {
      */
     @Test
     public void shouldParseFileWithHeader() throws Exception {
-        String fileName = "org/talend/dataprep/schema/file_with_header.xlsx";
         final List<String> expected = Arrays.asList("col0", "col1", "col2", "col3", "col4");
-        checkColumnsName(fileName, expected);
+        checkColumnsName("file_with_header.xlsx", expected);
     }
 
     /**
@@ -52,11 +51,10 @@ public class XlsSchemaParserTest {
      */
     @Test
     public void shouldParseFileWithEmptyColumn() throws Exception {
-        String fileName = "org/talend/dataprep/schema/empty_column.xlsx";
         final List<String> expected = Arrays.asList("First Name", "Last Name", "Company", "Email Address", "col_5",
                 "Current Product",
                 "Product to send");
-        checkColumnsName(fileName, expected);
+        checkColumnsName("empty_column.xlsx", expected);
     }
 
     /**
@@ -67,7 +65,7 @@ public class XlsSchemaParserTest {
      * @throws IOException if an error occurs while reading the excel file.
      */
     private void checkColumnsName(String sourceFileName, List<String> expectedColsName) throws IOException {
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(sourceFileName)) {
+        try (InputStream inputStream = this.getClass().getResourceAsStream(sourceFileName)) {
 
             DataSetMetadata datasetMetadata = IoTestUtils.getSimpleDataSetMetadata();
 

@@ -20,6 +20,7 @@
   "FEEDBACK_TYPE_IMPROVEMENT": "Improvement",
   "FEEDBACK_SENT_TITLE": "Thank you for your feedback !",
   "FEEDBACK_SENT_CONTENT": "Your feedback has been sent",
+  "ONBOARDING": "Click here to discover the application",
 
   "_comment": "Left side menu",
   "ALL_FOLDERS": "All Datasets",

@@ -1,6 +1,10 @@
-package org.talend.dataprep.schema;
+package org.talend.dataprep.schema.unsupported;
 
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.schema.DraftValidator;
+import org.talend.dataprep.schema.FormatGuess;
+import org.talend.dataprep.schema.SchemaParser;
+import org.talend.dataprep.schema.Serializer;
 
 /**
  * A special implementation of {@link FormatGuess} to serve as fallback and indicates the provided content is not

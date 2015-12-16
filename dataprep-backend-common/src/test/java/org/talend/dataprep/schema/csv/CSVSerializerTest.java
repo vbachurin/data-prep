@@ -1,4 +1,4 @@
-package org.talend.dataprep.schema.io;
+package org.talend.dataprep.schema.csv;
 
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 
@@ -18,6 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.schema.IoTestUtils;
 
 /**
  * Unit test for the CSVSerializer test.
@@ -44,43 +45,37 @@ public class CSVSerializerTest {
 
     @Test
     public void should_serialize_standard_csv() throws IOException {
-        String fileName = "org/talend/dataprep/schema/simple.csv";
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
+        InputStream inputStream = this.getClass().getResourceAsStream("simple.csv");
         DataSetMetadata datasetMetadata = IoTestUtils.getSimpleDataSetMetadata("first name", "last name");
 
         InputStream input = serializer.serialize(inputStream, datasetMetadata);
         String actual = IOUtils.toString(input);
 
-        InputStream expected = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("org/talend/dataprep/schema/simple.csv_expected.json");
+        InputStream expected = this.getClass().getResourceAsStream("simple.csv_expected.json");
         Assert.assertThat(actual, sameJSONAsFile(expected));
     }
 
     @Test
     public void should_serialize_csv_with_missing_values() throws IOException {
-        String fileName = "org/talend/dataprep/schema/missing_values.csv";
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
+        InputStream inputStream = this.getClass().getResourceAsStream("missing_values.csv");
         DataSetMetadata datasetMetadata = IoTestUtils.getSimpleDataSetMetadata("character", "actor", "active");
 
         InputStream input = serializer.serialize(inputStream, datasetMetadata);
         String actual = IOUtils.toString(input);
 
-        InputStream expected = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("org/talend/dataprep/schema/missing_values.csv_expected.json");
+        InputStream expected = this.getClass().getResourceAsStream("missing_values.csv_expected.json");
         Assert.assertThat(actual, sameJSONAsFile(expected));
     }
 
     @Test
     public void should_serialize_csv_with_additional_values() throws IOException {
-        String fileName = "org/talend/dataprep/schema/additional_values.csv";
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
+        InputStream inputStream = this.getClass().getResourceAsStream("additional_values.csv");
         DataSetMetadata datasetMetadata = IoTestUtils.getSimpleDataSetMetadata("name", "email");
 
         InputStream input = serializer.serialize(inputStream, datasetMetadata);
         String actual = IOUtils.toString(input);
 
-        InputStream expected = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("org/talend/dataprep/schema/additional_values.csv_expected.json");
+        InputStream expected = this.getClass().getResourceAsStream("additional_values.csv_expected.json");
         Assert.assertThat(actual, sameJSONAsFile(expected));
     }
 }

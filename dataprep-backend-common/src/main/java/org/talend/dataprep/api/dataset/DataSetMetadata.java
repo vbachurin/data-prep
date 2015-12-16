@@ -6,7 +6,7 @@ import java.util.*;
 import org.springframework.data.annotation.Id;
 import org.talend.dataprep.api.dataset.location.LocalStoreLocation;
 import org.talend.dataprep.schema.SchemaParserResult;
-import org.talend.dataprep.schema.io.CSVSerializer;
+import org.talend.dataprep.schema.csv.CSVSerializer;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
