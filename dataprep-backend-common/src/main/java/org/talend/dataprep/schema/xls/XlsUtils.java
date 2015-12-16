@@ -69,7 +69,7 @@ public class XlsUtils {
             case Cell.CELL_TYPE_ERROR:
                 return "Cell Error type";
             case Cell.CELL_TYPE_NUMERIC:
-                return getNumericValue(cell, null, fromFormula);
+                return getNumericValue(cell, fromFormula? cellValue : null, fromFormula);
             case Cell.CELL_TYPE_STRING:
                 return StringUtils.trim(cell.getStringCellValue());
             default:
