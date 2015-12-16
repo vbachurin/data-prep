@@ -4,11 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 
 import java.io.InputStream;
-import java.util.List;
 import java.util.Random;
 
 import org.junit.Test;
@@ -16,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
-import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.dataset.DataSetBaseTest;
 import org.talend.dataprep.dataset.service.DataSetServiceTests;
@@ -160,24 +157,6 @@ public class SchemaAnalyzerTest extends DataSetBaseTest {
             assertThat(column.getType(), is(expectedTypes[i].getName()));
             i++;
         }
-    }
-
-    /**
-     * See <a href="https://jira.talendforge.org/browse/TDP-402">https://jira.talendforge.org/browse/TDP-402</a>.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testTDP_402() throws Exception {
-        final DataSetMetadata metadata = initializeDataSetMetadata(this.getClass().getResourceAsStream("TDP-402.csv"));
-        final ColumnMetadata dateOfBirth = metadata.getRowMetadata().getById("0004");
-        assertThat(dateOfBirth.getName(), is("date-of-birth"));
-        assertThat(dateOfBirth.getType(), is("date"));
-        final List<PatternFrequency> patternFrequencies = dateOfBirth.getStatistics().getPatternFrequencies();
-        assertThat(patternFrequencies.size(), is(3));
-        assertTrue(patternFrequencies.contains("d/M/yyyy"));
-        assertTrue(patternFrequencies.contains("aaaaa"));
-        assertTrue(patternFrequencies.contains("yyyy-d-M"));
     }
 
     /**
