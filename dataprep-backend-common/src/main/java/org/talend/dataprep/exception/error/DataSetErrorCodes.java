@@ -77,7 +77,6 @@ public enum DataSetErrorCodes implements ErrorCode {
      * Error return when the uploaded content is not supported by any
      * {@link org.talend.dataprep.schema.FormatGuesser guesser}.
      *
-     * @see org.talend.dataprep.schema.UnsupportedFormatGuess
      */
     UNSUPPORTED_CONTENT(400),
     /**
