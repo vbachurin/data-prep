@@ -44,6 +44,8 @@
   "CREATE_FOLDER": "Create Folder",
   "ENTER_FOLDER_NAME" : "Enter Folder Name",
   "HOME_FOLDER": "Home",
+  "COPY": " Copy",
+
 
   "_comment": "Preparations",
   "LAST_MODIFICATION": "last change",

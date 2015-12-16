@@ -1,4 +1,4 @@
-$selected-color: #c9d7e4;
+$selected-color: lightgrey;
 $hover-color: #c9d7e4;
 $border-color: #CECECE;
 
@@ -75,6 +75,7 @@ $border-color: #CECECE;
       font-weight: 700;
       text-transform: uppercase;
       cursor: pointer;
+      vertical-align: bottom;
       &:hover {
         color: $dark-blue;
         text-decoration: underline;
@@ -199,7 +200,8 @@ $border-color: #CECECE;
   }
 
   .folder-name {
-    color: $black;
+    color: $dark-gray;
+    vertical-align: bottom;
     &:hover {
       cursor: pointer;
     }
@@ -211,20 +213,12 @@ $border-color: #CECECE;
 
   .dropdown-button-down {
     cursor: pointer;
-    color: $black;
-    &:before {
-      content: "\25BC";
-      margin-left: 2px;
-    }
+    color: grey;
   }
 
   .dropdown-button-right {
     cursor: pointer;
-    color: $black;
-    &:before {
-      content: "\25B6";
-      margin-left: 2px;
-    }
+    color: grey;
   }
 
   .clone-name{

@@ -360,7 +360,7 @@
             vm.datasetToClone = dataset;
             vm.foldersFound = [];
             vm.searchFolderQuery = '';
-            vm.cloneName = dataset.name + ' Copy';
+            vm.cloneName = dataset.name + $translate.instant('COPY');
             // ensure nothing is null
             var toggleToCurrentFolder = state.folder && state.folder.currentFolder && state.folder.currentFolder.id;
 
@@ -475,15 +475,12 @@
 
                 FolderService.searchFolders(vm.searchFolderQuery)
                     .then(function(response){
-                        console.log(response);
                         if(n > -1){
                             var rootFolder = {id: '', path: '/', name: $translate.instant('HOME_FOLDER')};
                             vm.foldersFound = [_.extend(rootFolder, response.data)];
                         } else {
                             vm.foldersFound = response.data;
                         }
-                        console.log(vm.foldersFound);
-
                         if(vm.foldersFound.length > 0){
                             vm.chooseFolder(vm.foldersFound[0]); //Select by default first folder
                         }

@@ -177,12 +177,12 @@
                     </div>
 
                     <script type="text/ng-template" id="folder_node_render.html">
-                        <div class="folder-node"
-                             ng-class="{folderselected: node.selected}">
-                            <a class="inventory-icon inventory-folder" ng-click="datasetListCtrl.toggle(node)"
-                               ng-class="{'dropdown-button-right': node.collapsed, 'dropdown-button-down': !node.collapsed}">
-                                <img class="icon-img" ng-if="!node.collapsed" src="assets/images/folder/folder_open_small-icon.png"/>
-                                <img class="icon-img" ng-if="node.collapsed" src="assets/images/folder/folder_close_small-icon.png"/>
+                        <div class="folder-node" ng-class="{folderselected: node.selected}">
+                            <a class="inventory-icon inventory-folder">
+                                <i data-icon="I" ng-if="!node.collapsed" class="dropdown-button-right" ng-click="datasetListCtrl.toggle(node)"></i>
+                                <img class="icon-img" ng-click="datasetListCtrl.chooseFolder(node)" ng-if="!node.collapsed" src="assets/images/folder/folder_open_small-icon.png"/>
+                                <i data-icon="J" ng-if="node.collapsed" class="dropdown-button-down" ng-click="datasetListCtrl.toggle(node)"></i>
+                                <img class="icon-img" ng-click="datasetListCtrl.chooseFolder(node)" ng-if="node.collapsed" src="assets/images/folder/folder_close_small-icon.png"/>
                             </a>
                             <span ng-click="datasetListCtrl.chooseFolder(node)" class="folder-name">{{node.name}}</span>
                         </div>
