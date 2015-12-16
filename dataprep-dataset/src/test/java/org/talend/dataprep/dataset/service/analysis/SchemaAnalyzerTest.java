@@ -4,13 +4,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
+
+import java.io.InputStream;
+import java.util.List;
+import java.util.Random;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
+import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.dataset.DataSetBaseTest;
 import org.talend.dataprep.dataset.service.DataSetServiceTests;
@@ -23,6 +29,9 @@ public class SchemaAnalyzerTest extends DataSetBaseTest {
     @Autowired
     SchemaAnalysis schemaAnalysis;
 
+    /** Random to generate random dataset id. */
+    private Random random = new Random();
+
     @Test
     public void testNoDataSetFound() throws Exception {
         schemaAnalysis.analyze("1234");
@@ -31,13 +40,8 @@ public class SchemaAnalyzerTest extends DataSetBaseTest {
 
     @Test
     public void testAnalysis() throws Exception {
-        final DataSetMetadata metadata = metadata().id("1234").build();
-        dataSetMetadataRepository.add(metadata);
-        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../avengers.csv"));
-        formatAnalysis.analyze("1234");
-        // Analyze schema
-        schemaAnalysis.analyze("1234");
-        final DataSetMetadata actual = dataSetMetadataRepository.get("1234");
+        final DataSetMetadata actual = initializeDataSetMetadata(
+                DataSetServiceTests.class.getResourceAsStream("../avengers.csv"));
         assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         String[] expectedNames = { "nickname", "secret firstname", "secret lastname", "date of birth", "city" };
         Type[] expectedTypes = { Type.STRING, Type.STRING, Type.STRING, Type.DATE, Type.STRING };
@@ -56,13 +60,8 @@ public class SchemaAnalyzerTest extends DataSetBaseTest {
      */
     @Test
     public void testTDP_224() throws Exception {
-        final DataSetMetadata metadata = metadata().id("1234").build();
-        dataSetMetadataRepository.add(metadata);
-        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../whatever.xls"));
-        formatAnalysis.analyze("1234");
-        // Analyze schema
-        schemaAnalysis.analyze("1234");
-        final DataSetMetadata actual = dataSetMetadataRepository.get("1234");
+        final DataSetMetadata actual = initializeDataSetMetadata(
+                DataSetServiceTests.class.getResourceAsStream("../whatever.xls"));
         assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         String[] expectedNames = { "whaterver" }; // Not a typo: this is what QA provided as column name.
         Type[] expectedTypes = { Type.STRING };
@@ -81,13 +80,8 @@ public class SchemaAnalyzerTest extends DataSetBaseTest {
      */
     @Test
     public void testTDP_279() throws Exception {
-        final DataSetMetadata metadata = metadata().id("1234").build();
-        dataSetMetadataRepository.add(metadata);
-        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../post_code.xls"));
-        formatAnalysis.analyze("1234");
-        // Analyze schema
-        schemaAnalysis.analyze("1234");
-        final DataSetMetadata actual = dataSetMetadataRepository.get("1234");
+        final DataSetMetadata actual = initializeDataSetMetadata(
+                DataSetServiceTests.class.getResourceAsStream("../post_code.xls"));
         assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         String[] expectedNames = { "zip" };
         Type[] expectedTypes = { Type.INTEGER };
@@ -113,13 +107,8 @@ public class SchemaAnalyzerTest extends DataSetBaseTest {
      */
     @Test
     public void testTDP_471() throws Exception {
-        final DataSetMetadata metadata = metadata().id("1234").build();
-        dataSetMetadataRepository.add(metadata);
-        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../semantic_type_threshold.csv"));
-        formatAnalysis.analyze("1234");
-        // Analyze schema
-        schemaAnalysis.analyze("1234");
-        final DataSetMetadata actual = dataSetMetadataRepository.get("1234");
+        final DataSetMetadata actual = initializeDataSetMetadata(
+                DataSetServiceTests.class.getResourceAsStream("../semantic_type_threshold.csv"));
         assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         String[] expectedNames = { "gender" };
         Type[] expectedTypes = { Type.INTEGER };
@@ -138,13 +127,7 @@ public class SchemaAnalyzerTest extends DataSetBaseTest {
 
     @Test
     public void testGenderAnalysis() throws Exception {
-        final DataSetMetadata metadata = metadata().id("1234").build();
-        dataSetMetadataRepository.add(metadata);
-        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../gender.csv"));
-        formatAnalysis.analyze("1234");
-        // Analyze schema
-        schemaAnalysis.analyze("1234");
-        final DataSetMetadata actual = dataSetMetadataRepository.get("1234");
+        final DataSetMetadata actual = initializeDataSetMetadata(DataSetServiceTests.class.getResourceAsStream("../gender.csv"));
         assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         // Gender must be a String with Gender domain
         String[] expectedNames = { "name", "bounty", "gender" };
@@ -166,13 +149,8 @@ public class SchemaAnalyzerTest extends DataSetBaseTest {
      */
     @Test
     public void testTDP_226() throws Exception {
-        final DataSetMetadata metadata = metadata().id("1234").build();
-        dataSetMetadataRepository.add(metadata);
-        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../empty_lines.csv"));
-        formatAnalysis.analyze("1234");
-        // Analyze schema
-        schemaAnalysis.analyze("1234");
-        final DataSetMetadata actual = dataSetMetadataRepository.get("1234");
+        final DataSetMetadata actual = initializeDataSetMetadata(
+                DataSetServiceTests.class.getResourceAsStream("../empty_lines.csv"));
         assertThat(actual.getLifecycle().schemaAnalyzed(), is(true));
         String[] expectedNames = { "id", "firstname", "lastname", "age", "date-of-birth", "alive" };
         Type[] expectedTypes = { Type.INTEGER, Type.STRING, Type.STRING, Type.INTEGER, Type.DATE, Type.BOOLEAN };
@@ -182,5 +160,42 @@ public class SchemaAnalyzerTest extends DataSetBaseTest {
             assertThat(column.getType(), is(expectedTypes[i].getName()));
             i++;
         }
+    }
+
+    /**
+     * See <a href="https://jira.talendforge.org/browse/TDP-402">https://jira.talendforge.org/browse/TDP-402</a>.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testTDP_402() throws Exception {
+        final DataSetMetadata metadata = initializeDataSetMetadata(this.getClass().getResourceAsStream("TDP-402.csv"));
+        final ColumnMetadata dateOfBirth = metadata.getRowMetadata().getById("0004");
+        assertThat(dateOfBirth.getName(), is("date-of-birth"));
+        assertThat(dateOfBirth.getType(), is("date"));
+        final List<PatternFrequency> patternFrequencies = dateOfBirth.getStatistics().getPatternFrequencies();
+        assertThat(patternFrequencies.size(), is(3));
+        assertTrue(patternFrequencies.contains("d/M/yyyy"));
+        assertTrue(patternFrequencies.contains("aaaaa"));
+        assertTrue(patternFrequencies.contains("yyyy-d-M"));
+    }
+
+    /**
+     * Initialize a dataset with the given content. Perform the format and the schema analysis.
+     *
+     * @param content the dataset content.
+     * @return the analyzed dataset metadata.
+     */
+    private DataSetMetadata initializeDataSetMetadata(InputStream content) {
+        String id = String.valueOf(random.nextInt(10000));
+        final DataSetMetadata metadata = metadata().id(id).build();
+        dataSetMetadataRepository.add(metadata);
+        contentStore.storeAsRaw(metadata, content);
+        formatAnalysis.analyze(id);
+        // Analyze schema
+        schemaAnalysis.analyze(id);
+        final DataSetMetadata analyzed = dataSetMetadataRepository.get(id);
+        assertThat(analyzed.getLifecycle().schemaAnalyzed(), is(true));
+        return analyzed;
     }
 }
