@@ -35,6 +35,12 @@ public class XlsUtils {
         // Utility class should not have a public constructor.
     }
 
+    /**
+     *
+     * @param cell
+     * @param formulaEvaluator
+     * @return return the cell value as String (if needed evaluate the existing formula)
+     */
     public static String getCellValueAsString( Cell cell, FormulaEvaluator formulaEvaluator) {
         if (cell == null) {
             return StringUtils.EMPTY;
@@ -47,7 +53,7 @@ public class XlsUtils {
         case Cell.CELL_TYPE_ERROR:
             return "Cell Error type";
         case Cell.CELL_TYPE_FORMULA:
-            return getCellValueAsString(cell, formulaEvaluator.evaluate(cell), true );
+            return getCellValueAsString(cell, formulaEvaluator.evaluate(cell) );
         case Cell.CELL_TYPE_NUMERIC:
             return getNumericValue(cell, null, false);
         case Cell.CELL_TYPE_STRING:
@@ -57,7 +63,13 @@ public class XlsUtils {
         }
     }
 
-    private static String getCellValueAsString(Cell cell, CellValue cellValue, boolean fromFormula) {
+    /**
+     *
+     * @param cell
+     * @param cellValue
+     * @return internal method which switch on the formula result value type then return a String value
+     */
+    private static String getCellValueAsString(Cell cell, CellValue cellValue) {
         if (cellValue == null) {
             return StringUtils.EMPTY;
         }
@@ -69,7 +81,7 @@ public class XlsUtils {
             case Cell.CELL_TYPE_ERROR:
                 return "Cell Error type";
             case Cell.CELL_TYPE_NUMERIC:
-                return getNumericValue(cell, fromFormula? cellValue : null, fromFormula);
+                return getNumericValue(cell, cellValue, cellValue != null);
             case Cell.CELL_TYPE_STRING:
                 return StringUtils.trim(cell.getStringCellValue());
             default:
