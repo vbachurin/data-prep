@@ -25,6 +25,11 @@ public class DataFrequency implements Serializable {
     }
 
     @Override
+    public String toString() {
+        return "DataFrequency{" + "data='" + data + '\'' + ", occurrences=" + occurrences + '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

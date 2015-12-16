@@ -17,10 +17,10 @@ import java.util.List;
 import org.apache.commons.lang.NotImplementedException;
 import org.talend.dataquality.statistics.numeric.NumericalStatisticsAnalyzer;
 import org.talend.dataquality.statistics.numeric.histogram.HistogramParameter;
+import org.talend.dataquality.statistics.type.DataTypeEnum;
+import org.talend.dataquality.statistics.type.TypeInferenceUtils;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.ResizableList;
-import org.talend.datascience.common.inference.type.DataType.Type;
-import org.talend.datascience.common.inference.type.TypeInferenceUtils;
 
 /**
  */
@@ -35,7 +35,7 @@ public class StreamHistogramAnalyzer extends NumericalStatisticsAnalyzer<StreamH
      * @param types data types
      * @param histogramParameter Histogram analyzer's parameter
      */
-    public StreamHistogramAnalyzer(Type[] types, HistogramParameter histogramParameter) {
+    public StreamHistogramAnalyzer(DataTypeEnum[] types, HistogramParameter histogramParameter) {
         super(types);
         if (histogramParameter == null) {
             throw new IllegalArgumentException("Histogram analyzer's parameter should is null.");
@@ -44,7 +44,7 @@ public class StreamHistogramAnalyzer extends NumericalStatisticsAnalyzer<StreamH
 
     @Override
     public boolean analyze(String... record) {
-        Type[] types = getTypes();
+        DataTypeEnum[] types = getTypes();
 
         if (record.length != types.length)
             throw new IllegalArgumentException("Each column of the record should be declared a DataType.Type corresponding! \n"

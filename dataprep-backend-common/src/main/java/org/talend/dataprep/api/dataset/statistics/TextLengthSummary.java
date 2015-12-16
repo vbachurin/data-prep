@@ -43,6 +43,12 @@ public class TextLengthSummary implements Serializable {
     }
 
     @Override
+    public String toString() {
+        return "TextLengthSummary{" + "minimalLength=" + minimalLength + ", maximalLength=" + maximalLength + ", averageLength="
+                + averageLength + '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

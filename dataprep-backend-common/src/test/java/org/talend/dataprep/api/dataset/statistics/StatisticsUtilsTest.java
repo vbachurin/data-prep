@@ -17,9 +17,10 @@ import org.talend.dataquality.statistics.frequency.pattern.PatternFrequencyStati
 import org.talend.dataquality.statistics.numeric.quantile.QuantileStatistics;
 import org.talend.dataquality.statistics.numeric.summary.SummaryStatistics;
 import org.talend.dataquality.statistics.text.TextLengthStatistics;
+import org.talend.dataquality.statistics.type.DataTypeEnum;
+import org.talend.dataquality.statistics.type.DataTypeOccurences;
 import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.ValueQualityStatistics;
-import org.talend.datascience.common.inference.type.DataType;
 
 public class StatisticsUtilsTest {
 
@@ -31,8 +32,8 @@ public class StatisticsUtilsTest {
     public void setUp() throws Exception {
         Analyzers.Result result = new Analyzers.Result();
         // Data type
-        DataType dataType = new DataType();
-        dataType.increment(DataType.Type.INTEGER);
+        DataTypeOccurences dataType = new DataTypeOccurences();
+        dataType.increment(DataTypeEnum.INTEGER);
         result.add(dataType);
         // Semantic type
         SemanticType semanticType = new SemanticType();
@@ -93,7 +94,6 @@ public class StatisticsUtilsTest {
         StatisticsAdapter adapter = new StatisticsAdapter();
         adapter.adapt(Collections.singletonList(integerColumn), Collections.singletonList(result));
         adapter.adapt(Collections.singletonList(stringColumn), Collections.singletonList(result));
-
     }
 
     @Test

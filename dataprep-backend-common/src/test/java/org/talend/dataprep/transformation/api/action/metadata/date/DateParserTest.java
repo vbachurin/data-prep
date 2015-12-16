@@ -100,7 +100,7 @@ public class DateParserTest extends BaseDateTests {
     public void shouldComputePatternFromDQ() {
         final ColumnMetadata column = getColumn(Type.DATE);
         assertEquals(new DatePattern(1, "d/M/yyyy"), action.guessPattern("01/02/2015", column));
-        assertEquals(new DatePattern(1, "yyyy-M-d"), action.guessPattern("2015-01-02", column));
+        assertEquals(new DatePattern(1, "yyyy-MM-dd"), action.guessPattern("2015-01-02", column));
         assertEquals(new DatePattern(1, "9999"), action.guessPattern("2015", column));
         assertEquals(new DatePattern(1, "MMMM d yyyy"), action.guessPattern("July 14 2015", column));
     }

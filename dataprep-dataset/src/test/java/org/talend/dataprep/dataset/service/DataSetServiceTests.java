@@ -1051,8 +1051,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         assertThat(column.getType(), is("date"));
         assertThat(column.getDomain(), is(""));
-        ObjectMapper mapper = new ObjectMapper();
-        final Statistics statistics = mapper.readerFor(Statistics.class)
+        final Statistics statistics = builder.build().readerFor(Statistics.class)
                 .readValue(DataSetServiceTests.class.getResourceAsStream("../date_time_pattern_expected.json"));
         assertThat(column.getStatistics(), CoreMatchers.equalTo(statistics));
     }

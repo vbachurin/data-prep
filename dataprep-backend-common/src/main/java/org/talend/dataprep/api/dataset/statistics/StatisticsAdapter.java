@@ -24,9 +24,10 @@ import org.talend.dataquality.statistics.frequency.pattern.PatternFrequencyStati
 import org.talend.dataquality.statistics.numeric.quantile.QuantileStatistics;
 import org.talend.dataquality.statistics.numeric.summary.SummaryStatistics;
 import org.talend.dataquality.statistics.text.TextLengthStatistics;
+import org.talend.dataquality.statistics.type.DataTypeEnum;
+import org.talend.dataquality.statistics.type.DataTypeOccurences;
 import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.ValueQualityStatistics;
-import org.talend.datascience.common.inference.type.DataType;
 
 @Component
 public class StatisticsAdapter {
@@ -47,10 +48,10 @@ public class StatisticsAdapter {
             final boolean isString = Type.STRING.isAssignableFrom(Type.get(currentColumn.getType()));
             final Statistics statistics = currentColumn.getStatistics();
             // Data type
-            if (result.exist(DataType.class) && !currentColumn.isTypeForced()) {
-                final DataType dataType = result.get(DataType.class);
-                final Map<DataType.Type, Long> frequencies = dataType.getTypeFrequencies();
-                frequencies.remove(DataType.Type.EMPTY); // TDP-226: Don't take into account EMPTY values.
+            if (result.exist(DataTypeOccurences.class) && !currentColumn.isTypeForced()) {
+                final DataTypeOccurences dataType = result.get(DataTypeOccurences.class);
+                final Map<DataTypeEnum, Long> frequencies = dataType.getTypeFrequencies();
+                frequencies.remove(DataTypeEnum.EMPTY); // TDP-226: Don't take into account EMPTY values.
                 // Look at type frequencies distribution (if not spread enough, fall back to STRING).
                 StandardDeviation standardDeviation = new StandardDeviation();
                 double[] values = new double[frequencies.size()];
@@ -63,7 +64,7 @@ public class StatisticsAdapter {
                 if (stdDev < 1 && frequencies.size() > 1) {
                     type = Type.STRING;
                 } else {
-                    final DataType.Type suggestedType = dataType.getSuggestedType();
+                    final DataTypeEnum suggestedType = dataType.getSuggestedType();
                     type = Type.get(suggestedType.name());
                 }
                 currentColumn.setType(type.getName());

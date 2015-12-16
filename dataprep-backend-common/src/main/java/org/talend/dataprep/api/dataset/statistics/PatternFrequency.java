@@ -41,6 +41,11 @@ public class PatternFrequency implements Serializable {
     }
 
     @Override
+    public String toString() {
+        return "PatternFrequency{" + "pattern='" + pattern + '\'' + ", occurrences=" + occurrences + '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

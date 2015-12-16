@@ -406,6 +406,14 @@
             {
               "pattern": "M/d/yyyy",
               "occurrences": 16
+            },
+            {
+              "pattern": "d/M/yyyy",
+              "occurrences": 7
+            },
+            {
+              "pattern": "dd/MM/yyyy",
+              "occurrences": 7
             }
           ],
           "quantiles": {
@@ -618,7 +626,11 @@
           ],
           "patternFrequencyTable": [
             {
-              "pattern": "yyyy-M-d H:m:s",
+              "pattern": "yyyy-MM-dd HH:mm:ss",
+              "occurrences": 16
+            },
+            {
+              "pattern": "yyyy-M-d H:mm:ss",
               "occurrences": 16
             }
           ],

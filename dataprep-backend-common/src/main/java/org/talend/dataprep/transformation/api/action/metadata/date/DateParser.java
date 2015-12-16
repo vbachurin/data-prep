@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.quality.AnalyzerService;
-import org.talend.dataquality.statistics.frequency.pattern.AbstractPatternFrequencyAnalyzer;
+import org.talend.dataquality.statistics.frequency.AbstractFrequencyAnalyzer;
 import org.talend.dataquality.statistics.frequency.pattern.PatternFrequencyStatistics;
 
 /**
@@ -92,7 +92,8 @@ public class DateParser {
             throw new DateTimeException("No pattern can be found out of '" + value + "'");
         }
         // call DQ on the given value
-        final AbstractPatternFrequencyAnalyzer analyzer = analyzerService.getPatternFrequencyAnalyzer(column);
+        final AbstractFrequencyAnalyzer<PatternFrequencyStatistics> analyzer = analyzerService
+                .getPatternFrequencyAnalyzer(column);
         analyzer.analyze(value);
         analyzer.end();
 
