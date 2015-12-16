@@ -3,7 +3,7 @@
 
     // currentFolder is initalized with root value
     var folderState = {
-                        currentFolder:{id:'', path: 'All files'},
+                        currentFolder:{id:'', path: ''},
                         currentFolderContent: {},
                         foldersStack: [],
                         menuChildren: []
