@@ -8,6 +8,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -37,6 +38,8 @@ public class APIService {
 
     private final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
+    private final RequestConfig requestConfig = RequestConfig.custom().setRedirectsEnabled(false).build();
+
     protected static final Logger LOG = LoggerFactory.getLogger(APIService.class);
 
     @Autowired
@@ -47,9 +50,11 @@ public class APIService {
     public APIService() {
         connectionManager.setMaxTotal(50);
         connectionManager.setDefaultMaxPerRoute(50);
+        
         httpClient = HttpClientBuilder.create() //
                 .setRedirectStrategy(new RedirectTransferStrategy()) //
                 .setConnectionManager(connectionManager) //
+                .setDefaultRequestConfig( requestConfig ) //
                 .build();
     }
 
@@ -62,6 +67,8 @@ public class APIService {
         public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
             return false;
         }
+
+
 
     }
 

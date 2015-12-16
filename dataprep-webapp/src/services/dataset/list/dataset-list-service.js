@@ -90,12 +90,13 @@
          * @name clone
          * @methodOf data-prep.services.dataset.service:DatasetListService
          * @param {object} dataset The dataset to clone
-         * @param {string} the optional cloned dataset name
+         * @param {object} the folder to clone the dataset
+         * @param {string) cloneName the name for the cloned dataset
          * @description Clone a dataset from backend and refresh its internal list
          * @returns {promise} The pending GET promise
          */
-        function clone(dataset,name) {
-            var promise = DatasetRestService.clone(dataset,name);
+        function clone(dataset,folder,cloneName) {
+            var promise = DatasetRestService.clone(dataset,folder,cloneName);
 
             promise.then(function (){
                 refreshDatasets();

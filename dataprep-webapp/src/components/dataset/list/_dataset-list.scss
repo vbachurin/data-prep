@@ -1,3 +1,7 @@
+$selected-color: lightgrey;
+$hover-color: #c9d7e4;
+$border-color: #CECECE;
+
 .dataset {
   $button-background-color: $white;
   $button-color-text: $black;
@@ -71,6 +75,7 @@
       font-weight: 700;
       text-transform: uppercase;
       cursor: pointer;
+      vertical-align: bottom;
       &:hover {
         color: $dark-blue;
         text-decoration: underline;
@@ -78,3 +83,147 @@
     }
   }
 }
+
+.folders-modal {
+
+  $medium-screen: em(640) !default;
+  $large-screen: em(860) !default;
+
+  padding: 10px 0;
+
+  @include display(flex);
+  @include flex-direction(column);
+  @include justify-content(flex-start);
+  @include flex-wrap(wrap);
+  @include align-items(stretch);
+
+  .search-folder-box{
+    margin-bottom: 4px;
+    .action-search {
+      position: absolute;
+      right: 0;
+      width: 20%;
+      height: 25px;
+      font-size: 0.8em;
+      padding: 0 0 0px 5px;
+      margin: 5px 10px 5px 10px;
+      border-top: 1px solid transparent;
+      border-right: 1px solid transparent;
+      border-left: 1px solid transparent;
+      box-shadow: none;
+    };
+
+    .search-input-icon {
+      top : 10px
+    }
+  }
+
+  form.search-bar {
+    $base-border-color: gainsboro !default;
+    $base-border-radius: 3px !default;
+    $base-line-height: 1.5em !default;
+    $action-color: #477DCA !default;
+    $dark-gray: #333 !default;
+    float: right;
+    position: relative;
+
+    $search-bar-border-color: $base-border-color;
+    $search-bar-border: 1px solid $search-bar-border-color;
+    $search-bar-background: lighten($search-bar-border-color, 10%);
+
+    input[type=search] {
+      background-color: white;
+      border-radius: $base-border-radius;
+      border-radius: $base-border-radius;
+      border: 1px solid $base-border-color;
+      display: block;
+      font-size: 1em;
+      font-style: italic;
+      margin: 0;
+      padding: ($base-spacing / 3) ($base-spacing / 3);
+      position: relative;
+      width: 100%;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    button[type=submit] {
+      @include button(flat, $action-color);
+      @include position(absolute, 0em 0em 0em null);
+      border-bottom-left-radius: 0;
+      border-top-left-radius: 0;
+      outline: none;
+      padding: 5px 10px;
+
+      img {
+        height: 12px;
+        opacity: 0.7;
+      }
+    }
+
+  }
+
+  .folders {
+    height: 200px;
+    overflow: auto;
+    border: 1px solid $border-color;
+    padding: 2px;
+    position: relative;
+    width: 100%;
+    margin: 30px 0 0 0;
+
+    &.datagrid{
+      min-height: 200px;
+      .slick-header-columns {
+        min-height: 29px;
+      }
+    }
+  }
+
+  .icon-img {
+    vertical-align: bottom;
+  }
+
+  .hidden {
+    display: none;
+    visibility: hidden;
+  }
+
+  .folders-tree-root .folder-nodes {
+    padding-left: 2px;
+  }
+
+  .folder-nodes {
+    padding-left: 20px;
+  }
+
+  .folder-name {
+    color: $dark-gray;
+    vertical-align: bottom;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .folderselected {
+    background-color: $selected-color;
+  }
+
+  .dropdown-button-down {
+    cursor: pointer;
+    color: grey;
+  }
+
+  .dropdown-button-right {
+    cursor: pointer;
+    color: grey;
+  }
+
+  .clone-name{
+    margin-top: 10px;
+  }
+}
+
+

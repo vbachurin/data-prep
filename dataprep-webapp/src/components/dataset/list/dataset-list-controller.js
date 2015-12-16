@@ -18,7 +18,7 @@
      * @requires data-prep.services.folder.service:FolderService
      * @requires data-prep.services.preparation.service:PreparationListService
      */
-    function DatasetListCtrl($stateParams, StateService, DatasetService, DatasetListSortService, PlaygroundService,
+    function DatasetListCtrl($scope, $translate, $stateParams, StateService, DatasetService, DatasetListSortService, PlaygroundService,
                              TalendConfirmService, MessageService, UploadWorkflowService, UpdateWorkflowService, FolderService, state, PreparationListService) {
         var vm = this;
 
@@ -70,6 +70,16 @@
          * @type {object}
          */
         vm.sortOrderSelected = DatasetListSortService.getOrderItem();
+
+        /**
+         * @type {Array} folder found after a search
+         */
+        vm.foldersFound = [];
+
+        /**
+         * @type {string} name used for dataset clone
+         */
+        vm.cloneName = '';
 
         /**
          * @ngdoc method
@@ -167,14 +177,26 @@
          * @ngdoc method
          * @name clone
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description Clone a dataset
-         * @param {object} dataset - the dataset to clone
+         * @description perform the dataset cloning to the folder destination
          */
-        vm.clone = function clone(dataset) {
-            DatasetService.clone(dataset)
-                .then(function () {
-                    MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
-                });
+        vm.clone = function(){
+
+            vm.cloneNameForm.$commitViewValue();
+
+            DatasetService.clone(vm.datasetToClone,vm.folderDestination,vm.cloneName).then(function (){
+                        MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
+
+                        // force going to current folder to refresh the content
+                        FolderService.getFolderContent(state.folder.currentFolder);
+
+                    }).finally(function () {
+                        // reset some values to initial values
+                        vm.folderDestinationModal = false;
+                        vm.datasetToClone = null;
+                        vm.folderDestination = null;
+                        vm.foldersFound = [];
+                        vm.cloneName = '';
+                    });
         };
 
         /**
@@ -186,9 +208,21 @@
          * @description Rename a dataset
          */
         vm.rename = function rename(dataset, name) {
-            var cleanName = name ? name.trim() : '';
+            var cleanName = name ? name.trim().toLowerCase() : '';
             if (cleanName) {
                 if (dataset.renaming) {
+                    return;
+                }
+                var nameAlreadyUsed = false;
+                _.forEach(state.folder.currentFolderContent.datasets, function(dataset){
+                    if (cleanName === dataset.name.toLowerCase()){
+                        nameAlreadyUsed = true;
+                        return;
+                    }
+                });
+
+                if (nameAlreadyUsed){
+                    MessageService.error('DATASET_NAME_ALREADY_USED_TITLE', 'DATASET_NAME_ALREADY_USED');
                     return;
                 }
 
@@ -282,6 +316,7 @@
                     vm.folderNameModal = false;
                 });
         };
+
         /**
          * @ngdoc method
          * @name goToFolder
@@ -313,6 +348,149 @@
                 });
         };
 
+
+        /**
+         * @ngdoc method
+         * @name openFolderChoice
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Display folder destination choice modal
+         * @param {object} dataset - the dataset to clone or move
+         */
+        vm.openFolderChoice = function(dataset) {
+            vm.datasetToClone = dataset;
+            vm.foldersFound = [];
+            vm.searchFolderQuery = '';
+            vm.cloneName = dataset.name + $translate.instant('COPY');
+            // ensure nothing is null
+            var toggleToCurrentFolder = state.folder && state.folder.currentFolder && state.folder.currentFolder.id;
+
+            if (toggleToCurrentFolder) {
+                var pathParts = state.folder.currentFolder.id.split( '/' );
+                var currentPath = pathParts[0];
+            }
+
+            var rootFolder = {id: '', path: '/', collapsed: false, name: $translate.instant('HOME_FOLDER')};
+
+            FolderService.children()
+                .then(function(res) {
+                    rootFolder.nodes = res.data;
+                    vm.chooseFolder(rootFolder);
+
+                    vm.folders = [rootFolder];
+                    _.forEach(vm.folders[0].nodes,function(folder){
+                        folder.collapsed = true;
+                        // recursive toggle until we reach the current folder
+                        if (toggleToCurrentFolder && folder.id===currentPath){
+                            vm.toggle(folder, pathParts.length>0?_.slice(pathParts,1):null,currentPath);
+                            vm.chooseFolder(folder);
+                        }
+                    });
+                    vm.folderDestinationModal = true;
+                });
+        };
+
+        /**
+         * @ngdoc method
+         * @name toggle
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description load folder children
+         * @param {object} node - the folder to display children
+         * @param {array} contains all path parts
+         * @param {string} the current path for recursive call
+         */
+        vm.toggle = function (node,pathParts,currentPath) {
+            if (!node.collapsed){
+                node.collapsed = true;
+            } else {
+                if (!node.nodes) {
+                    FolderService.children( node.id )
+                        .then(function(res){
+                            node.nodes = res.data ? res.data : [];
+                            vm.collapseNodes(node);
+                            if(pathParts && pathParts[0]){
+                                currentPath += currentPath ? '/' + pathParts[0] : pathParts[0];
+                                _.forEach(node.nodes,function(folder){
+                                    if(folder.id===currentPath) {
+                                        vm.toggle(folder,pathParts.length>0?_.slice(pathParts,1):null, currentPath);
+                                        vm.chooseFolder(folder);
+                                    }
+                                });
+                            }
+                        });
+
+                } else {
+                    vm.collapseNodes(node);
+                }
+            }
+        };
+
+
+        /**
+         * @ngdoc method
+         * @name chooseFolder
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Set folder destination choice
+         * @param {object} folder - the folder to use for cloning the dataset
+         */
+        vm.chooseFolder = function(folder){
+            var previousSelected = vm.folderDestination;
+            if (previousSelected){
+                previousSelected.selected = false;
+            }
+            vm.folderDestination = folder;
+            folder.selected=true;
+        };
+
+        /**
+         * @ngdoc method
+         * @name collapseNodes
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description utility function to collapse nodes
+         * @param {object} node - parent node of childs to collapse
+         */
+        vm.collapseNodes = function(node){
+            _.forEach(node.nodes,function(folder){
+                folder.collapsed = true;
+            });
+            if (node.nodes.length > 0 ) {
+                node.collapsed = false;
+            } else {
+                node.collapsed = !node.collapsed;
+            }
+        };
+
+
+        /**
+         * @ngdoc method
+         * @name searchFolders
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Search folders
+         */
+        vm.searchFolders = function(){
+
+            vm.foldersFound = [];
+            if(vm.searchFolderQuery){
+                //Add the root folder if it matches the filter
+                var n = $translate.instant('HOME_FOLDER').indexOf(vm.searchFolderQuery);
+
+                FolderService.searchFolders(vm.searchFolderQuery)
+                    .then(function(response){
+                        if(n > -1){
+                            var rootFolder = {id: '', path: '/', name: $translate.instant('HOME_FOLDER')};
+                            vm.foldersFound = [_.extend(rootFolder, response.data)];
+                        } else {
+                            vm.foldersFound = response.data;
+                        }
+                        if(vm.foldersFound.length > 0){
+                            vm.chooseFolder(vm.foldersFound[0]); //Select by default first folder
+                        }
+                    });
+            } else {
+                vm.chooseFolder(vm.folders[0]);  //Select by default first folder
+            }
+
+        };
+
         // load the datasets
         DatasetService
             .getDatasets()
@@ -337,10 +515,10 @@
 
     /**
      * @ngdoc property
-     * @name currentChilds
+     * @name currentFolderContent
      * @propertyOf data-prep.folder.controller:FolderCtrl
-     * @description The childs list.
-     * This list is bound to {@link data-prep.services.state.service:FolderStateService}.folderState.currentFolderChilds
+     * @description The folder content list.
+     * This list is bound to {@link data-prep.services.state.service:FolderStateService}.state.currentFolderContent
      */
     Object.defineProperty(DatasetListCtrl.prototype,
         'currentFolderContent', {

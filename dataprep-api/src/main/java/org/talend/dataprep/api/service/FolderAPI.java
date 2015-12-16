@@ -30,13 +30,33 @@ import com.wordnik.swagger.annotations.ApiParam;
 public class FolderAPI extends APIService {
 
     @RequestMapping(value = "/api/folders", method = GET)
-    @ApiOperation(value = "List childs folders of the parameter if null list root childs.", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List children folders of the parameter if null list root children.", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
-    public void childs(@RequestParam(required = false) String path, final OutputStream output) {
+    public void children(@RequestParam(required = false) String path, final OutputStream output) {
         try {
             final HystrixCommand<InputStream> foldersList = getCommand(FoldersList.class, getClient(), path);
             HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             IOUtils.copyLarge(foldersList.execute(), output);
+            output.flush();
+        } catch (Exception e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDERS, e);
+        }
+    }
+
+    /**
+     * no javadoc here so see description in @ApiOperation notes.
+     * 
+     * @param pathName
+     * @return
+     */
+    @RequestMapping(value = "/api/folders/search", method = GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Search Folders with parameter as part of the name", produces = MediaType.APPLICATION_JSON_VALUE, notes = "")
+    @Timed
+    public void search(@RequestParam(required = false) String pathName, final OutputStream output) {
+        try {
+            final HystrixCommand<InputStream> searchFolders = getCommand(SearchFolders.class, getClient(), pathName);
+            HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            IOUtils.copyLarge(searchFolders.execute(), output);
             output.flush();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_FOLDERS, e);
@@ -92,23 +112,23 @@ public class FolderAPI extends APIService {
 
     /**
      * no javadoc here so see description in @ApiOperation notes.
+     * 
      * @param path
      * @param newPath
      */
     @RequestMapping(value = "/api/folders/rename", method = PUT)
     @ApiOperation(value = "Rename a Folder")
     @Timed
-    @VolumeMetered
-    public void renameFolder(@RequestParam String path, @RequestParam String newPath){
+    public void renameFolder(@RequestParam String path, @RequestParam String newPath) {
 
-        if ( StringUtils.isEmpty( path) //
-            || StringUtils.isEmpty(newPath) //
-            || StringUtils.containsOnly(path, "/")) {
+        if (StringUtils.isEmpty(path) //
+                || StringUtils.isEmpty(newPath) //
+                || StringUtils.containsOnly(path, "/")) {
 
             throw new TDPException(APIErrorCodes.UNABLE_TO_RENAME_FOLDER);
         }
         try {
-            final HystrixCommand<Void> renameFolder = getCommand( RenameFolder.class, getClient(), path, newPath);
+            final HystrixCommand<Void> renameFolder = getCommand(RenameFolder.class, getClient(), path, newPath);
             renameFolder.execute();
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_RENAME_FOLDER, e);
@@ -144,9 +164,8 @@ public class FolderAPI extends APIService {
      * @return
      */
     @RequestMapping(value = "/api/folders/entries/{contentType}/{id}", method = DELETE)
-    @ApiOperation(value = "Remove a FolderEntry")
+    @ApiOperation(value = "Remove a Folder Entry")
     @Timed
-    @VolumeMetered
     public void deleteFolderEntry(@PathVariable(value = "id") String contentId,
             @PathVariable(value = "contentType") String contentType, //
             @RequestParam String path) {
@@ -194,7 +213,6 @@ public class FolderAPI extends APIService {
     @RequestMapping(value = "/api/folders/datasets", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all datasets within the folder and sorted by key/date", produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
-    @VolumeMetered
     public FolderContent datasets(
             @ApiParam(value = "Folder id to search datasets") @RequestParam(defaultValue = "", required = false) String folder,
             @ApiParam(value = "Sort key (by name or date), defaults to 'date'.") @RequestParam(defaultValue = "DATE", required = false) String sort,
@@ -204,7 +222,7 @@ public class FolderAPI extends APIService {
         }
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
-        HystrixCommand<FolderContent> listCommand = getCommand( FolderDataSetList.class, client, sort, order, folder);
+        HystrixCommand<FolderContent> listCommand = getCommand(FolderDataSetList.class, client, sort, order, folder);
         try {
             return listCommand.execute();
         } catch (Exception e) {

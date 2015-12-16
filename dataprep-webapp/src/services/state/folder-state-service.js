@@ -6,7 +6,7 @@
                         currentFolder:{id:'', path: 'All files'},
                         currentFolderContent: {},
                         foldersStack: [],
-                        menuChilds: []
+                        menuChildren: []
                       };
 
     /**
@@ -19,7 +19,7 @@
             setCurrentFolder: setCurrentFolder,
             setCurrentFolderContent: setCurrentFolderContent,
             setFoldersStack: setFoldersStack,
-            setMenuChilds: setMenuChilds
+            setMenuChildren: setMenuChildren
         };
 
         /**
@@ -35,12 +35,12 @@
 
         /**
          * @ngdoc method
-         * @name setCurrentChilds
+         * @name setCurrentFolderContent
          * @methodOf data-prep.services.state.service:FolderStateService
-         * @param {object} array the childs of the current folder
+         * @param {object} the content of the current folder
          */
-        function setCurrentFolderContent(childs){
-            folderState.currentFolderContent = childs;
+        function setCurrentFolderContent(children){
+            folderState.currentFolderContent = children;
         }
 
         /**
@@ -55,12 +55,12 @@
 
         /**
          * @ngdoc method
-         * @name setCurrentChilds
+         * @name setMenuChildren
          * @methodOf data-prep.services.state.service:FolderStateService
-         * @param {object} array the current childs of the current menu entry
+         * @param {object} array the current children of the current menu entry
          */
-        function setMenuChilds(childs){
-            folderState.menuChilds = childs;
+        function setMenuChildren(children){
+            folderState.menuChildren = children;
         }
 
     }

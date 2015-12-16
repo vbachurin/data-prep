@@ -396,19 +396,12 @@ describe('Dataset List Service', function () {
     }));
 
     it('should call rest service clone', inject(function (DatasetRestService, DatasetListService) {
+        var folder = {id: 'foo'};
         //when
-        DatasetListService.clone(datasets[0], 'beer');
+        DatasetListService.clone(datasets[0], folder, 'beer');
 
         //then
-        expect(DatasetRestService.clone).toHaveBeenCalledWith(datasets[0], 'beer');
+        expect(DatasetRestService.clone).toHaveBeenCalledWith(datasets[0], folder, 'beer');
     }));
 
-    it('should call rest service clone', inject(function ($rootScope, DatasetRestService, DatasetListService) {
-        //when
-        DatasetListService.clone(datasets[0], 'beer');
-        $rootScope.$digest();
-
-        //then
-        expect(DatasetRestService.getDatasets).toHaveBeenCalled();
-    }));
 });

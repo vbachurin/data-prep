@@ -5,9 +5,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.talend.daikon.exception.error.ErrorCode;
 import org.talend.dataprep.api.dataset.DataSetLifecycle;
-import org.talend.dataprep.schema.unsupported.UnsupportedFormatGuess;
+
 
 /**
  * Dataset error codes.
@@ -47,10 +48,10 @@ public enum DataSetErrorCodes implements ErrorCode {
      * cannot be parsed.
      */
     UNABLE_TO_READ_DATASET_LOCATION(400),
-                                                    /**
-                                                     * Error returned in case user tries to access to a column that does
-                                                     * not exist (or no longer exists) for a data set.
-                                                     */
+    /**
+     * Error returned in case user tries to access to a column that does
+     * not exist (or no longer exists) for a data set.
+     */
     COLUMN_DOES_NOT_EXIST(400, "id"),
     /**
      * Error returned when the order is not supported.
@@ -60,26 +61,30 @@ public enum DataSetErrorCodes implements ErrorCode {
      * Error returned when the sort is not supported.
      */
     ILLEGAL_SORT_FOR_LIST(400, "sort"),
-                                                    /**
-                                                     * Error returned when the dataset metadata could not be saved.
-                                                     */
+    /**
+    * Error returned when the dataset metadata could not be saved.
+    */
     UNABLE_TO_STORE_DATASET_METADATA(500, "id"),
-                                                    /**
-                                                     * Error returned when the dataset metadata could not be read.
-                                                     */
+    /**
+     * Error returned when the dataset metadata could not be read.
+     */
     UNABLE_TO_READ_DATASET_METADATA(500, "id"),
-                                                    /**
-                                                     * Error return when the uploaded content is not supported by any
-                                                     * {@link org.talend.dataprep.schema.FormatGuesser guesser}.
-                                                     * 
-                                                     * @see UnsupportedFormatGuess
-                                                     */
+    /**
+     * This dataset name is already used
+     */
+    DATASET_NAME_ALREADY_USED( HttpStatus.BAD_REQUEST.value(), "id", "name", "folder"),
+    /**
+     * Error return when the uploaded content is not supported by any
+     * {@link org.talend.dataprep.schema.FormatGuesser guesser}.
+     *
+     */
     UNSUPPORTED_CONTENT(400),
-                                                    /**
-                                                     * Error return when the uploaded content is mal formatted .
-                                                     *
-                                                     */
+    /**
+     * Error return when the uploaded content is mal formatted .
+     *
+     */
     MALFORMATTED_CONTENT(400);
+
 
     /** The http status to use. */
     private int httpStatus;

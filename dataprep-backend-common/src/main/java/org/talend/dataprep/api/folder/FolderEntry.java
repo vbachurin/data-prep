@@ -7,7 +7,7 @@ import org.talend.dataprep.api.preparation.Identifiable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class FolderEntry extends Identifiable implements Serializable {
+public class FolderEntry implements Serializable {
 
     /** Serialization UID. */
     private static final long serialVersionUID = 1L;
@@ -44,17 +44,14 @@ public class FolderEntry extends Identifiable implements Serializable {
         this.id = contentType + '@' + contentId + '@' + path;
     }
 
-    @Override
     public String id() {
         return this.getId();
     }
 
-    @Override
     public String getId() {
         return id;
     }
 
-    @Override
     public void setId(String id) {
         this.id = id;
     }

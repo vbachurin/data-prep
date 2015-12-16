@@ -89,6 +89,14 @@ public class GenericCommand<T> extends HystrixCommand<T> {
         commandResponseHeaders = response.getAllHeaders();
 
         final HttpStatus status = HttpStatus.valueOf(response.getStatusLine().getStatusCode());
+        
+        // do we have a behavior for this status code (even an error) ?
+        // if yes use it
+        BiFunction<HttpRequestBase, HttpResponse, T> function = behavior.get(status);
+        if (function != null) {
+            return function.apply(request, response);
+        }
+        
         // handle response's HTTP status
         if (status.is4xxClientError() || status.is5xxServerError()) {
             // Http status >= 400 so apply onError behavior

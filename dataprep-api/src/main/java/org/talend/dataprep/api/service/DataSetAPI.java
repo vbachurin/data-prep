@@ -9,8 +9,10 @@ import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.service.command.common.HttpResponse;
 import org.talend.dataprep.api.service.command.dataset.*;
 import org.talend.dataprep.api.service.command.transformation.SuggestDataSetActions;
 import org.talend.dataprep.api.service.command.transformation.SuggestLookupActions;
@@ -164,25 +166,32 @@ public class DataSetAPI extends APIService {
      * Clone a dataset from the given id
      *
      * @param id the dataset id to clone
-     * @param name The dataset name.
+     * @param folderPath the folder path to clone the dataset
+     * @param cloneName the name of the dataset clone
      * @return The dataset id.
      */
-    @RequestMapping(value = "/api/datasets/clone/{id}", method = GET, produces = TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/api/datasets/clone/{id}", method = PUT, produces = TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a data set", produces = TEXT_PLAIN_VALUE, notes = "Clone a data set based the id provided.")
-    public String cloneDataset(
+    public void cloneDataset(
         @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
-                               @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set') if none the current name concat with ' Copy' will be used. Returns the id of the newly created data set.")
-                               @RequestParam(defaultValue = "", required = false) String name) {
-
+        @ApiParam(value = "The name of the cloned dataset.") @RequestParam(defaultValue = "", required = false) String cloneName,
+        @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "", required = false) String folderPath,
+        final OutputStream output) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Cloning dataset (pool: {} )...", getConnectionManager().getTotalStats());
         }
-
         HttpClient client = getClient();
-        HystrixCommand<String> creation = getCommand(CloneDataSet.class, client, id, name);
-        String result = creation.execute();
-        LOG.debug("Dataset creation done.");
-        return result;
+        HystrixCommand<HttpResponse> creation = getCommand(CloneDataSet.class, client, id, folderPath, cloneName);
+        HttpResponse result = creation.execute();
+        LOG.debug("Dataset clone done.");
+        try {
+            HttpResponseContext.status(HttpStatus.valueOf(result.getStatusCode()));
+            HttpResponseContext.header("Content-Type", result.getContentType());
+            IOUtils.write(result.getHttpContent(), output);
+            output.flush();
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
     }
 
     @RequestMapping(value = "/api/datasets/preview/{id}", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)

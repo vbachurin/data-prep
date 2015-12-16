@@ -12,7 +12,7 @@
 		var vm = this;
 		vm.state = state;
 
-		vm.loadingChilds = true;
+		vm.loadingChildren = true;
 		vm.state = state;
 
 		/**
@@ -27,17 +27,17 @@
 
 		/**
 		 * @ngdoc method
-		 * @name initMenuChilds
+		 * @name initMenuChildren
 		 * @methodOf data-prep.folder.controller:FolderCtrl
 		 * @param {object} folder - the folder
-		 * @description build the child list of the folder menu entry as parameter
+		 * @description build the children of the folder menu entry as parameter
 		 */
-		vm.initMenuChilds = function initMenuChilds (folder) {
-			vm.loadingChilds = true;
-			FolderService.populateMenuChilds(folder)
+		vm.initMenuChildren = function initMenuChildren (folder) {
+			vm.loadingChildren = true;
+			FolderService.populateMenuChildren(folder)
 				.finally(
 				function () {
-					vm.loadingChilds = false;
+					vm.loadingChildren = false;
 				});
 		};
 

@@ -45,6 +45,8 @@
   "CREATE_FOLDER": "Create Folder",
   "ENTER_FOLDER_NAME" : "Enter Folder Name",
   "HOME_FOLDER": "Home",
+  "COPY": " Copy",
+
 
   "_comment": "Preparations",
   "LAST_MODIFICATION": "last change",
@@ -142,7 +144,15 @@
   "INVALID_DATASET_TITLE": "Invalid dataset",
   "INVALID_DATASET": "This dataset is not valid. Please import a correct CSV file to update the data.",
   "PLAYGROUND_FILE_NOT_FOUND_TITLE": "{{type}} load error",
-  "PLAYGROUND_FILE_NOT_FOUND": "The {{type}} with this id does not exist or is inaccessible",
+  "PLAYGROUND_FILE_NOT_FOUND": "The {{type}} with this id does not exist or is not accessible.",
+  "PREPARATION_STEP_DELETE_MODE_NOT_AUTHORIZED_TITLE": "Delete action not authorized",
+  "PREPARATION_STEP_DELETE_MODE_NOT_AUTHORIZED": "This action cannot be deleted because some following actions depends on it.",
+  "SERVER_ERROR_TITLE": "Server error",
+  "SERVICE_UNAVAILABLE": "Service unavailable",
+  "UNSUPPORTED_CONTENT_TITLE": "Unsupported content",
+  "UNSUPPORTED_CONTENT": "Unable to create the dataset: the content is not supported. Try with a CSV or XSL file.",
+  "DATASET_NAME_ALREADY_USED_TITLE": "Dataset name already used",
+  "DATASET_NAME_ALREADY_USED" : "This Dataset name is already used by an other dataset",
 
   "_comment": "Transformation",
   "NO_CLUSTERS_ACTION_MSG":"No clusters found.",
@@ -210,6 +220,10 @@
   "CERTIFY_ACTION": "Certify {{type}} \"{{name}}\"",
   "FAVORITE_ACTION": "Add {{type}} \"{{name}}\" in your favorites",
   "DELETE_ACTION": "Delete {{type}} \"{{name}}\"",
+  "CLONE_ACTION": "Clone {{type}} \"{{name}}\"",
+  "COPY_ACTION": "Copy",
+  "COPY_HERE_ACTION": "Copy here",
+  "CHOOSE_FOLDER_DESTINATION": "Copy {{type}} - Select Folder destination",
 
   "_comment": "Range slider",
   "INVALID_VALUE_RANGE_SLIDER": "Invalid Entered Value",
@@ -247,5 +261,8 @@
   "OTHER": "other",
   "RECIPE_LOOKUP_FOLLOWING_COLS_ADDED_PLURAL":"column(s) have been added.",
   "RECIPE_LOOKUP_FOLLOWING_COLS_ADDED_SINGULAR":"column has been added.",
-  "ADD_TO_LOOKUP":"Add to Lookup"
+  "ADD_TO_LOOKUP":"Add to Lookup",
+
+  "_comment": "Folders",
+  "FIND_FOLDER": "Find a Folder"
 }

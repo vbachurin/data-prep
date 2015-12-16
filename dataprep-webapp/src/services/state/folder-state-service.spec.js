@@ -32,7 +32,7 @@ describe('Folder state service', function () {
 		{'id':'lookups','path':'lookups','name':'lookups'}
 	];
 
-	var menuChilds = [
+	var menuChildren = [
 		{
 			'id':'lookups/simple_lookup',
 			'path':'lookups/simple_lookup',
@@ -78,15 +78,15 @@ describe('Folder state service', function () {
 			expect(folderState.foldersStack).toBe(foldersStack);
 		}));
 
-		it('should set menuChilds', inject(function (folderState, FolderStateService) {
+		it('should set menuChildren', inject(function (folderState, FolderStateService) {
 			//given
-			folderState.menuChilds = [];
+			folderState.menuChildren = [];
 
 			//when
-			FolderStateService.setMenuChilds(menuChilds);
+			FolderStateService.setMenuChildren(menuChildren);
 
 			//then
-			expect(folderState.menuChilds).toBe(menuChilds);
+			expect(folderState.menuChildren).toBe(menuChildren);
 		}));
 	});
 });
