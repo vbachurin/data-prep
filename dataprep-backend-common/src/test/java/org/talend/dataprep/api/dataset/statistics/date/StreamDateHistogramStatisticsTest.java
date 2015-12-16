@@ -129,4 +129,27 @@ public class StreamDateHistogramStatisticsTest {
         assertThat(histoRange.getRange().getMax(), is(LocalDateTime.of(2016, JANUARY, 1, 0, 0)));
         assertThat(histoRange.getOccurrences(), is(4L));
     }
+
+
+    @Test
+    public void should_scale_to_geologic_time() {
+        //given
+        final StreamDateHistogramStatistics stats = new StreamDateHistogramStatistics();
+        stats.setNumberOfBins(4);
+
+        stats.add(LocalDateTime.of(-1_000_000, JANUARY, 5, 8, 8));
+        stats.add(LocalDateTime.of(100, JANUARY, 6, 9, 9));
+        stats.add(LocalDateTime.of(1000, MARCH, 15, 0, 0));
+        stats.add(LocalDateTime.of(1500, APRIL, 1, 12, 12));
+        stats.add(LocalDateTime.of(2000, MARCH, 25, 4, 10));
+        stats.add(LocalDateTime.of(1_000_000, JANUARY, 5, 7, 9));
+
+        //when
+        final Histogram<LocalDateTime> histogram = stats.getHistogram();
+
+        //then
+        // Assert that it scales, e.g. the pace should be for this example 10 thousands years
+        // Assert that we have 3 bins
+        // Assert also that there is no limit about pace, it should continue to scale
+    }
 }
