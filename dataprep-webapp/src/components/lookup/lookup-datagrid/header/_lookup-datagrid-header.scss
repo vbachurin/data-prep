@@ -35,6 +35,11 @@ $datagrid-header-bkg: $dark-gray;
   .talend-dropdown-text-div {
     overflow: hidden;
     max-width: 90%;
+    height: 23px;
+    .grid-header-title {
+      width: 100%;
+      height: 100%
+    }
   }
 }
 
