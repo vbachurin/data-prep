@@ -1,5 +1,13 @@
 package org.talend.dataprep.dataset.service.analysis;
 
+import static org.talend.dataprep.exception.error.DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY;
+
+import java.util.List;
+import java.util.stream.Stream;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,13 +27,6 @@ import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import java.util.List;
-import java.util.stream.Stream;
-
-import static org.talend.dataprep.exception.error.DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY;
 
 @Component
 public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
@@ -69,17 +70,18 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
             DataSetMetadata metadata = repository.get(dataSetId);
             if (metadata != null) {
                 if (!metadata.getLifecycle().schemaAnalyzed()) {
-                    LOGGER.debug("Dataset {}, schema information must be computed before quality analysis can be performed, ignoring message", metadata.getId());
+                    LOGGER.debug(
+                            "Dataset {}, schema information must be computed before quality analysis can be performed, ignoring message",
+                            metadata.getId());
                     return; // no acknowledge to allow re-poll.
                 }
 
                 final List<ColumnMetadata> columns = metadata.getRowMetadata().getColumns();
                 if (columns.isEmpty()) {
                     LOGGER.debug("Skip statistics of {} (no column information).", metadata.getId());
-                }
-                else {
+                } else {
                     try (final Stream<DataSetRow> stream = store.stream(metadata)) {
-                        final Analyzer<Analyzers.Result> analyzer = analyzerService.baseAnalysis(columns);
+                        final Analyzer<Analyzers.Result> analyzer = analyzerService.baselineAnalysis(columns);
                         computeStatistics(analyzer, columns, stream);
                     } catch (Exception e) {
                         LOGGER.warn("Base statistics analysis, dataset {} generates an error", dataSetId, e);
@@ -114,7 +116,8 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
      * @param columns the columns metadata.
      * @param stream the content to compute the statistics from.
      */
-    private void computeStatistics(final Analyzer<Analyzers.Result> analyzer, final List<ColumnMetadata> columns, final Stream<DataSetRow> stream) {
+    private void computeStatistics(final Analyzer<Analyzers.Result> analyzer, final List<ColumnMetadata> columns,
+            final Stream<DataSetRow> stream) {
         // Create a content with the expected format for the StatisticsClientJson class
         stream.map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
         analyzer.end();
@@ -138,7 +141,6 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
         final Analyzer<Analyzers.Result> analyzer = analyzerService.full(columns);
         computeStatistics(analyzer, columns, stream);
     }
-
 
     /**
      * @see AsynchronousDataSetAnalyzer#destination()
