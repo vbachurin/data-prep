@@ -12,8 +12,8 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.dataset.DataSetBaseTest;
 import org.talend.dataprep.dataset.service.DataSetServiceTests;
-import org.talend.dataprep.schema.CSVFormatGuess;
-import org.talend.dataprep.schema.XlsFormatGuess;
+import org.talend.dataprep.schema.csv.CSVFormatGuess;
+import org.talend.dataprep.schema.xls.XlsFormatGuess;
 
 
 public class FormatAnalyzerTest extends DataSetBaseTest {

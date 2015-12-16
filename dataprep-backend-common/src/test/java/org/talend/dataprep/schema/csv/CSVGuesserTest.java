@@ -1,4 +1,4 @@
-package org.talend.dataprep.schema;
+package org.talend.dataprep.schema.csv;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -12,17 +12,20 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.talend.dataprep.schema.AbstractSchemaTestUtils;
+import org.talend.dataprep.schema.FormatGuesser;
+import org.talend.dataprep.schema.unsupported.UnsupportedFormatGuess;
 
 /**
  * Unit test for the LineBasedFormatGuesser.
  * 
- * @see LineBasedFormatGuesser
+ * @see CSVFormatGuesser
  */
-public class LineBasedFormatGuesserTest extends AbstractSchemaTestUtils {
+public class CSVGuesserTest extends AbstractSchemaTestUtils {
 
     /** The format guesser to test. */
     @Autowired
-    LineBasedFormatGuesser guesser;
+    CSVFormatGuesser guesser;
 
     /**
      * Text file
@@ -33,7 +36,6 @@ public class LineBasedFormatGuesserTest extends AbstractSchemaTestUtils {
         Assert.assertNotNull(actual);
         assertTrue(actual.getFormatGuess() instanceof UnsupportedFormatGuess);
     }
-
 
     @Test(expected = IllegalArgumentException.class)
     public void read_null_csv_file() throws Exception {
@@ -79,7 +81,7 @@ public class LineBasedFormatGuesserTest extends AbstractSchemaTestUtils {
             Assert.assertNotNull(actual);
             assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
             char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
-            assertEquals(separator, ';');
+            assertEquals(';', separator);
         }
     }
 
@@ -138,28 +140,19 @@ public class LineBasedFormatGuesserTest extends AbstractSchemaTestUtils {
         assertTrue(separatorMap.isEmpty());
     }
 
+
+    /**
+     * Have a look at https://jira.talendforge.org/browse/TDP-1060
+     */
     @Test
-    public void shouldComputeScore() {
-        // given
-        Separator sep = new Separator('s');
-        incrementCount(12, 1, sep);
-        incrementCount(10, 2, sep);
-        // nothing on the third line
-        incrementCount(11, 4, sep);
-        incrementCount(13, 5, sep);
-        incrementCount(12, 6, sep);
+    public void TDP_1060() throws IOException {
+        try (InputStream inputStream = this.getClass().getResourceAsStream("tdp-1060.csv")) {
+            FormatGuesser.Result actual = guesser.guess(getRequest(inputStream, "#8"), "UTF-8");
 
-        // when
-        guesser.computeScore(sep, 6);
-
-        // then
-        assertEquals(9.66, sep.getAveragePerLine(), 0.01);
-        assertEquals(6.27, sep.getStandardDeviation(), 0.01); // https://www.mathsisfun.com/data/standard-deviation-calculator.html
-    }
-
-    private void incrementCount(int count, int lineNumber, Separator separator) {
-        for (int i = 0; i < count; i++) {
-            separator.incrementCount(lineNumber);
+            Assert.assertNotNull(actual);
+            assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
+            char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
+            assertEquals(',', separator);
         }
     }
 

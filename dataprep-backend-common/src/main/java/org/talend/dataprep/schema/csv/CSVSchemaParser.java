@@ -1,4 +1,4 @@
-package org.talend.dataprep.schema.io;
+package org.talend.dataprep.schema.csv;
 
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 
@@ -17,7 +17,6 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.schema.CSVFormatGuess;
 import org.talend.dataprep.schema.SchemaParser;
 import org.talend.dataprep.schema.SchemaParserResult;
 

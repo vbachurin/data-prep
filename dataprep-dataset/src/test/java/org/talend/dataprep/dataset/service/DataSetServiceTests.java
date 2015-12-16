@@ -35,7 +35,8 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.DataSetBaseTest;
 import org.talend.dataprep.lock.DistributedLock;
-import org.talend.dataprep.schema.CSVFormatGuess;
+import org.talend.dataprep.schema.csv.CSVFormatGuess;
+import org.talend.dataprep.schema.csv.CSVFormatGuesser;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -593,7 +594,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     /**
      * Test the import of a csv file with a really low separator coefficient variation.
      *
-     * @see org.talend.dataprep.schema.LineBasedFormatGuesser
+     * @see CSVFormatGuesser
      */
     @Test
     public void testLowSeparatorOccurrencesInCSV() throws Exception {
@@ -613,7 +614,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
      * Test the import of an excel file that is also detected as csv file. See
      * https://jira.talendforge.org/browse/TDP-258
      *
-     * @see org.talend.dataprep.schema.LineBasedFormatGuesser
+     * @see CSVFormatGuesser
      */
     @Test
     public void testXlsFileThatIsAlsoParsedAsCSV() throws Exception {

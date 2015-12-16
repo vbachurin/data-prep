@@ -1,4 +1,4 @@
-package org.talend.dataprep.schema.io;
+package org.talend.dataprep.schema.xls;
 
 import static org.talend.dataprep.api.type.Type.*;
 

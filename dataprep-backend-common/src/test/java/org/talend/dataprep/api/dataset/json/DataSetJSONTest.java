@@ -25,7 +25,7 @@ import org.talend.dataprep.api.dataset.location.HttpLocation;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
-import org.talend.dataprep.schema.CSVFormatGuess;
+import org.talend.dataprep.schema.csv.CSVFormatGuess;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;

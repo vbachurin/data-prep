@@ -1,4 +1,4 @@
-package org.talend.dataprep.schema;
+package org.talend.dataprep.schema.xls;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -8,7 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.schema.io.XlsUtils;
+import org.talend.dataprep.schema.FormatGuesser;
+import org.talend.dataprep.schema.SchemaParser;
+import org.talend.dataprep.schema.unsupported.UnsupportedFormatGuess;
 
 @Component("formatGuesser#xls")
 public class XlsFormatGuesser implements FormatGuesser {
