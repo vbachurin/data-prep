@@ -6,7 +6,11 @@ import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -30,7 +34,6 @@ import org.talend.dataprep.schema.unsupported.UnsupportedFormatGuess;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
-
 
 public class XlsFormatTest extends AbstractSchemaTestUtils {
 
@@ -57,7 +60,7 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
     protected List<Map<String, String>> getValuesFromFile(String fileName, FormatGuess formatGuess,
             DataSetMetadata dataSetMetadata) throws Exception {
 
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
             InputStream jsonStream = formatGuess.getSerializer().serialize(inputStream, dataSetMetadata);
 
@@ -110,9 +113,9 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
             columnMetadataFound = columnMetadatas.stream()
                     .filter(columnMetadata -> StringUtils.equals(columnMetadata.getName(), "note")).findFirst().get();
 
-            logger.debug( "columnMetadataFound: {}", columnMetadataFound );
+            logger.debug("columnMetadataFound: {}", columnMetadataFound);
 
-            Assertions.assertThat(columnMetadataFound.getType()).isEqualTo( Type.NUMERIC.getName() );
+            Assertions.assertThat(columnMetadataFound.getType()).isEqualTo(Type.NUMERIC.getName());
 
         }
 
@@ -164,54 +167,41 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         }
 
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+        List<Map<String, String>> values = getValuesFromFile(fileName, formatGuess, dataSetMetadata);
 
-            InputStream jsonStream = formatGuess.getSerializer().serialize(inputStream, dataSetMetadata);
+        logger.debug("values: {}", values);
 
-            String json = IOUtils.toString(jsonStream);
+        // expected*
+        // {country=Australie, note=10.0, beer name =Little Creatures, quality=Awesome}
+        // {country=France , note=, beer name =Heinekein, quality=crappy}
+        // {country=Australie, note=6.0, beer name =Foo, quality=10.0}
+        // {country=France , note=2.0, beer name =Bar, quality=crappy}
 
-            logger.debug("json: {}", json);
+        Assertions.assertThat(values).isNotEmpty().hasSize(4);
 
-            ObjectMapper mapper = new ObjectMapper();
+        Assertions.assertThat(values.get(0)) //
+                .contains(MapEntry.entry("0000", "Little Creatures"), //
+                        MapEntry.entry("0001", "Australie"), //
+                        MapEntry.entry("0002", "Awesome"), //
+                        MapEntry.entry("0003", "10")); //
 
-            CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, HashMap.class);
+        Assertions.assertThat(values.get(1)) //
+                .contains(MapEntry.entry("0000", "Heinekein"), //
+                        MapEntry.entry("0001", "France"), //
+                        MapEntry.entry("0002", "crappy"), //
+                        MapEntry.entry("0003", "")); //
 
-            List<Map<String, String>> values = mapper.readValue(json, collectionType);
+        Assertions.assertThat(values.get(2)) //
+                .contains(MapEntry.entry("0000", "Foo"), //
+                        MapEntry.entry("0001", "Australie"), //
+                        MapEntry.entry("0002", "10"), //
+                        MapEntry.entry("0003", "6"));
 
-            logger.debug("values: {}", values);
-
-            // expected*
-            // {country=Australie, note=10.0, beer name =Little Creatures, quality=Awesome}
-            // {country=France , note=, beer name =Heinekein, quality=crappy}
-            // {country=Australie, note=6.0, beer name =Foo, quality=10.0}
-            // {country=France , note=2.0, beer name =Bar, quality=crappy}
-
-            Assertions.assertThat(values).isNotEmpty().hasSize(4);
-
-            Assertions.assertThat(values.get(0)) //
-                    .contains(MapEntry.entry("0000", "Little Creatures"), //
-                            MapEntry.entry("0001", "Australie"),//
-                            MapEntry.entry("0002", "Awesome"), //
-                            MapEntry.entry("0003", "10")); //
-
-            Assertions.assertThat(values.get(1)) //
-                    .contains(MapEntry.entry("0000", "Heinekein"), //
-                            MapEntry.entry("0001", "France"),//
-                            MapEntry.entry("0002", "crappy"), //
-                            MapEntry.entry("0003", "")); //
-
-            Assertions.assertThat(values.get(2)) //
-                    .contains(MapEntry.entry("0000", "Foo"), //
-                            MapEntry.entry("0001", "Australie"),//
-                            MapEntry.entry("0002", "10"),//
-                            MapEntry.entry("0003", "6"));
-
-            Assertions.assertThat(values.get(3)) //
-                    .contains(MapEntry.entry("0000", "Bar"), //
-                            MapEntry.entry("0001", "France"),//
-                            MapEntry.entry("0002", "crappy"), //
-                            MapEntry.entry("0003", "2"));
-        }
+        Assertions.assertThat(values.get(3)) //
+                .contains(MapEntry.entry("0000", "Bar"), //
+                        MapEntry.entry("0001", "France"), //
+                        MapEntry.entry("0002", "crappy"), //
+                        MapEntry.entry("0003", "2"));
 
     }
 
@@ -252,23 +242,21 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         }
 
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+        List<Map<String, String>> values = getValuesFromFile(fileName, formatGuess, dataSetMetadata);
 
-            InputStream jsonStream = formatGuess.getSerializer().serialize(inputStream, dataSetMetadata);
+        logger.debug("values: {}", values);
 
-            String json = IOUtils.toString(jsonStream);
+        Assertions.assertThat(values.get(0)) //
+                .contains(MapEntry.entry("0000", "ILE-DE-FRANCE"), //
+                        MapEntry.entry("0001", "PARIS 8ME"), //
+                        MapEntry.entry("0002", "12"), //
+                        MapEntry.entry("0003", "GEORGE V"));
 
-            logger.debug("json: {}", json);
-
-            ObjectMapper mapper = new ObjectMapper();
-
-            CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, HashMap.class);
-
-            List<Map<String, String>> values = mapper.readValue(json, collectionType);
-
-            logger.debug("values: {}", values);
-
-        }
+        Assertions.assertThat(values.get(3)) //
+                .contains(MapEntry.entry("0000", "ILE-DE-FRANCE"), //
+                        MapEntry.entry("0001", "PARIS 8ME"), //
+                        MapEntry.entry("0002", "52"), //
+                        MapEntry.entry("0003", "GAUMONT CHAMPS ELYSEES AMBASSADE"));
 
     }
 
@@ -304,25 +292,24 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
             Assertions.assertThat(columnMetadata.getType()).isEqualTo(Type.STRING.getName());
 
-        }
-
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-
-            InputStream jsonStream = formatGuess.getSerializer().serialize(inputStream, dataSetMetadata);
-
-            String json = IOUtils.toString(jsonStream);
-
-            logger.debug("json: {}", json);
-
-            ObjectMapper mapper = new ObjectMapper();
-
-            CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, HashMap.class);
-
-            List<Map<String, String>> values = mapper.readValue(json, collectionType);
-
-            logger.debug("values: {}", values);
+            dataSetMetadata.getRowMetadata(  ).setColumns( columnMetadatas );
 
         }
+
+        List<Map<String, String>> values = getValuesFromFile(fileName, formatGuess, dataSetMetadata);
+
+        logger.debug("values: {}", values);
+
+        Assertions.assertThat(values.get(0)) //
+                .contains(MapEntry.entry("0000", "ALSACE"), //
+                        MapEntry.entry("0001", "BAS-RHIN"), //
+                        MapEntry.entry("0002", "NON"));
+
+        Assertions.assertThat(values.get(2)) //
+                .contains(MapEntry.entry("0000", "ALSACE"), //
+                        MapEntry.entry("0001", "BAS-RHIN"), //
+                        MapEntry.entry("0002", "OUI"), //
+                        MapEntry.entry("0003", "29 juin 2013"));
 
     }
 
@@ -334,8 +321,7 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         XlsSchemaParser xlsSchemaParser = new XlsSchemaParser();
 
-
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
             formatGuess = formatGuesser.guess(getRequest(inputStream, "#7"), "UTF-8").getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
@@ -362,40 +348,26 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
             dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
         }
 
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+        List<Map<String, String>> values = getValuesFromFile(fileName, formatGuess, dataSetMetadata);
 
-            InputStream jsonStream = formatGuess.getSerializer().serialize(inputStream, dataSetMetadata);
+        logger.trace("values: {}", values);
 
-            String json = IOUtils.toString(jsonStream);
+        Assertions.assertThat(values).isNotEmpty().hasSize(239);
 
-            logger.trace("json: {}", json);
+        Assertions.assertThat(values.get(0)) //
+                .contains(MapEntry.entry("0000", "24-Jul-2014"), //
+                        MapEntry.entry("0001", "COFACE"), //
+                        MapEntry.entry("0006", "tony_fernandes@coface.com"));
 
-            ObjectMapper mapper = new ObjectMapper();
+        Assertions.assertThat(values.get(1)) //
+                .contains(MapEntry.entry("0000", "24-Jul-2014"), //
+                        MapEntry.entry("0001", "ENABLON"), //
+                        MapEntry.entry("0004", "COCUD"));
 
-            CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, HashMap.class);
-
-            List<Map<String, String>> values = mapper.readValue(json, collectionType);
-
-            logger.trace("values: {}", values);
-
-            Assertions.assertThat(values).isNotEmpty().hasSize(239);
-
-            Assertions.assertThat(values.get(0)) //
-                    .contains(MapEntry.entry("0000", "24-Jul-2014"),//
-                            MapEntry.entry("0001", "COFACE"), //
-                            MapEntry.entry("0006", "tony_fernandes@coface.com"));
-
-            Assertions.assertThat(values.get(1)) //
-                    .contains(MapEntry.entry("0000", "24-Jul-2014"),//
-                            MapEntry.entry("0001", "ENABLON"), //
-                            MapEntry.entry("0004", "COCUD"));
-
-            Assertions.assertThat(values.get(17)) //
-                    .contains(MapEntry.entry("0000", "17-Jul-2014"), //
-                            MapEntry.entry("0001", "SODEBO"), //
-                            MapEntry.entry("0003", "Tanguy"));
-
-        }
+        Assertions.assertThat(values.get(17)) //
+                .contains(MapEntry.entry("0000", "17-Jul-2014"), //
+                        MapEntry.entry("0001", "SODEBO"), //
+                        MapEntry.entry("0003", "Tanguy"));
 
     }
 
@@ -407,7 +379,11 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
      * XlsSerializer should follow the data format as set in the Excel file. This test ensures XlsSerializer follows the
      * data format as defined and don't directly use {@link Cell#getNumericCellValue()}.
      * </p>
+<<<<<<< HEAD:dataprep-backend-common/src/test/java/org/talend/dataprep/schema/xls/XlsFormatTest.java
      *
+=======
+     * 
+>>>>>>> improve testing for xls serialization:dataprep-backend-common/src/test/java/org/talend/dataprep/schema/XlsFormatTest.java
      * @throws Exception
      * @see XlsUtils#getCellValueAsString(Cell)
      */
@@ -429,7 +405,6 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         assertThat(result, sameJSONAs(expected));
     }
 
-
     @Test
     public void read_xls_TDP_332() throws Exception {
 
@@ -448,13 +423,13 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
             List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(getRequest(inputStream, "#0267"))
                     .getSheetContents().get(0).getColumnMetadatas();
             logger.debug("columnMetadatas: {}", columnMetadatas);
-            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize( 10 );
+            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(10);
 
             ColumnMetadata columnMetadataDate = columnMetadatas.stream() //
-                    .filter( columnMetadata -> columnMetadata.getName().equalsIgnoreCase( "date" ) ) //
+                    .filter(columnMetadata -> columnMetadata.getName().equalsIgnoreCase("date")) //
                     .findFirst().get();
 
-            Assertions.assertThat( columnMetadataDate.getType() ).isEqualTo( "date" );
+            Assertions.assertThat(columnMetadataDate.getType()).isEqualTo("date");
 
         }
 
@@ -487,7 +462,7 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         String sheetName = "WEEK SUMMARY";
 
-        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
             formatGuess = formatGuesser.guess(getRequest(inputStream, UUID.randomUUID().toString()), "UTF-8").getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
