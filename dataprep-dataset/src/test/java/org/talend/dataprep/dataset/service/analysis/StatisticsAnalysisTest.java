@@ -44,10 +44,13 @@ public class StatisticsAnalysisTest extends DataSetBaseTest {
         assertThat(dateOfBirth.getType(), is("date"));
         final List<PatternFrequency> patternFrequencies = dateOfBirth.getStatistics().getPatternFrequencies();
         final List<String> patterns = patternFrequencies.stream().map(pf -> pf.getPattern()).collect(Collectors.toList());
-        assertThat(patterns.size(), is(3));
+        assertThat(patterns.size(), is(6));
         assertTrue(patterns.contains("d/M/yyyy"));
+        assertTrue(patterns.contains("d/M/yyyy"));
+        assertTrue(patterns.contains("M/d/yyyy"));
         assertTrue(patterns.contains("aaaaa"));
-        assertTrue(patterns.contains("yyyy-d-M"));
+        assertTrue(patterns.contains("yyyy-MM-dd"));
+        assertTrue(patterns.contains("yyyy-M-d"));
     }
 
     /**
