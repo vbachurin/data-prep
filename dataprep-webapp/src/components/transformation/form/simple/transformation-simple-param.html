@@ -21,7 +21,7 @@
                    ng-trim="false"
                    is-type="{{::simpleParamCtrl.parameter.type}}"
                    can-be-blank="{{::simpleParamCtrl.parameter.canBeBlank}}"/>
-            <span ng-if="::(simpleParamCtrl.parameter.type === 'boolean')">{{simpleParamCtrl.parameter.name}}</span>
+            <span ng-if="::(simpleParamCtrl.parameter.type === 'boolean' && simpleParamCtrl.label === 'false')">{{simpleParamCtrl.parameter.name}}</span>
         </div>
 
         <div class="param-error error"
