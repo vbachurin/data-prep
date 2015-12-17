@@ -79,7 +79,7 @@
         vm.search = function() {
             // just in case something funny happens...
             EasterEggsService.enableEasterEgg(vm.searchInput);
-        }
+        };
 
     }
 

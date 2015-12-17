@@ -21,7 +21,7 @@ describe('StarWars directive', function() {
         createElement();
 
         //then
-        expect(element.find('.title').text()).toBe('DATA PREP');
+        expect(element.find('.title').text()).toBe('Talend Data Preparation');
     });
 
 });
