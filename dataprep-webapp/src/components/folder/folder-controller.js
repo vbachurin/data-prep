@@ -30,7 +30,7 @@
 		 * @description build the children of the folder menu entry as parameter
 		 */
 		vm.initMenuChildren = function initMenuChildren (folder) {
-			StateService.setMenuChilds([]);
+			StateService.setMenuChildren([]);
 			FolderService.populateMenuChildren(folder);
 		};
 
@@ -38,7 +38,6 @@
 		 * Load folders on start
 		 */
 		FolderService.getFolderContent();
-
 	}
 
 	angular.module('data-prep.folder')
