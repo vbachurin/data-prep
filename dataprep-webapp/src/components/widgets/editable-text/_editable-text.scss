@@ -9,7 +9,6 @@
   }
 
   .editable-text-container {
-    font-size: .85em;
     @include display(flex);
     @include align-items(center);
   }
