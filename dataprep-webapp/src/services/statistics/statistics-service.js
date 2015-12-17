@@ -11,14 +11,24 @@
      * @requires data-prep.services.utils.service:FilterAdapterService
      * @requires data-prep.services.utils.service:TextFormatService
      * @requires data-prep.services.utils.service:StorageService
+     * @requires data-prep.services.utils.service:WorkerService
      */
     function StatisticsService($filter, state,
                                DatagridService, RecipeService, StatisticsRestService,
-                               ConverterService, FilterAdapterService, TextFormatService, StorageService) {
+                               ConverterService, FilterAdapterService, TextFormatService, StorageService, WorkerService) {
+
+        var dateFilteredWorkerWrapper;
+        var datePatternWorkerWrapper;
+
+        //workerFn[0-9] are preserved words that won't be mangled during uglification
+        //those should be used to pass external functions, that are directly used here, to the web worker
+        var workerFn0 = TextFormatService.convertJavaDateFormatToMomentDateFormat;
+        var workerFn1 = TextFormatService.convertPatternToRegexp;
 
         var service = {
             boxPlot: null,
             histogram: null,
+            filteredHistogram: null,
             stateDistribution: null,
             statistics: null,
             patterns: null,
@@ -106,15 +116,20 @@
          * @ngdoc method
          * @name getRangeFilteredOccurrence
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {function} predicateFn A function that determine if a value is in the filtered values
+         * @param {number} min The range min value
+         * @param {number} max The range max value
          * @description Compute The filtered records that fullfill the given predicate
          * @returns {number} The Number of records
          */
-        function getRangeFilteredOccurrence(predicateFn) {
+        function getRangeFilteredOccurrence(min, max) {
             return _.chain(state.playground.grid.filteredOccurences)
                 .keys()
-                .filter(predicateFn)
-                .map(function(key) {
+                .filter(function (value) {
+                    var numberValue = Number(value);
+                    return !isNaN(numberValue) &&
+                        ((numberValue === min) || (numberValue > min && numberValue < max));
+                })
+                .map(function (key) {
                     return state.playground.grid.filteredOccurences[key];
                 })
                 .reduce(function (accu, value) {
@@ -131,30 +146,33 @@
          * @description Adapt the numeric range data to fit histogram format
          */
         function initRangeHistogram(histoData) {
-            if(!histoData) {
+            if (!histoData) {
                 return;
             }
 
-            var rangeData = _.map(histoData.items, function (histDatum) {
+            var rangeData = [];
+            var filteredRangeData = [];
+            _.forEach(histoData.items, function (histDatum) {
                 var min = histDatum.range.min;
                 var max = histDatum.range.max;
-                var isInRangeLimits = function(value) {
-                    var numberValue = Number(value);
-                    return !isNaN(numberValue) &&
-                        ((numberValue === min) || (numberValue > min && numberValue < max));
+                var range = {
+                    type: 'number',
+                    min: min,
+                    max: max
                 };
-                return {
-                    'data': {
-                        type: 'number',
-                        min: histDatum.range.min,
-                        max: histDatum.range.max
-                    },
-                    'occurrences': histDatum.occurrences,
-                    'filteredOccurrences': getRangeFilteredOccurrence(isInRangeLimits)
-                };
+
+                rangeData.push({
+                    'data': range,
+                    'occurrences': histDatum.occurrences
+                });
+                filteredRangeData.push({
+                    'data': range,
+                    'filteredOccurrences': state.playground.filter.gridFilters.length ? getRangeFilteredOccurrence(min, max) : histDatum.occurrences
+                });
             });
 
-            initVerticalHistogram('occurrences', 'Occurrences', rangeData);
+            service.histogram = initVerticalHistogram('occurrences', 'Occurrences', rangeData);
+            service.filteredHistogram = initVerticalHistogram('filteredOccurrences', 'Filtered Occurrences', filteredRangeData);
         }
 
         /**
@@ -165,37 +183,18 @@
          * @description Adapt the date range data to fit histogram format
          */
         function initDateRangeHistogram(histoData) {
-            if(!histoData) {
+            if (!histoData) {
                 return;
             }
+
+            var patterns = _.chain(state.playground.grid.selectedColumn.statistics.patternFrequencyTable)
+                .pluck('pattern')
+                .map(TextFormatService.convertJavaDateFormatToMomentDateFormat)
+                .value();
 
             var rangeData = _.map(histoData.items, function (histDatum) {
                 var minDate = new Date(histDatum.range.min.year, histDatum.range.min.monthValue - 1, histDatum.range.min.dayOfMonth);
                 var maxDate = new Date(histDatum.range.max.year, histDatum.range.max.monthValue - 1, histDatum.range.max.dayOfMonth);
-                var minTimestamp = minDate.getTime();
-                var maxTimestamp = maxDate.getTime();
-                var patterns = _.chain(state.playground.grid.selectedColumn.statistics.patternFrequencyTable)
-                    .pluck('pattern')
-                    .map(TextFormatService.convertJavaDateFormatToMomentDateFormat);
-
-                var isInDateLimits = function(value) {
-                    var parsedMoment = _.chain(patterns)
-                        .map(function(pattern) {
-                            return moment(value, pattern);
-                        })
-                        .find(function(momentDate) {
-                            return momentDate.isValid();
-                        })
-                        .value();
-
-                    if(!parsedMoment) {
-                        return false;
-                    }
-
-                    var time = parsedMoment.toDate().getTime();
-                    return time === minTimestamp || (time > minTimestamp && time < maxTimestamp);
-                };
-
                 return {
                     'data': {
                         type: 'date',
@@ -203,12 +202,87 @@
                         min: minDate,
                         max: maxDate
                     },
-                    'occurrences': histDatum.occurrences,
-                    'filteredOccurrences': getRangeFilteredOccurrence(isInDateLimits)
+                    'occurrences': histDatum.occurrences
                 };
             });
 
-            initVerticalHistogram('occurrences', 'Occurrences', rangeData);
+            //init the main histogram
+            service.histogram = initVerticalHistogram('occurrences', 'Occurrences', rangeData);
+
+            //execute  a web worker that will compute the filtered occurrences
+            dateFilteredWorkerWrapper = WorkerService.create(
+                ['/worker/moment.js', '/worker/lodash.js'],
+                [isInDateLimits],
+                dateFilteredOccurrenceWorker);
+
+            var filteredOccurrences = state.playground.filter.gridFilters.length ? state.playground.grid.filteredOccurences : null;
+            dateFilteredWorkerWrapper.postMessage([rangeData, patterns, filteredOccurrences])
+                .then(function (filteredRangeData) {
+                    service.filteredHistogram = initVerticalHistogram('filteredOccurrences', 'Filtered Occurrences', filteredRangeData);
+                })
+                .finally(function () {
+                    dateFilteredWorkerWrapper.clean();
+                });
+        }
+
+        /**
+         * @ngdoc method
+         * @name isInDateLimits
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Predicate that test if a date is in the range
+         * @param {number} minTimestamp The range min timestamp
+         * @param {number} maxTimestamp The range max timestamp
+         * @param {Array} patterns The date patterns to use for date parsing
+         */
+        function isInDateLimits(minTimestamp, maxTimestamp, patterns) {
+            return function (value) {
+                var parsedMoment = _.chain(patterns)
+                    .map(function (pattern) {
+                        return moment(value, pattern);
+                    })
+                    .find(function (momentDate) {
+                        return momentDate.isValid();
+                    })
+                    .value();
+
+                if (!parsedMoment) {
+                    return false;
+                }
+
+                var time = parsedMoment.toDate().getTime();
+                return time === minTimestamp || (time > minTimestamp && time < maxTimestamp);
+            };
+        }
+
+        /**
+         * @ngdoc method
+         * @name dateFilteredOccurrenceWorker
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Web worker function to execute to get the date pattern filtered occurrences
+         * @param {object} rangeData The range data
+         * @param {Array} patterns The patterns to use for date parsing
+         * @param {Array} filteredOccurences The filtered occurrences
+         */
+        function dateFilteredOccurrenceWorker(rangeData, patterns, filteredOccurences) {
+            _.forEach(rangeData, function (range) {
+                var minTimestamp = range.data.min.getTime();
+                var maxTimestamp = range.data.max.getTime();
+
+                range.filteredOccurrences = !filteredOccurences ?
+                    range.occurrences :
+                    _.chain(filteredOccurences)
+                        .keys()
+                        .filter(isInDateLimits(minTimestamp, maxTimestamp, patterns))
+                        .map(function (key) {
+                            return filteredOccurences[key];
+                        })
+                        .reduce(function (accu, value) {
+                            return accu + value;
+                        }, 0)
+                        .value();
+            });
+
+            postMessage(rangeData);
         }
 
         /**
@@ -220,7 +294,7 @@
          * @description Returns the date pattern that fit the pace at the starting date
          */
         function getDateFormat(pace, startDate) {
-            switch(pace) {
+            switch (pace) {
                 case 'CENTURY':
                 case 'DECADE':
                 case 'YEAR':
@@ -251,7 +325,7 @@
             var dateFilter = $filter('date');
             var format = getDateFormat(pace, minDate);
 
-            switch(pace) {
+            switch (pace) {
                 case 'YEAR':
                 case 'HALF_YEAR':
                 case 'QUARTER':
@@ -287,7 +361,7 @@
          * @description Set the frequency table that fit the histogram format (filter is managed in frontend)
          */
         function initClassicHistogram(key, label, dataTable) {
-            if(!dataTable || !dataTable.length) {
+            if (!dataTable || !dataTable.length) {
                 return;
             }
 
@@ -336,10 +410,10 @@
          * @param {string} key The value key
          * @param {string} label The value label
          * @param {Array} dataTable The table to display
-         * @description Set the records frequency ranges table that fit the histogram format
+         * @description Create a records frequency ranges table that fit the histogram format
          */
         function initVerticalHistogram(key, label, dataTable) {
-            service.histogram = {
+            return {
                 data: dataTable,
                 key: key,
                 label: label,
@@ -374,7 +448,7 @@
          * and the active/inactive bars of the vertical barchart
          */
         function initRangeLimits() {
-            if(!service.histogram) {
+            if (!service.histogram) {
                 return;
             }
 
@@ -484,29 +558,67 @@
          * @param {string} column The column to be updated
          */
         function updateFilteredPatternsFrequency(column) {
-            service.patterns = [];
+            var patternFrequency = column.statistics.patternFrequencyTable;
+            service.patterns = patternFrequency;
 
-            _.forEach(column.statistics.patternFrequencyTable, function (patternFrequency) {
+            datePatternWorkerWrapper = WorkerService.create(
+                ['/worker/moment.js', '/worker/lodash.js', '/worker/moment-jdateformatparser.js'],
+                [{
+                    workerFn0: workerFn0,
+                    workerFn1: workerFn1
+                }, TextFormatService.escapeRegex, valueMatchPatternFn, isDatePattern, valueMatchDatePatternFn, valueMatchRegexFn, valueMatchPatternFn],
+                patternOccurrenceWorker
+            );
+
+            var filteredRecords = state.playground.filter.gridFilters.length ? state.playground.grid.filteredRecords : null;
+            datePatternWorkerWrapper.postMessage([column.id, patternFrequency, filteredRecords])
+                .then(function (patternFrequencies) {
+                    service.patterns = patternFrequencies;
+                })
+                .finally(function () {
+                    datePatternWorkerWrapper.clean();
+                });
+        }
+
+        /**
+         * @ngdoc method
+         * @name patternOccurrenceWorker
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Web worker function to execute to get the pattern filtered occurrences
+         * @param {string} columnId The column id
+         * @param {Array} patternFrequencyTable The pattern frequencies to update
+         * @param {Array} filteredRecords The filtered records to process for the filtered occurrences number
+         */
+        function patternOccurrenceWorker(columnId, patternFrequencyTable, filteredRecords) {
+            _.forEach(patternFrequencyTable, function (patternFrequency) {
                 var pattern = patternFrequency.pattern;
                 var matchingFn = valueMatchPatternFn(pattern);
 
-                var filteredOccurrences = _.chain(state.playground.grid.filteredRecords)
-                    .pluck(column.id)
-                    .filter(matchingFn)
-                    .groupBy(function (value) {
-                        return value;
-                    })
-                    .mapValues('length')
-                    .reduce(function (accu, value) {
-                        return accu + value;
-                    }, 0)
-                    .value();
-
-                var patternsFiltered = _.extend({}, patternFrequency, {filteredOccurrences: filteredOccurrences});
-                service.patterns.push(patternsFiltered);
+                patternFrequency.filteredOccurrences = !filteredRecords ?
+                    patternFrequency.occurrences :
+                    _.chain(filteredRecords)
+                        .pluck(columnId)
+                        .filter(matchingFn)
+                        .groupBy(function (value) {
+                            return value;
+                        })
+                        .mapValues('length')
+                        .reduce(function (accu, value) {
+                            return accu + value;
+                        }, 0)
+                        .value();
             });
+
+            postMessage(patternFrequencyTable);
         }
 
+        /**
+         * @ngdoc method
+         * @name isDatePattern
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Check if the pattern is a date pattern
+         * @param {string} pattern The pattern to check
+         */
         function isDatePattern(pattern) {
             return (pattern.indexOf('d') > -1 ||
             pattern.indexOf('M') > -1 ||
@@ -517,27 +629,48 @@
             pattern.indexOf('s') > -1);
         }
 
+        /**
+         * @ngdoc method
+         * @name valueMatchDatePatternFn
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Create a predicate that check if a value match the date pattern
+         * @param {string} pattern The date pattern to match
+         */
         function valueMatchDatePatternFn(pattern) {
-            var datePattern = TextFormatService.convertJavaDateFormatToMomentDateFormat(pattern);
-            return function(value) {
+            var datePattern = workerFn0(pattern);
+            return function (value) {
                 return value && moment(value, datePattern, true).isValid();
             };
         }
 
+        /**
+         * @ngdoc method
+         * @name valueMatchRegexFn
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Create a predicate that check if a value match the regex pattern
+         * @param {string} pattern The pattern to match
+         */
         function valueMatchRegexFn(pattern) {
-            var regex = TextFormatService.convertPatternToRegexp(pattern);
-            return function(value) {
+            var regex = workerFn1(pattern);
+            return function (value) {
                 return value && value.match(regex);
             };
         }
 
+        /**
+         * @ngdoc method
+         * @name valueMatchPatternFn
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Create the adequat predicate that match the pattern. It can be empty, a date pattern, or an alphanumeric pattern
+         * @param {string} pattern The pattern to match
+         */
         function valueMatchPatternFn(pattern) {
-            if(pattern === '') {
-                return function(value) {
+            if (pattern === '') {
+                return function (value) {
                     return value === '';
                 };
             }
-            else if(isDatePattern(pattern)) {
+            else if (isDatePattern(pattern)) {
                 return valueMatchDatePatternFn(pattern);
             }
             else {
@@ -804,6 +937,7 @@
             if (charts) {
                 service.boxPlot = null;
                 service.histogram = null;
+                service.filteredHistogram = null;
                 service.rangeLimits = null;
                 service.stateDistribution = null;
             }
@@ -814,6 +948,15 @@
 
             if (cache) {
                 StatisticsRestService.resetCache();
+            }
+
+            if (dateFilteredWorkerWrapper) {
+                dateFilteredWorkerWrapper.terminate();
+                dateFilteredWorkerWrapper = null;
+            }
+            if (datePatternWorkerWrapper) {
+                datePatternWorkerWrapper.terminate();
+                datePatternWorkerWrapper = null;
             }
         }
     }

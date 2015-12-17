@@ -117,7 +117,7 @@ public class StreamDateHistogramStatistics {
      */
     public Histogram<LocalDateTime> getHistogram() {
         if(min == null) {
-            return null;
+            return new DateHistogram();
         }
 
         final DateManipulator.Pace pace = dateManipulator.getSuitablePace(min, max, numberOfBins);

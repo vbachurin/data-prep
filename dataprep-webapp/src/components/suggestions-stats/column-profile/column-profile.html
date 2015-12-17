@@ -52,8 +52,9 @@
                                height="150"
                                on-click="columnProfileCtrl.addRangeFilter(interval)"
                                visu-data="columnProfileCtrl.histogram.data"
+                               visu-data-2="columnProfileCtrl.filteredHistogram.data"
                                value-field="{{columnProfileCtrl.histogram.key}}"
-                               value-field-2="filteredOccurrences"
+                               value-field-2="{{columnProfileCtrl.filteredHistogram.key}}"
                                key-field="data"
                                active-limits="columnProfileCtrl.histogram.activeLimits"
                                key-label="{{columnProfileCtrl.histogram.label}}"></vertical-barchart>

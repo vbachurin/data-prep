@@ -12,19 +12,22 @@
      *     height="400"
      *     on-click="columnProfileCtrl.vBarchartClickFn"
      *     visu-data="columnProfileCtrl.histogram.data"
+     *     visu-data-2="columnProfileCtrl.histogram2.data"
      *     key-field="data"
      *     key-label="{{columnProfileCtrl.histogram.label}}">
      *     value-field="{{columnProfileCtrl.histogram.key}}"
+     *     value-field="{{columnProfileCtrl.histogram2.key}}"
      *     active-limits="columnProfileCtrl.histogram.existingFilter"
      * </vertical-barchart>
      * @param {number} width The chart width
      * @param {number} height The chart height
      * @param {function} onClick The callback on chart click
      * @param {array} visuData The value array to render
+     * @param {array} visuData2 The second value array to render
      * @param {string} keyField The key property name in visuData elements
      * @param {object} keyLabel The label property name in visuData elements
      * @param {string} valueField The value property name in visuData elements used for 1st column
-     * @param {string} valueField2 The value property name in visuData elements used for 2nd column
+     * @param {string} valueField2 The second value property name in visuData elements used for 2nd column
      * @param {array} activeLimits The filter limits
      * */
 
@@ -34,6 +37,7 @@
             scope: {
                 onClick: '&',
                 visuData: '=',
+                visuData2: '=',
                 keyField: '@',
                 valueField: '@',
                 valueField2: '@',
@@ -41,9 +45,7 @@
                 activeLimits: '='
             },
             link: function (scope, element, attrs) {
-                var xField = scope.keyField;
-                var yField = scope.valueField;
-                var yField2 = scope.valueField2;
+                var oldVisuData;
                 var labelTooltip = scope.keyLabel;
                 var activeLimits = scope.activeLimits;
                 var renderTimeout, updateBarsTimeout;
@@ -67,7 +69,7 @@
                     .html(getTooltipContent);
 
                 function getTooltipContent(data) {
-                    var range = data[xField];
+                    var range = data[scope.keyField];
                     var uniqueValue = range.min === range.max;
                     var title = (uniqueValue ? 'Value: ' : 'Range: ');
                     var value = range.label || (uniqueValue ? range.min : '[' + range.min + ', ' + range.max + '[');
@@ -88,15 +90,25 @@
                 }
 
                 function getRangeInfos(data) {
-                   return data[xField];
+                    return data[scope.keyField];
                 }
 
                 function getPrimaryValue(data) {
-                    return data[yField];
+                    return data[scope.valueField];
                 }
 
                 function getSecondaryValue(data) {
-                    return data[yField2] || 0;
+                    if(!scope.visuData2) {
+                        return 0;
+                    }
+
+                    var range = data[scope.keyField];
+                    var secondaryDate = _.find(scope.visuData2, function(data2) {
+                        var range2 = data2[scope.keyField];
+                        return (range.min === range2.min && range.max === range2.max) ||
+                            (range.min instanceof Date && range.min.getTime() === range2.min.getTime() && range.max.getTime() === range2.max.getTime());
+                    });
+                    return secondaryDate ? secondaryDate[scope.valueField2] : 0;
                 }
 
                 //------------------------------------------------------------------------------------------------------
@@ -105,9 +117,10 @@
                 // Axis scale definitions
                 var xScale = d3.scale.ordinal().rangeRoundBands([0, width], 0.2);
                 var yScale = d3.scale.linear().range([height, 0]);
+                var svg;
 
                 function createContainer() {
-                    var svg = d3.select(containerId)
+                    svg = d3.select(containerId)
                         .append('svg')
                         .attr('class', 'vertical-barchart-cls')
                         .attr('width', containerWidth)
@@ -115,8 +128,6 @@
                         .append('g')
                         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
                     svg.call(tooltip);
-
-                    return svg;
                 }
 
                 function configureAxisScales(statData) {
@@ -124,8 +135,9 @@
                     yScale.domain([0, d3.max(statData, getPrimaryValue)]);
                 }
 
-                function drawBars(svg, selector, statData, getValue, className) {
+                function drawBars(selector, statData, getValue, className) {
                     svg.append('g')
+                        .attr('class', 'bars ' + className)
                         .selectAll(selector)
                         .data(statData)
                         .enter()
@@ -150,9 +162,9 @@
                         });
                 }
 
-                function drawHorizontalGrid(svg) {
+                function drawHorizontalGrid() {
                     var minSizeBetweenGrid = 18;
-                    var ticksNbre = yScale.domain()[1] > 10 ? Math.ceil(height / minSizeBetweenGrid): yScale.domain()[1];
+                    var ticksNbre = yScale.domain()[1] > 10 ? Math.ceil(height / minSizeBetweenGrid) : yScale.domain()[1];
 
                     svg.append('g')
                         //draw grid lines
@@ -172,8 +184,9 @@
                         .style('text-anchor', 'middle');
                 }
 
-                function drawYAxis(svg) {
+                function drawYAxis() {
                     svg.append('g')
+                        .attr('class', 'yAxis')
                         .append('text')
                         .attr('x', -height / 2)
                         .attr('y', -2)
@@ -182,11 +195,12 @@
                         .text(labelTooltip);
                 }
 
-                function drawHoverBars(svg, statData) {
+                function drawHoverBars(statData) {
                     svg.selectAll('g.bg-rect')
                         .data(statData)
                         .enter()
                         .append('g')
+                        .attr('class', 'hover')
                         .attr('transform', function (d) {
                             return 'translate(' + (xScale(getInterval(d)) - 2) + ', 0)';
                         })
@@ -208,17 +222,48 @@
                         });
                 }
 
-                function renderVBarchart(statData) {
-                    var svg = createContainer();
-                    configureAxisScales(statData);
-                    drawBars(svg, '.bar', statData, getPrimaryValue, 'bar');
-                    drawBars(svg, '.filterBar', statData, getSecondaryValue, 'filterBar');
+                function removeSecondaryData() {
+                    d3.selectAll('g.bars.secondary').remove();
+                }
 
-                    drawHorizontalGrid(svg);
-                    drawYAxis(svg);
-                    drawHoverBars(svg, statData);
+                function removeHorizontalGrid() {
+                    d3.selectAll('g.grid').remove();
+                }
 
+                function removeYAxis() {
+                    d3.selectAll('g.yAxis').remove();
+                }
+
+                function removeHoverBars() {
+                    d3.selectAll('g.hover').remove();
+                }
+
+                function renderWholeVBarchart(firstVisuData, secondVisuData) {
+                    createContainer();
+                    configureAxisScales(firstVisuData);
+                    drawBars('.bar', firstVisuData, getPrimaryValue, 'bar');
+                    if (secondVisuData) {
+                        drawBars('.secondaryBar', secondVisuData, getSecondaryValue, 'secondaryBar');
+                    }
+
+                    drawHorizontalGrid();
+                    drawYAxis();
+                    drawHoverBars(firstVisuData);
                     scope.buckets = d3.selectAll('rect.bar');
+                    finishedRendering = true;
+                }
+
+                function renderSecondVBars(firstVisuData, secondVisuData) {
+                    removeSecondaryData();
+                    removeHorizontalGrid();
+                    removeYAxis();
+                    removeHoverBars();
+
+                    drawBars('.secondaryBar', secondVisuData, getSecondaryValue, 'secondaryBar');
+                    drawHorizontalGrid();
+                    drawYAxis();
+                    drawHoverBars(firstVisuData);
+
                     finishedRendering = true;
                 }
 
@@ -239,31 +284,39 @@
                     }
                 }
 
-                scope.$watch('visuData',
-                    function (statData) {
-                        element.empty();
-                        //because the tooltip is not a child of the vertical barchart element
-                        d3.selectAll('.vertical-barchart-cls.d3-tip').remove();
-                        if (statData) {
+                scope.$watchGroup(['visuData', 'visuData2'],
+                    function (newValues) {
+                        var firstVisuData = newValues[0];
+                        var secondVisuData = newValues[1];
+                        var firstDataHasChanged = firstVisuData !== oldVisuData;
+
+                        if (firstDataHasChanged) {
+                            oldVisuData = firstVisuData;
+                            element.empty();
+                            //because the tooltip is not a child of the vertical barchart element
+                            d3.selectAll('.vertical-barchart-cls.d3-tip').remove();
+                            if (firstVisuData) {
+                                finishedRendering = false;
+                                clearTimeout(renderTimeout);
+                                renderTimeout = setTimeout(renderWholeVBarchart.bind(this, firstVisuData, secondVisuData), 100);
+                            }
+                        }
+                        else if (secondVisuData) {
                             finishedRendering = false;
                             clearTimeout(renderTimeout);
-                            renderTimeout = setTimeout(renderVBarchart.bind(this, statData), 100);
+                            renderTimeout = setTimeout(renderSecondVBars.bind(this, firstVisuData, secondVisuData), 100);
                         }
                     }
                 );
 
                 scope.$watch('activeLimits',
-                    function (newFilter) {
-                        if (newFilter) {
-                            var wait = 600;
-                            if (finishedRendering) {
-                                wait = 100;
-                            }
+                    function (newLimits) {
+                        if (newLimits) {
                             clearTimeout(updateBarsTimeout);
                             updateBarsTimeout = setTimeout(function () {
-                                activeLimits = newFilter;
+                                activeLimits = newLimits;
                                 updateBarsLookFeel();
-                            }, wait);
+                            }, 500);
                         }
                     }
                 );
