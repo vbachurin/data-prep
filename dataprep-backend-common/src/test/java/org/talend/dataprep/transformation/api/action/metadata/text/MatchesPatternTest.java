@@ -22,6 +22,7 @@ import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -29,6 +30,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
@@ -37,18 +39,18 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
  *
  * @see Split
  */
-public class MatchesPatternTest {
+public class MatchesPatternTest extends AbstractMetadataBaseTest {
 
     /**
      * The action to test.
      */
+    @Autowired
     private MatchesPattern action;
 
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        action = new MatchesPattern();
         parameters = ActionMetadataTestUtils.parseParameters(MatchesPatternTest.class.getResourceAsStream("matchesPattern.json"));
     }
 
@@ -88,8 +90,8 @@ public class MatchesPatternTest {
 
     @Test
     public void shouldOrNotMatchPattern() {
-        assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]*")));
-        assertTrue(action.computeNewValue("aA", buildPatternActionContext("[a-zA-Z]*")));
+        assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]+")));
+        assertTrue(action.computeNewValue("aA", buildPatternActionContext("[a-zA-Z]+")));
 
         assertFalse(action.computeNewValue("Ouch !", buildPatternActionContext("[a-zA-Z0-9]*")));
         assertTrue(action.computeNewValue("Houba 2 fois", buildPatternActionContext("[a-zA-Z0-9 ]*")));
@@ -97,7 +99,7 @@ public class MatchesPatternTest {
 
     @Test
     public void shouldNotMatchPattern() {
-        assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]*")));
+        assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]+")));
         assertFalse(action.computeNewValue("aaaa8", buildPatternActionContext("[a-zA-Z]*")));
         assertFalse(action.computeNewValue(" a8 ", buildPatternActionContext("[a-zA-Z]*")));
         assertFalse(action.computeNewValue("aa:", buildPatternActionContext("[a-zA-Z]*")));
@@ -107,8 +109,8 @@ public class MatchesPatternTest {
     public void shouldMatchOrNotoEmptyString() {
         assertTrue(action.computeNewValue("", buildPatternActionContext(".*")));
         assertTrue(action.computeNewValue("", buildPatternActionContext("[a-zA-Z]*")));
-        assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]*")));
-        assertTrue(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z ]*")));
+        assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]+")));
+        assertTrue(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z ]+")));
     }
 
     private ActionContext buildPatternActionContext(String regex) {

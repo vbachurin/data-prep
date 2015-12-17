@@ -6,7 +6,10 @@
         "column_id": "0001",
         "column_name": "steps",
         "proposed_pattern": "custom",
-        "manual_pattern": "[a-zA-Z]*",
+        "manual_pattern": {
+          "token": "[a-zA-Z]*",
+          "operator": "regex"
+        },
         "scope": "column"
       }
     }
