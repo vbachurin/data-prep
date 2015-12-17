@@ -23,7 +23,6 @@
       searchFolders: searchFolders,
 
       // shared folder ui mngt
-      buildStackFromId: buildStackFromId,
       populateMenuChildren: populateMenuChildren
     };
 
@@ -125,12 +124,10 @@
      * @description build the children of the part part given by the index parameter
      */
     function populateMenuChildren(folder) {
-      var promise = FolderRestService.getFolderContent(folder);
-
-      promise.then(function (content) {
-        StateService.setMenuChildren(content.data.folders);
-      });
-      return promise;
+      return FolderRestService.getFolderContent(folder)
+          .then(function (content) {
+            StateService.setMenuChildren(content.data.folders);
+          });
     }
 
     /**

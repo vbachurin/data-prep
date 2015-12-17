@@ -206,11 +206,9 @@ describe('Folder services', function () {
     beforeEach(inject(function($q, FolderRestService, StateService) {
         spyOn(FolderRestService, 'create').and.returnValue($q.when());
         spyOn(FolderRestService, 'children').and.returnValue($q.when());
+        spyOn(FolderRestService, 'searchFolders').and.returnValue($q.when());
         spyOn(FolderRestService, 'renameFolder').and.returnValue($q.when());
         spyOn(StateService, 'setFoldersStack').and.returnValue();
-
-
-
     }));
 
     it('should call rest create', inject(function ($rootScope, FolderService, FolderRestService) {
@@ -231,23 +229,16 @@ describe('Folder services', function () {
         expect(FolderRestService.renameFolder).toHaveBeenCalledWith('foo', 'beer');
     }));
 
+    it('should call rest searchFolders', inject(function ($rootScope, FolderService, FolderRestService) {
+        //given
+        var path = 'path';
 
-    //it('should build stack from folder id', inject(function ($rootScope, FolderService, StateService) {
-    //    //when
-    //    FolderService.buildStackFromId('1/2');
+        //when
+        FolderService.searchFolders(path);
 
-    //    //then
-    //    expect(StateService.setFoldersStack).toHaveBeenCalledWith([{id:'', path:'', name: 'HOME_FOLDER'},{id : '1', path: '1', name: '1'},{id : '1/2', path: '1/2', name: '2'}]);
-    //}));
-
-    //it('should build stack from root folder id', inject(function ($rootScope, FolderService, StateService) {
-    //    //when
-    //    FolderService.buildStackFromId('');
-
-    //    //then
-    //    expect(StateService.setFoldersStack).toHaveBeenCalledWith([{id:'', path:'', name: 'HOME_FOLDER'}]);
-    //}));
-
+        //then
+        expect(FolderRestService.searchFolders).toHaveBeenCalledWith(path);
+    }));
 
     it('should populateMenuChildren', inject(function ($q, $rootScope, FolderService, StateService, FolderRestService) {
         //Given

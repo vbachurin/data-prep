@@ -96,19 +96,6 @@ describe('folder directive', function() {
 			expect(FolderService.populateMenuChildren).toHaveBeenCalledWith(stateMock.folder.foldersStack[1]);
 		}));
 
-		it('should show "Loading..." message while getting children', function(){
-			//given
-			createElement();
-			spyOn(controller, 'initMenuChildren').and.returnValue();//in order not to access the .finally()
-
-			//when
-			element.find('#folder_1 .dropdown-button').eq(0).click();
-			scope.$digest();
-
-			//then
-			expect(element.find('#folder_1 .dropdown-menu > li').eq(0).text().trim()).toBe('Loading...');
-		});
-
 		it('should show menu children', function(){
 			//given
 			createElement();

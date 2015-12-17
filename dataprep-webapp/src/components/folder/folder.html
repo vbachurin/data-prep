@@ -7,8 +7,7 @@
           <span class="dropdown-action">
             <a class="dropdown-button" ng-click="folderCtrl.initMenuChildren(folder)"></a>
           </span>
-          <ul class="dropdown-menu">
-            <li ng-if="folderCtrl.loadingChildren" translate-once="LOADING">y</li>
+          <ul class="dropdown-menu" ng-show="folderCtrl.state.folder.menuChildren.length">
             <li ng-repeat="child in folderCtrl.state.folder.menuChildren" ng-click="folderCtrl.goToFolder(child)">
               {{child.name}}
             </li>
