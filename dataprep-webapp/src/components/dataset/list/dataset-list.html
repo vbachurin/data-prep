@@ -171,7 +171,8 @@
                                 ng-class="{folderselected: node.selected}"
                                 ng-click="datasetListCtrl.chooseFolder(node)">
                                 <img class="icon-img" src="assets/images/folder/folder_close_small-icon.png"/>
-                                <span class="folder-name">{{node.path}}</span>
+                                <span class="folder-name" ng-if="!node.path" translate-once="HOME_FOLDER"></span>
+                                <span class="folder-name" ng-if="node.path"><span translate-once="HOME_FOLDER"></span>/{{node.path}}</span>
                             </li>
                         </ul>
                     </div>
