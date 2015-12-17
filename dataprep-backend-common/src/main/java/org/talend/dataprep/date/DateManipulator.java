@@ -55,7 +55,7 @@ public class DateManipulator {
         return Arrays.stream(Pace.values())
                 .filter(pace -> (allRangeTimetamp / pace.getTime()) < (maxNumberOfParts - 1))
                 .findFirst()
-                .orElse(CENTURY);
+                .orElse(null);
     }
 
     /**

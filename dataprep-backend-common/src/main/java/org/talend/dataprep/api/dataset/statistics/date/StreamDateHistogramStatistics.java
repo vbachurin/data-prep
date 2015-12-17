@@ -116,14 +116,17 @@ public class StreamDateHistogramStatistics {
      * Note that the returned ranges are in pattern of [Min, Min+Pace[ - [Min+Pace, Min+Pace*2[ - ...[Max-binSize,Max[.
      */
     public Histogram<LocalDateTime> getHistogram() {
+        final DateHistogram histogram = new DateHistogram();
         if(min == null) {
-            return new DateHistogram();
+            return histogram;
         }
 
         final DateManipulator.Pace pace = dateManipulator.getSuitablePace(min, max, numberOfBins);
         final Map<Range<LocalDateTime>, Long> paceBin = bins.get(pace);
+        if(paceBin == null) {
+            return histogram;
+        }
 
-        final DateHistogram histogram = new DateHistogram();
         histogram.setPace(pace);
         LocalDateTime nextRangeStart = dateManipulator.getSuitableStartingDate(min, pace);
 

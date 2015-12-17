@@ -24,7 +24,8 @@ public class DateManipulatorTest {
         testGetSuitablePaceWith(LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2022, 1, 15, 0, 0), 20, HALF_YEAR);
         testGetSuitablePaceWith(LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2032, 1, 15, 0, 0), 20, YEAR);
         testGetSuitablePaceWith(LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2200, 1, 15, 0, 0), 20, DECADE);
-        testGetSuitablePaceWith(LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(4015, 1, 15, 0, 0), 20, CENTURY);
+        testGetSuitablePaceWith(LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(3015, 1, 15, 0, 0), 20, CENTURY);
+        testGetSuitablePaceWith(LocalDateTime.of(0, 1, 1, 0, 0), LocalDateTime.of(1000000, 1, 15, 0, 0), 20, null);
     }
 
     private void testGetSuitablePaceWith(final LocalDateTime min, final LocalDateTime max, final int maxBins, final DateManipulator.Pace expectedPace) throws Exception {

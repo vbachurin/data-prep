@@ -151,5 +151,6 @@ public class StreamDateHistogramStatisticsTest {
         // Assert that it scales, e.g. the pace should be for this example 10 thousands years
         // Assert that we have 3 bins
         // Assert also that there is no limit about pace, it should continue to scale
+        //TODO implementation + assertion
     }
 }
