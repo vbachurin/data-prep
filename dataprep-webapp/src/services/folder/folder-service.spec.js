@@ -231,24 +231,6 @@ describe('Folder services', function () {
         expect(FolderRestService.renameFolder).toHaveBeenCalledWith('foo', 'beer');
     }));
 
-
-    //it('should build stack from folder id', inject(function ($rootScope, FolderService, StateService) {
-    //    //when
-    //    FolderService.buildStackFromId('1/2');
-
-    //    //then
-    //    expect(StateService.setFoldersStack).toHaveBeenCalledWith([{id:'', path:'', name: 'HOME_FOLDER'},{id : '1', path: '1', name: '1'},{id : '1/2', path: '1/2', name: '2'}]);
-    //}));
-
-    //it('should build stack from root folder id', inject(function ($rootScope, FolderService, StateService) {
-    //    //when
-    //    FolderService.buildStackFromId('');
-
-    //    //then
-    //    expect(StateService.setFoldersStack).toHaveBeenCalledWith([{id:'', path:'', name: 'HOME_FOLDER'}]);
-    //}));
-
-
     it('should populateMenuChildren', inject(function ($q, $rootScope, FolderService, StateService, FolderRestService) {
         //Given
         var content ={data: {
