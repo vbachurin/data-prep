@@ -3,6 +3,11 @@
   $keySize: 30px;
 
   .dropdown-action {
+    border-bottom: 1px solid #B7B7B7;
+    border-top: 1px solid #f4f8fa;
+    border-left: 1px solid #f4f8fa;
+    border-right: 1px solid #C7C7C7;
+
     background: $light-gray;
     color: $black;
 
@@ -11,7 +16,7 @@
 
     float: left;
     cursor: pointer;
-    border-radius: 3px 0 0 3px;
+    border-radius: 5px 0 0 5px;
     padding: 0;
 
     font-weight: 800;
