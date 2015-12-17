@@ -20,6 +20,8 @@
 
     padding: 10px;
 
+    font-size: .85em;
+
     .param-name {
       @include flex-basis(45px);
       @include flex-grow(1);
