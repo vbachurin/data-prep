@@ -4,8 +4,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 import javax.inject.Inject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.folder.Folder;
@@ -19,8 +17,6 @@ import com.wordnik.swagger.annotations.ApiOperation;
 @RestController
 @Api(value = "folders", basePath = "/folders", description = "Operations on folders")
 public class FolderService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(FolderService.class);
 
     private FolderRepository folderRepository;
 

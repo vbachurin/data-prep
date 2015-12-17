@@ -23,7 +23,6 @@ import org.slf4j.Marker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.talend.daikon.exception.ExceptionContext;
@@ -110,10 +109,6 @@ public class DataSetService {
     /** Dataset locator (used for remote datasets). */
     @Autowired
     private DataSetLocatorService datasetLocator;
-
-    /** DataPrep ready to use jackson object mapper. */
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
 
     /** DataPrep abstraction to the underlying security (whether it's enabled or not). */
     @Autowired

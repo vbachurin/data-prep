@@ -94,19 +94,16 @@ public class CSVSchemaParser implements SchemaParser {
                 try {
                     Integer.parseInt(columnValue);
 
-                    if (content.isPresent()) {
-                        // in case there are more columns that in the header
-                        if (columns.size() > i) {
-                            columns.get(i).setType(Type.INTEGER.getName());
-                        }
+                    // in case there are more columns that in the header
+                    if (content.isPresent() && columns.size() > i) {
+                        columns.get(i).setType(Type.INTEGER.getName());
                     }
                 } catch (NumberFormatException e) {
                     // Not a number
                 }
-                if ("true".equalsIgnoreCase(columnValue.trim()) || "false".equalsIgnoreCase(columnValue.trim())) {
-                    if (columns.size() > i) {
-                        columns.get(i).setType(Type.BOOLEAN.getName());
-                    }
+                if (("true".equalsIgnoreCase(columnValue.trim()) || "false".equalsIgnoreCase(columnValue.trim()))
+                        && columns.size() > i) {
+                    columns.get(i).setType(Type.BOOLEAN.getName());
                 }
             }
             lineNumber++;

@@ -9,7 +9,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -32,10 +31,6 @@ import org.talend.dataprep.transformation.format.WriterRegistrationService;
  */
 @Component
 class DiffTransformer implements Transformer {
-
-    /** The data-prep ready jackson module. */
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
 
     @Autowired
     private ActionParser actionParser;

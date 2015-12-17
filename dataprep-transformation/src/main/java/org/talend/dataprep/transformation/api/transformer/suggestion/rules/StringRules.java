@@ -31,11 +31,11 @@ public class StringRules extends BasicRules {
                     final List<PatternFrequency> patterns = columnMetadata.getStatistics().getPatternFrequencies();
                     for (PatternFrequency pattern : patterns) {
                         final String patternAsString = pattern.getPattern();
-                        if (!patternAsString.isEmpty()) {
-                            if (patternAsString.charAt(0) == ' ' || patternAsString.charAt(patternAsString.length() - 1) == ' ') {
-                                // At least a pattern has a space (at beginning or end) in it, Trim should be suggested.
-                                return POSITIVE;
-                            }
+                        // At least a pattern has a space (at beginning or end) in it, Trim should be suggested
+                        if (!patternAsString.isEmpty() && //
+                                (patternAsString.charAt(0) == ' '
+                                        || patternAsString.charAt(patternAsString.length() - 1) == ' ')) {
+                            return POSITIVE;
                         }
                     }
                     return NEGATIVE;
@@ -54,11 +54,9 @@ public class StringRules extends BasicRules {
                     final List<PatternFrequency> patterns = columnMetadata.getStatistics().getPatternFrequencies();
                     for (PatternFrequency pattern : patterns) {
                         final String patternAsString = pattern.getPattern();
-                        if (!patternAsString.isEmpty()) {
-                            if (patternAsString.indexOf('a') >= 0) {
-                                // At least a pattern has a lower case in it, Upper case should be suggested.
-                                return POSITIVE;
-                            }
+                        // At least a pattern has a lower case in it, Upper case should be suggested.
+                        if (!patternAsString.isEmpty() && patternAsString.indexOf('a') >= 0) {
+                            return POSITIVE;
                         }
                     }
                     return NEGATIVE;
@@ -77,11 +75,9 @@ public class StringRules extends BasicRules {
                     final List<PatternFrequency> patterns = columnMetadata.getStatistics().getPatternFrequencies();
                     for (PatternFrequency pattern : patterns) {
                         final String patternAsString = pattern.getPattern();
-                        if (!patternAsString.isEmpty()) {
-                            if (patternAsString.indexOf('A') >= 0) {
-                                // At least a pattern has a upper case in it, Lower case should be suggested.
-                                return POSITIVE;
-                            }
+                        // At least a pattern has a upper case in it, Lower case should be suggested.
+                        if (!patternAsString.isEmpty() && patternAsString.indexOf('A') >= 0) {
+                            return POSITIVE;
                         }
                     }
                     return NEGATIVE;

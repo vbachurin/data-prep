@@ -116,6 +116,7 @@ public class MailFeedbackSender implements FeedbackSender {
             this.password = password;
         }
 
+        @Override
         protected PasswordAuthentication getPasswordAuthentication() {
             return new PasswordAuthentication(userName, password);
         }

@@ -102,21 +102,21 @@ public class Padding extends ActionMetadata implements ColumnAction {
         final String original = row.get(columnId);
 
         final int size = Integer.parseInt(parameters.get(SIZE_PARAMETER));
-        final char padding_char = parameters.get(PADDING_CHAR_PARAMETER).charAt(0);
-        final String padding_position = parameters.get(PADDING_POSITION_PARAMETER);
+        final char paddingChar = parameters.get(PADDING_CHAR_PARAMETER).charAt(0);
+        final String paddingPosition = parameters.get(PADDING_POSITION_PARAMETER);
 
-        row.set(columnId, apply(original, size, padding_char, padding_position));
+        row.set(columnId, apply(original, size, paddingChar, paddingPosition));
     }
 
-    protected String apply(String from, int size, char padding_char, String position) {
+    protected String apply(String from, int size, char paddingChar, String position) {
         if (from == null) {
             return StringUtils.EMPTY;
         }
 
         if (position.equals(LEFT_POSITION)) {
-            return Strings.padStart(from, size, padding_char);
+            return Strings.padStart(from, size, paddingChar);
         } else {
-            return Strings.padEnd(from, size, padding_char);
+            return Strings.padEnd(from, size, paddingChar);
         }
     }
 

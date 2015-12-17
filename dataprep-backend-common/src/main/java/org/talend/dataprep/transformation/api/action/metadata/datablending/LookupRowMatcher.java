@@ -99,6 +99,7 @@ public class LookupRowMatcher implements DisposableBean {
     /**
      * Gently close the input stream as well as the http client.
      */
+    @Override
     public void destroy() {
         try {
             input.close();

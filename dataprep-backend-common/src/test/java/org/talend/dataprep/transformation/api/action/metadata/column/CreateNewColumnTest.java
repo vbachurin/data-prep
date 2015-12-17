@@ -8,30 +8,48 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-public class CreateNewColumnTest {
+
+public class CreateNewColumnTest extends AbstractMetadataBaseTest {
 
     /** The action to test. */
+    @Autowired
     private CreateNewColumn action;
 
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        action = new CreateNewColumn();
         parameters = ActionMetadataTestUtils.parseParameters(CreateNewColumnTest.class.getResourceAsStream("createNewColumnAction.json"));
+    }
+
+    @Test
+    public void testActionName() throws Exception {
+        assertEquals("create_new_column", action.getName());
+    }
+
+    @Test
+    public void testActionParameters() throws Exception {
+        final List<Parameter> parameters = action.getParameters();
+        assertEquals(5, parameters.size());
+        assertTrue(parameters.stream().filter(p -> StringUtils.equals(p.getName(), "mode_new_column")).findFirst().isPresent());
     }
 
     @Test
