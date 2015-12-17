@@ -76,6 +76,8 @@ public class RegexParametersHelper {
         /** The pattern, used only in regex mode. */
         private Pattern pattern;
 
+        private boolean strict = true;
+
         /**
          * Constructor.
          *
@@ -102,12 +104,24 @@ public class RegexParametersHelper {
             return operator;
         }
 
+        public boolean isStrict() {
+            return strict;
+        }
+
+        public void setStrict(boolean strict) {
+            this.strict = strict;
+        }
+
+        public Pattern getPattern() {
+            return pattern;
+        }
+
         public boolean isValid() {
             // regex validity check
             final Boolean regexMode = this.operator.equals(REGEX_MODE);
 
             if (regexMode && pattern == null) {
-                String actualPattern = ".*" + this.token + ".*";
+                String actualPattern = (strict ? this.token : ".*" + this.token + ".*");
                 try {
                     pattern = Pattern.compile(actualPattern);
                 } catch (Exception e) {
@@ -119,6 +133,9 @@ public class RegexParametersHelper {
         }
 
         public boolean matches(String value) {
+            if (value == null) {
+                return false;
+            }
             if (this.token == null || this.token.length() == 0) {
                 return false;
             }

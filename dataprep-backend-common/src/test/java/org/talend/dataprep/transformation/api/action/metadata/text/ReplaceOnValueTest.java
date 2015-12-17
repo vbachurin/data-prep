@@ -210,6 +210,11 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
                         "XXX_this is a string_YYY"));
         assertEquals("foobar", action.computeNewValue(
                 buildPatternActionContext(generateJson("t.t.", RegexParametersHelper.REGEX_MODE), "foobar", true), "XXX_toto_YYY"));
+
+        assertEquals("XXX-123-YYY", action.computeNewValue(
+                buildPatternActionContext(generateJson("_(\\d{3,})_", RegexParametersHelper.REGEX_MODE), "-$1-", false), "XXX_123_YYY"));
+        assertEquals("123", action.computeNewValue(
+                buildPatternActionContext(generateJson("_(\\d{3,})_", RegexParametersHelper.REGEX_MODE), "$1", true), "XXX_123_YYY"));
     }
 
     @Test

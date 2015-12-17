@@ -6,6 +6,7 @@ import static org.talend.dataprep.transformation.api.action.parameters.Parameter
 import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -93,7 +94,6 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
                 actionContext.get(REGEX_HELPER_KEY,(p) -> regexParametersHelper.build(rawParam));
             } catch (InvalidParameterException e) {
                 actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
-                return;
             }
         }
     }
@@ -156,11 +156,15 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
 
         try {
             final RegexParametersHelper.ReplaceOnValueParameter replaceOnValueParameter = context.get(REGEX_HELPER_KEY);
+            replaceOnValueParameter.setStrict(false);
 
             boolean matches = replaceOnValueParameter.matches(originalValue);
 
             if (matches) {
-                if (replaceEntireCell) {
+                if (replaceEntireCell && replaceOnValueParameter.getOperator().equals(RegexParametersHelper.REGEX_MODE)) {
+                    Matcher matcher = replaceOnValueParameter.getPattern().matcher(originalValue);
+                    return matcher.replaceAll(replacement);
+                } else if (replaceEntireCell) {
                     return replacement;
                 } else {
                     return originalValue.replaceAll(replaceOnValueParameter.getToken(), replacement);

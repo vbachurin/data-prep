@@ -87,7 +87,7 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
     }
 
     @Test
-    public void should_delete_even_with_leading_space() {
+    public void should_not_delete_even_with_leading_space() {
         //given
         final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
@@ -98,13 +98,13 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
-        assertTrue(row.isDeleted());
+        assertFalse(row.isDeleted());
         assertEquals("David Bowie", row.get("name"));
         assertEquals(" Berlin", row.get("city"));
     }
 
     @Test
-    public void should_delete_even_with_trailing_space() {
+    public void should_not_delete_even_with_trailing_space() {
         //given
         final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
@@ -115,13 +115,13 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
-        assertTrue(row.isDeleted());
+        assertFalse(row.isDeleted());
         assertEquals("David Bowie", row.get("name"));
         assertEquals("Berlin ", row.get("city"));
     }
 
     @Test
-    public void should_delete_even_with_enclosing_spaces() {
+    public void should_not_delete_even_with_enclosing_spaces() {
         //given
         final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
@@ -132,7 +132,7 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         //then
-        assertTrue(row.isDeleted());
+        assertFalse(row.isDeleted());
         assertEquals("David Bowie", row.get("name"));
         assertEquals(" Berlin ", row.get("city"));
     }
