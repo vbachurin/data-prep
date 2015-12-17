@@ -10,24 +10,35 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
+import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
 
 /**
  * Unit test for the Cut action.
  *
  * @see Cut
  */
-public class CutTest {
+public class CutTest extends AbstractMetadataBaseTest {
 
     /** The action to test. */
+    @Autowired
     private Cut action;
+
+    /** The dataprep ready jackson builder. */
+    @Autowired
+    public Jackson2ObjectMapperBuilder builder;
+    
     /** The action parameters. */
     private Map<String, String> parameters;
 
@@ -35,7 +46,6 @@ public class CutTest {
      * Constructor.
      */
     public CutTest() throws IOException {
-        action = new Cut();
         final InputStream parametersSource = SplitTest.class.getResourceAsStream("cutAction.json");
         parameters = ActionMetadataTestUtils.parseParameters(parametersSource);
     }
@@ -66,6 +76,41 @@ public class CutTest {
     }
 
     @Test
+    public void should_apply_on_column_starts_with() throws IOException {
+        // given
+        DataSetRow row = getRow("Wait for it...", "The value that gets cut !", "Done !");
+        DataSetRow expected = getRow("Wait for it...", " value that gets cut !", "Done !");
+
+        Map<String, String> regexpParameters = ActionMetadataTestUtils.parseParameters(
+                SplitTest.class.getResourceAsStream("cutAction.json"));
+        regexpParameters.put("pattern", generateJson("The", "starts_with"));
+
+        // when
+        ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
+
+        // then
+        assertEquals(expected, row);
+    }
+
+
+    @Test
+    public void should_apply_on_column_ends_with() throws IOException {
+        // given
+        DataSetRow row = getRow("Wait for it...", "The value that gets cut !", "Done !");
+        DataSetRow expected = getRow("Wait for it...", "The value that gets ", "Done !");
+
+        Map<String, String> regexpParameters = ActionMetadataTestUtils.parseParameters(
+                SplitTest.class.getResourceAsStream("cutAction.json"));
+        regexpParameters.put("pattern", generateJson("cut !", "ends_with"));
+
+        // when
+        ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
+
+        // then
+        assertEquals(expected, row);
+    }
+
+    @Test
     public void should_apply_on_column_with_regexp() throws IOException {
         // given
         DataSetRow row = getRow("Wait for it...", "The value that gets cut !", "Done !");
@@ -73,7 +118,7 @@ public class CutTest {
 
         Map<String, String> regexpParameters = ActionMetadataTestUtils.parseParameters(
                 SplitTest.class.getResourceAsStream("cutAction.json"));
-        regexpParameters.put("pattern", ".*gets");
+        regexpParameters.put("pattern", generateJson(".*gets", "regex"));
 
         // when
         ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
@@ -90,7 +135,7 @@ public class CutTest {
 
         Map<String, String> regexpParameters = ActionMetadataTestUtils.parseParameters(
                 SplitTest.class.getResourceAsStream("cutAction.json"));
-        regexpParameters.put("pattern", "*");
+        regexpParameters.put("pattern", generateJson("*", "regex"));
 
         // when
         ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
@@ -108,7 +153,7 @@ public class CutTest {
 
         Map<String, String> regexpParameters = ActionMetadataTestUtils.parseParameters(
                 SplitTest.class.getResourceAsStream("cutAction.json"));
-        regexpParameters.put("pattern", "");
+        regexpParameters.put("pattern", generateJson("", "regex"));
 
         // when
         ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
@@ -145,4 +190,14 @@ public class CutTest {
         assertFalse(action.acceptColumn(getColumn(Type.DATE)));
         assertFalse(action.acceptColumn(getColumn(Type.BOOLEAN)));
     }
+
+    private String generateJson(String token, String operator) {
+        RegexParametersHelper.ReplaceOnValueParameter r = new RegexParametersHelper.ReplaceOnValueParameter(token, operator);
+        try {
+            return builder.build().writeValueAsString(r);
+        } catch (JsonProcessingException e) {
+            return "";
+        }
+    }
+
 }
