@@ -6,7 +6,10 @@
         "column_id": "city",
         "scope": "column",
         "separator": "other",
-        "manual_separator": " ",
+        "manual_separator": {
+          "token": " ",
+          "operator": "regex"
+        },
         "limit":"2",
         "filter": {
           "eq": {

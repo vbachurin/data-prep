@@ -5,6 +5,7 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.INTEGER;
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.REGEX;
 
+import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -12,6 +13,7 @@ import java.util.regex.PatternSyntaxException;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -20,6 +22,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
@@ -28,6 +31,9 @@ import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
  */
 @Component(Split.ACTION_BEAN_PREFIX + Split.SPLIT_ACTION_NAME)
 public class Split extends ActionMetadata implements ColumnAction {
+
+    @Autowired
+    private RegexParametersHelper regexParametersHelper;
 
     /**
      * The action name.
@@ -54,6 +60,8 @@ public class Split extends ActionMetadata implements ColumnAction {
      * Number of items produces by the split
      */
     private static final String LIMIT = "limit"; //$NON-NLS-1$
+
+    public static final String REGEX_HELPER_KEY = "regex_helper";
 
     /**
      * @see org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata#getName()
@@ -107,26 +115,25 @@ public class Split extends ActionMetadata implements ColumnAction {
      * @param parameters the action parameters.
      * @return the separator to use according to the given parameters.
      */
-    private String getSeparator(Map<String, String> parameters) {
-        return ("other").equals(parameters.get(SEPARATOR_PARAMETER)) ? parameters.get(MANUAL_SEPARATOR_PARAMETER) : parameters
-                .get(SEPARATOR_PARAMETER);
+    private RegexParametersHelper.ReplaceOnValueParameter getSeparator(Map<String, String> parameters) {
+        if ("other".equals(parameters.get(SEPARATOR_PARAMETER))) {
+            final String jsonString = parameters.get(MANUAL_SEPARATOR_PARAMETER);
+            return regexParametersHelper.build(jsonString);
+        } else {
+            return new RegexParametersHelper.ReplaceOnValueParameter(parameters.get(SEPARATOR_PARAMETER),
+                    RegexParametersHelper.REGEX_MODE);
+        }
     }
 
     @Override
     public void compile(ActionContext actionContext) {
-        // Retrieve the separator to use
-        final String realSeparator = getSeparator(actionContext.getParameters());
-        if (StringUtils.isEmpty(realSeparator)) {
-            actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
-            return;
-        }
-        try {
-            // Check if separator is a valid regex
-            Pattern.compile(realSeparator);
-        } catch (PatternSyntaxException e) {
-            // In case the pattern is not valid: nothing to do, do not create new columns.
-            actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
-            return;
+        super.compile(actionContext);
+        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
+            try {
+                actionContext.get(REGEX_HELPER_KEY,(p) -> getSeparator(actionContext.getParameters()));
+            } catch (InvalidParameterException e) {
+                actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
+            }
         }
         actionContext.setActionStatus(ActionContext.ActionStatus.OK);
     }
@@ -137,8 +144,9 @@ public class Split extends ActionMetadata implements ColumnAction {
     @Override
     public void applyOnColumn(DataSetRow row, ActionContext context) {
         // Retrieve the separator to use
+        final RegexParametersHelper.ReplaceOnValueParameter replaceOnValueParameter = context.get(REGEX_HELPER_KEY);
+        replaceOnValueParameter.setStrict(false);
         final Map<String, String> parameters = context.getParameters();
-        final String realSeparator = getSeparator(parameters);
         final String columnId = context.getColumnId();
         // create the new columns
         int limit = Integer.parseInt(parameters.get(LIMIT));
@@ -168,13 +176,16 @@ public class Split extends ActionMetadata implements ColumnAction {
             return;
         }
 
-        String[] split = originalValue.split(realSeparator, limit);
+        if (replaceOnValueParameter.matches(originalValue)){
+            final String realSeparator = replaceOnValueParameter.getToken();
+            String[] split = originalValue.split(realSeparator, limit);
 
-        final Iterator<String> iterator = newColumns.iterator();
+            final Iterator<String> iterator = newColumns.iterator();
 
-        for (int i = 0; i < limit && iterator.hasNext(); i++) {
-            final String newValue = i < split.length ? split[i] : EMPTY;
-            row.set(iterator.next(), newValue);
+            for (int i = 0; i < limit && iterator.hasNext(); i++) {
+                final String newValue = i < split.length ? split[i] : EMPTY;
+                row.set(iterator.next(), newValue);
+            }
         }
     }
 
