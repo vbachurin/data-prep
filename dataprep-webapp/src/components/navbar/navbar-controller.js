@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function NavbarCtrl($state, $translate, version, OnboardingService, DatasetService, FeedbackRestService, MessageService) {
+    function NavbarCtrl($state, $translate, version, OnboardingService, DatasetService, FeedbackRestService, MessageService, EasterEggsService) {
         var vm = this;
 
         //--------------------------------------------------------------------------------------------------------------
@@ -71,7 +71,19 @@
                 });
         };
 
+        //--------------------------------------------------------------------------------------------------------------
+        //----------------------------------------------SEARCH----------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+
+        vm.searchInput='';
+        vm.search = function() {
+            // just in case something funny happens...
+            EasterEggsService.enableEasterEgg(vm.searchInput);
+        }
+
     }
+
+
 
     angular.module('data-prep.navbar')
         .controller('NavbarCtrl', NavbarCtrl);

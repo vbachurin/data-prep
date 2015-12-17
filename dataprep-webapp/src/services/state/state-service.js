@@ -8,10 +8,14 @@
      * @name data-prep.services.state.service:StateService
      * @description Entry level for State services
      */
-    function StateService(PlaygroundStateService, playgroundState, DatasetStateService, datasetState, FolderStateService, folderState) {
+    function StateService(PlaygroundStateService, playgroundState, //
+                          DatasetStateService, datasetState, //
+                          FolderStateService, folderState,  //
+                          EasterEggsStateService, easterEggsState) {
         state.playground = playgroundState;
         state.dataset = datasetState;
         state.folder = folderState;
+        state.easterEggsState = easterEggsState;
 
         return {
             //playground
@@ -59,7 +63,11 @@
             setCurrentFolder: FolderStateService.setCurrentFolder,
             setCurrentFolderContent: FolderStateService.setCurrentFolderContent,
             setFoldersStack: FolderStateService.setFoldersStack,
-            setMenuChildren: FolderStateService.setMenuChildren
+            setMenuChildren: FolderStateService.setMenuChildren,
+
+            //easter eggs
+            enableEasterEgg: EasterEggsStateService.enableEasterEgg,
+            disableEasterEgg: EasterEggsStateService.disableEasterEgg
         };
     }
 

@@ -24,8 +24,9 @@
     </nav>
     <div class="navigation-tools">
         <div class="search-bar">
-            <form role="search">
-                <input type="search" translate-once-placeholder="SEARCH" title="{{'COMING_SOON' | translate}}"/>
+            <form role="search" ng-submit="navbarCtrl.search()">
+                <input type="search" ng-model="navbarCtrl.searchInput" translate-once-placeholder="SEARCH"
+                       title="{{'COMING_SOON' | translate}}"/>
             </form>
         </div>
     </div>
@@ -81,7 +82,6 @@
         </div>
     </form>
 </talend-modal>
-
 
 <ui-view class="content"></ui-view>
 
