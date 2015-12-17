@@ -55,7 +55,7 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
     /**
      * The pattern manually specified by the user. Should be used only if PATTERN_PARAMETER value is 'other'.
      */
-    private static final String MANUAL_PATTERN_PARAMETER = "manual_pattern"; //$NON-NLS-1$
+    protected static final String MANUAL_PATTERN_PARAMETER = "manual_pattern"; //$NON-NLS-1$
 
     public static final String CUSTOM = "custom";
 

@@ -20,9 +20,11 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -33,6 +35,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
 
 /**
  * Test class for Match Pattern action. Creates one consumer, and test it.
@@ -46,6 +49,11 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
      */
     @Autowired
     private MatchesPattern action;
+
+
+    /** The dataprep ready jackson builder. */
+    @Autowired
+    public Jackson2ObjectMapperBuilder builder;
 
     private Map<String, String> parameters;
 
@@ -80,6 +88,56 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
         expectedValues.put("0001", "Bacon");
         expectedValues.put("0003", "true");
         expectedValues.put("0002", "01/01/2015");
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
+    public void shouldMatchPattern_starts_with() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon");
+        values.put("0002", "01/01/2015");
+        final DataSetRow row = new DataSetRow(values);
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon");
+        expectedValues.put("0003", "true");
+        expectedValues.put("0002", "01/01/2015");
+
+        parameters.put(MatchesPattern.PATTERN_PARAMETER, "custom");
+        parameters.put(MatchesPattern.MANUAL_PATTERN_PARAMETER, generateJson("Bac", "starts_with"));
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
+    public void shouldNotMatchPattern_starts_with() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon");
+        values.put("0002", "01/01/2015");
+        final DataSetRow row = new DataSetRow(values);
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon");
+        expectedValues.put("0003", "false");
+        expectedValues.put("0002", "01/01/2015");
+
+        parameters.put(MatchesPattern.PATTERN_PARAMETER, "custom");
+        parameters.put(MatchesPattern.MANUAL_PATTERN_PARAMETER, generateJson("Bak", "starts_with"));
 
         // when
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
@@ -222,6 +280,15 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
     private ColumnMetadata createMetadata(String id, String name, Type type) {
         return ColumnMetadata.Builder.column().computedId(id).name(name).type(type).headerSize(12).empty(0).invalid(2).valid(5)
                 .build();
+    }
+
+    private String generateJson(String token, String operator) {
+        RegexParametersHelper.ReplaceOnValueParameter r = new RegexParametersHelper.ReplaceOnValueParameter(token, operator);
+        try {
+            return builder.build().writeValueAsString(r);
+        } catch (JsonProcessingException e) {
+            return "";
+        }
     }
 
 }
