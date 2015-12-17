@@ -55,7 +55,7 @@ public class DeleteOnValue extends AbstractDelete {
     @Nonnull
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        parameters.add(new Parameter(VALUE_PARAMETER, REGEX, regexParametersHelper.getEmptyParamAsString()));
+        parameters.add(new Parameter(VALUE_PARAMETER, REGEX, EMPTY));
         return parameters;
     }
 

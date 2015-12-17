@@ -2,7 +2,7 @@ package org.talend.dataprep.transformation.api.action.metadata.common;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by stef on 16/12/15.
+ * Utils class to ease manipulation of parameters of type ParameterType.REGEX.
  */
 @Component
 public class RegexParametersHelper {
@@ -40,19 +40,8 @@ public class RegexParametersHelper {
     /** The ends with parmeter name. */
     public static final String ENDS_WITH_MODE = "ends_with";
 
-    public static final ReplaceOnValueParameter EMPTY = new ReplaceOnValueParameter("", EQUALS_MODE);
-
-    public String getEmptyParamAsString() {
-/*        try {
-            return builder.build().writeValueAsString(EMPTY);
-        } catch (JsonProcessingException e) {
-            return "";
-        }*/
-        return "";
-    }
-
     public ReplaceOnValueParameter build(String jsonString) {
-        if (jsonString == null || jsonString.length() == 0) {
+        if (StringUtils.isEmpty(jsonString)) {
             throw new InvalidParameterException(jsonString + " is not a valid json");
         }
         try {
@@ -76,6 +65,7 @@ public class RegexParametersHelper {
         /** The pattern, used only in regex mode. */
         private Pattern pattern;
 
+        /** Indicates if the match is strict or not. */
         private boolean strict = true;
 
         /**
@@ -116,7 +106,7 @@ public class RegexParametersHelper {
             return pattern;
         }
 
-        public boolean isValid() {
+        private boolean isValid() {
             // regex validity check
             final Boolean regexMode = this.operator.equals(REGEX_MODE);
 
@@ -132,11 +122,20 @@ public class RegexParametersHelper {
             return true;
         }
 
+        /**
+         * Check if a string matches token & operator.
+         *
+         * If operator is REGEX we use the strict field.
+         * If strict=true value must matches the regex, if strict=false a part of value must matches the regex.
+         *
+         * @param value
+         * @return true if value matches the token regarding operator
+         */
         public boolean matches(String value) {
             if (value == null) {
                 return false;
             }
-            if (this.token == null || this.token.length() == 0) {
+            if (StringUtils.isEmpty(this.token)) {
                 return false;
             }
 

@@ -66,7 +66,7 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
     @Override
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        parameters.add(new Parameter(CELL_VALUE_PARAMETER, REGEX, regexParametersHelper.getEmptyParamAsString()));
+        parameters.add(new Parameter(CELL_VALUE_PARAMETER, REGEX, EMPTY));
         parameters.add(new Parameter(REPLACE_VALUE_PARAMETER, STRING, EMPTY));
         parameters.add(new Parameter(REPLACE_ENTIRE_CELL_PARAMETER, BOOLEAN, "false"));
         return parameters;
