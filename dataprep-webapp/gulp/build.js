@@ -44,8 +44,8 @@ gulp.task('injector:js', ['scripts', 'injector:css'], function () {
                 '!src/lib/**/*.*',
                 '!src/**/*.mine.*'
             ])
-                .pipe($.naturalSort())//This fixes a angularFileSort issue : https://github.com/klei/gulp-angular-filesort/issues/17
-                .pipe($.angularFilesort())
+            .pipe($.naturalSort())//This fixes a angularFileSort issue : https://github.com/klei/gulp-angular-filesort/issues/17
+            .pipe($.angularFilesort())
             , {
                 ignorePath: 'src',
                 addRootSlash: false
@@ -90,7 +90,14 @@ gulp.task('html', ['wiredep', 'injector:css', 'injector:js', 'partials'], functi
         .pipe($.rev())
         .pipe(jsFilter)
         .pipe($.ngAnnotate())
-        .pipe($.uglify({preserveComments: $.uglifySaveLicense}))
+        .pipe($.uglify({
+            mangle: {
+                //workerFn[0-9] are preserved words that won't be mangled during uglification
+                //those can be used to pass external functions to the web worker
+                except: ['workerFn0', 'workerFn1', 'workerFn2', 'workerFn3', 'workerFn4', 'workerFn5', 'workerFn6', 'workerFn7', 'workerFn8', 'workerFn9']
+            },
+            preserveComments: $.uglifySaveLicense
+        }))
         .pipe(jsFilter.restore())
         .pipe(cssFilter)
         .pipe($.csso())
@@ -131,6 +138,20 @@ gulp.task('fonts', function () {
         .pipe(gulp.dest('dist/fonts/'));
 });
 
+gulp.task('workerLibs', function () {
+    return gulp.src($.mainBowerFiles())
+        .pipe($.filter('**/*.js'))
+        .pipe($.flatten())
+        .pipe(gulp.dest('dist/worker/'));
+});
+
+gulp.task('workerLibs:dev', function () {
+    return gulp.src($.mainBowerFiles())
+        .pipe($.filter('**/*.js'))
+        .pipe($.flatten())
+        .pipe(gulp.dest('.tmp/worker/'));
+});
+
 gulp.task('misc', function () {
     return gulp.src(['src/**/*.ico', 'src/**/*.json'])
         .pipe(gulp.dest('dist/'));
@@ -145,7 +166,7 @@ gulp.task('clean:dev', function (done) {
 });
 
 gulp.task('build', ['clean'], function () {
-    gulp.start(['html', 'images', 'fonts', 'customFonts', 'misc']);
+    gulp.start(['html', 'images', 'fonts', 'customFonts', 'misc', 'workerLibs']);
 });
 
 gulp.task('build:dev', ['clean'], function () {
@@ -153,7 +174,6 @@ gulp.task('build:dev', ['clean'], function () {
     return gulp.src([
         'src/**/*.*',
         '.tmp/**/*.*',
-        '!src/**/*.scss',
-        '!src/**/*.jade'
+        '!src/**/*.scss'
     ]).pipe(gulp.dest('dev/'));
 });

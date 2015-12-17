@@ -266,6 +266,15 @@
             }
         });
 
+    Object.defineProperty(ColumnProfileCtrl.prototype,
+        'filteredHistogram', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.statisticsService.filteredHistogram;
+            }
+        });
+
     /**
      * @ngdoc property
      * @name aggregationColumns

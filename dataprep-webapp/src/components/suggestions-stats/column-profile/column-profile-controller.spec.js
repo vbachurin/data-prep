@@ -123,6 +123,18 @@ describe('ColumnProfile controller', function () {
             expect(ctrl.histogram).toBe(data);
         }));
 
+        it('should bind filteredHistogram getter to StatisticsService.filteredHistogram', inject(function (StatisticsService) {
+            //given
+            var data = {};
+            var ctrl = createController();
+
+            //when
+            StatisticsService.filteredHistogram = data;
+
+            //then
+            expect(ctrl.filteredHistogram).toBe(data);
+        }));
+
         it('should bind aggregationColumns getter to StatisticsService.getAggregationColumns()', inject(function (StatisticsService) {
             //given
             var ctrl = createController();

@@ -1,7 +1,7 @@
 describe('verticalBarchart directive', function () {
     'use strict';
 
-    var createElement, element, scope, statsData, isolateScope;
+    var createElement, element, scope, statsData, secondaryStatsData, isolateScope;
     var flushAllD3Transitions = function () {
         var now = Date.now;
         Date.now = function () {
@@ -19,6 +19,12 @@ describe('verticalBarchart directive', function () {
             {'data': {min: 10, max: 15}, 'occurrences': 6},
             {'data': {min: 15, max: 20}, 'occurrences': 5}
         ];
+        secondaryStatsData = [
+            {'data': {min: 0, max: 5}, 'filteredOccurrences': 9},
+            {'data': {min: 5, max: 10}, 'filteredOccurrences': 8},
+            {'data': {min: 10, max: 15}, 'filteredOccurrences': 6},
+            {'data': {min: 15, max: 20}, 'filteredOccurrences': 5}
+        ];
 
         createElement = function () {
 
@@ -30,9 +36,11 @@ describe('verticalBarchart directive', function () {
             element = angular.element('<vertical-barchart id="barChart" width="250" height="400"' +
                 'on-click="onClick(interval)"' +
                 'visu-data="visData"' +
+                'visu-data-2="visData2"' +
                 'key-field="data"' +
                 'active-limits="existingFilter"' +
                 'value-field="occurrences"' +
+                'value-field-2="filteredOccurrences"' +
                 '></vertical-barchart>');
 
             angular.element('body').append(element);
@@ -59,14 +67,66 @@ describe('verticalBarchart directive', function () {
 
         //when
         scope.visData = statsData;
+        scope.visData2 = secondaryStatsData;
         scope.$digest();
         jasmine.clock().tick(100);
 
         //then
-        expect(element.find('rect').length).toBe(statsData.length * 3); // 3 chart columns
-        expect(element.find('.bg-rect').length).toBe(statsData.length);
-        expect(element.find('.bar').length).toBe(statsData.length);
         expect(element.find('.grid').length).toBe(1);
+        expect(element.find('rect').length).toBe(statsData.length * 3); // 3 chart columns * (main + secondary + hover)
+
+        expect(element.find('g.bar').length).toBe(1);
+        expect(element.find('rect.bar').length).toBe(statsData.length);
+
+        expect(element.find('g.secondaryBar').length).toBe(1);
+        expect(element.find('rect.secondaryBar').length).toBe(secondaryStatsData.length);
+
+        expect(element.find('.bg-rect').length).toBe(statsData.length);
+    });
+
+    it('should render main bars after a 100ms delay', function () {
+        //given
+        createElement();
+
+        //when
+        scope.visData = statsData;
+        scope.visData2 = null;
+        scope.$digest();
+        jasmine.clock().tick(100);
+
+        //then
+        expect(element.find('.grid').length).toBe(1);
+        expect(element.find('rect').length).toBe(statsData.length * 2); // 3 chart columns * (main + hover)
+
+        expect(element.find('g.bar').length).toBe(1);
+        expect(element.find('rect.bar').length).toBe(statsData.length);
+
+        expect(element.find('g.secondaryBar').length).toBe(0);
+        expect(element.find('rect.secondaryBar').length).toBe(0);
+
+        expect(element.find('.bg-rect').length).toBe(statsData.length);
+    });
+
+    it('should render secondary bars after a 100ms delay', function () {
+        //given
+        createElement();
+
+        scope.visData = statsData;
+        scope.visData2 = null;
+        scope.$digest();
+        jasmine.clock().tick(100);
+
+        expect(element.find('g.secondaryBar').length).toBe(0);
+        expect(element.find('rect.secondaryBar').length).toBe(0);
+
+        //when
+        scope.visData2 = secondaryStatsData;
+        scope.$digest();
+        jasmine.clock().tick(100);
+
+        //then
+        expect(element.find('g.secondaryBar').length).toBe(1);
+        expect(element.find('rect.secondaryBar').length).toBe(secondaryStatsData.length);
     });
 
     it('should check the initial bars opacity', function () {
