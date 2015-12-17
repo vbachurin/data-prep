@@ -13,17 +13,15 @@
     function StarWars() {
         return {
             restrict: 'E',
-            transclude: true,
+            transclude: false,
             replace: true,
-            templateUrl: 'components/widgets/star-wars/star-wars.html',
+            templateUrl: 'components/easter-eggs/star-wars/star-wars.html',
             bindToController: true,
-            //controller: 'StarWarsCtrl',
-            //controllerAs: 'starWarsCtrl',
             link: {
             }
         };
     }
 
-    angular.module('talend.widget')
+    angular.module('data-prep.easter-eggs')
         .directive('starWars', StarWars);
 })();

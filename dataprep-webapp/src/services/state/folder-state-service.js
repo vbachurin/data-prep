@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    // currentFolder is initalized with root value
+    // currentFolder is initialized with root value
     var folderState = {
                         currentFolder:{id:'', path: 'All files'},
                         currentFolderContent: {},

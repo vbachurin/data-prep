@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function NavbarCtrl($state, $translate, version, OnboardingService, DatasetService, FeedbackRestService, MessageService) {
+    function NavbarCtrl($state, $translate, version, OnboardingService, DatasetService, FeedbackRestService, MessageService, EasterEggsService) {
         var vm = this;
 
         //--------------------------------------------------------------------------------------------------------------
@@ -22,7 +22,6 @@
         //--------------------------------------------------------------------------------------------------------------
         vm.feedbackModal = false;
         vm.isSendingFeedback = false;
-        vm.starWarsModal = false;
 
         $translate([
             'FEEDBACK_TYPE_BUG',
@@ -77,11 +76,9 @@
         //--------------------------------------------------------------------------------------------------------------
 
         vm.searchInput='';
-
         vm.search = function() {
-            if (vm.searchInput == 'star wars') {
-                vm.starWarsModal = true;
-            }
+            // just in case something funny happens...
+            EasterEggsService.enableEasterEgg(vm.searchInput);
         }
 
     }
