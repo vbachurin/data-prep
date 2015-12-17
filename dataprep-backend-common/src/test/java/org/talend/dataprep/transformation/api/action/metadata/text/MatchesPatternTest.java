@@ -121,6 +121,34 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
         assertEquals(expectedValues, row.values());
     }
 
+    /**
+     * Test with an invalid regex pattern as token and mode is not REGEX.
+     */
+    @Test
+    public void shouldMatchPattern_contains_invalid_regex() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Ba(con");
+        values.put("0002", "01/01/2015");
+        final DataSetRow row = new DataSetRow(values);
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Ba(con");
+        expectedValues.put("0003", "true");
+        expectedValues.put("0002", "01/01/2015");
+
+        parameters.put(MatchesPattern.PATTERN_PARAMETER, "custom");
+        parameters.put(MatchesPattern.MANUAL_PATTERN_PARAMETER, generateJson("(", "contains"));
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
+
     @Test
     public void shouldNotMatchPattern_starts_with() {
         // given

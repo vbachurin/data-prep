@@ -110,6 +110,26 @@ public class CutTest extends AbstractMetadataBaseTest {
         assertEquals(expected, row);
     }
 
+    /**
+     * Test with an invalid regex pattern as token and mode is not REGEX.
+     */
+    @Test
+    public void should_apply_on_column_contains_and_invalid_regex() throws IOException {
+        // given
+        DataSetRow row = getRow("Wait for it...", "The value that (gets cut !", "Done !");
+        DataSetRow expected = getRow("Wait for it...", "The value that gets cut !", "Done !");
+
+        Map<String, String> regexpParameters = ActionMetadataTestUtils.parseParameters(
+                SplitTest.class.getResourceAsStream("cutAction.json"));
+        regexpParameters.put("pattern", generateJson("(", "contains"));
+
+        // when
+        ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
+
+        // then
+        assertEquals(expected, row);
+    }
+
     @Test
     public void should_apply_on_column_with_regexp() throws IOException {
         // given

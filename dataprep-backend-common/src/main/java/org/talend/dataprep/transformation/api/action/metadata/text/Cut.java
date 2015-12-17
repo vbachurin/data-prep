@@ -100,8 +100,14 @@ public class Cut extends ActionMetadata implements ColumnAction {
             replaceOnValueParameter.setStrict(false);
 
             if (replaceOnValueParameter.matches(toCut)) {
-                String value = toCut.replaceAll(replaceOnValueParameter.getToken(), ""); //$NON-NLS-1$
-                row.set(columnId, value);
+                if (replaceOnValueParameter.getOperator().equals(RegexParametersHelper.REGEX_MODE)) {
+                    String value = toCut.replaceAll(replaceOnValueParameter.getToken(), ""); //$NON-NLS-1$
+                    row.set(columnId, value);
+                } else {
+                    String value = toCut.replace(replaceOnValueParameter.getToken(), ""); //$NON-NLS-1$
+                    row.set(columnId, value);
+
+                }
             }
         }
     }

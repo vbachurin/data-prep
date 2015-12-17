@@ -142,6 +142,32 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
     }
 
     /**
+     * Test with an invalid regex pattern as token and mode is not REGEX.
+     */
+    @Test
+    public void should_replace_the_value_that_match_on_the_specified_column_entireh() {
+        // given
+        final String columnId = "firstname";
+
+        final Map<String, String> values = new HashMap<>();
+        values.put(columnId, "James (etfield");
+        final DataSetRow row = new DataSetRow(values);
+
+        final Map<String, String> parameters = new HashMap<>();
+        parameters.put(CELL_VALUE_PARAMETER, generateJson("(", RegexParametersHelper.CONTAINS_MODE));
+        parameters.put(REPLACE_VALUE_PARAMETER, "H");
+        parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
+        parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "column");
+        parameters.put(ImplicitParameters.COLUMN_ID.getKey().toLowerCase(), columnId);
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        assertThat(row.get(columnId), is("James Hetfield"));
+    }
+
+    /**
      * This test case covers all cases describe in TDP-951 description.
      */
     @Test

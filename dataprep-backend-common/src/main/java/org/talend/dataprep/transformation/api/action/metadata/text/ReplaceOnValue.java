@@ -166,8 +166,10 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
                     return matcher.replaceAll(replacement);
                 } else if (replaceEntireCell) {
                     return replacement;
-                } else {
+                } else if (replaceOnValueParameter.getOperator().equals(RegexParametersHelper.REGEX_MODE)) {
                     return originalValue.replaceAll(replaceOnValueParameter.getToken(), replacement);
+                } else {
+                    return originalValue.replace(replaceOnValueParameter.getToken(), replacement);
                 }
             } else {
                 return originalValue;
