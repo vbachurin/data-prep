@@ -206,6 +206,7 @@ describe('Folder services', function () {
     beforeEach(inject(function($q, FolderRestService, StateService) {
         spyOn(FolderRestService, 'create').and.returnValue($q.when());
         spyOn(FolderRestService, 'children').and.returnValue($q.when());
+        spyOn(FolderRestService, 'searchFolders').and.returnValue($q.when());
         spyOn(FolderRestService, 'renameFolder').and.returnValue($q.when());
         spyOn(StateService, 'setFoldersStack').and.returnValue();
 
@@ -229,6 +230,17 @@ describe('Folder services', function () {
 
         //then
         expect(FolderRestService.renameFolder).toHaveBeenCalledWith('foo', 'beer');
+    }));
+
+    it('should call rest searchFolders', inject(function ($rootScope, FolderService, FolderRestService) {
+        //given
+        var path = 'path';
+
+        //when
+        FolderService.searchFolders(path);
+
+        //then
+        expect(FolderRestService.searchFolders).toHaveBeenCalledWith(path);
     }));
 
     it('should populateMenuChildren', inject(function ($q, $rootScope, FolderService, StateService, FolderRestService) {

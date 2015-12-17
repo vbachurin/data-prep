@@ -15,7 +15,7 @@ describe('Folder controller', function () {
         };
         spyOn(FolderService, 'getFolderContent').and.returnValue($q.when(true));
         spyOn(FolderService, 'populateMenuChildren').and.returnValue($q.when(true));
-        spyOn(StateService, 'setMenuChilds').and.returnValue();
+        spyOn(StateService, 'setMenuChildren').and.returnValue();
     }));
 
     it('should call goToFolder service', inject(function (FolderService) {
@@ -28,7 +28,7 @@ describe('Folder controller', function () {
         expect(FolderService.getFolderContent).toHaveBeenCalled();
     }));
 
-    it('should call populateMenuChilds service', inject(function (FolderService, StateService) {
+    it('should call populateMenuChildren service', inject(function (FolderService, StateService) {
 
         //when
         var ctrl = createController();
@@ -36,8 +36,8 @@ describe('Folder controller', function () {
         scope.$digest();
 
         //then
-        expect(FolderService.populateMenuChilds).toHaveBeenCalled();
-        expect(StateService.setMenuChilds).toHaveBeenCalledWith([]);
+        expect(FolderService.populateMenuChildren).toHaveBeenCalled();
+        expect(StateService.setMenuChildren).toHaveBeenCalledWith([]);
     }));
 
 });
