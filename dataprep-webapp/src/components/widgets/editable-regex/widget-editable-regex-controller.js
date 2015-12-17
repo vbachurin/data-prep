@@ -73,7 +73,7 @@
         vm.getTypeKey = function getTypeKey(){
             var currentType = _.find(vm.types, {operator: vm.value.operator});
             return currentType.key;
-        }
+        };
     }
 
     angular.module('talend.widget')
