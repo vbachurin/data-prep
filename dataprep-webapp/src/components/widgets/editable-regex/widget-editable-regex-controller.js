@@ -42,7 +42,7 @@
         //TODO should be removed as backend must initialize it
         vm.value = vm.value ? vm.value : {
             token : '',
-            operator : 'equals'
+            operator : 'contains'
         };
 
         /**

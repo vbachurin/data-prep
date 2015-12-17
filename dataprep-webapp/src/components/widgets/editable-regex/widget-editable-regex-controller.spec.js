@@ -43,10 +43,12 @@ describe('Editable regex widget controller', function() {
     it('should return the initialized operator key', function(){
         //when
         var ctrl = createController();
-        var key = ctrl.getTypeKey();
 
         //then
-        expect(key).toBe('=');
+        expect(ctrl.value).toEqual({
+            token : '',
+            operator : 'contains'
+        });
     });
 
     it('should return the current operator key', function(){
