@@ -209,9 +209,6 @@ describe('Folder services', function () {
         spyOn(FolderRestService, 'searchFolders').and.returnValue($q.when());
         spyOn(FolderRestService, 'renameFolder').and.returnValue($q.when());
         spyOn(StateService, 'setFoldersStack').and.returnValue();
-
-
-
     }));
 
     it('should call rest create', inject(function ($rootScope, FolderService, FolderRestService) {
