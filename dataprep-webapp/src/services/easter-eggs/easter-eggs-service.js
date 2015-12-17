@@ -8,8 +8,6 @@
      * @requires data-prep.services.state.service:StateService
      */
     function EasterEggsService(StateService) {
-        var self = this;
-
         /**
          * @ngdoc method
          * @name enableEasterEgg
