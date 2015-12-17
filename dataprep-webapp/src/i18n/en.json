@@ -8,8 +8,8 @@
   "LOGOUT": "Logout",
   "MENU": "MENU",
   "FEEDBACK_FORM": "Send Feedback",
-  "FEEDBACK_MAIL": "Your Email",
-  "FEEDBACK_TITLE": "Title (required)",
+  "FEEDBACK_MAIL": "Enter you email",
+  "FEEDBACK_SUMMARY": "Summary (required)",
   "FEEDBACK_DESCRIPTION": "Description",
   "FEEDBACK_TOOLTIP": "Send feedback to Talend",
   "FEEDBACK_SEVERITY_CRITICAL": "Critical",
@@ -20,6 +20,9 @@
   "FEEDBACK_TYPE_IMPROVEMENT": "Improvement",
   "FEEDBACK_SENT_TITLE": "Thank you for your feedback !",
   "FEEDBACK_SENT_CONTENT": "Your feedback has been sent",
+  "FEEDBACK_FORUM_LINK": "Feel free to ask questions and interact with us on the forum",
+  "FEEDBACK_KNOWN_ISSUES": "Known issues and other documentation towards the bottom of the Beta page",
+
   "ONBOARDING": "Click here to discover the application",
 
   "_comment": "Left side menu",
