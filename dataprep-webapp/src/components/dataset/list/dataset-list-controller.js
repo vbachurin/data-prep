@@ -369,7 +369,7 @@
                 var currentPath = pathParts[0];
             }
 
-            var rootFolder = {id: '', path: '/', collapsed: false, name: $translate.instant('HOME_FOLDER')};
+            var rootFolder = {id: '', path: '', collapsed: false, name: $translate.instant('HOME_FOLDER')};
 
             FolderService.children()
                 .then(function(res) {
@@ -476,8 +476,9 @@
                 FolderService.searchFolders(vm.searchFolderQuery)
                     .then(function(response){
                         if(n > -1){
-                            var rootFolder = {id: '', path: '/', name: $translate.instant('HOME_FOLDER')};
-                            vm.foldersFound = [_.extend(rootFolder, response.data)];
+                            var rootFolder = {id: '', path: '', name: $translate.instant('HOME_FOLDER')};
+                            vm.foldersFound.push(rootFolder);
+                            vm.foldersFound = vm.foldersFound.concat(response.data);
                         } else {
                             vm.foldersFound = response.data;
                         }
