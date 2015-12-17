@@ -8,7 +8,15 @@ import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Spliterator;
+import java.util.TimeZone;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -25,14 +33,33 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.daikon.exception.ExceptionContext;
-import org.talend.dataprep.api.dataset.*;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
+import org.talend.dataprep.api.dataset.DataSetLocation;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.user.UserData;
-import org.talend.dataprep.dataset.service.analysis.*;
+import org.talend.dataprep.dataset.service.analysis.AsynchronousDataSetAnalyzer;
+import org.talend.dataprep.dataset.service.analysis.ContentAnalysis;
+import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
+import org.talend.dataprep.dataset.service.analysis.FormatAnalysis;
+import org.talend.dataprep.dataset.service.analysis.QualityAnalysis;
+import org.talend.dataprep.dataset.service.analysis.SchemaAnalysis;
+import org.talend.dataprep.dataset.service.analysis.StatisticsAnalysis;
+import org.talend.dataprep.dataset.service.analysis.SynchronousDataSetAnalyzer;
 import org.talend.dataprep.dataset.service.api.UpdateColumnParameters;
 import org.talend.dataprep.dataset.service.locator.DataSetLocatorService;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
@@ -469,6 +496,55 @@ public class DataSetService {
 
         return newId;
     }
+
+    /**
+     * Move a data set to an other folder
+     * 
+     * @param folderPath The original folder path of the dataset
+     * @param newFolderPath The new folder path of the dataset
+     * @return The new data id.
+     */
+    @RequestMapping(value = "/datasets/move/{id}", method = PUT, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Clone a data set", produces = MediaType.TEXT_PLAIN_VALUE, notes = "Move a data set to an other folder.")
+    @Timed
+    public boolean move(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
+            @ApiParam(value = "The original folder path of the dataset.") @RequestParam(defaultValue = "", required = false) String folderPath,
+            @ApiParam(value = "The new folder path of the dataset.") @RequestParam(defaultValue = "", required = false) String newFolderPath)
+                    throws IOException {
+
+        HttpResponseContext.header("Content-Type", MediaType.TEXT_PLAIN_VALUE);
+
+        DataSet dataSet = get(true, null, dataSetId);
+
+        final String dataSetName = dataSet.getMetadata().getName();
+
+        // if no metadata it's an empty one the get method has already set NO CONTENT http return code
+        // so simply return!!
+        if (dataSet.getMetadata() == null) {
+            return false;
+        }
+        // first check if the name is already used in the target folder
+        final Iterable<FolderEntry> entries = folderRepository.entries(newFolderPath, "dataset");
+
+        entries.forEach(folderEntry -> {
+            DataSetMetadata dataSetEntry = dataSetMetadataRepository.get(folderEntry.getContentId());
+            if (dataSetEntry != null && StringUtils.equals(dataSetName, dataSetEntry.getName())) {
+                final ExceptionContext context = ExceptionContext.build() //
+                        .put("id", folderEntry.getContentId()) //
+                        .put("folder", folderPath) //
+                        .put("name", dataSetName);
+                throw new TDPException(DataSetErrorCodes.DATASET_NAME_ALREADY_USED, context, true);
+            }
+        });
+
+        FolderEntry folderEntry = new FolderEntry("dataset", dataSetId, folderPath);
+
+        folderRepository.moveFolderEntry(folderEntry, newFolderPath);
+
+        return true;
+    }
+
 
     /**
      * Deletes a data set with provided id.
