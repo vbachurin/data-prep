@@ -218,7 +218,7 @@ public class FolderAPI extends APIService {
             @ApiParam(value = "Sort key (by name or date), defaults to 'date'.") @RequestParam(defaultValue = "DATE", required = false) String sort,
             @ApiParam(value = "Order for sort key (desc or asc), defaults to 'desc'.") @RequestParam(defaultValue = "DESC", required = false) String order) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Listing datasets (pool: {})...", getConnectionManager().getTotalStats());
+            LOG.debug("Listing datasets (pool: {})...", getConnectionStats());
         }
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();

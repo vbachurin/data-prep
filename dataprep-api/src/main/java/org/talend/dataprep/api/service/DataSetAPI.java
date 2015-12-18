@@ -44,7 +44,7 @@ public class DataSetAPI extends APIService {
             @RequestHeader("Content-Type") String contentType,
             @ApiParam(value = "content") InputStream dataSetContent) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Creating dataset (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Creating dataset (pool: {} )...", getConnectionStats());
         }
         HttpClient client = getClient();
         HystrixCommand<String> creation = getCommand(CreateDataSet.class, client, name, contentType, dataSetContent, folderPath);
@@ -62,7 +62,7 @@ public class DataSetAPI extends APIService {
             @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "", required = false) String folderPath,
             @ApiParam(value = "content") InputStream dataSetContent) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
+            LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionStats());
         }
         HttpClient client = getClient();
         HystrixCommand<String> creation = getCommand(CreateOrUpdateDataSet.class, client, id, name, dataSetContent, folderPath);
@@ -77,7 +77,7 @@ public class DataSetAPI extends APIService {
     public String update(@ApiParam(value = "Id of the data set to update / create") @PathVariable(value = "id") String id,
             @ApiParam(value = "content") InputStream dataSetContent) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
+            LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionStats());
         }
         HttpClient client = getClient();
         HystrixCommand<String> creation = getCommand(UpdateDataSet.class, client, id, dataSetContent);
@@ -94,7 +94,7 @@ public class DataSetAPI extends APIService {
                              @ApiParam(value = "content") final InputStream body) {
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Creating or updating dataset #{} (pool: {})...", datasetId, getConnectionManager().getTotalStats());
+            LOG.debug("Creating or updating dataset #{} (pool: {})...", datasetId, getConnectionStats());
         }
 
         final HttpClient client = getClient();
@@ -112,7 +112,7 @@ public class DataSetAPI extends APIService {
             @RequestParam(required = false, defaultValue = "full") @ApiParam(name = "sample", value = "Size of the wanted sample, if missing or 'full', the full dataset is returned") String sample, //
             final OutputStream output) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
+            LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionStats());
         }
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
@@ -129,7 +129,7 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(content, output);
             output.flush();
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
+                LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionStats());
             }
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
@@ -147,7 +147,7 @@ public class DataSetAPI extends APIService {
     public DataSetMetadata getMetadata(@ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id) {
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Requesting dataset metadata #{} (pool: {})...", id, getConnectionManager().getTotalStats());
+            LOG.debug("Requesting dataset metadata #{} (pool: {})...", id, getConnectionStats());
         }
 
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
@@ -157,7 +157,7 @@ public class DataSetAPI extends APIService {
         final DataSetMetadata metadata = getMetadataCommand.execute();
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Request dataset metadata #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
+            LOG.debug("Request dataset metadata #{} (pool: {}) done.", id, getConnectionStats());
         }
         return metadata;
     }
@@ -178,7 +178,7 @@ public class DataSetAPI extends APIService {
         @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "", required = false) String folderPath,
         final OutputStream output) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Cloning dataset (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Cloning dataset (pool: {} )...", getConnectionStats());
         }
         HttpClient client = getClient();
         HystrixCommand<HttpResponse> creation = getCommand(CloneDataSet.class, client, id, folderPath, cloneName);
@@ -202,7 +202,7 @@ public class DataSetAPI extends APIService {
             @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
             final OutputStream output) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
+            LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionStats());
         }
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
@@ -211,7 +211,7 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(content, output);
             output.flush();
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
+                LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionStats());
             }
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
@@ -224,7 +224,7 @@ public class DataSetAPI extends APIService {
                      @ApiParam(value = "Order for sort key (desc or asc), defaults to 'desc'.") @RequestParam(defaultValue = "DESC", required = false) String order,
                      final OutputStream output) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Listing datasets (pool: {})...", getConnectionManager().getTotalStats());
+            LOG.debug("Listing datasets (pool: {})...", getConnectionStats());
         }
         HttpResponseContext.header("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
@@ -233,7 +233,7 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(content, output);
             output.flush();
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
+                LOG.debug("Listing datasets (pool: {}) done.", getConnectionStats());
             }
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
@@ -245,7 +245,7 @@ public class DataSetAPI extends APIService {
     @Timed
     public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to delete") String dataSetId) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Delete dataset #{} (pool: {})...", dataSetId, getConnectionManager().getTotalStats());
+            LOG.debug("Delete dataset #{} (pool: {})...", dataSetId, getConnectionStats());
         }
         HttpClient client = getClient();
         HystrixCommand<Void> deleteCommand = getCommand(DataSetDelete.class, client, dataSetId);
@@ -253,7 +253,7 @@ public class DataSetAPI extends APIService {
         deleteCommand.execute();
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
+            LOG.debug("Listing datasets (pool: {}) done.", getConnectionStats());
         }
     }
 
@@ -300,8 +300,7 @@ public class DataSetAPI extends APIService {
             @ApiParam(value = "Id of the favorite data set ") @PathVariable(value = "id") String id,
             @RequestParam(defaultValue = "false") @ApiParam(name = "unset", value = "When true, will remove the dataset from favorites, if false (default) this will set the dataset as favorite.") boolean unset) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug((unset ? "Unset" : "Set") + " favorite dataset #{} (pool: {})...", id, getConnectionManager()
-                    .getTotalStats());
+            LOG.debug((unset ? "Unset" : "Set") + " favorite dataset #{} (pool: {})...", id, getConnectionStats());
         }
         HttpClient client = getClient();
         HystrixCommand<String> creation = getCommand(SetFavorite.class, client, id, unset);

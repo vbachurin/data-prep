@@ -41,7 +41,7 @@ public class TransformAPI extends APIService {
         if (dataSetId == null) {
             throw new IllegalArgumentException("Data set id cannot be null.");
         }
-        LOG.debug("Transforming dataset id #{} (pool: {})...", dataSetId, getConnectionManager().getTotalStats());
+        LOG.debug("Transforming dataset id #{} (pool: {})...", dataSetId, getConnectionStats());
         try {
             // Configure transformation flow
             HttpResponseContext.header( "Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
@@ -143,8 +143,6 @@ public class TransformAPI extends APIService {
     /**
      * Get the suggested action dynamic params. Dynamic params depends on the context (dataset / preparation / actual
      * transformations)
-     *
-     * @param response the http response.
      */
     @RequestMapping(value = "/api/transform/suggest/{action}/params", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get the transformation dynamic parameters", notes = "Returns the transformation parameters.")

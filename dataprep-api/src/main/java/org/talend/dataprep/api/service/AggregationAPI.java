@@ -39,7 +39,7 @@ public class AggregationAPI extends APIService {
     @ApiOperation(value = "Compute aggregation", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE, notes = "Compute aggregation according to the given parameters")
     public void compute(@RequestBody @Valid final AggregationParameters input, final OutputStream output) {
 
-        LOG.debug("Aggregation computation requested (pool: {} )...", getConnectionManager().getTotalStats());
+        LOG.debug("Aggregation computation requested (pool: {} )...", getConnectionStats());
 
         // get the command and execute it
         HttpClient client = getClient();
@@ -49,7 +49,7 @@ public class AggregationAPI extends APIService {
         try (InputStream result = command.execute()) {
             IOUtils.copyLarge(result, output);
             output.flush();
-            LOG.debug("Aggregation done (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Aggregation done (pool: {} )...", getConnectionStats());
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }

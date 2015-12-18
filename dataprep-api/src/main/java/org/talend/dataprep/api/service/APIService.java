@@ -1,19 +1,10 @@
 package org.talend.dataprep.api.service;
 
-import java.io.IOException;
-
-import javax.annotation.PreDestroy;
-
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.ProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultRedirectStrategy;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.protocol.HttpContext;
+import org.apache.http.pool.PoolStats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -36,8 +27,6 @@ public class APIService {
 
     public static final HystrixCommandGroupKey DATASET_GROUP = HystrixCommandGroupKey.Factory.asKey("dataset"); //$NON-NLS-1$
 
-    private final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-
     private final RequestConfig requestConfig = RequestConfig.custom().setRedirectsEnabled(false).build();
 
     protected static final Logger LOG = LoggerFactory.getLogger(APIService.class);
@@ -45,46 +34,11 @@ public class APIService {
     @Autowired
     private WebApplicationContext context;
 
+    @Autowired
     private CloseableHttpClient httpClient;
 
-    public APIService() {
-        connectionManager.setMaxTotal(50);
-        connectionManager.setDefaultMaxPerRoute(50);
-        
-        httpClient = HttpClientBuilder.create() //
-                .setRedirectStrategy(new RedirectTransferStrategy()) //
-                .setConnectionManager(connectionManager) //
-                .setDefaultRequestConfig( requestConfig ) //
-                .build();
-    }
-
-    /**
-     * 
-     */
-    static class RedirectTransferStrategy extends DefaultRedirectStrategy {
-
-        @Override
-        public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
-            return false;
-        }
-
-
-
-    }
-
-    @PreDestroy
-    private void shutdown() {
-        try {
-            httpClient.close();
-        } catch (IOException e) {
-            LOG.error("Unable to close HTTP client on shutdown.", e);
-        }
-        this.connectionManager.shutdown();
-    }
-
-    public PoolingHttpClientConnectionManager getConnectionManager() {
-        return connectionManager;
-    }
+    @Autowired
+    private PoolingHttpClientConnectionManager connectionManager;
 
     protected <T extends HystrixCommand> T getCommand(Class<T> clazz, Object... args) {
         try {
@@ -97,5 +51,12 @@ public class APIService {
 
     protected HttpClient getClient() {
         return httpClient;
+    }
+
+    /**
+     * @return the connection pool stats.
+     */
+    protected PoolStats getConnectionStats() {
+        return connectionManager.getTotalStats();
     }
 }

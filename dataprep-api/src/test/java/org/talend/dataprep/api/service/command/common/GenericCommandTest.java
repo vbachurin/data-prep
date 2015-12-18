@@ -10,10 +10,7 @@ import java.util.function.Function;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,28 +36,18 @@ public class GenericCommandTest {
 
     private static TDPException lastException;
 
-    private final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-
     @Value("${local.server.port}")
     public int port;
 
     @Autowired
     private WebApplicationContext context;
 
+    @Autowired
     private HttpClient httpClient;
 
     private static RuntimeException error(Exception e) {
         lastException = (TDPException) e;
         return new RuntimeException(e);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        connectionManager.setMaxTotal(50);
-        connectionManager.setDefaultMaxPerRoute(50);
-        httpClient = HttpClientBuilder.create() //
-                .setConnectionManager(connectionManager) //
-                .build();
     }
 
     @After

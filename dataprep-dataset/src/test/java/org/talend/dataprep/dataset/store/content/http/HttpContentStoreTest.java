@@ -12,7 +12,7 @@ import org.talend.dataprep.dataset.service.locator.HttpDataSetLocator;
 /**
  * Unit test for the remote http datasets.
  */
-public class RemoteHttpDataSetTests extends DataSetBaseTest {
+public class HttpContentStoreTest extends DataSetBaseTest {
 
     @Test
     public void createRemoteHttp() throws Exception {
