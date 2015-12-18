@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
 
 @Configuration
+@SuppressWarnings("InsufficientBranchCoverage")
 public class Messaging {
 
     @Bean

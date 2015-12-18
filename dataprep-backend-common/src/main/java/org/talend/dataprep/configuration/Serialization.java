@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.Module;
 
 @Configuration
+@SuppressWarnings("InsufficientBranchCoverage")
 public class Serialization {
 
     @Autowired

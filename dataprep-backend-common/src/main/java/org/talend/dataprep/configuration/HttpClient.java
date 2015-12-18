@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
  * Http client bean name.
  */
 @Configuration
+@SuppressWarnings("InsufficientBranchCoverage")
 public class HttpClient {
 
     /** Maximum connection pool size. */

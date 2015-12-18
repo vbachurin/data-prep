@@ -7,6 +7,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.talend.dataprep.schema.csv.CSVSerializer;
 
 @Configuration
+@SuppressWarnings("InsufficientBranchCoverage")
 public class TaskExecution {
 
     /**

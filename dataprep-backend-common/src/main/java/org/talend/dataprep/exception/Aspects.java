@@ -16,6 +16,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 
 @Configuration
 @Aspect
+@SuppressWarnings("InsufficientBranchCoverage")
 class Aspects {
 
     private static final Logger LOG = LoggerFactory.getLogger(Aspects.class);

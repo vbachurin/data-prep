@@ -30,6 +30,7 @@ import com.hazelcast.core.HazelcastInstance;
  */
 @Configuration
 @Profile("standalone")
+@SuppressWarnings("InsufficientBranchCoverage")
 public class HazelcastSetup {
 
     /**
