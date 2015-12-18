@@ -159,7 +159,6 @@ public class Split extends ActionMetadata implements ColumnAction {
     public void applyOnColumn(DataSetRow row, ActionContext context) {
         // Retrieve the separator to use
         final RegexParametersHelper.ReplaceOnValueParameter replaceOnValueParameter = context.get(REGEX_HELPER_KEY);
-        replaceOnValueParameter.setStrict(false);
         final Map<String, String> parameters = context.getParameters();
         final String columnId = context.getColumnId();
         // create the new columns
@@ -190,12 +189,12 @@ public class Split extends ActionMetadata implements ColumnAction {
             return;
         }
 
-        if (replaceOnValueParameter.matches(originalValue)){
-            String realSeparator = replaceOnValueParameter.getToken();
-            if (!StringUtils.equals("other (regex)", parameters.get(SEPARATOR_PARAMETER))) {
-                realSeparator = '[' + realSeparator + ']';
-            }
-            String[] split = originalValue.split(realSeparator, limit);
+        String realSeparator = replaceOnValueParameter.getToken();
+        if (!StringUtils.equals("other (regex)", parameters.get(SEPARATOR_PARAMETER))) {
+            realSeparator = '[' + realSeparator + ']';
+        }
+        String[] split = originalValue.split(realSeparator, limit);
+        if (split.length != 0) {
 
             final Iterator<String> iterator = newColumns.iterator();
 

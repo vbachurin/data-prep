@@ -252,6 +252,28 @@ public class SplitTest extends AbstractMetadataBaseTest {
     }
 
     @Test
+    public void test_split_on_regex2() {
+        // given
+        final DataSetRow row = getRow("lorem bacon", "Je vais bien (tout va bien)", "01/01/2015");
+
+        parameters.put(Split.SEPARATOR_PARAMETER, "other (regex)");
+        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER_REGEX, "bien|fff");
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Je vais bien (tout va bien)");
+        expectedValues.put("0003", "Je vais ");
+        expectedValues.put("0004", " (tout va bien)");
+        expectedValues.put("0002", "01/01/2015");
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
     /**
      * @see SplitTest#should_split_row()
      */
