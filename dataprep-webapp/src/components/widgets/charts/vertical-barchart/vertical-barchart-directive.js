@@ -48,7 +48,7 @@
                 var oldVisuData;
                 var labelTooltip = scope.keyLabel;
                 var activeLimits = scope.activeLimits;
-                var renderTimeout, updateBarsTimeout;
+                var renderPrimaryTimeout, renderSecondaryTimeout, updateLimitsTimeout;
                 var finishedRendering = false;
                 var containerId = '#' + attrs.id;
 
@@ -297,14 +297,14 @@
                             d3.selectAll('.vertical-barchart-cls.d3-tip').remove();
                             if (firstVisuData) {
                                 finishedRendering = false;
-                                clearTimeout(renderTimeout);
-                                renderTimeout = setTimeout(renderWholeVBarchart.bind(this, firstVisuData, secondVisuData), 100);
+                                clearTimeout(renderPrimaryTimeout);
+                                renderPrimaryTimeout = setTimeout(renderWholeVBarchart.bind(this, firstVisuData, secondVisuData), 100);
                             }
                         }
                         else if (secondVisuData) {
                             finishedRendering = false;
-                            clearTimeout(renderTimeout);
-                            renderTimeout = setTimeout(renderSecondVBars.bind(this, firstVisuData, secondVisuData), 100);
+                            clearTimeout(renderSecondaryTimeout);
+                            renderSecondaryTimeout = setTimeout(renderSecondVBars.bind(this, firstVisuData, secondVisuData), 100);
                         }
                     }
                 );
@@ -312,8 +312,8 @@
                 scope.$watch('activeLimits',
                     function (newLimits) {
                         if (newLimits) {
-                            clearTimeout(updateBarsTimeout);
-                            updateBarsTimeout = setTimeout(function () {
+                            clearTimeout(updateLimitsTimeout);
+                            updateLimitsTimeout = setTimeout(function () {
                                 activeLimits = newLimits;
                                 updateBarsLookFeel();
                             }, 500);
