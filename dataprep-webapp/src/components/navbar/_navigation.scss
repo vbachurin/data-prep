@@ -58,6 +58,27 @@ header.navigation {
 }
 
 .feedback {
+  $medium-screen: em(640) !default;
+  $large-screen: em(860) !default;
+  $x-large-screen: em(1824) !default;
+
+  .modal {
+    .modal-window {
+      @include media($medium-screen) {
+        padding-top: 0;
+      }
+
+      @include media($large-screen) {
+        padding-top: 0;
+      }
+
+      @include media($x-large-screen) {
+        padding-top: 4em;
+      }
+    }
+  }
+
+
   .title {
     font-weight: bold;
     padding: 10px;
