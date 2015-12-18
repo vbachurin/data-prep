@@ -537,11 +537,13 @@ describe('Dataset list controller', function () {
 
             //when
             ctrl.clone();
+            expect(ctrl.isSendingRequest).toBeTruthy();
             scope.$digest();
 
             //then
             expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder, cloneName);
             expect(FolderService.getFolderContent).toHaveBeenCalled();
+            expect(ctrl.isSendingRequest).toBeFalsy();
         }));
 
         it('should display message on success', inject(function (MessageService,DatasetService,FolderService) {

@@ -209,8 +209,14 @@
                 <div class="modal-buttons">
                     <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL">
                     </button>
-                    <button class="btn-primary modal-primary-button" translate-once="COPY_HERE_ACTION"
-                            ng-disabled="datasetListCtrl.cloneNameForm.$invalid">
+                    <button class="btn-primary modal-primary-button"
+                            ng-disabled="datasetListCtrl.cloneNameForm.$invalid || datasetListCtrl.isSendingRequest"
+                            ng-switch="datasetListCtrl.isSendingRequest">
+                            <span ng-switch-when="false" translate-once="COPY_HERE_ACTION"></span>
+
+                            <div class="feedback-sending-div" ng-switch-when="true" >
+                                <span class="feedback-sending continuous-rotate"><i data-icon="c" class="icon"></i></span>
+                            </div>
                     </button>
                 </div>
             </form>
