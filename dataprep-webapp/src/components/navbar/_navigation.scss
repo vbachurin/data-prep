@@ -39,7 +39,13 @@ header.navigation {
         height: 26px;
         width: 26px;
       }
+
+      &.enabled {
+        color: white;
+      }
     }
+
+
   }
 
   li.more.nav-link {
