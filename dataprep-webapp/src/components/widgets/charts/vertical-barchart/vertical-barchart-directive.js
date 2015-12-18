@@ -136,7 +136,7 @@
                 }
 
                 function drawBars(selector, statData, getValue, className) {
-                    svg.append('g')
+                    svg.insert('g', '.grid')
                         .attr('class', 'bars ' + className)
                         .selectAll(selector)
                         .data(statData)
@@ -223,18 +223,6 @@
                         });
                 }
 
-                function removeSecondaryData() {
-                    d3.selectAll('g.bars.secondary').remove();
-                }
-
-                function removeHorizontalGrid() {
-                    d3.selectAll('g.grid').remove();
-                }
-
-                function removeHoverBars() {
-                    d3.selectAll('g.hover').remove();
-                }
-
                 function renderWholeVBarchart(firstVisuData, secondVisuData) {
                     createContainer();
                     configureAxisScales(firstVisuData);
@@ -250,15 +238,8 @@
                     finishedRendering = true;
                 }
 
-                function renderSecondVBars(firstVisuData, secondVisuData) {
-                    removeSecondaryData();
-                    removeHorizontalGrid();
-                    removeHoverBars();
-
+                function renderSecondVBars(secondVisuData) {
                     drawBars('.secondaryBar', secondVisuData, getSecondaryValue, 'secondaryBar');
-                    drawHorizontalGrid();
-                    drawHoverBars(firstVisuData);
-
                     finishedRendering = true;
                 }
 
