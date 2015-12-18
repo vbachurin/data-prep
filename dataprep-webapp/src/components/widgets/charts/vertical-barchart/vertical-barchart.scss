@@ -81,6 +81,7 @@
     border-radius: 2px;
     z-index: 100000;
   }
+
   &.d3-tip:after {
     box-sizing: border-box;
     display: inline;
@@ -93,7 +94,6 @@
     float: right;
     margin-right: -22px;
   }
-
 
   &.d3-tip.n:after {
     margin: -1px 0 0 0;

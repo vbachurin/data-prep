@@ -120,7 +120,6 @@
             return (value + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
 
-
         /**
          * @ngdoc method
          * @name convertPatternToRegexp

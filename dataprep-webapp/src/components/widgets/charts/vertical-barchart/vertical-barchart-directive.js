@@ -164,7 +164,8 @@
 
                 function drawHorizontalGrid() {
                     var minSizeBetweenGrid = 18;
-                    var ticksNbre = yScale.domain()[1] > 10 ? Math.ceil(height / minSizeBetweenGrid) : yScale.domain()[1];
+                    var ticksThreshold = Math.ceil(height / minSizeBetweenGrid);
+                    var ticksNbre = yScale.domain()[1] > ticksThreshold ? ticksThreshold : yScale.domain()[1];
 
                     svg.append('g')
                         //draw grid lines
@@ -184,7 +185,7 @@
                         .style('text-anchor', 'middle');
                 }
 
-                function drawYAxis() {
+                function drawYAxisLegend() {
                     svg.append('g')
                         .attr('class', 'yAxis')
                         .append('text')
@@ -230,10 +231,6 @@
                     d3.selectAll('g.grid').remove();
                 }
 
-                function removeYAxis() {
-                    d3.selectAll('g.yAxis').remove();
-                }
-
                 function removeHoverBars() {
                     d3.selectAll('g.hover').remove();
                 }
@@ -247,7 +244,7 @@
                     }
 
                     drawHorizontalGrid();
-                    drawYAxis();
+                    drawYAxisLegend();
                     drawHoverBars(firstVisuData);
                     scope.buckets = d3.selectAll('rect.bar');
                     finishedRendering = true;
@@ -256,12 +253,10 @@
                 function renderSecondVBars(firstVisuData, secondVisuData) {
                     removeSecondaryData();
                     removeHorizontalGrid();
-                    removeYAxis();
                     removeHoverBars();
 
                     drawBars('.secondaryBar', secondVisuData, getSecondaryValue, 'secondaryBar');
                     drawHorizontalGrid();
-                    drawYAxis();
                     drawHoverBars(firstVisuData);
 
                     finishedRendering = true;

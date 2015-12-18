@@ -563,10 +563,18 @@
 
             datePatternWorkerWrapper = WorkerService.create(
                 ['/worker/moment.js', '/worker/lodash.js', '/worker/moment-jdateformatparser.js'],
-                [{
-                    workerFn0: workerFn0,
-                    workerFn1: workerFn1
-                }, TextFormatService.escapeRegex, valueMatchPatternFn, isDatePattern, valueMatchDatePatternFn, valueMatchRegexFn, valueMatchPatternFn],
+                [
+                    {
+                        workerFn0: workerFn0,
+                        workerFn1: workerFn1
+                    },
+                    TextFormatService.escapeRegex,
+                    valueMatchPatternFn,
+                    isDatePattern,
+                    valueMatchDatePatternFn,
+                    valueMatchRegexFn,
+                    valueMatchPatternFn
+                ],
                 patternOccurrenceWorker
             );
 
