@@ -16,15 +16,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getRow;
 
 import java.io.IOException;
 import java.util.*;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.Quality;
@@ -37,7 +36,6 @@ import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
 
 /**
  * Test class for Split action. Creates one consumer, and test it.
@@ -52,10 +50,7 @@ public class SplitTest extends AbstractMetadataBaseTest {
     @Autowired
     private Split action;
 
-    /** The dataprep ready jackson builder. */
-    @Autowired
-    public Jackson2ObjectMapperBuilder builder;
-
+    /** The action parameters. */
     private Map<String, String> parameters;
 
     @Before
@@ -110,8 +105,7 @@ public class SplitTest extends AbstractMetadataBaseTest {
         values.put("0002", "01/01/2015");
         final DataSetRow row = new DataSetRow(values);
 
-        parameters.put(Split.SEPARATOR_PARAMETER, "other");
-        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER, generateJson(";", RegexParametersHelper.REGEX_MODE));
+        parameters.put(Split.SEPARATOR_PARAMETER, ";");
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
@@ -136,8 +130,8 @@ public class SplitTest extends AbstractMetadataBaseTest {
         values.put("0002", "01/01/2015");
         final DataSetRow row = new DataSetRow(values);
 
-        parameters.put(Split.SEPARATOR_PARAMETER, "other");
-        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER, generateJson("_", RegexParametersHelper.REGEX_MODE));
+        parameters.put(Split.SEPARATOR_PARAMETER, "other (string)");
+        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER_STRING, "_");
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
@@ -156,14 +150,10 @@ public class SplitTest extends AbstractMetadataBaseTest {
     @Test
     public void should_split_tab() {
         // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0000", "lorem bacon");
-        values.put("0001", "Bacon\tipsum");
-        values.put("0002", "01/01/2015");
-        final DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = getRow("lorem bacon", "Bacon\tipsum", "01/01/2015");
 
-        parameters.put(Split.SEPARATOR_PARAMETER, "other");
-        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER, generateJson("\\t", RegexParametersHelper.REGEX_MODE));
+        parameters.put(Split.SEPARATOR_PARAMETER, "other (string)");
+        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER_STRING, "\t");
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
@@ -188,19 +178,14 @@ public class SplitTest extends AbstractMetadataBaseTest {
         values.put("0002", "01/01/2015");
         final DataSetRow row = new DataSetRow(values);
 
-        parameters.put(Split.SEPARATOR_PARAMETER, "other");
-        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER, generateJson("", RegexParametersHelper.REGEX_MODE));
-
-        final Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("0000", "lorem bacon");
-        expectedValues.put("0001", "Je vais bien (tout va bien)");
-        expectedValues.put("0002", "01/01/2015");
+        parameters.put(Split.SEPARATOR_PARAMETER, "other (string)");
+        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER_STRING, "");
 
         // when
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
-        assertEquals(expectedValues, row.values());
+        assertEquals(values, row.values());
     }
 
     @Test
@@ -212,12 +197,51 @@ public class SplitTest extends AbstractMetadataBaseTest {
         values.put("0002", "01/01/2015");
         final DataSetRow row = new DataSetRow(values);
 
-        parameters.put(Split.SEPARATOR_PARAMETER, "other");
-        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER, generateJson("(", RegexParametersHelper.REGEX_MODE));
+        parameters.put(Split.SEPARATOR_PARAMETER, "other (regex)");
+        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER_STRING, "(");
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        assertEquals(values, row.values());
+    }
+
+    @Test
+    public void test_string_that_looks_like_a_regex() {
+        // given
+        final DataSetRow row = getRow("lorem bacon", "Je vais bien (tout va bien)", "01/01/2015");
+
+        parameters.put(Split.SEPARATOR_PARAMETER, "other (string)");
+        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER_STRING, "(");
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", "Je vais bien (tout va bien)");
+        expectedValues.put("0002", "01/01/2015");
+        expectedValues.put("0003", "Je vais bien ");
+        expectedValues.put("0004", "tout va bien)");
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
+    public void test_split_on_regex() {
+        // given
+        final DataSetRow row = getRow("lorem bacon", "Je vais bien (tout va bien)", "01/01/2015");
+
+        parameters.put(Split.SEPARATOR_PARAMETER, "other (regex)");
+        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER_REGEX, "bien");
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Je vais bien (tout va bien)");
+        expectedValues.put("0003", "Je vais ");
+        expectedValues.put("0004", " (tout va bien)");
         expectedValues.put("0002", "01/01/2015");
 
         // when
@@ -266,11 +290,7 @@ public class SplitTest extends AbstractMetadataBaseTest {
     @Test
     public void should_split_row_twice() {
         // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0000", "lorem bacon");
-        values.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
-        values.put("0002", "01/01/2015");
-        final DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = getRow("lorem bacon", "Bacon ipsum dolor amet swine leberkas pork belly", "01/01/2015");
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
@@ -396,13 +416,12 @@ public class SplitTest extends AbstractMetadataBaseTest {
     public void should_not_split_because_null_separator() throws IOException {
         // given
         final Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
+        values.put("0000", "lorem bacon");
         values.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
-        values.put("last update", "01/01/2015");
+        values.put("0002", "01/01/2015");
         final DataSetRow row = new DataSetRow(values);
 
-        parameters.put(Split.SEPARATOR_PARAMETER, "other");
-        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER, generateJson("", RegexParametersHelper.REGEX_MODE));
+        parameters.put(Split.SEPARATOR_PARAMETER, "");
 
         // when
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
@@ -414,13 +433,12 @@ public class SplitTest extends AbstractMetadataBaseTest {
     public void should_not_update_metadata_because_null_separator() throws IOException {
         // given
         final List<ColumnMetadata> input = new ArrayList<>();
-        input.add(createMetadata("recipe", "recipe"));
+        input.add(createMetadata("0000", "recipe"));
         input.add(createMetadata("0001", "steps"));
-        input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("0002", "last update"));
         final RowMetadata rowMetadata = new RowMetadata(input);
 
-        parameters.put(Split.SEPARATOR_PARAMETER, "other");
-        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER, generateJson("", RegexParametersHelper.REGEX_MODE));
+        parameters.put(Split.SEPARATOR_PARAMETER, "");
 
         // when
         ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
@@ -449,15 +467,6 @@ public class SplitTest extends AbstractMetadataBaseTest {
     private ColumnMetadata createMetadata(String id, String name) {
         return ColumnMetadata.Builder.column().computedId(id).name(name).type(Type.STRING).headerSize(12).empty(0).invalid(2)
                 .valid(5).build();
-    }
-
-    private String generateJson(String token, String operator) {
-        RegexParametersHelper.ReplaceOnValueParameter r = new RegexParametersHelper.ReplaceOnValueParameter(token, operator);
-        try {
-            return builder.build().writeValueAsString(r);
-        } catch (JsonProcessingException e) {
-            return "";
-        }
     }
 
 }

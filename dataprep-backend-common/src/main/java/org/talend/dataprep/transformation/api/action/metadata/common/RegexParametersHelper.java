@@ -1,17 +1,18 @@
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.IOException;
+import java.security.InvalidParameterException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.security.InvalidParameterException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Utils class to ease manipulation of parameters of type ParameterType.REGEX.
@@ -21,8 +22,7 @@ public class RegexParametersHelper {
 
     /** The dataprep ready jackson builder. */
     @Autowired
-    @Lazy
-    // needed to prevent a circular dependency
+    @Lazy // needed to prevent a circular dependency
     public Jackson2ObjectMapperBuilder builder;
 
     /** The regex mode parameter name. */
@@ -37,7 +37,7 @@ public class RegexParametersHelper {
     /** The starts with parameter name. */
     public static final String STARTS_WITH_MODE = "starts_with";
 
-    /** The ends with parmeter name. */
+    /** The ends with parameter name. */
     public static final String ENDS_WITH_MODE = "ends_with";
 
     public ReplaceOnValueParameter build(String jsonString) {
@@ -47,6 +47,7 @@ public class RegexParametersHelper {
         try {
             return builder.build().readValue(jsonString, ReplaceOnValueParameter.class);
         } catch (IOException e) {
+            // TODO replace this security exception by IllegalArgumentException
             throw new InvalidParameterException(e.getMessage());
         }
     }
@@ -125,11 +126,11 @@ public class RegexParametersHelper {
         /**
          * Check if a string matches token & operator.
          *
-         * If operator is REGEX we use the strict field.
-         * If strict=true value must matches the regex, if strict=false a part of value must matches the regex.
+         * If operator is REGEX we use the strict field. If strict=true value must matches the regex, if strict=false a
+         * part of value must matches the regex.
          *
-         * @param value
-         * @return true if value matches the token regarding operator
+         * @param value the value to check.
+         * @return true if value matches the token regarding operator.
          */
         public boolean matches(String value) {
             if (value == null) {
@@ -142,7 +143,7 @@ public class RegexParametersHelper {
             if (!isValid()) {
                 return false;
             }
-            
+
             boolean matches = false;
             switch (this.getOperator()) {
             case EQUALS_MODE:
@@ -166,6 +167,14 @@ public class RegexParametersHelper {
             return matches;
         }
 
+        /**
+         * @see Object#toString()
+         */
+        @Override
+        public String toString() {
+            return "ReplaceOnValueParameter{" + "token='" + token + '\'' + ", operator='" + operator + '\'' + ", pattern="
+                    + pattern + ", strict=" + strict + '}';
+        }
     }
 
 }

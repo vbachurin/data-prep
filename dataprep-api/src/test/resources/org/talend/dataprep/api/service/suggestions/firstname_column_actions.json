@@ -1595,11 +1595,25 @@
               "value": ";"
             },
             {
-              "value": "other",
+              "value": "other (string)",
               "parameters": [
                 {
-                  "name": "manual_separator",
-                  "type": "regex",
+                  "name": "manual_separator_string",
+                  "type": "string",
+                  "implicit": false,
+                  "canBeBlank": true,
+                  "description": "Choose your own separator",
+                  "label": "Manual separator",
+                  "default": ""
+                }
+              ]
+            },
+            {
+              "value": "other (regex)",
+              "parameters": [
+                {
+                  "name": "manual_separator_regex",
+                  "type": "string",
                   "implicit": false,
                   "canBeBlank": true,
                   "description": "Choose your own separator",

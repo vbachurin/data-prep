@@ -5,11 +5,7 @@
       "parameters": {
         "column_id": "city",
         "scope": "column",
-        "separator": "other",
-        "manual_separator": {
-          "token": " ",
-          "operator": "regex"
-        },
+        "separator": " ",
         "limit":"2",
         "filter": {
           "eq": {

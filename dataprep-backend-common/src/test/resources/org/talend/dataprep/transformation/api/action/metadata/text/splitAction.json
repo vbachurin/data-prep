@@ -5,11 +5,8 @@
       "parameters": {
         "column_id": "0001",
         "column_name": "steps",
-        "separator": "other",
-        "manual_separator": {
-          "token": " ",
-          "operator": "regex"
-        },
+        "separator": "other (string)",
+        "manual_separator_string": " ",
         "limit":"2",
         "scope": "column"
       }
