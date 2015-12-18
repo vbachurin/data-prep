@@ -846,10 +846,6 @@ describe('Statistics service', function () {
 
     var stateMock;
     var workerWrapper;
-    var workerPostedMessage;
-    window.postMessage = function (message) {
-        workerPostedMessage = message;
-    };
 
     beforeEach(module('data-prep.services.statistics', function ($provide) {
         stateMock = {
@@ -866,7 +862,7 @@ describe('Statistics service', function () {
         spyOn(WorkerService, 'create').and.callFake(function (importLibs, helperFns, mainFn) {
             workerWrapper = {
                 postMessage: function (args) {
-                    mainFn.apply(null, args);
+                    var workerPostedMessage = mainFn.apply(null, args);
                     return $q.when(workerPostedMessage);
                 },
                 terminate: jasmine.createSpy('terminate')
