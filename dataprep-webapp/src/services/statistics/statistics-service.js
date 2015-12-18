@@ -211,7 +211,7 @@
 
             //execute  a web worker that will compute the filtered occurrences
             dateFilteredWorkerWrapper = WorkerService.create(
-                ['/worker/moment.js', '/worker/lodash.js'],
+                ['/worker/moment.js', '/worker/moment-jdateformatparser.js', '/worker/lodash.js'],
                 [isInDateLimits],
                 dateFilteredOccurrenceWorker);
 
@@ -238,7 +238,7 @@
             return function (value) {
                 var parsedMoment = _.chain(patterns)
                     .map(function (pattern) {
-                        return moment(value, pattern);
+                        return moment(value, pattern, true);
                     })
                     .find(function (momentDate) {
                         return momentDate.isValid();
