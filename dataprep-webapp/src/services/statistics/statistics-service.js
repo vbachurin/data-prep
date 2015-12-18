@@ -282,7 +282,7 @@
                         .value();
             });
 
-            postMessage(rangeData);
+            return rangeData;
         }
 
         /**
@@ -609,7 +609,7 @@
                         .value();
             });
 
-            postMessage(patternFrequencyTable);
+            return patternFrequencyTable;
         }
 
         /**
