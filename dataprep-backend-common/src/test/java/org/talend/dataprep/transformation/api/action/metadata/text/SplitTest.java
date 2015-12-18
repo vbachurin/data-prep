@@ -16,12 +16,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getRow;
 
 import java.io.IOException;
 import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.Quality;
@@ -31,6 +33,7 @@ import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
@@ -39,18 +42,19 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
  *
  * @see Split
  */
-public class SplitTest {
+public class SplitTest extends AbstractMetadataBaseTest {
 
     /**
      * The action to test.
      */
+    @Autowired
     private Split action;
 
+    /** The action parameters. */
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        action = new Split();
         parameters = ActionMetadataTestUtils.parseParameters(SplitTest.class.getResourceAsStream("splitAction.json"));
     }
 
@@ -101,8 +105,7 @@ public class SplitTest {
         values.put("0002", "01/01/2015");
         final DataSetRow row = new DataSetRow(values);
 
-        parameters.put(Split.SEPARATOR_PARAMETER, "other");
-        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER, ";");
+        parameters.put(Split.SEPARATOR_PARAMETER, ";");
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
@@ -127,8 +130,8 @@ public class SplitTest {
         values.put("0002", "01/01/2015");
         final DataSetRow row = new DataSetRow(values);
 
-        parameters.put(Split.SEPARATOR_PARAMETER, "other");
-        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER, "_");
+        parameters.put(Split.SEPARATOR_PARAMETER, "other (string)");
+        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER_STRING, "_");
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
@@ -147,14 +150,10 @@ public class SplitTest {
     @Test
     public void should_split_tab() {
         // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0000", "lorem bacon");
-        values.put("0001", "Bacon\tipsum");
-        values.put("0002", "01/01/2015");
-        final DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = getRow("lorem bacon", "Bacon\tipsum", "01/01/2015");
 
-        parameters.put(Split.SEPARATOR_PARAMETER, "other");
-        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER, "\t");
+        parameters.put(Split.SEPARATOR_PARAMETER, "other (string)");
+        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER_STRING, "\t");
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
@@ -179,19 +178,14 @@ public class SplitTest {
         values.put("0002", "01/01/2015");
         final DataSetRow row = new DataSetRow(values);
 
-        parameters.put(Split.SEPARATOR_PARAMETER, "other");
-        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER, "");
-
-        final Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("0000", "lorem bacon");
-        expectedValues.put("0001", "Je vais bien (tout va bien)");
-        expectedValues.put("0002", "01/01/2015");
+        parameters.put(Split.SEPARATOR_PARAMETER, "other (string)");
+        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER_STRING, "");
 
         // when
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
-        assertEquals(expectedValues, row.values());
+        assertEquals(values, row.values());
     }
 
     @Test
@@ -203,12 +197,51 @@ public class SplitTest {
         values.put("0002", "01/01/2015");
         final DataSetRow row = new DataSetRow(values);
 
-        parameters.put(Split.SEPARATOR_PARAMETER, "other");
-        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER, "(");
+        parameters.put(Split.SEPARATOR_PARAMETER, "other (regex)");
+        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER_STRING, "(");
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        assertEquals(values, row.values());
+    }
+
+    @Test
+    public void test_string_that_looks_like_a_regex() {
+        // given
+        final DataSetRow row = getRow("lorem bacon", "Je vais bien (tout va bien)", "01/01/2015");
+
+        parameters.put(Split.SEPARATOR_PARAMETER, "other (string)");
+        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER_STRING, "(");
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", "Je vais bien (tout va bien)");
+        expectedValues.put("0002", "01/01/2015");
+        expectedValues.put("0003", "Je vais bien ");
+        expectedValues.put("0004", "tout va bien)");
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
+    public void test_split_on_regex() {
+        // given
+        final DataSetRow row = getRow("lorem bacon", "Je vais bien (tout va bien)", "01/01/2015");
+
+        parameters.put(Split.SEPARATOR_PARAMETER, "other (regex)");
+        parameters.put(Split.MANUAL_SEPARATOR_PARAMETER_REGEX, "bien");
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Je vais bien (tout va bien)");
+        expectedValues.put("0003", "Je vais ");
+        expectedValues.put("0004", " (tout va bien)");
         expectedValues.put("0002", "01/01/2015");
 
         // when
@@ -257,11 +290,7 @@ public class SplitTest {
     @Test
     public void should_split_row_twice() {
         // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0000", "lorem bacon");
-        values.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
-        values.put("0002", "01/01/2015");
-        final DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = getRow("lorem bacon", "Bacon ipsum dolor amet swine leberkas pork belly", "01/01/2015");
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
@@ -308,7 +337,6 @@ public class SplitTest {
     /**
      * @see Action#getRowAction()
      */
-    @Test
     public void should_split_row_no_separator() {
         // given
         final Map<String, String> values = new HashMap<>();
@@ -387,40 +415,33 @@ public class SplitTest {
     @Test
     public void should_not_split_because_null_separator() throws IOException {
         // given
-        final Split nullSeparatorAction = new Split();
-        final Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
-                //
-                SplitTest.class.getResourceAsStream("splitActionWithNullSeparator.json"));
-
         final Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("0002", "01/01/2015");
         final DataSetRow row = new DataSetRow(values);
 
+        parameters.put(Split.SEPARATOR_PARAMETER, "");
+
         // when
-        ActionTestWorkbench.test(row, nullSeparatorAction.create(parameters).getRowAction());
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
         // then
         assertEquals(values, row.values());
     }
 
-    @Test
     public void should_not_update_metadata_because_null_separator() throws IOException {
         // given
-        final Split nullSeparatorAction = new Split();
-        final Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
-                //
-                SplitTest.class.getResourceAsStream("splitActionWithNullSeparator.json"));
-
         final List<ColumnMetadata> input = new ArrayList<>();
-        input.add(createMetadata("recipe", "recipe"));
-        input.add(createMetadata("steps", "steps"));
-        input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("0000", "recipe"));
+        input.add(createMetadata("0001", "steps"));
+        input.add(createMetadata("0002", "last update"));
         final RowMetadata rowMetadata = new RowMetadata(input);
 
+        parameters.put(Split.SEPARATOR_PARAMETER, "");
+
         // when
-        ActionTestWorkbench.test(rowMetadata, nullSeparatorAction.create(parameters).getRowAction());
+        ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction());
 
         // then
         assertEquals(input, rowMetadata.getColumns());
@@ -447,4 +468,5 @@ public class SplitTest {
         return ColumnMetadata.Builder.column().computedId(id).name(name).type(Type.STRING).headerSize(12).empty(0).invalid(2)
                 .valid(5).build();
     }
+
 }

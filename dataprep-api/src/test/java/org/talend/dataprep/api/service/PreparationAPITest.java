@@ -480,7 +480,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
                 + "       \"action\": \"delete_on_value\",\n"//
                 + "       \"parameters\": {" //
                 + "           \"column_id\": \"0006\"," //
-                + "           \"value\": \"Coast city\","//
+                + "           \"value\": {\"token\": \"Coast city\", \"operator\": \"equals\"},"//
                 + "           \"scope\": \"column\""//
                 + "       }" //
                 + "   }"//

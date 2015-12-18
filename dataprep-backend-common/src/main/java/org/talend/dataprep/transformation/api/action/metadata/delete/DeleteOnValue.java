@@ -1,12 +1,16 @@
 package org.talend.dataprep.transformation.api.action.metadata.delete;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -22,6 +26,9 @@ import static org.talend.dataprep.transformation.api.action.parameters.Parameter
  */
 @Component(DeleteOnValue.ACTION_BEAN_PREFIX + DeleteOnValue.DELETE_ON_VALUE_ACTION_NAME)
 public class DeleteOnValue extends AbstractDelete {
+
+    @Autowired
+    private RegexParametersHelper regexParametersHelper;
 
     /**
      * The action name.
@@ -65,13 +72,7 @@ public class DeleteOnValue extends AbstractDelete {
      */
     @Override
     public boolean toDelete(ColumnMetadata colMetadata, Map<String, String> parsedParameters, String value) {
-        try {
-            Pattern p = Pattern.compile(parsedParameters.get(VALUE_PARAMETER));
-
-            return value != null && p.matcher(value.trim()).matches();
-        } catch (PatternSyntaxException e) {
-            // In case the pattern is not valid, consider that the value does not match.
-            return false;
-        }
+        final RegexParametersHelper.ReplaceOnValueParameter replaceOnValueParameter = regexParametersHelper.build(parsedParameters.get(VALUE_PARAMETER));
+        return replaceOnValueParameter.matches(value);
     }
 }
