@@ -1015,69 +1015,16 @@ describe('Playground Service', function () {
                     column_id: '0001',
                     column_name: 'firstname',
                     row_id: 58,
-                    cell_value: 'Ronald',
+                    cell_value: {
+                        token: 'Ronald',
+                        operator: 'equals'
+                    },
                     replace_value: 'Donald'
                 };
                 expect(PreparationService.appendStep).toHaveBeenCalledWith(
                     preparationId,
                     {action: 'replace_on_value', parameters: expectedParams}
                 );
-            }));
-
-            it('should append column replace value step', inject(function ($rootScope, PlaygroundService, PreparationService) {
-                //given
-                var preparationId = '64f3543cd466f545';
-                stateMock.playground.preparation = {id: preparationId};
-
-                var rowItem = {tdpId: 58, '0000': 'McDonald', '0001': 'Ronald'};
-                var column = {id: '0001', name: 'firstname'};
-                var newValue = 'Donald';
-                var updateAllCellWithValue = true;
-
-                //when
-                PlaygroundService.editCell(rowItem, column, newValue, updateAllCellWithValue);
-                $rootScope.$digest();
-
-                //then
-                var expectedParams = {
-                    scope: 'column',
-                    column_id: '0001',
-                    column_name: 'firstname',
-                    row_id: 58,
-                    cell_value: 'Ronald',
-                    replace_value: 'Donald'
-                };
-                expect(PreparationService.appendStep).toHaveBeenCalledWith(
-                    preparationId,
-                    {action: 'replace_on_value', parameters: expectedParams}
-                );
-            }));
-
-            it('should escape regex chars with brackets in "value to replace"', inject(function ($rootScope, PlaygroundService, PreparationService) {
-                //given
-                var preparationId = '64f3543cd466f545';
-                stateMock.playground.preparation = {id: preparationId};
-
-                var rowItem = {tdpId: 58, '0000': 'McDonald', '0001': 'R?onal.d'};
-                var column = {id: '0001', name: 'firstname'};
-                var newValue = 'Donald';
-                var updateAllCellWithValue = true;
-
-                //when
-                PlaygroundService.editCell(rowItem, column, newValue, updateAllCellWithValue);
-                $rootScope.$digest();
-
-                //then
-                var expectedParams = {
-                    scope: 'column',
-                    column_id: '0001',
-                    column_name: 'firstname',
-                    row_id: 58,
-                    cell_value: 'R[?]onal[.]d',
-                    replace_value: 'Donald'
-                };
-                var actualActionParameters = PreparationService.appendStep.calls.argsFor(0)[1].parameters;
-                expect(actualActionParameters).toEqual(expectedParams);
             }));
 
             describe('append history', function () {

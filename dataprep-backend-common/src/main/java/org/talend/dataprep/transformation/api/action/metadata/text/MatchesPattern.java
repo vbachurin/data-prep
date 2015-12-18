@@ -6,6 +6,7 @@ import static org.talend.dataprep.api.type.Type.BOOLEAN;
 import static org.talend.dataprep.api.type.Type.STRING;
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.REGEX;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -15,6 +16,7 @@ import java.util.regex.PatternSyntaxException;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -24,12 +26,16 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 @Component(MatchesPattern.ACTION_BEAN_PREFIX + MatchesPattern.MATCHES_PATTERN_ACTION_NAME)
 public class MatchesPattern extends ActionMetadata implements ColumnAction {
 
+    @Autowired
+    private RegexParametersHelper regexParametersHelper;
+    
     /**
      * The action name.
      */
@@ -49,11 +55,11 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
     /**
      * The pattern manually specified by the user. Should be used only if PATTERN_PARAMETER value is 'other'.
      */
-    private static final String MANUAL_PATTERN_PARAMETER = "manual_pattern"; //$NON-NLS-1$
+    protected static final String MANUAL_PATTERN_PARAMETER = "manual_pattern"; //$NON-NLS-1$
 
     public static final String CUSTOM = "custom";
 
-    public static final String COMPILED_PATTERN = "compiled_pattern";
+    public static final String REGEX_HELPER_KEY = "regex_helper";
 
     /**
      * @see ActionMetadata#getName()
@@ -102,25 +108,23 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
      * @param parameters the action parameters.
      * @return the pattern to use according to the given parameters.
      */
-    private String getPattern(Map<String, String> parameters) {
-        return (CUSTOM).equals(parameters.get(PATTERN_PARAMETER)) ? parameters.get(MANUAL_PATTERN_PARAMETER)
-                : parameters.get(PATTERN_PARAMETER);
+    private RegexParametersHelper.ReplaceOnValueParameter getPattern(Map<String, String> parameters) {
+        if (CUSTOM.equals(parameters.get(PATTERN_PARAMETER))) {
+            final String jsonString = parameters.get(MANUAL_PATTERN_PARAMETER);
+            return regexParametersHelper.build(jsonString);
+        } else {
+            return new RegexParametersHelper.ReplaceOnValueParameter(parameters.get(PATTERN_PARAMETER),
+                    RegexParametersHelper.REGEX_MODE);
+        }
     }
 
     @Override
     public void compile(ActionContext actionContext) {
         super.compile(actionContext);
         if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
-            final String pattern = getPattern(actionContext.getParameters());
-            if (pattern == null || pattern.length() < 1) {
-                // In case of empty pattern, consider that value does not match:
-                actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
-                return;
-            }
             try {
-                actionContext.get(COMPILED_PATTERN, (p) -> Pattern.compile(pattern));
-            } catch (PatternSyntaxException e) {
-                // In case of wrong pattern, consider that value does not match:
+                actionContext.get(REGEX_HELPER_KEY,(p) -> getPattern(actionContext.getParameters()));
+            } catch (InvalidParameterException e) {
                 actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
             }
         }
@@ -169,9 +173,9 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
         if (actionContext.getActionStatus() != ActionContext.ActionStatus.OK) {
             return false;
         }
-        final Pattern p = actionContext.get(COMPILED_PATTERN);
-        final Matcher matcher = p.matcher(value == null ? StringUtils.EMPTY : value);
-        return matcher.matches();
+        final RegexParametersHelper.ReplaceOnValueParameter replaceOnValueParameter = actionContext.get(REGEX_HELPER_KEY);
+
+        return replaceOnValueParameter.matches(value);
     }
 
 }

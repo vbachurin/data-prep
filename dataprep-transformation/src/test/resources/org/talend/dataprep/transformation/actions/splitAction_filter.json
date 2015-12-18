@@ -5,8 +5,7 @@
       "parameters": {
         "column_id": "city",
         "scope": "column",
-        "separator": "other",
-        "manual_separator": " ",
+        "separator": " ",
         "limit":"2",
         "filter": {
           "eq": {

@@ -20,8 +20,11 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -29,26 +32,33 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
 
 /**
  * Test class for Match Pattern action. Creates one consumer, and test it.
  *
  * @see Split
  */
-public class MatchesPatternTest {
+public class MatchesPatternTest extends AbstractMetadataBaseTest {
 
     /**
      * The action to test.
      */
+    @Autowired
     private MatchesPattern action;
+
+
+    /** The dataprep ready jackson builder. */
+    @Autowired
+    public Jackson2ObjectMapperBuilder builder;
 
     private Map<String, String> parameters;
 
     @Before
     public void init() throws IOException {
-        action = new MatchesPattern();
         parameters = ActionMetadataTestUtils.parseParameters(MatchesPatternTest.class.getResourceAsStream("matchesPattern.json"));
     }
 
@@ -87,9 +97,87 @@ public class MatchesPatternTest {
     }
 
     @Test
+    public void shouldMatchPattern_starts_with() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon");
+        values.put("0002", "01/01/2015");
+        final DataSetRow row = new DataSetRow(values);
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon");
+        expectedValues.put("0003", "true");
+        expectedValues.put("0002", "01/01/2015");
+
+        parameters.put(MatchesPattern.PATTERN_PARAMETER, "custom");
+        parameters.put(MatchesPattern.MANUAL_PATTERN_PARAMETER, generateJson("Bac", "starts_with"));
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
+     * Test with an invalid regex pattern as token and mode is not REGEX.
+     */
+    @Test
+    public void shouldMatchPattern_contains_invalid_regex() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Ba(con");
+        values.put("0002", "01/01/2015");
+        final DataSetRow row = new DataSetRow(values);
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Ba(con");
+        expectedValues.put("0003", "true");
+        expectedValues.put("0002", "01/01/2015");
+
+        parameters.put(MatchesPattern.PATTERN_PARAMETER, "custom");
+        parameters.put(MatchesPattern.MANUAL_PATTERN_PARAMETER, generateJson("(", "contains"));
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
+    public void shouldNotMatchPattern_starts_with() {
+        // given
+        final Map<String, String> values = new HashMap<>();
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon");
+        values.put("0002", "01/01/2015");
+        final DataSetRow row = new DataSetRow(values);
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon");
+        expectedValues.put("0003", "false");
+        expectedValues.put("0002", "01/01/2015");
+
+        parameters.put(MatchesPattern.PATTERN_PARAMETER, "custom");
+        parameters.put(MatchesPattern.MANUAL_PATTERN_PARAMETER, generateJson("Bak", "starts_with"));
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
     public void shouldOrNotMatchPattern() {
-        assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]*")));
-        assertTrue(action.computeNewValue("aA", buildPatternActionContext("[a-zA-Z]*")));
+        assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]+")));
+        assertTrue(action.computeNewValue("aA", buildPatternActionContext("[a-zA-Z]+")));
 
         assertFalse(action.computeNewValue("Ouch !", buildPatternActionContext("[a-zA-Z0-9]*")));
         assertTrue(action.computeNewValue("Houba 2 fois", buildPatternActionContext("[a-zA-Z0-9 ]*")));
@@ -97,7 +185,7 @@ public class MatchesPatternTest {
 
     @Test
     public void shouldNotMatchPattern() {
-        assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]*")));
+        assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]+")));
         assertFalse(action.computeNewValue("aaaa8", buildPatternActionContext("[a-zA-Z]*")));
         assertFalse(action.computeNewValue(" a8 ", buildPatternActionContext("[a-zA-Z]*")));
         assertFalse(action.computeNewValue("aa:", buildPatternActionContext("[a-zA-Z]*")));
@@ -107,8 +195,8 @@ public class MatchesPatternTest {
     public void shouldMatchOrNotoEmptyString() {
         assertTrue(action.computeNewValue("", buildPatternActionContext(".*")));
         assertTrue(action.computeNewValue("", buildPatternActionContext("[a-zA-Z]*")));
-        assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]*")));
-        assertTrue(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z ]*")));
+        assertFalse(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z]+")));
+        assertTrue(action.computeNewValue(" ", buildPatternActionContext("[a-zA-Z ]+")));
     }
 
     private ActionContext buildPatternActionContext(String regex) {
@@ -220,6 +308,15 @@ public class MatchesPatternTest {
     private ColumnMetadata createMetadata(String id, String name, Type type) {
         return ColumnMetadata.Builder.column().computedId(id).name(name).type(type).headerSize(12).empty(0).invalid(2).valid(5)
                 .build();
+    }
+
+    private String generateJson(String token, String operator) {
+        RegexParametersHelper.ReplaceOnValueParameter r = new RegexParametersHelper.ReplaceOnValueParameter(token, operator);
+        try {
+            return builder.build().writeValueAsString(r);
+        } catch (JsonProcessingException e) {
+            return "";
+        }
     }
 
 }

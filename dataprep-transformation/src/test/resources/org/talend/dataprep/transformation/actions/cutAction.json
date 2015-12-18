@@ -4,7 +4,10 @@
       "action": "cut",
       "parameters": {
         "column_id": "name",
-        "pattern": "The ",
+        "pattern": {
+          "token": "The ",
+          "operator": "regex"
+        },
         "scope": "column"
       }
     }
