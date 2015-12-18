@@ -25,6 +25,7 @@
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
         vm.state = state;
+        vm.isSendingRequest = false;
 
         /**
          * @ngdoc property
@@ -180,7 +181,7 @@
          * @description perform the dataset cloning to the folder destination
          */
         vm.clone = function(){
-
+            vm.isSendingRequest = true;
             vm.cloneNameForm.$commitViewValue();
 
             DatasetService.clone(vm.datasetToClone,vm.folderDestination,vm.cloneName).then(function (){
@@ -196,6 +197,7 @@
                         vm.folderDestination = null;
                         vm.foldersFound = [];
                         vm.cloneName = '';
+                        vm.isSendingRequest = false;
                     });
         };
 

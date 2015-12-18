@@ -227,7 +227,7 @@
   "DELETE_ACTION": "Delete {{type}} \"{{name}}\"",
   "CLONE_ACTION": "Clone {{type}} \"{{name}}\"",
   "COPY_ACTION": "Copy",
-  "COPY_HERE_ACTION": "Copy here",
+  "COPY_HERE_ACTION": "Copy",
   "CHOOSE_FOLDER_DESTINATION": "Copy {{type}} - Select Folder destination",
 
   "_comment": "Range slider",
