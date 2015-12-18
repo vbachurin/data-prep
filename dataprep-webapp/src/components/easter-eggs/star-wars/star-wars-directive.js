@@ -13,12 +13,7 @@
     function StarWars() {
         return {
             restrict: 'E',
-            transclude: false,
-            replace: true,
             templateUrl: 'components/easter-eggs/star-wars/star-wars.html',
-            bindToController: true,
-            link: {
-            }
         };
     }
 

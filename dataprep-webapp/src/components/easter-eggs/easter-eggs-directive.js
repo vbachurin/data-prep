@@ -13,8 +13,6 @@
     function EasterEggs() {
         return {
             restrict: 'E',
-            transclude: false,
-            replace: true,
             templateUrl: 'components/easter-eggs/easter-eggs.html',
             bindToController: true,
             controllerAs: 'easterEggsCtrl',
