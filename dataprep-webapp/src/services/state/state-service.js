@@ -11,11 +11,12 @@
     function StateService(PlaygroundStateService, playgroundState, //
                           DatasetStateService, datasetState, //
                           FolderStateService, folderState,  //
-                          EasterEggsStateService, easterEggsState) {
+                          EasterEggsStateService, easterEggsState,FeedbackStateService, feedbackState) {
         state.playground = playgroundState;
         state.dataset = datasetState;
         state.folder = folderState;
         state.easterEggsState = easterEggsState;
+        state.feedbackState = feedbackState;
 
         return {
             //playground
@@ -67,7 +68,11 @@
 
             //easter eggs
             enableEasterEgg: EasterEggsStateService.enableEasterEgg,
-            disableEasterEgg: EasterEggsStateService.disableEasterEgg
+            disableEasterEgg: EasterEggsStateService.disableEasterEgg,
+
+            //easter eggs
+            enableFeedback: FeedbackStateService.enableFeedback,
+            disableFeedback: FeedbackStateService.disableFeedback
         };
     }
 

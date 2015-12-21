@@ -27,6 +27,10 @@
   float: right;
   margin-right: 51px;
 
+  .enabled {
+    color: white;
+  }
+
   .onboarding-prep-icon {
     color: $medium-gray;
     padding-left: 10px;
