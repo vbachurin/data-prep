@@ -15,6 +15,7 @@ import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
 @Configuration
 @ConditionalOnProperty(name = "service.documentation", havingValue = "true", matchIfMissing = true)
 @EnableSwagger
+@SuppressWarnings("InsufficientBranchCoverage")
 public class Documentation {
 
     @Value("${service.documentation.name}")

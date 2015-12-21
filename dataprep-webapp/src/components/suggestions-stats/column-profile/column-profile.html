@@ -1,20 +1,11 @@
-<div class="column-profile" ng-switch="!!(columnProfileCtrl.histogram.data.length || columnProfileCtrl.stateDistribution)">
+<div class="column-profile" ng-switch="!!(columnProfileCtrl.histogram || columnProfileCtrl.stateDistribution)">
 
-    <div id="column-profile-refresh"
-         ng-switch-when="false"
-         ng-switch="!!columnProfileCtrl.histogram">
-
-        <div ng-switch-when="true" id="chart-ghost" class="loading-container">
-            <img id="chart-ghost-img" src="/assets/images/refreshing-ghost-chart.png">
-            <div id="chart-ghost-message" class="loading-msg">
-                <span class="wait-icon continuous-rotate" ><i data-icon="c" class="icon"></i></span>
-                <span class="wait-text" translate-once="REFRESHING_WAIT"></span>
-            </div>
+    <div id="chart-ghost" class="loading-container" ng-switch-when="false">
+        <img id="chart-ghost-img" src="/assets/images/refreshing-ghost-chart.png">
+        <div id="chart-ghost-message" class="loading-msg">
+            <span class="wait-icon continuous-rotate" ><i data-icon="c" class="icon"></i></span>
+            <span class="wait-text" translate-once="REFRESHING_WAIT"></span>
         </div>
-
-        <div ng-switch-when="false"
-             class="watermark"
-             translate-once="COMING_SOON"></div>
     </div>
 
     <div id="column-profile-chart" ng-switch-when="true">
@@ -43,32 +34,35 @@
             </div>
         </div>
 
-        <horizontal-barchart id="hBarChart"
-                             ng-if="!columnProfileCtrl.histogram.vertical"
-                             width="300"
-                             height="400"
-                             on-click="columnProfileCtrl.addBarchartFilter"
-                             visu-data="columnProfileCtrl.histogram.data"
-                             value-field="formattedValue"
-                             value-field-2="filteredOccurrences"
-                             key-field="{{columnProfileCtrl.histogram.key}}"
-                             key-label="{{columnProfileCtrl.histogram.label}}"></horizontal-barchart>
+        <div style="min-height: 160px;">
+            <horizontal-barchart id="hBarChart"
+                                 ng-if="!columnProfileCtrl.histogram.vertical"
+                                 width="300"
+                                 height="400"
+                                 on-click="columnProfileCtrl.addBarchartFilter"
+                                 visu-data="columnProfileCtrl.histogram.data"
+                                 value-field="formattedValue"
+                                 value-field-2="filteredOccurrences"
+                                 key-field="{{columnProfileCtrl.histogram.key}}"
+                                 key-label="{{columnProfileCtrl.histogram.label}}"></horizontal-barchart>
 
-        <vertical-barchart id="vBarChart"
-                           ng-if="columnProfileCtrl.histogram.vertical"
-                           width="300"
-                           height="150"
-                           on-click="columnProfileCtrl.addRangeFilter(interval)"
-                           visu-data="columnProfileCtrl.histogram.data"
-                           value-field="{{columnProfileCtrl.histogram.key}}"
-                           value-field-2="filteredOccurrences"
-                           key-field="data"
-                           active-limits="columnProfileCtrl.histogram.activeLimits"
-                           key-label="{{columnProfileCtrl.histogram.label}}"></vertical-barchart>
+            <vertical-barchart id="vBarChart"
+                               ng-if="columnProfileCtrl.histogram.vertical"
+                               width="300"
+                               height="150"
+                               on-click="columnProfileCtrl.addRangeFilter(interval)"
+                               visu-data="columnProfileCtrl.histogram.data"
+                               visu-data-2="columnProfileCtrl.filteredHistogram.data"
+                               value-field="{{columnProfileCtrl.histogram.key}}"
+                               value-field-2="{{columnProfileCtrl.filteredHistogram.key}}"
+                               key-field="data"
+                               active-limits="columnProfileCtrl.histogram.activeLimits"
+                               key-label="{{columnProfileCtrl.histogram.label}}"></vertical-barchart>
 
-        <highchart id="geochart"
-                   ng-if="columnProfileCtrl.stateDistribution"
-                   config="columnProfileCtrl.chartConfig"></highchart>
+            <highchart id="geochart"
+                       ng-if="columnProfileCtrl.stateDistribution"
+                       config="columnProfileCtrl.chartConfig"></highchart>
+        </div>
 
         <range-slider id="rangeSliderId"
                       width="300"

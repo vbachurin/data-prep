@@ -3,20 +3,9 @@ package org.talend.dataprep.folder.store.file;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -26,8 +15,6 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -41,8 +28,6 @@ import com.google.common.collect.Lists;
 @Component("folderRepository#file")
 @ConditionalOnProperty(name = "folder.store", havingValue = "file", matchIfMissing = false)
 public class FileSystemFolderRepository extends FolderRepositoryAdapter implements FolderRepository {
-
-    private static final Logger LOG = LoggerFactory.getLogger(FileSystemFolderRepository.class);
 
     /**
      * Where to store the folders
@@ -78,7 +63,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
     @Override
     public Iterable<Folder> children( String parentPath) {
         try {
-            Path folderPath = null;
+            Path folderPath;
             if (StringUtils.isNotEmpty(parentPath)) {
                 folderPath = Paths.get(getRootFolder().toString(), StringUtils.split(parentPath, PATH_SEPARATOR));
             } else {
@@ -485,7 +470,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
 
         try {
 
-            Path destinationFile = Paths.get(path.toString(), folderEntry.id());
+            Path destinationFile = Paths.get(path.toString(), buildFileName( folderEntry ));
             Files.move(originFile, destinationFile);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -494,8 +479,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
 
     @Override
     public int size() {
-        int number = foldersNumber(getRootFolder());
-        return number;
+        return foldersNumber(getRootFolder());
     }
 
     /**

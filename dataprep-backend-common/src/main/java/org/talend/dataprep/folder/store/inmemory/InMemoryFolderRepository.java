@@ -9,8 +9,6 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.folder.Folder;
@@ -21,8 +19,6 @@ import org.talend.dataprep.folder.store.FolderRepositoryAdapter;
 @Component("folderRepository#in-memory")
 @ConditionalOnProperty(name = "folder.store", havingValue = "in-memory", matchIfMissing = false)
 public class InMemoryFolderRepository extends FolderRepositoryAdapter implements FolderRepository {
-
-    private static final Logger LOG = LoggerFactory.getLogger(InMemoryFolderRepository.class);
 
     /**
      * all folders key is the path
@@ -184,14 +180,12 @@ public class InMemoryFolderRepository extends FolderRepositoryAdapter implements
     public Iterable<FolderEntry> findFolderEntries(String contentId, String contentType) {
         List<FolderEntry> entries = new ArrayList<>();
 
-        this.folderEntriesMap.values().stream().forEach(folderEntries -> {
-            folderEntries.stream().forEach(folderEntry -> {
-                if (StringUtils.equalsIgnoreCase(contentId, folderEntry.getContentId()) //
-                        && StringUtils.equalsIgnoreCase(contentType, folderEntry.getContentType())) {
-                    entries.add(folderEntry);
-                }
-            });
-        });
+        this.folderEntriesMap.values().stream().forEach(folderEntries -> folderEntries.stream().forEach(folderEntry -> {
+            if (StringUtils.equalsIgnoreCase(contentId, folderEntry.getContentId()) //
+                    && StringUtils.equalsIgnoreCase(contentType, folderEntry.getContentType())) {
+                entries.add(folderEntry);
+            }
+        }));
 
         return entries;
     }

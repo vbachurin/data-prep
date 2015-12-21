@@ -5,10 +5,12 @@ import static org.talend.dataprep.api.type.Type.STRING;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.STRINGS;
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.REGEX;
 
+import java.security.InvalidParameterException;
 import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import java.util.Map;
+import java.util.regex.Matcher;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -16,10 +18,14 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 @Component(Cut.ACTION_BEAN_PREFIX + Cut.CUT_ACTION_NAME)
 public class Cut extends ActionMetadata implements ColumnAction {
+
+    @Autowired
+    private RegexParametersHelper regexParametersHelper;
 
     /**
      * The action name.
@@ -31,10 +37,7 @@ public class Cut extends ActionMetadata implements ColumnAction {
      */
     public static final String PATTERN_PARAMETER = "pattern"; //$NON-NLS-1$
 
-    /**
-     * The compiled pattern based on provided value.
-     */
-    private static final String COMPILED_PATTERN = "compiled_pattern"; //$NON-NLS-1$
+    public static final String REGEX_HELPER_KEY = "regex_helper";
 
     /**
      * @see ActionMetadata#getName()
@@ -72,11 +75,16 @@ public class Cut extends ActionMetadata implements ColumnAction {
 
     @Override
     public void compile(ActionContext actionContext) {
-        try {
-            Pattern.compile(actionContext.getParameters().get(PATTERN_PARAMETER));
-            actionContext.setActionStatus(ActionContext.ActionStatus.OK);
-        } catch (Exception e) {
-            actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
+        super.compile(actionContext);
+        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
+            final Map<String, String> parameters = actionContext.getParameters();
+            String rawParam = parameters.get(PATTERN_PARAMETER);
+
+            try {
+                actionContext.get(REGEX_HELPER_KEY,(p) -> regexParametersHelper.build(rawParam));
+            } catch (InvalidParameterException e) {
+                actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
+            }
         }
     }
 
@@ -88,13 +96,20 @@ public class Cut extends ActionMetadata implements ColumnAction {
         final String columnId = context.getColumnId();
         final String toCut = row.get(columnId);
         if (toCut != null) {
-            try {
-                // Check if the pattern is valid:
-                Pattern p = context.get(COMPILED_PATTERN, (map) -> Pattern.compile(map.get(PATTERN_PARAMETER)));
-                row.set(columnId, p.matcher(toCut).replaceAll("")); //$NON-NLS-1$
-            } catch (PatternSyntaxException e) {
-                // In case the pattern is not valid, consider that the value does not match: do nothing.
+            final RegexParametersHelper.ReplaceOnValueParameter replaceOnValueParameter = context.get(REGEX_HELPER_KEY);
+            replaceOnValueParameter.setStrict(false);
+
+            if (replaceOnValueParameter.matches(toCut)) {
+                if (replaceOnValueParameter.getOperator().equals(RegexParametersHelper.REGEX_MODE)) {
+                    String value = toCut.replaceAll(replaceOnValueParameter.getToken(), ""); //$NON-NLS-1$
+                    row.set(columnId, value);
+                } else {
+                    String value = toCut.replace(replaceOnValueParameter.getToken(), ""); //$NON-NLS-1$
+                    row.set(columnId, value);
+
+                }
             }
         }
     }
+    
 }

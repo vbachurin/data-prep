@@ -4,6 +4,7 @@
   $border-color: $shadow-gray;
 
   .actions-category {
+    font-size: .95em;
     background-color: #F1F1F1;
     color: $black;
     font-weight: 300;
@@ -23,6 +24,7 @@
       }
 
       a.trigger {
+        font-size: .85em;
         cursor: pointer;
         color: inherit;
         padding-left: 10px;

@@ -401,7 +401,10 @@
                 column_id: column.id,
                 column_name: column.name,
                 row_id: rowItem.tdpId,
-                cell_value: TextFormatService.escapeRegex(rowItem[column.id]),
+                cell_value: {
+                    token: rowItem[column.id],
+                    operator: 'equals'
+                },
                 replace_value: newValue
             };
             var action = 'replace_on_value';

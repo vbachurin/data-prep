@@ -227,7 +227,9 @@ public abstract class ActionMetadata {
                 break;
             case LINE:
             case DATASET:
+            default:
                 break;
+
             }
         }
         actionContext.setActionStatus(ActionContext.ActionStatus.OK);

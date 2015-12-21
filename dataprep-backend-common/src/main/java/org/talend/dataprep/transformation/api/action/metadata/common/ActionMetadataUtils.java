@@ -55,7 +55,7 @@ public class ActionMetadataUtils {
             synchronized (analyzerCache) {
                 analyzer = analyzerCache.get(domain);
                 if (analyzer == null) {
-                    analyzer = service.qualityAnalyzer(Collections.singletonList(colMetadata));
+                    analyzer = service.getQualityAnalyzer(Collections.singletonList(colMetadata));
                     analyzer.init();
                     analyzerCache.put(domain, analyzer);
                 }

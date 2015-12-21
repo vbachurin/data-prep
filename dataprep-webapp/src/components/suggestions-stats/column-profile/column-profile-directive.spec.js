@@ -34,13 +34,13 @@ describe('Suggestions Profile directive', function () {
     it('should render chart ghost when fetching statistics', inject(function ($q, PlaygroundService, StatisticsService) {
             //given
             spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
-            StatisticsService.histogram = {data: []};
+            StatisticsService.histogram = null;
 
             //when
             createElement();
 
             //then
-            expect(element.find('#column-profile-refresh').length).toBe(1);
+            expect(element.find('#chart-ghost').length).toBe(1);
             expect(element.find('#column-profile-chart').length).toBe(0);
         })
     );

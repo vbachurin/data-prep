@@ -537,11 +537,13 @@ describe('Dataset list controller', function () {
 
             //when
             ctrl.clone();
+            expect(ctrl.isSendingRequest).toBeTruthy();
             scope.$digest();
 
             //then
             expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder, cloneName);
             expect(FolderService.getFolderContent).toHaveBeenCalled();
+            expect(ctrl.isSendingRequest).toBeFalsy();
         }));
 
         it('should display message on success', inject(function (MessageService,DatasetService,FolderService) {
@@ -656,7 +658,7 @@ describe('Dataset list controller', function () {
             expect(ctrl.datasetToClone).toBe(datasets[0]);
             expect(ctrl.foldersFound).toEqual([]);
             expect(ctrl.searchFolderQuery).toBe('');
-            expect(ctrl.folders).toEqual([{id: '', path: '/', collapsed: false, name: 'Home',
+            expect(ctrl.folders).toEqual([{id: '', path: '', collapsed: false, name: 'Home',
                                            nodes : [{id: 'folder-1/beer', path: 'folder-1/beer', name: 'folder-1/beer', collapsed: true},
                                                     {id: 'folder-2', path: 'folder-2', name: 'folder-2', collapsed: true},
                                                     {id: 'folder-3', path: 'folder-3', name: 'folder-3', collapsed: true}]}]);
@@ -689,6 +691,7 @@ describe('Dataset list controller', function () {
         it('should call filter root folder and search folders service', inject(function (FolderService) {
             //given
             var foldersFromSearch = [
+                {id: '', path: '', name: 'Home'},
                 {path: 'folder-1', name: 'folder-1'},
                 {path: 'folder-1/sub-1', name: 'sub-1'},
                 {path: 'folder-1/sub-2/folder-1-beer', name: 'folder-1-beer'}
@@ -697,7 +700,7 @@ describe('Dataset list controller', function () {
             var ctrl = createController();
             ctrl.searchFolderQuery = 'H';
             spyOn(ctrl, 'chooseFolder').and.returnValue();
-            var rootFolder = {id: '', path: '/', name: 'Home'};
+            var rootFolder = {id: '', path: '', name: 'Home'};
 
             //when
             ctrl.searchFolders();
@@ -705,7 +708,7 @@ describe('Dataset list controller', function () {
 
             //then
             expect(FolderService.searchFolders).toHaveBeenCalledWith(ctrl.searchFolderQuery);
-            expect(ctrl.foldersFound).toEqual([_.extend(rootFolder, foldersFromSearch)]);
+            expect(ctrl.foldersFound).toEqual(foldersFromSearch);
             expect(ctrl.chooseFolder).toHaveBeenCalledWith(rootFolder);
         }));
 

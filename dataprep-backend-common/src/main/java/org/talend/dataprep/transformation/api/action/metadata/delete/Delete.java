@@ -43,8 +43,9 @@ public class Delete extends ActionMetadata implements RowAction {
                 return MessagesBundle.getString("action." + DELETE_SINGLE_LINE + ".desc");
             case COLUMN:
                 return MessagesBundle.getString("action." + DELETE_COLUMN + ".desc");
+        default:
+            return null;
         }
-        return null;
     }
 
     @Override
@@ -54,8 +55,9 @@ public class Delete extends ActionMetadata implements RowAction {
                 return MessagesBundle.getString("action." + DELETE_SINGLE_LINE + ".label");
             case COLUMN:
                 return MessagesBundle.getString("action." + DELETE_COLUMN + ".label");
+        default:
+            return null;
         }
-        return null;
     }
 
     @Override

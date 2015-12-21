@@ -25,6 +25,7 @@
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
         vm.state = state;
+        vm.isSendingRequest = false;
 
         /**
          * @ngdoc property
@@ -180,7 +181,7 @@
          * @description perform the dataset cloning to the folder destination
          */
         vm.clone = function(){
-
+            vm.isSendingRequest = true;
             vm.cloneNameForm.$commitViewValue();
 
             DatasetService.clone(vm.datasetToClone,vm.folderDestination,vm.cloneName).then(function (){
@@ -196,6 +197,7 @@
                         vm.folderDestination = null;
                         vm.foldersFound = [];
                         vm.cloneName = '';
+                        vm.isSendingRequest = false;
                     });
         };
 
@@ -206,7 +208,7 @@
          * @description perform the dataset moving to the folder destination
          */
         vm.move = function(){
-
+            vm.isSendingRequest = true;
             vm.cloneNameForm.$commitViewValue();
 
             DatasetService.move(vm.datasetToClone,state.folder.currentFolder,vm.folderDestination,vm.cloneName).then(function (){
@@ -222,6 +224,7 @@
                 vm.folderDestination = null;
                 vm.foldersFound = [];
                 vm.cloneName = '';
+                vm.isSendingRequest = false;
             });
         };
 
@@ -395,7 +398,7 @@
                 var currentPath = pathParts[0];
             }
 
-            var rootFolder = {id: '', path: '/', collapsed: false, name: $translate.instant('HOME_FOLDER')};
+            var rootFolder = {id: '', path: '', collapsed: false, name: $translate.instant('HOME_FOLDER')};
 
             FolderService.children()
                 .then(function(res) {
@@ -502,8 +505,9 @@
                 FolderService.searchFolders(vm.searchFolderQuery)
                     .then(function(response){
                         if(n > -1){
-                            var rootFolder = {id: '', path: '/', name: $translate.instant('HOME_FOLDER')};
-                            vm.foldersFound = [_.extend(rootFolder, response.data)];
+                            var rootFolder = {id: '', path: '', name: $translate.instant('HOME_FOLDER')};
+                            vm.foldersFound.push(rootFolder);
+                            vm.foldersFound = vm.foldersFound.concat(response.data);
                         } else {
                             vm.foldersFound = response.data;
                         }

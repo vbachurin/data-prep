@@ -4,7 +4,10 @@
       "action": "cut",
       "parameters": {
         "column_id": "0001",
-        "pattern": "The ",
+        "pattern": {
+          "token": "The ",
+          "operator": "contains"
+        },
         "scope": "column"
       }
     }

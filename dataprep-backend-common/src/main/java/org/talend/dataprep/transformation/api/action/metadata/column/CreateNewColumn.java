@@ -89,6 +89,10 @@ public class CreateNewColumn extends ActionMetadata implements ColumnAction {
     }
 
 
+    /**
+     * @see ActionMetadata#getParameters()
+     */
+    @Override
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
 
@@ -150,6 +154,7 @@ public class CreateNewColumn extends ActionMetadata implements ColumnAction {
                 ColumnMetadata selectedColumn = rowMetadata.getById(parameters.get(SELECTED_COLUMN_PARAMETER));
                 newValue = row.get(selectedColumn.getId());
                 break;
+        default:
         }
 
         row.set(newColumn, newValue);

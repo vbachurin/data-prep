@@ -6,11 +6,12 @@
     <nav role="navigation">
         <ul class="navigation-menu show">
             <li class="nav-link" title="{{'COMING_SOON' | translate}}"><a class="icon" data-icon="i"></a></li>
-            <li class="nav-link" title="{{'ONBOARDING' | translate}}"><a class="icon" style="color:white;" data-icon="y" id="onboarding-icon"
+            <li class="nav-link" title="{{'ONBOARDING' | translate}}"><a class="icon enabled" data-icon="y"
+                                                                         id="onboarding-icon"
                                     ng-click="navbarCtrl.startTour('dataset')"></a></li>
             <li class="nav-link" title="{{'COMING_SOON' | translate}}"><a class="icon" data-icon="j" id="marketplace-icon" ></a></li>
             <li class="nav-link" title="{{'FEEDBACK_TOOLTIP' | translate}}">
-                <a class="icon" data-icon="H" id="message-icon" ng-click="navbarCtrl.openFeedbackForm()"></a>
+                <a class="icon enabled" data-icon="H" id="message-icon" ng-click="navbarCtrl.openFeedbackForm()"></a>
             </li>
             <li class="nav-link" title="{{'COMING_SOON' | translate}}"><a class="icon notification-icon" id="notification-icon">3</a></li>
             <!--<li class="nav-link more"><a class="icon nomore" data-icon="k" id="profile-icon"></a>
@@ -24,8 +25,9 @@
     </nav>
     <div class="navigation-tools">
         <div class="search-bar">
-            <form role="search">
-                <input type="search" translate-once-placeholder="SEARCH" title="{{'COMING_SOON' | translate}}"/>
+            <form role="search" ng-submit="navbarCtrl.search()">
+                <input type="search" ng-model="navbarCtrl.searchInput" translate-once-placeholder="SEARCH"
+                       title="{{'COMING_SOON' | translate}}"/>
             </form>
         </div>
     </div>
@@ -35,7 +37,8 @@
               fullscreen="false"
               close-button="true"
               disable-enter="true"
-              state="navbarCtrl.feedbackModal">
+              state="navbarCtrl.feedbackModal"
+              ng-if="navbarCtrl.feedbackModal">
     <div class="title"
          translate-once="FEEDBACK_FORM"></div>
 
@@ -50,7 +53,7 @@
         </div>
 
         <div class="feedback-form-line">
-            <span class="feedback-form-label" translate-once="FEEDBACK_TITLE"></span>
+            <span class="feedback-form-label" translate-once="FEEDBACK_SUMMARY"></span>
             <input type="text"
                    ng-model="navbarCtrl.feedback.title"
                    ng-model-options="{debounce: { default: 300, blur: 0 }}"
@@ -67,6 +70,24 @@
                       ng-model-options="{debounce: { default: 300, blur: 0 }}"
                       ng-model="navbarCtrl.feedback.description"></textarea>
         </div>
+
+        <div class="feedback-form-line">
+            <span class="feedback-form-label"></span>
+            <span translate-once="FEEDBACK_FORUM_LINK_1"></span>
+            <span>
+                <a href="https://talendforge.org/forum/viewforum.php?id=47"
+                   translate-once="FEEDBACK_FORUM_LINK_2" target="_blank"></a>
+            </span>
+        </div>
+        <div class="feedback-form-line">
+            <span class="feedback-form-label"></span>
+            <span translate-once="FEEDBACK_KNOWN_ISSUES_1"></span>
+            <span>
+                <a href="https://help.talend.com/display/WIKI/Talend+Data+Preparation+v1.0+Beta+Program"
+                   translate-once="FEEDBACK_KNOWN_ISSUES_2" target="_blank"></a>
+            </span>
+        </div>
+
         <div class="modal-buttons">
             <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL"></button>
             <button class="btn-primary modal-primary-button"
@@ -81,7 +102,6 @@
         </div>
     </form>
 </talend-modal>
-
 
 <ui-view class="content"></ui-view>
 

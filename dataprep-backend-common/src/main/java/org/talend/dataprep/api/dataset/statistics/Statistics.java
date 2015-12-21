@@ -1,17 +1,19 @@
 package org.talend.dataprep.api.dataset.statistics;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
-
 @JsonRootName("statistics")
 public class Statistics implements Serializable {
 
-    /** Serialization UID. */
+    /**
+     * Serialization UID.
+     */
     private static final long serialVersionUID = 1L;
 
     @JsonProperty("count")
@@ -54,7 +56,7 @@ public class Statistics implements Serializable {
     Quantiles quantiles = new Quantiles();
 
     @JsonProperty("histogram")
-    List<HistogramRange> histogram = new LinkedList<>();
+    Histogram histogram;
 
     @JsonProperty("textLengthSummary")
     TextLengthSummary textLengthSummary = new TextLengthSummary();
@@ -163,11 +165,11 @@ public class Statistics implements Serializable {
         this.quantiles = quantiles;
     }
 
-    public List<HistogramRange> getHistogram() {
+    public Histogram getHistogram() {
         return histogram;
     }
 
-    public void setHistogram(List<HistogramRange> histogram) {
+    public void setHistogram(Histogram histogram) {
         this.histogram = histogram;
     }
 
@@ -236,7 +238,7 @@ public class Statistics implements Serializable {
         if (!quantiles.equals(that.quantiles)) {
             return false;
         }
-        if (!new HashSet<>(histogram).equals(new HashSet<>(that.histogram))) {
+        if ((histogram == null && that.histogram != null) || (histogram != null && !histogram.equals(that.histogram))) {
             return false;
         }
         return textLengthSummary.equals(that.textLengthSummary);

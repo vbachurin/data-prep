@@ -31,7 +31,6 @@ import org.slf4j.Marker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -137,10 +136,6 @@ public class DataSetService {
     /** Dataset locator (used for remote datasets). */
     @Autowired
     private DataSetLocatorService datasetLocator;
-
-    /** DataPrep ready to use jackson object mapper. */
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
 
     /** DataPrep abstraction to the underlying security (whether it's enabled or not). */
     @Autowired
@@ -538,18 +533,18 @@ public class DataSetService {
             }
         });
         
-        // rename the dataset if we received a new name
-        DistributedLock datasetLock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
-        datasetLock.lock();
-        try {
-            if (StringUtils.isNotEmpty(newName)) {
+        // rename the dataset only if we received a new name
+        if (StringUtils.isNotEmpty(newName)) {
+            DistributedLock datasetLock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+            datasetLock.lock();
+            try {
                 dataSet.getMetadata().setName(newName);
                 dataSetMetadataRepository.add(dataSet.getMetadata());
-            }
-        } finally {
-            datasetLock.unlock();
-        }
 
+            } finally {
+                datasetLock.unlock();
+            }
+        }
         FolderEntry folderEntry = new FolderEntry("dataset", dataSetId, folderPath);
 
         folderRepository.moveFolderEntry(folderEntry, newFolderPath);
@@ -970,7 +965,7 @@ public class DataSetService {
             qualityAnalyzer.computeQuality(copy.getMetadata(), stream, sample);
         }
         try (Stream<DataSetRow> stream = contentStore.sample(dataSetMetadata, sample)) {
-            statisticsAnalysis.computeStatistics(copy.getMetadata(), stream);
+            statisticsAnalysis.computeFullStatistics(copy.getMetadata(), stream);
         }
     }
 }

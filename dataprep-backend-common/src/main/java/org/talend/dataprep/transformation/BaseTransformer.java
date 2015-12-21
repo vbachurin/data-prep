@@ -40,6 +40,7 @@ public class BaseTransformer {
                             LOGGER.debug("[Compilation] Remove action '{}' (compilation step returned {}).", action, actionStatus);
                             iterator.remove();
                             break;
+                        default:
                     }
                     actionContext.setOutputRowMetadata(current.getRowMetadata().clone());
                 }
@@ -72,6 +73,7 @@ public class BaseTransformer {
                             LOGGER.trace("[Transformation] Remove action '{}' (compilation step returned {}).", action, actionStatus);
                             iterator.remove();
                             break;
+                                default:
                     }
                 }
                 context.setPreviousRow(current.clone());

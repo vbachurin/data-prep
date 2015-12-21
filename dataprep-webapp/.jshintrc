@@ -24,6 +24,8 @@
     "document": false,
     "window": false,
     "angular": false,
+    //webworker
+    "postMessage": false,
     // Angular Mocks
     "inject": false,
     // JASMINE

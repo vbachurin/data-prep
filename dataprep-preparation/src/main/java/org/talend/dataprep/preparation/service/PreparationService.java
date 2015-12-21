@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.preparation.*;
@@ -48,9 +47,6 @@ public class PreparationService {
 
     @Autowired
     private PreparationRepository preparationRepository = null;
-
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
 
     @Autowired
     private ActionMetadataValidation validator;

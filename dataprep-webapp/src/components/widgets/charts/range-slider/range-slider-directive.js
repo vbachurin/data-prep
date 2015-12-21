@@ -35,7 +35,7 @@
 
             link: function (scope, element, attrs, ctrl) {
                 var renderTimeout;
-                var filterToApply;
+                //var filterToApply;
 
                 ctrl.showRangeInputs = true;
 
@@ -113,7 +113,10 @@
 
                     function triggerFilter(filterToTrigger){
                         //check if the minFilter < maxFilter
-                        filterToTrigger = filterToTrigger[0] > filterToTrigger[1] ? [filterToTrigger[1], filterToTrigger[0]] : filterToTrigger;
+                        filterToTrigger = filterToTrigger.min > filterToTrigger.max ?
+                            {min: filterToTrigger.max, max: filterToTrigger.min} :
+                            filterToTrigger;
+
                         ctrl.onBrushEnd({interval: filterToTrigger});
                     }
 
@@ -130,13 +133,17 @@
                         }
 
                         //left brush moved
+                        var filterToApply = {
+                            min: initialBrushValues[0],
+                            max: initialBrushValues[1]
+                        };
                         if (initialBrushValues[0] !== lastValues.brush.min) {
-                            filterToApply[0] = lastValues.brush.min;
+                            filterToApply.min = lastValues.brush.min;
                             lastValues.input.min = lastValues.brush.min;
                         }
                         //right brush moved
                         if (initialBrushValues[1] !== lastValues.brush.max) {
-                            filterToApply[1] = lastValues.brush.max;
+                            filterToApply.max = lastValues.brush.max;
                             lastValues.input.max = lastValues.brush.max;
                         }
 
@@ -169,7 +176,10 @@
                             //resize the brush with the delta
                             handleUniqueBrushValue();
 
-                            filterToApply = [lastValues.input.min,lastValues.input.max];
+                            var filterToApply = {
+                                min: lastValues.input.min,
+                                max: lastValues.input.max
+                            };
 
                             triggerFilter(filterToApply);
                         }
@@ -298,7 +308,7 @@
                             ctrl.minMaxModel.maxModel = ''+lastValues.input.max;
                         });
 
-                        filterToApply = [lastValues.input.min, lastValues.input.max];
+                        //filterToApply = [lastValues.input.min, lastValues.input.max];
                     }
 
                     function initRangeInputsListeners() {

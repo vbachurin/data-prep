@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 @Configuration
+@SuppressWarnings("InsufficientBranchCoverage")
 public class I18N {
 
     @Bean

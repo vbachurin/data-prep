@@ -21,7 +21,7 @@ public class InvalidRules extends BasicRules {
      * corrective actions).
      */
     @Value("#{'${invalid.threshold:0}'}")
-    private int invalidThreshold;
+    private static int invalidThreshold;
 
     private static long getInvalidCount(ColumnMetadata columnMetadata) {
         return Math.max(columnMetadata.getStatistics().getInvalid(), columnMetadata.getQuality().getInvalid());
@@ -34,7 +34,7 @@ public class InvalidRules extends BasicRules {
     public static SuggestionEngineRule deleteInvalidRule() {
         return forActions(DeleteInvalid.DELETE_INVALID_ACTION_NAME) //
                 .then(columnMetadata -> {
-                    if (getInvalidCount(columnMetadata) > 0) {
+                    if (getInvalidCount(columnMetadata) > invalidThreshold) {
                         return INVALID_MGT;
                     }
                     return NEGATIVE;
@@ -49,7 +49,7 @@ public class InvalidRules extends BasicRules {
     public SuggestionEngineRule fillInvalidRule() {
         return forActions(FillInvalid.FILL_INVALID_ACTION_NAME) //
                         .then(columnMetadata -> {
-                            if (getInvalidCount(columnMetadata) > 0) {
+                    if (getInvalidCount(columnMetadata) > invalidThreshold) {
                                 return INVALID_MGT;
                             }
                             return NEGATIVE;
@@ -64,7 +64,7 @@ public class InvalidRules extends BasicRules {
     public SuggestionEngineRule clearInvalidRule() {
         return forActions(ClearInvalid.ACTION_NAME) //
                 .then(columnMetadata -> {
-                    if (getInvalidCount(columnMetadata) > 0) {
+                    if (getInvalidCount(columnMetadata) > invalidThreshold) {
                         return INVALID_MGT;
                     }
                     return NEGATIVE;

@@ -8,11 +8,8 @@
 	 * @requires data-prep.services.folder.service:FolderService
 	 * @requires data-prep.services.state.constant:state
 	 */
-	function FolderCtrl (FolderService, state) {
+	function FolderCtrl (FolderService, state, StateService) {
 		var vm = this;
-		vm.state = state;
-
-		vm.loadingChildren = true;
 		vm.state = state;
 
 		/**
@@ -33,19 +30,14 @@
 		 * @description build the children of the folder menu entry as parameter
 		 */
 		vm.initMenuChildren = function initMenuChildren (folder) {
-			vm.loadingChildren = true;
-			FolderService.populateMenuChildren(folder)
-				.finally(
-				function () {
-					vm.loadingChildren = false;
-				});
+			StateService.setMenuChildren([]);
+			FolderService.populateMenuChildren(folder);
 		};
 
 		/**
 		 * Load folders on start
 		 */
 		FolderService.getFolderContent();
-
 	}
 
 	angular.module('data-prep.folder')

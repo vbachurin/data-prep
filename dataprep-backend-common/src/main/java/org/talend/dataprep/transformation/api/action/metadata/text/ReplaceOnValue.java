@@ -3,11 +3,12 @@ package org.talend.dataprep.transformation.api.action.metadata.text;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.*;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -17,32 +18,31 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.CellAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
+/**
+ * Replace the content or part of a cell by a value.
+ */
 @Component(ReplaceOnValue.ACTION_BEAN_PREFIX + ReplaceOnValue.REPLACE_ON_VALUE_ACTION_NAME)
 public class ReplaceOnValue extends ActionMetadata implements ColumnAction, CellAction {
 
-    /**
-     * The action name.
-     */
+    public static final String REGEX_HELPER_KEY = "regex_helper";
+
+    @Autowired
+    private RegexParametersHelper regexParametersHelper;
+
+    /** The action name. */
     public static final String REPLACE_ON_VALUE_ACTION_NAME = "replace_on_value"; //$NON-NLS-1$
 
-    /**
-     * Value to match
-     */
+    /** Value to match. */
     public static final String CELL_VALUE_PARAMETER = "cell_value"; //$NON-NLS-1$
 
-    /**
-     * Replace Value
-     */
+    /** Replace Value. */
     public static final String REPLACE_VALUE_PARAMETER = "replace_value"; //$NON-NLS-1$
 
-    /**
-     * Scope Value
-     */
+    /** Scope Value (replace the entire cell or only the part that matches). */
     public static final String REPLACE_ENTIRE_CELL_PARAMETER = "replace_entire_cell"; //$NON-NLS-1$
-
-    private static final String COMPILED_PATTERN = "compiled_pattern";
 
     /**
      * @see ActionMetadata#getName()
@@ -80,62 +80,21 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
+    /**
+     * @see ActionMetadata#compile(ActionContext)
+     */
     @Override
     public void compile(ActionContext actionContext) {
         super.compile(actionContext);
         if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
             final Map<String, String> parameters = actionContext.getParameters();
-            String regexp = parameters.get(CELL_VALUE_PARAMETER);
-            if (regexp == null || regexp.length() == 0) {
-                actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
-                return;
-            }
-            final Boolean replaceEntireCell = Boolean.valueOf(parameters.get(REPLACE_ENTIRE_CELL_PARAMETER));
-            if (replaceEntireCell) {
-                regexp = ".*" + regexp + ".*";
-            }
-            final String actualPattern = regexp;
-            // regex validity check
+            String rawParam = parameters.get(CELL_VALUE_PARAMETER);
+
             try {
-                actionContext.get(COMPILED_PATTERN, (p) -> Pattern.compile(actualPattern));
-            } catch (Exception e) {
+                actionContext.get(REGEX_HELPER_KEY,(p) -> regexParametersHelper.build(rawParam));
+            } catch (InvalidParameterException e) {
                 actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
             }
-        }
-    }
-
-    private void apply(DataSetRow row, ActionContext context) {
-        final String value = row.get(context.getColumnId());
-
-        // defensive programming against null pointer exception
-        if (value == null) {
-            return;
-        }
-
-        final String newValue = computeNewValue(context, value);
-        row.set(context.getColumnId(), newValue);
-    }
-
-    protected String computeNewValue(ActionContext context, String originalValue) {
-        if (originalValue == null) {
-            return null;
-        }
-        // There are direct calls to this method from unit tests, normally such checks are done during transformation.
-        if (context.getActionStatus() != ActionContext.ActionStatus.OK) {
-            return originalValue;
-        }
-        final Map<String, String> parameters = context.getParameters();
-        String replacement = parameters.get(REPLACE_VALUE_PARAMETER);
-        boolean replaceEntireCell = Boolean.valueOf(parameters.get(REPLACE_ENTIRE_CELL_PARAMETER));
-        final Matcher matcher = context.<Pattern>get(COMPILED_PATTERN).matcher(originalValue);
-        if (replaceEntireCell) {
-            if (matcher.matches()) {
-                return replacement;
-            } else {
-                return originalValue;
-            }
-        } else {
-            return matcher.replaceAll(replacement);
         }
     }
 
@@ -154,4 +113,70 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
     public void applyOnCell(DataSetRow row, ActionContext context) {
         apply(row, context);
     }
+
+    /**
+     * Apply the action.
+     *
+     * @param row the row where to apply the action.
+     * @param context the action context.
+     */
+    private void apply(DataSetRow row, ActionContext context) {
+        final String value = row.get(context.getColumnId());
+
+        // defensive programming against null pointer exception
+        if (value == null) {
+            return;
+        }
+
+        final String newValue = computeNewValue(context, value);
+        row.set(context.getColumnId(), newValue);
+    }
+
+    /**
+     * Compute the new action based on the current action context.
+     * 
+     * @param context the action context.
+     * @param originalValue the original value.
+     * @return the new value to set based on the parameters within the action context.
+     */
+    protected String computeNewValue(ActionContext context, String originalValue) {
+        if (originalValue == null) {
+            return null;
+        }
+
+        // There are direct calls to this method from unit tests, normally such checks are done during transformation.
+        if (context.getActionStatus() != ActionContext.ActionStatus.OK) {
+            return originalValue;
+        }
+
+        final Map<String, String> parameters = context.getParameters();
+
+        String replacement = parameters.get(REPLACE_VALUE_PARAMETER);
+        boolean replaceEntireCell = Boolean.valueOf(parameters.get(REPLACE_ENTIRE_CELL_PARAMETER));
+
+        try {
+            final RegexParametersHelper.ReplaceOnValueParameter replaceOnValueParameter = context.get(REGEX_HELPER_KEY);
+            replaceOnValueParameter.setStrict(false);
+
+            boolean matches = replaceOnValueParameter.matches(originalValue);
+
+            if (matches) {
+                if (replaceEntireCell && replaceOnValueParameter.getOperator().equals(RegexParametersHelper.REGEX_MODE)) {
+                    Matcher matcher = replaceOnValueParameter.getPattern().matcher(originalValue);
+                    return matcher.replaceAll(replacement);
+                } else if (replaceEntireCell) {
+                    return replacement;
+                } else if (replaceOnValueParameter.getOperator().equals(RegexParametersHelper.REGEX_MODE)) {
+                    return originalValue.replaceAll(replaceOnValueParameter.getToken(), replacement);
+                } else {
+                    return originalValue.replace(replaceOnValueParameter.getToken(), replacement);
+                }
+            } else {
+                return originalValue;
+            }
+        } catch (InvalidParameterException e) {
+            return originalValue;
+        }
+    }
+
 }

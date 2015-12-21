@@ -8,27 +8,33 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
+import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Unit test for the NumericOperations action.
  * 
  * @see NumericOperations
  */
-public class NumericOperationsTest {
+public class NumericOperationsTest extends AbstractMetadataBaseTest {
 
     /** The action to test. */
+    @Autowired
     private NumericOperations action;
 
     /** The action parameters. */
@@ -45,6 +51,19 @@ public class NumericOperationsTest {
     public void setUp() throws Exception {
         final InputStream parametersSource = NumericOperationsTest.class.getResourceAsStream("numericOpsAction.json");
         parameters = ActionMetadataTestUtils.parseParameters(parametersSource);
+    }
+
+    @Test
+    public void testActionName() throws Exception {
+        assertEquals("numeric_ops", action.getName());
+    }
+
+    @Test
+    public void testActionParameters() throws Exception {
+        final List<Parameter> parameters = action.getParameters();
+        assertEquals(6, parameters.size());
+        assertTrue(parameters.stream().filter(p -> StringUtils.equals(p.getName(), "operator")).findFirst().isPresent());
+        assertTrue(parameters.stream().filter(p -> StringUtils.equals(p.getName(), "mode")).findFirst().isPresent());
     }
 
     @Test

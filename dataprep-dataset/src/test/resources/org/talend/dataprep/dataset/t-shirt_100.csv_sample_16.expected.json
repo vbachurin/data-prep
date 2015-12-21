@@ -140,7 +140,7 @@
             "lowerQuantile": "NaN",
             "upperQuantile": "NaN"
           },
-          "histogram": [],
+          "histogram": null,
           "textLengthSummary": {
             "minimalLength": 10.0,
             "maximalLength": 10.0,
@@ -237,78 +237,81 @@
             "lowerQuantile": 53.0,
             "upperQuantile": 75.0
           },
-          "histogram": [
-            {
-              "occurrences": 2,
-              "range": {
-                "min": 13.0,
-                "max": 13.0
+          "histogram": {
+            "type": "number",
+            "items": [
+              {
+                "occurrences": 2,
+                "range": {
+                  "min": 13.0,
+                  "max": 13.0
+                }
+              },
+              {
+                "occurrences": 1,
+                "range": {
+                  "min": 46.0,
+                  "max": 46.0
+                }
+              },
+              {
+                "occurrences": 2,
+                "range": {
+                  "min": 53.0,
+                  "max": 53.0
+                }
+              },
+              {
+                "occurrences": 1,
+                "range": {
+                  "min": 69.0,
+                  "max": 69.0
+                }
+              },
+              {
+                "occurrences": 1,
+                "range": {
+                  "min": 70.0,
+                  "max": 70.0
+                }
+              },
+              {
+                "occurrences": 1,
+                "range": {
+                  "min": 71.0,
+                  "max": 71.0
+                }
+              },
+              {
+                "occurrences": 4,
+                "range": {
+                  "min": 75.0,
+                  "max": 75.0
+                }
+              },
+              {
+                "occurrences": 1,
+                "range": {
+                  "min": 78.0,
+                  "max": 78.0
+                }
+              },
+              {
+                "occurrences": 1,
+                "range": {
+                  "min": 91.0,
+                  "max": 91.0
+                }
+              },
+              {
+                "occurrences": 1,
+                "range": {
+                  "min": 92.0,
+                  "max": 92.0
+                }
               }
-            },
-            {
-              "occurrences": 1,
-              "range": {
-                "min": 46.0,
-                "max": 46.0
-              }
-            },
-            {
-              "occurrences": 2,
-              "range": {
-                "min": 53.0,
-                "max": 53.0
-              }
-            },
-            {
-              "occurrences": 1,
-              "range": {
-                "min": 69.0,
-                "max": 69.0
-              }
-            },
-            {
-              "occurrences": 1,
-              "range": {
-                "min": 70.0,
-                "max": 70.0
-              }
-            },
-            {
-              "occurrences": 1,
-              "range": {
-                "min": 71.0,
-                "max": 71.0
-              }
-            },
-            {
-              "occurrences": 4,
-              "range": {
-                "min": 75.0,
-                "max": 75.0
-              }
-            },
-            {
-              "occurrences": 1,
-              "range": {
-                "min": 78.0,
-                "max": 78.0
-              }
-            },
-            {
-              "occurrences": 1,
-              "range": {
-                "min": 91.0,
-                "max": 91.0
-              }
-            },
-            {
-              "occurrences": 1,
-              "range": {
-                "min": 92.0,
-                "max": 92.0
-              }
-            }
-          ],
+            ]
+          },
           "textLengthSummary": {
             "minimalLength": "NaN",
             "maximalLength": "NaN",
@@ -413,7 +416,374 @@
             "lowerQuantile": "NaN",
             "upperQuantile": "NaN"
           },
-          "histogram": [],
+          "histogram": {
+            "type": "date",
+            "items": [
+              {
+                "occurrences": 1,
+                "range": {
+                  "min": {
+                    "year": 1890,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "WEDNESDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": false,
+                    "monthValue": 1
+                  },
+                  "max": {
+                    "year": 1900,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "MONDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": false,
+                    "monthValue": 1
+                  }
+                }
+              },
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": {
+                    "year": 1900,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "MONDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": false,
+                    "monthValue": 1
+                  },
+                  "max": {
+                    "year": 1910,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "SATURDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": false,
+                    "monthValue": 1
+                  }
+                }
+              },
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": {
+                    "year": 1910,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "SATURDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": false,
+                    "monthValue": 1
+                  },
+                  "max": {
+                    "year": 1920,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "THURSDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": true,
+                    "monthValue": 1
+                  }
+                }
+              },
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": {
+                    "year": 1920,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "THURSDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": true,
+                    "monthValue": 1
+                  },
+                  "max": {
+                    "year": 1930,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "WEDNESDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": false,
+                    "monthValue": 1
+                  }
+                }
+              },
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": {
+                    "year": 1930,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "WEDNESDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": false,
+                    "monthValue": 1
+                  },
+                  "max": {
+                    "year": 1940,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "MONDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": true,
+                    "monthValue": 1
+                  }
+                }
+              },
+              {
+                "occurrences": 0,
+                "range": {
+                  "min": {
+                    "year": 1940,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "MONDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": true,
+                    "monthValue": 1
+                  },
+                  "max": {
+                    "year": 1950,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "SUNDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": false,
+                    "monthValue": 1
+                  }
+                }
+              },
+              {
+                "occurrences": 3,
+                "range": {
+                  "min": {
+                    "year": 1950,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "SUNDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": false,
+                    "monthValue": 1
+                  },
+                  "max": {
+                    "year": 1960,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "FRIDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": true,
+                    "monthValue": 1
+                  }
+                }
+              },
+              {
+                "occurrences": 2,
+                "range": {
+                  "min": {
+                    "year": 1960,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "FRIDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": true,
+                    "monthValue": 1
+                  },
+                  "max": {
+                    "year": 1970,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "THURSDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": false,
+                    "monthValue": 1
+                  }
+                }
+              },
+              {
+                "occurrences": 5,
+                "range": {
+                  "min": {
+                    "year": 1970,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "THURSDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": false,
+                    "monthValue": 1
+                  },
+                  "max": {
+                    "year": 1980,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "TUESDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": true,
+                    "monthValue": 1
+                  }
+                }
+              },
+              {
+                "occurrences": 4,
+                "range": {
+                  "min": {
+                    "year": 1980,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "TUESDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": true,
+                    "monthValue": 1
+                  },
+                  "max": {
+                    "year": 1990,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "MONDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": false,
+                    "monthValue": 1
+                  }
+                }
+              },
+              {
+                "occurrences": 1,
+                "range": {
+                  "min": {
+                    "year": 1990,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "MONDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": false,
+                    "monthValue": 1
+                  },
+                  "max": {
+                    "year": 2000,
+                    "month": "JANUARY",
+                    "chronology": {
+                      "calendarType": "iso8601",
+                      "id": "ISO"
+                    },
+                    "dayOfMonth": 1,
+                    "dayOfWeek": "SATURDAY",
+                    "era": "CE",
+                    "dayOfYear": 1,
+                    "leapYear": true,
+                    "monthValue": 1
+                  }
+                }
+              }
+            ]
+          },
           "textLengthSummary": {
             "minimalLength": "NaN",
             "maximalLength": "NaN",
@@ -522,7 +892,7 @@
             "lowerQuantile": "NaN",
             "upperQuantile": "NaN"
           },
-          "histogram": [],
+          "histogram": null,
           "textLengthSummary": {
             "minimalLength": 11.0,
             "maximalLength": 11.0,
@@ -627,7 +997,704 @@
             "lowerQuantile": "NaN",
             "upperQuantile": "NaN"
           },
-          "histogram": [],
+          "histogram": {
+            "type":"date",
+            "items":[
+              {
+                "occurrences":1,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"NOVEMBER",
+                    "year":2013,
+                    "dayOfMonth":18,
+                    "era":"CE",
+                    "dayOfYear":322,
+                    "monthValue":11,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"DECEMBER",
+                    "year":2013,
+                    "dayOfMonth":2,
+                    "era":"CE",
+                    "dayOfYear":336,
+                    "monthValue":12,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":4,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"DECEMBER",
+                    "year":2013,
+                    "dayOfMonth":2,
+                    "era":"CE",
+                    "dayOfYear":336,
+                    "monthValue":12,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"DECEMBER",
+                    "year":2013,
+                    "dayOfMonth":16,
+                    "era":"CE",
+                    "dayOfYear":350,
+                    "monthValue":12,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":2,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"DECEMBER",
+                    "year":2013,
+                    "dayOfMonth":16,
+                    "era":"CE",
+                    "dayOfYear":350,
+                    "monthValue":12,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"DECEMBER",
+                    "year":2013,
+                    "dayOfMonth":30,
+                    "era":"CE",
+                    "dayOfYear":364,
+                    "monthValue":12,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":0,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"DECEMBER",
+                    "year":2013,
+                    "dayOfMonth":30,
+                    "era":"CE",
+                    "dayOfYear":364,
+                    "monthValue":12,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"JANUARY",
+                    "year":2014,
+                    "dayOfMonth":13,
+                    "era":"CE",
+                    "dayOfYear":13,
+                    "monthValue":1,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":3,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"JANUARY",
+                    "year":2014,
+                    "dayOfMonth":13,
+                    "era":"CE",
+                    "dayOfYear":13,
+                    "monthValue":1,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"JANUARY",
+                    "year":2014,
+                    "dayOfMonth":27,
+                    "era":"CE",
+                    "dayOfYear":27,
+                    "monthValue":1,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":0,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"JANUARY",
+                    "year":2014,
+                    "dayOfMonth":27,
+                    "era":"CE",
+                    "dayOfYear":27,
+                    "monthValue":1,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"FEBRUARY",
+                    "year":2014,
+                    "dayOfMonth":10,
+                    "era":"CE",
+                    "dayOfYear":41,
+                    "monthValue":2,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":1,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"FEBRUARY",
+                    "year":2014,
+                    "dayOfMonth":10,
+                    "era":"CE",
+                    "dayOfYear":41,
+                    "monthValue":2,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"FEBRUARY",
+                    "year":2014,
+                    "dayOfMonth":24,
+                    "era":"CE",
+                    "dayOfYear":55,
+                    "monthValue":2,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":0,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"FEBRUARY",
+                    "year":2014,
+                    "dayOfMonth":24,
+                    "era":"CE",
+                    "dayOfYear":55,
+                    "monthValue":2,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"MARCH",
+                    "year":2014,
+                    "dayOfMonth":10,
+                    "era":"CE",
+                    "dayOfYear":69,
+                    "monthValue":3,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":1,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"MARCH",
+                    "year":2014,
+                    "dayOfMonth":10,
+                    "era":"CE",
+                    "dayOfYear":69,
+                    "monthValue":3,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"MARCH",
+                    "year":2014,
+                    "dayOfMonth":24,
+                    "era":"CE",
+                    "dayOfYear":83,
+                    "monthValue":3,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":0,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"MARCH",
+                    "year":2014,
+                    "dayOfMonth":24,
+                    "era":"CE",
+                    "dayOfYear":83,
+                    "monthValue":3,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"APRIL",
+                    "year":2014,
+                    "dayOfMonth":7,
+                    "era":"CE",
+                    "dayOfYear":97,
+                    "monthValue":4,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":0,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"APRIL",
+                    "year":2014,
+                    "dayOfMonth":7,
+                    "era":"CE",
+                    "dayOfYear":97,
+                    "monthValue":4,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"APRIL",
+                    "year":2014,
+                    "dayOfMonth":21,
+                    "era":"CE",
+                    "dayOfYear":111,
+                    "monthValue":4,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":0,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"APRIL",
+                    "year":2014,
+                    "dayOfMonth":21,
+                    "era":"CE",
+                    "dayOfYear":111,
+                    "monthValue":4,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"MAY",
+                    "year":2014,
+                    "dayOfMonth":5,
+                    "era":"CE",
+                    "dayOfYear":125,
+                    "monthValue":5,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":0,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"MAY",
+                    "year":2014,
+                    "dayOfMonth":5,
+                    "era":"CE",
+                    "dayOfYear":125,
+                    "monthValue":5,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"MAY",
+                    "year":2014,
+                    "dayOfMonth":19,
+                    "era":"CE",
+                    "dayOfYear":139,
+                    "monthValue":5,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":2,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"MAY",
+                    "year":2014,
+                    "dayOfMonth":19,
+                    "era":"CE",
+                    "dayOfYear":139,
+                    "monthValue":5,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"JUNE",
+                    "year":2014,
+                    "dayOfMonth":2,
+                    "era":"CE",
+                    "dayOfYear":153,
+                    "monthValue":6,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":0,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"JUNE",
+                    "year":2014,
+                    "dayOfMonth":2,
+                    "era":"CE",
+                    "dayOfYear":153,
+                    "monthValue":6,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"JUNE",
+                    "year":2014,
+                    "dayOfMonth":16,
+                    "era":"CE",
+                    "dayOfYear":167,
+                    "monthValue":6,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":0,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"JUNE",
+                    "year":2014,
+                    "dayOfMonth":16,
+                    "era":"CE",
+                    "dayOfYear":167,
+                    "monthValue":6,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"JUNE",
+                    "year":2014,
+                    "dayOfMonth":30,
+                    "era":"CE",
+                    "dayOfYear":181,
+                    "monthValue":6,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":0,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"JUNE",
+                    "year":2014,
+                    "dayOfMonth":30,
+                    "era":"CE",
+                    "dayOfYear":181,
+                    "monthValue":6,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"JULY",
+                    "year":2014,
+                    "dayOfMonth":14,
+                    "era":"CE",
+                    "dayOfYear":195,
+                    "monthValue":7,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":0,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"JULY",
+                    "year":2014,
+                    "dayOfMonth":14,
+                    "era":"CE",
+                    "dayOfYear":195,
+                    "monthValue":7,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"JULY",
+                    "year":2014,
+                    "dayOfMonth":28,
+                    "era":"CE",
+                    "dayOfYear":209,
+                    "monthValue":7,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":0,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"JULY",
+                    "year":2014,
+                    "dayOfMonth":28,
+                    "era":"CE",
+                    "dayOfYear":209,
+                    "monthValue":7,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"AUGUST",
+                    "year":2014,
+                    "dayOfMonth":11,
+                    "era":"CE",
+                    "dayOfYear":223,
+                    "monthValue":8,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":1,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"AUGUST",
+                    "year":2014,
+                    "dayOfMonth":11,
+                    "era":"CE",
+                    "dayOfYear":223,
+                    "monthValue":8,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"AUGUST",
+                    "year":2014,
+                    "dayOfMonth":25,
+                    "era":"CE",
+                    "dayOfYear":237,
+                    "monthValue":8,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              },
+              {
+                "occurrences":1,
+                "range":{
+                  "min":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"AUGUST",
+                    "year":2014,
+                    "dayOfMonth":25,
+                    "era":"CE",
+                    "dayOfYear":237,
+                    "monthValue":8,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  },
+                  "max":{
+                    "dayOfWeek":"MONDAY",
+                    "month":"SEPTEMBER",
+                    "year":2014,
+                    "dayOfMonth":8,
+                    "era":"CE",
+                    "dayOfYear":251,
+                    "monthValue":9,
+                    "chronology":{
+                      "calendarType":"iso8601",
+                      "id":"ISO"
+                    },
+                    "leapYear":false
+                  }
+                }
+              }
+            ]
+          },
           "textLengthSummary": {
             "minimalLength": "NaN",
             "maximalLength": "NaN",
@@ -712,64 +1779,67 @@
             "lowerQuantile": 19.9,
             "upperQuantile": 63.725
           },
-          "histogram": [
-            {
-              "occurrences": 3,
-              "range": {
-                "min": 16.7,
-                "max": 16.7
+          "histogram": {
+            "type": "number",
+            "items": [
+              {
+                "occurrences": 3,
+                "range": {
+                  "min": 16.7,
+                  "max": 16.7
+                }
+              },
+              {
+                "occurrences": 5,
+                "range": {
+                  "min": 19.9,
+                  "max": 19.9
+                }
+              },
+              {
+                "occurrences": 1,
+                "range": {
+                  "min": 25.0,
+                  "max": 25.0
+                }
+              },
+              {
+                "occurrences": 2,
+                "range": {
+                  "min": 33.4,
+                  "max": 33.4
+                }
+              },
+              {
+                "occurrences": 1,
+                "range": {
+                  "min": 39.8,
+                  "max": 39.8
+                }
+              },
+              {
+                "occurrences": 1,
+                "range": {
+                  "min": 71.7,
+                  "max": 71.7
+                }
+              },
+              {
+                "occurrences": 1,
+                "range": {
+                  "min": 75.0,
+                  "max": 75.0
+                }
+              },
+              {
+                "occurrences": 2,
+                "range": {
+                  "min": 200.0,
+                  "max": 200.0
+                }
               }
-            },
-            {
-              "occurrences": 5,
-              "range": {
-                "min": 19.9,
-                "max": 19.9
-              }
-            },
-            {
-              "occurrences": 1,
-              "range": {
-                "min": 25.0,
-                "max": 25.0
-              }
-            },
-            {
-              "occurrences": 2,
-              "range": {
-                "min": 33.4,
-                "max": 33.4
-              }
-            },
-            {
-              "occurrences": 1,
-              "range": {
-                "min": 39.8,
-                "max": 39.8
-              }
-            },
-            {
-              "occurrences": 1,
-              "range": {
-                "min": 71.7,
-                "max": 71.7
-              }
-            },
-            {
-              "occurrences": 1,
-              "range": {
-                "min": 75.0,
-                "max": 75.0
-              }
-            },
-            {
-              "occurrences": 2,
-              "range": {
-                "min": 200.0,
-                "max": 200.0
-              }
-            }
-          ],
+            ]
+          },
           "textLengthSummary": {
             "minimalLength": "NaN",
             "maximalLength": "NaN",
@@ -834,36 +1904,39 @@
             "lowerQuantile": 1.0,
             "upperQuantile": 2.75
           },
-          "histogram": [
-            {
-              "occurrences": 9,
-              "range": {
-                "min": 1.0,
-                "max": 1.0
+          "histogram": {
+            "type": "number",
+            "items": [
+              {
+                "occurrences": 9,
+                "range": {
+                  "min": 1.0,
+                  "max": 1.0
+                }
+              },
+              {
+                "occurrences": 3,
+                "range": {
+                  "min": 2.0,
+                  "max": 2.0
+                }
+              },
+              {
+                "occurrences": 2,
+                "range": {
+                  "min": 3.0,
+                  "max": 3.0
+                }
+              },
+              {
+                "occurrences": 2,
+                "range": {
+                  "min": 8.0,
+                  "max": 8.0
+                }
               }
-            },
-            {
-              "occurrences": 3,
-              "range": {
-                "min": 2.0,
-                "max": 2.0
-              }
-            },
-            {
-              "occurrences": 2,
-              "range": {
-                "min": 3.0,
-                "max": 3.0
-              }
-            },
-            {
-              "occurrences": 2,
-              "range": {
-                "min": 8.0,
-                "max": 8.0
-              }
-            }
-          ],
+            ]
+          },
           "textLengthSummary": {
             "minimalLength": "NaN",
             "maximalLength": "NaN",
@@ -928,36 +2001,39 @@
             "lowerQuantile": 16.7,
             "upperQuantile": 24.725
           },
-          "histogram": [
-            {
-              "occurrences": 5,
-              "range": {
-                "min": 16.7,
-                "max": 16.7
+          "histogram": {
+            "type": "number",
+            "items": [
+              {
+                "occurrences": 5,
+                "range": {
+                  "min": 16.7,
+                  "max": 16.7
+                }
+              },
+              {
+                "occurrences": 6,
+                "range": {
+                  "min": 19.9,
+                  "max": 19.9
+                }
+              },
+              {
+                "occurrences": 1,
+                "range": {
+                  "min": 23.9,
+                  "max": 23.9
+                }
+              },
+              {
+                "occurrences": 4,
+                "range": {
+                  "min": 25.0,
+                  "max": 25.0
+                }
               }
-            },
-            {
-              "occurrences": 6,
-              "range": {
-                "min": 19.9,
-                "max": 19.9
-              }
-            },
-            {
-              "occurrences": 1,
-              "range": {
-                "min": 23.9,
-                "max": 23.9
-              }
-            },
-            {
-              "occurrences": 4,
-              "range": {
-                "min": 25.0,
-                "max": 25.0
-              }
-            }
-          ],
+            ]
+          },
           "textLengthSummary": {
             "minimalLength": "NaN",
             "maximalLength": "NaN",
@@ -1026,7 +2102,7 @@
             "lowerQuantile": "NaN",
             "upperQuantile": "NaN"
           },
-          "histogram": [],
+          "histogram": null,
           "textLengthSummary": {
             "minimalLength": 6.0,
             "maximalLength": 15.0,

@@ -48,8 +48,12 @@
          */
         vm.addRangeFilter = function addRangeFilter(interval) {
             var selectedColumn = state.playground.grid.selectedColumn;
+            if(selectedColumn.type === 'date') {
+                return;
+            }
+
             var removeFilterFn = StatisticsService.getRangeFilterRemoveFn();
-            FilterService.addFilterAndDigest('inside_range', selectedColumn.id, selectedColumn.name, {interval: interval.slice(0)}, removeFilterFn);
+            FilterService.addFilterAndDigest('inside_range', selectedColumn.id, selectedColumn.name, {interval: [interval.min, interval.max]}, removeFilterFn);
         };
 
         //------------------------------------------------------------------------------------------------------
@@ -206,8 +210,7 @@
          * @description Check if we have the statistics or we have to fetch them
          */
         function shouldFetchStatistics() {
-            return StatisticsService.histogram &&// no histogram means no data to display at all
-                !StatisticsService.histogram.data.length &&// has histogram but no data in it
+            return !StatisticsService.histogram &&// no histogram means no statistics yet whereas empty histogram means no data to display
                 !vm.stateDistribution; // and not a state distribution chart
         }
 
@@ -260,6 +263,15 @@
             configurable: false,
             get: function () {
                 return this.statisticsService.histogram;
+            }
+        });
+
+    Object.defineProperty(ColumnProfileCtrl.prototype,
+        'filteredHistogram', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.statisticsService.filteredHistogram;
             }
         });
 

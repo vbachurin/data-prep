@@ -62,14 +62,16 @@
               "min": 1.0,
               "max": 8.0
             },
-            "occurrences": 7
+            "occurrences": 7,
+            "type": "number"
           },
           {
             "range": {
               "min": 8.0,
               "max": 15.0
             },
-            "occurrences": 8
+            "occurrences": 8,
+            "type": "number"
           }
         ],
         "text length summary": {
@@ -368,14 +370,16 @@
               "min": 5.7,
               "max": 52.1
             },
-            "occurrences": 7
+            "occurrences": 7,
+            "type": "number"
           },
           {
             "range": {
               "min": 52.1,
               "max": 98.5
             },
-            "occurrences": 8
+            "occurrences": 8,
+            "type": "number"
           }
         ],
         "text length summary": {
@@ -670,14 +674,16 @@
               "min": 1.0,
               "max": 8.0
             },
-            "occurrences": 9
+            "occurrences": 9,
+            "type": "number"
           },
           {
             "range": {
               "min": 8.0,
               "max": 15.0
             },
-            "occurrences": 6
+            "occurrences": 6,
+            "type": "number"
           }
         ],
         "text length summary": {

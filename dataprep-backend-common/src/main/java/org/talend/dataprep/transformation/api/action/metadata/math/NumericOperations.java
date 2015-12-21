@@ -110,6 +110,7 @@ public class NumericOperations extends ActionMetadata implements ColumnAction, O
     /**
      * @see ActionMetadata#acceptColumn(ColumnMetadata)
      */
+    @Override
     public boolean acceptColumn(ColumnMetadata column) {
         Type columnType = Type.get(column.getType());
         return Type.NUMERIC.isAssignableFrom(columnType);
@@ -166,10 +167,10 @@ public class NumericOperations extends ActionMetadata implements ColumnAction, O
         row.set(newColumnId, newValue);
     }
 
-    protected String compute(final String operand_1_string, final String operator, final String operand_2_string) {
+    protected String compute(final String stringOperandOne, final String operator, final String stringOperandTwo) {
         try {
-            final BigDecimal operand_1 = new BigDecimal(operand_1_string);
-            final BigDecimal operand_2 = new BigDecimal(operand_2_string);
+            final BigDecimal operandOne = new BigDecimal(stringOperandOne);
+            final BigDecimal operandTwo = new BigDecimal(stringOperandTwo);
 
             BigDecimal toReturn;
 
@@ -178,16 +179,16 @@ public class NumericOperations extends ActionMetadata implements ColumnAction, O
 
             switch (operator) {
                 case PLUS:
-                    toReturn = operand_1.add(operand_2);
+                toReturn = operandOne.add(operandTwo);
                     break;
                 case MULTIPLY:
-                    toReturn = operand_1.multiply(operand_2);
+                toReturn = operandOne.multiply(operandTwo);
                     break;
                 case MINUS:
-                    toReturn = operand_1.subtract(operand_2);
+                toReturn = operandOne.subtract(operandTwo);
                     break;
                 case DIVIDE:
-                    toReturn = operand_1.divide(operand_2, scale, rm);
+                toReturn = operandOne.divide(operandTwo, scale, rm);
                     break;
                 default:
                     return "";
