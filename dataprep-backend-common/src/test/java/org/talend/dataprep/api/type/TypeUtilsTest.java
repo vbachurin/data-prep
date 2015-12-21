@@ -12,55 +12,56 @@ import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 import org.talend.dataquality.semantic.classifier.custom.UserDefinedCategory;
 import org.talend.dataquality.semantic.recognizer.CategoryFrequency;
 import org.talend.dataquality.semantic.statistics.SemanticType;
-import org.talend.datascience.common.inference.type.DataType;
+import org.talend.dataquality.statistics.type.DataTypeEnum;
+
 
 public class TypeUtilsTest {
 
     @Test
     public void testConvertString() throws Exception {
         ColumnMetadata metadata = column().id(1).type(Type.ANY).build();
-        DataType.Type[] types = TypeUtils.convert(Collections.singletonList(metadata));
-        assertThat(types[0], is(DataType.Type.STRING));
+        DataTypeEnum[] types = TypeUtils.convert(Collections.singletonList(metadata));
+        assertThat(types[0], is(DataTypeEnum.STRING));
 
         metadata = column().id(2).type(Type.STRING).build();
         types = TypeUtils.convert(Collections.singletonList(metadata));
-        assertThat(types[0], is(DataType.Type.STRING));
+        assertThat(types[0], is(DataTypeEnum.STRING));
     }
 
     @Test
     public void testConvertInteger() throws Exception {
         ColumnMetadata metadata = column().id(1).type(Type.NUMERIC).build();
-        DataType.Type[] types = TypeUtils.convert(Collections.singletonList(metadata));
-        assertThat(types[0], is(DataType.Type.INTEGER));
+        DataTypeEnum[] types = TypeUtils.convert(Collections.singletonList(metadata));
+        assertThat(types[0], is(DataTypeEnum.INTEGER));
 
         metadata = column().id(2).type(Type.INTEGER).build();
         types = TypeUtils.convert(Collections.singletonList(metadata));
-        assertThat(types[0], is(DataType.Type.INTEGER));
+        assertThat(types[0], is(DataTypeEnum.INTEGER));
     }
 
     @Test
     public void testConvertDouble() throws Exception {
         ColumnMetadata metadata = column().id(1).type(Type.DOUBLE).build();
-        DataType.Type[] types = TypeUtils.convert(Collections.singletonList(metadata));
-        assertThat(types[0], is(DataType.Type.DOUBLE));
+        DataTypeEnum[] types = TypeUtils.convert(Collections.singletonList(metadata));
+        assertThat(types[0], is(DataTypeEnum.DOUBLE));
 
         metadata = column().id(2).type(Type.FLOAT).build();
         types = TypeUtils.convert(Collections.singletonList(metadata));
-        assertThat(types[0], is(DataType.Type.DOUBLE));
+        assertThat(types[0], is(DataTypeEnum.DOUBLE));
     }
 
     @Test
     public void testConvertBoolean() throws Exception {
         ColumnMetadata metadata = column().id(1).type(Type.BOOLEAN).build();
-        final DataType.Type[] types = TypeUtils.convert(Collections.singletonList(metadata));
-        assertThat(types[0], is(DataType.Type.BOOLEAN));
+        final DataTypeEnum[] types = TypeUtils.convert(Collections.singletonList(metadata));
+        assertThat(types[0], is(DataTypeEnum.BOOLEAN));
     }
 
     @Test
     public void testConvertDate() throws Exception {
         ColumnMetadata metadata = column().id(1).type(Type.DATE).build();
-        final DataType.Type[] types = TypeUtils.convert(Collections.singletonList(metadata));
-        assertThat(types[0], is(DataType.Type.DATE));
+        final DataTypeEnum[] types = TypeUtils.convert(Collections.singletonList(metadata));
+        assertThat(types[0], is(DataTypeEnum.DATE));
     }
 
     @Test

@@ -24,9 +24,10 @@ import org.talend.dataquality.statistics.frequency.pattern.PatternFrequencyStati
 import org.talend.dataquality.statistics.numeric.quantile.QuantileStatistics;
 import org.talend.dataquality.statistics.numeric.summary.SummaryStatistics;
 import org.talend.dataquality.statistics.text.TextLengthStatistics;
+import org.talend.dataquality.statistics.type.DataTypeEnum;
+import org.talend.dataquality.statistics.type.DataTypeOccurences;
 import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.ValueQualityStatistics;
-import org.talend.datascience.common.inference.type.DataType;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;

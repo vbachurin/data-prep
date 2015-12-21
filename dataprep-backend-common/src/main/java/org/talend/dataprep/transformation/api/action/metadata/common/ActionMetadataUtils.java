@@ -9,9 +9,9 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.quality.AnalyzerService;
 import org.talend.dataquality.statistics.quality.DataTypeQualityAnalyzer;
+import org.talend.dataquality.statistics.type.DataTypeEnum;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.ValueQualityStatistics;
-import org.talend.datascience.common.inference.type.DataType;
 
 /**
  * Utility class for the ActionsMetadata
@@ -65,7 +65,7 @@ public class ActionMetadataUtils {
             }
         } else {
             // perform a data type only (no domain set).
-            DataType.Type[] types = TypeUtils.convert(Collections.singletonList(colMetadata));
+            DataTypeEnum[] types = TypeUtils.convert(Collections.singletonList(colMetadata));
             analyzer = new DataTypeQualityAnalyzer(types, true);
             analyzer.analyze(value);
             analyzer.end();

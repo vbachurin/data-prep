@@ -378,7 +378,6 @@ public class DataSetServiceTests extends DataSetBaseTest {
     }
 
     @Test
-    @Ignore
     public void sampleShouldUpdateStatistics() throws Exception {
         // given
         String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
@@ -629,7 +628,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         String dataSetId = given()
                 .body(IOUtils.toByteArray(this.getClass().getResourceAsStream("../TDP-375_xsl_read_as_csv.xls")))
-                // .queryParam("Content-Type", "application/vnd.ms-excel")
+                        // .queryParam("Content-Type", "application/vnd.ms-excel")
                 .when().post("/datasets").asString();
 
         assertQueueMessages(dataSetId);
@@ -1046,7 +1045,6 @@ public class DataSetServiceTests extends DataSetBaseTest {
     }
 
     @Test
-    @Ignore
     public void datePattern() throws Exception {
         int before = dataSetMetadataRepository.size();
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../date_time_pattern.csv")))
