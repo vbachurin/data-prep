@@ -168,7 +168,6 @@
                     var ticksNbre = yScale.domain()[1] > ticksThreshold ? ticksThreshold : yScale.domain()[1];
 
                     svg.append('g')
-                        //draw grid lines
                         .attr('class', 'grid')
                         .call(d3.svg.axis()
                             .scale(yScale)
@@ -296,6 +295,10 @@
                         }
                     }
                 );
+
+                scope.$on('$destroy', function() {
+                    d3.selectAll('.vertical-barchart-cls.d3-tip').remove();
+                });
             }
         };
     }

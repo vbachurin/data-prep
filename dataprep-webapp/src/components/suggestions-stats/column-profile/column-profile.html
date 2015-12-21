@@ -41,10 +41,10 @@
                                  height="400"
                                  on-click="columnProfileCtrl.addBarchartFilter"
                                  visu-data="columnProfileCtrl.histogram.data"
-                                 value-field="formattedValue"
-                                 value-field-2="filteredOccurrences"
-                                 key-field="{{columnProfileCtrl.histogram.key}}"
-                                 key-label="{{columnProfileCtrl.histogram.label}}"></horizontal-barchart>
+                                 key-label="{{columnProfileCtrl.histogram.label}}"
+                                 key-field="formattedValue"
+                                 value-field="{{columnProfileCtrl.histogram.key}}"
+                                 value-field-2="filteredOccurrences"></horizontal-barchart>
 
             <vertical-barchart id="vBarChart"
                                ng-if="columnProfileCtrl.histogram.vertical"

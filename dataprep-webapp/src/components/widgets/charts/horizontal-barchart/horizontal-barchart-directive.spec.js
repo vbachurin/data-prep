@@ -1,37 +1,54 @@
 describe('horizontalBarchart directive', function () {
     'use strict';
 
-    var createElement, element, scope, statsData;
+    var createElement, createElementWithSecondaryValues, element, scope, statsData;
 
     beforeEach(module('talend.widget'));
     beforeEach(inject(function ($rootScope, $compile) {
         statsData = [
-            {'data': 'Johnson', 'occurrences': 9},
-            {'data': 'Roosevelt', 'occurrences': 8},
-            {'data': 'Pierce', 'occurrences': 6},
-            {'data': 'Wilson', 'occurrences': 5},
-            {'data': 'Adams', 'occurrences': 4},
-            {'data': 'Quincy', 'occurrences': 4},
-            {'data': 'Clinton', 'occurrences': 4},
-            {'data': 'Harrison', 'occurrences': 4}
+            {'data': 'Johnson', 'occurrences': 9, 'filteredOccurrences': 4},
+            {'data': 'Roosevelt', 'occurrences': 8, 'filteredOccurrences': 4},
+            {'data': 'Pierce', 'occurrences': 6, 'filteredOccurrences': 4},
+            {'data': 'Wilson', 'occurrences': 5, 'filteredOccurrences': 4},
+            {'data': 'Adams', 'occurrences': 4, 'filteredOccurrences': 4},
+            {'data': 'Quincy', 'occurrences': 4, 'filteredOccurrences': 4},
+            {'data': 'Clinton', 'occurrences': 4, 'filteredOccurrences': 4},
+            {'data': 'Harrison', 'occurrences': 4, 'filteredOccurrences': 4}
         ];
 
+        scope = $rootScope.$new();
+        scope.onclick = jasmine.createSpy('click');
+
         createElement = function () {
-
-            scope = $rootScope.$new();
-            scope.visData = null;
-            scope.clicked = false;
-            scope.onclck = function () {
-                scope.clicked = true;
-            };
-
-            element = angular.element('<horizontal-barchart id="barChart" width="250" height="400"' +
-                'on-click="onclck"' +
+            var html = '<horizontal-barchart ' +
+                'id="barChart" ' +
+                'width="250" ' +
+                'height="400"' +
+                'on-click="onclick"' +
                 'visu-data="visData"' +
-                'key-field="occurrences"' +
-                'value-field="data"' +
-                '></horizontal-barchart>');
+                'key-field="data"' +
+                'value-field="occurrences"' +
+                '></horizontal-barchart>';
 
+            element = angular.element(html);
+            angular.element('body').append(element);
+            $compile(element)(scope);
+            scope.$digest();
+        };
+
+        createElementWithSecondaryValues = function () {
+            var html = '<horizontal-barchart ' +
+                    'id="barChart" ' +
+                    'width="250" ' +
+                    'height="400"' +
+                    'on-click="onclick"' +
+                    'visu-data="visData"' +
+                    'key-field="data"' +
+                    'value-field="occurrences"' +
+                    'value-field-2="filteredOccurrences"' +
+                    '></horizontal-barchart>';
+
+            element = angular.element(html);
             angular.element('body').append(element);
             $compile(element)(scope);
             scope.$digest();
@@ -48,7 +65,7 @@ describe('horizontalBarchart directive', function () {
         element.remove();
     });
 
-    it('should render all bars after a 100ms delay', function () {
+    it('should render all bars without secondary values after a 100ms delay', function () {
         //given
         createElement();
 
@@ -58,10 +75,26 @@ describe('horizontalBarchart directive', function () {
         jasmine.clock().tick(100);
 
         //then
-        expect(element.find('rect').length).toBe(statsData.length * 2);
-        expect(element.find('.foreign-object-body').length).toBe(statsData.length);
+        expect(element.find('rect.bar').length).toBe(statsData.length);
+        expect(element.find('rect.blueBar').length).toBe(0);
+        expect(element.find('.label').length).toBe(statsData.length);
         expect(element.find('.bg-rect').length).toBe(statsData.length);
-        expect(element.find('.frontBar').length).toBe(statsData.length);
+    });
+
+    it('should render all bars with secondary values after a 100ms delay', function () {
+        //given
+        createElementWithSecondaryValues();
+
+        //when
+        scope.visData = statsData;
+        scope.$digest();
+        jasmine.clock().tick(100);
+
+        //then
+        expect(element.find('rect.bar').length).toBe(statsData.length);
+        expect(element.find('rect.blueBar').length).toBe(statsData.length);
+        expect(element.find('.label').length).toBe(statsData.length);
+        expect(element.find('.bg-rect').length).toBe(statsData.length);
     });
 
     //waiting for a solution for this issue PhantomJs + svg :

@@ -11,42 +11,32 @@
 
   .frontBar {
     rect {
-      fill: $dark-blue;
+      &.blueBar {
+        fill: $dark-blue;
+      }
+      &.brownBar {
+        fill: $brown;
+      }
     }
-    .foreign-object-body {
-      background-color: rgba(255, 255, 255, 0);
-      font-size: .8em;
+  }
+
+  .label {
+    background-color: rgba(255, 255, 255, 0);
+    font-size: .8em;
+    padding-top: 3px;
+    padding-left: 10px;
+    font-family: $inconsolota;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
+    &.blueBar {
       color: $dark-green;
-      padding-top: 3px;
-      padding-left: 10px;
-      font-family: $inconsolota;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
+    }
+    &.brownBar {
+      color: $dark-brown;
     }
   }
-
-  .frontBarGreen {
-    rect {
-      fill: #B3AF76;
-    }
-    .foreign-object-body {
-      background-color: rgba(255, 255, 255, 0);
-      font-size: .8em;
-      color: #55580D;
-      padding-top: 3px;
-      padding-left: 10px;
-      font-family: $inconsolota;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-  }
-
-  //.frontBarGreen text.value {
-  //  font-size: .8em;
-  //  fill: ;
-  //}
 
   .axis {
     shape-rendering: crispEdges;
@@ -58,7 +48,6 @@
 
   .x.axis line {
     stroke: #fff;
-    //stroke-opacity: .2;
     stroke-opacity: .0;
   }
 
