@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.talend.dataquality.statistics.numeric.NumericalStatisticsAnalyzer;
-import org.talend.dataquality.statistics.numeric.histogram.HistogramParameter;
 import org.talend.dataquality.statistics.type.DataTypeEnum;
 import org.talend.dataquality.statistics.type.TypeInferenceUtils;
 import org.talend.datascience.common.inference.Analyzer;
@@ -36,7 +35,7 @@ public class StreamNumberHistogramAnalyzer extends NumericalStatisticsAnalyzer<S
      *
      * @param types data types
      */
-    public StreamNumberHistogramAnalyzer(Type[] types) {
+    public StreamNumberHistogramAnalyzer(DataTypeEnum[] types) {
         super(types);
     }
 

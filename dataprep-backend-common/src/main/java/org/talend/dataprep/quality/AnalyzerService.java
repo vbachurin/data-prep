@@ -37,8 +37,6 @@ import org.talend.dataquality.statistics.frequency.recognition.AbstractPatternRe
 import org.talend.dataquality.statistics.frequency.recognition.DateTimePatternRecognizer;
 import org.talend.dataquality.statistics.frequency.recognition.EmptyPatternRecognizer;
 import org.talend.dataquality.statistics.frequency.recognition.LatinExtendedCharPatternRecognizer;
-import org.talend.dataquality.statistics.numeric.histogram.HistogramColumnParameter;
-import org.talend.dataquality.statistics.numeric.histogram.HistogramParameter;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileAnalyzer;
 import org.talend.dataquality.statistics.numeric.summary.SummaryAnalyzer;
 import org.talend.dataquality.statistics.quality.DataTypeQualityAnalyzer;
@@ -100,7 +98,7 @@ public class AnalyzerService implements DisposableBean {
 
     public Analyzer<Analyzers.Result> full(final List<ColumnMetadata> columns) {
         // Configure quality & semantic analysis (if column metadata information is present in stream).
-        final DataType.Type[] types = TypeUtils.convert(columns);
+        final DataTypeEnum[] types = TypeUtils.convert(columns);
 
         // Configure value quality analysis
         final Analyzer<Analyzers.Result> analyzer = Analyzers.with(getQualityAnalyzer(columns), // Value quality
@@ -134,7 +132,7 @@ public class AnalyzerService implements DisposableBean {
 
     public Analyzer<Analyzers.Result> advancedAnalysis(final List<ColumnMetadata> columns) {
         // Configure quality & semantic analysis (if column metadata information is present in stream).
-        final DataType.Type[] types = TypeUtils.convert(columns);
+        final DataTypeEnum[] types = TypeUtils.convert(columns);
 
         // Configure value quality analysis
         final Analyzer<Analyzers.Result> analyzer = Analyzers.with(new TextLengthAnalyzer(), // Text length analysis
@@ -161,7 +159,7 @@ public class AnalyzerService implements DisposableBean {
     public AbstractFrequencyAnalyzer getPatternFrequencyAnalyzer(List<ColumnMetadata> columns) {
 
         // deal with specific date, even custom date pattern
-        final DateTimePatternFrequencyAnalyzer dateTimePatternFrequencyAnalyzer = getDateTimePatternFrequencyAnalyzer(columns);
+        final DateTimePatternRecognizer dateTimePatternFrequencyAnalyzer = getDateTimePatternFrequencyAnalyzer(columns);
 
         // warning, the order is important
         List<AbstractPatternRecognizer> patternFrequencyAnalyzers = new ArrayList<>();
@@ -172,8 +170,8 @@ public class AnalyzerService implements DisposableBean {
         return new CompositePatternFrequencyAnalyzer(patternFrequencyAnalyzers);
     }
 
-    private DateTimePatternFrequencyAnalyzer getDateTimePatternFrequencyAnalyzer(final List<ColumnMetadata> columns) {
-        final DateTimePatternFrequencyAnalyzer dateTimePatternFrequencyAnalyzer = new DateTimePatternFrequencyAnalyzer();
+    private DateTimePatternRecognizer getDateTimePatternFrequencyAnalyzer(final List<ColumnMetadata> columns) {
+        final DateTimePatternRecognizer dateTimePatternFrequencyAnalyzer = new DateTimePatternRecognizer();
         final List<String> mostUsedDatePatterns = getMostUsedDatePatterns(columns);
         dateTimePatternFrequencyAnalyzer.addCustomDateTimePatterns(mostUsedDatePatterns);
         return dateTimePatternFrequencyAnalyzer;

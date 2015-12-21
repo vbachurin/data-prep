@@ -1,5 +1,16 @@
 package org.talend.dataprep.api.dataset.statistics;
 
+import static java.util.Locale.ENGLISH;
+import static org.talend.dataprep.api.type.Type.*;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.slf4j.Logger;
@@ -9,7 +20,6 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.Quality;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
-import org.talend.dataprep.api.dataset.statistics.date.DateHistogram;
 import org.talend.dataprep.api.dataset.statistics.date.StreamDateHistogramStatistics;
 import org.talend.dataprep.api.dataset.statistics.number.NumberHistogram;
 import org.talend.dataprep.api.dataset.statistics.number.StreamNumberHistogramStatistics;
@@ -28,18 +38,6 @@ import org.talend.dataquality.statistics.type.DataTypeEnum;
 import org.talend.dataquality.statistics.type.DataTypeOccurences;
 import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.ValueQualityStatistics;
-
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static java.util.Locale.ENGLISH;
-import static org.talend.dataprep.api.type.Type.*;
 
 /**
  * Statistics adapter. This is used to inject every statistics part in the columns metadata.
@@ -80,10 +78,10 @@ public class StatisticsAdapter {
     }
 
     private void injectDataType(final ColumnMetadata column, final Analyzers.Result result) {
-        if (result.exist(DataType.class) && !column.isTypeForced()) {
-            final DataType dataType = result.get(DataType.class);
-            final Map<DataType.Type, Long> frequencies = dataType.getTypeFrequencies();
-            frequencies.remove(DataType.Type.EMPTY); // TDP-226: Don't take into account EMPTY values.
+        if (result.exist(DataTypeOccurences.class) && !column.isTypeForced()) {
+            final DataTypeOccurences dataType = result.get(DataTypeOccurences.class);
+            final Map<DataTypeEnum, Long> frequencies = dataType.getTypeFrequencies();
+            frequencies.remove(DataTypeEnum.EMPTY); // TDP-226: Don't take into account EMPTY values.
             // Look at type frequencies distribution (if not spread enough, fall back to STRING).
             StandardDeviation standardDeviation = new StandardDeviation();
 
@@ -97,7 +95,7 @@ public class StatisticsAdapter {
             if (stdDev < 1 && frequencies.size() > 1) {
                 type = STRING;
             } else {
-                final DataType.Type suggestedType = dataType.getSuggestedType();
+                final DataTypeEnum suggestedType = dataType.getSuggestedType();
                 type = Type.get(suggestedType.name());
             }
             column.setType(type.getName());
