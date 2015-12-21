@@ -8,7 +8,6 @@ import static org.talend.dataprep.transformation.api.action.parameters.Parameter
 import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,14 +17,14 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
+import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 @Component(Cut.ACTION_BEAN_PREFIX + Cut.CUT_ACTION_NAME)
 public class Cut extends ActionMetadata implements ColumnAction {
 
     @Autowired
-    private RegexParametersHelper regexParametersHelper;
+    private ReplaceOnValueHelper regexParametersHelper;
 
     /**
      * The action name.
@@ -96,11 +95,11 @@ public class Cut extends ActionMetadata implements ColumnAction {
         final String columnId = context.getColumnId();
         final String toCut = row.get(columnId);
         if (toCut != null) {
-            final RegexParametersHelper.ReplaceOnValueParameter replaceOnValueParameter = context.get(REGEX_HELPER_KEY);
+            final ReplaceOnValueHelper replaceOnValueParameter = context.get(REGEX_HELPER_KEY);
             replaceOnValueParameter.setStrict(false);
 
             if (replaceOnValueParameter.matches(toCut)) {
-                if (replaceOnValueParameter.getOperator().equals(RegexParametersHelper.REGEX_MODE)) {
+                if (replaceOnValueParameter.getOperator().equals(ReplaceOnValueHelper.REGEX_MODE)) {
                     String value = toCut.replaceAll(replaceOnValueParameter.getToken(), ""); //$NON-NLS-1$
                     row.set(columnId, value);
                 } else {

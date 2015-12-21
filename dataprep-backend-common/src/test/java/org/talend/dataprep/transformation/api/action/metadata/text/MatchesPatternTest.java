@@ -20,7 +20,6 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.*;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,9 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
+import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Test class for Match Pattern action. Creates one consumer, and test it.
@@ -311,7 +312,7 @@ public class MatchesPatternTest extends AbstractMetadataBaseTest {
     }
 
     private String generateJson(String token, String operator) {
-        RegexParametersHelper.ReplaceOnValueParameter r = new RegexParametersHelper.ReplaceOnValueParameter(token, operator);
+        ReplaceOnValueHelper r = new ReplaceOnValueHelper(token, operator);
         try {
             return builder.build().writeValueAsString(r);
         } catch (JsonProcessingException e) {

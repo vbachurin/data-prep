@@ -18,7 +18,7 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.CellAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
+import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
@@ -30,7 +30,7 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
     public static final String REGEX_HELPER_KEY = "regex_helper";
 
     @Autowired
-    private RegexParametersHelper regexParametersHelper;
+    private ReplaceOnValueHelper regexParametersHelper;
 
     /** The action name. */
     public static final String REPLACE_ON_VALUE_ACTION_NAME = "replace_on_value"; //$NON-NLS-1$
@@ -155,18 +155,18 @@ public class ReplaceOnValue extends ActionMetadata implements ColumnAction, Cell
         boolean replaceEntireCell = Boolean.valueOf(parameters.get(REPLACE_ENTIRE_CELL_PARAMETER));
 
         try {
-            final RegexParametersHelper.ReplaceOnValueParameter replaceOnValueParameter = context.get(REGEX_HELPER_KEY);
+            final ReplaceOnValueHelper replaceOnValueParameter = context.get(REGEX_HELPER_KEY);
             replaceOnValueParameter.setStrict(false);
 
             boolean matches = replaceOnValueParameter.matches(originalValue);
 
             if (matches) {
-                if (replaceEntireCell && replaceOnValueParameter.getOperator().equals(RegexParametersHelper.REGEX_MODE)) {
+                if (replaceEntireCell && replaceOnValueParameter.getOperator().equals(ReplaceOnValueHelper.REGEX_MODE)) {
                     Matcher matcher = replaceOnValueParameter.getPattern().matcher(originalValue);
                     return matcher.replaceAll(replacement);
                 } else if (replaceEntireCell) {
                     return replacement;
-                } else if (replaceOnValueParameter.getOperator().equals(RegexParametersHelper.REGEX_MODE)) {
+                } else if (replaceOnValueParameter.getOperator().equals(ReplaceOnValueHelper.REGEX_MODE)) {
                     return originalValue.replaceAll(replaceOnValueParameter.getToken(), replacement);
                 } else {
                     return originalValue.replace(replaceOnValueParameter.getToken(), replacement);

@@ -9,13 +9,9 @@ import static org.talend.dataprep.transformation.api.action.parameters.Parameter
 import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -26,7 +22,7 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
+import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
@@ -34,7 +30,7 @@ import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 public class MatchesPattern extends ActionMetadata implements ColumnAction {
 
     @Autowired
-    private RegexParametersHelper regexParametersHelper;
+    private ReplaceOnValueHelper regexParametersHelper;
     
     /**
      * The action name.
@@ -108,13 +104,12 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
      * @param parameters the action parameters.
      * @return the pattern to use according to the given parameters.
      */
-    private RegexParametersHelper.ReplaceOnValueParameter getPattern(Map<String, String> parameters) {
+    private ReplaceOnValueHelper getPattern(Map<String, String> parameters) {
         if (CUSTOM.equals(parameters.get(PATTERN_PARAMETER))) {
             final String jsonString = parameters.get(MANUAL_PATTERN_PARAMETER);
             return regexParametersHelper.build(jsonString);
         } else {
-            return new RegexParametersHelper.ReplaceOnValueParameter(parameters.get(PATTERN_PARAMETER),
-                    RegexParametersHelper.REGEX_MODE);
+            return new ReplaceOnValueHelper(parameters.get(PATTERN_PARAMETER), ReplaceOnValueHelper.REGEX_MODE);
         }
     }
 
@@ -173,7 +168,7 @@ public class MatchesPattern extends ActionMetadata implements ColumnAction {
         if (actionContext.getActionStatus() != ActionContext.ActionStatus.OK) {
             return false;
         }
-        final RegexParametersHelper.ReplaceOnValueParameter replaceOnValueParameter = actionContext.get(REGEX_HELPER_KEY);
+        final ReplaceOnValueHelper replaceOnValueParameter = actionContext.get(REGEX_HELPER_KEY);
 
         return replaceOnValueParameter.matches(value);
     }

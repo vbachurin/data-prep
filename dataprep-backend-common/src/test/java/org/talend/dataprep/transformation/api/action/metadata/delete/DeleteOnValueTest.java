@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,9 @@ import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
+import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Test class for DeleteOnValue action. Creates one consumer, and test it.
@@ -147,7 +148,7 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
 
         Map<String, String> regexpParameters = ActionMetadataTestUtils.parseParameters( //
                 DeleteOnValueTest.class.getResourceAsStream("deleteOnValueAction.json"));
-        regexpParameters.put("value", generateJson(".*Berlin.*", RegexParametersHelper.REGEX_MODE));
+        regexpParameters.put("value", generateJson(".*Berlin.*", ReplaceOnValueHelper.REGEX_MODE));
 
         // when
         ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
@@ -169,7 +170,7 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
         Map<String, String> regexpParameters = ActionMetadataTestUtils.parseParameters( //
                 //
                 DeleteOnValueTest.class.getResourceAsStream("deleteOnValueAction.json"));
-        regexpParameters.put("value", generateJson("*", RegexParametersHelper.REGEX_MODE));
+        regexpParameters.put("value", generateJson("*", ReplaceOnValueHelper.REGEX_MODE));
 
         // when
         ActionTestWorkbench.test(row, action.create(regexpParameters).getRowAction());
@@ -191,7 +192,7 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
 
         Map<String, String> regexpParameters = ActionMetadataTestUtils.parseParameters( //
                 DeleteOnValueTest.class.getResourceAsStream("deleteOnValueAction.json"));
-        regexpParameters.put("value", generateJson("", RegexParametersHelper.REGEX_MODE));
+        regexpParameters.put("value", generateJson("", ReplaceOnValueHelper.REGEX_MODE));
 
         // when
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
@@ -266,7 +267,7 @@ public class DeleteOnValueTest extends AbstractMetadataBaseTest {
     }
 
     private String generateJson(String token, String operator) {
-        RegexParametersHelper.ReplaceOnValueParameter r = new RegexParametersHelper.ReplaceOnValueParameter(token, operator);
+        ReplaceOnValueHelper r = new ReplaceOnValueHelper(token, operator);
         try {
             return builder.build().writeValueAsString(r);
         } catch (JsonProcessingException e) {
