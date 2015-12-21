@@ -566,6 +566,58 @@ describe('Dataset list controller', function () {
         }));
     });
 
+    describe('move', function () {
+
+        beforeEach(inject(function ($q, MessageService,FolderService,DatasetService,PreparationListService) {
+            spyOn(MessageService, 'success').and.returnValue();
+            spyOn(FolderService, 'getFolderContent').and.returnValue($q.when(true));
+            spyOn(DatasetService,'move').and.returnValue($q.when(true));
+            spyOn(PreparationListService, 'refreshMetadataInfos').and.returnValue($q.when(true));
+        }));
+
+        it('should call move service', inject(function (DatasetService,FolderService) {
+            //given
+            var folder = {id:'foo'};
+            var cloneName = 'bar';
+            var ctrl = createController();
+            ctrl.datasetToClone = datasets[0];
+            ctrl.folderDestination = folder;
+            ctrl.cloneNameForm = {};
+            ctrl.cloneNameForm.$commitViewValue = function(){};
+            ctrl.cloneName = cloneName;
+
+            //when
+            ctrl.move();
+            scope.$digest();
+            
+            //then
+            expect(DatasetService.move).toHaveBeenCalledWith(datasets[0], theCurrentFolder, folder, cloneName);
+            expect(FolderService.getFolderContent).toHaveBeenCalled();
+        }));
+
+        it('should display message on success', inject(function (MessageService,DatasetService,FolderService) {
+            //given
+            var folder = {id:'foo'};
+            var ctrl = createController();
+            var cloneName = 'bar';
+            ctrl.datasetToClone = datasets[0];
+            ctrl.folderDestination = folder;
+            ctrl.cloneNameForm = {};
+            ctrl.cloneNameForm.$commitViewValue = function(){};
+            ctrl.cloneName = cloneName;
+
+            //when
+            ctrl.move();
+            scope.$digest();
+
+            //then
+            expect(DatasetService.move).toHaveBeenCalledWith(datasets[0], theCurrentFolder, folder, cloneName);
+            expect(MessageService.success).toHaveBeenCalledWith('MOVE_SUCCESS_TITLE', 'MOVE_SUCCESS');
+            expect(FolderService.getFolderContent).toHaveBeenCalled();
+        }));
+    });
+
+
     describe('search folders', function () {
 
         beforeEach(inject(function ($q,MessageService,FolderService) {

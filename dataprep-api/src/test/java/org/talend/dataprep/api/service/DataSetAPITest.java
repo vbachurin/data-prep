@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import com.jayway.restassured.RestAssured;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +34,7 @@ import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
 
@@ -359,9 +359,9 @@ public class DataSetAPITest extends ApiServiceTestBase {
         //  home has one dataset
         Assertions.assertThat( folderContent.getDatasets() ).isNotEmpty().hasSize( 1 );
 
-         list = when() //
-             .get("/api/folders/datasets?folder={folder}", "/") ///
-            .asString();
+        list = when() //
+                .get("/api/folders/datasets?folder={folder}", "/") ///
+                .asString();
 
         folderContent = mapper.readValue( list, FolderContent.class);
 
@@ -372,6 +372,65 @@ public class DataSetAPITest extends ApiServiceTestBase {
 
     @Test
     public void testDataSetCreate_move_already_exists() throws Exception {
+
+        // create beer and foo folders
+        RestAssured.given() //
+            .queryParam("path", "beer").when() //
+            .put("/api/folders");
+
+        Response response = RestAssured.given() //
+            .queryParam("path", "foo").when() //
+            .put("/api/folders");
+
+        Assert.assertEquals( HttpStatus.OK.value(), response.getStatusCode() );
+
+        // given
+        final String dataSetId = createDataset("dataset/dataset.csv", "tagada", "text/csv", "beer");
+        InputStream expected = PreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_metadata.json");
+
+        // when
+        String contentAsString = when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
+
+        // then
+        assertThat( contentAsString, sameJSONAsFile( expected ) );
+
+        String cloneName = "tagada";
+
+        String clonedDataSetId = given() //
+            .queryParam("folderPath", "foo") //
+            .queryParam( "cloneName", cloneName) //
+            .when() //
+            .put("/api/datasets/clone/{id}", dataSetId) //
+            .asString();
+
+        Assert.assertEquals( HttpStatus.OK.value(), response.getStatusCode() );
+
+        Assertions.assertThat( clonedDataSetId ).isNotEmpty().isNotEqualTo( dataSetId );
+
+        response = when().get("/api/datasets/{id}?metadata=true&columns=false", clonedDataSetId);
+
+        contentAsString = response.asString();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        DataSet dataSet = objectMapper.readValue( contentAsString, DataSet.class );
+
+        DataSetMetadata dataSetMetadata = dataSet.getMetadata();
+
+        Assertions.assertThat( dataSetMetadata.getName() ).isEqualTo( cloneName );
+
+        response = given() //
+            .queryParam("folderPath", "beer") //
+            .queryParam( "newFolderPath", "foo") //
+            .when() //
+            .put("/api/datasets/move/{id}", dataSetId);
+
+        Assert.assertEquals( HttpStatus.BAD_REQUEST.value(), response.getStatusCode() );
+
+    }
+
+    @Test
+    public void testDataSetCreate_move_with_new_name() throws Exception {
 
         // create beer and foo folders
         Response response = RestAssured.given() //
@@ -422,12 +481,31 @@ public class DataSetAPITest extends ApiServiceTestBase {
         response = given() //
             .queryParam("folderPath", "beer") //
             .queryParam( "newFolderPath", "foo") //
+            .queryParam( "newName", "thegoodwine") //
             .when() //
             .put("/api/datasets/move/{id}", dataSetId);
 
-        Assert.assertEquals( HttpStatus.BAD_REQUEST.value(), response.getStatusCode() );
+        Assert.assertEquals( HttpStatus.OK.value(), response.getStatusCode() );
 
-    }
+        String list = when() //
+            .get("/api/folders/datasets?folder={folder}", "/foo") ///
+            .asString();
+
+        //  /foo has one dataset
+        FolderContent folderContent = objectMapper.readValue( list, FolderContent.class);
+
+        Assertions.assertThat( folderContent.getDatasets() ).isNotEmpty().hasSize( 2 );
+
+        list = when() //
+            .get("/api/folders/datasets?folder={folder}", "/beer") ///
+            .asString();
+
+        //  /beer has not anymore content
+        folderContent = objectMapper.readValue( list, FolderContent.class);
+
+        Assertions.assertThat( folderContent.getDatasets() ).isEmpty();
+
+    }    
 
 
     @Test

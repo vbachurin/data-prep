@@ -224,6 +224,7 @@ public class DataSetAPI extends APIService {
         @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
         @ApiParam(value = "The original folder path of the dataset.") @RequestParam(defaultValue = "", required = false) String folderPath,
         @ApiParam(value = "The new folder path of the dataset.") @RequestParam(defaultValue = "", required = false) String newFolderPath,
+        @ApiParam(value = "The new name of the moved dataset.") @RequestParam(defaultValue = "", required = false) String newName,
         final OutputStream output)
         throws IOException {
 
@@ -231,7 +232,7 @@ public class DataSetAPI extends APIService {
             LOG.debug("Moving dataset (pool: {} )...", getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
-        HystrixCommand<HttpResponse> creation = getCommand(MoveDataSet.class, client, dataSetId, folderPath, newFolderPath);
+        HystrixCommand<HttpResponse> creation = getCommand(MoveDataSet.class, client, dataSetId, folderPath, newFolderPath, newName);
         HttpResponse result = creation.execute();
         LOG.debug("Dataset move done.");
 

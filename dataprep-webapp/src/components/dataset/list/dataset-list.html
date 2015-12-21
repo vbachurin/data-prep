@@ -198,7 +198,7 @@
                     </div>
                 </div>
             </div>
-            <form name="datasetListCtrl.cloneNameForm" ng-submit="datasetListCtrl.cloneNameForm.$valid && datasetListCtrl.clone()">
+            <form name="datasetListCtrl.cloneNameForm" ng-submit="datasetListCtrl.cloneNameForm.$valid">
                 <div class="clone-name">
                     <span translate-once="DATASET_NAME"></span>
                     <input type="text"
@@ -208,8 +208,11 @@
                 <div class="modal-buttons">
                     <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL">
                     </button>
+                    <button class="btn-primary modal-primary-button" translate-once="MOVE_HERE_ACTION"
+                            ng-disabled="datasetListCtrl.cloneNameForm.$invalid" ng-click="datasetListCtrl.move()">
+                    </button>
                     <button class="btn-primary modal-primary-button" translate-once="COPY_HERE_ACTION"
-                            ng-disabled="datasetListCtrl.cloneNameForm.$invalid">
+                            ng-disabled="datasetListCtrl.cloneNameForm.$invalid" ng-click="datasetListCtrl.clone()">
                     </button>
                 </div>
             </form>

@@ -201,6 +201,32 @@
 
         /**
          * @ngdoc method
+         * @name move
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description perform the dataset moving to the folder destination
+         */
+        vm.move = function(){
+
+            vm.cloneNameForm.$commitViewValue();
+
+            DatasetService.move(vm.datasetToClone,state.folder.currentFolder,vm.folderDestination,vm.cloneName).then(function (){
+                MessageService.success('MOVE_SUCCESS_TITLE', 'MOVE_SUCCESS');
+
+                // force going to current folder to refresh the content
+                FolderService.getFolderContent(state.folder.currentFolder);
+
+            }).finally(function () {
+                // reset some values to initial values
+                vm.folderDestinationModal = false;
+                vm.datasetToClone = null;
+                vm.folderDestination = null;
+                vm.foldersFound = [];
+                vm.cloneName = '';
+            });
+        };
+
+        /**
+         * @ngdoc method
          * @name rename
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @param {object} dataset The dataset to rename
@@ -360,7 +386,7 @@
             vm.datasetToClone = dataset;
             vm.foldersFound = [];
             vm.searchFolderQuery = '';
-            vm.cloneName = dataset.name + $translate.instant('COPY');
+            vm.cloneName = dataset.name;
             // ensure nothing is null
             var toggleToCurrentFolder = state.folder && state.folder.currentFolder && state.folder.currentFolder.id;
 

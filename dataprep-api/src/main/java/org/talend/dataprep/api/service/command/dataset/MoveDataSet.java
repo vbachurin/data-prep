@@ -37,8 +37,9 @@ public class MoveDataSet
      * @param dataSetId the requested dataset id.
      * @param folderPath the origin folder othe the dataset
      * @param newFolderPath the new folder path
+     * @param newName the new name (optional) 
      */
-    public MoveDataSet( HttpClient client, String dataSetId, String folderPath, String newFolderPath) {
+    public MoveDataSet( HttpClient client, String dataSetId, String folderPath, String newFolderPath, String newName) {
         super(PreparationAPI.DATASET_GROUP, client);
         execute(() -> {
             try {
@@ -48,6 +49,9 @@ public class MoveDataSet
                 }
                 if (StringUtils.isNotEmpty(newFolderPath)) {
                     uriBuilder.addParameter("newFolderPath", newFolderPath);
+                }
+                if (StringUtils.isNotEmpty(newName)) {
+                    uriBuilder.addParameter("newName", newName);
                 }
                 HttpPut httpPut = new HttpPut(uriBuilder.build());
 

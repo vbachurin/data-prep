@@ -33,6 +33,7 @@ describe('Dataset Service', function () {
         spyOn(DatasetListService, 'update').and.returnValue(promiseWithProgress);
         spyOn(DatasetListService, 'clone').and.returnValue($q.when(true));
         spyOn(DatasetListService, 'processCertification').and.returnValue($q.when(true));
+        spyOn(DatasetListService, 'move').and.returnValue($q.when(true));
 
         spyOn(DatasetRestService, 'getContent').and.returnValue($q.when({}));
         spyOn(DatasetRestService, 'getSheetPreview').and.returnValue($q.when({}));
@@ -196,6 +197,38 @@ describe('Dataset Service', function () {
                 expect(DatasetListService.refreshDefaultPreparation).toHaveBeenCalledWith(preparations);
             }));
         });
+
+        describe('move', function() {
+            it('should love a dataset and return the http promise (with progress function)', inject(function ($rootScope, DatasetService, DatasetListService) {
+                //given
+                var dataset = DatasetListService.datasets[0];
+                var folder = {id:'/wine/foo'};
+                var newFolder = {id:'/wine/beer'};
+                var name = 'my clone';
+
+
+                //when
+                DatasetService.move(dataset, folder, newFolder, name);
+
+                //then
+                expect(DatasetListService.move).toHaveBeenCalledWith(dataset, folder, newFolder, name);
+            }));
+
+            it('should consolidate preparations and datasets', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
+                //given
+                var dataset = DatasetListService.datasets[0];
+                var name = 'my clone';
+
+                //when
+                DatasetService.move(dataset, name);
+                $rootScope.$digest();
+
+                //then
+                expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
+                expect(DatasetListService.refreshDefaultPreparation).toHaveBeenCalledWith(preparations);
+            }));
+        });
+
     });
 
     describe('metadata actions', function () {

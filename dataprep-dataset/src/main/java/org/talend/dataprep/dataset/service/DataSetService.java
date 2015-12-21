@@ -502,27 +502,27 @@ public class DataSetService {
      * 
      * @param folderPath The original folder path of the dataset
      * @param newFolderPath The new folder path of the dataset
-     * @return The new data id.
      */
     @RequestMapping(value = "/datasets/move/{id}", method = PUT, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Clone a data set", produces = MediaType.TEXT_PLAIN_VALUE, notes = "Move a data set to an other folder.")
     @Timed
-    public boolean move(
+    public void move(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
             @ApiParam(value = "The original folder path of the dataset.") @RequestParam(defaultValue = "", required = false) String folderPath,
-            @ApiParam(value = "The new folder path of the dataset.") @RequestParam(defaultValue = "", required = false) String newFolderPath)
+            @ApiParam(value = "The new folder path of the dataset.") @RequestParam(defaultValue = "", required = false) String newFolderPath,
+            @ApiParam(value = "The new name of the moved dataset.") @RequestParam(defaultValue = "", required = false) String newName)
                     throws IOException {
 
         HttpResponseContext.header("Content-Type", MediaType.TEXT_PLAIN_VALUE);
 
         DataSet dataSet = get(true, null, dataSetId);
 
-        final String dataSetName = dataSet.getMetadata().getName();
+        final String dataSetName = StringUtils.isEmpty(newName) ? dataSet.getMetadata().getName() : newName;
 
         // if no metadata it's an empty one the get method has already set NO CONTENT http return code
         // so simply return!!
         if (dataSet.getMetadata() == null) {
-            return false;
+            return;
         }
         // first check if the name is already used in the target folder
         final Iterable<FolderEntry> entries = folderRepository.entries(newFolderPath, "dataset");
@@ -537,12 +537,22 @@ public class DataSetService {
                 throw new TDPException(DataSetErrorCodes.DATASET_NAME_ALREADY_USED, context, true);
             }
         });
+        
+        // rename the dataset if we received a new name
+        DistributedLock datasetLock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        datasetLock.lock();
+        try {
+            if (StringUtils.isNotEmpty(newName)) {
+                dataSet.getMetadata().setName(newName);
+                dataSetMetadataRepository.add(dataSet.getMetadata());
+            }
+        } finally {
+            datasetLock.unlock();
+        }
 
         FolderEntry folderEntry = new FolderEntry("dataset", dataSetId, folderPath);
 
         folderRepository.moveFolderEntry(folderEntry, newFolderPath);
-
-        return true;
     }
 
 

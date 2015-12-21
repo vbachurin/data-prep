@@ -19,6 +19,7 @@
             update: update,
             delete: deleteDataset,
             clone: cloneDataset,
+            move: moveDataset,
 
             //metadata actions
             updateColumn: DatasetRestService.updateColumn,
@@ -110,7 +111,7 @@
 
         /**
          * @ngdoc method
-         * @name clone
+         * @name cloneDataset
          * @methodOf data-prep.services.dataset.service:DatasetService
          * @param {object} dataset The dataset to clone
          * @param {object) the folder to clone the dataset
@@ -120,6 +121,23 @@
          */
         function cloneDataset(dataset, folder, cloneName) {
             var promise = DatasetListService.clone(dataset, folder, cloneName);
+            promise.then(consolidatePreparationsAndDatasets);
+            return promise;
+        }
+
+        /**
+         * @ngdoc method
+         * @name moveDataset
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {dataset} dataset the dataset infos to move
+         * @param {folder) folder the original folder of the dataset
+         * @param {folder) newFolder the folder to move the dataset
+         * @param {string) newName the name for the moved dataset (optional)
+         * @description Move a dataset
+         * @returns {promise} The pending PUT promise
+         */
+        function moveDataset(dataset, folder, newFolder, newName) {
+            var promise = DatasetListService.move(dataset, folder, newFolder, newName);
             promise.then(consolidatePreparationsAndDatasets);
             return promise;
         }

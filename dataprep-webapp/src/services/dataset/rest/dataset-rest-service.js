@@ -15,6 +15,7 @@
             update: update,
             delete: deleteDataset,
             clone: cloneDataset,
+            move: moveDataset,
 
             updateColumn: updateColumn,
 
@@ -106,8 +107,8 @@
          * @name cloneDataset
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Clone the dataset
-         * @param {dataset} dataset the dataset infos to delete
-         * @param {folder) the folder to clone the dataset
+         * @param {dataset} dataset the dataset infos to clone
+         * @param {folder) folder the folder to clone the dataset
          * @param {string) cloneName the name for the cloned dataset
          * @returns {Promise} The GET promise
          */
@@ -125,6 +126,31 @@
             }
             return $http.put(url);
         }
+
+
+        /**
+         * @ngdoc method
+         * @name moveDataset
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @description Move the dataset to an other Folder
+         * @param {dataset} dataset the dataset infos to move
+         * @param {folder) folder the original folder of the dataset
+         * @param {folder) newFolder the folder to move the dataset
+         * @param {string) newName the name for the moved dataset (optional)
+         * @returns {Promise} The GET promise
+         */
+        function moveDataset(dataset, folder, newFolder, newName) {
+            var url = RestURLs.datasetUrl + '/move/' + dataset.id;
+            url += '?folderPath=' + encodeURIComponent(folder.id);
+            url += '&newFolderPath=' + encodeURIComponent(newFolder.id);
+
+            if (newName){
+                url += '&newName=' + encodeURIComponent(newName);
+            }
+
+            return $http.put(url);
+        }
+
 
         //--------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------Metadata---------------------------------------------------

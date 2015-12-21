@@ -18,6 +18,7 @@
             refreshDatasets : refreshDatasets,
             create : create,
             clone: clone,
+            move: move,
             importRemoteDataset : importRemoteDataset,
             update : update,
             processCertification : processCertification,
@@ -97,6 +98,27 @@
          */
         function clone(dataset,folder,cloneName) {
             var promise = DatasetRestService.clone(dataset,folder,cloneName);
+
+            promise.then(function (){
+                refreshDatasets();
+            });
+
+            return promise;
+        }
+
+        /**
+         * @ngdoc method
+         * @name move
+         * @methodOf data-prep.services.dataset.service:DatasetListService
+         * @param {dataset} dataset the dataset infos to move
+         * @param {folder) folder the original folder of the dataset
+         * @param {folder) newFolder the folder to move the dataset
+         * @param {string) newName the name for the moved dataset (optional)
+         * @description Move a dataset from backend and refresh its internal list
+         * @returns {promise} The pending PUT promise
+         */
+        function move(dataset, folder, newFolder, newName) {
+            var promise = DatasetRestService.move(dataset, folder, newFolder, newName);
 
             promise.then(function (){
                 refreshDatasets();

@@ -565,6 +565,49 @@ describe('Dataset Rest Service', function () {
     });
 
 
+    describe('move', function() {
+        it('should call move w/o new name', inject(function ($rootScope, DatasetRestService, RestURLs) {
+            //given
+            var dataset = {id: 'foobar'};
+            var folder = {id:'/'};
+            var newFolder = {id:'/wine/beer'};
+
+            $httpBackend
+                .expectPUT(RestURLs.datasetUrl + '/move/foobar?folderPath='+encodeURIComponent(folder.id)+'&newFolderPath='+encodeURIComponent(newFolder.id))
+                .respond(200);
+
+            //when
+            DatasetRestService.move(dataset,folder,newFolder);
+            $httpBackend.flush();
+            $rootScope.$digest();
+
+            //then
+            //expect GET not to throw any exception;
+        }));
+
+        it('should call move w a new name', inject(function ($rootScope, DatasetRestService, RestURLs) {
+            //given
+            var dataset = {id: 'foobar'};
+            var folder = {id:'/'};
+            var newFolder = {id:'/wine/beer'};
+            var newName = 'good one';
+
+            $httpBackend
+                .expectPUT(RestURLs.datasetUrl + '/move/foobar?folderPath='+encodeURIComponent(folder.id)+'&newFolderPath='+encodeURIComponent(newFolder.id)+'&newName='+encodeURIComponent(newName))
+                .respond(200);
+
+            //when
+            DatasetRestService.move(dataset,folder,newFolder,newName);
+            $httpBackend.flush();
+            $rootScope.$digest();
+
+            //then
+            //expect GET not to throw any exception;
+        }));
+
+    });
+
+
 
 
 });
