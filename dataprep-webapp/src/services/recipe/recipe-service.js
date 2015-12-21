@@ -434,17 +434,6 @@
         //--------------------------------------------------------------------------------------------------------------
         //-----------------------------------------------------PREVIEW--------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
-
-
-        function getStepFilters (){
-            if(state.playground.filter.applyTransformationOnFilters){
-                return state.playground.filter.gridFilters.slice(0);
-            }
-            else {
-                return [];
-            }
-        }
-
         /**
          * @ngdoc method
          * @name earlyPreview
@@ -460,7 +449,9 @@
                 lastActiveStep: activeThresholdStep
             };
 
-            var stepFilters = getStepFilters();
+            var stepFilters = state.playground.filter.applyTransformationOnFilters ?
+                                state.playground.filter.gridFilters.slice(0) :
+                                [];
 
             //create the preview step
             /*jshint camelcase: false */
