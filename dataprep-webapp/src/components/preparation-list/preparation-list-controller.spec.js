@@ -114,20 +114,21 @@ describe('Preparation list controller', function () {
         expect(PreparationService.getPreparations).toHaveBeenCalled();
     }));
 
-    it('should load preparation if requested in url', inject(function ($stateParams, PlaygroundService, StateService) {
+    it('should load preparation if requested in url', inject(function ($stateParams, $timeout, PlaygroundService, StateService) {
         //given
         $stateParams.prepid = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
 
         //when
         createController();
         scope.$digest();
+        $timeout.flush();
 
         //then
         expect(PlaygroundService.load).toHaveBeenCalledWith(allPreparations[1]);
         expect(StateService.showPlayground).toHaveBeenCalled();
     }));
 
-    it('should show error message if requested preparation is not in preparation list', inject(function ($stateParams, PlaygroundService, MessageService, StateService) {
+    it('should show error message if requested preparation is not in preparation list', inject(function ($stateParams, PlaygroundService, MessageService) {
         //given
         $stateParams.prepid = 'azerty';
 
@@ -137,11 +138,10 @@ describe('Preparation list controller', function () {
 
         //then
         expect(PlaygroundService.load).not.toHaveBeenCalled();
-        expect(StateService.showPlayground).not.toHaveBeenCalled();
         expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
     }));
 
-    it('should load preparation and show playground', inject(function (PlaygroundService, StateService) {
+    it('should load preparation and show playground', inject(function ($timeout, PlaygroundService, StateService) {
         //given
         var ctrl = createController();
         var preparation = {
@@ -159,6 +159,7 @@ describe('Preparation list controller', function () {
         //when
         ctrl.load(preparation);
         scope.$digest();
+        $timeout.flush();
 
         //then
         expect(PlaygroundService.load).toHaveBeenCalledWith(preparation);

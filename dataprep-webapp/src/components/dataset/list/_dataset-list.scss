@@ -105,7 +105,7 @@ $border-color: #CECECE;
       width: 20%;
       height: 25px;
       font-size: 0.8em;
-      padding: 0 0 0px 5px;
+      padding: 0 0 0 5px;
       margin: 5px 10px 5px 10px;
       border-top: 1px solid transparent;
       border-right: 1px solid transparent;
@@ -134,7 +134,6 @@ $border-color: #CECECE;
     input[type=search] {
       background-color: white;
       border-radius: $base-border-radius;
-      border-radius: $base-border-radius;
       border: 1px solid $base-border-color;
       display: block;
       font-size: 1em;
@@ -162,7 +161,6 @@ $border-color: #CECECE;
         opacity: 0.7;
       }
     }
-
   }
 
   .folders {

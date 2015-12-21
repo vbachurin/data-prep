@@ -113,9 +113,9 @@
                         columnTimeout = setTimeout(function () {
                             columns = DatagridColumnService.createColumns(data.metadata.columns, data.preview);
 
-                            if(!data.preview) {
+                            if (!data.preview) {
                                 selectedColumn = stateSelectedColumn ? _.find(columns, {id: stateSelectedColumn.id}) : null;
-                                if(stateSelectedLine) {
+                                if (stateSelectedLine) {
                                     var stateSelectedColumnIndex = columns.indexOf(selectedColumn);
                                     DatagridStyleService.scheduleHighlightCellsContaining(stateSelectedLine, stateSelectedColumnIndex);
                                 }
@@ -128,7 +128,7 @@
 
                         //manage column selection (external)
                         clearTimeout(externalTimeout);
-                        if(!data.preview) {
+                        if (!data.preview) {
                             externalTimeout = setTimeout(DatagridExternalService.updateSuggestionPanel.bind(null, null, true), 0);
                         }
 
@@ -158,10 +158,10 @@
                  * @description Resize grid canvas
                  */
                 function resize() {
-                    if(grid) {
-                        setTimeout(function(){
+                    if (grid) {
+                        setTimeout(function () {
                             grid.resizeCanvas();
-                        },200);
+                        }, 250);
                     }
                 }
 
