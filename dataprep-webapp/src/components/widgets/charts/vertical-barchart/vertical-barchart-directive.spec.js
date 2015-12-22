@@ -32,6 +32,7 @@ describe('verticalBarchart directive', function () {
             scope.onClick = jasmine.createSpy('onClick');
 
             element = angular.element('<vertical-barchart id="barChart" width="250" height="400"' +
+                'axis-type="dataType"'+
                 'on-click="onClick(interval)"' +
                 'key-field="data"' +
                 'primary-data="primaryData"' +

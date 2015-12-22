@@ -45,7 +45,8 @@
                 primaryData: '=',
                 primaryValueField: '@',
                 secondaryData: '=',
-                secondaryValueField: '@'
+                secondaryValueField: '@',
+                axisType: '='
             },
             link: function (scope, element, attrs) {
                 var oldVisuData;
@@ -55,11 +56,7 @@
                 var containerId = '#' + attrs.id;
 
                 // Define chart sizes and margin
-                var margin = {top: 20, right: 20, bottom: 10, left: 15};
-                var containerWidth = +attrs.width;
-                var containerHeight = +attrs.height;
-                var width = containerWidth - margin.left - margin.right;
-                var height = containerHeight - margin.top - margin.bottom;
+                var margin, containerWidth, containerHeight, width, height;
 
                 //------------------------------------------------------------------------------------------------------
                 //----------------------------------------------- Tooltip ----------------------------------------------
@@ -95,6 +92,10 @@
                     return data[scope.keyField];
                 }
 
+                function getRangeLabel(data) {
+                    return data[scope.keyField].label;
+                }
+
                 function getPrimaryValue(data) {
                     return data[scope.primaryValueField];
                 }
@@ -120,9 +121,25 @@
                 //------------------------------------------------------------------------------------------------------
                 //------------------------------------------- Chart utils ----------------------------------------------
                 //------------------------------------------------------------------------------------------------------
-                var xScale = d3.scale.ordinal().rangeRoundBands([0, width], 0.2);
-                var yScale = d3.scale.linear().range([height, 0]);
-                var svg;
+                var svg, xScale, yScale;
+
+                function initSizesByDataType (){
+                    margin = {
+                        top: 20,
+                        right: 20,
+                        bottom: scope.axisType === 'date' ? 100 : 10,
+                        left: 15
+                    };
+                    containerWidth = +attrs.width;
+                    containerHeight = scope.axisType === 'date' ? +attrs.height + 100 : +attrs.height;
+                    width = containerWidth - margin.left - margin.right;
+                    height = containerHeight - margin.top - margin.bottom;
+                }
+
+                function initScales (){
+                    xScale = d3.scale.ordinal().rangeRoundBands([0, width], 0.2);
+                    yScale = d3.scale.linear().range([height, 0]);
+                }
 
                 function createContainer() {
                     svg = d3.select(containerId)
@@ -167,6 +184,28 @@
                         });
                 }
 
+                function drawXaxis(statData) {
+                    var xAxisScale = d3.scale.ordinal().rangeRoundBands([0, width], 0.2);
+                    xAxisScale.domain(statData.map(getRangeLabel));
+                    svg.append('g')
+                        .attr('class', 'x axis')
+                        .attr('transform', 'translate(0,' + height + ')')
+                        .call(d3.svg.axis()
+                            .scale(xAxisScale)
+                            .orient('bottom')
+                            .ticks(5)
+                        )
+                        .selectAll('text')
+                            .attr('y', 5)
+                            .attr('x', -9)
+                            .attr('dy', '.35em')
+                            .style('text-anchor', 'end')
+                            .attr('transform', 'rotate(270)')
+                        .transition()
+                            .duration(1000)
+                            .attr('transform', 'rotate(295)');
+                }
+
                 function drawHorizontalGrid() {
                     var minSizeBetweenGrid = 18;
                     var ticksThreshold = Math.ceil(height / minSizeBetweenGrid);
@@ -184,9 +223,9 @@
                         //place text
                         .selectAll('.tick text')
                         .attr('y', -5)
-                        .attr('x', width / 2)
+                        .attr('x', width)
                         .attr('dy', '.15em')
-                        .style('text-anchor', 'middle');
+                        .style('text-anchor', 'end');
                 }
 
                 function drawYAxisLegend() {
@@ -231,8 +270,13 @@
                 //------------------------------------------- Chart render ---------------------------------------------
                 //------------------------------------------------------------------------------------------------------
                 function renderWholeVBarchart(firstVisuData, secondVisuData) {
+                    initSizesByDataType();
+                    initScales();
                     createContainer();
                     configureAxisScales(firstVisuData);
+                    if(scope.axisType === 'date'){
+                        drawXaxis(firstVisuData);
+                    }
                     drawBars('primaryBar', firstVisuData, getPrimaryValue, 'bar');
                     renderSecondVBars(secondVisuData);
 

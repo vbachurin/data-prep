@@ -17,9 +17,9 @@ import java.util.Map;
  */
 public class StreamDateHistogramStatistics {
     /**
-     * The default bin number which is 32.
+     * The default bin number which is 16.
      */
-    private static final int DEFAULT_BIN_NUMBER = 32;
+    private static final int DEFAULT_BIN_NUMBER = 16;
 
     /**
      * The maximum number of buckets.
