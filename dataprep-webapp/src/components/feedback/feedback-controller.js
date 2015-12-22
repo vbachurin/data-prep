@@ -3,7 +3,6 @@
 
     function FeedbackCtrl(state, $translate, FeedbackRestService, MessageService, StateService) {
         var vm = this;
-        vm.feedbackModal = false;
         vm.isSendingFeedback = false;
         vm.state = state;
 
@@ -51,8 +50,6 @@
                 });
         };
     }
-
-
 
     angular.module('data-prep.feedback')
         .controller('FeedbackCtrl', FeedbackCtrl);

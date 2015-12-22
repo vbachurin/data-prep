@@ -3,8 +3,8 @@
 
     /**
      * @ngdoc directive
-     * @name data-prep.datagrid.directive:Export
-     * @description This directive create the Export<br/>
+     * @name data-prep.datagrid.directive:Feedback
+     * @description This directive create a feedback form<br/>
      * @restrict E
      * @usage <feedback></feedback>
      */

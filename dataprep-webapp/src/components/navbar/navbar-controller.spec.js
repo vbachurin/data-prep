@@ -103,139 +103,22 @@ describe('Navbar controller', function () {
     });
 
     describe('feedback ', function() {
-        beforeEach(inject(function($q, FeedbackRestService, MessageService, OnboardingService) {
-            spyOn(FeedbackRestService, 'sendFeedback').and.returnValue($q.when(true));
-            spyOn(MessageService, 'success').and.returnValue(false);
-            spyOn(OnboardingService, 'shouldStartTour').and.returnValue(false);
-            $stateMock.params = {};
-            $stateMock.current = {name: 'nav.home.datasets'};
+        beforeEach(inject(function (StateService) {
+            spyOn(StateService, 'enableFeedback').and.returnValue();
         }));
 
-        it('should open feedback modal', inject(function () {
+        it('should open feedback modal', inject(function (StateService) {
             //given
+            $stateMock.params = {};
+            $stateMock.current = {name: 'nav.home.datasets'};
             var ctrl = createController();
-            ctrl.feedbackModal = false;
 
             //given
             ctrl.openFeedbackForm();
 
             //then
-            expect(ctrl.feedbackModal).toBe(true);
+            expect(StateService.enableFeedback).toHaveBeenCalled();
         }));
 
-        it('should send feedback', inject(function (FeedbackRestService) {
-            //given
-            var feedback = {
-                title : 'test',
-                mail : 'test',
-                severity : 'test',
-                type : 'test',
-                description: 'test'
-            };
-            var ctrl = createController();
-            ctrl.feedbackForm = {$commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue()};
-            ctrl.feedback = feedback;
-
-            //given
-            ctrl.sendFeedback();
-
-            //then
-            expect(FeedbackRestService.sendFeedback).toHaveBeenCalledWith(feedback);
-        }));
-
-        it('should manage sending flag', function () {
-            //given
-            var feedback = {
-                title : 'test',
-                mail : 'test',
-                severity : 'test',
-                type : 'test',
-                description: 'test'
-            };
-            var ctrl = createController();
-            ctrl.feedbackForm = {$commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue()};
-            ctrl.feedback = feedback;
-            ctrl.isSendingFeedback = false;
-
-            //given
-            ctrl.sendFeedback();
-            expect(ctrl.isSendingFeedback).toBe(true);
-            scope.$digest();
-
-            //then
-            expect(ctrl.isSendingFeedback).toBe(false);
-        });
-
-        it('should close feedback modal on send success', function () {
-            //given
-            var feedback = {
-                title : 'test',
-                mail : 'test',
-                severity : 'test',
-                type : 'test',
-                description: 'test'
-            };
-            var ctrl = createController();
-            ctrl.feedbackForm = {$commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue()};
-            ctrl.feedback = feedback;
-            ctrl.feedbackModal = true;
-
-            //given
-            ctrl.sendFeedback();
-            scope.$digest();
-
-            //then
-            expect(ctrl.feedbackModal).toBe(false);
-        });
-
-        it('should show message on send success', inject(function (MessageService) {
-            //given
-            var feedback = {
-                title : 'test',
-                mail : 'test',
-                severity : 'test',
-                type : 'test',
-                description: 'test'
-            };
-            var ctrl = createController();
-            ctrl.feedbackForm = {$commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue()};
-            ctrl.feedback = feedback;
-            ctrl.feedbackModal = true;
-
-            //given
-            ctrl.sendFeedback();
-            scope.$digest();
-
-            //then
-            expect(MessageService.success).toHaveBeenCalledWith('FEEDBACK_SENT_TITLE', 'FEEDBACK_SENT_CONTENT');
-        }));
-
-        it('should reset form on send success', function () {
-            //given
-            var feedback = {
-                title : 'test',
-                mail : 'test',
-                severity : 'test',
-                type : 'test',
-                description: 'test'
-            };
-            var ctrl = createController();
-            ctrl.feedbackForm = {$commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue()};
-            ctrl.feedback = feedback;
-            ctrl.feedbackModal = true;
-
-            //given
-            ctrl.sendFeedback();
-            scope.$digest();
-
-            //then
-            expect(ctrl.feedback).toEqual({
-                title: '',
-                mail: '',
-                severity: 'MINOR',
-                type: 'BUG',
-                description: ''
-            });
-        });
     });
 });

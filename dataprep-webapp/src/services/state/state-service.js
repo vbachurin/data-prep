@@ -11,12 +11,13 @@
     function StateService(PlaygroundStateService, playgroundState, //
                           DatasetStateService, datasetState, //
                           FolderStateService, folderState,  //
-                          EasterEggsStateService, easterEggsState,FeedbackStateService, feedbackState) {
+                          EasterEggsStateService, easterEggsState,
+                          FeedbackStateService, feedbackState) {
         state.playground = playgroundState;
         state.dataset = datasetState;
         state.folder = folderState;
         state.easterEggsState = easterEggsState;
-        state.feedbackState = feedbackState;
+        state.feedback = feedbackState;
 
         return {
             //playground

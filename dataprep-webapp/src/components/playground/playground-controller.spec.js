@@ -297,4 +297,22 @@ describe('Playground controller', function () {
             expect(LookupService.loadContent).not.toHaveBeenCalled();
         }));
     });
+
+    describe('feedback ', function() {
+        beforeEach(inject(function (StateService) {
+            spyOn(StateService, 'enableFeedback').and.returnValue();
+        }));
+
+        it('should open feedback modal', inject(function (StateService) {
+            //given
+            var ctrl = createController();
+
+            //when
+            ctrl.openFeedbackForm();
+
+            //then
+            expect(StateService.enableFeedback).toHaveBeenCalled();
+        }));
+
+    });
 });
