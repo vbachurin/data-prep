@@ -59,52 +59,39 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @RestController
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
 public class TransformationService {
 
-    /**
-     * This class' logger.
-     */
+    /** This class' logger. */
     private static final Logger LOG = LoggerFactory.getLogger(TransformationService.class);
 
-    /**
-     * The Spring application context.
-     */
+    /** The Spring application context. */
     @Autowired
     private ApplicationContext context;
 
-    /**
-     * The dataprep ready to use jackson object builder.
-     */
+    /** The dataprep ready to use jackson object builder. */
     @Autowired(required = true)
     private Jackson2ObjectMapperBuilder builder;
 
-    /**
-     * All available transformation actions.
-     */
+    /** All available transformation actions. */
     @Autowired
     private ActionMetadata[] allActions;
 
-    /**
-     * The transformer factory.
-     */
+    /** The transformer factory. */
     @Autowired
     private TransformerFactory factory;
 
-    /**
-     * The aggregation service.
-     */
+    /** he aggregation service. */
     @Autowired
     private AggregationService aggregationService;
 
-    /**
-     * The format registration service.
-     */
+    /** The format registration service. */
     @Autowired
     private FormatRegistrationService formatRegistrationService;
 
@@ -129,9 +116,9 @@ public class TransformationService {
     @VolumeMetered
     //@formatter:off
     public void transform(@ApiParam(value = "Output format.") @PathVariable("format") final String formatName, //
-                           @ApiParam(value = "Actions to perform on content.") @RequestPart(value = "actions", required = false) final Part actions, //
-                           @ApiParam(value = "Data set content as JSON.") @RequestPart(value = "content", required = false) final Part content, //
-                           final HttpServletResponse response, final HttpServletRequest request) {
+                          @ApiParam(value = "Actions to perform on content.") @RequestPart(value = "actions", required = false) final Part actions, //
+                          @ApiParam(value = "Data set content as JSON.") @RequestPart(value = "content", required = false) final Part content, //
+                          final HttpServletResponse response, final HttpServletRequest request) {
     //@formatter:on
         final ExportFormat format = formatRegistrationService.getByName(formatName);
         if (format == null) {
