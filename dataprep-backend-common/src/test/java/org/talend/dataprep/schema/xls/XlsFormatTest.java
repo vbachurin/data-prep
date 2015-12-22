@@ -9,10 +9,15 @@ import java.io.InputStream;
 import java.util.*;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellValue;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.MapEntry;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -374,8 +379,8 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
      * XlsSerializer should follow the data format as set in the Excel file. This test ensures XlsSerializer follows the
      * data format as defined and don't directly use {@link Cell#getNumericCellValue()}.
      * </p>
-     * 
-     * @see XlsUtils#getCellValueAsString(Cell)
+     *
+     * @see XlsUtils#getCellValueAsString(Cell, CellValue)
      */
     @Test
     public void testGeneralNumberFormat_TDP_222() throws Exception {
@@ -437,6 +442,48 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
             Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
+        }
+
+    }
+
+
+
+    @Test
+    public void read_xls_TDP_1136() throws Exception {
+
+        String fileName = "sales-force.xls";
+
+        FormatGuess formatGuess;
+
+        String str = IOUtils.toString( this.getClass().getResourceAsStream( fileName), "UTF-16" );
+
+        Document document = Jsoup.parse( str );
+
+        Elements elements = document.select( "tr" );
+        elements.stream().forEach( element ->
+                                   {
+                                       logger.debug( "element: {}", element.html() );
+                                   });
+
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+            formatGuess = formatGuesser.guess(getRequest(inputStream, UUID.randomUUID().toString()), "UTF-8").getFormatGuess();
+            Assert.assertNotNull(formatGuess);
+            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
+            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
+        }
+
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
+                    .parse(getRequest(inputStream, UUID.randomUUID().toString())).getSheetContents().get(0).getColumnMetadatas();
+            logger.debug("columnMetadatas: {}", columnMetadatas);
+            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(10);
+
+            ColumnMetadata columnMetadataDate = columnMetadatas.stream() //
+                    .filter(columnMetadata -> columnMetadata.getName().equalsIgnoreCase("date")) //
+                    .findFirst().get();
+
+            Assertions.assertThat(columnMetadataDate.getType()).isEqualTo("date");
+
         }
 
     }
