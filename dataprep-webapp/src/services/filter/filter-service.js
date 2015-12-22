@@ -12,8 +12,9 @@
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.utils.service:TextFormatService
+     * @requires data-prep.services.utils.service:DateService
      */
-    function FilterService($timeout, state, StateService, FilterAdapterService, DatagridService, StatisticsService, ConverterService, TextFormatService) {
+    function FilterService($timeout, state, StateService, FilterAdapterService, DatagridService, StatisticsService, ConverterService, TextFormatService, DateService) {
         var service = {
             //utils
             getColumnsContaining: getColumnsContaining,
@@ -197,6 +198,34 @@
             };
         }
 
+
+        /**
+         * @ngdoc method
+         * @name createDateRangeFilterFn
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {string} colId The column id
+         * @param {Array} values The filter interval
+         * @description Create a 'range' filter function
+         * @returns {function} The predicate function
+         */
+        function createDateRangeFilterFn(colId, values) {
+
+            var minTimestamp = values[0].getTime();
+            var maxTimestamp = values[1].getTime();
+            var patterns = _.chain(state.playground.grid.selectedColumn.statistics.patternFrequencyTable)
+                .pluck('pattern')
+                .map(TextFormatService.convertJavaDateFormatToMomentDateFormat)
+                .value();
+
+            var valueInDateLimitsFn = DateService.isInDateLimits(minTimestamp, maxTimestamp, patterns);
+            return function () {
+                return function (item) {
+                    return valueInDateLimitsFn(item[colId]);
+                };
+            };
+
+        }
+
         /**
          * @ngdoc method
          * @name createMatchFilterFn
@@ -227,9 +256,10 @@
          * @param {string} colName The column name
          * @param {string} args The filter arguments (ex for 'contains' type : {phrase: 'toto'})
          * @param {function} removeFilterFn An optional remove callback
+         * @param {string} colType The column type
          * @description Add a filter and update datagrid filters
          */
-        function addFilter(type, colId, colName, args, removeFilterFn) {
+        function addFilter(type, colId, colName, args, removeFilterFn, colType) {
             var filterFn;
             var sameColAndTypeFilter = _.find(state.playground.filter.gridFilters, {colId: colId, type: type});
             var createFilter, getFilterValue, filterExists;
@@ -294,13 +324,20 @@
                     };
                     break;
                 case 'inside_range':
-                    createFilter = function createFilter() {
-                        filterFn = createRangeFilterFn(colId, args.interval);
-                        return FilterAdapterService.createFilter(type, colId, colName, false, args, filterFn, removeFilterFn);
-                    };
+                    if(colType === 'date') {
+                        createFilter = function createFilter() {
+                            filterFn = createDateRangeFilterFn(colId, args.interval);
+                            return FilterAdapterService.createFilter(type, colId, colName, false, args, filterFn, removeFilterFn, colType);
+                        };
+                    } else {
+                        createFilter = function createFilter() {
+                            filterFn = createRangeFilterFn(colId, args.interval);
+                            return FilterAdapterService.createFilter(type, colId, colName, false, args, filterFn, removeFilterFn);
+                        };
+                    }
 
                     getFilterValue = function getFilterValue() {
-                        return args.interval;
+                        return args;
                     };
 
                     filterExists = function filterExists() {
@@ -345,10 +382,11 @@
          * @param {string} colName The column name
          * @param {string} args The filter arguments (ex for 'contains' type : {phrase: 'toto'})
          * @param {function} removeFilterFn An optional remove callback
+         * @param {string} colType The column type
          * @description Wrapper on addFilter method that trigger a digest at the end (use of $timeout)
          */
-        function addFilterAndDigest(type, colId, colName, args, removeFilterFn) {
-            $timeout(addFilter.bind(service, type, colId, colName, args, removeFilterFn));
+        function addFilterAndDigest(type, colId, colName, args, removeFilterFn, colType) {
+            $timeout(addFilter.bind(service, type, colId, colName, args, removeFilterFn, colType));
         }
 
         /**
@@ -376,9 +414,13 @@
                     editableFilter = true;
                     break;
                 case 'inside_range':
-                    newArgs.interval = newValue;
-                    newFilterFn = createRangeFilterFn(oldFilter.colId, newValue);
+                    newArgs = newValue;
                     editableFilter = false;
+                    if(oldFilter.colType === 'date') {
+                        newFilterFn = createDateRangeFilterFn(oldFilter.colId, newValue.interval);
+                    } else {
+                        newFilterFn = createRangeFilterFn(oldFilter.colId, newValue.interval);
+                    }
                     break;
                 case 'matches':
                     newArgs.pattern = newValue;
@@ -386,7 +428,7 @@
                     editableFilter = false;
                     break;
             }
-            newFilter = FilterAdapterService.createFilter(oldFilter.type, oldFilter.colId, oldFilter.colName, editableFilter, newArgs, newFilterFn, oldFilter.removeFilterFn);
+            newFilter = FilterAdapterService.createFilter(oldFilter.type, oldFilter.colId, oldFilter.colName, editableFilter, newArgs, newFilterFn, oldFilter.removeFilterFn, oldFilter.colType);
 
             StateService.updateGridFilter(oldFilter, newFilter);
             StatisticsService.updateFilteredStatistics();

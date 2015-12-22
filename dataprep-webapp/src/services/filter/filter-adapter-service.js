@@ -35,10 +35,11 @@
          * @param {object} args The filter arguments
          * @param {function} filterFn The filter function
          * @param {function} removeFilterFn The remove filter callback
+         * @param {string} colType The column type
          * @description creates a Filter definition instance
          * @returns {Object} instance of the Filter
          */
-        function createFilter(type, colId, colName, editable, args, filterFn, removeFilterFn) {
+        function createFilter(type, colId, colName, editable, args, filterFn, removeFilterFn, colType) {
             var filter = {
                 type: type,
                 colId: colId,
@@ -46,7 +47,8 @@
                 editable: editable,
                 args: args,
                 filterFn: filterFn,
-                removeFilterFn: removeFilterFn
+                removeFilterFn: removeFilterFn,
+                colType: colType
             };
 
             filter.__defineGetter__('value', getFilterValue.bind(filter));
@@ -74,9 +76,14 @@
                 case VALID_RECORDS:
                     return 'valid records';
                 case INSIDE_RANGE:
-                    var min = d3.format(',')(this.args.interval[0]);
-                    var max = d3.format(',')(this.args.interval[1]);
-                    return min === max ? '[' + min + ']' : '[' + min + ' .. ' + max + '[';
+                    if(this.colType === 'date') {
+                        return this.args.label;
+                    } else {
+                        var min = d3.format(',')(this.args.interval[0]);
+                        var max = d3.format(',')(this.args.interval[1]);
+                        return min === max ? '[' + min + ']' : '[' + min + ' .. ' + max + '[';
+                    }
+                    break;
                 case MATCHES:
                     return this.args.pattern;
             }
@@ -129,7 +136,9 @@
                         range: {
                             field: this.colId,
                             start: '' + this.args.interval[0],
-                            end: '' + this.args.interval[1]
+                            end: '' + this.args.interval[1],
+                            colType: this.colType,
+                            label: this.args.label
                         }
                     };
                 case MATCHES:
@@ -219,7 +228,7 @@
          * @returns {Object} The resulting filter definition
          */
         function leafToFilter(leaf) {
-            var type, args, condition;
+            var type, args, condition, colType;
             var editable = false;
 
             if('contains' in leaf) {
@@ -235,7 +244,8 @@
             else if('range' in leaf) {
                 type = INSIDE_RANGE;
                 condition = leaf.range;
-                args = {interval: [condition.start, condition.end]};
+                colType = condition.colType;
+                args = {interval: [condition.start, condition.end], label: condition.label};
             }
             else if('invalid' in leaf) {
                 type = INVALID_RECORDS;
@@ -257,7 +267,7 @@
 
             var colId = condition.field;
             var colName = _.find(state.playground.data.metadata.columns, {id: colId}).name;
-            return createFilter(type, colId, colName, editable, args, null, null);
+            return createFilter(type, colId, colName, editable, args, null, null, colType);
         }
     }
 

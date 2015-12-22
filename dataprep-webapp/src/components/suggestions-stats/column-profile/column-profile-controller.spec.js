@@ -72,17 +72,22 @@ describe('ColumnProfile controller', function () {
 
             //then
             expect(StatisticsService.getRangeFilterRemoveFn).toHaveBeenCalled();
-            expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('inside_range', '0001', 'firstname', {interval: [5, 15]}, removeFilterFn);
+            expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('inside_range', '0001', 'firstname', {interval: [5, 15], label: undefined}, removeFilterFn, undefined);
         }));
 
-        it('should NOT add a "range" filter on date columns', inject(function (StatisticsService, FilterService) {
+
+        it('should add a "range" filter on date columns', inject(function (StatisticsService, FilterService) {
             //given
             var ctrl = createController();
-            var interval = ['1 jan 2015', '1 feb 2015'];
+            var interval = {
+                min: '1 jan 2015',
+                max: '31 jan 2015',
+                label: 'Jan 2015'
+            };
 
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
-                name: 'birth',
+                name: 'firstname',
                 type: 'date'
             };
 
@@ -90,7 +95,8 @@ describe('ColumnProfile controller', function () {
             ctrl.addRangeFilter(interval);
 
             //then
-            expect(FilterService.addFilterAndDigest).not.toHaveBeenCalled();
+            expect(StatisticsService.getRangeFilterRemoveFn).toHaveBeenCalled();
+            expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('inside_range', '0001', 'firstname', {interval: ['1 jan 2015', '31 jan 2015'], label: 'Jan 2015'}, removeFilterFn, 'date');
         }));
 
         it('should add a new "empty_records" filter from exact_filter on barchart click callback', inject(function (StatisticsService, FilterService) {

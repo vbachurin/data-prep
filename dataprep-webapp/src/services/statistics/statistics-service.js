@@ -13,10 +13,12 @@
      * @requires data-prep.services.utils.service:TextFormatService
      * @requires data-prep.services.utils.service:StorageService
      * @requires data-prep.services.utils.service:WorkerService
+     * @requires data-prep.services.utils.service:DateService
      */
-    function StatisticsService($filter, state,
+    function StatisticsService($filter, state, StateService,
                                DatagridService, RecipeService, StatisticsRestService,
-                               StateService, ConverterService, FilterAdapterService, TextFormatService, StorageService, WorkerService) {
+                               ConverterService, FilterAdapterService, TextFormatService,
+                               StorageService, WorkerService, DateService) {
 
         var dateFilteredWorkerWrapper;
         var datePatternWorkerWrapper;
@@ -25,6 +27,7 @@
         //those should be used to pass external functions, that are directly used here, to the web worker
         var workerFn0 = TextFormatService.convertJavaDateFormatToMomentDateFormat;
         var workerFn1 = TextFormatService.convertPatternToRegexp;
+        var workerFn2 = DateService.isInDateLimits;
 
         var service = {
             boxPlot: null,
@@ -370,7 +373,7 @@
             //execute a web worker that will compute the filtered occurrences
             dateFilteredWorkerWrapper = WorkerService.create(
                 ['/worker/moment.js', '/worker/moment-jdateformatparser.js', '/worker/lodash.js'],
-                [isInDateLimits],
+                [{workerFn2: workerFn2}],
                 dateFilteredOccurrenceWorker);
 
             var filteredOccurrences = state.playground.filter.gridFilters.length ? state.playground.grid.filteredOccurences : null;
@@ -381,35 +384,6 @@
                 .finally(function () {
                     dateFilteredWorkerWrapper.clean();
                 });
-        }
-
-        /**
-         * @ngdoc method
-         * @name isInDateLimits
-         * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @description Predicate that test if a date is in the range
-         * @param {number} minTimestamp The range min timestamp
-         * @param {number} maxTimestamp The range max timestamp
-         * @param {Array} patterns The date patterns to use for date parsing
-         */
-        function isInDateLimits(minTimestamp, maxTimestamp, patterns) {
-            return function (value) {
-                var parsedMoment = _.chain(patterns)
-                    .map(function (pattern) {
-                        return moment(value, pattern, true);
-                    })
-                    .find(function (momentDate) {
-                        return momentDate.isValid();
-                    })
-                    .value();
-
-                if (!parsedMoment) {
-                    return false;
-                }
-
-                var time = parsedMoment.toDate().getTime();
-                return time === minTimestamp || (time > minTimestamp && time < maxTimestamp);
-            };
         }
 
         /**
@@ -430,7 +404,7 @@
                     range.occurrences :
                     _.chain(filteredOccurences)
                         .keys()
-                        .filter(isInDateLimits(minTimestamp, maxTimestamp, patterns))
+                        .filter(workerFn2(minTimestamp, maxTimestamp, patterns))
                         .map(function (key) {
                             return filteredOccurences[key];
                         })

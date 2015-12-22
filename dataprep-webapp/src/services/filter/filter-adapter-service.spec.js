@@ -257,7 +257,35 @@ describe('Filter Adapter Service', function () {
                     range: {
                         field: '0001',
                         start: '1000',
-                        end: '2000'
+                        end: '2000',
+                        colType: undefined,
+                        label: undefined
+                    }
+                });
+            }));
+
+            it('should return tree corresponding to INSIDE_RANGE filter for date column', inject(function (FilterAdapterService) {
+                //given
+                var type = 'inside_range';
+                var colId = '0001';
+                var args = {
+                    interval: ['19-06-2015', '29-06-2015'],
+                    label: 'June 2015'
+                };
+
+                var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null, 'date');
+
+                //when
+                var tree = filter.toTree();
+
+                //then
+                expect(tree).toEqual({
+                    range: {
+                        field: '0001',
+                        start: '19-06-2015',
+                        end: '29-06-2015',
+                        colType: 'date',
+                        label: 'June 2015'
                     }
                 });
             }));
@@ -311,7 +339,35 @@ describe('Filter Adapter Service', function () {
                 range: {
                     field: '0001',
                     start: '1000',
-                    end: '2000'
+                    end: '2000',
+                    colType: undefined,
+                    label: undefined
+                }
+            }});
+        }));
+
+        it('should create single filter tree for date column', inject(function (FilterAdapterService) {
+            //given
+            var type = 'inside_range';
+            var colId = '0001';
+            var args = {
+                interval: ['19-06-2015', '29-06-2015'],
+                label: 'June 2015'
+            };
+
+            var filter = FilterAdapterService.createFilter(type, colId, null, null, args, null, null, 'date');
+
+            //when
+            var tree = FilterAdapterService.toTree([filter]);
+
+            //then
+            expect(tree).toEqual({filter: {
+                range: {
+                    field: '0001',
+                    start: '19-06-2015',
+                    end: '29-06-2015',
+                    colType: 'date',
+                    label: 'June 2015'
                 }
             }});
         }));
@@ -324,12 +380,18 @@ describe('Filter Adapter Service', function () {
             var containsArgs = {phrase: 'Jimmy'};
             var exactArgs = {phrase: 'Toto'};
 
+            var dateRangeArgs = {
+                interval: ['19-06-2015', '29-06-2015'],
+                label: 'June 2015'
+            };
+
             var rangeFilter = FilterAdapterService.createFilter('inside_range', '0001', null, null, rangeArgs, null, null);
             var containsFilter = FilterAdapterService.createFilter('contains', '0002', null, null, containsArgs, null, null);
             var exactFilter = FilterAdapterService.createFilter('exact', '0003', null, null, exactArgs, null, null);
+            var dateRangeFilter = FilterAdapterService.createFilter('inside_range', '0001', null, null, dateRangeArgs, null, null, 'date');
 
             //when
-            var tree = FilterAdapterService.toTree([rangeFilter, containsFilter, exactFilter]);
+            var tree = FilterAdapterService.toTree([rangeFilter, containsFilter, exactFilter, dateRangeFilter]);
 
             //then
             expect(tree).toEqual({filter: {
@@ -337,24 +399,38 @@ describe('Filter Adapter Service', function () {
                     {
                         and: [
                             {
-                                range: {
-                                    field: '0001',
-                                    start: '1000',
-                                    end: '2000'
-                                }
+                                and: [
+                                    {
+                                        range: {
+                                            field: '0001',
+                                            start: '1000',
+                                            end: '2000',
+                                            colType: undefined,
+                                            label: undefined
+                                        }
+                                    },
+                                    {
+                                        contains: {
+                                            field: '0002',
+                                            value: 'Jimmy'
+                                        }
+                                    }
+                                ]
                             },
                             {
-                                contains: {
-                                    field: '0002',
-                                    value: 'Jimmy'
+                                eq: {
+                                    field: '0003',
+                                    value: 'Toto'
                                 }
                             }
                         ]
-                    },
-                    {
-                        eq: {
-                            field: '0003',
-                            value: 'Toto'
+                    }, {
+                        range: {
+                            field: '0001',
+                            start: '19-06-2015',
+                            end: '29-06-2015',
+                            colType: 'date',
+                            label: 'June 2015'
                         }
                     }
                 ]
@@ -438,7 +514,7 @@ describe('Filter Adapter Service', function () {
             expect(singleFilter.colId).toBe('0001');
             expect(singleFilter.colName).toBe('lastname');
             expect(singleFilter.editable).toBe(false);
-            expect(singleFilter.args).toEqual({interval: [1000, 2000]});
+            expect(singleFilter.args).toEqual({interval: [1000, 2000], label: undefined});
         }));
 
         it('should create single INVALID_RECORDS filter from leaf', inject(function (FilterAdapterService) {
@@ -577,7 +653,7 @@ describe('Filter Adapter Service', function () {
             expect(rangeFilter.colId).toBe('0001');
             expect(rangeFilter.colName).toBe('lastname');
             expect(rangeFilter.editable).toBe(false);
-            expect(rangeFilter.args).toEqual({interval: ['1000', '2000']});
+            expect(rangeFilter.args).toEqual({interval: ['1000', '2000'], label: undefined});
 
             var containsFilter = filters[1];
             expect(containsFilter.type).toBe('contains');

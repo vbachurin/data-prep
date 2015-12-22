@@ -49,12 +49,11 @@
          */
         vm.addRangeFilter = function addRangeFilter(interval) {
             var selectedColumn = state.playground.grid.selectedColumn;
-            if(selectedColumn.type === 'date') {
-                return;
-            }
 
             var removeFilterFn = StatisticsService.getRangeFilterRemoveFn();
-            FilterService.addFilterAndDigest('inside_range', selectedColumn.id, selectedColumn.name, {interval: [interval.min, interval.max]}, removeFilterFn);
+            FilterService.addFilterAndDigest('inside_range', selectedColumn.id,
+                                              selectedColumn.name, {interval: [interval.min, interval.max], label: interval.label},
+                                              removeFilterFn, selectedColumn.type);
         };
 
         //------------------------------------------------------------------------------------------------------
