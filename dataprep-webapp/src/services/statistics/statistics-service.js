@@ -171,8 +171,8 @@
                 });
             });
 
-            service.histogram = initVerticalHistogram('occurrences', 'Occurrences', rangeData);
-            service.filteredHistogram = initVerticalHistogram('filteredOccurrences', 'Filtered Occurrences', filteredRangeData);
+            service.histogram = initVerticalHistogram('data', 'occurrences', 'Occurrences', rangeData);
+            service.filteredHistogram = initVerticalHistogram('data', 'filteredOccurrences', 'Filtered Occurrences', filteredRangeData);
         }
 
         /**
@@ -211,9 +211,9 @@
             });
 
             //init the main histogram
-            service.histogram = initVerticalHistogram('occurrences', 'Occurrences', rangeData);
+            service.histogram = initVerticalHistogram('data', 'occurrences', 'Occurrences', rangeData);
 
-            //execute  a web worker that will compute the filtered occurrences
+            //execute a web worker that will compute the filtered occurrences
             dateFilteredWorkerWrapper = WorkerService.create(
                 ['/worker/moment.js', '/worker/moment-jdateformatparser.js', '/worker/lodash.js'],
                 [isInDateLimits],
@@ -222,7 +222,7 @@
             var filteredOccurrences = state.playground.filter.gridFilters.length ? state.playground.grid.filteredOccurences : null;
             dateFilteredWorkerWrapper.postMessage([rangeData, patterns, filteredOccurrences])
                 .then(function (filteredRangeData) {
-                    service.filteredHistogram = initVerticalHistogram('filteredOccurrences', 'Filtered Occurrences', filteredRangeData);
+                    service.filteredHistogram = initVerticalHistogram('data', 'filteredOccurrences', 'Filtered Occurrences', filteredRangeData);
                 })
                 .finally(function () {
                     dateFilteredWorkerWrapper.clean();
@@ -359,28 +359,37 @@
          * @ngdoc method
          * @name initClassicHistogram
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {string} key The value key
+         * @param {string} valueField The value key
          * @param {string} label The value label
          * @param {Array} dataTable The table to display
          * @description Set the frequency table that fit the histogram format (filter is managed in frontend)
          */
-        function initClassicHistogram(key, label, dataTable) {
+        function initClassicHistogram(valueField, label, dataTable) {
             if (!dataTable || !dataTable.length) {
                 return;
             }
+            var keyField = 'formattedValue';
+            var filteredValueField = 'filteredOccurrences';
 
-            var adaptedData = _.map(dataTable, function (rec) {
-                rec.formattedValue = TextFormatService.adaptToGridConstraints(rec.data);
-                rec.filteredOccurrences = getClassicFilteredOccurrence(rec.data);
-                return rec;
+            var adaptedData = [];
+            var adaptedFilteredData = [];
+            _.forEach(dataTable, function (rec) {
+                var formattedValue = TextFormatService.adaptToGridConstraints(rec.data);
+
+                var item = {};
+                item[keyField] = formattedValue;
+                item[valueField] = rec[valueField];
+                item.data = rec.data;
+                adaptedData.push(item);
+
+                var filteredItem = {};
+                filteredItem[keyField] = formattedValue;
+                filteredItem[filteredValueField] = getClassicFilteredOccurrence(rec.data);
+                adaptedFilteredData.push(filteredItem);
             });
 
-            service.histogram = {
-                data: adaptedData,
-                key: key,
-                label: label,
-                column: state.playground.grid.selectedColumn
-            };
+            service.histogram = initHorizontalHistogram(keyField, valueField, label, adaptedData, null);
+            service.filteredHistogram = initHorizontalHistogram(keyField, filteredValueField, null, adaptedFilteredData, 'blueBar');
         }
 
 
@@ -388,22 +397,43 @@
          * @ngdoc method
          * @name initAggregationHistogram
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {string} key The value key
+         * @param {string} valueField The value prop name
          * @param {string} label The value label
          * @param {Array} dataTable The table to display
          * @description Set the frequency table that fit the histogram format for aggregation (filter is managed in backend)
          */
-        function initAggregationHistogram(key, label, dataTable) {
+        function initAggregationHistogram(valueField, label, dataTable) {
+            var keyField = 'formattedValue';
+
             var adaptedData = _.map(dataTable, function (rec) {
-                rec.formattedValue = TextFormatService.adaptToGridConstraints(rec.data);
+                rec[keyField] = TextFormatService.adaptToGridConstraints(rec.data);
                 return rec;
             });
 
-            service.histogram = {
-                data: adaptedData,
-                key: key,
+            service.histogram = initHorizontalHistogram(keyField, valueField, label, adaptedData, 'blueBar');
+            service.filteredHistogram = null;
+        }
+
+        /**
+         * @ngdoc method
+         * @name initVerticalHistogram
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {string} keyField The key field prop name
+         * @param {string} valueField The value field prop name
+         * @param {string} label The value label
+         * @param {Array} data The data to display
+         * @param {string} className The bar class name
+         * @description Create a records frequency ranges table that fit the histogram format
+         */
+        function initHorizontalHistogram(keyField, valueField, label, data, className) {
+            return {
+                data: data,
                 label: label,
-                column: state.playground.grid.selectedColumn
+                keyField: keyField,
+                valueField: valueField,
+                column: state.playground.grid.selectedColumn,
+                vertical: false,
+                className: className
             };
         }
 
@@ -411,15 +441,17 @@
          * @ngdoc method
          * @name initVerticalHistogram
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {string} key The value key
+         * @param {string} keyField The key field prop name
+         * @param {string} valueField The value field prop name
          * @param {string} label The value label
-         * @param {Array} dataTable The table to display
+         * @param {Array} data The data to display
          * @description Create a records frequency ranges table that fit the histogram format
          */
-        function initVerticalHistogram(key, label, dataTable) {
+        function initVerticalHistogram(keyField, valueField, label, data) {
             return {
-                data: dataTable,
-                key: key,
+                data: data,
+                keyField: keyField,
+                valueField: valueField,
                 label: label,
                 column: state.playground.grid.selectedColumn,
                 activeLimits: null,
@@ -564,6 +596,7 @@
         function updateFilteredPatternsFrequency(column) {
             var patternFrequency = column.statistics.patternFrequencyTable;
             service.patterns = patternFrequency;
+            service.filteredPatterns = null;
 
             datePatternWorkerWrapper = WorkerService.create(
                 ['/worker/moment.js', '/worker/lodash.js', '/worker/moment-jdateformatparser.js'],
@@ -585,7 +618,7 @@
             var filteredRecords = state.playground.filter.gridFilters.length ? state.playground.grid.filteredRecords : null;
             datePatternWorkerWrapper.postMessage([column.id, patternFrequency, filteredRecords])
                 .then(function (patternFrequencies) {
-                    service.patterns = patternFrequencies;
+                    service.filteredPatterns = patternFrequencies;
                 })
                 .finally(function () {
                     datePatternWorkerWrapper.clean();

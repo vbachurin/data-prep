@@ -56,6 +56,15 @@
             }
         });
 
+    Object.defineProperty(StatsDetailsCtrl.prototype,
+        'filteredPatternFrequencyTable', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.statisticsService.filteredPatterns;
+            }
+        });
+
     angular.module('data-prep.stats-details')
         .controller('StatsDetailsCtrl', StatsDetailsCtrl);
 })();

@@ -39,25 +39,36 @@
                                  ng-if="!columnProfileCtrl.histogram.vertical"
                                  width="300"
                                  height="400"
-                                 on-click="columnProfileCtrl.addBarchartFilter"
-                                 visu-data="columnProfileCtrl.histogram.data"
+                                 on-click="columnProfileCtrl.addBarchartFilter(item)"
+
+                                 key-field="{{columnProfileCtrl.histogram.keyField}}"
                                  key-label="{{columnProfileCtrl.histogram.label}}"
-                                 key-field="formattedValue"
-                                 value-field="{{columnProfileCtrl.histogram.key}}"
-                                 value-field-2="filteredOccurrences"></horizontal-barchart>
+
+                                 primary-data="columnProfileCtrl.histogram.data"
+                                 primary-value-field="{{columnProfileCtrl.histogram.valueField}}"
+                                 primary-bar-class="{{columnProfileCtrl.histogram.className}}"
+
+                                 secondary-data="columnProfileCtrl.filteredHistogram.data"
+                                 secondary-value-field="{{columnProfileCtrl.filteredHistogram.valueField}}"
+                                 secondary-bar-class="{{columnProfileCtrl.filteredHistogram.className}}"
+            ></horizontal-barchart>
 
             <vertical-barchart id="vBarChart"
                                ng-if="columnProfileCtrl.histogram.vertical"
                                width="300"
                                height="150"
                                on-click="columnProfileCtrl.addRangeFilter(interval)"
-                               visu-data="columnProfileCtrl.histogram.data"
-                               visu-data-2="columnProfileCtrl.filteredHistogram.data"
-                               value-field="{{columnProfileCtrl.histogram.key}}"
-                               value-field-2="{{columnProfileCtrl.filteredHistogram.key}}"
-                               key-field="data"
-                               active-limits="columnProfileCtrl.histogram.activeLimits"
-                               key-label="{{columnProfileCtrl.histogram.label}}"></vertical-barchart>
+
+                               key-field="{{columnProfileCtrl.histogram.keyField}}"
+                               key-label="{{columnProfileCtrl.histogram.label}}"
+
+                               primary-data="columnProfileCtrl.histogram.data"
+                               primary-value-field="{{columnProfileCtrl.histogram.valueField}}"
+
+                               secondary-data="columnProfileCtrl.filteredHistogram.data"
+                               secondary-value-field="{{columnProfileCtrl.filteredHistogram.valueField}}"
+
+                               active-limits="columnProfileCtrl.histogram.activeLimits"></vertical-barchart>
 
             <highchart id="geochart"
                        ng-if="columnProfileCtrl.stateDistribution"

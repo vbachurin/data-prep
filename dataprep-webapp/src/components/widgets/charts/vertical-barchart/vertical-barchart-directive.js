@@ -10,46 +10,48 @@
      * <vertical-barchart id="vBarChart"
      *     width="320"
      *     height="400"
-     *     on-click="columnProfileCtrl.vBarchartClickFn"
-     *     visu-data="columnProfileCtrl.histogram.data"
-     *     visu-data-2="columnProfileCtrl.histogram2.data"
-     *     key-field="data"
-     *     key-label="{{columnProfileCtrl.histogram.label}}">
-     *     value-field="{{columnProfileCtrl.histogram.key}}"
-     *     value-field="{{columnProfileCtrl.histogram2.key}}"
-     *     active-limits="columnProfileCtrl.histogram.existingFilter"
+     *     on-click="clickFn(interval)"
+     *
+     *     key-field="country"
+     *     key-label="Country of the world"
+     *     active-limits="activeLimits"
+     *
+     *     primary-data="primaryData"
+     *     primary-value-field="occurrences"
+     *
+     *     secondary-data="secondaryData"
+     *     secondary-value-field="filteredOccurrences">
      * </vertical-barchart>
-     * @param {number} width The chart width
-     * @param {number} height The chart height
-     * @param {function} onClick The callback on chart click
-     * @param {array} visuData The value array to render
-     * @param {array} visuData2 The second value array to render
-     * @param {string} keyField The key property name in visuData elements
-     * @param {object} keyLabel The label property name in visuData elements
-     * @param {string} valueField The value property name in visuData elements used for 1st column
-     * @param {string} valueField2 The second value property name in visuData elements used for 2nd column
-     * @param {array} activeLimits The filter limits
-     * */
+     * @param {number}      width The chart width
+     * @param {number}      height The chart height
+     * @param {function}    onClick The callback on chart bar click. The interval is an Object {min: minValue, max, maxValue}
+     * @param {string}      keyField The key property name in primaryData elements
+     * @param {string}      keyLabel The label property name in primaryData elements
+     * @param {array}       primaryData The primary value array to render
+     * @param {string}      primaryValueField The primary value property name in primaryData
+     * @param {array}       secondaryData The secondary value array to render
+     * @param {string}      secondaryValueField The secondary value property name in secondaryData
+     * @param {array}       activeLimits The limits [min, max[ that represents the active part
+     */
 
     function VerticalBarchart() {
         return {
             restrict: 'E',
             scope: {
                 onClick: '&',
-                visuData: '=',
-                visuData2: '=',
+                activeLimits: '=',
                 keyField: '@',
-                valueField: '@',
-                valueField2: '@',
                 keyLabel: '@',
-                activeLimits: '='
+                primaryData: '=',
+                primaryValueField: '@',
+                secondaryData: '=',
+                secondaryValueField: '@'
             },
             link: function (scope, element, attrs) {
                 var oldVisuData;
                 var labelTooltip = scope.keyLabel;
                 var activeLimits = scope.activeLimits;
                 var renderPrimaryTimeout, renderSecondaryTimeout, updateLimitsTimeout;
-                var finishedRendering = false;
                 var containerId = '#' + attrs.id;
 
                 // Define chart sizes and margin
@@ -74,7 +76,7 @@
                     var title = (uniqueValue ? 'Value: ' : 'Range: ');
                     var value = range.label || (uniqueValue ? range.min : '[' + range.min + ', ' + range.max + '[');
 
-                    return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + getSecondaryValue(data) + ' / ' + getPrimaryValue(data) + '</span>' +
+                    return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + getSecondaryValueFromRange(getRangeInfos(data)) + ' / ' + getPrimaryValue(data) + '</span>' +
                         '<br/>' +
                         '<br/>' +
                         '<strong>' + title + '</strong> ' +
@@ -94,27 +96,30 @@
                 }
 
                 function getPrimaryValue(data) {
-                    return data[scope.valueField];
+                    return data[scope.primaryValueField];
                 }
 
                 function getSecondaryValue(data) {
-                    if(!scope.visuData2) {
+                    return data[scope.secondaryValueField];
+                }
+
+                function getSecondaryValueFromRange(range) {
+                    var secondaryData = scope.secondaryData;
+                    if (!secondaryData) {
                         return 0;
                     }
 
-                    var range = data[scope.keyField];
-                    var secondaryDate = _.find(scope.visuData2, function(data2) {
-                        var range2 = data2[scope.keyField];
-                        return (range.min === range2.min && range.max === range2.max) ||
-                            (range.min instanceof Date && range.min.getTime() === range2.min.getTime() && range.max.getTime() === range2.max.getTime());
+                    var secondaryDataItem = _.find(secondaryData, function (dataItem) {
+                        var secondaryRange = getRangeInfos(dataItem);
+                        return (range.min === secondaryRange.min && range.max === secondaryRange.max) ||
+                            (range.min instanceof Date && range.min.getTime() === secondaryRange.min.getTime() && range.max.getTime() === secondaryRange.max.getTime());
                     });
-                    return secondaryDate ? secondaryDate[scope.valueField2] : 0;
+                    return secondaryDataItem ? getSecondaryValue(secondaryDataItem) : 0;
                 }
 
                 //------------------------------------------------------------------------------------------------------
-                //---------------------------------------- Chart manipulation ------------------------------------------
+                //------------------------------------------- Chart utils ----------------------------------------------
                 //------------------------------------------------------------------------------------------------------
-                // Axis scale definitions
                 var xScale = d3.scale.ordinal().rangeRoundBands([0, width], 0.2);
                 var yScale = d3.scale.linear().range([height, 0]);
                 var svg;
@@ -135,14 +140,14 @@
                     yScale.domain([0, d3.max(statData, getPrimaryValue)]);
                 }
 
-                function drawBars(selector, statData, getValue, className) {
+                function drawBars(containerClassName, statData, getValue, barClassName) {
                     svg.insert('g', '.grid')
-                        .attr('class', 'bars ' + className)
-                        .selectAll(selector)
+                        .attr('class', containerClassName)
+                        .selectAll('.' + barClassName)
                         .data(statData)
                         .enter()
                         .append('rect')
-                        .attr('class', className)
+                        .attr('class', barClassName)
                         .attr('x', function (d) {
                             return xScale(getInterval(d));
                         })
@@ -222,24 +227,26 @@
                         });
                 }
 
+                //------------------------------------------------------------------------------------------------------
+                //------------------------------------------- Chart render ---------------------------------------------
+                //------------------------------------------------------------------------------------------------------
                 function renderWholeVBarchart(firstVisuData, secondVisuData) {
                     createContainer();
                     configureAxisScales(firstVisuData);
-                    drawBars('.bar', firstVisuData, getPrimaryValue, 'bar');
-                    if (secondVisuData) {
-                        drawBars('.secondaryBar', secondVisuData, getSecondaryValue, 'secondaryBar');
-                    }
+                    drawBars('primaryBar', firstVisuData, getPrimaryValue, 'bar');
+                    renderSecondVBars(secondVisuData);
 
                     drawHorizontalGrid();
                     drawYAxisLegend();
                     drawHoverBars(firstVisuData);
                     scope.buckets = d3.selectAll('rect.bar');
-                    finishedRendering = true;
                 }
 
                 function renderSecondVBars(secondVisuData) {
-                    drawBars('.secondaryBar', secondVisuData, getSecondaryValue, 'secondaryBar');
-                    finishedRendering = true;
+                    d3.selectAll('g.bars.secondary').remove();
+                    if (secondVisuData) {
+                        drawBars('secondaryBar', secondVisuData, getSecondaryValue, 'blueBar');
+                    }
                 }
 
                 function updateBarsLookFeel() {
@@ -259,7 +266,10 @@
                     }
                 }
 
-                scope.$watchGroup(['visuData', 'visuData2'],
+                //------------------------------------------------------------------------------------------------------
+                //---------------------------------------------- Watchers ----------------------------------------------
+                //------------------------------------------------------------------------------------------------------
+                scope.$watchGroup(['primaryData', 'secondaryData'],
                     function (newValues) {
                         var firstVisuData = newValues[0];
                         var secondVisuData = newValues[1];
@@ -271,15 +281,13 @@
                             //because the tooltip is not a child of the vertical barchart element
                             d3.selectAll('.vertical-barchart-cls.d3-tip').remove();
                             if (firstVisuData) {
-                                finishedRendering = false;
                                 clearTimeout(renderPrimaryTimeout);
                                 renderPrimaryTimeout = setTimeout(renderWholeVBarchart.bind(this, firstVisuData, secondVisuData), 100);
                             }
                         }
-                        else if (secondVisuData) {
-                            finishedRendering = false;
+                        else {
                             clearTimeout(renderSecondaryTimeout);
-                            renderSecondaryTimeout = setTimeout(renderSecondVBars.bind(this, firstVisuData, secondVisuData), 100);
+                            renderSecondaryTimeout = setTimeout(renderSecondVBars.bind(this, secondVisuData), 100);
                         }
                     }
                 );
@@ -296,7 +304,7 @@
                     }
                 );
 
-                scope.$on('$destroy', function() {
+                scope.$on('$destroy', function () {
                     d3.selectAll('.vertical-barchart-cls.d3-tip').remove();
                 });
             }

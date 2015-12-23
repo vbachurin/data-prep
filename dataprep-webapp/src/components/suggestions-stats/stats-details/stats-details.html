@@ -30,12 +30,17 @@
                 <horizontal-barchart id="patternBarChart"
                                      width="300"
                                      height="400"
-                                     on-click="statsDetailsCtrl.addPatternFilter"
-                                     visu-data="statsDetailsCtrl.patternFrequencyTable"
+                                     on-click="statsDetailsCtrl.addPatternFilter(item)"
+
                                      key-field="pattern"
-                                     value-field="occurrences"
-                                     value-field-2="filteredOccurrences"
-                                     front-bar-class="brownBar">
+                                     key-Label="Occurrences"
+
+                                     primary-data="statsDetailsCtrl.patternFrequencyTable"
+                                     primary-value-field="occurrences"
+
+                                     secondary-data="statsDetailsCtrl.filteredPatternFrequencyTable"
+                                     secondary-value-field="filteredOccurrences"
+                                     secondary-bar-class="brownBar">
                 </horizontal-barchart>
             </div>
         </talend-tabs-item>

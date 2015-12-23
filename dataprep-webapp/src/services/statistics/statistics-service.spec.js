@@ -541,29 +541,29 @@ describe('Statistics service', function () {
             'frequencyTable': [
                 {
                     'data': '   toto',
-                    'occurences': 202
+                    'occurrences': 202
                 },
                 {
                     'data': 'titi',
-                    'occurences': 2
+                    'occurrences': 2
                 },
                 {
                     'data': 'coucou',
-                    'occurences': 102
+                    'occurrences': 102
                 },
                 {
                     'data': 'cici',
-                    'occurences': 22
+                    'occurrences': 22
                 }
             ],
             'patternFrequencyTable': [
                 {
                     'pattern': '   Aa9',
-                    'occurences': 202
+                    'occurrences': 202
                 },
                 {
                     'pattern': 'yyyy-M-d',
-                    'occurences': 2
+                    'occurrences': 2
                 }
             ],
             textLengthSummary: {
@@ -595,19 +595,19 @@ describe('Statistics service', function () {
             'frequencyTable': [
                 {
                     'data': '   toto',
-                    'occurences': 1
+                    'occurrences': 1
                 },
                 {
                     'data': 'titi',
-                    'occurences': 1
+                    'occurrences': 1
                 },
                 {
                     'data': 'coucou',
-                    'occurences': 1
+                    'occurrences': 1
                 },
                 {
                     'data': 'cici',
-                    'occurences': 1
+                    'occurrences': 1
                 }
             ],
             textLengthSummary: {
@@ -638,19 +638,19 @@ describe('Statistics service', function () {
             'frequencyTable': [
                 {
                     'data': 'MI',
-                    'occurences': 202
+                    'occurrences': 202
                 },
                 {
                     'data': 'WA',
-                    'occurences': 2
+                    'occurrences': 2
                 },
                 {
                     'data': 'DE',
-                    'occurences': 102
+                    'occurrences': 102
                 },
                 {
                     'data': 'IL',
-                    'occurences': 22
+                    'occurrences': 22
                 }
             ],
             textLengthSummary: {
@@ -681,15 +681,15 @@ describe('Statistics service', function () {
             'frequencyTable': [
                 {
                     'data': 'true',
-                    'occurences': 2
+                    'occurrences': 2
                 },
                 {
                     'data': 'false',
-                    'occurences': 20
+                    'occurrences': 20
                 },
                 {
                     'data': '',
-                    'occurences': 10
+                    'occurrences': 10
                 }
             ]
         }
@@ -844,17 +844,33 @@ describe('Statistics service', function () {
                     data: [
                         {
                             data: '   toto',
-                            occurences: 202,
-                            formattedValue: '<span class="hiddenChars">   </span>toto',
-                            filteredOccurrences: 3
+                            occurrences: 202,
+                            formattedValue: '<span class="hiddenChars">   </span>toto'
                         },
-                        {data: 'titi', occurences: 2, formattedValue: 'titi', filteredOccurrences: 2},
-                        {data: 'coucou', occurences: 102, formattedValue: 'coucou', filteredOccurrences: 0},
-                        {data: 'cici', occurences: 22, formattedValue: 'cici', filteredOccurrences: 0}
+                        {data: 'titi', occurrences: 2, formattedValue: 'titi'},
+                        {data: 'coucou', occurrences: 102, formattedValue: 'coucou'},
+                        {data: 'cici', occurrences: 22, formattedValue: 'cici'}
                     ],
-                    key: 'occurrences',
+                    keyField: 'formattedValue',
+                    valueField: 'occurrences',
                     label: 'Occurrences',
-                    column: barChartStrCol
+                    column: barChartStrCol,
+                    vertical: false,
+                    className: null
+                });
+                expect(StatisticsService.filteredHistogram).toEqual({
+                    data: [
+                        {formattedValue: '<span class="hiddenChars">   </span>toto', filteredOccurrences: 3},
+                        {formattedValue: 'titi', filteredOccurrences: 2},
+                        {formattedValue: 'coucou', filteredOccurrences: 0},
+                        {formattedValue: 'cici', filteredOccurrences: 0}
+                    ],
+                    keyField: 'formattedValue',
+                    valueField: 'filteredOccurrences',
+                    label: null,
+                    column: barChartStrCol,
+                    vertical: false,
+                    className: 'blueBar'
                 });
             }));
 
@@ -872,17 +888,33 @@ describe('Statistics service', function () {
                     data: [
                         {
                             data: '   toto',
-                            occurences: 1,
-                            formattedValue: '<span class="hiddenChars">   </span>toto',
-                            filteredOccurrences: 1
+                            occurrences: 1,
+                            formattedValue: '<span class="hiddenChars">   </span>toto'
                         },
-                        {data: 'titi', occurences: 1, formattedValue: 'titi', filteredOccurrences: 1},
-                        {data: 'coucou', occurences: 1, formattedValue: 'coucou', filteredOccurrences: 1},
-                        {data: 'cici', occurences: 1, formattedValue: 'cici', filteredOccurrences: 1}
+                        {data: 'titi', occurrences: 1, formattedValue: 'titi'},
+                        {data: 'coucou', occurrences: 1, formattedValue: 'coucou'},
+                        {data: 'cici', occurrences: 1, formattedValue: 'cici'}
                     ],
-                    key: 'occurrences',
+                    keyField: 'formattedValue',
+                    valueField: 'occurrences',
                     label: 'Occurrences',
-                    column: barChartStrCol2
+                    column: barChartStrCol2,
+                    vertical: false,
+                    className: null
+                });
+                expect(StatisticsService.filteredHistogram).toEqual({
+                    data: [
+                        {formattedValue: '<span class="hiddenChars">   </span>toto', filteredOccurrences: 1},
+                        {formattedValue: 'titi', filteredOccurrences: 1},
+                        {formattedValue: 'coucou', filteredOccurrences: 1},
+                        {formattedValue: 'cici', filteredOccurrences: 1}
+                    ],
+                    keyField: 'formattedValue',
+                    valueField: 'filteredOccurrences',
+                    label: null,
+                    column: barChartStrCol2,
+                    vertical: false,
+                    className: 'blueBar'
                 });
             }));
 
@@ -912,10 +944,30 @@ describe('Statistics service', function () {
 
                 //then
                 expect(StatisticsService.histogram).toEqual({
-                    key: 'occurrences',
+                    data: [
+                        {"formattedValue": "true", "occurrences": 2, "data": "true"},
+                        {"formattedValue": "false", "occurrences": 20, "data": "false"},
+                        {"formattedValue": "", "occurrences": 10, "data": ""}
+                    ],
+                    keyField: 'formattedValue',
+                    valueField: 'occurrences',
                     label: 'Occurrences',
                     column: barChartBoolCol,
-                    data: barChartBoolCol.statistics.frequencyTable
+                    vertical: false,
+                    className: null
+                });
+                expect(StatisticsService.filteredHistogram).toEqual({
+                    data: [
+                        {"formattedValue": "true", "filteredOccurrences": 3},
+                        {"formattedValue": "false", "filteredOccurrences": 2},
+                        {"formattedValue": "", "filteredOccurrences": 0}
+                    ],
+                    keyField: 'formattedValue',
+                    valueField: 'filteredOccurrences',
+                    label: null,
+                    column: barChartBoolCol,
+                    vertical: false,
+                    className: 'blueBar'
                 });
             }));
 
@@ -942,30 +994,29 @@ describe('Statistics service', function () {
                     $rootScope.$digest();
 
                     //then
-                    expect(StatisticsService.histogram.data[0].occurrences).toBe(5); //[0, 10[
-                    expect(StatisticsService.histogram.data[0].data).toEqual({
-                        type: 'number',
-                        min: barChartNumCol.statistics.histogram.items[0].range.min,
-                        max: barChartNumCol.statistics.histogram.items[0].range.max
+                    expect(StatisticsService.histogram).toEqual({
+                        data: [
+                            {data: {type: "number", min: 0, max: 10}, occurrences: 5},
+                            {data: {type: "number", min: 10, max: 20}, occurrences: 15}
+                        ],
+                        keyField: "data",
+                        valueField: "occurrences",
+                        label: "Occurrences",
+                        column: barChartNumCol,
+                        activeLimits: null,
+                        vertical: true
                     });
-                    expect(StatisticsService.histogram.data[1].occurrences).toBe(15); //[10, 20[
-                    expect(StatisticsService.histogram.data[1].data).toEqual({
-                        type: 'number',
-                        min: barChartNumCol.statistics.histogram.items[1].range.min,
-                        max: barChartNumCol.statistics.histogram.items[1].range.max
-                    });
-
-                    expect(StatisticsService.filteredHistogram.data[0].filteredOccurrences).toBe(3); //[0, 10[
-                    expect(StatisticsService.filteredHistogram.data[0].data).toEqual({
-                        type: 'number',
-                        min: barChartNumCol.statistics.histogram.items[0].range.min,
-                        max: barChartNumCol.statistics.histogram.items[0].range.max
-                    });
-                    expect(StatisticsService.filteredHistogram.data[1].filteredOccurrences).toBe(6); //[10, 20[
-                    expect(StatisticsService.filteredHistogram.data[1].data).toEqual({
-                        type: 'number',
-                        min: barChartNumCol.statistics.histogram.items[1].range.min,
-                        max: barChartNumCol.statistics.histogram.items[1].range.max
+                    expect(StatisticsService.filteredHistogram).toEqual({
+                        data: [
+                            {data: {type: "number", min: 0, max: 10}, filteredOccurrences: 3},
+                            {data: {type: "number", min: 10, max: 20}, filteredOccurrences: 6}
+                        ],
+                        keyField: "data",
+                        valueField: "filteredOccurrences",
+                        label: "Filtered Occurrences",
+                        column: barChartNumCol,
+                        activeLimits: null,
+                        vertical: true
                     });
                 }));
 
@@ -991,31 +1042,55 @@ describe('Statistics service', function () {
                     $rootScope.$digest();
 
                     //then
-                    expect(StatisticsService.histogram.data[0].occurrences).toBe(5); //[0, 10[
-                    expect(StatisticsService.histogram.data[0].data).toEqual({
-                        type: 'number',
-                        min: barChartNumCol.statistics.histogram.items[0].range.min,
-                        max: barChartNumCol.statistics.histogram.items[0].range.max
+                    expect(StatisticsService.histogram).toEqual({
+                        data: [
+                            {data: {type: "number", min: 0, max: 10}, occurrences: 5},
+                            {data: {type: "number", min: 10, max: 20}, occurrences: 15}
+                        ],
+                        keyField: "data",
+                        valueField: "occurrences",
+                        label: "Occurrences",
+                        column: barChartNumCol,
+                        activeLimits: null,
+                        vertical: true
                     });
-                    expect(StatisticsService.histogram.data[1].occurrences).toBe(15); //[10, 20[
-                    expect(StatisticsService.histogram.data[1].data).toEqual({
-                        type: 'number',
-                        min: barChartNumCol.statistics.histogram.items[1].range.min,
-                        max: barChartNumCol.statistics.histogram.items[1].range.max
+                    expect(StatisticsService.filteredHistogram).toEqual({
+                        data: [
+                            {data: {type: "number", min: 0, max: 10}, filteredOccurrences: 5},
+                            {data: {type: "number", min: 10, max: 20}, filteredOccurrences: 15}
+                        ],
+                        keyField: "data",
+                        valueField: "filteredOccurrences",
+                        label: "Filtered Occurrences",
+                        column: barChartNumCol,
+                        activeLimits: null,
+                        vertical: true
                     });
-
-                    expect(StatisticsService.filteredHistogram.data[0].filteredOccurrences).toBe(5); //[0, 10[
-                    expect(StatisticsService.filteredHistogram.data[0].data).toEqual({
-                        type: 'number',
-                        min: barChartNumCol.statistics.histogram.items[0].range.min,
-                        max: barChartNumCol.statistics.histogram.items[0].range.max
-                    });
-                    expect(StatisticsService.filteredHistogram.data[1].filteredOccurrences).toBe(15); //[10, 20[
-                    expect(StatisticsService.filteredHistogram.data[1].data).toEqual({
-                        type: 'number',
-                        min: barChartNumCol.statistics.histogram.items[1].range.min,
-                        max: barChartNumCol.statistics.histogram.items[1].range.max
-                    });
+                    //expect(StatisticsService.histogram.data[0].occurrences).toBe(5); //[0, 10[
+                    //expect(StatisticsService.histogram.data[0].data).toEqual({
+                    //    type: 'number',
+                    //    min: barChartNumCol.statistics.histogram.items[0].range.min,
+                    //    max: barChartNumCol.statistics.histogram.items[0].range.max
+                    //});
+                    //expect(StatisticsService.histogram.data[1].occurrences).toBe(15); //[10, 20[
+                    //expect(StatisticsService.histogram.data[1].data).toEqual({
+                    //    type: 'number',
+                    //    min: barChartNumCol.statistics.histogram.items[1].range.min,
+                    //    max: barChartNumCol.statistics.histogram.items[1].range.max
+                    //});
+                    //
+                    //expect(StatisticsService.filteredHistogram.data[0].filteredOccurrences).toBe(5); //[0, 10[
+                    //expect(StatisticsService.filteredHistogram.data[0].data).toEqual({
+                    //    type: 'number',
+                    //    min: barChartNumCol.statistics.histogram.items[0].range.min,
+                    //    max: barChartNumCol.statistics.histogram.items[0].range.max
+                    //});
+                    //expect(StatisticsService.filteredHistogram.data[1].filteredOccurrences).toBe(15); //[10, 20[
+                    //expect(StatisticsService.filteredHistogram.data[1].data).toEqual({
+                    //    type: 'number',
+                    //    min: barChartNumCol.statistics.histogram.items[1].range.min,
+                    //    max: barChartNumCol.statistics.histogram.items[1].range.max
+                    //});
                 }));
 
                 it('should set histogram vertical mode to true when column type is "number"', inject(function (StatisticsService) {
@@ -1663,11 +1738,11 @@ describe('Statistics service', function () {
         var aggregation = 'MAX';                            // the aggregation operation
 
         var getAggregationsResponse = [                     // the REST aggregation GET result
-            {'data': 'Lansing', 'max': 15},
-            {'data': 'Helena', 'max': 5},
-            {'data': 'Baton Rouge', 'max': 64},
-            {'data': 'Annapolis', 'max': 4},
-            {'data': 'Pierre', 'max': 104}
+            {'data': 'Lansing', 'MAX': 15},
+            {'data': 'Helena', 'MAX': 5},
+            {'data': 'Baton Rouge', 'MAX': 64},
+            {'data': 'Annapolis', 'MAX': 4},
+            {'data': 'Pierre', 'MAX': 104}
         ];
 
         beforeEach(inject(function (StatisticsService, RecipeService, StorageService) {
@@ -1695,17 +1770,33 @@ describe('Statistics service', function () {
                     data: [
                         {
                             data: '   toto',
-                            occurences: 202,
-                            formattedValue: '<span class="hiddenChars">   </span>toto',
-                            filteredOccurrences: 3
+                            occurrences: 202,
+                            formattedValue: '<span class="hiddenChars">   </span>toto'
                         },
-                        {data: 'titi', occurences: 2, formattedValue: 'titi', filteredOccurrences: 2},
-                        {data: 'coucou', occurences: 102, formattedValue: 'coucou', filteredOccurrences: 0},
-                        {data: 'cici', occurences: 22, formattedValue: 'cici', filteredOccurrences: 0}
+                        {data: 'titi', occurrences: 2, formattedValue: 'titi'},
+                        {data: 'coucou', occurrences: 102, formattedValue: 'coucou'},
+                        {data: 'cici', occurrences: 22, formattedValue: 'cici'}
                     ],
-                    key: 'occurrences',
+                    keyField: 'formattedValue',
+                    valueField: 'occurrences',
                     label: 'Occurrences',
-                    column: barChartStrCol
+                    column: barChartStrCol,
+                    vertical: false,
+                    className: null
+                });
+                expect(StatisticsService.filteredHistogram).toEqual({
+                    data: [
+                        {formattedValue: '<span class="hiddenChars">   </span>toto', filteredOccurrences: 3},
+                        {formattedValue: 'titi', filteredOccurrences: 2},
+                        {formattedValue: 'coucou', filteredOccurrences: 0},
+                        {formattedValue: 'cici', filteredOccurrences: 0}
+                    ],
+                    keyField: 'formattedValue',
+                    valueField: 'filteredOccurrences',
+                    label: null,
+                    column: barChartStrCol,
+                    vertical: false,
+                    className: 'blueBar'
                 });
             }));
 
@@ -1744,14 +1835,17 @@ describe('Statistics service', function () {
                 });
                 expect(StatisticsService.histogram).toEqual({
                     data: [
-                        {'data': 'Lansing', 'max': 15, 'formattedValue': 'Lansing'},
-                        {'data': 'Helena', 'max': 5, 'formattedValue': 'Helena'},
-                        {'data': 'Baton Rouge', 'max': 64, 'formattedValue': 'Baton Rouge'},
-                        {'data': 'Annapolis', 'max': 4, 'formattedValue': 'Annapolis'},
-                        {'data': 'Pierre', 'max': 104, 'formattedValue': 'Pierre'}
+                        {'data': 'Lansing', 'MAX': 15, 'formattedValue': 'Lansing'},
+                        {'data': 'Helena', 'MAX': 5, 'formattedValue': 'Helena'},
+                        {'data': 'Baton Rouge', 'MAX': 64, 'formattedValue': 'Baton Rouge'},
+                        {'data': 'Annapolis', 'MAX': 4, 'formattedValue': 'Annapolis'},
+                        {'data': 'Pierre', 'MAX': 104, 'formattedValue': 'Pierre'}
                     ],
-                    key: 'MAX',
+                    keyField: 'formattedValue',
+                    valueField: 'MAX',
                     label: 'MAX',
+                    vertical: false,
+                    className: 'blueBar',
                     column: stateMock.playground.grid.selectedColumn,
                     aggregationColumn: column,
                     aggregation: aggregation
@@ -1776,18 +1870,22 @@ describe('Statistics service', function () {
                 });
                 expect(StatisticsService.histogram).toEqual({
                     data: [
-                        {'data': 'Lansing', 'max': 15, 'formattedValue': 'Lansing'},
-                        {'data': 'Helena', 'max': 5, 'formattedValue': 'Helena'},
-                        {'data': 'Baton Rouge', 'max': 64, 'formattedValue': 'Baton Rouge'},
-                        {'data': 'Annapolis', 'max': 4, 'formattedValue': 'Annapolis'},
-                        {'data': 'Pierre', 'max': 104, 'formattedValue': 'Pierre'}
+                        {'data': 'Lansing', 'MAX': 15, 'formattedValue': 'Lansing'},
+                        {'data': 'Helena', 'MAX': 5, 'formattedValue': 'Helena'},
+                        {'data': 'Baton Rouge', 'MAX': 64, 'formattedValue': 'Baton Rouge'},
+                        {'data': 'Annapolis', 'MAX': 4, 'formattedValue': 'Annapolis'},
+                        {'data': 'Pierre', 'MAX': 104, 'formattedValue': 'Pierre'}
                     ],
-                    key: 'MAX',
+                    keyField: 'formattedValue',
+                    valueField: 'MAX',
                     label: 'MAX',
                     column: stateMock.playground.grid.selectedColumn,
+                    vertical: false,
+                    className: 'blueBar',
                     aggregationColumn: column,
                     aggregation: aggregation
                 });
+                expect(StatisticsService.filteredHistogram).toBe(null);
             }));
 
             it('should save column aggregation in storage', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService, StorageService) {
@@ -2155,11 +2253,11 @@ describe('Statistics service', function () {
         var aggregation = 'MAX';                            // the aggregation operation
 
         var getAggregationsResponse = [                     // the REST aggregation GET result
-            {'data': 'Lansing', 'max': 15},
-            {'data': 'Helena', 'max': 5},
-            {'data': 'Baton Rouge', 'max': 64},
-            {'data': 'Annapolis', 'max': 4},
-            {'data': 'Pierre', 'max': 104}
+            {'data': 'Lansing', 'MAX': 15},
+            {'data': 'Helena', 'MAX': 5},
+            {'data': 'Baton Rouge', 'MAX': 64},
+            {'data': 'Annapolis', 'MAX': 4},
+            {'data': 'Pierre', 'MAX': 104}
         ];
 
         beforeEach(inject(function (StatisticsService, RecipeService, StorageService) {
@@ -2187,16 +2285,32 @@ describe('Statistics service', function () {
                 data: [
                     {
                         data: '   toto',
-                        occurences: 202,
-                        formattedValue: '<span class="hiddenChars">   </span>toto',
-                        filteredOccurrences: 3
+                        occurrences: 202,
+                        formattedValue: '<span class="hiddenChars">   </span>toto'
                     },
-                    {data: 'titi', occurences: 2, formattedValue: 'titi', filteredOccurrences: 2},
-                    {data: 'coucou', occurences: 102, formattedValue: 'coucou', filteredOccurrences: 0},
-                    {data: 'cici', occurences: 22, formattedValue: 'cici', filteredOccurrences: 0}
+                    {data: 'titi', occurrences: 2, formattedValue: 'titi'},
+                    {data: 'coucou', occurrences: 102, formattedValue: 'coucou'},
+                    {data: 'cici', occurrences: 22, formattedValue: 'cici'}
                 ],
-                key: 'occurrences',
+                keyField: 'formattedValue',
+                valueField: 'occurrences',
                 label: 'Occurrences',
+                vertical: false,
+                className: null,
+                column: barChartStrCol
+            });
+            expect(StatisticsService.filteredHistogram).toEqual({
+                data: [
+                    {formattedValue: '<span class="hiddenChars">   </span>toto', filteredOccurrences: 3},
+                    {formattedValue: 'titi', filteredOccurrences: 2},
+                    {formattedValue: 'coucou', filteredOccurrences: 0},
+                    {formattedValue: 'cici', filteredOccurrences: 0}
+                ],
+                keyField: 'formattedValue',
+                valueField: 'filteredOccurrences',
+                label: null,
+                vertical: false,
+                className: 'blueBar',
                 column: barChartStrCol
             });
         }));
@@ -2229,14 +2343,17 @@ describe('Statistics service', function () {
             });
             expect(StatisticsService.histogram).toEqual({
                 data: [
-                    {'data': 'Lansing', 'max': 15, 'formattedValue': 'Lansing'},
-                    {'data': 'Helena', 'max': 5, 'formattedValue': 'Helena'},
-                    {'data': 'Baton Rouge', 'max': 64, 'formattedValue': 'Baton Rouge'},
-                    {'data': 'Annapolis', 'max': 4, 'formattedValue': 'Annapolis'},
-                    {'data': 'Pierre', 'max': 104, 'formattedValue': 'Pierre'}
+                    {'data': 'Lansing', 'MAX': 15, 'formattedValue': 'Lansing'},
+                    {'data': 'Helena', 'MAX': 5, 'formattedValue': 'Helena'},
+                    {'data': 'Baton Rouge', 'MAX': 64, 'formattedValue': 'Baton Rouge'},
+                    {'data': 'Annapolis', 'MAX': 4, 'formattedValue': 'Annapolis'},
+                    {'data': 'Pierre', 'MAX': 104, 'formattedValue': 'Pierre'}
                 ],
-                key: 'MAX',
+                keyField: 'formattedValue',
                 label: 'MAX',
+                valueField: 'MAX',
+                vertical: false,
+                className: 'blueBar',
                 column: stateMock.playground.grid.selectedColumn,
                 aggregationColumn: column,
                 aggregation: aggregation

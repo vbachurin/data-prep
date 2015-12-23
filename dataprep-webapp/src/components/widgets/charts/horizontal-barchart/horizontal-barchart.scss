@@ -5,12 +5,12 @@
     cursor: pointer;
   }
 
-  .bar rect {
-    fill: $light-blue;
-  }
-
-  .frontBar {
+  .primaryBar,
+  .secondaryBar {
     rect {
+      &.transparentBar {
+        fill: $light-blue;
+      }
       &.blueBar {
         fill: $dark-blue;
       }
@@ -40,28 +40,32 @@
 
   .axis {
     shape-rendering: crispEdges;
-  }
 
-  .axis path {
-    fill: none;
-  }
+    path {
+      fill: none;
+    }
 
-  .x.axis line {
-    stroke: #fff;
-    stroke-opacity: .0;
-  }
+    &.x {
+      line {
+        stroke: #fff;
+        stroke-opacity: .0;
+      }
 
-  .x.axis text {
-    font-size: .8em;
-    fill: $medium-gray;
-  }
+      text {
+        font-size: .8em;
+        fill: $medium-gray;
+      }
+    }
 
-  .y.axis path {
-    stroke: $shadow-gray;
-  }
+    &.y {
+      path {
+        stroke: $shadow-gray;
+      }
 
-  .y.axis text {
-    display: none;
+      text {
+        display: none;
+      }
+    }
   }
 
   .hiddenChars {
@@ -72,7 +76,6 @@
 
   &.d3-tip {
     line-height: 1;
-    font-family: $inconsolota;
     font-size: .8em;
     font-weight: 400;
     padding: 12px;
@@ -81,18 +84,18 @@
     border-radius: 2px;
     z-index: 100000;
     right: 15px;
-  }
 
-  /* Creates a small triangle extender for the tooltip */
-  &.d3-tip:after {
-    box-sizing: border-box;
-    display: inline;
-    width: 100%;
-    line-height: 1;
-    color: rgba(0, 0, 0, 0.8);
-    content: "\25BC";
-    position: absolute;
-    text-align: center;
+    &:after {
+      /* Creates a small triangle extender for the tooltip */
+      box-sizing: border-box;
+      display: inline;
+      width: 100%;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.8);
+      content: "\25BC";
+      position: absolute;
+      text-align: center;
+    }
   }
 
   /* Style northward tooltips differently */

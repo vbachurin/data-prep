@@ -1,52 +1,49 @@
 describe('horizontalBarchart directive', function () {
     'use strict';
 
-    var createElement, createElementWithSecondaryValues, element, scope, statsData;
+    var createElement, element, scope, statsData, filteredStatsData;
 
     beforeEach(module('talend.widget'));
+
     beforeEach(inject(function ($rootScope, $compile) {
         statsData = [
-            {'data': 'Johnson', 'occurrences': 9, 'filteredOccurrences': 4},
-            {'data': 'Roosevelt', 'occurrences': 8, 'filteredOccurrences': 4},
-            {'data': 'Pierce', 'occurrences': 6, 'filteredOccurrences': 4},
-            {'data': 'Wilson', 'occurrences': 5, 'filteredOccurrences': 4},
-            {'data': 'Adams', 'occurrences': 4, 'filteredOccurrences': 4},
-            {'data': 'Quincy', 'occurrences': 4, 'filteredOccurrences': 4},
-            {'data': 'Clinton', 'occurrences': 4, 'filteredOccurrences': 4},
-            {'data': 'Harrison', 'occurrences': 4, 'filteredOccurrences': 4}
+            {'data': 'Johnson', 'occurrences': 9},
+            {'data': 'Roosevelt', 'occurrences': 8},
+            {'data': 'Pierce', 'occurrences': 6},
+            {'data': 'Wilson', 'occurrences': 5},
+            {'data': 'Adams', 'occurrences': 4},
+            {'data': 'Quincy', 'occurrences': 4},
+            {'data': 'Clinton', 'occurrences': 4},
+            {'data': 'Harrison', 'occurrences': 4}
+        ];
+        filteredStatsData = [
+            {'data': 'Johnson', 'filteredOccurrences': 4},
+            {'data': 'Roosevelt', filteredOccurrences: 4},
+            {'data': 'Pierce', 'filteredOccurrences': 4},
+            {'data': 'Wilson', 'filteredOccurrences': 4},
+            {'data': 'Adams', 'filteredOccurrences': 4},
+            {'data': 'Quincy', 'filteredOccurrences': 4},
+            {'data': 'Clinton', 'filteredOccurrences': 4},
+            {'data': 'Harrison', 'filteredOccurrences': 4}
         ];
 
         scope = $rootScope.$new();
-        scope.onclick = jasmine.createSpy('click');
+        scope.onClick = jasmine.createSpy('on bar click fn');
 
         createElement = function () {
             var html = '<horizontal-barchart ' +
                 'id="barChart" ' +
                 'width="250" ' +
                 'height="400"' +
-                'on-click="onclick"' +
-                'visu-data="visData"' +
+                'on-click="onClick(item)"' +
                 'key-field="data"' +
-                'value-field="occurrences"' +
+                'primary-data="primaryData"' +
+                'primary-value-field="occurrences"' +
+                'primary-bar-class="{{primaryBarClass}}"' +
+                'secondary-data="secondaryData"' +
+                'secondary-value-field="filteredOccurrences"' +
+                'secondary-bar-class="{{secondaryBarClass}}"' +
                 '></horizontal-barchart>';
-
-            element = angular.element(html);
-            angular.element('body').append(element);
-            $compile(element)(scope);
-            scope.$digest();
-        };
-
-        createElementWithSecondaryValues = function () {
-            var html = '<horizontal-barchart ' +
-                    'id="barChart" ' +
-                    'width="250" ' +
-                    'height="400"' +
-                    'on-click="onclick"' +
-                    'visu-data="visData"' +
-                    'key-field="data"' +
-                    'value-field="occurrences"' +
-                    'value-field-2="filteredOccurrences"' +
-                    '></horizontal-barchart>';
 
             element = angular.element(html);
             angular.element('body').append(element);
@@ -58,6 +55,7 @@ describe('horizontalBarchart directive', function () {
     beforeEach(function () {
         jasmine.clock().install();
     });
+
     afterEach(function () {
         jasmine.clock().uninstall();
 
@@ -65,51 +63,102 @@ describe('horizontalBarchart directive', function () {
         element.remove();
     });
 
-    it('should render all bars without secondary values after a 100ms delay', function () {
-        //given
-        createElement();
+    describe('render', function () {
+        it('should render primary data after a 100ms delay', function () {
+            //given
+            createElement();
 
-        //when
-        scope.visData = statsData;
-        scope.$digest();
-        jasmine.clock().tick(100);
+            //when
+            scope.primaryData = statsData;
+            scope.$digest();
+            jasmine.clock().tick(100);
 
-        //then
-        expect(element.find('rect.bar').length).toBe(statsData.length);
-        expect(element.find('rect.blueBar').length).toBe(0);
-        expect(element.find('.label').length).toBe(statsData.length);
-        expect(element.find('.bg-rect').length).toBe(statsData.length);
+            //then
+            expect(element.find('.primaryBar > rect').length).toBe(statsData.length);
+            expect(element.find('.secondaryBar > rect').length).toBe(0);
+            expect(element.find('.label').length).toBe(statsData.length);
+            expect(element.find('.bg-rect').length).toBe(statsData.length);
+        });
+
+        it('should render primary and secondary data after a 100ms delay', function () {
+            //given
+            createElement();
+
+            //when
+            scope.primaryData = statsData;
+            scope.secondaryData = filteredStatsData;
+            scope.$digest();
+            jasmine.clock().tick(100);
+
+            //then
+            expect(element.find('.primaryBar > rect').length).toBe(statsData.length);
+            expect(element.find('.secondaryBar > rect').length).toBe(statsData.length);
+            expect(element.find('.label').length).toBe(statsData.length);
+            expect(element.find('.bg-rect').length).toBe(statsData.length);
+        });
+
+        it('should render secondary data after a 100ms delay', function () {
+            //given
+            createElement();
+            scope.primaryData = statsData;
+            scope.$digest();
+            jasmine.clock().tick(100);
+
+            expect(element.find('.secondaryBar > rect').length).toBe(0);
+
+            //when
+            scope.secondaryData = filteredStatsData;
+            scope.$digest();
+            jasmine.clock().tick(100);
+
+            //then
+            expect(element.find('.secondaryBar > rect').length).toBe(statsData.length);
+        });
     });
 
-    it('should render all bars with secondary values after a 100ms delay', function () {
-        //given
-        createElementWithSecondaryValues();
+    describe('bar class name', function () {
+        it('should set "transparentBar" class as primary bars default class name', function () {
+            //given
+            createElement();
 
-        //when
-        scope.visData = statsData;
-        scope.$digest();
-        jasmine.clock().tick(100);
+            //when
+            scope.primaryData = statsData;
+            scope.$digest();
+            jasmine.clock().tick(100);
 
-        //then
-        expect(element.find('rect.bar').length).toBe(statsData.length);
-        expect(element.find('rect.blueBar').length).toBe(statsData.length);
-        expect(element.find('.label').length).toBe(statsData.length);
-        expect(element.find('.bg-rect').length).toBe(statsData.length);
+            //then
+            expect(element.find('.primaryBar > rect.transparentBar').length).toBe(statsData.length);
+        });
+
+        it('should set "blueBar" class as secondary bars default class name', function () {
+            //given
+            createElement();
+
+            //when
+            scope.primaryData = statsData;
+            scope.secondaryData = filteredStatsData;
+            scope.$digest();
+            jasmine.clock().tick(100);
+
+            //then
+            expect(element.find('.secondaryBar > rect.blueBar').length).toBe(statsData.length);
+        });
+
+        it('should set custom secondary bars class name', function () {
+            //given
+            createElement();
+
+            //when
+            scope.primaryData = statsData;
+            scope.primaryBarClass = 'blueBar';
+            scope.secondaryData = filteredStatsData;
+            scope.secondaryBarClass = 'brownBar';
+            scope.$digest();
+            jasmine.clock().tick(100);
+
+            //then
+            expect(element.find('.primaryBar > rect.blueBar').length).toBe(statsData.length);
+            expect(element.find('.secondaryBar > rect.brownBar').length).toBe(statsData.length);
+        });
     });
-
-    //waiting for a solution for this issue PhantomJs + svg :
-    // https://github.com/ariya/phantomjs/issues/13293
-    // it('should call addFilter function on click', inject(function () {
-    //	//given
-    //	createElement();
-    //	scope.visData = statsData;
-    //	scope.$digest();
-    //	var event = new angular.element.Event('click');
-    //
-    //	//when
-    //	 element.find('.bg-rect').eq(5).trigger(event);
-    //
-    //	console.log(element.find('.bg-rect').eq(5));
-    //	//then
-    //}));
 });

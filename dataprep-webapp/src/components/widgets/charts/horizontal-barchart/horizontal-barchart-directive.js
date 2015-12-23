@@ -10,12 +10,30 @@
      * <horizontal-barchart id="hBarChart"
      *    width="320"
      *    height="400"
-     *    on-click="columnProfileCtrl.barchartClickFn"
-     *    visu-data="columnProfileCtrl.histogram.data"
-     *    value-field="formattedValue"
-     *    key-field="{{columnProfileCtrl.histogram.key}}"
-     *    key-label="{{columnProfileCtrl.histogram.label}}">
+     *    on-click="columnProfileCtrl.barchartClickFn(item)"
+     *
+     *    key-field="country"
+     *    key-label="Country of the world"
+     *
+     *    primary-data="primaryData"
+     *    primary-value-field="occurrences"
+     *    primary-bar-class="blueBar"
+     *
+     *    secondary-data="secondaryData"
+     *    secondary-value-field="filteredOccurrences"
+     *    secondary-bar-class="greenBar">
      * </horizontal-barchart>
+     * @param {number}      width The chart width
+     * @param {number}      height The chart height
+     * @param {function}    onClick The callback on chart bar click. The item in argument is the element in primaryData that is selected.
+     * @param {string}      keyField The key property name in primaryData elements
+     * @param {string}      keyLabel The label property name in primaryData elements used in tooltip
+     * @param {array}       primaryData The primary value array to render
+     * @param {string}      primaryValueField The primary value property name in primaryData
+     * @param {string}      primaryBarClass The primary chart bar class name. Default: none
+     * @param {array}       secondaryData The secondary value array to render
+     * @param {string}      secondaryValueField The secondary value property name in secondaryData
+     * @param {string}      secondaryBarClass The secondary chart bar class name. Default: 'blueBar'
      * */
 
     function HorizontalBarchart() {
@@ -23,17 +41,18 @@
             restrict: 'E',
             scope: {
                 onClick: '&',
-                visuData: '=',
                 keyField: '@',
-                valueField: '@',
-                valueField2: '@',
                 keyLabel: '@',
-                frontBarClass: '@'
+                primaryData: '=',
+                primaryValueField: '@',
+                primaryBarClass: '@',
+                secondaryData: '=',
+                secondaryValueField: '@',
+                secondaryBarClass: '@'
             },
             link: function (scope, element, attrs) {
-                var secondaryClassName = scope.frontBarClass ? scope.frontBarClass : 'blueBar';
                 var containerId = '#' + attrs.id;
-                var renderTimeout;
+                var renderPrimaryTimeout, renderSecondaryTimeout;
 
                 // Define chart sizes and margin
                 var margin = {top: 15, right: 10, bottom: 10, left: 10};
@@ -48,7 +67,7 @@
                     .html(function (d) {
                         var key = getKey(d);
                         var primaryValue = getPrimaryValue(d);
-                        var secondaryValue = getSecondaryValue(d);
+                        var secondaryValue = getSecondaryValueFromKey(key);
 
                         return '<strong>' + scope.keyLabel + ':</strong> <span style="color:yellow">' + (secondaryValue ? secondaryValue + ' / ' : '') + primaryValue + '</span>' +
                             '<br/><br/>' +
@@ -63,15 +82,38 @@
                 }
 
                 function getPrimaryValue(data) {
-                    return data[scope.valueField];
+                    return data[scope.primaryValueField];
                 }
 
                 function getSecondaryValue(data) {
-                    return data[scope.valueField2];
+                    return data[scope.secondaryValueField];
+                }
+
+                function getSecondaryValueFromKey(key) {
+                    var secondaryData = scope.secondaryData;
+                    if(!secondaryData) {
+                        return 0;
+                    }
+
+                    var secondaryDataItem = _.find(secondaryData, function(dataItem) {
+                        return getKey(dataItem) === key;
+                    });
+                    return secondaryDataItem ? getSecondaryValue(secondaryDataItem) : 0;
                 }
 
                 //------------------------------------------------------------------------------------------------------
-                //---------------------------------------- Chart manipulation ------------------------------------------
+                //--------------------------------------------- Bar class ----------------------------------------------
+                //------------------------------------------------------------------------------------------------------
+                function getPrimaryClassName() {
+                    return scope.primaryBarClass ? scope.primaryBarClass : 'transparentBar';
+                }
+
+                function getSecondaryClassName() {
+                    return scope.secondaryBarClass ? scope.secondaryBarClass : 'blueBar';
+                }
+
+                //------------------------------------------------------------------------------------------------------
+                //------------------------------------------- Chart utils ----------------------------------------------
                 //------------------------------------------------------------------------------------------------------
                 var xScale, yScale;
                 var xAxis, yAxis;
@@ -127,14 +169,14 @@
                         .call(yAxis);
                 }
 
-                function drawBars(containerClassName, statData, getValue, className) {
+                function drawBars(containerClassName, statData, getValue, barClassName) {
                     svg.insert('g', '.labels')
                         .attr('class', containerClassName)
-                        .selectAll(className)
+                        .selectAll('.' + barClassName)
                         .data(statData)
                         .enter()
                         .append('rect')
-                        .attr('class', className)
+                        .attr('class', barClassName)
                         .attr('transform', function (d) {
                             return 'translate(0,' + yScale(getKey(d)) + ')';
                         })
@@ -165,7 +207,7 @@
 
                         //label
                         .append('xhtml:div')
-                        .attr('class', 'label ' + secondaryClassName)
+                        .attr('class', 'label ' + getSecondaryClassName())
                         .html(function (d) {
                             return getKey(d) || '(EMPTY)';
                         });
@@ -194,43 +236,67 @@
                             tooltip.hide(d);
                         })
                         .on('click', function (d) {
-                            scope.onClick()(d); //TODO
+                            scope.onClick({item: d});
                         });
                 }
 
-                function renderHBarchart(statData) {
+                //------------------------------------------------------------------------------------------------------
+                //------------------------------------------- Chart render ---------------------------------------------
+                //------------------------------------------------------------------------------------------------------
+                function renderWholeHBarchart(firstVisuData, secondVisuData) {
                     // Chart sizes dynamically computed (it depends on the bars number)
-                    var containerHeight = Math.ceil(((+attrs.height) / 15) * (statData.length + 1));
+                    var containerHeight = Math.ceil(((+attrs.height) / 15) * (firstVisuData.length + 1));
                     var width = containerWidth - margin.left - margin.right;
                     var height = containerHeight - margin.top - margin.bottom;
 
                     initScales(width, height);
                     initAxis(height);
                     createContainer(containerWidth, containerHeight);
-                    configureAxisScales(statData);
+                    configureAxisScales(firstVisuData);
                     drawAxis();
 
-                    drawBars('bar', statData, getPrimaryValue, 'bar');
-                    if (typeof statData[0][scope.valueField2] !== 'undefined') { //TODO change the condition
-                        drawBars('frontBar', statData, getSecondaryValue, secondaryClassName); //TODO change the passed data
-                    }
-                    drawKeysLabels(statData, width);
-                    drawHoverBars(statData, width);
+                    drawBars('primaryBar', firstVisuData, getPrimaryValue, getPrimaryClassName());
+                    renderSecondaryBars(secondVisuData);
+
+                    drawKeysLabels(firstVisuData, width);
+                    drawHoverBars(firstVisuData, width);
                 }
 
+                function renderSecondaryBars(secondVisuData) {
+                    d3.selectAll('g.secondaryBar').remove();
+                    if(secondVisuData) {
+                        drawBars('secondaryBar', secondVisuData, getSecondaryValue, getSecondaryClassName());
+                    }
+                }
 
-                scope.$watch('visuData',
-                    function (statData) {
-                        element.empty();
-                        //because the tooltip is not a child of the horizontal barchart element
-                        d3.selectAll('.horizontal-barchart-cls.d3-tip').remove();
-                        if (statData) {
-                            clearTimeout(renderTimeout);
-                            renderTimeout = setTimeout(renderHBarchart.bind(this, statData), 100);
+                //------------------------------------------------------------------------------------------------------
+                //---------------------------------------------- Watchers ----------------------------------------------
+                //------------------------------------------------------------------------------------------------------
+                var oldVisuData;
+                scope.$watchGroup(['primaryData', 'secondaryData'],
+                    function (newValues) {
+                        var firstVisuData = newValues[0];
+                        var secondVisuData = newValues[1];
+                        var firstDataHasChanged = firstVisuData !== oldVisuData;
+
+                        if (firstDataHasChanged) {
+                            oldVisuData = firstVisuData;
+                            element.empty();
+                            //because the tooltip is not a child of the horizontal barchart element
+                            d3.selectAll('.horizontal-barchart-cls.d3-tip').remove();
+                            if (firstVisuData) {
+                                clearTimeout(renderPrimaryTimeout);
+                                renderPrimaryTimeout = setTimeout(renderWholeHBarchart.bind(this, firstVisuData, secondVisuData), 100);
+                            }
                         }
-                    });
+                        else {
+                            clearTimeout(renderSecondaryTimeout);
+                            renderSecondaryTimeout = setTimeout(renderSecondaryBars.bind(this, secondVisuData), 100);
+                        }
+                    }
+                );
 
-                scope.$on('$destroy', function() {
+                scope.$on('$destroy', function () {
                     d3.selectAll('.horizontal-barchart-cls.d3-tip').remove();
                 });
             }
