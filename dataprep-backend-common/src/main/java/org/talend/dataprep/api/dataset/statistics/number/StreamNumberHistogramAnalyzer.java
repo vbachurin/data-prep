@@ -16,10 +16,10 @@ import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.talend.dataquality.statistics.numeric.NumericalStatisticsAnalyzer;
+import org.talend.dataquality.statistics.type.DataTypeEnum;
+import org.talend.dataquality.statistics.type.TypeInferenceUtils;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.ResizableList;
-import org.talend.datascience.common.inference.type.DataType.Type;
-import org.talend.datascience.common.inference.type.TypeInferenceUtils;
 
 /**
  * Number histogram analyzer. It processes all the records and compute the statistics for each.
@@ -35,13 +35,13 @@ public class StreamNumberHistogramAnalyzer extends NumericalStatisticsAnalyzer<S
      *
      * @param types data types
      */
-    public StreamNumberHistogramAnalyzer(Type[] types) {
+    public StreamNumberHistogramAnalyzer(DataTypeEnum[] types) {
         super(types);
     }
 
     @Override
     public boolean analyze(String... record) {
-        Type[] types = getTypes();
+        DataTypeEnum[] types = getTypes();
 
         if (record.length != types.length)
             throw new IllegalArgumentException("Each column of the record should be declared a DataType.Type corresponding! \n"

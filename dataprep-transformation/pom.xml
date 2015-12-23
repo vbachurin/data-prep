@@ -62,8 +62,8 @@
         </dependency>
         <!-- SWAGGER DEPENDENCIES -->
         <dependency>
-            <groupId>com.mangofactory</groupId>
-            <artifactId>swagger-springmvc</artifactId>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
         </dependency>
         <!-- SPRING DEPENDENCIES-->
         <dependency>

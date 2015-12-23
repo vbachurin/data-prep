@@ -21,6 +21,7 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Test class for Split action. Creates one consumer, and test it.
@@ -59,6 +61,22 @@ public class SplitTest extends AbstractMetadataBaseTest {
     }
 
     @Test
+    public void testName() throws Exception {
+        assertEquals("split", action.getName());
+    }
+
+    @Test
+    public void testParameters() throws Exception {
+        final List<Parameter> parameters = action.getParameters();
+        assertEquals(6, parameters.size());
+        assertEquals(1L, parameters.stream().filter(p -> StringUtils.equals(Split.LIMIT, p.getName())).count());
+        final Optional<Parameter> separatorParameter = parameters.stream() //
+                .filter(p -> StringUtils.equals(Split.SEPARATOR_PARAMETER, p.getName())) //
+                .findFirst();
+        assertTrue(separatorParameter.isPresent());
+    }
+
+    @Test
     public void testAdapt() throws Exception {
         assertThat(action.adapt((ColumnMetadata) null), is(action));
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
@@ -76,11 +94,7 @@ public class SplitTest extends AbstractMetadataBaseTest {
     @Test
     public void should_split_row() {
         // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0000", "lorem bacon");
-        values.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
-        values.put("0002", "01/01/2015");
-        final DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = getRow("lorem bacon", "Bacon ipsum dolor amet swine leberkas pork belly", "01/01/2015");
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
@@ -99,11 +113,7 @@ public class SplitTest extends AbstractMetadataBaseTest {
     @Test
     public void should_split_semicolon() {
         // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0000", "lorem bacon");
-        values.put("0001", "Bacon;ipsum");
-        values.put("0002", "01/01/2015");
-        final DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = getRow("lorem bacon", "Bacon;ipsum", "01/01/2015");
 
         parameters.put(Split.SEPARATOR_PARAMETER, ";");
 
@@ -124,11 +134,7 @@ public class SplitTest extends AbstractMetadataBaseTest {
     @Test
     public void should_split_underscore() {
         // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0000", "lorem bacon");
-        values.put("0001", "Bacon_ipsum");
-        values.put("0002", "01/01/2015");
-        final DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = getRow("lorem bacon", "Bacon_ipsum", "01/01/2015");
 
         parameters.put(Split.SEPARATOR_PARAMETER, "other (string)");
         parameters.put(Split.MANUAL_SEPARATOR_PARAMETER_STRING, "_");
@@ -336,11 +342,7 @@ public class SplitTest extends AbstractMetadataBaseTest {
     @Test
     public void should_split_row_with_separator_at_the_end() {
         // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0000", "lorem bacon");
-        values.put("0001", "Bacon ");
-        values.put("0002", "01/01/2015");
-        final DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = getRow("lorem bacon", "Bacon ", "01/01/2015");
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
@@ -359,13 +361,10 @@ public class SplitTest extends AbstractMetadataBaseTest {
     /**
      * @see Action#getRowAction()
      */
+    @Test
     public void should_split_row_no_separator() {
         // given
-        final Map<String, String> values = new HashMap<>();
-        values.put("0000", "lorem bacon");
-        values.put("0001", "Bacon");
-        values.put("0002", "01/01/2015");
-        final DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = getRow("lorem bacon", "Bacon", "01/01/2015");
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
@@ -432,6 +431,30 @@ public class SplitTest extends AbstractMetadataBaseTest {
         ActionTestWorkbench.test(rowMetadata, action.create(parameters).getRowAction(), action.create(parameters).getRowAction());
 
         assertEquals(expected, rowMetadata.getColumns());
+    }
+
+    @Test
+    public void should_not_split_separator_not_found() throws IOException {
+        // given
+        final DataSetRow row = getRow("lorem bacon", "Bacon ipsum dolor amet swine leberkas pork belly", "01/01/2015");
+
+        parameters.put(Split.SEPARATOR_PARAMETER, "-");
+        parameters.put(Split.LIMIT, "4");
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("0003", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("0004", "");
+        expectedValues.put("0005", "");
+        expectedValues.put("0006", "");
+        expectedValues.put("0002", "01/01/2015");
+
+        assertEquals(expectedValues, row.values());
     }
 
     @Test

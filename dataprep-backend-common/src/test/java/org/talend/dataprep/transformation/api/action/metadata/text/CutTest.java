@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -22,7 +21,9 @@ import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBa
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
-import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
+import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Unit test for the Cut action.
@@ -212,7 +213,7 @@ public class CutTest extends AbstractMetadataBaseTest {
     }
 
     private String generateJson(String token, String operator) {
-        RegexParametersHelper.ReplaceOnValueParameter r = new RegexParametersHelper.ReplaceOnValueParameter(token, operator);
+        ReplaceOnValueHelper r = new ReplaceOnValueHelper(token, operator);
         try {
             return builder.build().writeValueAsString(r);
         } catch (JsonProcessingException e) {

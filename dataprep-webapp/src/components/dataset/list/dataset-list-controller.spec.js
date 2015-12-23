@@ -69,30 +69,31 @@ describe('Dataset list controller', function () {
     }));
 
     describe('dataset in query params load', function () {
-        it('should init playground with the provided datasetId from url', inject(function ($stateParams, PlaygroundService, StateService) {
+        it('should init playground with the provided datasetId from url', inject(function ($stateParams, $timeout, PlaygroundService, StateService) {
             //given
             $stateParams.datasetid = 'ab45f893d8e923';
 
             //when
             createController();
             scope.$digest();
+            $timeout.flush();
 
             //then
             expect(PlaygroundService.initPlayground).toHaveBeenCalledWith(datasets[1]);
             expect(StateService.showPlayground).toHaveBeenCalled();
         }));
 
-        it('should show error message when dataset id is not in users dataset', inject(function ($stateParams, PlaygroundService, MessageService, StateService) {
+        it('should show error message when dataset id is not in users dataset', inject(function ($stateParams, $timeout, PlaygroundService, MessageService) {
             //given
             $stateParams.datasetid = 'azerty';
 
             //when
             createController();
             scope.$digest();
+            $timeout.flush();
 
             //then
             expect(PlaygroundService.initPlayground).not.toHaveBeenCalled();
-            expect(StateService.showPlayground).not.toHaveBeenCalled();
             expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
         }));
     });

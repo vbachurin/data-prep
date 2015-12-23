@@ -3,15 +3,12 @@ package org.talend.dataprep.dataset.store.content.http;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.annotation.PreDestroy;
-
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.location.HttpLocation;
@@ -29,35 +26,9 @@ public class HttpContentStore extends DataSetContentStoreAdapter {
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpContentStore.class);
 
-    /** Http connection manager. */
-    private PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-
     /** The http client to use. */
+    @Autowired
     private CloseableHttpClient httpClient;
-
-    /**
-     * Default empty constructor.
-     */
-    public HttpContentStore() {
-        connectionManager.setMaxTotal(50);
-        connectionManager.setDefaultMaxPerRoute(50);
-        httpClient = HttpClientBuilder.create() //
-                .setConnectionManager(connectionManager) //
-                .build();
-    }
-
-    /**
-     * Clean the connection manager before shutting down.
-     */
-    @PreDestroy
-    private void shutdown() {
-        try {
-            httpClient.close();
-        } catch (IOException e) {
-            LOGGER.error("Unable to close HTTP client on shutdown.", e);
-        }
-        this.connectionManager.shutdown();
-    }
 
     /**
      * @see DataSetContentStore#getAsRaw(DataSetMetadata)
@@ -66,6 +37,7 @@ public class HttpContentStore extends DataSetContentStoreAdapter {
     public InputStream getAsRaw(DataSetMetadata dataSetMetadata) {
         HttpLocation location = (HttpLocation) dataSetMetadata.getLocation();
         HttpGet get = new HttpGet(location.getUrl());
+        get.setHeader("Accept","*/*");
         CloseableHttpResponse response;
         try {
             response = httpClient.execute(get);

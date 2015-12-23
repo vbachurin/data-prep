@@ -1,29 +1,17 @@
 package org.talend.dataprep.api.dataset.statistics.date;
 
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.apache.commons.lang.NotImplementedException;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
-import org.talend.dataquality.statistics.frequency.pattern.DateTimePatternFrequencyAnalyzer;
-import org.talend.dataquality.statistics.frequency.pattern.PatternFrequencyStatistics;
+import org.talend.dataquality.statistics.type.DataTypeEnum;
+import org.talend.dataquality.statistics.type.TypeInferenceUtils;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.ResizableList;
-import org.talend.datascience.common.inference.type.DataType.Type;
-import org.talend.datascience.common.inference.type.TypeInferenceUtils;
 
-import java.time.DateTimeException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
-import static org.talend.dataprep.api.type.Type.DATE;
 
 /**
  * Date histogram analyzer
@@ -45,7 +33,7 @@ public class StreamDateHistogramAnalyzer implements Analyzer<StreamDateHistogram
     /**
      * The columns types
      */
-    private final Type[] types;
+    private final DataTypeEnum[] types;
 
     /**
      * A date parser, based on columns and analyzer
@@ -58,7 +46,7 @@ public class StreamDateHistogramAnalyzer implements Analyzer<StreamDateHistogram
      * @param types   The columns data types
      * @param dateParser A date parser based on column metadata and DQ analyzer
      */
-    public StreamDateHistogramAnalyzer(List<ColumnMetadata> columns, final Type[] types, final DateParser dateParser) {
+    public StreamDateHistogramAnalyzer(List<ColumnMetadata> columns, final DataTypeEnum[] types, final DateParser dateParser) {
         this.columns = columns;
         this.types = types;
         this.dateParser = dateParser;
@@ -75,10 +63,10 @@ public class StreamDateHistogramAnalyzer implements Analyzer<StreamDateHistogram
         stats.resize(record.length);
 
         for (int index = 0; index < types.length; ++index) {
-            final Type type = this.types[index];
+            final DataTypeEnum type = this.types[index];
             final ColumnMetadata column = this.columns.get(index);
             final String value = record[index];
-            if (type != Type.DATE || !TypeInferenceUtils.isValid(type, value)) {
+            if (type != DataTypeEnum.DATE || !TypeInferenceUtils.isValid(type, value)) {
                 continue;
             }
 

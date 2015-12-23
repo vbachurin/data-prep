@@ -26,8 +26,9 @@ import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @RestController
 public class PreparationAPI extends APIService {
@@ -39,7 +40,7 @@ public class PreparationAPI extends APIService {
             @RequestParam(value = "format", defaultValue = "long") @ApiParam(name = "format", value = "Format of the returned document (can be 'long' or 'short'). Defaults to 'long'.") String format,
             final OutputStream output) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Listing preparations (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Listing preparations (pool: {} )...", getConnectionStats());
         }
         PreparationList.Format listFormat = PreparationList.Format.valueOf(format.toUpperCase());
         HttpClient client = getClient();
@@ -49,7 +50,7 @@ public class PreparationAPI extends APIService {
             IOUtils.copyLarge(command.execute(), output);
             output.flush();
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Listed preparations (pool: {} )...", getConnectionManager().getTotalStats());
+                LOG.debug("Listed preparations (pool: {} )...", getConnectionStats());
             }
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
@@ -62,13 +63,13 @@ public class PreparationAPI extends APIService {
     public String createPreparation(
             @ApiParam(name = "body", value = "The original preparation. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Creating preparation (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Creating preparation (pool: {} )...", getConnectionStats());
         }
         HttpClient client = getClient();
         PreparationCreate preparationCreate = getCommand(PreparationCreate.class, client, preparation);
         final String preparationId = preparationCreate.execute();
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Created preparation (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Created preparation (pool: {} )...", getConnectionStats());
         }
         return preparationId;
     }
@@ -80,13 +81,13 @@ public class PreparationAPI extends APIService {
             @ApiParam(name = "id", value = "The id of the preparation to update.") @PathVariable("id") String id,
             @ApiParam(name = "body", value = "The updated preparation. Null values are ignored during update. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Updating preparation (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Updating preparation (pool: {} )...", getConnectionStats());
         }
         HttpClient client = getClient();
         PreparationUpdate preparationUpdate = getCommand(PreparationUpdate.class, client, id, preparation);
         final String preparationId = preparationUpdate.execute();
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Updated preparation (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Updated preparation (pool: {} )...", getConnectionStats());
         }
         return preparationId;
     }
@@ -97,13 +98,13 @@ public class PreparationAPI extends APIService {
     public String deletePreparation(
             @ApiParam(name = "id", value = "The id of the preparation to delete.") @PathVariable("id") String id) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Deleting preparation (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Deleting preparation (pool: {} )...", getConnectionStats());
         }
         HttpClient client = getClient();
         PreparationDelete preparationDelete = getCommand(PreparationDelete.class, client, id);
         final String preparationId = preparationDelete.execute();
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Deleted preparation (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Deleted preparation (pool: {} )...", getConnectionStats());
         }
         return preparationId;
     }
@@ -115,13 +116,13 @@ public class PreparationAPI extends APIService {
             @ApiParam(name = "id", value = "The id of the preparation to clone.") @PathVariable("id") String id) {
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Cloning preparation (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Cloning preparation (pool: {} )...", getConnectionStats());
         }
         HttpClient client = getClient();
         PreparationClone preparationClone = getCommand(PreparationClone.class, client, id);
         String preparationId = preparationClone.execute();
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Cloned preparation (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Cloned preparation (pool: {} )...", getConnectionStats());
         }
         return preparationId;
     }
@@ -132,7 +133,7 @@ public class PreparationAPI extends APIService {
     public void getPreparation(@PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             final OutputStream output) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Retrieving preparation details (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Retrieving preparation details (pool: {} )...", getConnectionStats());
         }
         HttpClient client = getClient();
         HystrixCommand<InputStream> command = getCommand(PreparationGet.class, client, preparationId);
@@ -143,7 +144,7 @@ public class PreparationAPI extends APIService {
             IOUtils.copyLarge(command.execute(), output);
             output.flush();
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Retrieved preparation details (pool: {} )...", getConnectionManager().getTotalStats());
+                LOG.debug("Retrieved preparation details (pool: {} )...", getConnectionStats());
             }
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
@@ -158,7 +159,7 @@ public class PreparationAPI extends APIService {
             @RequestParam(required = false, defaultValue = "full") @ApiParam(name = "sample", value = "Size of the wanted sample, if missing or 'full', the full preparation content is returned") String sample, //
             final OutputStream output) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Retrieving preparation content (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Retrieving preparation content (pool: {} )...", getConnectionStats());
         }
         HttpClient client = getClient();
         Long sampleValue;
@@ -173,7 +174,7 @@ public class PreparationAPI extends APIService {
             IOUtils.copyLarge(preparationContent, output);
             output.flush();
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Retrieved preparation content (pool: {} )...", getConnectionManager().getTotalStats());
+                LOG.debug("Retrieved preparation content (pool: {} )...", getConnectionStats());
             }
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
@@ -189,13 +190,13 @@ public class PreparationAPI extends APIService {
     @ApiParam("Action to add at end of the preparation.")
     final AppendStep step) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Adding action to preparation (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Adding action to preparation (pool: {} )...", getConnectionStats());
         }
         final HttpClient client = getClient();
         final HystrixCommand<Void> command = getCommand(PreparationAddAction.class, client, preparationId, step);
         command.execute();
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Added action to preparation (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Added action to preparation (pool: {} )...", getConnectionStats());
         }
     }
 
@@ -211,14 +212,14 @@ public class PreparationAPI extends APIService {
     final AppendStep step) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Updating preparation action at step #{} (pool: {} )...", stepId, //
-                    getConnectionManager().getTotalStats());
+                    getConnectionStats());
         }
         final HttpClient client = getClient();
         final HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationId, stepId, step);
         command.execute();
         if (LOG.isDebugEnabled()) {
             LOG.debug("Updated preparation action at step #{} (pool: {} )...", stepId, //
-                    getConnectionManager().getTotalStats());
+                    getConnectionStats());
         }
     }
 
@@ -232,7 +233,7 @@ public class PreparationAPI extends APIService {
     final String stepId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Deleting preparation action at step #{} (pool: {} ) ...", stepId, //
-                    getConnectionManager().getTotalStats());
+                    getConnectionStats());
         }
         final HttpClient client = getClient();
         final HystrixCommand<Void> command = getCommand(PreparationDeleteAction.class, client, preparationId, stepId);
@@ -240,7 +241,7 @@ public class PreparationAPI extends APIService {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Deleted preparation action at step #{} (pool: {} ) ...", stepId, //
-                    getConnectionManager().getTotalStats());
+                    getConnectionStats());
         }
     }
 

@@ -71,8 +71,6 @@ describe('Lookup Datagrid style service', function () {
 		it('should reset cell styles', inject(function (LookupDatagridStyleService) {
 			//given
 			LookupDatagridStyleService.init(gridMock);
-			gridMock.setCellCssStyles('highlight', {'2': {'0000': 'highlight'}});
-
 			var args = {column: gridColumns[1]};
 
 			//when
@@ -81,7 +79,6 @@ describe('Lookup Datagrid style service', function () {
 
 			//then
 			expect(gridMock.resetActiveCell).toHaveBeenCalled();
-			expect(gridMock.cssStyleConfig.highlight).toEqual({});
 		}));
 
 		it('should set selected column class', inject(function (LookupDatagridStyleService) {
@@ -132,7 +129,6 @@ describe('Lookup Datagrid style service', function () {
 
 			//then
 			expect(gridMock.resetActiveCell).toHaveBeenCalled();
-			expect(gridMock.cssStyleConfig.highlight).toEqual({});
 		}));
 
 		it('should set selected column class', inject(function (LookupDatagridStyleService) {
@@ -176,17 +172,6 @@ describe('Lookup Datagrid style service', function () {
 			dataViewMock = new DataViewMock();
 			stateMock.playground.lookup.dataView = dataViewMock;
 		});
-
-		beforeEach(inject(function(DatagridService) {
-			//spyOn(stateMock.playground.lookup.dataView, 'getItem').and.returnValue({'0001': 'cell 1 content'});
-			spyOn(DatagridService, 'getSameContentConfig').and.returnValue({
-				5: { '0001': 'highlight' },
-				18: { '0001': 'highlight' },
-				28: { '0001': 'highlight' },
-				42: { '0001': 'highlight' },
-				43: { '0001': 'highlight' }
-			});
-		}));
 
 		it('should set "selected" column class', inject(function (LookupDatagridStyleService) {
 			//given
@@ -266,31 +251,6 @@ describe('Lookup Datagrid style service', function () {
 			//then
 			expect(gridMock.invalidate).not.toHaveBeenCalled();
 			assertColumnsHasNoStyles();
-		}));
-	});
-
-	describe('reset cell styles', function() {
-		it('should reset cell styles configuration', inject(function (LookupDatagridStyleService) {
-			//given
-			LookupDatagridStyleService.init(gridMock);
-			gridMock.setCellCssStyles('highlight', {'2': {'0000': 'highlight'}});
-
-			//when
-			LookupDatagridStyleService.resetCellStyles();
-
-			//then
-			expect(gridMock.cssStyleConfig.highlight).toEqual({});
-		}));
-
-		it('should reset grid active cell', inject(function (LookupDatagridStyleService) {
-			//given
-			LookupDatagridStyleService.init(gridMock);
-
-			//when
-			LookupDatagridStyleService.resetCellStyles();
-
-			//then
-			expect(gridMock.resetActiveCell).toHaveBeenCalled();
 		}));
 	});
 
@@ -394,134 +354,6 @@ describe('Lookup Datagrid style service', function () {
 
 			//then
 			expect(result).toBe('m&amp;a&gt;al&lt;ej@talend<div title="Invalid Value" class="red-rect"></div>');
-		}));
-
-		it('should add "deleted" class on deleted row', inject(function (LookupDatagridStyleService) {
-			//given
-			LookupDatagridStyleService.init(gridMock);
-			var col = {quality: {invalidValues: []}};
-			var value = 'my value';
-			var columnDef = gridColumns[1];
-			var dataContext = {__tdpRowDiff : 'delete'};
-
-			//when
-			var formatter = LookupDatagridStyleService.columnFormatter(col);
-			var result = formatter(null, null, value, columnDef, dataContext);
-
-			//then
-			expect(result).toBe('<div class="cellDeletedValue">my value</div>');
-		}));
-
-		it('should add a space " " as value on empty cell in a deleted row', inject(function (LookupDatagridStyleService) {
-			//given
-			LookupDatagridStyleService.init(gridMock);
-			var col = {quality: {invalidValues: []}};
-			var value = '';
-			var columnDef = gridColumns[1];
-			var dataContext = {__tdpRowDiff : 'delete'};
-
-			//when
-			var formatter = LookupDatagridStyleService.columnFormatter(col);
-			var result = formatter(null, null, value, columnDef, dataContext);
-
-			//then
-			expect(result).toBe('<div class="cellDeletedValue"> </div>');
-		}));
-
-		it('should add "new" class on a new row', inject(function (LookupDatagridStyleService) {
-			//given
-			LookupDatagridStyleService.init(gridMock);
-			var col = {quality: {invalidValues: []}};
-			var value = 'my value';
-			var columnDef = gridColumns[1];
-			var dataContext = {__tdpRowDiff : 'new'};
-
-			//when
-			var formatter = LookupDatagridStyleService.columnFormatter(col);
-			var result = formatter(null, null, value, columnDef, dataContext);
-
-			//then
-			expect(result).toBe('<div class="cellNewValue">my value</div>');
-		}));
-
-		it('should add a space " " as value on empty cell in a new row', inject(function (LookupDatagridStyleService) {
-			//given
-			LookupDatagridStyleService.init(gridMock);
-			var col = {quality: {invalidValues: []}};
-			var value = '';
-			var columnDef = gridColumns[1];
-			var dataContext = {__tdpRowDiff : 'new'};
-
-			//when
-			var formatter = LookupDatagridStyleService.columnFormatter(col);
-			var result = formatter(null, null, value, columnDef, dataContext);
-
-			//then
-			expect(result).toBe('<div class="cellNewValue"> </div>');
-		}));
-
-		it('should add "update" class on an updated cell', inject(function (LookupDatagridStyleService) {
-			//given
-			LookupDatagridStyleService.init(gridMock);
-			var col = {quality: {invalidValues: []}};
-			var value = 'my value';
-			var columnDef = gridColumns[1];
-			var dataContext = {__tdpDiff : {'0001': 'update'}};
-
-			//when
-			var formatter = LookupDatagridStyleService.columnFormatter(col);
-			var result = formatter(null, null, value, columnDef, dataContext);
-
-			//then
-			expect(result).toBe('<div class="cellUpdateValue">my value</div>');
-		}));
-
-		it('should add "new" class on a new cell', inject(function (LookupDatagridStyleService) {
-			//given
-			LookupDatagridStyleService.init(gridMock);
-			var col = {quality: {invalidValues: []}};
-			var value = 'my value';
-			var columnDef = gridColumns[1];
-			var dataContext = {__tdpDiff : {'0001': 'new'}};
-
-			//when
-			var formatter = LookupDatagridStyleService.columnFormatter(col);
-			var result = formatter(null, null, value, columnDef, dataContext);
-
-			//then
-			expect(result).toBe('<div class="cellNewValue">my value</div>');
-		}));
-
-		it('should add "delete" class on a deleted cell', inject(function (LookupDatagridStyleService) {
-			//given
-			LookupDatagridStyleService.init(gridMock);
-			var col = {quality: {invalidValues: []}};
-			var value = 'my value';
-			var columnDef = gridColumns[1];
-			var dataContext = {__tdpDiff : {'0001': 'delete'}};
-
-			//when
-			var formatter = LookupDatagridStyleService.columnFormatter(col);
-			var result = formatter(null, null, value, columnDef, dataContext);
-
-			//then
-			expect(result).toBe('<div class="cellDeletedValue">my value</div>');
-		}));
-
-		it('should add a space " " as value on empty deleted cell', inject(function (LookupDatagridStyleService) {
-			//given
-			LookupDatagridStyleService.init(gridMock);
-			var col = {quality: {invalidValues: []}};
-			var value = '';
-			var columnDef = gridColumns[1];
-			var dataContext = {__tdpDiff : {'0001': 'delete'}};
-
-			//when
-			var formatter = LookupDatagridStyleService.columnFormatter(col);
-			var result = formatter(null, null, value, columnDef, dataContext);
-
-			//then
-			expect(result).toBe('<div class="cellDeletedValue"> </div>');
 		}));
 	});
 });

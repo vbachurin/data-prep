@@ -5,13 +5,13 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.INTEGER;
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.STRING;
 
-import java.security.InvalidParameterException;
 import java.util.*;
 
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -20,7 +20,6 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
@@ -30,35 +29,26 @@ import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 @Component(Split.ACTION_BEAN_PREFIX + Split.SPLIT_ACTION_NAME)
 public class Split extends ActionMetadata implements ColumnAction {
 
-    @Autowired
-    private RegexParametersHelper regexParametersHelper;
-
     /** The action name. */
     public static final String SPLIT_ACTION_NAME = "split"; //$NON-NLS-1$
-
     /** The split column appendix. */
     public static final String SPLIT_APPENDIX = "_split"; //$NON-NLS-1$
 
-    /**
-     * The separator shown to the user as a list. An item in this list is the value 'other', which allow the user to
-     * manually enter its separator.
-     */
+    /** The selected separator within the provided list. */
     protected static final String SEPARATOR_PARAMETER = "separator"; //$NON-NLS-1$
 
-    /**
-     * The string separator manually specified by the user. Should be used only if SEPARATOR_PARAMETER value is 'other'.
-     */
+    /** The string separator specified by the user. Should be used only if SEPARATOR_PARAMETER value is 'other'. */
     protected static final String MANUAL_SEPARATOR_PARAMETER_STRING = "manual_separator_string"; //$NON-NLS-1$
 
-    /**
-     * The regex separator manually specified by the user. Should be used only if SEPARATOR_PARAMETER value is 'other'.
-     */
+    /** The regex separator specified by the user. Should be used only if SEPARATOR_PARAMETER value is 'other'. */
     protected static final String MANUAL_SEPARATOR_PARAMETER_REGEX = "manual_separator_regex"; //$NON-NLS-1$
 
     /** Number of items produces by the split. */
-    private static final String LIMIT = "limit"; //$NON-NLS-1$
+    protected static final String LIMIT = "limit"; //$NON-NLS-1$
 
-    public static final String REGEX_HELPER_KEY = "regex_helper";
+    /** This class' logger. */
+    private static final Logger LOGGER = LoggerFactory.getLogger(Split.class);
+
 
     /**
      * @see org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata#getName()
@@ -110,46 +100,17 @@ public class Split extends ActionMetadata implements ColumnAction {
     }
 
     /**
-     * @param parameters the action parameters.
-     * @return the separator to use according to the given parameters.
-     */
-    private RegexParametersHelper.ReplaceOnValueParameter getSeparator(Map<String, String> parameters) {
-        if (StringUtils.equals("other (string)", parameters.get(SEPARATOR_PARAMETER))) {
-            String token = parameters.get(MANUAL_SEPARATOR_PARAMETER_STRING);
-            return new RegexParametersHelper.ReplaceOnValueParameter(checkToken(token), RegexParametersHelper.CONTAINS_MODE);
-        }
- else if (StringUtils.equals("other (regex)", parameters.get(SEPARATOR_PARAMETER))) {
-            String token = parameters.get(MANUAL_SEPARATOR_PARAMETER_REGEX);
-            return new RegexParametersHelper.ReplaceOnValueParameter(checkToken(token), RegexParametersHelper.REGEX_MODE);
-        } else {
-            String token = parameters.get(SEPARATOR_PARAMETER);
-            return new RegexParametersHelper.ReplaceOnValueParameter(checkToken(token), RegexParametersHelper.CONTAINS_MODE);
-        }
-    }
-
-    private String checkToken(String token) {
-        if (StringUtils.isEmpty(token)) {
-            throw new InvalidParameterException("empty token not allowed");
-        }
-        return token;
-    }
-
-    /**
      * @see ActionMetadata#compile(ActionContext)
      */
     @Override
     public void compile(ActionContext actionContext) {
         super.compile(actionContext);
         if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
-            try {
-                final RegexParametersHelper.ReplaceOnValueParameter separator = getSeparator(actionContext.getParameters());
-                actionContext.get(REGEX_HELPER_KEY, (p) -> separator);
-            } catch (InvalidParameterException e) {
+            if (StringUtils.isEmpty(getSeparator(actionContext))) {
+                LOGGER.warn("Cannot split on an empty separator");
                 actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
-                return;
             }
         }
-        actionContext.setActionStatus(ActionContext.ActionStatus.OK);
     }
 
     /**
@@ -157,8 +118,6 @@ public class Split extends ActionMetadata implements ColumnAction {
      */
     @Override
     public void applyOnColumn(DataSetRow row, ActionContext context) {
-        // Retrieve the separator to use
-        final RegexParametersHelper.ReplaceOnValueParameter replaceOnValueParameter = context.get(REGEX_HELPER_KEY);
         final Map<String, String> parameters = context.getParameters();
         final String columnId = context.getColumnId();
         // create the new columns
@@ -189,27 +148,41 @@ public class Split extends ActionMetadata implements ColumnAction {
             return;
         }
 
-        String realSeparator = replaceOnValueParameter.getToken();
-        if (!StringUtils.equals("other (regex)", parameters.get(SEPARATOR_PARAMETER))) {
+        String realSeparator = getSeparator(context);
+        if (!isRegexMode(context)) {
             realSeparator = '[' + realSeparator + ']';
         }
         String[] split = originalValue.split(realSeparator, limit);
         if (split.length != 0) {
-
             final Iterator<String> iterator = newColumns.iterator();
-
             for (int i = 0; i < limit && iterator.hasNext(); i++) {
                 final String newValue = i < split.length ? split[i] : EMPTY;
                 row.set(iterator.next(), newValue);
             }
         }
-        // TODO ugly code to keep current behaviour
-        else if (newColumns.size() > 0) {
-            row.set(newColumns.get(0), originalValue);
-            for (int i = 1; i < newColumns.size(); i++) {
-                row.set(newColumns.get(i), EMPTY);
-            }
-        }
     }
 
+    /**
+     * @param context The action context.
+     * @return True if the separator is a regex.
+     */
+    private boolean isRegexMode(ActionContext context) {
+        final Map<String, String> parameters = context.getParameters();
+        return StringUtils.equals("other (regex)", parameters.get(SEPARATOR_PARAMETER));
+    }
+
+    /**
+     * @param context The action context.
+     * @return The separator from the parameters.
+     */
+    private String getSeparator(ActionContext context) {
+        final Map<String, String> parameters = context.getParameters();
+        if (StringUtils.equals("other (string)", parameters.get(SEPARATOR_PARAMETER))) {
+            return parameters.get(MANUAL_SEPARATOR_PARAMETER_STRING);
+        } else if (StringUtils.equals("other (regex)", parameters.get(SEPARATOR_PARAMETER))) {
+            return parameters.get(MANUAL_SEPARATOR_PARAMETER_REGEX);
+        } else {
+            return parameters.get(SEPARATOR_PARAMETER);
+        }
+    }
 }

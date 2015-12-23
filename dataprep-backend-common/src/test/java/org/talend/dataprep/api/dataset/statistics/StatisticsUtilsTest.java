@@ -19,9 +19,10 @@ import org.talend.dataquality.statistics.frequency.pattern.PatternFrequencyStati
 import org.talend.dataquality.statistics.numeric.quantile.QuantileStatistics;
 import org.talend.dataquality.statistics.numeric.summary.SummaryStatistics;
 import org.talend.dataquality.statistics.text.TextLengthStatistics;
+import org.talend.dataquality.statistics.type.DataTypeEnum;
+import org.talend.dataquality.statistics.type.DataTypeOccurences;
 import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.ValueQualityStatistics;
-import org.talend.datascience.common.inference.type.DataType;
 
 public class StatisticsUtilsTest {
 
@@ -38,7 +39,7 @@ public class StatisticsUtilsTest {
     @Test
     public void testDataType() throws Exception {
         //when
-        adaptColumn(stringColumn, DataType.Type.INTEGER);
+        adaptColumn(stringColumn, DataTypeEnum.INTEGER);
 
         //then
         assertEquals(Type.INTEGER.getName(), stringColumn.getType());
@@ -47,7 +48,7 @@ public class StatisticsUtilsTest {
     @Test
     public void testSemanticType() throws Exception {
         //when
-        adaptColumn(stringColumn, DataType.Type.STRING);
+        adaptColumn(stringColumn, DataTypeEnum.STRING);
 
         //then
         // TODO Can't have "myId" as category because frequency is too low (and no way to set it).
@@ -58,7 +59,7 @@ public class StatisticsUtilsTest {
     @Test
     public void testValue() throws Exception {
         //when
-        adaptColumn(stringColumn, DataType.Type.STRING);
+        adaptColumn(stringColumn, DataTypeEnum.STRING);
 
         //then
         assertEquals(10, stringColumn.getStatistics().getEmpty());
@@ -69,7 +70,7 @@ public class StatisticsUtilsTest {
     @Test
     public void testCardinality() throws Exception {
         //when
-        adaptColumn(stringColumn, DataType.Type.STRING);
+        adaptColumn(stringColumn, DataTypeEnum.STRING);
 
         //then
         assertEquals(1, stringColumn.getStatistics().getDistinctCount());
@@ -79,7 +80,7 @@ public class StatisticsUtilsTest {
     @Test
     public void testDataFrequency() throws Exception {
         //when
-        adaptColumn(stringColumn, DataType.Type.STRING);
+        adaptColumn(stringColumn, DataTypeEnum.STRING);
 
         //then
         assertEquals("frequentValue2", stringColumn.getStatistics().getDataFrequencies().get(0).data);
@@ -91,7 +92,7 @@ public class StatisticsUtilsTest {
     @Test
     public void testPatternFrequency() throws Exception {
         //when
-        adaptColumn(stringColumn, DataType.Type.STRING);
+        adaptColumn(stringColumn, DataTypeEnum.STRING);
 
         //then
         assertEquals("999aaaa", stringColumn.getStatistics().getPatternFrequencies().get(0).getPattern());
@@ -103,7 +104,7 @@ public class StatisticsUtilsTest {
     @Test
     public void testQuantiles() throws Exception {
         //when
-        adaptColumn(integerColumn, DataType.Type.INTEGER);
+        adaptColumn(integerColumn, DataTypeEnum.INTEGER);
 
         //then
         assertEquals(1.0, integerColumn.getStatistics().getQuantiles().getLowerQuantile(), 0);
@@ -114,7 +115,7 @@ public class StatisticsUtilsTest {
     @Test
     public void testSummary() throws Exception {
         //when
-        adaptColumn(integerColumn, DataType.Type.INTEGER);
+        adaptColumn(integerColumn, DataTypeEnum.INTEGER);
 
         //then
         assertEquals(1.0, integerColumn.getStatistics().getMin(), 0);
@@ -125,7 +126,7 @@ public class StatisticsUtilsTest {
     @Test
     public void testHistogram() throws Exception {
         //when
-        adaptColumn(integerColumn, DataType.Type.INTEGER);
+        adaptColumn(integerColumn, DataTypeEnum.INTEGER);
 
         //then
         final List<HistogramRange<Double>> histogramRanges = ((Histogram<Double>)integerColumn.getStatistics().getHistogram()).getItems();
@@ -141,7 +142,7 @@ public class StatisticsUtilsTest {
     @Test
     public void testTextLengthSummary() throws Exception {
         //when
-        adaptColumn(stringColumn, DataType.Type.STRING);
+        adaptColumn(stringColumn, DataTypeEnum.STRING);
 
         //then
         assertEquals(10, stringColumn.getStatistics().getTextLengthSummary().getMinimalLength(), 0);
@@ -149,11 +150,11 @@ public class StatisticsUtilsTest {
         assertEquals(8, stringColumn.getStatistics().getTextLengthSummary().getAverageLength(), 0);
     }
 
-    private void adaptColumn(final ColumnMetadata column, final DataType.Type type) {
+    private void adaptColumn(final ColumnMetadata column, final DataTypeEnum type) {
         Analyzers.Result result = new Analyzers.Result();
 
         // Data type
-        DataType dataType = new DataType();
+        DataTypeOccurences dataType = new DataTypeOccurences();
         dataType.increment(type);
         result.add(dataType);
 
@@ -220,6 +221,7 @@ public class StatisticsUtilsTest {
         result.add(textLengthStatistics);
 
         StatisticsAdapter adapter = new StatisticsAdapter();
-        adapter.adapt(Collections.singletonList(column), Collections.singletonList(result));
+        adapter.adapt(Collections.singletonList(integerColumn), Collections.singletonList(result));
+        adapter.adapt(Collections.singletonList(stringColumn), Collections.singletonList(result));
     }
 }

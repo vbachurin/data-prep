@@ -30,19 +30,23 @@ import org.talend.dataquality.semantic.statistics.SemanticAnalyzer;
 import org.talend.dataquality.semantic.statistics.SemanticQualityAnalyzer;
 import org.talend.dataquality.standardization.index.ClassPathDirectory;
 import org.talend.dataquality.statistics.cardinality.CardinalityAnalyzer;
+import org.talend.dataquality.statistics.frequency.AbstractFrequencyAnalyzer;
 import org.talend.dataquality.statistics.frequency.DataTypeFrequencyAnalyzer;
-import org.talend.dataquality.statistics.frequency.pattern.*;
+import org.talend.dataquality.statistics.frequency.pattern.CompositePatternFrequencyAnalyzer;
+import org.talend.dataquality.statistics.frequency.recognition.AbstractPatternRecognizer;
+import org.talend.dataquality.statistics.frequency.recognition.DateTimePatternRecognizer;
+import org.talend.dataquality.statistics.frequency.recognition.EmptyPatternRecognizer;
+import org.talend.dataquality.statistics.frequency.recognition.LatinExtendedCharPatternRecognizer;
 import org.talend.dataquality.statistics.numeric.quantile.QuantileAnalyzer;
 import org.talend.dataquality.statistics.numeric.summary.SummaryAnalyzer;
 import org.talend.dataquality.statistics.quality.DataTypeQualityAnalyzer;
 import org.talend.dataquality.statistics.quality.ValueQualityAnalyzer;
 import org.talend.dataquality.statistics.text.TextLengthAnalyzer;
+import org.talend.dataquality.statistics.type.DataTypeAnalyzer;
+import org.talend.dataquality.statistics.type.DataTypeEnum;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.ValueQualityStatistics;
-import org.talend.datascience.common.inference.type.DataType;
-import org.talend.datascience.common.inference.type.DataTypeAnalyzer;
-
 /**
  * Service in charge of analyzing dataset quality.
  */
@@ -78,7 +82,7 @@ public class AnalyzerService implements DisposableBean {
      */
     public ValueQualityAnalyzer getQualityAnalyzer(List<ColumnMetadata> columns) {
         final CategoryRecognizerBuilder categoryBuilder = newCategoryRecognizer();
-        final DataType.Type[] types = TypeUtils.convert(columns);
+        final DataTypeEnum[] types = TypeUtils.convert(columns);
         List<String> domainList = columns.stream() //
                 .map(c -> {
                     final SemanticCategoryEnum category = SemanticCategoryEnum.getCategoryById(c.getDomain().toUpperCase());
@@ -94,7 +98,7 @@ public class AnalyzerService implements DisposableBean {
 
     public Analyzer<Analyzers.Result> full(final List<ColumnMetadata> columns) {
         // Configure quality & semantic analysis (if column metadata information is present in stream).
-        final DataType.Type[] types = TypeUtils.convert(columns);
+        final DataTypeEnum[] types = TypeUtils.convert(columns);
 
         // Configure value quality analysis
         final Analyzer<Analyzers.Result> analyzer = Analyzers.with(getQualityAnalyzer(columns), // Value quality
@@ -128,7 +132,7 @@ public class AnalyzerService implements DisposableBean {
 
     public Analyzer<Analyzers.Result> advancedAnalysis(final List<ColumnMetadata> columns) {
         // Configure quality & semantic analysis (if column metadata information is present in stream).
-        final DataType.Type[] types = TypeUtils.convert(columns);
+        final DataTypeEnum[] types = TypeUtils.convert(columns);
 
         // Configure value quality analysis
         final Analyzer<Analyzers.Result> analyzer = Analyzers.with(new TextLengthAnalyzer(), // Text length analysis
@@ -144,7 +148,7 @@ public class AnalyzerService implements DisposableBean {
     /**
      * @see AnalyzerService#getPatternFrequencyAnalyzer(List)
      */
-    public AbstractPatternFrequencyAnalyzer getPatternFrequencyAnalyzer(ColumnMetadata column) {
+    public AbstractFrequencyAnalyzer getPatternFrequencyAnalyzer(ColumnMetadata column) {
         return getPatternFrequencyAnalyzer(Collections.singletonList(column));
     }
 
@@ -152,29 +156,29 @@ public class AnalyzerService implements DisposableBean {
      * @param columns the columns to analyze.
      * @return the analyzer for the given columns.
      */
-    public AbstractPatternFrequencyAnalyzer getPatternFrequencyAnalyzer(List<ColumnMetadata> columns) {
+    public AbstractFrequencyAnalyzer getPatternFrequencyAnalyzer(List<ColumnMetadata> columns) {
 
         // deal with specific date, even custom date pattern
-        final DateTimePatternFrequencyAnalyzer dateTimePatternFrequencyAnalyzer = getDateTimePatternFrequencyAnalyzer(columns);
+        final DateTimePatternRecognizer dateTimePatternFrequencyAnalyzer = getDateTimePatternFrequencyAnalyzer(columns);
 
         // warning, the order is important
-        List<AbstractPatternFrequencyAnalyzer> patternFrequencyAnalyzers = new ArrayList<>();
-        patternFrequencyAnalyzers.add(new EmptyPatternFrequencyAnalyzer());
+        List<AbstractPatternRecognizer> patternFrequencyAnalyzers = new ArrayList<>();
+        patternFrequencyAnalyzers.add(new EmptyPatternRecognizer());
         patternFrequencyAnalyzers.add(dateTimePatternFrequencyAnalyzer);
-        patternFrequencyAnalyzers.add(new LatinExtendedCharPatternFrequencyAnalyzer());
+        patternFrequencyAnalyzers.add(new LatinExtendedCharPatternRecognizer());
 
         return new CompositePatternFrequencyAnalyzer(patternFrequencyAnalyzers);
     }
 
-    private DateTimePatternFrequencyAnalyzer getDateTimePatternFrequencyAnalyzer(final List<ColumnMetadata> columns) {
-        final DateTimePatternFrequencyAnalyzer dateTimePatternFrequencyAnalyzer = new DateTimePatternFrequencyAnalyzer();
+    private DateTimePatternRecognizer getDateTimePatternFrequencyAnalyzer(final List<ColumnMetadata> columns) {
+        final DateTimePatternRecognizer dateTimePatternFrequencyAnalyzer = new DateTimePatternRecognizer();
         final List<String> mostUsedDatePatterns = getMostUsedDatePatterns(columns);
         dateTimePatternFrequencyAnalyzer.addCustomDateTimePatterns(mostUsedDatePatterns);
         return dateTimePatternFrequencyAnalyzer;
     }
 
     public Analyzer<Analyzers.Result> qualityAnalysis(List<ColumnMetadata> columns) {
-        DataType.Type[] types = TypeUtils.convert(columns);
+        DataTypeEnum[] types = TypeUtils.convert(columns);
         // Run analysis
         final CategoryRecognizerBuilder categoryBuilder = newCategoryRecognizer();
         // Configure value quality analysis

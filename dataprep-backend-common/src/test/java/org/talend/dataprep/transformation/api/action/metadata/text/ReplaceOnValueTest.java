@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +37,10 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
-import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
+import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Test class for Replace value action
@@ -128,7 +129,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         final Map<String, String> parameters = new HashMap<>();
-        parameters.put(CELL_VALUE_PARAMETER, generateJson("James", RegexParametersHelper.STARTS_WITH_MODE));
+        parameters.put(CELL_VALUE_PARAMETER, generateJson("James", ReplaceOnValueHelper.STARTS_WITH_MODE));
         parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
         parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "true");
         parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "column");
@@ -154,7 +155,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         final Map<String, String> parameters = new HashMap<>();
-        parameters.put(CELL_VALUE_PARAMETER, generateJson("(", RegexParametersHelper.CONTAINS_MODE));
+        parameters.put(CELL_VALUE_PARAMETER, generateJson("(", ReplaceOnValueHelper.CONTAINS_MODE));
         parameters.put(REPLACE_VALUE_PARAMETER, "H");
         parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
         parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "column");
@@ -173,74 +174,80 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
     @Test
     public void test_TDP_951() {
         assertEquals("XXX_FR_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FR", RegexParametersHelper.EQUALS_MODE), "EN", false), "XXX_FR_YYY"));
+                buildPatternActionContext(generateJson("FR", ReplaceOnValueHelper.EQUALS_MODE), "EN", false), "XXX_FR_YYY"));
         assertEquals("XXX_FR_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FR", RegexParametersHelper.EQUALS_MODE), "EN", true), "XXX_FR_YYY"));
+                buildPatternActionContext(generateJson("FR", ReplaceOnValueHelper.EQUALS_MODE), "EN", true), "XXX_FR_YYY"));
 
         assertEquals("Barfoo", action.computeNewValue(
-                buildPatternActionContext(generateJson("Foobar", RegexParametersHelper.EQUALS_MODE), "Barfoo", false), "Foobar"));
+                buildPatternActionContext(generateJson("Foobar", ReplaceOnValueHelper.EQUALS_MODE), "Barfoo", false), "Foobar"));
         assertEquals("Barfoo", action.computeNewValue(
-                buildPatternActionContext(generateJson("Foobar", RegexParametersHelper.EQUALS_MODE), "Barfoo", true), "Foobar"));
+                buildPatternActionContext(generateJson("Foobar", ReplaceOnValueHelper.EQUALS_MODE), "Barfoo", true), "Foobar"));
 
 
         assertEquals("XXX_EN_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FR", RegexParametersHelper.CONTAINS_MODE), "EN", false), "XXX_FR_YYY"));
+                buildPatternActionContext(generateJson("FR", ReplaceOnValueHelper.CONTAINS_MODE), "EN", false), "XXX_FR_YYY"));
         assertEquals("EN", action.computeNewValue(
-                buildPatternActionContext(generateJson("FR", RegexParametersHelper.CONTAINS_MODE), "EN", true), "XXX_FR_YYY"));
+                buildPatternActionContext(generateJson("FR", ReplaceOnValueHelper.CONTAINS_MODE), "EN", true), "XXX_FR_YYY"));
         assertEquals("XXX_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FR_", RegexParametersHelper.CONTAINS_MODE), "", false), "XXX_FR_YYY"));
+                buildPatternActionContext(generateJson("FR_", ReplaceOnValueHelper.CONTAINS_MODE), "", false), "XXX_FR_YYY"));
 
         assertEquals("XXX_FR_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FR", RegexParametersHelper.STARTS_WITH_MODE), "EN", false), "XXX_FR_YYY"));
+                buildPatternActionContext(generateJson("FR", ReplaceOnValueHelper.STARTS_WITH_MODE), "EN", false), "XXX_FR_YYY"));
         assertEquals("XXX_FR_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FR", RegexParametersHelper.STARTS_WITH_MODE), "EN", true), "XXX_FR_YYY"));
+                buildPatternActionContext(generateJson("FR", ReplaceOnValueHelper.STARTS_WITH_MODE), "EN", true), "XXX_FR_YYY"));
         assertEquals("EN_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FR", RegexParametersHelper.STARTS_WITH_MODE), "EN", false), "FR_YYY"));
+                buildPatternActionContext(generateJson("FR", ReplaceOnValueHelper.STARTS_WITH_MODE), "EN", false), "FR_YYY"));
         assertEquals("EN", action.computeNewValue(
-                buildPatternActionContext(generateJson("FR", RegexParametersHelper.STARTS_WITH_MODE), "EN", true), "FR_YYY"));
+                buildPatternActionContext(generateJson("FR", ReplaceOnValueHelper.STARTS_WITH_MODE), "EN", true), "FR_YYY"));
 
         assertEquals("XXX_FR_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FR", RegexParametersHelper.ENDS_WITH_MODE), "EN", false), "XXX_FR_YYY"));
+                buildPatternActionContext(generateJson("FR", ReplaceOnValueHelper.ENDS_WITH_MODE), "EN", false), "XXX_FR_YYY"));
         assertEquals("XXX_FR_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FR", RegexParametersHelper.ENDS_WITH_MODE), "EN", true), "XXX_FR_YYY"));
+                buildPatternActionContext(generateJson("FR", ReplaceOnValueHelper.ENDS_WITH_MODE), "EN", true), "XXX_FR_YYY"));
         assertEquals("XXX_EN", action.computeNewValue(
-                buildPatternActionContext(generateJson("FR", RegexParametersHelper.ENDS_WITH_MODE), "EN", false), "XXX_FR"));
+                buildPatternActionContext(generateJson("FR", ReplaceOnValueHelper.ENDS_WITH_MODE), "EN", false), "XXX_FR"));
         assertEquals("EN", action.computeNewValue(
-                buildPatternActionContext(generateJson("FR", RegexParametersHelper.ENDS_WITH_MODE), "EN", true), "XXX_FR"));
+                buildPatternActionContext(generateJson("FR", ReplaceOnValueHelper.ENDS_WITH_MODE), "EN", true), "XXX_FR"));
 
         // Nothing to do because doesn't match:
         assertEquals("XXX_FR_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FOO", RegexParametersHelper.EQUALS_MODE), "EN", false), "XXX_FR_YYY"));
+                buildPatternActionContext(generateJson("FOO", ReplaceOnValueHelper.EQUALS_MODE), "EN", false), "XXX_FR_YYY"));
         assertEquals("XXX_FR_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FOO", RegexParametersHelper.EQUALS_MODE), "EN", true), "XXX_FR_YYY"));
+                buildPatternActionContext(generateJson("FOO", ReplaceOnValueHelper.EQUALS_MODE), "EN", true), "XXX_FR_YYY"));
         assertEquals("XXX_FR_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FOO", RegexParametersHelper.CONTAINS_MODE), "EN", false), "XXX_FR_YYY"));
+                buildPatternActionContext(generateJson("FOO", ReplaceOnValueHelper.CONTAINS_MODE), "EN", false), "XXX_FR_YYY"));
         assertEquals("XXX_FR_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FOO", RegexParametersHelper.CONTAINS_MODE), "EN", true), "XXX_FR_YYY"));
+                buildPatternActionContext(generateJson("FOO", ReplaceOnValueHelper.CONTAINS_MODE), "EN", true), "XXX_FR_YYY"));
         assertEquals("XXX_FR_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FOO", RegexParametersHelper.STARTS_WITH_MODE), "EN", false), "XXX_FR_YYY"));
+                        buildPatternActionContext(generateJson("FOO", ReplaceOnValueHelper.STARTS_WITH_MODE), "EN", false),
+                        "XXX_FR_YYY"));
         assertEquals("XXX_FR_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FOO", RegexParametersHelper.STARTS_WITH_MODE), "EN", true), "XXX_FR_YYY"));
+                buildPatternActionContext(generateJson("FOO", ReplaceOnValueHelper.STARTS_WITH_MODE), "EN", true), "XXX_FR_YYY"));
         assertEquals("XXX_FR_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FOO", RegexParametersHelper.ENDS_WITH_MODE), "EN", false), "XXX_FR_YYY"));
+                buildPatternActionContext(generateJson("FOO", ReplaceOnValueHelper.ENDS_WITH_MODE), "EN", false), "XXX_FR_YYY"));
         assertEquals("XXX_FR_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("FOO", RegexParametersHelper.ENDS_WITH_MODE), "EN", true), "XXX_FR_YYY"));
+                buildPatternActionContext(generateJson("FOO", ReplaceOnValueHelper.ENDS_WITH_MODE), "EN", true), "XXX_FR_YYY"));
 
         assertEquals("XXX_foobar_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("t.t.", RegexParametersHelper.REGEX_MODE), "foobar", false), "XXX_toto_YYY"));
+                        buildPatternActionContext(generateJson("t.t.", ReplaceOnValueHelper.REGEX_MODE), "foobar", false),
+                        "XXX_toto_YYY"));
         assertEquals("XXX_foobar_YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("t.t.", RegexParametersHelper.REGEX_MODE), "foobar", false), "XXX_titi_YYY"));
+                        buildPatternActionContext(generateJson("t.t.", ReplaceOnValueHelper.REGEX_MODE), "foobar", false),
+                        "XXX_titi_YYY"));
         assertEquals("XXX_ZZ_YYY",
                 action.computeNewValue(
-                        buildPatternActionContext(generateJson("_[a-z ]*_", RegexParametersHelper.REGEX_MODE), "_ZZ_", false),
+                        buildPatternActionContext(generateJson("_[a-z ]*_", ReplaceOnValueHelper.REGEX_MODE), "_ZZ_", false),
                         "XXX_this is a string_YYY"));
         assertEquals("foobar", action.computeNewValue(
-                buildPatternActionContext(generateJson("t.t.", RegexParametersHelper.REGEX_MODE), "foobar", true), "XXX_toto_YYY"));
+                        buildPatternActionContext(generateJson("t.t.", ReplaceOnValueHelper.REGEX_MODE), "foobar", true),
+                        "XXX_toto_YYY"));
 
         assertEquals("XXX-123-YYY", action.computeNewValue(
-                buildPatternActionContext(generateJson("_(\\d{3,})_", RegexParametersHelper.REGEX_MODE), "-$1-", false), "XXX_123_YYY"));
+                        buildPatternActionContext(generateJson("_(\\d{3,})_", ReplaceOnValueHelper.REGEX_MODE), "-$1-", false),
+                        "XXX_123_YYY"));
         assertEquals("123", action.computeNewValue(
-                buildPatternActionContext(generateJson("_(\\d{3,})_", RegexParametersHelper.REGEX_MODE), "$1", true), "XXX_123_YYY"));
+                        buildPatternActionContext(generateJson("_(\\d{3,})_", ReplaceOnValueHelper.REGEX_MODE), "$1", true),
+                        "XXX_123_YYY"));
     }
 
     @Test
@@ -253,7 +260,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         final Map<String, String> parameters = new HashMap<>();
-        parameters.put(CELL_VALUE_PARAMETER, generateJson("Toto", RegexParametersHelper.EQUALS_MODE));
+        parameters.put(CELL_VALUE_PARAMETER, generateJson("Toto", ReplaceOnValueHelper.EQUALS_MODE));
         parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
         parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
         parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "column");
@@ -277,7 +284,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
         row.setTdpId(85L);
 
         final Map<String, String> parameters = new HashMap<>();
-        parameters.put(CELL_VALUE_PARAMETER, generateJson("James", RegexParametersHelper.EQUALS_MODE));
+        parameters.put(CELL_VALUE_PARAMETER, generateJson("James", ReplaceOnValueHelper.EQUALS_MODE));
         parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
         parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
         parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "cell");
@@ -299,7 +306,8 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
         final String to = "pont.html?region=FR";
 
         //when
-        final String result = action.computeNewValue(buildPatternActionContext(generateJson(regexp, RegexParametersHelper.REGEX_MODE), to, false), from);
+        final String result = action.computeNewValue(
+                buildPatternActionContext(generateJson(regexp, ReplaceOnValueHelper.REGEX_MODE), to, false), from);
 
         //then
         assertThat(result, is(to));
@@ -316,7 +324,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
         row.setTdpId(85L);
 
         final Map<String, String> parameters = new HashMap<>();
-        parameters.put(CELL_VALUE_PARAMETER, generateJson("James", RegexParametersHelper.CONTAINS_MODE));
+        parameters.put(CELL_VALUE_PARAMETER, generateJson("James", ReplaceOnValueHelper.CONTAINS_MODE));
         parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
         parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
         parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "cell");
@@ -341,7 +349,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
         final DataSetRow row = new DataSetRow(values);
 
         final Map<String, String> parameters = new HashMap<>();
-        parameters.put(CELL_VALUE_PARAMETER, generateJson("James", RegexParametersHelper.CONTAINS_MODE));
+        parameters.put(CELL_VALUE_PARAMETER, generateJson("James", ReplaceOnValueHelper.CONTAINS_MODE));
         parameters.put(REPLACE_VALUE_PARAMETER, "Jimmy");
         parameters.put(REPLACE_ENTIRE_CELL_PARAMETER, "false");
         parameters.put(ImplicitParameters.SCOPE.getKey().toLowerCase(), "cell");
@@ -357,8 +365,9 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
 
     @Test
     public void test_TDP_663() {
-        for (String op : new String[] { RegexParametersHelper.REGEX_MODE, RegexParametersHelper.EQUALS_MODE, RegexParametersHelper.CONTAINS_MODE,
-                RegexParametersHelper.STARTS_WITH_MODE, RegexParametersHelper.ENDS_WITH_MODE }) {
+        for (String op : new String[] { ReplaceOnValueHelper.REGEX_MODE, ReplaceOnValueHelper.EQUALS_MODE,
+                ReplaceOnValueHelper.CONTAINS_MODE, ReplaceOnValueHelper.STARTS_WITH_MODE,
+                ReplaceOnValueHelper.ENDS_WITH_MODE }) {
             assertEquals("password swordfish with Halle Berry", action.computeNewValue(
                     buildPatternActionContext(generateJson("*", op), "replaced", false), "password swordfish with Halle Berry"));
             assertEquals("password swordfish with Halle Berry", action.computeNewValue(
@@ -368,8 +377,9 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
 
     @Test
     public void test_TDP_958_emptyPattern() {
-        for (String op : new String[] { RegexParametersHelper.REGEX_MODE, RegexParametersHelper.EQUALS_MODE, RegexParametersHelper.CONTAINS_MODE,
-                RegexParametersHelper.STARTS_WITH_MODE, RegexParametersHelper.ENDS_WITH_MODE }) {
+        for (String op : new String[] { ReplaceOnValueHelper.REGEX_MODE, ReplaceOnValueHelper.EQUALS_MODE,
+                ReplaceOnValueHelper.CONTAINS_MODE, ReplaceOnValueHelper.STARTS_WITH_MODE,
+                ReplaceOnValueHelper.ENDS_WITH_MODE }) {
             assertEquals("password swordfish with Halle Berry", action.computeNewValue(
                     buildPatternActionContext(generateJson("", op), "replaced", false), "password swordfish with Halle Berry"));
             assertEquals("password swordfish with Halle Berry", action.computeNewValue(
@@ -379,8 +389,9 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
 
     @Test
     public void test_TDP_958_invalidPattern() {
-        for (String op : new String[] { RegexParametersHelper.REGEX_MODE, RegexParametersHelper.EQUALS_MODE, RegexParametersHelper.CONTAINS_MODE,
-                RegexParametersHelper.STARTS_WITH_MODE, RegexParametersHelper.ENDS_WITH_MODE }) {
+        for (String op : new String[] { ReplaceOnValueHelper.REGEX_MODE, ReplaceOnValueHelper.EQUALS_MODE,
+                ReplaceOnValueHelper.CONTAINS_MODE, ReplaceOnValueHelper.STARTS_WITH_MODE,
+                ReplaceOnValueHelper.ENDS_WITH_MODE }) {
             assertEquals("password swordfish with Halle Berry", action.computeNewValue(
                     buildPatternActionContext(generateJson("^(", op), "replaced", false), "password swordfish with Halle Berry"));
             assertEquals("password swordfish with Halle Berry", action.computeNewValue(
@@ -390,7 +401,7 @@ public class ReplaceOnValueTest extends AbstractMetadataBaseTest {
 
 
     private String generateJson(String token, String operator) {
-        RegexParametersHelper.ReplaceOnValueParameter r = new RegexParametersHelper.ReplaceOnValueParameter(token, operator);
+        ReplaceOnValueHelper r = new ReplaceOnValueHelper(token, operator);
         try {
             return builder.build().writeValueAsString(r);
         } catch (JsonProcessingException e) {

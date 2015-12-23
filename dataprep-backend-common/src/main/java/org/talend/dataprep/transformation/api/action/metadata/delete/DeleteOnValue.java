@@ -1,25 +1,22 @@
 package org.talend.dataprep.transformation.api.action.metadata.delete;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.ActionContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.RegexParametersHelper;
-import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.talend.dataprep.api.type.Type.NUMERIC;
 import static org.talend.dataprep.api.type.Type.STRING;
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.REGEX;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ReplaceOnValueHelper;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Delete row on a given value.
@@ -28,7 +25,7 @@ import static org.talend.dataprep.transformation.api.action.parameters.Parameter
 public class DeleteOnValue extends AbstractDelete {
 
     @Autowired
-    private RegexParametersHelper regexParametersHelper;
+    private ReplaceOnValueHelper regexParametersHelper;
 
     /**
      * The action name.
@@ -72,7 +69,7 @@ public class DeleteOnValue extends AbstractDelete {
      */
     @Override
     public boolean toDelete(ColumnMetadata colMetadata, Map<String, String> parsedParameters, String value) {
-        final RegexParametersHelper.ReplaceOnValueParameter replaceOnValueParameter = regexParametersHelper.build(parsedParameters.get(VALUE_PARAMETER));
+        final ReplaceOnValueHelper replaceOnValueParameter = regexParametersHelper.build(parsedParameters.get(VALUE_PARAMETER));
         return replaceOnValueParameter.matches(value);
     }
 }

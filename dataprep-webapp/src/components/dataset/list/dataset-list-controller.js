@@ -18,7 +18,7 @@
      * @requires data-prep.services.folder.service:FolderService
      * @requires data-prep.services.preparation.service:PreparationListService
      */
-    function DatasetListCtrl($scope, $translate, $stateParams, StateService, DatasetService, DatasetListSortService, PlaygroundService,
+    function DatasetListCtrl($timeout, $translate, $stateParams, StateService, DatasetService, DatasetListSortService, PlaygroundService,
                              TalendConfirmService, MessageService, UploadWorkflowService, UpdateWorkflowService, FolderService, state, PreparationListService) {
         var vm = this;
 
@@ -135,10 +135,12 @@
          * @description [PRIVATE] Initiate a new preparation from dataset
          * @param {object} dataset The dataset to open
          */
-        var open = function (dataset) {
+        function open(dataset) {
             PlaygroundService.initPlayground(dataset)
-                .then(StateService.showPlayground);
-        };
+                .then(function () {
+                    $timeout(StateService.showPlayground);
+                });
+        }
 
         /**
          * @ngdoc method
@@ -180,25 +182,25 @@
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description perform the dataset cloning to the folder destination
          */
-        vm.clone = function(){
+        vm.clone = function () {
             vm.isSendingRequest = true;
             vm.cloneNameForm.$commitViewValue();
 
-            DatasetService.clone(vm.datasetToClone,vm.folderDestination,vm.cloneName).then(function (){
-                        MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
+            DatasetService.clone(vm.datasetToClone, vm.folderDestination, vm.cloneName).then(function () {
+                MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
 
-                        // force going to current folder to refresh the content
-                        FolderService.getFolderContent(state.folder.currentFolder);
+                // force going to current folder to refresh the content
+                FolderService.getFolderContent(state.folder.currentFolder);
 
-                    }).finally(function () {
-                        // reset some values to initial values
-                        vm.folderDestinationModal = false;
-                        vm.datasetToClone = null;
-                        vm.folderDestination = null;
-                        vm.foldersFound = [];
-                        vm.cloneName = '';
-                        vm.isSendingRequest = false;
-                    });
+            }).finally(function () {
+                // reset some values to initial values
+                vm.folderDestinationModal = false;
+                vm.datasetToClone = null;
+                vm.folderDestination = null;
+                vm.foldersFound = [];
+                vm.cloneName = '';
+                vm.isSendingRequest = false;
+            });
         };
 
         /**
@@ -242,15 +244,12 @@
                 if (dataset.renaming) {
                     return;
                 }
-                var nameAlreadyUsed = false;
-                _.forEach(state.folder.currentFolderContent.datasets, function(dataset){
-                    if (cleanName === dataset.name.toLowerCase()){
-                        nameAlreadyUsed = true;
-                        return;
-                    }
+
+                var nameAlreadyUsed = _.find(state.folder.currentFolderContent.datasets, function (dataset) {
+                    return cleanName === dataset.name.toLowerCase();
                 });
 
-                if (nameAlreadyUsed){
+                if (nameAlreadyUsed) {
                     MessageService.error('DATASET_NAME_ALREADY_USED_TITLE', 'DATASET_NAME_ALREADY_USED');
                     return;
                 }
@@ -263,7 +262,7 @@
                         MessageService.success('DATASET_RENAME_SUCCESS_TITLE',
                             'DATASET_RENAME_SUCCESS');
                         PreparationListService.refreshMetadataInfos(state.folder.currentFolderContent.datasets)
-                            .then(function(preparations){
+                            .then(function (preparations) {
                                 FolderService.refreshDefaultPreparationForCurrentFolder(preparations);
                             });
 
@@ -307,7 +306,7 @@
          */
         vm.processCertification = function (dataset) {
             vm.datasetService.processCertification(dataset).then(
-                function() {
+                function () {
                     vm.goToFolder(state.folder.currentFolder);
                 }
             );
@@ -323,7 +322,7 @@
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description run these action when clicking on Add Folder button
          */
-        vm.actionsOnAddFolderClick = function(){
+        vm.actionsOnAddFolderClick = function () {
             vm.folderNameModal = true;
             vm.folderName = '';
         };
@@ -334,13 +333,13 @@
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description Create a new folder
          */
-        vm.addFolder = function(){
+        vm.addFolder = function () {
 
             vm.folderNameForm.$commitViewValue();
 
-            var pathToCreate = (state.folder.currentFolder.id?state.folder.currentFolder.id:'') + '/' + vm.folderName;
-            FolderService.create( pathToCreate )
-                .then(function() {
+            var pathToCreate = (state.folder.currentFolder.id ? state.folder.currentFolder.id : '') + '/' + vm.folderName;
+            FolderService.create(pathToCreate)
+                .then(function () {
                     vm.goToFolder(state.folder.currentFolder);
                     vm.folderNameModal = false;
                 });
@@ -353,7 +352,7 @@
          * @param {object} folder - the folder to go
          * @description Go to the folder given as parameter
          */
-        vm.goToFolder = function(folder){
+        vm.goToFolder = function (folder) {
             FolderService.getFolderContent(folder);
         };
 
@@ -365,13 +364,13 @@
          * @param {string} path the path to rename
          * @param {string} newPath the new last part of the path
          */
-        vm.renameFolder = function(path, newPath){
+        vm.renameFolder = function (path, newPath) {
             // the service only use full path so we build the new full folder path
             var n = path.lastIndexOf('/');
             var str = path;
-            str = str.substring(0,n) + '/' + newPath;
+            str = str.substring(0, n) + '/' + newPath;
             FolderService.renameFolder(path, str)
-                .then(function() {
+                .then(function () {
                     vm.goToFolder(state.folder.currentFolder);
                     // or to newOne?
                 });
@@ -385,7 +384,7 @@
          * @description Display folder destination choice modal
          * @param {object} dataset - the dataset to clone or move
          */
-        vm.openFolderChoice = function(dataset) {
+        vm.openFolderChoice = function (dataset) {
             vm.datasetToClone = dataset;
             vm.foldersFound = [];
             vm.searchFolderQuery = '';
@@ -394,23 +393,23 @@
             var toggleToCurrentFolder = state.folder && state.folder.currentFolder && state.folder.currentFolder.id;
 
             if (toggleToCurrentFolder) {
-                var pathParts = state.folder.currentFolder.id.split( '/' );
+                var pathParts = state.folder.currentFolder.id.split('/');
                 var currentPath = pathParts[0];
             }
 
             var rootFolder = {id: '', path: '', collapsed: false, name: $translate.instant('HOME_FOLDER')};
 
             FolderService.children()
-                .then(function(res) {
+                .then(function (res) {
                     rootFolder.nodes = res.data;
                     vm.chooseFolder(rootFolder);
 
                     vm.folders = [rootFolder];
-                    _.forEach(vm.folders[0].nodes,function(folder){
+                    _.forEach(vm.folders[0].nodes, function (folder) {
                         folder.collapsed = true;
                         // recursive toggle until we reach the current folder
-                        if (toggleToCurrentFolder && folder.id===currentPath){
-                            vm.toggle(folder, pathParts.length>0?_.slice(pathParts,1):null,currentPath);
+                        if (toggleToCurrentFolder && folder.id === currentPath) {
+                            vm.toggle(folder, pathParts.length > 0 ? _.slice(pathParts, 1) : null, currentPath);
                             vm.chooseFolder(folder);
                         }
                     });
@@ -427,20 +426,20 @@
          * @param {array} contains all path parts
          * @param {string} the current path for recursive call
          */
-        vm.toggle = function (node,pathParts,currentPath) {
-            if (!node.collapsed){
+        vm.toggle = function (node, pathParts, currentPath) {
+            if (!node.collapsed) {
                 node.collapsed = true;
             } else {
                 if (!node.nodes) {
-                    FolderService.children( node.id )
-                        .then(function(res){
+                    FolderService.children(node.id)
+                        .then(function (res) {
                             node.nodes = res.data ? res.data : [];
                             vm.collapseNodes(node);
-                            if(pathParts && pathParts[0]){
+                            if (pathParts && pathParts[0]) {
                                 currentPath += currentPath ? '/' + pathParts[0] : pathParts[0];
-                                _.forEach(node.nodes,function(folder){
-                                    if(folder.id===currentPath) {
-                                        vm.toggle(folder,pathParts.length>0?_.slice(pathParts,1):null, currentPath);
+                                _.forEach(node.nodes, function (folder) {
+                                    if (folder.id === currentPath) {
+                                        vm.toggle(folder, pathParts.length > 0 ? _.slice(pathParts, 1) : null, currentPath);
                                         vm.chooseFolder(folder);
                                     }
                                 });
@@ -461,13 +460,13 @@
          * @description Set folder destination choice
          * @param {object} folder - the folder to use for cloning the dataset
          */
-        vm.chooseFolder = function(folder){
+        vm.chooseFolder = function (folder) {
             var previousSelected = vm.folderDestination;
-            if (previousSelected){
+            if (previousSelected) {
                 previousSelected.selected = false;
             }
             vm.folderDestination = folder;
-            folder.selected=true;
+            folder.selected = true;
         };
 
         /**
@@ -477,11 +476,11 @@
          * @description utility function to collapse nodes
          * @param {object} node - parent node of childs to collapse
          */
-        vm.collapseNodes = function(node){
-            _.forEach(node.nodes,function(folder){
+        vm.collapseNodes = function (node) {
+            _.forEach(node.nodes, function (folder) {
                 folder.collapsed = true;
             });
-            if (node.nodes.length > 0 ) {
+            if (node.nodes.length > 0) {
                 node.collapsed = false;
             } else {
                 node.collapsed = !node.collapsed;
@@ -495,23 +494,23 @@
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description Search folders
          */
-        vm.searchFolders = function(){
+        vm.searchFolders = function () {
 
             vm.foldersFound = [];
-            if(vm.searchFolderQuery){
+            if (vm.searchFolderQuery) {
                 //Add the root folder if it matches the filter
                 var n = $translate.instant('HOME_FOLDER').indexOf(vm.searchFolderQuery);
 
                 FolderService.searchFolders(vm.searchFolderQuery)
-                    .then(function(response){
-                        if(n > -1){
+                    .then(function (response) {
+                        if (n > -1) {
                             var rootFolder = {id: '', path: '', name: $translate.instant('HOME_FOLDER')};
                             vm.foldersFound.push(rootFolder);
                             vm.foldersFound = vm.foldersFound.concat(response.data);
                         } else {
                             vm.foldersFound = response.data;
                         }
-                        if(vm.foldersFound.length > 0){
+                        if (vm.foldersFound.length > 0) {
                             vm.chooseFolder(vm.foldersFound[0]); //Select by default first folder
                         }
                     });

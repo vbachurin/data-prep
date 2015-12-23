@@ -1,13 +1,28 @@
 package org.talend.dataprep.dataset.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.restassured.response.Response;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static com.jayway.restassured.http.ContentType.JSON;
+import static com.jayway.restassured.path.json.JsonPath.from;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,29 +37,12 @@ import org.talend.dataprep.api.dataset.statistics.Statistics;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.DataSetBaseTest;
-import org.talend.dataprep.date.LocalDateTimeModule;
 import org.talend.dataprep.lock.DistributedLock;
 import org.talend.dataprep.schema.csv.CSVFormatGuess;
 import org.talend.dataprep.schema.csv.CSVFormatGuesser;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static com.jayway.restassured.http.ContentType.JSON;
-import static com.jayway.restassured.path.json.JsonPath.from;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
-import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.jayway.restassured.response.Response;
 
 public class DataSetServiceTests extends DataSetBaseTest {
 
@@ -66,9 +64,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
     private static final String DATASET_WITH_NUL_CHAR_CSV = "../dataset_with_NUL_char.csv";
 
-    /**
-     * DataPrep jackson ready to use builder.
-     */
+    /** DataPrep jackson ready to use builder. */
     @Autowired
     Jackson2ObjectMapperBuilder builder;
 
@@ -144,8 +140,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         dataSetMetadataRepository.add(metadata2);
         // Ensure order by name (most recent first)
         String actual = when().get("/datasets?sort=name").asString();
-        ObjectMapper mapper = new ObjectMapper();
-        final Iterator<JsonNode> elements = mapper.readTree(actual).elements();
+        final Iterator<JsonNode> elements = builder.build().readTree(actual).elements();
         String[] expectedNames = new String[]{"BBBB", "AAAA"};
         int i = 0;
         while (elements.hasNext()) {
@@ -167,8 +162,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         dataSetMetadataRepository.add(metadata2);
         // Ensure order by date (most recent first)
         String actual = when().get("/datasets?sort=date").asString();
-        ObjectMapper mapper = new ObjectMapper();
-        final Iterator<JsonNode> elements = mapper.readTree(actual).elements();
+        final Iterator<JsonNode> elements = builder.build().readTree(actual).elements();
         String[] expectedNames = new String[]{"AAAA", "BBBB"};
         int i = 0;
         while (elements.hasNext()) {
@@ -188,10 +182,9 @@ public class DataSetServiceTests extends DataSetBaseTest {
         final DataSetMetadata metadata2 = metadata().id(id2).name("BBBB").author("anonymous").created(0)
                 .formatGuessId(new CSVFormatGuess().getBeanId()).build();
         dataSetMetadataRepository.add(metadata2);
-        final ObjectMapper mapper = new ObjectMapper();
         // Ensure order by date (most recent first)
         String actual = when().get("/datasets?sort=date&order=desc").asString();
-        Iterator<JsonNode> elements = mapper.readTree(actual).elements();
+        Iterator<JsonNode> elements = builder.build().readTree(actual).elements();
         String[] expectedNames = new String[]{"AAAA", "BBBB"};
         int i = 0;
         while (elements.hasNext()) {
@@ -199,7 +192,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         }
         // Ensure order by date (oldest first when no order value)
         actual = when().get("/datasets?sort=date").asString();
-        elements = mapper.readTree(actual).elements();
+        elements = builder.build().readTree(actual).elements();
         expectedNames = new String[]{"AAAA", "BBBB"};
         i = 0;
         while (elements.hasNext()) {
@@ -207,7 +200,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         }
         // Ensure order by date (oldest first)
         actual = when().get("/datasets?sort=date&order=asc").asString();
-        elements = mapper.readTree(actual).elements();
+        elements = builder.build().readTree(actual).elements();
         expectedNames = new String[]{"BBBB", "AAAA"};
         i = 0;
         while (elements.hasNext()) {
@@ -231,10 +224,9 @@ public class DataSetServiceTests extends DataSetBaseTest {
         final DataSetMetadata metadata3 = metadata().id(id3).name("bbbb").author("anonymous").created(0)
                 .formatGuessId(new CSVFormatGuess().getBeanId()).build();
         dataSetMetadataRepository.add(metadata3);
-        final ObjectMapper mapper = new ObjectMapper();
         // Ensure order by name (last character from alphabet first)
         String actual = when().get("/datasets?sort=name&order=desc").asString();
-        Iterator<JsonNode> elements = mapper.readTree(actual).elements();
+        Iterator<JsonNode> elements = builder.build().readTree(actual).elements();
         String[] expectedNames = new String[]{"CCCC", "bbbb", "AAAA"};
         int i = 0;
         while (elements.hasNext()) {
@@ -242,7 +234,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         }
         // Ensure order by name (last character from alphabet first when no order value)
         actual = when().get("/datasets?sort=name").asString();
-        elements = mapper.readTree(actual).elements();
+        elements = builder.build().readTree(actual).elements();
         expectedNames = new String[]{"CCCC", "bbbb", "AAAA"};
         i = 0;
         while (elements.hasNext()) {
@@ -250,7 +242,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         }
         // Ensure order by name (first character from alphabet first)
         actual = when().get("/datasets?sort=name&order=asc").asString();
-        elements = mapper.readTree(actual).elements();
+        elements = builder.build().readTree(actual).elements();
         expectedNames = new String[]{"AAAA", "bbbb", "CCCC"};
         i = 0;
         while (elements.hasNext()) {
@@ -271,7 +263,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void create() throws Exception {
         int before = dataSetMetadataRepository.size();
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
+        String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         int after = dataSetMetadataRepository.size();
         assertThat(after - before, is(1));
@@ -282,7 +274,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void clone_dataset() throws Exception {
         int before = dataSetMetadataRepository.size();
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
+        String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         int after = dataSetMetadataRepository.size();
         assertThat(after - before, is(1));
@@ -308,9 +300,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         String content = response.asString();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new LocalDateTimeModule());
-        DataSet dataSet = objectMapper.readerFor(DataSet.class).readValue(content.getBytes());
+        DataSet dataSet = builder.build().readerFor(DataSet.class).readValue(content.getBytes());
 
         Assertions.assertThat(dataSet.getMetadata().getName()).isNotEmpty().contains("Copy");
 
@@ -319,14 +309,14 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void createEmptyLines() throws Exception {
         int before = dataSetMetadataRepository.size();
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(EMPTY_LINES2_CSV)))
+        String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream(EMPTY_LINES2_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         int after = dataSetMetadataRepository.size();
         assertThat(after - before, is(1));
         assertQueueMessages(dataSetId);
 
         final String content = when().get("/datasets/{id}/content", dataSetId).asString();
-        assertThat(content, sameJSONAsFile(DataSetServiceTests.class.getResourceAsStream(EMPTY_LINES2_JSON)));
+        assertThat(content, sameJSONAsFile(this.getClass().getResourceAsStream(EMPTY_LINES2_JSON)));
     }
 
     @Test
@@ -370,7 +360,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void sample() throws Exception {
         // given
-        String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
+        String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV));
         // when
         String sample = requestDataSetSample(dataSetId, true, "17");
         // then
@@ -378,10 +368,9 @@ public class DataSetServiceTests extends DataSetBaseTest {
     }
 
     @Test
-    @Ignore
     public void sampleShouldUpdateStatistics() throws Exception {
         // given
-        String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
+        String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV));
         // when
         String sample = requestDataSetSample(dataSetId, true, "16");
         // then
@@ -392,7 +381,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void sampleWithNegativeSize() throws Exception {
         // given
-        String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
+        String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV));
         // when
         String sample = requestDataSetSample(dataSetId, true, "-1");
         // then
@@ -402,7 +391,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void sampleWithSizeIsZero() throws Exception {
         // given
-        String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
+        String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV));
         // when
         String sample = requestDataSetSample(dataSetId, true, "0");
         // then
@@ -412,7 +401,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test(expected = java.lang.AssertionError.class)
     public void sampleWithDecimalSize() throws Exception {
         // given
-        String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
+        String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV));
         // when
         requestDataSetSample(dataSetId, true, "10.5");
         // then expect error (400 bad request)
@@ -421,7 +410,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test(expected = java.lang.AssertionError.class)
     public void sampleWithBadContent() throws Exception {
         // given
-        String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
+        String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream(T_SHIRT_100_CSV));
         // when
         requestDataSetSample(dataSetId, true, "ghqmkdhjsgf");
         // then expect error (400 bad request)
@@ -448,7 +437,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void updateRawContent() throws Exception {
         String dataSetId = "123456";
-        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV))).when()
+        given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV))).when()
                 .put("/datasets/{id}/raw", dataSetId).then().statusCode(HttpStatus.OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("id");
         assertThat(ids, hasItem(dataSetId));
@@ -459,7 +448,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     public void updateMetadataContentWithWrongDatasetId() throws Exception {
         assertThat(dataSetMetadataRepository.get("3d72677c-e2c9-4a34-8c58-959a56ec8643"), nullValue());
         given().contentType(JSON) //
-                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(METADATA_JSON))) //
+                .body(IOUtils.toString(this.getClass().getResourceAsStream(METADATA_JSON))) //
                 .when() //
                 .put("/datasets/{id}", "3d72677c-e2c9-4a34-8c58-959a56ec8643") //
                 .then() //
@@ -469,7 +458,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void previewNonDraft() throws Exception {
         // Create a data set
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
+        String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertThat(dataSetMetadata, notNullValue());
@@ -498,20 +487,18 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         String dataSetId = given()
                 .body(IOUtils
-                        .toByteArray(DataSetServiceTests.class.getResourceAsStream("../Talend_Desk-Tableau_de_Bord-011214.xls")))
+.toByteArray(this.getClass().getResourceAsStream("../Talend_Desk-Tableau_de_Bord-011214.xls")))
                 .when().post("/datasets").asString();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-
         String json = given().contentType(JSON).get("/datasets/{id}/preview?sheetName=Leads", dataSetId).asString();
-        DataSet dataSet = objectMapper.readerFor(DataSet.class).readValue(json);
+        DataSet dataSet = builder.build().readerFor(DataSet.class).readValue(json);
 
         Assertions.assertThat(dataSet.getMetadata().getRowMetadata().getColumns()).isNotNull().isNotEmpty().hasSize(21);
 
         json = given().contentType(JSON).get("/datasets/{id}/preview?sheetName=Tableau de bord", dataSetId)
                 .asString();
 
-        dataSet = objectMapper.readerFor(DataSet.class).readValue(json);
+        dataSet = builder.build().readerFor(DataSet.class).readValue(json);
 
         Assertions.assertThat(dataSet.getMetadata().getRowMetadata().getColumns()).isNotNull().isNotEmpty().hasSize(10);
 
@@ -520,7 +507,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void should_get_content_from_semi_colon_csv() throws Exception {
         // given
-        final String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV))) //
+        final String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV))) //
                 .queryParam("Content-Type", "text/csv") //
                 .when() //
                 .post("/datasets") //
@@ -532,14 +519,14 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         // then
         final String contentAsString = IOUtils.toString(content);
-        final InputStream expected = DataSetServiceTests.class.getResourceAsStream("../content/test1.json");
+        final InputStream expected = this.getClass().getResourceAsStream("../content/test1.json");
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     @Test
     public void should_get_content_from_coma_csv() throws Exception {
         // given
-        final String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA2_CSV)))
+        final String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA2_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
 
@@ -548,19 +535,19 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         // then
         final String contentAsString = IOUtils.toString(content);
-        final InputStream expected = DataSetServiceTests.class.getResourceAsStream("../content/test1.json");
+        final InputStream expected = this.getClass().getResourceAsStream("../content/test1.json");
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     @Test
     public void should_get_content_from_updated_dataset() throws Exception {
         // given
-        final String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
+        final String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
 
         // given: update content
-        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../tagada3.csv")))
+        given().body(IOUtils.toString(this.getClass().getResourceAsStream("../tagada3.csv")))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId + "/raw");
         assertQueueMessages(dataSetId);
 
@@ -569,12 +556,12 @@ public class DataSetServiceTests extends DataSetBaseTest {
         final String contentAsString = IOUtils.toString(content);
 
         // then
-        final InputStream expected = DataSetServiceTests.class.getResourceAsStream("../content/test2.json");
+        final InputStream expected = this.getClass().getResourceAsStream("../content/test2.json");
         assertThat(contentAsString, sameJSONAsFile(expected));
 
         // Update name
         String expectedName = "testOfADataSetName";
-        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../tagada3.csv")))
+        given().body(IOUtils.toString(this.getClass().getResourceAsStream("../tagada3.csv")))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId + "/raw?name=" + expectedName);
         final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertThat(dataSetMetadata, notNullValue());
@@ -584,13 +571,13 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void should_update_dataset_name() throws Exception {
         // given
-        final String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
+        final String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
 
         // when
         final String expectedName = "testOfADataSetName";
-        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../tagada3.csv")))
+        given().body(IOUtils.toString(this.getClass().getResourceAsStream("../tagada3.csv")))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId + "/raw?name=" + expectedName);
 
         // then
@@ -607,12 +594,12 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void testLowSeparatorOccurrencesInCSV() throws Exception {
 
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../avengers.csv")))
+        String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream("../avengers.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
 
         assertQueueMessages(dataSetId);
 
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("../avengers_expected.json");
+        InputStream expected = this.getClass().getResourceAsStream("../avengers_expected.json");
         String datasetContent = given().when().get("/datasets/{id}/content?metadata=true", dataSetId).asString();
 
         assertThat(datasetContent, sameJSONAsFile(expected));
@@ -629,14 +616,13 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         String dataSetId = given()
                 .body(IOUtils.toByteArray(this.getClass().getResourceAsStream("../TDP-375_xsl_read_as_csv.xls")))
-                // .queryParam("Content-Type", "application/vnd.ms-excel")
+                        // .queryParam("Content-Type", "application/vnd.ms-excel")
                 .when().post("/datasets").asString();
 
         assertQueueMessages(dataSetId);
 
         String json = given().when().get("/datasets/{id}/metadata", dataSetId).asString();
-        ObjectMapper mapper = new ObjectMapper();
-        final JsonNode rootNode = mapper.reader().readTree(json);
+        final JsonNode rootNode = builder.build().reader().readTree(json);
         final JsonNode metadata = rootNode.get("metadata");
 
         // only interested in the parser --> excel parser must be used !
@@ -647,26 +633,26 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
     @Test
     public void testQuotes() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../bands_quotes.csv")))
+        String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream("../bands_quotes.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("../test_quotes.json");
+        InputStream expected = this.getClass().getResourceAsStream("../test_quotes.json");
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     @Test
     public void testQuotesAndCarriageReturn() throws Exception {
         String dataSetId = given()
-                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../bands_quotes_and_carriage_return.csv")))
+                .body(IOUtils.toString(this.getClass().getResourceAsStream("../bands_quotes_and_carriage_return.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("../test_quotes_and_carriage_return.json");
+        InputStream expected = this.getClass().getResourceAsStream("../test_quotes_and_carriage_return.json");
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
@@ -675,19 +661,19 @@ public class DataSetServiceTests extends DataSetBaseTest {
      */
     @Test
     public void empty_lines_and_missing_values() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(US_STATES_TO_CLEAN_CSV)))
+        String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream(US_STATES_TO_CLEAN_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("../us_states_to_clean.csv_expected.json");
+        InputStream expected = this.getClass().getResourceAsStream("../us_states_to_clean.csv_expected.json");
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     @Test
     public void nbLines() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
+        String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=true", dataSetId).asInputStream();
@@ -699,19 +685,19 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
     @Test
     public void nbLines2() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV)))
+        String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream(T_SHIRT_100_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=true", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV_EXPECTED_JSON);
+        InputStream expected = this.getClass().getResourceAsStream(T_SHIRT_100_CSV_EXPECTED_JSON);
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     @Test
     public void nbLinesUpdate() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
+        String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=true", dataSetId).asInputStream();
@@ -720,7 +706,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         assertThat(contentAsString, sameJSONAs("{\"metadata\":{\"records\":2,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
                 .allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
 
-        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV)))
+        given().body(IOUtils.toString(this.getClass().getResourceAsStream(T_SHIRT_100_CSV)))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/{id}/raw", dataSetId).asString();
 
         assertQueueMessages(dataSetId);
@@ -728,7 +714,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         content = when().get("/datasets/{id}/content?metadata=true", dataSetId).asInputStream();
         contentAsString = IOUtils.toString(content);
 
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV_EXPECTED_JSON);
+        InputStream expected = this.getClass().getResourceAsStream(T_SHIRT_100_CSV_EXPECTED_JSON);
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
@@ -758,7 +744,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         dataSetMetadataRepository.add(metadata);
         String contentAsString = when().get("/datasets/{id}/metadata", "1234").asString();
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("../metadata1.json");
+        InputStream expected = this.getClass().getResourceAsStream("../metadata1.json");
         assertThat(contentAsString, sameJSONAsFile(expected));
 
         Boolean isFavorites = from(contentAsString).get("metadata.favorite");
@@ -796,8 +782,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     public void shouldListErrors() throws Exception {
         String errors = when().get("/datasets/errors").asString();
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = mapper.readTree(errors);
+        JsonNode rootNode = builder.build().readTree(errors);
 
         assertTrue(rootNode.isArray());
         assertTrue(rootNode.size() > 0);
@@ -810,7 +795,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void testAskCertification() throws Exception {
         int before = dataSetMetadataRepository.size();
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
+        String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         int after = dataSetMetadataRepository.size();
         assertThat(after - before, is(1));
@@ -830,7 +815,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void testCertify() throws Exception {
         int before = dataSetMetadataRepository.size();
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
+        String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         int after = dataSetMetadataRepository.size();
         assertThat(after - before, is(1));
@@ -891,7 +876,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         String wrongDsId = UUID.randomUUID().toString();
         assertThat(dataSetMetadataRepository.get(wrongDsId), nullValue());
         given().contentType(JSON) //
-                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(METADATA_JSON))) //
+                .body(IOUtils.toString(this.getClass().getResourceAsStream(METADATA_JSON))) //
                 .when() //
                 .put("/datasets/{id}/favorite", wrongDsId) //
                 .then() //
@@ -915,7 +900,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     public void updateDatasetColumn_should_update_domain() throws Exception {
         //given
         final String dataSetId = given() //
-                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV))) //
+                .body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV))) //
                 .queryParam("Content-Type", "text/csv") //
                 .when() //
                 .post("/datasets") //
@@ -969,7 +954,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     public void updateDatasetColumn_should_update_type() throws Exception {
         //given
         final String dataSetId = given() //
-                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV))) //
+                .body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV))) //
                 .queryParam("Content-Type", "text/csv") //
                 .when() //
                 .post("/datasets") //
@@ -1010,7 +995,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     public void updateDatasetColumn_should_clear_domain() throws Exception {
         //given
         final String dataSetId = given() //
-                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV))) //
+                .body(IOUtils.toString(this.getClass().getResourceAsStream(TAGADA_CSV))) //
                 .queryParam("Content-Type", "text/csv") //
                 .when() //
                 .post("/datasets") //
@@ -1046,10 +1031,9 @@ public class DataSetServiceTests extends DataSetBaseTest {
     }
 
     @Test
-    @Ignore
     public void datePattern() throws Exception {
         int before = dataSetMetadataRepository.size();
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../date_time_pattern.csv")))
+        String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream("../date_time_pattern.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         int after = dataSetMetadataRepository.size();
         assertThat(after - before, is(1));
@@ -1060,18 +1044,17 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         assertThat(column.getType(), is("date"));
         assertThat(column.getDomain(), is(""));
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new LocalDateTimeModule());
-        final Statistics statistics = mapper.readerFor(Statistics.class).readValue(DataSetServiceTests.class.getResourceAsStream("../date_time_pattern_expected.json"));
+        final Statistics statistics = builder.build().readerFor(Statistics.class)
+                .readValue(this.getClass().getResourceAsStream("../date_time_pattern_expected.json"));
         assertThat(column.getStatistics(), CoreMatchers.equalTo(statistics));
     }
 
     @Test
     public void should_remove_any_NUL_character() throws Exception {
         // given
-        final String originalContent = IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(DATASET_WITH_NUL_CHAR_CSV));
+        final String originalContent = IOUtils.toString(this.getClass().getResourceAsStream(DATASET_WITH_NUL_CHAR_CSV));
         assertThat(originalContent.chars().anyMatch((c) -> c == '\u0000'), is(true));
-        final String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(DATASET_WITH_NUL_CHAR_CSV));
+        final String dataSetId = createCSVDataSet(this.getClass().getResourceAsStream(DATASET_WITH_NUL_CHAR_CSV));
 
         // when
         final String content = requestDataSetSample(dataSetId, false, "10");
@@ -1082,7 +1065,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
     @Test
     public void invalid_us_states() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../invalid_us_states.csv")))
+        String dataSetId = given().body(IOUtils.toString(this.getClass().getResourceAsStream("../invalid_us_states.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=true", dataSetId).asInputStream();
@@ -1124,8 +1107,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     }
 
     private long getNumberOfRecords(String json) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = mapper.readTree(json);
+        JsonNode rootNode = builder.build().readTree(json);
         JsonNode records = rootNode.get("records");
         return records.size();
     }

@@ -12,7 +12,7 @@
      * @requires data-prep.services.state.service:StateService
      * @requires talend.widget.service:TalendConfirmService
      */
-    function PreparationListCtrl($rootScope, $stateParams, PlaygroundService, PreparationService, TalendConfirmService, MessageService, StateService) {
+    function PreparationListCtrl($rootScope, $stateParams, $timeout, PlaygroundService, PreparationService, TalendConfirmService, MessageService, StateService) {
         var vm = this;
         vm.preparationService = PreparationService;
 
@@ -23,10 +23,12 @@
          * @param {object} preparation - the preparation to load
          * @description Load a preparation in the playground
          */
-        vm.load = function (preparation) {
+        vm.load = function load(preparation) {
             PlaygroundService
                 .load(preparation)
-                .then(StateService.showPlayground);
+                .then(function () {
+                    $timeout(StateService.showPlayground);
+                });
         };
 
         /**

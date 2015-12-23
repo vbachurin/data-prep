@@ -14,7 +14,6 @@
 
         return {
             init: init,
-            resetCellStyles: resetCellStyles,
             updateColumnClass: updateColumnClass,
             columnFormatter: columnFormatter
         };
@@ -29,7 +28,6 @@
          */
         function resetCellStyles() {
             grid.resetActiveCell();
-            grid.setCellCssStyles('highlight', {});
         }
 
         /**
@@ -107,30 +105,9 @@
                 return invalidValues.indexOf(value) >= 0;
             };
 
-            return function formatter(row, cell, value, columnDef, dataContext) {
+            return function formatter(row, cell, value) {
                 //hidden characters need to be shown
                 var returnStr = TextFormatService.adaptToGridConstraints(value);
-
-                //entire row modification preview
-                switch (dataContext.__tdpRowDiff) {
-                    case 'delete':
-                        return '<div class="cellDeletedValue">' + (returnStr ? returnStr : ' ') + '</div>';
-                    case 'new':
-                        return '<div class="cellNewValue">' + (returnStr ? returnStr : ' ') + '</div>';
-                }
-
-                //cell modification preview
-                if (dataContext.__tdpDiff && dataContext.__tdpDiff[columnDef.id]) {
-                    switch (dataContext.__tdpDiff[columnDef.id]) {
-                        case 'update':
-                            return '<div class="cellUpdateValue">' + returnStr + '</div>';
-                        case 'new':
-                            return '<div class="cellNewValue">' + returnStr + '</div>';
-                        case 'delete':
-                            return '<div class="cellDeletedValue">' + (returnStr ? returnStr : ' ') + '</div>';
-                    }
-                }
-
                 return returnStr + (isInvalid(value) ? '<div title="Invalid Value" class="red-rect"></div>' : '<div class="invisible-rect"></div>');
             };
         }
@@ -180,7 +157,7 @@
          * @ngdoc method
          * @name attachCellListeners
          * @methodOf data-prep.lookup.service:LookupDatagridStyleService
-         * @description Attach cell action listeners : update columns classes and highlight cells
+         * @description Attach cell action listeners : update columns classes
          */
         function attachCellListeners() {
             grid.onActiveCellChanged.subscribe(function (e, args) {

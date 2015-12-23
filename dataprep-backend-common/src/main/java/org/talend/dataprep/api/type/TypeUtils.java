@@ -6,7 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataquality.semantic.classifier.SemanticCategoryEnum;
 import org.talend.dataquality.semantic.statistics.SemanticType;
-import org.talend.datascience.common.inference.type.DataType;
+import org.talend.dataquality.statistics.type.DataTypeEnum;
 
 public class TypeUtils {
 
@@ -19,8 +19,8 @@ public class TypeUtils {
      * @return the dataset column types in DQ libraries.
      * @param columns The Data Prep {@link ColumnMetadata columns} to convert to DQ library's types.
      */
-    public static DataType.Type[] convert(List<ColumnMetadata> columns) {
-        DataType.Type[] types = new DataType.Type[columns.size()];
+    public static DataTypeEnum[] convert(List<ColumnMetadata> columns) {
+        DataTypeEnum[] types = new DataTypeEnum[columns.size()];
         for (int i = 0; i < columns.size(); i++) {
             final String type = columns.get(i).getType();
             types[i] = convert(Type.get(type));
@@ -28,30 +28,30 @@ public class TypeUtils {
         return types;
     }
 
-    public static DataType.Type convert(Type type) {
+    public static DataTypeEnum convert(Type type) {
         switch (type) {
             case ANY:
             case STRING:
-                return DataType.Type.STRING;
+            return DataTypeEnum.STRING;
             case NUMERIC:
-                return DataType.Type.INTEGER;
+            return DataTypeEnum.INTEGER;
             case INTEGER:
-                return DataType.Type.INTEGER;
+            return DataTypeEnum.INTEGER;
             case DOUBLE:
             case FLOAT:
-                return DataType.Type.DOUBLE;
+            return DataTypeEnum.DOUBLE;
             case BOOLEAN:
-                return DataType.Type.BOOLEAN;
+            return DataTypeEnum.BOOLEAN;
             case DATE:
-                return DataType.Type.DATE;
+            return DataTypeEnum.DATE;
             default:
-                return DataType.Type.STRING;
+            return DataTypeEnum.STRING;
         }
 
     }
 
-    public static DataType.Type[] convert(Type[] types) {
-        DataType.Type[] converted = new DataType.Type[types.length];
+    public static DataTypeEnum[] convert(Type[] types) {
+        DataTypeEnum[] converted = new DataTypeEnum[types.length];
         for (int i = 0; i < types.length; i++) {
             converted[i] = convert(types[i]);
         }
