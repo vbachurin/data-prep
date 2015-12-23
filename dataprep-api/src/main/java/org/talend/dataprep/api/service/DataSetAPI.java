@@ -230,7 +230,7 @@ public class DataSetAPI extends APIService {
         throws IOException {
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Moving dataset (pool: {} )...", getConnectionManager().getTotalStats());
+            LOG.debug("Moving dataset (pool: {} )...", getConnectionStats());
         }
         HttpClient client = getClient();
         HystrixCommand<HttpResponse> creation = getCommand(MoveDataSet.class, client, dataSetId, folderPath, newFolderPath, newName);
