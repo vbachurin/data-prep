@@ -208,6 +208,7 @@ describe('Folder services', function () {
         spyOn(FolderRestService, 'children').and.returnValue($q.when());
         spyOn(FolderRestService, 'searchFolders').and.returnValue($q.when());
         spyOn(FolderRestService, 'renameFolder').and.returnValue($q.when());
+        spyOn(FolderRestService, 'removeFolder').and.returnValue($q.when());
         spyOn(StateService, 'setFoldersStack').and.returnValue();
     }));
 
@@ -418,6 +419,15 @@ describe('Folder services', function () {
 
         //then
         expect(FolderRestService.children).toHaveBeenCalled();
+    }));
+
+    it('should call rest removeFolder', inject(function ($rootScope, FolderService, FolderRestService) {
+        //when
+        FolderService.removeFolder('foo');
+        $rootScope.$digest();
+
+        //then
+        expect(FolderRestService.removeFolder).toHaveBeenCalledWith('foo');
     }));
 
 });

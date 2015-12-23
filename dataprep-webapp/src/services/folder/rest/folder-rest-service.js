@@ -14,6 +14,7 @@
 			create: createFolder,
 			getFolderContent: getFolderContent,
 			renameFolder: renameFolder,
+			removeFolder: removeFolder,
 			children: children,
 			searchFolders: searchFolders
 		};
@@ -107,6 +108,19 @@
 		function renameFolder (path, newPath) {
 			return $http.put(RestURLs.folderUrl + '/rename?path=' + encodeURIComponent(path) + '&newPath=' + encodeURIComponent(newPath));
 		}
+
+		/**
+		 * @ngdoc method
+		 * @name removeFolder
+		 * @methodOf data-prep.services.folder.service:FolderRestService
+		 * @description Remove a folder
+		 * @param {string} path the path to remove
+		 * @returns {Promise} The DELETE promise
+		 */
+		function removeFolder (path) {
+			return $http.delete(RestURLs.folderUrl + '?path=' + encodeURIComponent(path));
+		}
+
 	}
 
 	angular.module('data-prep.services.folder')

@@ -74,6 +74,10 @@ public enum DataSetErrorCodes implements ErrorCode {
      */
     DATASET_NAME_ALREADY_USED( HttpStatus.BAD_REQUEST.value(), "id", "name", "folder"),
     /**
+     *
+     */
+    FOLDER_NOT_EMPTY(HttpStatus.BAD_REQUEST.value()),
+    /**
      * Error return when the uploaded content is not supported by any
      * {@link org.talend.dataprep.schema.FormatGuesser guesser}.
      *

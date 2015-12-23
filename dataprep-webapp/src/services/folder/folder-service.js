@@ -17,6 +17,7 @@
       // folder operations
       create: createFolder,
       renameFolder: renameFolder,
+      removeFolder: removeFolder,
       getFolderContent: getFolderContent,
       refreshDefaultPreparationForCurrentFolder: refreshDefaultPreparationForCurrentFolder,
       children: children,
@@ -78,6 +79,18 @@
      */
     function renameFolder (path, newPath) {
       return FolderRestService.renameFolder(path, newPath);
+    }
+
+    /**
+     * @ngdoc method
+     * @name removeFolder
+     * @methodOf data-prep.services.folder.service:FolderService
+     * @description Remove a folder
+     * @param {string} path the path to remove
+     * @returns {Promise} The DELETE promise
+     */
+    function removeFolder (path) {
+      return FolderRestService.removeFolder(path);
     }
 
 

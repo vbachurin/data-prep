@@ -152,4 +152,18 @@ describe('Folder Rest Service', function () {
 
     }));
 
+    it('should call remove', inject(function ($rootScope, FolderRestService, RestURLs) {
+        //given
+
+        $httpBackend
+            .expectDELETE(RestURLs.folderUrl + '?path='+encodeURIComponent('the beer'))
+            .respond(200);
+
+        //when
+        FolderRestService.removeFolder('the beer');
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+    }));
+
 });

@@ -349,6 +349,20 @@
                 });
         };
 
+        /**
+         * @ngdoc method
+         * @name removeFolder
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Remove a folder
+         * @param {folder} the folder to remove
+         */
+        vm.removeFolder = function (folder) {
+            FolderService.removeFolder(folder.id).then(function () {
+                MessageService.success('FOLDER_REMOVE_SUCCESS_TITLE', 'FOLDER_REMOVE_SUCCESS');
+                vm.goToFolder(state.folder.currentFolder);
+            });
+        };
+
 
         /**
          * @ngdoc method

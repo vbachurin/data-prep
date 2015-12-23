@@ -3,9 +3,20 @@ package org.talend.dataprep.folder.store.file;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -24,6 +35,7 @@ import org.talend.dataprep.folder.store.FolderRepository;
 import org.talend.dataprep.folder.store.FolderRepositoryAdapter;
 
 import com.google.common.collect.Lists;
+import org.talend.dataprep.folder.store.NotEmptyFolderException;
 
 @Component("folderRepository#file")
 @ConditionalOnProperty(name = "folder.store", havingValue = "file", matchIfMissing = false)
@@ -229,9 +241,60 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
     }
 
     @Override
-    public void removeFolder(String folder) {
+    public void removeFolder(String folder)  throws NotEmptyFolderException {
 
         Path path = Paths.get(getRootFolder().toString(), StringUtils.split(folder, PATH_SEPARATOR));
+
+        // check if any content in the tree
+
+        final List<FolderEntry> folderEntries = new ArrayList<>(  );
+
+        FoldersConsumer foldersConsumer = new FoldersConsumer()
+        {
+            @Override
+            public Collection<Folder> getFolders()
+            {
+                return Collections.emptyList();
+            }
+
+            @Override
+            public Collection<FolderEntry> getFolderEntries()
+            {
+                return folderEntries;
+            }
+
+            @Override
+            public void accept( Path path )
+            {
+                if (!Files.isDirectory( path )){
+                    // so we have a folderEntry here
+                    // try to read it
+                    try {
+                        try (InputStream inputStream = Files.newInputStream(path)) {
+                            Properties properties = new Properties();
+                            properties.load(inputStream);
+
+                            FolderEntry folderEntry = new FolderEntry();
+                            folderEntry.setId(properties.getProperty("id"));
+                            folderEntry.setPath(path.getParent().toString());
+                            folderEntry.setContentType("contentType");
+                            folderEntry.setContentId(properties.getProperty("contentId"));
+                            folderEntries.add(folderEntry);
+
+                        }
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e.getMessage(), e);
+                    }
+                }
+            }
+        };
+
+        visitFolders( foldersConsumer, path );
+
+        if (!foldersConsumer.getFolderEntries().isEmpty()){
+            throw new NotEmptyFolderException( "The folder or a child contains data" );
+        }
 
         try {
             FileUtils.deleteDirectory(path.toFile());
@@ -353,6 +416,11 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
             }
 
             @Override
+            public Collection<FolderEntry> getFolderEntries() {
+                return Collections.emptyList();
+            }
+
+            @Override
             public void accept( Path path )
             {
                 if (Files.isDirectory(path)) {
@@ -365,7 +433,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
             }
         };
 
-        visitAllFolders( foldersConsumer );
+        visitFolders( foldersConsumer, getRootFolder() );
 
         return folders;
     }
@@ -377,10 +445,15 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
 
         FoldersConsumer foldersConsumer = new FoldersConsumer()
         {
+
             @Override
-            public Collection<Folder> getFolders()
-            {
+            public Collection<Folder> getFolders() {
                 return folders;
+            }
+
+            @Override
+            public Collection<FolderEntry> getFolderEntries() {
+                return Collections.emptyList();
             }
 
             @Override
@@ -399,16 +472,16 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
             }
         };
 
-        visitAllFolders( foldersConsumer );
+        visitFolders( foldersConsumer, getRootFolder() );
 
         return folders;
     }
 
 
-    protected void visitAllFolders( final FoldersConsumer foldersConsumer ){
+    protected void visitFolders( final FoldersConsumer foldersConsumer, final Path startFolder ){
 
         try {
-            Files.walkFileTree(getRootFolder(), new FileVisitor<Path>() {
+            Files.walkFileTree(startFolder, new FileVisitor<Path>() {
 
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
@@ -441,6 +514,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
 
     private interface FoldersConsumer extends Consumer<Path> {
         Collection<Folder> getFolders();
+        Collection<FolderEntry> getFolderEntries();
     }
 
     protected String buildFileName( FolderEntry folderEntry){

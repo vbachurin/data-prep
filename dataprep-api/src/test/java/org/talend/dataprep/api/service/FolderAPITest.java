@@ -248,10 +248,19 @@ public class FolderAPITest extends ApiServiceTestBase {
                 .hasSize(1) //
                 .contains(created);
 
+
+        response = RestAssured.given() //
+            .queryParam("path", "/beer") //
+            .pathParam("contentType", DataSet.class.getName()) //
+            .pathParam("id", folderEntries.get( 0 ).getContentId()) //
+            .delete("/api/folders/entries/{contentType}/{id}");
+
         response = RestAssured.given() //
                 .queryParam("path", "beer") //
                 .when() //
                 .delete("/api/folders");
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
 
         // delete the folder
         response = RestAssured.given() //
@@ -456,12 +465,39 @@ public class FolderAPITest extends ApiServiceTestBase {
             assertThat(iterator.next().getId(), is(expectedIds[i++]));
         }
 
+
         response = RestAssured.given() //
                 .queryParam("path", "beer") //
                 .when() //
                 .delete("/api/folders");
 
+        // cannot delete because we have entries here
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(400);
+
+        response = RestAssured.given() //
+            .queryParam( "path", "/beer/bar" ) //
+            .pathParam( "contentType", "dataset" ) //
+            .pathParam( "id", dataSetId2 ) //
+            .delete( "/api/folders/entries/{contentType}/{id}" );
+
         Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
+
+        response = RestAssured.given() //
+            .queryParam( "path", "/beer" ) //
+            .pathParam( "contentType", "dataset" ) //
+            .pathParam( "id", dataSetId3 ) //
+            .delete( "/api/folders/entries/{contentType}/{id}" );
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
+
+        response = RestAssured.given() //
+            .queryParam("path", "beer") //
+            .when() //
+            .delete("/api/folders");
+
+        // cannot delete because we have entries here
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
+
     }
 
     @Test
