@@ -586,6 +586,7 @@ describe('Dataset list controller', function () {
 
             spyOn(FolderService, 'children').and.returnValue($q.when({data :childrenFolders}));
             spyOn(FolderService, 'searchFolders').and.returnValue($q.when({data :foldersFromSearch}));
+            spyOn(MessageService, 'success').and.returnValue();
 
         }));
 
@@ -762,6 +763,24 @@ describe('Dataset list controller', function () {
             //then
             expect(FolderService.renameFolder).toHaveBeenCalledWith('toto/1', 'toto/2');
             expect(FolderService.getFolderContent).toHaveBeenCalledWith(theCurrentFolder);
+        }));
+
+        it('should remove folder', inject(function ($q, FolderService, MessageService) {
+            //given
+            spyOn(FolderService, 'removeFolder').and.returnValue($q.when(true));
+            spyOn(FolderService, 'getFolderContent').and.returnValue($q.when(true));
+            var ctrl = createController();
+
+            var folder = {id:'toto'};
+
+            //when
+            ctrl.removeFolder (folder);
+            scope.$digest();
+            //then
+            expect(FolderService.removeFolder).toHaveBeenCalledWith(folder.id);
+            expect(FolderService.getFolderContent).toHaveBeenCalledWith(theCurrentFolder);
+            //then
+            expect(MessageService.success).toHaveBeenCalledWith('FOLDER_REMOVE_SUCCESS_TITLE', 'FOLDER_REMOVE_SUCCESS');
         }));
 
     });
