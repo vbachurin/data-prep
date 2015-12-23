@@ -57,6 +57,13 @@
             setLineTransformations: PlaygroundStateService.setLineTransformations,
             setSuggestionsLoading: PlaygroundStateService.setSuggestionsLoading,
 
+            //playground - Statistics
+            setStatisticsHistogram: PlaygroundStateService.setStatisticsHistogram,
+            setStatisticsFilteredHistogram: PlaygroundStateService.setStatisticsFilteredHistogram,
+            setStatisticsHistogramActiveLimits: PlaygroundStateService.setStatisticsHistogramActiveLimits,
+            setStatisticsPatterns: PlaygroundStateService.setStatisticsPatterns,
+            setStatisticsFilteredPatterns: PlaygroundStateService.setStatisticsFilteredPatterns,
+
             //dataset
             startUploadingDataset: DatasetStateService.startUploadingDataset,
             finishUploadingDataset: DatasetStateService.finishUploadingDataset,

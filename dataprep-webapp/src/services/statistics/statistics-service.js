@@ -7,6 +7,7 @@
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.statistics.service:StatisticsRestService
+     * @requires data-prep.services.state.service:StateService
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.utils.service:FilterAdapterService
      * @requires data-prep.services.utils.service:TextFormatService
@@ -15,7 +16,7 @@
      */
     function StatisticsService($filter, state,
                                DatagridService, RecipeService, StatisticsRestService,
-                               ConverterService, FilterAdapterService, TextFormatService, StorageService, WorkerService) {
+                               StateService, ConverterService, FilterAdapterService, TextFormatService, StorageService, WorkerService) {
 
         var dateFilteredWorkerWrapper;
         var datePatternWorkerWrapper;
@@ -27,8 +28,6 @@
 
         var service = {
             boxPlot: null,
-            histogram: null,
-            filteredHistogram: null,
             stateDistribution: null,
             statistics: null,
             patterns: null,
@@ -171,8 +170,8 @@
                 });
             });
 
-            service.histogram = initVerticalHistogram('data', 'occurrences', 'Occurrences', rangeData);
-            service.filteredHistogram = initVerticalHistogram('data', 'filteredOccurrences', 'Filtered Occurrences', filteredRangeData);
+            StateService.setStatisticsHistogram(initVerticalHistogram('data', 'occurrences', 'Occurrences', rangeData));
+            StateService.setStatisticsFilteredHistogram(initVerticalHistogram('data', 'filteredOccurrences', 'Filtered Occurrences', filteredRangeData));
         }
 
         /**
@@ -211,7 +210,7 @@
             });
 
             //init the main histogram
-            service.histogram = initVerticalHistogram('data', 'occurrences', 'Occurrences', rangeData);
+            StateService.setStatisticsHistogram(initVerticalHistogram('data', 'occurrences', 'Occurrences', rangeData));
 
             //execute a web worker that will compute the filtered occurrences
             dateFilteredWorkerWrapper = WorkerService.create(
@@ -222,7 +221,7 @@
             var filteredOccurrences = state.playground.filter.gridFilters.length ? state.playground.grid.filteredOccurences : null;
             dateFilteredWorkerWrapper.postMessage([rangeData, patterns, filteredOccurrences])
                 .then(function (filteredRangeData) {
-                    service.filteredHistogram = initVerticalHistogram('data', 'filteredOccurrences', 'Filtered Occurrences', filteredRangeData);
+                    StateService.setStatisticsFilteredHistogram(initVerticalHistogram('data', 'filteredOccurrences', 'Filtered Occurrences', filteredRangeData));
                 })
                 .finally(function () {
                     dateFilteredWorkerWrapper.clean();
@@ -388,30 +387,28 @@
                 adaptedFilteredData.push(filteredItem);
             });
 
-            service.histogram = initHorizontalHistogram(keyField, valueField, label, adaptedData, null);
-            service.filteredHistogram = initHorizontalHistogram(keyField, filteredValueField, null, adaptedFilteredData, 'blueBar');
+            StateService.setStatisticsHistogram(initHorizontalHistogram(keyField, valueField, label, adaptedData, null));
+            StateService.setStatisticsFilteredHistogram(initHorizontalHistogram(keyField, filteredValueField, null, adaptedFilteredData, 'blueBar'));
         }
 
 
         /**
          * @ngdoc method
-         * @name initAggregationHistogram
+         * @name getAggregationHistogram
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @param {string} valueField The value prop name
          * @param {string} label The value label
-         * @param {Array} dataTable The table to display
-         * @description Set the frequency table that fit the histogram format for aggregation (filter is managed in backend)
+         * @param {Array} data The data to display
+         * @description Create the histogram format for aggregation (filter is managed in backend)
          */
-        function initAggregationHistogram(valueField, label, dataTable) {
+        function getAggregationHistogram(valueField, label, data) {
             var keyField = 'formattedValue';
 
-            var adaptedData = _.map(dataTable, function (rec) {
+            _.forEach(data, function (rec) {
                 rec[keyField] = TextFormatService.adaptToGridConstraints(rec.data);
-                return rec;
             });
 
-            service.histogram = initHorizontalHistogram(keyField, valueField, label, adaptedData, 'blueBar');
-            service.filteredHistogram = null;
+            return initHorizontalHistogram(keyField, valueField, label, data, 'blueBar');
         }
 
         /**
@@ -454,7 +451,6 @@
                 valueField: valueField,
                 label: label,
                 column: state.playground.grid.selectedColumn,
-                activeLimits: null,
                 vertical: true
             };
         }
@@ -484,7 +480,7 @@
          * and the active/inactive bars of the vertical barchart
          */
         function initRangeLimits() {
-            if (!service.histogram) {
+            if (!state.playground.statistics.histogram) {
                 return;
             }
 
@@ -509,7 +505,7 @@
                 rangeLimits.minBrush = getValueWithinRange(filterMin, statistics.min, statistics.max);
                 rangeLimits.maxBrush = getValueWithinRange(filterMax, statistics.min, statistics.max);
 
-                service.histogram.activeLimits = [rangeLimits.minBrush, rangeLimits.maxBrush];
+                StateService.setStatisticsHistogramActiveLimits([rangeLimits.minBrush, rangeLimits.maxBrush]);
             }
 
             service.rangeLimits = rangeLimits;
@@ -595,8 +591,7 @@
          */
         function updateFilteredPatternsFrequency(column) {
             var patternFrequency = column.statistics.patternFrequencyTable;
-            service.patterns = patternFrequency;
-            service.filteredPatterns = null;
+            StateService.setStatisticsPatterns(patternFrequency);
 
             datePatternWorkerWrapper = WorkerService.create(
                 ['/worker/moment.js', '/worker/lodash.js', '/worker/moment-jdateformatparser.js'],
@@ -617,8 +612,8 @@
 
             var filteredRecords = state.playground.filter.gridFilters.length ? state.playground.grid.filteredRecords : null;
             datePatternWorkerWrapper.postMessage([column.id, patternFrequency, filteredRecords])
-                .then(function (patternFrequencies) {
-                    service.filteredPatterns = patternFrequencies;
+                .then(function (filteredPatternFrequency) {
+                    StateService.setStatisticsFilteredPatterns(filteredPatternFrequency);
                 })
                 .finally(function () {
                     datePatternWorkerWrapper.clean();
@@ -772,7 +767,7 @@
                 if (filter.colId === actualSelectedColumn.id) {
                     initRangeLimits();
                     //to reset the vertical bars colors
-                    service.histogram.activeLimits = [columnMin, columnMax];
+                    StateService.setStatisticsHistogramActiveLimits([columnMin, columnMax]);
                 }
             };
         }
@@ -850,11 +845,11 @@
          * @name processAggregation
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @param {object} column The column to visualize
-         * @param {string} aggregation The aggregation to perform
+         * @param {string} aggregationName The aggregation to perform
          * @description Processes the statistics aggregation for visualization
          */
-        function processAggregation(column, aggregation) {
-            if (!aggregation) {
+        function processAggregation(column, aggregationName) {
+            if (!aggregationName) {
                 removeSavedColumnAggregation();
                 return processData();
             }
@@ -870,7 +865,7 @@
                 preparationId: preparationId,
                 stepId: stepId,
                 operations: [{
-                    operator: aggregation,
+                    operator: aggregationName,
                     columnId: column.id
                 }],
                 groupBy: [selectedColumn.id]
@@ -881,11 +876,13 @@
 
             StatisticsRestService.getAggregations(aggregationParameters)
                 .then(function (response) {
-                    initAggregationHistogram(aggregation, $filter('translate')(aggregation), response);
-                    service.histogram.aggregationColumn = column;
-                    service.histogram.aggregation = aggregation;
+                    var histogram = getAggregationHistogram(aggregationName, $filter('translate')(aggregationName), response);
+                    histogram.aggregationColumn = column;
+                    histogram.aggregation = aggregationName;
 
-                    saveColumnAggregation();
+                    StateService.setStatisticsHistogram(histogram);
+
+                    saveColumnAggregation(aggregationName, column.id);
                 });
         }
 
@@ -921,14 +918,15 @@
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @description Update the actual dataset column aggregation in localStorage
          */
-        function saveColumnAggregation() {
+        function saveColumnAggregation(aggregationName, colId) {
             var datasetId = state.playground.dataset && state.playground.dataset.id;
             var preparationId = state.playground.preparation && state.playground.preparation.id;
             var columnId = state.playground.grid.selectedColumn && state.playground.grid.selectedColumn.id;
 
-            var aggregation = {};
-            aggregation.aggregation = service.histogram.aggregation;
-            aggregation.aggregationColumnId = service.histogram.aggregationColumn.id;
+            var aggregation = {
+                aggregation: aggregationName,
+                aggregationColumnId: colId
+            };
 
             return StorageService.setAggregation(datasetId, preparationId, columnId, aggregation);
         }
@@ -981,10 +979,9 @@
         function reset(charts, statistics, cache) {
             if (charts) {
                 service.boxPlot = null;
-                service.histogram = null;
-                service.filteredHistogram = null;
                 service.rangeLimits = null;
                 service.stateDistribution = null;
+                StateService.setStatisticsHistogram(null);
             }
 
             if (statistics) {

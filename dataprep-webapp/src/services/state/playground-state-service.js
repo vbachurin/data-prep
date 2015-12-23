@@ -8,13 +8,15 @@
         GridStateService, gridState,
         FilterStateService, filterState,
         SuggestionsStateService, suggestionsState,
-        LookupStateService, lookupState) {
+        LookupStateService, lookupState,
+        StatisticsStateService, statisticsState) {
 
         playgroundState.recipe = recipeState;
         playgroundState.grid = gridState;
         playgroundState.lookup = lookupState;
         playgroundState.filter = filterState;
         playgroundState.suggestions = suggestionsState;
+        playgroundState.statistics = statisticsState;
 
         return {
             //playground
@@ -49,10 +51,17 @@
             removeGridFilter: removeGridFilter,
             removeAllGridFilters: removeAllGridFilters,
 
-            //Suggestion-Stats
+            //suggestion
             setColumnTransformations: SuggestionsStateService.setColumnTransformations,
             setLineTransformations: SuggestionsStateService.setLineTransformations,
-            setSuggestionsLoading: SuggestionsStateService.setLoading
+            setSuggestionsLoading: SuggestionsStateService.setLoading,
+
+            //statistics
+            setStatisticsHistogram: StatisticsStateService.setHistogram,
+            setStatisticsFilteredHistogram: StatisticsStateService.setFilteredHistogram,
+            setStatisticsHistogramActiveLimits: StatisticsStateService.setHistogramActiveLimits,
+            setStatisticsPatterns: StatisticsStateService.setPatterns,
+            setStatisticsFilteredPatterns: StatisticsStateService.setFilteredPatterns
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -131,6 +140,7 @@
             GridStateService.reset();
             LookupStateService.reset();
             SuggestionsStateService.reset();
+            StatisticsStateService.reset();
         }
     }
 

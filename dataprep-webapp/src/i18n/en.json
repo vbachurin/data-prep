@@ -152,6 +152,7 @@
   "PLAYGROUND_FILE_NOT_FOUND": "The {{type}} with this id does not exist or is not accessible.",
   "PREPARATION_STEP_DELETE_MODE_NOT_AUTHORIZED_TITLE": "Delete action not authorized",
   "PREPARATION_STEP_DELETE_MODE_NOT_AUTHORIZED": "This action cannot be deleted because some following actions depends on it.",
+  "GENERIC_ERROR": "An error occurred.",
   "SERVER_ERROR_TITLE": "Server error",
   "SERVICE_UNAVAILABLE": "Service unavailable",
   "UNSUPPORTED_CONTENT_TITLE": "Unsupported content",

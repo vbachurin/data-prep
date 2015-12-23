@@ -1,4 +1,4 @@
-describe('Grid state service', function () {
+describe('Suggestions state service', function () {
     'use strict';
 
     beforeEach(module('data-prep.services.state'));
