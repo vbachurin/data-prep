@@ -11,10 +11,9 @@
      * @requires data-prep.services.dataset.service:DatasetListService
      * @requires data-prep.services.folder.service:FolderService
      */
-    function PreparationService($q, StorageService, PreparationListService, PreparationRestService, DatasetListService, FolderService) {
+    function PreparationService(state, $q, StorageService, PreparationListService, PreparationRestService, DatasetListService, FolderService) {
         return {
             //get, refresh preparations
-            preparationsList: preparationsList,
             refreshPreparations: refreshPreparations,
             getPreparations: getPreparations,
 
@@ -45,16 +44,6 @@
         //---------------------------------------------------------------------------------
         //------------------------------------GET/REFRESH----------------------------------
         //---------------------------------------------------------------------------------
-        /**
-         * @ngdoc method
-         * @name preparationsList
-         * @methodOf data-prep.services.preparation.service:PreparationService
-         * @description Return the preparations list. See {@link data-prep.services.preparation.service:PreparationListService PreparationListService}.preparations
-         * @returns {object[]} The preparations list
-         */
-        function preparationsList() {
-            return PreparationListService.preparations;
-        }
 
         /**
          * @ngdoc method
@@ -63,7 +52,7 @@
          * @description [PRIVATE] Refresh the default preparation within each dataset
          */
         function consolidatePreparationsAndDatasets(response) {
-            DatasetListService.refreshDefaultPreparation(preparationsList())
+            DatasetListService.refreshDefaultPreparation(state.preparation.preparationsList)
                 .then(PreparationListService.refreshMetadataInfos)
                 .then(FolderService.refreshDefaultPreparation);
             return response;
@@ -89,8 +78,8 @@
          * @returns {promise} The process promise
          */
         function getPreparations() {
-            return preparationsList() !== null ?
-                $q.when(preparationsList()) :
+            return state.preparation.preparationsList !== null ?
+                $q.when(state.preparation.preparationsList) :
                 refreshPreparations();
         }
 

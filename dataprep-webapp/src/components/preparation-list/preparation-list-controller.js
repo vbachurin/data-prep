@@ -12,9 +12,10 @@
      * @requires data-prep.services.state.service:StateService
      * @requires talend.widget.service:TalendConfirmService
      */
-    function PreparationListCtrl($rootScope, $stateParams, $timeout, PlaygroundService, PreparationService, TalendConfirmService, MessageService, StateService) {
+    function PreparationListCtrl(state, $rootScope, $stateParams, $timeout, PlaygroundService, PreparationService, TalendConfirmService, MessageService, StateService) {
         var vm = this;
         vm.preparationService = PreparationService;
+        vm.state = state;
 
         /**
          * @ngdoc method
@@ -122,22 +123,6 @@
         PreparationService.getPreparations()
             .then(loadUrlSelectedPreparation);
     }
-
-    /**
-     * @ngdoc property
-     * @name preparations
-     * @propertyOf data-prep.preparation-list.controller:PreparationListCtrl
-     * @description The preparations list.
-     * It is bound to {@link data-prep.services.preparation.service:PreparationService PreparationService}.preparationsList()
-     */
-    Object.defineProperty(PreparationListCtrl.prototype,
-        'preparations', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.preparationService.preparationsList();
-            }
-        });
 
     angular.module('data-prep.preparation-list')
         .controller('PreparationListCtrl', PreparationListCtrl);

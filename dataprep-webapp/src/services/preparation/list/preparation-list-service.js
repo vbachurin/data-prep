@@ -8,19 +8,12 @@
      * <b style="color: red;">WARNING : do NOT use this service directly.
      * {@link data-prep.services.preparation.service:PreparationService PreparationService} must be the only entry point for preparations</b>
      * @requires data-prep.services.preparation.service:PreparationRestService
+     * @requires data-prep.services.state.service:StateService
      */
-    function PreparationListService($q, PreparationRestService) {
+    function PreparationListService(state, $q, PreparationRestService, StateService) {
         var preparationsPromise;
 
         var service = {
-            /**
-             * @ngdoc property
-             * @name preparations
-             * @propertyOf data-prep.services.preparation.service:PreparationListService
-             * @description the preparations list
-             */
-            preparations: null,
-
             refreshPreparations: refreshPreparations,
             getPreparationsPromise: getPreparationsPromise,
             refreshMetadataInfos: refreshMetadataInfos,
@@ -45,9 +38,8 @@
                 preparationsPromise = PreparationRestService.getPreparations()
                     .then(function (response) {
                         preparationsPromise = null;
-                        service.preparations = response.data;
-
-                        return service.preparations;
+                        StateService.updatePreparationsList(response.data);
+                        return response.data;
                     });
             }
             return preparationsPromise;
@@ -61,7 +53,7 @@
          * @returns {promise} The process promise
          */
         function getPreparationsPromise() {
-            return service.preparations === null ? refreshPreparations() : $q.when(service.preparations);
+            return state.preparation.preparationsList === null ? refreshPreparations() : $q.when(state.preparation.preparationsList);
         }
 
         /**
@@ -132,8 +124,8 @@
         function deletePreparation(preparation) {
             return PreparationRestService.delete(preparation.id)
                 .then(function() {
-                    var index = service.preparations.indexOf(preparation);
-                    service.preparations.splice(index, 1);
+                    var index = state.preparation.preparationsList.indexOf(preparation);
+                    StateService.deletePreparationFromPreparationsList(index);
                 });
         }
 

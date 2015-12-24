@@ -74,7 +74,7 @@ describe('Preparation list controller', function () {
 
     beforeEach(module('data-prep.preparation-list'));
 
-    beforeEach(inject(function ($q, $rootScope, $controller, PreparationService, PlaygroundService, MessageService, StateService) {
+    beforeEach(inject(function (state, $q, $rootScope, $controller, PreparationService, PlaygroundService, MessageService, StateService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -91,16 +91,19 @@ describe('Preparation list controller', function () {
         spyOn(PreparationService, 'getPreparations').and.callFake(function () {
             return $q.when(allPreparations);
         });
-        spyOn(PreparationService, 'preparationsList').and.returnValue(allPreparations);
         spyOn(PreparationService, 'setName').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'load').and.returnValue($q.when(true));
         spyOn(StateService, 'showPlayground').and.returnValue();
         spyOn(MessageService, 'success').and.returnValue(null);
         spyOn(MessageService, 'error').and.returnValue(null);
+
+        state.preparation.preparationsList = allPreparations;
+
     }));
 
-    afterEach(inject(function ($stateParams) {
+    afterEach(inject(function (state, $stateParams) {
         $stateParams.prepid = null;
+        state.preparation.preparationsList = null;
     }));
 
     it('should init preparations', inject(function (PreparationService) {
