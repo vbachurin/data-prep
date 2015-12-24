@@ -13,7 +13,7 @@
             'FEEDBACK_SEVERITY_MAJOR',
             'FEEDBACK_SEVERITY_MINOR',
             'FEEDBACK_SEVERITY_TRIVIAL'
-        ]).then(function(translations) {
+        ]).then(function (translations) {
             vm.feedbackTypes = [
                 {name: translations.FEEDBACK_TYPE_BUG, value: 'BUG'},
                 {name: translations.FEEDBACK_TYPE_IMPROVEMENT, value: 'IMPROVEMENT'}];
@@ -41,10 +41,10 @@
             vm.isSendingFeedback = true;
             FeedbackRestService.sendFeedback(vm.feedback)
                 .then (function () {
-                resetForm();
-                StateService.disableFeedback();
-                MessageService.success('FEEDBACK_SENT_TITLE', 'FEEDBACK_SENT_CONTENT');
-            })
+                    resetForm();
+                    StateService.hideFeedback();
+                    MessageService.success('FEEDBACK_SENT_TITLE', 'FEEDBACK_SENT_CONTENT');
+                })
                 .finally(function () {
                     vm.isSendingFeedback = false;
                 });

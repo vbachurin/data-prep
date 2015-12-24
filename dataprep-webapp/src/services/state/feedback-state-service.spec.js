@@ -1,26 +1,32 @@
-describe('Feedback', function () {
+describe('Feedback state', function () {
     'use strict';
 
     beforeEach(module('data-prep.services.state'));
 
-    describe('state service', function() {
+    it('should init visibility to false', inject(function (feedbackState) {
+        //then
+        expect(feedbackState.visible).toBe(false);
+    }));
 
-        it('should enable an feedback', inject(function (feedbackState, FeedbackStateService) {
-            //given
-            //when
-            FeedbackStateService.enableFeedback();
+    it('should show feedback', inject(function (feedbackState, FeedbackStateService) {
+        //given
+        feedbackState.visible = false;
 
-            //then
-            expect(feedbackState.displayFeedback).toBe(true);
-        }));
+        //when
+        FeedbackStateService.show();
 
-        it('should disable an feedback', inject(function (feedbackState, FeedbackStateService) {
-            //given
-            //when
-            FeedbackStateService.disableFeedback();
+        //then
+        expect(feedbackState.visible).toBe(true);
+    }));
 
-            //then
-            expect(feedbackState.displayFeedback).toBe(false);
-        }));
-    });
+    it('should hide feedback', inject(function (feedbackState, FeedbackStateService) {
+        //given
+        feedbackState.visible = true;
+
+        //when
+        FeedbackStateService.hide();
+
+        //then
+        expect(feedbackState.visible).toBe(false);
+    }));
 });

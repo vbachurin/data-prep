@@ -300,7 +300,7 @@ describe('Playground controller', function () {
 
     describe('feedback ', function() {
         beforeEach(inject(function (StateService) {
-            spyOn(StateService, 'enableFeedback').and.returnValue();
+            spyOn(StateService, 'showFeedback').and.returnValue();
         }));
 
         it('should open feedback modal', inject(function (StateService) {
@@ -311,7 +311,7 @@ describe('Playground controller', function () {
             ctrl.openFeedbackForm();
 
             //then
-            expect(StateService.enableFeedback).toHaveBeenCalled();
+            expect(StateService.showFeedback).toHaveBeenCalled();
         }));
 
     });

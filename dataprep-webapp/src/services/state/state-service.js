@@ -11,7 +11,7 @@
     function StateService(PlaygroundStateService, playgroundState, //
                           DatasetStateService, datasetState, //
                           FolderStateService, folderState,  //
-                          EasterEggsStateService, easterEggsState,
+                          EasterEggsStateService, easterEggsState, //
                           FeedbackStateService, feedbackState) {
         state.playground = playgroundState;
         state.dataset = datasetState;
@@ -71,9 +71,9 @@
             enableEasterEgg: EasterEggsStateService.enableEasterEgg,
             disableEasterEgg: EasterEggsStateService.disableEasterEgg,
 
-            //easter eggs
-            enableFeedback: FeedbackStateService.enableFeedback,
-            disableFeedback: FeedbackStateService.disableFeedback
+            //feedback
+            showFeedback: FeedbackStateService.show,
+            hideFeedback: FeedbackStateService.hide
         };
     }
 

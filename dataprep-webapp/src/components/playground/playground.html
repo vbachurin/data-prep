@@ -26,10 +26,17 @@
             <li>
                 <export></export>
             </li>
-            <li class="nav-link" title="{{'ONBOARDING' | translate}}"><a class="icon onboarding-prep-icon" data-icon="y" style="color:white;"
-                                    ng-click="playgroundCtrl.onboardingService.startTour('playground')"></a></li>
-            <li class="nav-link" title="{{'FEEDBACK_TOOLTIP' | translate}}">
-                <a class="icon enabled" data-icon="H" id="message-icon-playground" ng-click="playgroundCtrl.openFeedbackForm()"></a>
+            <li class="nav-link" translate-once-title="ONBOARDING">
+                <a id="playground-onboarding-icon"
+                   class="icon"
+                   data-icon="y"
+                   ng-click="playgroundCtrl.onboardingService.startTour('playground')"></a>
+            </li>
+            <li class="nav-link" translate-once-title="FEEDBACK_TOOLTIP">
+                <a id="playground-feedback-icon"
+                   class="icon"
+                   data-icon="H"
+                   ng-click="playgroundCtrl.openFeedbackForm()"></a>
             </li>
             <li id="help-history">
                 <history-control></history-control>

@@ -2,7 +2,7 @@
     'use strict';
 
     var feedbackState = {
-        displayFeedback: false
+        visible: false
     };
 
     /**
@@ -13,28 +13,28 @@
     function FeedbackStateService() {
 
         return {
-            enableFeedback: enableFeedback,
-            disableFeedback: disableFeedback
+            show: show,
+            hide: hide
         };
 
         /**
          * @ngdoc method
-         * @name enableFeedback
+         * @name show
          * @methodOf data-prep.services.state.service:FeedbackStateService
-         * @description enable the feedback to display
+         * @description Display the feedback
          */
-        function enableFeedback() {
-            feedbackState.displayFeedback = true;
+        function show() {
+            feedbackState.visible = true;
         }
 
         /**
          * @ngdoc method
-         * @name disableFeedback
+         * @name hide
          * @methodOf data-prep.services.state.service:FeedbackStateService
-         * @description disable the feedback to display
+         * @description Hide the feedback
          */
-        function disableFeedback () {
-            feedbackState.displayFeedback = false;
+        function hide () {
+            feedbackState.visible = false;
         }
     }
 

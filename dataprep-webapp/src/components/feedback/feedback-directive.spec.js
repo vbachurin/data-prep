@@ -5,7 +5,7 @@ describe('Feedback directive', function() {
     var body = angular.element('body');
     beforeEach(module('data-prep.feedback', function ($provide) {
         stateMock = {feedback: {
-            displayFeedback: false
+            visible: false
         }};
         $provide.constant('state', stateMock);
     }));
@@ -20,8 +20,6 @@ describe('Feedback directive', function() {
             $compile(element)(scope);
             scope.$digest();
         };
-
-
     }));
 
     afterEach(inject(function () {
@@ -31,7 +29,7 @@ describe('Feedback directive', function() {
 
     it('should render a feedback form', function() {
         //when
-        stateMock.feedback.displayFeedback = true;
+        stateMock.feedback.visible = true;
         createElement();
         scope.$digest();
 
@@ -41,7 +39,7 @@ describe('Feedback directive', function() {
 
     it('should render form labels', function() {
         //when
-        stateMock.feedback.displayFeedback = true;
+        stateMock.feedback.visible = true;
         createElement();
         scope.$digest();
 
@@ -51,7 +49,7 @@ describe('Feedback directive', function() {
 
     it('should render form buttons', function() {
         //when
-        stateMock.feedback.displayFeedback = true;
+        stateMock.feedback.visible = true;
         createElement();
         scope.$digest();
 
@@ -61,7 +59,7 @@ describe('Feedback directive', function() {
 
     it('should render form title', function() {
         //when
-        stateMock.feedback.displayFeedback = true;
+        stateMock.feedback.visible = true;
         createElement();
         scope.$digest();
 

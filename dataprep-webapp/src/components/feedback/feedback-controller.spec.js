@@ -84,14 +84,14 @@ describe('Feedback controller', function () {
             var ctrl = createController();
             ctrl.feedbackForm = {$commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue()};
             ctrl.feedback = feedback;
-            ctrl.state.feedback.displayFeedback = true;
+            ctrl.state.feedback.visible = true;
 
             //given
             ctrl.sendFeedback();
             scope.$digest();
 
             //then
-            expect(ctrl.state.feedback.displayFeedback).toBe(false);
+            expect(ctrl.state.feedback.visible).toBe(false);
         });
 
         it('should show message on send success', inject(function (MessageService) {
@@ -106,7 +106,7 @@ describe('Feedback controller', function () {
             var ctrl = createController();
             ctrl.feedbackForm = {$commitViewValue: jasmine.createSpy('$commitViewValue').and.returnValue()};
             ctrl.feedback = feedback;
-            ctrl.state.feedback.displayFeedback = true;
+            ctrl.state.feedback.visible = true;
 
             //given
             ctrl.sendFeedback();

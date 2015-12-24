@@ -4,7 +4,7 @@
     /**
      * @ngdoc directive
      * @name data-prep.datagrid.directive:Feedback
-     * @description This directive create a feedback form<br/>
+     * @description This directive create a feedback form
      * @restrict E
      * @usage <feedback></feedback>
      */
