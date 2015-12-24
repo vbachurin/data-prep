@@ -164,11 +164,11 @@
                 }
 
                 function drawBars(containerClassName, statData, getValue, barClassName) {
-                    svg.insert('g', '.grid')
-                        .attr('class', containerClassName)
+                    var bars = svg.select('.' + containerClassName)
                         .selectAll('.' + barClassName)
-                        .data(statData)
-                        .enter()
+                        .data(statData, function(d){return ''+getInterval(d);});
+
+                    bars.enter()
                         .append('rect')
                         .attr('class', barClassName)
                         .attr('x', function (d) {
@@ -188,6 +188,24 @@
                         .attr('y', function (d) {
                             return yScale(getValue(d));
                         });
+
+                    bars.transition().ease('exp').delay(function (d, i) {
+                        return i * 30;
+                    })
+                    .attr('height', function (d) {
+                        return height - yScale(getValue(d));
+                    })
+                    .attr('y', function (d) {
+                        return yScale(getValue(d));
+                    });
+                }
+
+                function createBarsContainers() {
+                    svg.append('g')
+                        .attr('class', 'primaryBar');
+
+                    svg.append('g')
+                        .attr('class', 'secondaryBar');
                 }
 
                 function drawXAxis() {
@@ -275,6 +293,7 @@
                     initScales();
                     createContainer();
                     configureAxisScales(firstVisuData);
+                    createBarsContainers();
                     if(scope.showXAxis){
                         drawXAxis(firstVisuData);
                     }
@@ -288,7 +307,6 @@
                 }
 
                 function renderSecondVBars(secondVisuData) {
-                    d3.selectAll('g.bars.secondary').remove();
                     if (secondVisuData) {
                         drawBars('secondaryBar', secondVisuData, getSecondaryValue, 'blueBar');
                     }

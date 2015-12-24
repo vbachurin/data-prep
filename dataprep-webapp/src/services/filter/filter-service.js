@@ -333,7 +333,7 @@
             else {
                 updateFilter();
             }
-            StatisticsService.updateStatistics();
+            StatisticsService.updateFilteredStatistics();
         }
 
         /**
@@ -389,7 +389,7 @@
             newFilter = FilterAdapterService.createFilter(oldFilter.type, oldFilter.colId, oldFilter.colName, editableFilter, newArgs, newFilterFn, oldFilter.removeFilterFn);
 
             StateService.updateGridFilter(oldFilter, newFilter);
-            StatisticsService.updateStatistics();
+            StatisticsService.updateFilteredStatistics();
         }
 
         /**
@@ -410,7 +410,7 @@
                     filter.removeFilterFn(filter);
                 })
                 .value();
-            StatisticsService.updateStatistics();
+            StatisticsService.updateFilteredStatistics();
         }
 
         /**
@@ -425,7 +425,7 @@
             if (filter.removeFilterFn) {
                 filter.removeFilterFn(filter);
             }
-            StatisticsService.updateStatistics();
+            StatisticsService.updateFilteredStatistics();
         }
     }
 

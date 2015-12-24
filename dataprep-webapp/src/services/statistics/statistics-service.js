@@ -14,9 +14,9 @@
      * @requires data-prep.services.utils.service:StorageService
      * @requires data-prep.services.utils.service:WorkerService
      */
-    function StatisticsService($filter, state,
-                               DatagridService, RecipeService, StatisticsRestService,
-                               StateService, ConverterService, FilterAdapterService, TextFormatService, StorageService, WorkerService) {
+    function StatisticsService ($filter, state,
+                                DatagridService, RecipeService, StatisticsRestService,
+                                StateService, ConverterService, FilterAdapterService, TextFormatService, StorageService, WorkerService) {
 
         var dateFilteredWorkerWrapper;
         var datePatternWorkerWrapper;
@@ -39,11 +39,12 @@
             getRangeFilterRemoveFn: getRangeFilterRemoveFn,
 
             //statistics entry points
-            processData: processData,                       // basic charts
-            processAggregation: processAggregation,         // aggregation charts
-            getAggregationColumns: getAggregationColumns,   // possible aggregation columns
-            updateStatistics: updateStatistics,             // update stats + trigger chart
-            reset: reset,                                   // reset charts/statistics/cache
+            processData: processData,                           // basic charts
+            processAggregation: processAggregation,             // aggregation charts
+            getAggregationColumns: getAggregationColumns,       // possible aggregation columns
+            updateStatistics: updateStatistics,                 // update stats + trigger chart render
+            updateFilteredStatistics: updateFilteredStatistics, // update stats of the filters and trigger chart updatae
+            reset: reset,                                       // reset charts/statistics/cache
 
             //TODO temporary method to be replaced with new geo chart
             getGeoDistribution: getGeoDistribution,
@@ -73,7 +74,7 @@
          *     <li>frequency (or specified) : the nb of time the value appears</li>
          * </ul>
          */
-        function getDistribution(columnId, keyName, valueName, keyTransformer) {
+        function getDistribution (columnId, keyName, valueName, keyTransformer) {
             keyName = keyName || 'colValue';
             valueName = valueName || 'frequency';
 
@@ -99,7 +100,7 @@
          * @param {object} column The target column
          * @returns {object} Geo distribution {map: string, data: [{}]}
          */
-        function getGeoDistribution(column) {
+        function getGeoDistribution (column) {
             var keyPrefix = 'US-';
             var map = 'countries/us/us-all';
 
@@ -120,7 +121,7 @@
          * @description Compute The filtered records that fullfill the given predicate
          * @returns {number} The Number of records
          */
-        function getRangeFilteredOccurrence(min, max) {
+        function getRangeFilteredOccurrence (min, max) {
             return _.chain(state.playground.grid.filteredOccurences)
                 .keys()
                 .filter(function (value) {
@@ -144,7 +145,25 @@
          * @param {Array} histoData Array of data
          * @description Adapt the numeric range data to fit histogram format
          */
-        function initRangeHistogram(histoData) {
+        function initRangeHistogram () {
+            var histogram = processRangeHistoData();
+            if (histogram) {
+                var rangeData = histogram.rangeData;
+                var filteredRangeData = histogram.filteredRangeData;
+                StateService.setStatisticsHistogram(initVerticalHistogram('data', 'occurrences', 'Occurrences', rangeData));
+                StateService.setStatisticsFilteredHistogram(initVerticalHistogram('data', 'filteredOccurrences', 'Filtered Occurrences', filteredRangeData));
+            }
+        }
+
+        /**
+         * @ngdoc method
+         * @name processRangeHistoData
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @return {Object} containing the original and the filtered data
+         * @description prepares the numeric data details
+         */
+        function processRangeHistoData () {
+            var histoData = state.playground.grid.selectedColumn.statistics.histogram;
             if (!histoData) {
                 return;
             }
@@ -169,9 +188,10 @@
                     'filteredOccurrences': state.playground.filter.gridFilters.length ? getRangeFilteredOccurrence(min, max) : histDatum.occurrences
                 });
             });
-
-            StateService.setStatisticsHistogram(initVerticalHistogram('data', 'occurrences', 'Occurrences', rangeData));
-            StateService.setStatisticsFilteredHistogram(initVerticalHistogram('data', 'filteredOccurrences', 'Filtered Occurrences', filteredRangeData));
+            return {
+                rangeData: rangeData,
+                filteredRangeData: filteredRangeData
+            };
         }
 
         /**
@@ -181,17 +201,28 @@
          * @param {Array} histoData Array of data
          * @description Adapt the date range data to fit histogram format
          */
-        function initDateRangeHistogram(histoData) {
+        function initDateRangeHistogram () {
+            var dateRangeData = processDateRangeHistoData();
+            if (dateRangeData) {
+                //init the main histogram
+                StateService.setStatisticsHistogram(initVerticalHistogram('data', 'occurrences', 'Occurrences', dateRangeData));
+                updateFilteredDateRange();
+            }
+        }
+
+        /**
+         * @ngdoc method
+         * @name processDateRangeHistoData
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description prepares the date data to be visualized
+         */
+        function processDateRangeHistoData () {
+            var histoData = state.playground.grid.selectedColumn.statistics.histogram;
             if (!histoData) {
                 return;
             }
 
-            var patterns = _.chain(state.playground.grid.selectedColumn.statistics.patternFrequencyTable)
-                .pluck('pattern')
-                .map(TextFormatService.convertJavaDateFormatToMomentDateFormat)
-                .value();
-
-            var rangeData = _.map(histoData.items, function (histDatum) {
+            return _.map(histoData.items, function (histDatum) {
                 //range are UTC dates. We convert them to local zone date, so the app date manipulation is easier.
                 var minDate = new Date(histDatum.range.min);
                 minDate.setTime(minDate.getTime() + (minDate.getTimezoneOffset() * 60 * 1000));
@@ -208,10 +239,35 @@
                     'occurrences': histDatum.occurrences
                 };
             });
+        }
 
-            //init the main histogram
-            StateService.setStatisticsHistogram(initVerticalHistogram('data', 'occurrences', 'Occurrences', rangeData));
+        /**
+         * @ngdoc method
+         * @name updateFilteredDateRange
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description adds/updates the filtered data
+         */
+        function updateFilteredDateRange () {
+            var dateRangeData = {
+                rangeData: state.playground.statistics.histogram.data
+            };
+            var patterns = _.chain(state.playground.grid.selectedColumn.statistics.patternFrequencyTable)
+                .pluck('pattern')
+                .map(TextFormatService.convertJavaDateFormatToMomentDateFormat)
+                .value();
 
+            dateRangeData.patterns = patterns;
+            computeFilteredDateRange(dateRangeData);
+        }
+
+        /**
+         * @ngdoc method
+         * @name computeFilteredDateRange
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @params {Object} dateRangeData containing the data and the patterns
+         * @description calls a Worker to compte & update the FilteredHistogram of the state
+         */
+        function computeFilteredDateRange (dateRangeData) {
             //execute a web worker that will compute the filtered occurrences
             dateFilteredWorkerWrapper = WorkerService.create(
                 ['/worker/moment.js', '/worker/moment-jdateformatparser.js', '/worker/lodash.js'],
@@ -219,7 +275,7 @@
                 dateFilteredOccurrenceWorker);
 
             var filteredOccurrences = state.playground.filter.gridFilters.length ? state.playground.grid.filteredOccurences : null;
-            dateFilteredWorkerWrapper.postMessage([rangeData, patterns, filteredOccurrences])
+            dateFilteredWorkerWrapper.postMessage([dateRangeData.rangeData, dateRangeData.patterns, filteredOccurrences])
                 .then(function (filteredRangeData) {
                     StateService.setStatisticsFilteredHistogram(initVerticalHistogram('data', 'filteredOccurrences', 'Filtered Occurrences', filteredRangeData));
                 })
@@ -237,7 +293,7 @@
          * @param {number} maxTimestamp The range max timestamp
          * @param {Array} patterns The date patterns to use for date parsing
          */
-        function isInDateLimits(minTimestamp, maxTimestamp, patterns) {
+        function isInDateLimits (minTimestamp, maxTimestamp, patterns) {
             return function (value) {
                 var parsedMoment = _.chain(patterns)
                     .map(function (pattern) {
@@ -266,7 +322,7 @@
          * @param {Array} patterns The patterns to use for date parsing
          * @param {Array} filteredOccurences The filtered occurrences
          */
-        function dateFilteredOccurrenceWorker(rangeData, patterns, filteredOccurences) {
+        function dateFilteredOccurrenceWorker (rangeData, patterns, filteredOccurences) {
             _.forEach(rangeData, function (range) {
                 var minTimestamp = range.data.min;
                 var maxTimestamp = range.data.max;
@@ -296,7 +352,7 @@
          * @param {Date} startDate The range starting date
          * @description Returns the date pattern that fit the pace at the starting date
          */
-        function getDateFormat(pace, startDate) {
+        function getDateFormat (pace, startDate) {
             switch (pace) {
                 case 'CENTURY':
                 case 'DECADE':
@@ -324,7 +380,7 @@
          * @param {Date} maxDate The range ending date
          * @description Returns the range label
          */
-        function getDateLabel(pace, minDate, maxDate) {
+        function getDateLabel (pace, minDate, maxDate) {
             var dateFilter = $filter('date');
             var format = getDateFormat(pace, minDate);
 
@@ -349,7 +405,7 @@
          * @description Get the occurrence of the provided value
          * @returns {number} The Number of records
          */
-        function getClassicFilteredOccurrence(value) {
+        function getClassicFilteredOccurrence (value) {
             var occurrence = state.playground.grid.filteredOccurences[value];
             return occurrence || 0;
         }
@@ -363,12 +419,37 @@
          * @param {Array} dataTable The table to display
          * @description Set the frequency table that fit the histogram format (filter is managed in frontend)
          */
-        function initClassicHistogram(valueField, label, dataTable) {
+        function initClassicHistogram () {
+            var valueField = 'occurrences';
+            var label = 'Occurrences';
+
+            var histogram = processClassicHistoData();
+            if (histogram) {
+                var keyField = histogram.keyField;
+                var adaptedData = histogram.adaptedData;
+                var filteredValueField = histogram.filteredValueField;
+                var adaptedFilteredData = histogram.adaptedFilteredData;
+
+                StateService.setStatisticsHistogram(initHorizontalHistogram(keyField, valueField, label, adaptedData, null));
+                StateService.setStatisticsFilteredHistogram(initHorizontalHistogram(keyField, filteredValueField, null, adaptedFilteredData, 'blueBar'));
+            }
+        }
+
+        /**
+         * @ngdoc method
+         * @name processClassicHistoData
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description prepares the frequency data
+         * @return {Object} the frequency details
+         */
+        function processClassicHistoData () {
+            var dataTable = state.playground.grid.selectedColumn.statistics.frequencyTable;
             if (!dataTable || !dataTable.length) {
                 return;
             }
             var keyField = 'formattedValue';
             var filteredValueField = 'filteredOccurrences';
+            var valueField = 'occurrences';
 
             var adaptedData = [];
             var adaptedFilteredData = [];
@@ -386,11 +467,13 @@
                 filteredItem[filteredValueField] = getClassicFilteredOccurrence(rec.data);
                 adaptedFilteredData.push(filteredItem);
             });
-
-            StateService.setStatisticsHistogram(initHorizontalHistogram(keyField, valueField, label, adaptedData, null));
-            StateService.setStatisticsFilteredHistogram(initHorizontalHistogram(keyField, filteredValueField, null, adaptedFilteredData, 'blueBar'));
+            return {
+                keyField: keyField,
+                filteredValueField: filteredValueField,
+                adaptedData: adaptedData,
+                adaptedFilteredData: adaptedFilteredData
+            };
         }
-
 
         /**
          * @ngdoc method
@@ -401,7 +484,7 @@
          * @param {Array} data The data to display
          * @description Create the histogram format for aggregation (filter is managed in backend)
          */
-        function getAggregationHistogram(valueField, label, data) {
+        function getAggregationHistogram (valueField, label, data) {
             var keyField = 'formattedValue';
 
             _.forEach(data, function (rec) {
@@ -422,7 +505,7 @@
          * @param {string} className The bar class name
          * @description Create a records frequency ranges table that fit the histogram format
          */
-        function initHorizontalHistogram(keyField, valueField, label, data, className) {
+        function initHorizontalHistogram (keyField, valueField, label, data, className) {
             return {
                 data: data,
                 label: label,
@@ -444,7 +527,7 @@
          * @param {Array} data The data to display
          * @description Create a records frequency ranges table that fit the histogram format
          */
-        function initVerticalHistogram(keyField, valueField, label, data) {
+        function initVerticalHistogram (keyField, valueField, label, data) {
             return {
                 data: data,
                 keyField: keyField,
@@ -462,7 +545,7 @@
          * @description Get the corresponding value within [min, max] interval.
          * If the value is not in the interval, we return min or max if it is under min or above max respectively
          */
-        function getValueWithinRange(value, min, max) {
+        function getValueWithinRange (value, min, max) {
             if (value < min) {
                 return min;
             }
@@ -479,7 +562,7 @@
          * @description Set the range slider limits to update the rangeSlider handlers
          * and the active/inactive bars of the vertical barchart
          */
-        function initRangeLimits() {
+        function initRangeLimits () {
             if (!state.playground.statistics.histogram) {
                 return;
             }
@@ -522,7 +605,7 @@
          * @description Cleans the value to have 2 decimals (5.2568845842587425588 -> 5.25)
          * @returns {number} The value in the clean format
          */
-        function clean(value) {
+        function clean (value) {
             return isNaN(value) || value === parseInt(value, 10) ? value : +value.toFixed(2);
         }
 
@@ -533,7 +616,7 @@
          * @param {object} column The target column
          * @description Initialize the statistics to display in the values TAB of the stats part
          */
-        function initStatisticsValues(column) {
+        function initStatisticsValues (column) {
             if (!column.statistics) {
                 return;
             }
@@ -589,7 +672,7 @@
          * @description update patterns statistics
          * @param {string} column The column to be updated
          */
-        function updateFilteredPatternsFrequency(column) {
+        function updateFilteredPatternsFrequency (column) {
             var patternFrequency = column.statistics.patternFrequencyTable;
             StateService.setStatisticsPatterns(patternFrequency);
 
@@ -629,7 +712,7 @@
          * @param {Array} patternFrequencyTable The pattern frequencies to update
          * @param {Array} filteredRecords The filtered records to process for the filtered occurrences number
          */
-        function patternOccurrenceWorker(columnId, patternFrequencyTable, filteredRecords) {
+        function patternOccurrenceWorker (columnId, patternFrequencyTable, filteredRecords) {
             _.forEach(patternFrequencyTable, function (patternFrequency) {
                 var pattern = patternFrequency.pattern;
                 var matchingFn = valueMatchPatternFn(pattern);
@@ -659,7 +742,7 @@
          * @description Check if the pattern is a date pattern
          * @param {string} pattern The pattern to check
          */
-        function isDatePattern(pattern) {
+        function isDatePattern (pattern) {
             return (pattern.indexOf('d') > -1 ||
             pattern.indexOf('M') > -1 ||
             pattern.indexOf('y') > -1 ||
@@ -676,7 +759,7 @@
          * @description Create a predicate that check if a value match the date pattern
          * @param {string} pattern The date pattern to match
          */
-        function valueMatchDatePatternFn(pattern) {
+        function valueMatchDatePatternFn (pattern) {
             var datePattern = workerFn0(pattern);
             return function (value) {
                 return value && moment(value, datePattern, true).isValid();
@@ -690,7 +773,7 @@
          * @description Create a predicate that check if a value match the regex pattern
          * @param {string} pattern The pattern to match
          */
-        function valueMatchRegexFn(pattern) {
+        function valueMatchRegexFn (pattern) {
             var regex = workerFn1(pattern);
             return function (value) {
                 return value && value.match(regex);
@@ -701,10 +784,11 @@
          * @ngdoc method
          * @name valueMatchPatternFn
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @description Create the adequat predicate that match the pattern. It can be empty, a date pattern, or an alphanumeric pattern
+         * @description Create the adequat predicate that match the pattern. It can be empty, a date pattern, or an
+         *     alphanumeric pattern
          * @param {string} pattern The pattern to match
          */
-        function valueMatchPatternFn(pattern) {
+        function valueMatchPatternFn (pattern) {
             if (pattern === '') {
                 return function (value) {
                     return value === '';
@@ -727,7 +811,7 @@
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @description Gathers the boxPlot data from the specific stats of the columns having a 'number' type
          */
-        function updateBoxplotData() {
+        function updateBoxplotData () {
             var specStats = service.statistics.specific;
 
             //waiting for DQ to process negative values
@@ -757,12 +841,12 @@
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @description Create a remove callback to reinit the current active limits on the current column range chart
          */
-        function getRangeFilterRemoveFn() {
+        function getRangeFilterRemoveFn () {
             var selectedColumn = state.playground.grid.selectedColumn;
             var columnMin = selectedColumn.statistics.min;
             var columnMax = selectedColumn.statistics.max;
 
-            return function removeFilterFn(filter) {
+            return function removeFilterFn (filter) {
                 var actualSelectedColumn = state.playground.grid.selectedColumn;
                 if (filter.colId === actualSelectedColumn.id) {
                     initRangeLimits();
@@ -782,7 +866,7 @@
          * @param {object} column The column to visualize
          * @description Remove the previous charts data and set the map chart
          */
-        function processMapData(column) {
+        function processMapData (column) {
             service.stateDistribution = column;
         }
 
@@ -793,24 +877,24 @@
          * @param {object} column The column to visualize
          * @description Reset the map chart and calculate the needed data for visualization
          */
-        function processNonMapData(column) {
+        function processNonMapData (column) {
             var simplifiedType = ConverterService.simplifyType(column.type);
             switch (simplifiedType) {
                 case 'integer':
                 case 'decimal':
-                    initRangeHistogram(column.statistics.histogram);
+                    initRangeHistogram();
                     updateBoxplotData();
                     initRangeLimits();
                     break;
                 case 'date':
-                    initDateRangeHistogram(column.statistics.histogram);
+                    initDateRangeHistogram();
                     break;
                 case 'text':
                 case 'boolean':
                     initClassicHistogram('occurrences', 'Occurrences', column.statistics.frequencyTable);
                     break;
                 default :
-                    console.log('nor a number neither a boolean neither a string but a ' + simplifiedType);
+                    console.log('nor a number neither a boolean, neither a string, neither a datebut a ' + simplifiedType);
             }
         }
 
@@ -820,7 +904,7 @@
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @description Processes the statistics data for visualization on the selected column
          */
-        function processData() {
+        function processData () {
             var column = state.playground.grid.selectedColumn;
             reset(true, false, false);
 
@@ -848,7 +932,7 @@
          * @param {string} aggregationName The aggregation to perform
          * @description Processes the statistics aggregation for visualization
          */
-        function processAggregation(column, aggregationName) {
+        function processAggregation (column, aggregationName) {
             if (!aggregationName) {
                 removeSavedColumnAggregation();
                 return processData();
@@ -892,7 +976,7 @@
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @description Get the saved dataset column aggregation.
          */
-        function getSavedColumnAggregation() {
+        function getSavedColumnAggregation () {
             var datasetId = state.playground.dataset && state.playground.dataset.id;
             var preparationId = state.playground.preparation && state.playground.preparation.id;
             var columnId = state.playground.grid.selectedColumn && state.playground.grid.selectedColumn.id;
@@ -905,7 +989,7 @@
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @description Delete the actual column aggregation key in localStorage
          */
-        function removeSavedColumnAggregation() {
+        function removeSavedColumnAggregation () {
             var datasetId = state.playground.dataset && state.playground.dataset.id;
             var preparationId = state.playground.preparation && state.playground.preparation.id;
             var columnId = state.playground.grid.selectedColumn && state.playground.grid.selectedColumn.id;
@@ -918,7 +1002,7 @@
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @description Update the actual dataset column aggregation in localStorage
          */
-        function saveColumnAggregation(aggregationName, colId) {
+        function saveColumnAggregation (aggregationName, colId) {
             var datasetId = state.playground.dataset && state.playground.dataset.id;
             var preparationId = state.playground.preparation && state.playground.preparation.id;
             var columnId = state.playground.grid.selectedColumn && state.playground.grid.selectedColumn.id;
@@ -937,7 +1021,7 @@
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @description Removes all the data to disable all visualization
          */
-        function getAggregationColumns() {
+        function getAggregationColumns () {
             if (state.playground.data) {
                 var column = state.playground.grid.selectedColumn;
                 //TODO JSO : put a cache again that is invalidated when one of the columns change
@@ -950,11 +1034,47 @@
         //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
+         * @name updateFilteredStatistics
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description responsible for updating the filtered data according to the selected column type
+         */
+        function updateFilteredStatistics () {
+            var column = state.playground.grid.selectedColumn;
+
+            var columnAggregation = getSavedColumnAggregation();
+            var aggregationName = columnAggregation && columnAggregation.aggregation;
+
+            if (!aggregationName) {
+                var horizontalData = processClassicHistoData();
+                var rangeData = processRangeHistoData();
+
+                var simplifiedType = ConverterService.simplifyType(column.type);
+                switch (simplifiedType) {
+                    case 'integer':
+                    case 'decimal':
+                        StateService.setStatisticsFilteredHistogram(initVerticalHistogram('data', 'filteredOccurrences', 'Filtered Occurrences', rangeData.filteredRangeData));
+                        initRangeLimits();
+                        break;
+                    case 'date':
+                        updateFilteredDateRange();
+                        break;
+                    case 'text':
+                    case 'boolean':
+                        StateService.setStatisticsFilteredHistogram(initHorizontalHistogram(horizontalData.keyField, horizontalData.filteredValueField, null, horizontalData.adaptedFilteredData, 'blueBar'));
+                        break;
+                }
+            }
+            //should be outside the IF(!aggregationName) statement because it does not depend on the aggregation
+            updateFilteredPatternsFrequency(column);
+        }
+
+        /**
+         * @ngdoc method
          * @name updateStatistics
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @description update aggregation for a selected column
          */
-        function updateStatistics() {
+        function updateStatistics () {
             var column = state.playground.grid.selectedColumn;
             reset(true, true, false);
             initStatisticsValues(column);
@@ -976,7 +1096,7 @@
          * @param {boolean} cache Clear cache
          * @description Removes data depending on the parameters
          */
-        function reset(charts, statistics, cache) {
+        function reset (charts, statistics, cache) {
             if (charts) {
                 service.boxPlot = null;
                 service.rangeLimits = null;

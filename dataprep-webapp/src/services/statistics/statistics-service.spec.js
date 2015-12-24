@@ -31,8 +31,8 @@ describe('Statistics service', function () {
             empty: 7,
             invalid: 8,
             valid: 9,
-            min: 10,
-            max: 11,
+            min: 0,
+            max: 20,
             mean: 12,
             variance: 13,
             quantiles: {
@@ -1089,7 +1089,32 @@ describe('Statistics service', function () {
                         'aze': 2,
                         '02/25/2015': 3
                     };
-                    stateMock.playground.statistics = {};
+                    stateMock.playground.statistics = {
+                        histogram: {
+                            data: [
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: 'Jan 2015',
+                                        min: new Date(2015, 0, 1),
+                                        max: new Date(2015, 1, 1)
+                                    },
+                                    occurrences: 15,
+                                    filteredOccurrences: 10
+                                },
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: 'Feb 2015',
+                                        min:  new Date(2015, 1, 1),
+                                        max: new Date(2015, 2, 1)
+                                    },
+                                    occurrences: 5,
+                                    filteredOccurrences: 3
+                                }
+                            ]
+                        }
+                    };
 
                     //when
                     StatisticsService.processData();
@@ -1105,8 +1130,7 @@ describe('Statistics service', function () {
                                     min: new Date(2015, 0, 1).getTime(),
                                     max: new Date(2015, 1, 1).getTime()
                                 },
-                                occurrences: 15,
-                                filteredOccurrences: 10
+                                occurrences: 15
                             },
                             {
                                 data: {
@@ -1115,8 +1139,7 @@ describe('Statistics service', function () {
                                     min:  new Date(2015, 1, 1).getTime(),
                                     max: new Date(2015, 2, 1).getTime()
                                 },
-                                occurrences: 5,
-                                filteredOccurrences: 3
+                                occurrences: 5
                             }],
                         keyField: 'data',
                         valueField: 'occurrences',
@@ -1159,7 +1182,32 @@ describe('Statistics service', function () {
                     stateMock.playground.grid.selectedColumn = barChartDateCol;
                     stateMock.playground.filter.gridFilters = [];
                     stateMock.playground.grid.filteredOccurences = null;
-                    stateMock.playground.statistics = {};
+                    stateMock.playground.statistics = {
+                        histogram: {
+                            data: [
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: 'Jan 2015',
+                                        min: new Date(2015, 0, 1),
+                                        max: new Date(2015, 1, 1)
+                                    },
+                                    occurrences: 15,
+                                    filteredOccurrences: 10
+                                },
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: 'Feb 2015',
+                                        min:  new Date(2015, 1, 1),
+                                        max: new Date(2015, 2, 1)
+                                    },
+                                    occurrences: 5,
+                                    filteredOccurrences: 3
+                                }
+                            ]
+                        }
+                    };
 
                     //when
                     StatisticsService.processData();
@@ -1175,8 +1223,7 @@ describe('Statistics service', function () {
                                     min: new Date(2015, 0, 1).getTime(),
                                     max: new Date(2015, 1, 1).getTime()
                                 },
-                                occurrences: 15,
-                                filteredOccurrences: 15
+                                occurrences: 15
                             },
                             {
                                 data: {
@@ -1185,8 +1232,7 @@ describe('Statistics service', function () {
                                     min:  new Date(2015, 1, 1).getTime(),
                                     max: new Date(2015, 2, 1).getTime()
                                 },
-                                occurrences: 5,
-                                filteredOccurrences: 5
+                                occurrences: 5
                             }],
                         keyField: 'data',
                         valueField: 'occurrences',
@@ -1227,6 +1273,32 @@ describe('Statistics service', function () {
                 it('should adapt date range label to century', inject(function (StatisticsService, StateService) {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColCENTURY;
+                    stateMock.playground.statistics = {
+                        histogram: {
+                            data: [
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: '[2000, 2100[',
+                                        min: new Date(2000, 0, 1),
+                                        max: new Date(2100, 0, 1)
+                                    },
+                                    occurrences: 15,
+                                    filteredOccurrences: 10
+                                },
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: '[2100, 2200[',
+                                        min: new Date(2100, 0, 1),
+                                        max: new Date(2200, 0, 1)
+                                    },
+                                    occurrences: 5,
+                                    filteredOccurrences: 3
+                                }
+                            ]
+                        }
+                    };
 
                     //when
                     StatisticsService.processData();
@@ -1250,6 +1322,32 @@ describe('Statistics service', function () {
                 it('should adapt date range label to decade', inject(function (StatisticsService, StateService) {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColDECADE;
+                    stateMock.playground.statistics = {
+                        histogram: {
+                            data: [
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: '[2000, 2010[',
+                                        min: new Date(2000, 0, 1),
+                                        max: new Date(2010, 0, 1)
+                                    },
+                                    occurrences: 15,
+                                    filteredOccurrences: 10
+                                },
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: '[2010, 2020[',
+                                        min: new Date(2010, 0, 1),
+                                        max: new Date(2020, 0, 1)
+                                    },
+                                    occurrences: 5,
+                                    filteredOccurrences: 3
+                                }
+                            ]
+                        }
+                    };
 
                     //when
                     StatisticsService.processData();
@@ -1273,6 +1371,32 @@ describe('Statistics service', function () {
                 it('should adapt date range label to year', inject(function (StatisticsService, StateService) {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColYEAR;
+                    stateMock.playground.statistics = {
+                        histogram: {
+                            data: [
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: '2014',
+                                        min: new Date(2014, 0, 1),
+                                        max: new Date(2015, 0, 1)
+                                    },
+                                    occurrences: 15,
+                                    filteredOccurrences: 10
+                                },
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: '2015',
+                                        min: new Date(2015, 0, 1),
+                                        max: new Date(2016, 0, 1)
+                                    },
+                                    occurrences: 5,
+                                    filteredOccurrences: 3
+                                }
+                            ]
+                        }
+                    };
 
                     //when
                     StatisticsService.processData();
@@ -1296,6 +1420,32 @@ describe('Statistics service', function () {
                 it('should adapt date range label to half year', inject(function (StatisticsService, StateService) {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColHAFLYEAR;
+                    stateMock.playground.statistics = {
+                        histogram: {
+                            data: [
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: 'H1 2014',
+                                        min: new Date(2014, 0, 1),
+                                        max: new Date(2014, 6, 1)
+                                    },
+                                    occurrences: 15,
+                                    filteredOccurrences: 10
+                                },
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: 'H2 2014',
+                                        min: new Date(2014, 6, 1),
+                                        max: new Date(2015, 0, 1)
+                                    },
+                                    occurrences: 5,
+                                    filteredOccurrences: 3
+                                }
+                            ]
+                        }
+                    };
 
                     //when
                     StatisticsService.processData();
@@ -1319,6 +1469,32 @@ describe('Statistics service', function () {
                 it('should adapt date range label to quarter', inject(function (StatisticsService, StateService) {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColQUARTER;
+                    stateMock.playground.statistics = {
+                        histogram: {
+                            data: [
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: 'Q1 2014',
+                                        min: new Date(2014, 0, 1),
+                                        max: new Date(2014, 3, 1)
+                                    },
+                                    occurrences: 15,
+                                    filteredOccurrences: 10
+                                },
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: 'Q2 2014',
+                                        min: new Date(2014, 3, 1),
+                                        max: new Date(2014, 6, 1)
+                                    },
+                                    occurrences: 5,
+                                    filteredOccurrences: 3
+                                }
+                            ]
+                        }
+                    };
 
                     //when
                     StatisticsService.processData();
@@ -1342,6 +1518,32 @@ describe('Statistics service', function () {
                 it('should adapt date range label to month', inject(function (StatisticsService, StateService) {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColMONTH;
+                    stateMock.playground.statistics = {
+                        histogram: {
+                            data: [
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: 'Jan 2015',
+                                        min: new Date(2015, 0, 1),
+                                        max: new Date(2015, 1, 1)
+                                    },
+                                    occurrences: 15,
+                                    filteredOccurrences: 10
+                                },
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: 'Feb 2015',
+                                        min: new Date(2015, 1, 1),
+                                        max: new Date(2015, 2, 1)
+                                    },
+                                    occurrences: 5,
+                                    filteredOccurrences: 3
+                                }
+                            ]
+                        }
+                    };
 
                     //when
                     StatisticsService.processData();
@@ -1365,6 +1567,32 @@ describe('Statistics service', function () {
                 it('should adapt date range label to week', inject(function (StatisticsService, StateService) {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColWEEK;
+                    stateMock.playground.statistics = {
+                        histogram: {
+                            data: [
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: 'W01 2016',
+                                        min: new Date(2016, 0, 4),
+                                        max: new Date(2016, 0, 11)
+                                    },
+                                    occurrences: 15,
+                                    filteredOccurrences: 10
+                                },
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: 'W02 2016',
+                                        min: new Date(2016, 0, 11),
+                                        max: new Date(2016, 0, 18)
+                                    },
+                                    occurrences: 5,
+                                    filteredOccurrences: 3
+                                }
+                            ]
+                        }
+                    };
 
                     //when
                     StatisticsService.processData();
@@ -1388,6 +1616,32 @@ describe('Statistics service', function () {
                 it('should adapt date range label to day', inject(function (StatisticsService, StateService) {
                     //given
                     stateMock.playground.grid.selectedColumn = barChartDateColDAY;
+                    stateMock.playground.statistics = {
+                        histogram: {
+                            data: [
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: 'Jan 1, 2016',
+                                        min: new Date(2016, 0, 1),
+                                        max: new Date(2016, 0, 2)
+                                    },
+                                    occurrences: 15,
+                                    filteredOccurrences: 10
+                                },
+                                {
+                                    data: {
+                                        type: 'date',
+                                        label: 'Jan 2, 2016',
+                                        min: new Date(2016, 0, 2),
+                                        max: new Date(2016, 0, 3)
+                                    },
+                                    occurrences: 5,
+                                    filteredOccurrences: 3
+                                }
+                            ]
+                        }
+                    };
 
                     //when
                     StatisticsService.processData();
@@ -1906,7 +2160,7 @@ describe('Statistics service', function () {
         });
     });
 
-    describe('Update Statistics : The statistics values', function () {
+    describe('init Statistics : The statistics values', function () {
         it('should init number statistics whithout quantile', inject(function (StatisticsService) {
             //given
             stateMock.playground.grid.selectedColumn = {
@@ -2226,6 +2480,217 @@ describe('Statistics service', function () {
         }));
     });
 
+    describe('Update Filtered Data Statistics Without an aggregation', function(){
+
+        var currentColumn = {                               // the selected column
+            'id': '0001',
+            'name': 'city',
+            'domain': '',
+            'type': '',
+            'statistics': {'patternFrequencyTable': []}
+        };
+        var datasetId = '13654634856752';                   // the current data id
+        var preparationId = '2132548345365';                // the current preparation id
+        var stepId = '9878645468';                          // the currently viewed step id
+
+        beforeEach(inject(function (StatisticsService, RecipeService, StorageService) {
+            stateMock.playground.grid.selectedColumn = currentColumn;
+            stateMock.playground.dataset = {id: datasetId};
+            stateMock.playground.preparation = {id: preparationId};
+            spyOn(RecipeService, 'getLastActiveStep').and.returnValue({transformation: {stepId: stepId}});
+            spyOn(StorageService, 'setAggregation').and.returnValue();
+            spyOn(StorageService, 'removeAggregation').and.returnValue();
+        }));
+
+        it('should update filtered Numeric data', inject(function(StatisticsService, StateService, StorageService){
+            //given
+            stateMock.playground.grid.selectedColumn = barChartNumCol;
+            stateMock.playground.filter.gridFilters = [{
+                colId: '0000',
+                type: 'inside_range',
+                args: {interval: [5, 10]}
+            }];
+            stateMock.playground.statistics.histogram = {};
+            stateMock.playground.grid.filteredOccurences = {
+                1: 2,
+                3: 1,
+                11: 6
+            };
+            spyOn(StorageService, 'getAggregation').and.returnValue();
+
+            //when
+            StatisticsService.updateFilteredStatistics();
+
+            //then
+            expect(StateService.setStatisticsFilteredHistogram).toHaveBeenCalledWith({
+                'data': [
+                    {
+                        'data': {
+                            'type': 'number',
+                            'min': 0,
+                            'max': 10
+                        },
+                        'filteredOccurrences': 3
+                    },
+                    {
+                        'data': {
+                            'type': 'number',
+                            'min': 10,
+                            'max': 20
+                        },
+                        'filteredOccurrences': 6
+                    }
+                ],
+                'keyField': 'data',
+                'valueField': 'filteredOccurrences',
+                'label': 'Filtered Occurrences',
+                'column': barChartNumCol,
+                'vertical': true
+            });
+            expect(StateService.setStatisticsHistogramActiveLimits).toHaveBeenCalledWith([5, 10]);
+        }));
+
+        it('should update filtered Date data', inject(function($rootScope, StatisticsService, StorageService, StateService){
+            //given
+            spyOn(StorageService, 'getAggregation').and.returnValue();
+            stateMock.playground.grid.selectedColumn = barChartDateCol;
+            stateMock.playground.filter.gridFilters = [{}];
+            stateMock.playground.grid.filteredOccurences = {
+                '05/01/2015': 6,
+                '12/01/2015': 4,
+                'aze': 2,
+                '02/25/2015': 3
+            };
+            stateMock.playground.statistics = {
+                histogram: {
+                    data: [
+                        {
+                            data: {
+                                type: 'date',
+                                label: 'Jan 2015',
+                                min: new Date(2015, 0, 1),
+                                max: new Date(2015, 1, 1)
+                            },
+                            occurrences: 15,
+                            filteredOccurrences: 10
+                        },
+                        {
+                            data: {
+                                type: 'date',
+                                label: 'Feb 2015',
+                                min:  new Date(2015, 1, 1),
+                                max: new Date(2015, 2, 1)
+                            },
+                            occurrences: 5,
+                            filteredOccurrences: 3
+                        }
+                    ]
+                }
+            };
+
+            //when
+            StatisticsService.updateFilteredStatistics();
+            $rootScope.$digest();
+
+            //then
+            expect(StateService.setStatisticsFilteredHistogram).toHaveBeenCalledWith({
+                data: [
+                    {
+                        data: {
+                            type: 'date',
+                            label: 'Jan 2015',
+                            min: new Date(2015, 0, 1),
+                            max: new Date(2015, 1, 1)
+                        },
+                        occurrences: 15,
+                        filteredOccurrences: 10
+                    },
+                    {
+                        data: {
+                            type: 'date',
+                            label: 'Feb 2015',
+                            min:  new Date(2015, 1, 1),
+                            max: new Date(2015, 2, 1)
+                        },
+                        occurrences: 5,
+                        filteredOccurrences: 3
+                    }],
+                keyField: 'data',
+                valueField: 'filteredOccurrences',
+                label: 'Filtered Occurrences',
+                column: barChartDateCol,
+                vertical: true
+            });
+        }));
+
+        it('should update filtered Text data', inject(function(StorageService, StatisticsService, StateService){
+            //given
+            stateMock.playground.grid.selectedColumn = barChartStrCol;
+            spyOn(StorageService, 'getAggregation').and.returnValue();
+            stateMock.playground.grid.filteredOccurences = {'   toto': 3, 'titi': 2};
+
+            //when
+            StatisticsService.updateFilteredStatistics();
+
+            //then
+            expect(StateService.setStatisticsFilteredHistogram).toHaveBeenCalledWith({
+                data: [
+                    {formattedValue: '<span class="hiddenChars">   </span>toto', filteredOccurrences: 3},
+                    {formattedValue: 'titi', filteredOccurrences: 2},
+                    {formattedValue: 'coucou', filteredOccurrences: 0},
+                    {formattedValue: 'cici', filteredOccurrences: 0}
+                ],
+                keyField: 'formattedValue',
+                valueField: 'filteredOccurrences',
+                label: null,
+                vertical: false,
+                className: 'blueBar',
+                column: barChartStrCol
+            });
+        }));
+
+        it('should NOT update ANY filtered data when there is an aggregation', inject(function(StorageService, StatisticsService, ConverterService){
+            //given
+            stateMock.playground.grid.selectedColumn = barChartStrCol;
+            spyOn(ConverterService, 'simplifyType').and.returnValue();
+            var savedAggregation = {
+                aggregationColumnId: '0002',
+                aggregation: 'MAX'
+            };
+            spyOn(StorageService, 'getAggregation').and.returnValue(savedAggregation);
+
+            //when
+            StatisticsService.updateFilteredStatistics();
+
+            //then
+            expect(ConverterService.simplifyType).not.toHaveBeenCalled();
+        }));
+
+        it('should update filtered Patterns Frequency', inject(function($rootScope, StatisticsService, StateService){
+            //given
+            stateMock.playground.grid.selectedColumn.statistics.patternFrequencyTable = [
+                {
+                    'pattern': '',
+                    'occurrences': 1
+                }
+            ];
+            stateMock.playground.grid.filteredRecords = [{
+                '0001': 'toto'
+            }];
+
+            //when
+            StatisticsService.updateFilteredStatistics();
+            $rootScope.$digest();
+
+            //then
+            expect(StateService.setStatisticsPatterns).toHaveBeenCalledWith([{
+                'pattern': '',
+                'occurrences': 1,
+                'filteredOccurrences': 1
+            }]);
+        }));
+    });
+
     describe('Update Statistics : Statistics routing (basic / aggregations)', function () {
         var currentColumn = {                               // the selected column
             'id': '0001',
@@ -2389,6 +2854,11 @@ describe('Statistics service', function () {
             stateMock.playground.filter.gridFilters = [];
             stateMock.playground.grid.filteredOccurences = null;
             StatisticsService.statistics = {};
+            stateMock.playground.statistics = {
+                histogram: {
+                    data: []
+                }
+            };
             expect(StatisticsService.histogram).toBeFalsy();
 
             StatisticsService.processData(); //create the worker

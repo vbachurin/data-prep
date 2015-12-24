@@ -55,7 +55,7 @@
                 var renderPrimaryTimeout, renderSecondaryTimeout;
 
                 // Define chart sizes and margin
-                var margin = {top: 15, right: 10, bottom: 10, left: 10};
+                var margin = {top: 15, right: 20, bottom: 10, left: 10};
                 var containerWidth = +attrs.width;
 
                 //------------------------------------------------------------------------------------------------------
@@ -125,16 +125,18 @@
                     yScale = d3.scale.ordinal().rangeBands([0, height], 0.18);
                 }
 
-                function initAxis(height) {
-                    xAxis = d3.svg
-                        .axis()
+                function initAxes(width, height) {
+                    var minSizeBetweenGrid = 40;
+                    var ticksThreshold = Math.ceil(width / minSizeBetweenGrid);
+                    var ticksNbre = xScale.domain()[1] > ticksThreshold ? ticksThreshold : xScale.domain()[1];
+
+                    xAxis = d3.svg.axis()
                         .scale(xScale)
-                        .tickFormat(d3.format('d'))
+                        .tickFormat(d3.format(',d'))
                         .orient('top')
                         .tickSize(-height)
-                        .ticks(Math.abs(xScale.range()[1] - xScale.range()[0]) / 50);
-                    yAxis = d3.svg
-                        .axis()
+                        .ticks(ticksNbre);
+                    yAxis = d3.svg.axis()
                         .scale(yScale)
                         .orient('left')
                         .tickSize(0);
@@ -152,17 +154,17 @@
                     svg.call(tooltip);
                 }
 
-                function configureAxisScales(statData) {
+                function configureScales(statData) {
                     xScale.domain([0, d3.max(statData, getPrimaryValue)]);
                     yScale.domain(statData.map(getKey));
                 }
 
                 function drawAxis() {
                     svg.append('g')
-                        .attr('class', 'x axis')
-                        .call(xAxis);
-
-                    svg.selectAll('.tick text').style('text-anchor', 'end');
+                        .attr('class', 'grid')
+                        .call(xAxis)
+                        .selectAll('.tick text')
+                        .style('text-anchor', 'middle');
 
                     svg.append('g')
                         .attr('class', 'y axis')
@@ -170,11 +172,12 @@
                 }
 
                 function drawBars(containerClassName, statData, getValue, barClassName) {
-                    svg.insert('g', '.labels')
-                        .attr('class', containerClassName)
+                    var bars = svg.select('.' + containerClassName)
                         .selectAll('.' + barClassName)
-                        .data(statData)
-                        .enter()
+                        .data(statData, function(d){return getKey(d);});
+
+                    //enter
+                    bars.enter()
                         .append('rect')
                         .attr('class', barClassName)
                         .attr('transform', function (d) {
@@ -188,6 +191,25 @@
                         .attr('width', function (d) {
                             return xScale(getValue(d));
                         });
+
+                    //update
+                    bars.transition().ease('exp').delay(function (d, i) {
+                            return i * 30;
+                        })
+                        .attr('width', function (d) {
+                            return xScale(getValue(d));
+                        });
+
+                    //exit
+                    //no need for the exit process as the size of the data is not changing
+                }
+
+                function createBarsContainers() {
+                    svg.append('g')
+                        .attr('class', 'primaryBar');
+
+                    svg.append('g')
+                        .attr('class', 'secondaryBar');
                 }
 
                 function drawKeysLabels(statData, width) {
@@ -250,10 +272,11 @@
                     var height = containerHeight - margin.top - margin.bottom;
 
                     initScales(width, height);
-                    initAxis(height);
+                    configureScales(firstVisuData);
+                    initAxes(width, height);
                     createContainer(containerWidth, containerHeight);
-                    configureAxisScales(firstVisuData);
                     drawAxis();
+                    createBarsContainers();
 
                     drawBars('primaryBar', firstVisuData, getPrimaryValue, getPrimaryClassName());
                     renderSecondaryBars(secondVisuData);
@@ -263,7 +286,6 @@
                 }
 
                 function renderSecondaryBars(secondVisuData) {
-                    d3.selectAll('g.secondaryBar').remove();
                     if(secondVisuData) {
                         drawBars('secondaryBar', secondVisuData, getSecondaryValue, getSecondaryClassName());
                     }

@@ -38,23 +38,29 @@
     }
   }
 
-  .axis {
+  .grid {
     shape-rendering: crispEdges;
 
     path {
       fill: none;
     }
 
-    &.x {
-      line {
-        stroke: #fff;
-        stroke-opacity: .0;
-      }
+    line {
+      stroke: #6c6769;
+      stroke-opacity: .1;
+    }
 
-      text {
-        font-size: .8em;
-        fill: $medium-gray;
-      }
+    text {
+      font-size: .8em;
+      fill: $medium-gray;
+    }
+  }
+
+  .axis {
+    shape-rendering: crispEdges;
+
+    path {
+      fill: none;
     }
 
     &.y {

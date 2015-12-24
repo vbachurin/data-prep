@@ -19,7 +19,7 @@ describe('Filter service', function () {
 
     beforeEach(inject(function(DatagridService, StateService, StatisticsService) {
         spyOn(StateService, 'addGridFilter').and.returnValue();
-        spyOn(StatisticsService, 'updateStatistics').and.returnValue();
+        spyOn(StatisticsService, 'updateFilteredStatistics').and.returnValue();
     }));
 
     describe('add filter', function () {
@@ -475,13 +475,13 @@ describe('Filter service', function () {
         it('should trigger statistics update', inject(function(FilterService, StatisticsService) {
             //given
             var removeFnCallback = function() {};
-            expect(StatisticsService.updateStatistics).not.toHaveBeenCalled();
+            expect(StatisticsService.updateFilteredStatistics).not.toHaveBeenCalled();
 
             //when
             FilterService.addFilter('contains', 'col1', 'column name', {phrase: 'toto'}, removeFnCallback);
 
             //then
-            expect(StatisticsService.updateStatistics).toHaveBeenCalled();
+            expect(StatisticsService.updateFilteredStatistics).toHaveBeenCalled();
         }));
     });
 
@@ -570,24 +570,24 @@ describe('Filter service', function () {
         it('should trigger statistics update on remove single', inject(function(FilterService, StatisticsService) {
             //given
             var filter = {};
-            expect(StatisticsService.updateStatistics).not.toHaveBeenCalled();
+            expect(StatisticsService.updateFilteredStatistics).not.toHaveBeenCalled();
 
             //when
             FilterService.removeFilter(filter);
 
             //then
-            expect(StatisticsService.updateStatistics).toHaveBeenCalled();
+            expect(StatisticsService.updateFilteredStatistics).toHaveBeenCalled();
         }));
 
         it('should trigger statistics update on remove all', inject(function(FilterService, StatisticsService) {
             //given
-            expect(StatisticsService.updateStatistics).not.toHaveBeenCalled();
+            expect(StatisticsService.updateFilteredStatistics).not.toHaveBeenCalled();
 
             //when
             FilterService.removeAllFilters();
 
             //then
-            expect(StatisticsService.updateStatistics).toHaveBeenCalled();
+            expect(StatisticsService.updateFilteredStatistics).toHaveBeenCalled();
         }));
     });
 
@@ -734,13 +734,13 @@ describe('Filter service', function () {
                 },
                 filterFn: function() {}
             };
-            expect(StatisticsService.updateStatistics).not.toHaveBeenCalled();
+            expect(StatisticsService.updateFilteredStatistics).not.toHaveBeenCalled();
 
             //when
             FilterService.updateFilter(oldFilter, 'Tata');
 
             //then
-            expect(StatisticsService.updateStatistics).toHaveBeenCalled();
+            expect(StatisticsService.updateFilteredStatistics).toHaveBeenCalled();
         }));
     });
 });
