@@ -47,6 +47,7 @@ import com.jayway.restassured.response.Response;
 public abstract class ApiServiceTestBase {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(ApiServiceTestBase.class);
+
     @Value("${local.server.port}")
     protected int port;
 

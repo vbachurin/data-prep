@@ -37,6 +37,7 @@ import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.exception.error.PreparationErrorCodes;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
@@ -100,12 +101,11 @@ public class TransformationService {
 
     /** Preparation service url. */
     @Value("${preparation.service.url}")
-    protected String preparationServiceUrl;
+    private String preparationServiceUrl;
 
     /** Http client used to retrieve datasets or preparations. */
     @Autowired
     private HttpClient httpClient;
-
 
     /**
      * Apply the preparation to the dataset out of the given IDs.
@@ -121,12 +121,12 @@ public class TransformationService {
     @ApiOperation(value = "Transform the given preparation to the given format on the given dataset id", notes = "This operation transforms the dataset using preparation id in the provided format.")
     @VolumeMetered
     //@formatter:off
-    public void v2Transform(@ApiParam(value = "Preparation id to apply.") @PathVariable(value = "preparationId") final String preparationId,
-                            @ApiParam(value = "DataSet id to transform.") @PathVariable(value = "datasetId") final String datasetId,
-                            @ApiParam(value = "Output format") @PathVariable("format") final String formatName,
-                            @ApiParam(value = "Step id", defaultValue = "head") @RequestParam(value = "stepId", required = false, defaultValue = "head") final String stepId,
-                            @ApiParam(value = "Name of the transformation", defaultValue = "untitled") @RequestParam(value = "name", required = false, defaultValue = "untitled") final String name,
-                            final OutputStream output) {
+    public void applyOnDataset(@ApiParam(value = "Preparation id to apply.") @PathVariable(value = "preparationId") final String preparationId,
+                               @ApiParam(value = "DataSet id to transform.") @PathVariable(value = "datasetId") final String datasetId,
+                               @ApiParam(value = "Output format") @PathVariable("format") final String formatName,
+                               @ApiParam(value = "Step id", defaultValue = "head") @RequestParam(value = "stepId", required = false, defaultValue = "head") final String stepId,
+                               @ApiParam(value = "Name of the transformation", defaultValue = "untitled") @RequestParam(value = "name", required = false, defaultValue = "untitled") final String name,
+                               final OutputStream output) {
         //@formatter:on
 
         final ObjectMapper mapper = builder.build();
@@ -136,13 +136,17 @@ public class TransformationService {
         try {
 
             final HttpResponse datasetGet = httpClient.execute(datasetRetrieval);
+            final HttpStatus status = HttpStatus.valueOf(datasetGet.getStatusLine().getStatusCode());
+            if (status.is4xxClientError() || status.is5xxServerError() || status.value() == HttpStatus.NO_CONTENT.value()) {
+                throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT);
+            }
             InputStream datasetContent = datasetGet.getEntity().getContent();
 
             // the parser need to be encapsulated within an auto closeable bloc so that the dataset can be fully
             // streamed
             try (JsonParser parser = mapper.getFactory().createParser(datasetContent)) {
                 final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-                internalTransform(formatName, dataSet, output, preparationId, stepId, name);
+                internalTransform(preparationId, dataSet, output, formatName, stepId, name);
             }
 
         } catch (Exception e) {
@@ -168,12 +172,12 @@ public class TransformationService {
     @ApiOperation(value = "Apply the given preparation to the given format on the given content", notes = "This operation transforms the content using preparation id to the provided format.")
     @VolumeMetered
     //@formatter:off
-    public void v2TransformContent(@ApiParam(value = "Preparation id to apply.") @PathVariable(value = "preparationId") final String preparationId,
-                                   @ApiParam(value = "Data set content as JSON.") final InputStream datasetContent,
-                                   @ApiParam(value = "Output format") @PathVariable("format") final String formatName,
-                                   @ApiParam(value = "Step id", defaultValue = "head") @RequestParam(value = "stepId", required = false, defaultValue = "head") final String stepId,
-                                   @ApiParam(value = "Name of the transformation", defaultValue = "untitled") @RequestParam(value = "name", required = false, defaultValue = "untitled") final String name,
-                                   final OutputStream output) {
+    public void applyOnContent(@ApiParam(value = "Preparation id to apply.") @PathVariable(value = "preparationId") final String preparationId,
+                               @ApiParam(value = "Data set content as JSON.") final InputStream datasetContent,
+                               @ApiParam(value = "Output format") @PathVariable("format") final String formatName,
+                               @ApiParam(value = "Step id", defaultValue = "head") @RequestParam(value = "stepId", required = false, defaultValue = "head") final String stepId,
+                               @ApiParam(value = "Name of the transformation", defaultValue = "untitled") @RequestParam(value = "name", required = false, defaultValue = "untitled") final String name,
+                               final OutputStream output) {
     //@formatter:on
 
         final ObjectMapper mapper = builder.build();
@@ -182,8 +186,7 @@ public class TransformationService {
         try (JsonParser parser = mapper.getFactory().createParser(datasetContent)) {
             final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
             internalTransform(formatName, dataSet, output, preparationId, stepId, name);
-        }
- catch (Exception e) {
+        } catch (Exception e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
         }
     }
@@ -252,16 +255,14 @@ public class TransformationService {
         } catch (IOException e) {
             final ExceptionContext context = ExceptionContext.build().put("id", preparationId).put("version", stepId);
             throw new TDPException(PreparationErrorCodes.UNABLE_TO_READ_PREPARATION, e, context);
-        }
- finally {
+        } finally {
             actionsRetrieval.releaseConnection();
         }
     }
 
-
     /**
-     * Returns all {@link ActionMetadata actions} data prep may apply to a column. Column is optional and only needed
-     * to fill out default parameter values.
+     * Returns all {@link ActionMetadata actions} data prep may apply to a column. Column is optional and only needed to
+     * fill out default parameter values.
      *
      * @return A list of {@link ActionMetadata} that can be applied to this column.
      * @see #suggest(ColumnMetadata, int)
@@ -280,7 +281,7 @@ public class TransformationService {
      * Suggest what {@link ActionMetadata actions} can be applied to <code>column</code>.
      *
      * @param column A {@link ColumnMetadata column} definition.
-     * @param limit  An optional limit parameter to return the first <code>limit</code> suggestions.
+     * @param limit An optional limit parameter to return the first <code>limit</code> suggestions.
      * @return A list of {@link ActionMetadata} that can be applied to this column.
      * @see #suggest(DataSet)
      */
@@ -298,7 +299,8 @@ public class TransformationService {
                 .collect(toList());
         final List<Suggestion> suggestions = suggestionEngine.score(actions, column);
         return suggestions.stream() //
-                .filter(s -> s.getScore() > 0) // Keep only strictly positive score (negative and 0 indicates not applicable)
+                .filter(s -> s.getScore() > 0) // Keep only strictly positive score (negative and 0 indicates not
+                                               // applicable)
                 .limit(limit) //
                 .map(Suggestion::getAction) // Get the action for positive suggestions
                 .map(am -> am.adapt(column)) // Adapt default values (e.g. column name)
@@ -369,6 +371,4 @@ public class TransformationService {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
-
-
 }
