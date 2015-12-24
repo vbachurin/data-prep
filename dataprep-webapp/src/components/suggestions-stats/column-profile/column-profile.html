@@ -57,7 +57,7 @@
                                ng-if="columnProfileCtrl.state.playground.statistics.histogram.vertical"
                                width="300"
                                height="150"
-                               axis-type="columnProfileCtrl.histogram.column.type"
+                               show-x-axis="columnProfileCtrl.state.playground.statistics.histogram.column.type === 'date'"
                                on-click="columnProfileCtrl.addRangeFilter(interval)"
 
                                key-field="{{columnProfileCtrl.state.playground.statistics.histogram.keyField}}"

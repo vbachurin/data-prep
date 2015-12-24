@@ -11,6 +11,7 @@
      *     width="320"
      *     height="400"
      *     on-click="clickFn(interval)"
+     *     show-x-axis="show"
      *
      *     key-field="country"
      *     key-label="Country of the world"
@@ -24,6 +25,7 @@
      * </vertical-barchart>
      * @param {number}      width The chart width
      * @param {number}      height The chart height
+     * @param {boolean} showXAxis Determine if the x-axis should be drawn
      * @param {function}    onClick The callback on chart bar click. The interval is an Object {min: minValue, max, maxValue}
      * @param {string}      keyField The key property name in primaryData elements
      * @param {string}      keyLabel The label property name in primaryData elements
@@ -46,7 +48,7 @@
                 primaryValueField: '@',
                 secondaryData: '=',
                 secondaryValueField: '@',
-                axisType: '='
+                showXAxis: '='
             },
             link: function (scope, element, attrs) {
                 var oldVisuData;
@@ -83,6 +85,10 @@
                 //------------------------------------------------------------------------------------------------------
                 //------------------------------------------ Data adaptation -------------------------------------------
                 //------------------------------------------------------------------------------------------------------
+                function getXAxisDomain(data) {
+                    return getRangeLabel(data) || getInterval(data);
+                }
+
                 function getInterval(data) {
                     var range = getRangeInfos(data);
                     return [range.min, range.max];
@@ -123,15 +129,15 @@
                 //------------------------------------------------------------------------------------------------------
                 var svg, xScale, yScale;
 
-                function initSizesByDataType (){
+                function initChartSizes (){
                     margin = {
                         top: 20,
                         right: 20,
-                        bottom: scope.axisType === 'date' ? 100 : 10,
+                        bottom: scope.showXAxis ? 100 : 10,
                         left: 15
                     };
                     containerWidth = +attrs.width;
-                    containerHeight = scope.axisType === 'date' ? +attrs.height + 100 : +attrs.height;
+                    containerHeight = +attrs.height + margin.bottom;
                     width = containerWidth - margin.left - margin.right;
                     height = containerHeight - margin.top - margin.bottom;
                 }
@@ -139,6 +145,11 @@
                 function initScales (){
                     xScale = d3.scale.ordinal().rangeRoundBands([0, width], 0.2);
                     yScale = d3.scale.linear().range([height, 0]);
+                }
+
+                function configureAxisScales(statData) {
+                    xScale.domain(statData.map(getXAxisDomain));
+                    yScale.domain([0, d3.max(statData, getPrimaryValue)]);
                 }
 
                 function createContainer() {
@@ -152,11 +163,6 @@
                     svg.call(tooltip);
                 }
 
-                function configureAxisScales(statData) {
-                    xScale.domain(statData.map(getInterval));
-                    yScale.domain([0, d3.max(statData, getPrimaryValue)]);
-                }
-
                 function drawBars(containerClassName, statData, getValue, barClassName) {
                     svg.insert('g', '.grid')
                         .attr('class', containerClassName)
@@ -166,7 +172,7 @@
                         .append('rect')
                         .attr('class', barClassName)
                         .attr('x', function (d) {
-                            return xScale(getInterval(d));
+                            return xScale(getXAxisDomain(d));
                         })
                         .attr('width', xScale.rangeBand())
                         .attr('y', function () {
@@ -184,26 +190,32 @@
                         });
                 }
 
-                function drawXaxis(statData) {
-                    var xAxisScale = d3.scale.ordinal().rangeRoundBands([0, width], 0.2);
-                    xAxisScale.domain(statData.map(getRangeLabel));
+                function drawXAxis() {
                     svg.append('g')
                         .attr('class', 'x axis')
                         .attr('transform', 'translate(0,' + height + ')')
                         .call(d3.svg.axis()
-                            .scale(xAxisScale)
+                            .scale(xScale)
                             .orient('bottom')
                             .ticks(5)
                         )
                         .selectAll('text')
-                            .attr('y', 5)
-                            .attr('x', -9)
-                            .attr('dy', '.35em')
-                            .style('text-anchor', 'end')
-                            .attr('transform', 'rotate(270)')
-                        .transition()
-                            .duration(1000)
-                            .attr('transform', 'rotate(295)');
+                        .attr('y', 5)
+                        .attr('x', -9)
+                        .attr('dy', '.35em')
+                        .style('text-anchor', 'end')
+                        .attr('transform', 'rotate(295)');
+                }
+
+                function drawYAxis() {
+                    svg.append('g')
+                        .attr('class', 'yAxis')
+                        .append('text')
+                        .attr('x', -height / 2)
+                        .attr('y', -2)
+                        .attr('transform', 'rotate(-90)')
+                        .style('text-anchor', 'middle')
+                        .text(labelTooltip);
                 }
 
                 function drawHorizontalGrid() {
@@ -228,17 +240,6 @@
                         .style('text-anchor', 'end');
                 }
 
-                function drawYAxisLegend() {
-                    svg.append('g')
-                        .attr('class', 'yAxis')
-                        .append('text')
-                        .attr('x', -height / 2)
-                        .attr('y', -2)
-                        .attr('transform', 'rotate(-90)')
-                        .style('text-anchor', 'middle')
-                        .text(labelTooltip);
-                }
-
                 function drawHoverBars(statData) {
                     svg.selectAll('g.bg-rect')
                         .data(statData)
@@ -246,7 +247,7 @@
                         .append('g')
                         .attr('class', 'hover')
                         .attr('transform', function (d) {
-                            return 'translate(' + (xScale(getInterval(d)) - 2) + ', 0)';
+                            return 'translate(' + (xScale(getXAxisDomain(d)) - 2) + ', 0)';
                         })
                         .append('rect')
                         .attr('width', xScale.rangeBand() + 4)
@@ -270,18 +271,18 @@
                 //------------------------------------------- Chart render ---------------------------------------------
                 //------------------------------------------------------------------------------------------------------
                 function renderWholeVBarchart(firstVisuData, secondVisuData) {
-                    initSizesByDataType();
+                    initChartSizes();
                     initScales();
                     createContainer();
                     configureAxisScales(firstVisuData);
-                    if(scope.axisType === 'date'){
-                        drawXaxis(firstVisuData);
+                    if(scope.showXAxis){
+                        drawXAxis(firstVisuData);
                     }
                     drawBars('primaryBar', firstVisuData, getPrimaryValue, 'bar');
                     renderSecondVBars(secondVisuData);
 
                     drawHorizontalGrid();
-                    drawYAxisLegend();
+                    drawYAxis();
                     drawHoverBars(firstVisuData);
                     scope.buckets = d3.selectAll('rect.bar');
                 }

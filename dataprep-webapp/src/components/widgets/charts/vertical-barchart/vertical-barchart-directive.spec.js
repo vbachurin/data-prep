@@ -32,7 +32,7 @@ describe('verticalBarchart directive', function () {
             scope.onClick = jasmine.createSpy('onClick');
 
             element = angular.element('<vertical-barchart id="barChart" width="250" height="400"' +
-                'axis-type="dataType"'+
+                'show-x-axis="showXAxis"'+
                 'on-click="onClick(interval)"' +
                 'key-field="data"' +
                 'primary-data="primaryData"' +
@@ -75,6 +75,36 @@ describe('verticalBarchart directive', function () {
             expect(element.find('.secondaryBar > rect').length).toBe(0);
             expect(element.find('.grid').length).toBe(1);
             expect(element.find('.bg-rect').length).toBe(statsData.length);
+        });
+
+        it('should render x-axis', function () {
+            //given
+            createElement();
+
+            //when
+            scope.primaryData = statsData;
+            scope.secondaryData = secondaryStatsData;
+            scope.showXAxis = true;
+            scope.$digest();
+            jasmine.clock().tick(100);
+
+            //then
+            expect(element.find('.x.axis').length).toBe(1);
+        });
+
+        it('should NOT render x-axis', function () {
+            //given
+            createElement();
+
+            //when
+            scope.primaryData = statsData;
+            scope.secondaryData = secondaryStatsData;
+            scope.dataType = false;
+            scope.$digest();
+            jasmine.clock().tick(100);
+
+            //then
+            expect(element.find('.x.axis').length).toBe(0);
         });
 
         it('should render primary and secondary bars after a 100ms delay', function () {
