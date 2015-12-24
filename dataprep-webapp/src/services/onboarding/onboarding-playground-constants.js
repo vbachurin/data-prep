@@ -33,7 +33,7 @@
             position: 'left'
         },
         {
-            element: '#message-icon-playground',
+            element: '#playground-feedback-icon',
             title: '',
             content: 'Click here to send feedback to Talend.',
             position: 'bottom'
