@@ -14,7 +14,6 @@ import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.folder.Folder;
 import org.talend.dataprep.api.folder.FolderContent;
 import org.talend.dataprep.api.folder.FolderEntry;
-import org.talend.dataprep.date.LocalDateTimeModule;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -174,7 +173,6 @@ public class FolderAPITest extends ApiServiceTestBase {
         createFolderEntry(folderEntry3);
 
         final ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new LocalDateTimeModule());
 
         //when
         String list = when() //
@@ -208,7 +206,6 @@ public class FolderAPITest extends ApiServiceTestBase {
         createFolderEntry(folderEntry3);
 
         final ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new LocalDateTimeModule());
 
         //when
         String list = when() //
@@ -242,7 +239,6 @@ public class FolderAPITest extends ApiServiceTestBase {
         createFolderEntry(folderEntry3);
 
         final ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new LocalDateTimeModule());
 
         //when
         String list = when() //
@@ -276,7 +272,6 @@ public class FolderAPITest extends ApiServiceTestBase {
         createFolderEntry(folderEntry3);
 
         final ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new LocalDateTimeModule());
 
         //when
         String list = when() //

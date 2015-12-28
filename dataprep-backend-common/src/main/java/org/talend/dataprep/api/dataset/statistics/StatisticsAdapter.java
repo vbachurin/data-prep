@@ -230,9 +230,9 @@ public class StatisticsAdapter {
             final NumberFormat format = DecimalFormat.getInstance(ENGLISH);
 
             // Set histogram ranges
-            final Histogram<Double> histogram = new NumberHistogram();
+            final Histogram histogram = new NumberHistogram();
             histogramStatistics.forEach((rangeValues, occurrence) -> {
-                final HistogramRange<Double> range = new HistogramRange<>();
+                final HistogramRange range = new HistogramRange();
                 try {
                     range.getRange().setMax(new Double(format.format(rangeValues.getUpper())));
                     range.getRange().setMin(new Double(format.format(rangeValues.getLower())));
@@ -250,7 +250,7 @@ public class StatisticsAdapter {
 
     private void injectDateHistogram(final ColumnMetadata column, final Analyzers.Result result) {
         if (DATE.isAssignableFrom(column.getType()) && result.exist(StreamDateHistogramStatistics.class)) {
-            final Histogram<LocalDateTime> histogram = result.get(StreamDateHistogramStatistics.class).getHistogram();
+            final Histogram histogram = result.get(StreamDateHistogramStatistics.class).getHistogram();
             column.getStatistics().setHistogram(histogram);
         }
     }

@@ -193,14 +193,18 @@
                 .value();
 
             var rangeData = _.map(histoData.items, function (histDatum) {
-                var minDate = new Date(histDatum.range.min.year, histDatum.range.min.monthValue - 1, histDatum.range.min.dayOfMonth);
-                var maxDate = new Date(histDatum.range.max.year, histDatum.range.max.monthValue - 1, histDatum.range.max.dayOfMonth);
+                //range are UTC dates. We convert them to local zone date, so the app date manipulation is easier.
+                var minDate = new Date(histDatum.range.min);
+                minDate.setTime(minDate.getTime() + (minDate.getTimezoneOffset() * 60 * 1000));
+                var maxDate = new Date(histDatum.range.max);
+                maxDate.setTime(maxDate.getTime() + (maxDate.getTimezoneOffset() * 60 * 1000));
+
                 return {
                     'data': {
                         type: 'date',
                         label: getDateLabel(histoData.pace, minDate, maxDate),
-                        min: minDate,
-                        max: maxDate
+                        min: minDate.getTime(),
+                        max: maxDate.getTime()
                     },
                     'occurrences': histDatum.occurrences
                 };
@@ -265,8 +269,8 @@
          */
         function dateFilteredOccurrenceWorker(rangeData, patterns, filteredOccurences) {
             _.forEach(rangeData, function (range) {
-                var minTimestamp = range.data.min.getTime();
-                var maxTimestamp = range.data.max.getTime();
+                var minTimestamp = range.data.min;
+                var maxTimestamp = range.data.max;
 
                 range.filteredOccurrences = !filteredOccurences ?
                     range.occurrences :

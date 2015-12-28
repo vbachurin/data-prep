@@ -53,31 +53,15 @@ describe('Statistics service', function () {
                     {
                         'occurrences': 15,
                         'range': {
-                            'min': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2015
-                            },
-                            'max': {
-                                dayOfMonth: 1,
-                                monthValue: 2,
-                                year: 2015
-                            }
+                            'min': 1420070400000, // 01/01/2015
+                            'max': 1422748800000 // 01/02/2015
                         }
                     },
                     {
                         'occurrences': 5,
                         'range': {
-                            'min': {
-                                dayOfMonth: 1,
-                                monthValue: 2,
-                                year: 2015
-                            },
-                            'max': {
-                                dayOfMonth: 1,
-                                monthValue: 3,
-                                year: 2015
-                            }
+                            'min': 1422748800000, // 01/02/2015
+                            'max': 1425168000000 // 01/03/2015
                         }
                     }
                 ]
@@ -120,31 +104,15 @@ describe('Statistics service', function () {
                     {
                         'occurrences': 15,
                         'range': {
-                            'min': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2000
-                            },
-                            'max': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2100
-                            }
+                            'min': 946684800000, // 01/01/2000
+                            'max': 4102444800000 // 01/01/2100
                         }
                     },
                     {
                         'occurrences': 5,
                         'range': {
-                            'min': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2100
-                            },
-                            'max': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2200
-                            }
+                            'min': 4102444800000, // 01/01/2100
+                            'max': 7258118400000 // 01/01/2200
                         }
                     }
                 ]
@@ -187,31 +155,15 @@ describe('Statistics service', function () {
                     {
                         'occurrences': 15,
                         'range': {
-                            'min': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2000
-                            },
-                            'max': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2010
-                            }
+                            'min': 946684800000, // 01/01/2000
+                            'max': 1262304000000 // 01/01/2010
                         }
                     },
                     {
                         'occurrences': 5,
                         'range': {
-                            'min': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2010
-                            },
-                            'max': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2020
-                            }
+                            'min': 1262304000000, // 01/01/2010
+                            'max': 1577836800000 // 01/01/2020
                         }
                     }
                 ]
@@ -254,31 +206,15 @@ describe('Statistics service', function () {
                     {
                         'occurrences': 15,
                         'range': {
-                            'min': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2014
-                            },
-                            'max': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2015
-                            }
+                            'min': 1388534400000, // 01/01/2014
+                            'max': 1420070400000 // 01/01/2015
                         }
                     },
                     {
                         'occurrences': 5,
                         'range': {
-                            'min': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2015
-                            },
-                            'max': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2016
-                            }
+                            'min': 1420070400000, // 01/01/2015
+                            'max': 1451606400000 // 01/01/2016
                         }
                     }
                 ]
@@ -321,31 +257,15 @@ describe('Statistics service', function () {
                     {
                         'occurrences': 15,
                         'range': {
-                            'min': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2014
-                            },
-                            'max': {
-                                dayOfMonth: 1,
-                                monthValue: 7,
-                                year: 2014
-                            }
+                            'min': 1388534400000, // 01/01/2014
+                            'max': 1404172800000 // 01/07/2014
                         }
                     },
                     {
                         'occurrences': 5,
                         'range': {
-                            'min': {
-                                dayOfMonth: 1,
-                                monthValue: 7,
-                                year: 2014
-                            },
-                            'max': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2015
-                            }
+                            'min': 1404172800000, // 01/07/2014
+                            'max': 1420070400000 // 01/01/2015
                         }
                     }
                 ]
@@ -388,31 +308,15 @@ describe('Statistics service', function () {
                     {
                         'occurrences': 15,
                         'range': {
-                            'min': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2014
-                            },
-                            'max': {
-                                dayOfMonth: 1,
-                                monthValue: 4,
-                                year: 2014
-                            }
+                            'min': 1388534400000, // 01/01/2015
+                            'max': 1396310400000 // 01/04/2015
                         }
                     },
                     {
                         'occurrences': 5,
                         'range': {
-                            'min': {
-                                dayOfMonth: 1,
-                                monthValue: 4,
-                                year: 2014
-                            },
-                            'max': {
-                                dayOfMonth: 1,
-                                monthValue: 7,
-                                year: 2014
-                            }
+                            'min': 1396310400000, // 01/04/2015
+                            'max': 1404172800000 // 01/07/2014
                         }
                     }
                 ]
@@ -455,31 +359,15 @@ describe('Statistics service', function () {
                     {
                         'occurrences': 15,
                         'range': {
-                            'min': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2015
-                            },
-                            'max': {
-                                dayOfMonth: 1,
-                                monthValue: 2,
-                                year: 2015
-                            }
+                            'min': 1420070400000, // 01/01/2015
+                            'max': 1422748800000 // 01/02/2015
                         }
                     },
                     {
                         'occurrences': 5,
                         'range': {
-                            'min': {
-                                dayOfMonth: 1,
-                                monthValue: 2,
-                                year: 2015
-                            },
-                            'max': {
-                                dayOfMonth: 1,
-                                monthValue: 3,
-                                year: 2015
-                            }
+                            'min': 1422748800000, // 01/02/2015
+                            'max': 1425168000000 // 01/03/2015
                         }
                     }
                 ]
@@ -522,31 +410,15 @@ describe('Statistics service', function () {
                     {
                         'occurrences': 15,
                         'range': {
-                            'min': {
-                                dayOfMonth: 4,
-                                monthValue: 1,
-                                year: 2016
-                            },
-                            'max': {
-                                dayOfMonth: 11,
-                                monthValue: 1,
-                                year: 2016
-                            }
+                            'min': 1451865600000, // 04/01/2016
+                            'max': 1452470400000 // 11/01/2016
                         }
                     },
                     {
                         'occurrences': 5,
                         'range': {
-                            'min': {
-                                dayOfMonth: 11,
-                                monthValue: 1,
-                                year: 2016
-                            },
-                            'max': {
-                                dayOfMonth: 18,
-                                monthValue: 1,
-                                year: 2016
-                            }
+                            'min': 1452470400000, // 11/01/2016
+                            'max': 1453075200000 // 18/01/2016
                         }
                     }
                 ]
@@ -589,31 +461,15 @@ describe('Statistics service', function () {
                     {
                         'occurrences': 15,
                         'range': {
-                            'min': {
-                                dayOfMonth: 1,
-                                monthValue: 1,
-                                year: 2016
-                            },
-                            'max': {
-                                dayOfMonth: 2,
-                                monthValue: 1,
-                                year: 2016
-                            }
+                            'min': 1451606400000, // 01/01/2016
+                            'max': 1451692800000 // 02/01/2016
                         }
                     },
                     {
                         'occurrences': 5,
                         'range': {
-                            'min': {
-                                dayOfMonth: 2,
-                                monthValue: 1,
-                                year: 2016
-                            },
-                            'max': {
-                                dayOfMonth: 3,
-                                monthValue: 1,
-                                year: 2016
-                            }
+                            'min': 1451692800000, // 02/01/2016
+                            'max': 1451779200000 // 03/01/2016
                         }
                     }
                 ]
@@ -1221,30 +1077,30 @@ describe('Statistics service', function () {
                     expect(StatisticsService.histogram.data[0].data).toEqual({
                         type: 'date',
                         label: 'Jan 2015',
-                        min: new Date(2015, 0, 1),
-                        max: new Date(2015, 1, 1)
+                        min: new Date(2015, 0, 1).getTime(),
+                        max: new Date(2015, 1, 1).getTime()
                     });
                     expect(StatisticsService.histogram.data[1].occurrences).toBe(5); //['01/02/2015', '01/03/2015'[
                     expect(StatisticsService.histogram.data[1].data).toEqual({
                         type: 'date',
                         label: 'Feb 2015',
-                        min: new Date(2015, 1, 1),
-                        max: new Date(2015, 2, 1)
+                        min: new Date(2015, 1, 1).getTime(),
+                        max: new Date(2015, 2, 1).getTime()
                     });
 
                     expect(StatisticsService.filteredHistogram.data[0].filteredOccurrences).toBe(10); //['01/01/2015', '01/02/2015'[
                     expect(StatisticsService.filteredHistogram.data[0].data).toEqual({
                         type: 'date',
                         label: 'Jan 2015',
-                        min: new Date(2015, 0, 1),
-                        max: new Date(2015, 1, 1)
+                        min: new Date(2015, 0, 1).getTime(),
+                        max: new Date(2015, 1, 1).getTime()
                     });
                     expect(StatisticsService.filteredHistogram.data[1].filteredOccurrences).toBe(3); //['01/02/2015', '01/03/2015'[
                     expect(StatisticsService.filteredHistogram.data[1].data).toEqual({
                         type: 'date',
                         label: 'Feb 2015',
-                        min: new Date(2015, 1, 1),
-                        max: new Date(2015, 2, 1)
+                        min: new Date(2015, 1, 1).getTime(),
+                        max: new Date(2015, 2, 1).getTime()
                     });
                 }));
 
@@ -1265,30 +1121,30 @@ describe('Statistics service', function () {
                     expect(StatisticsService.histogram.data[0].data).toEqual({
                         type: 'date',
                         label: 'Jan 2015',
-                        min: new Date(2015, 0, 1),
-                        max: new Date(2015, 1, 1)
+                        min: new Date(2015, 0, 1).getTime(),
+                        max: new Date(2015, 1, 1).getTime()
                     });
                     expect(StatisticsService.histogram.data[1].occurrences).toBe(5); //['01/02/2015', '01/03/2015'[
                     expect(StatisticsService.histogram.data[1].data).toEqual({
                         type: 'date',
                         label: 'Feb 2015',
-                        min: new Date(2015, 1, 1),
-                        max: new Date(2015, 2, 1)
+                        min: new Date(2015, 1, 1).getTime(),
+                        max: new Date(2015, 2, 1).getTime()
                     });
 
                     expect(StatisticsService.filteredHistogram.data[0].filteredOccurrences).toBe(15); //['01/01/2015', '01/02/2015'[
                     expect(StatisticsService.filteredHistogram.data[0].data).toEqual({
                         type: 'date',
                         label: 'Jan 2015',
-                        min: new Date(2015, 0, 1),
-                        max: new Date(2015, 1, 1)
+                        min: new Date(2015, 0, 1).getTime(),
+                        max: new Date(2015, 1, 1).getTime()
                     });
                     expect(StatisticsService.filteredHistogram.data[1].filteredOccurrences).toBe(5); //['01/02/2015', '01/03/2015'[
                     expect(StatisticsService.filteredHistogram.data[1].data).toEqual({
                         type: 'date',
                         label: 'Feb 2015',
-                        min: new Date(2015, 1, 1),
-                        max: new Date(2015, 2, 1)
+                        min: new Date(2015, 1, 1).getTime(),
+                        max: new Date(2015, 2, 1).getTime()
                     });
                 }));
 
@@ -1322,14 +1178,14 @@ describe('Statistics service', function () {
                     expect(StatisticsService.histogram.data[0].data).toEqual({
                         type: 'date',
                         label: '[2000, 2100[',
-                        min: new Date(2000, 0, 1),
-                        max: new Date(2100, 0, 1)
+                        min: new Date(2000, 0, 1).getTime(),
+                        max: new Date(2100, 0, 1).getTime()
                     });
                     expect(StatisticsService.histogram.data[1].data).toEqual({
                         type: 'date',
                         label: '[2100, 2200[',
-                        min: new Date(2100, 0, 1),
-                        max: new Date(2200, 0, 1)
+                        min: new Date(2100, 0, 1).getTime(),
+                        max: new Date(2200, 0, 1).getTime()
                     });
                 }));
 
@@ -1344,14 +1200,14 @@ describe('Statistics service', function () {
                     expect(StatisticsService.histogram.data[0].data).toEqual({
                         type: 'date',
                         label: '[2000, 2010[',
-                        min: new Date(2000, 0, 1),
-                        max: new Date(2010, 0, 1)
+                        min: new Date(2000, 0, 1).getTime(),
+                        max: new Date(2010, 0, 1).getTime()
                     });
                     expect(StatisticsService.histogram.data[1].data).toEqual({
                         type: 'date',
                         label: '[2010, 2020[',
-                        min: new Date(2010, 0, 1),
-                        max: new Date(2020, 0, 1)
+                        min: new Date(2010, 0, 1).getTime(),
+                        max: new Date(2020, 0, 1).getTime()
                     });
                 }));
 
@@ -1366,14 +1222,14 @@ describe('Statistics service', function () {
                     expect(StatisticsService.histogram.data[0].data).toEqual({
                         type: 'date',
                         label: '2014',
-                        min: new Date(2014, 0, 1),
-                        max: new Date(2015, 0, 1)
+                        min: new Date(2014, 0, 1).getTime(),
+                        max: new Date(2015, 0, 1).getTime()
                     });
                     expect(StatisticsService.histogram.data[1].data).toEqual({
                         type: 'date',
                         label: '2015',
-                        min: new Date(2015, 0, 1),
-                        max: new Date(2016, 0, 1)
+                        min: new Date(2015, 0, 1).getTime(),
+                        max: new Date(2016, 0, 1).getTime()
                     });
                 }));
 
@@ -1388,14 +1244,14 @@ describe('Statistics service', function () {
                     expect(StatisticsService.histogram.data[0].data).toEqual({
                         type: 'date',
                         label: 'H1 2014',
-                        min: new Date(2014, 0, 1),
-                        max: new Date(2014, 6, 1)
+                        min: new Date(2014, 0, 1).getTime(),
+                        max: new Date(2014, 6, 1).getTime()
                     });
                     expect(StatisticsService.histogram.data[1].data).toEqual({
                         type: 'date',
                         label: 'H2 2014',
-                        min: new Date(2014, 6, 1),
-                        max: new Date(2015, 0, 1)
+                        min: new Date(2014, 6, 1).getTime(),
+                        max: new Date(2015, 0, 1).getTime()
                     });
                 }));
 
@@ -1410,14 +1266,14 @@ describe('Statistics service', function () {
                     expect(StatisticsService.histogram.data[0].data).toEqual({
                         type: 'date',
                         label: 'Q1 2014',
-                        min: new Date(2014, 0, 1),
-                        max: new Date(2014, 3, 1)
+                        min: new Date(2014, 0, 1).getTime(),
+                        max: new Date(2014, 3, 1).getTime()
                     });
                     expect(StatisticsService.histogram.data[1].data).toEqual({
                         type: 'date',
                         label: 'Q2 2014',
-                        min: new Date(2014, 3, 1),
-                        max: new Date(2014, 6, 1)
+                        min: new Date(2014, 3, 1).getTime(),
+                        max: new Date(2014, 6, 1).getTime()
                     });
                 }));
 
@@ -1432,14 +1288,14 @@ describe('Statistics service', function () {
                     expect(StatisticsService.histogram.data[0].data).toEqual({
                         type: 'date',
                         label: 'Jan 2015',
-                        min: new Date(2015, 0, 1),
-                        max: new Date(2015, 1, 1)
+                        min: new Date(2015, 0, 1).getTime(),
+                        max: new Date(2015, 1, 1).getTime()
                     });
                     expect(StatisticsService.histogram.data[1].data).toEqual({
                         type: 'date',
                         label: 'Feb 2015',
-                        min: new Date(2015, 1, 1),
-                        max: new Date(2015, 2, 1)
+                        min: new Date(2015, 1, 1).getTime(),
+                        max: new Date(2015, 2, 1).getTime()
                     });
                 }));
 
@@ -1454,14 +1310,14 @@ describe('Statistics service', function () {
                     expect(StatisticsService.histogram.data[0].data).toEqual({
                         type: 'date',
                         label: 'W01 2016',
-                        min: new Date(2016, 0, 4),
-                        max: new Date(2016, 0, 11)
+                        min: new Date(2016, 0, 4).getTime(),
+                        max: new Date(2016, 0, 11).getTime()
                     });
                     expect(StatisticsService.histogram.data[1].data).toEqual({
                         type: 'date',
                         label: 'W02 2016',
-                        min: new Date(2016, 0, 11),
-                        max: new Date(2016, 0, 18)
+                        min: new Date(2016, 0, 11).getTime(),
+                        max: new Date(2016, 0, 18).getTime()
                     });
                 }));
 
@@ -1476,14 +1332,14 @@ describe('Statistics service', function () {
                     expect(StatisticsService.histogram.data[0].data).toEqual({
                         type: 'date',
                         label: 'Jan 1, 2016',
-                        min: new Date(2016, 0, 1),
-                        max: new Date(2016, 0, 2)
+                        min: new Date(2016, 0, 1).getTime(),
+                        max: new Date(2016, 0, 2).getTime()
                     });
                     expect(StatisticsService.histogram.data[1].data).toEqual({
                         type: 'date',
                         label: 'Jan 2, 2016',
-                        min: new Date(2016, 0, 2),
-                        max: new Date(2016, 0, 3)
+                        min: new Date(2016, 0, 2).getTime(),
+                        max: new Date(2016, 0, 3).getTime()
                     });
                 }));
             });
