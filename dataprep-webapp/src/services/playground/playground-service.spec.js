@@ -31,9 +31,9 @@ describe('Playground Service', function () {
         spyOn(StateService, 'removeAllGridFilters').and.returnValue();
         spyOn(StateService, 'setCurrentPreparation').and.returnValue();
         spyOn(StatisticsService, 'reset').and.returnValue();
-        spyOn(SuggestionService, 'reset').and.returnValue();
         spyOn(TransformationCacheService, 'invalidateCache').and.returnValue();
         spyOn(ExportService, 'reset').and.returnValue();
+        spyOn(StateService, 'resetColumnSuggestions').and.returnValue();
     }));
 
     it('should set new name to the preparation', inject(function ($rootScope, PlaygroundService, PreparationService) {
@@ -72,7 +72,7 @@ describe('Playground Service', function () {
                 expect(StateService.removeAllGridFilters).toHaveBeenCalled();
                 expect(RecipeService.refresh).toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
-                expect(SuggestionService.reset).toHaveBeenCalled();
+                expect(StateService.resetColumnSuggestions).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
                 expect(StatisticsService.reset).toHaveBeenCalledWith(true, true, true);
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
@@ -85,7 +85,7 @@ describe('Playground Service', function () {
                 expect(StateService.removeAllGridFilters).not.toHaveBeenCalled();
                 expect(RecipeService.refresh).not.toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).not.toHaveBeenCalled();
-                expect(SuggestionService.reset).not.toHaveBeenCalled();
+                expect(StateService.resetColumnSuggestions).not.toHaveBeenCalled();
                 expect(HistoryService.clear).not.toHaveBeenCalled();
                 expect(StatisticsService.reset).not.toHaveBeenCalled();
                 expect(PreviewService.reset).not.toHaveBeenCalled();
@@ -226,7 +226,7 @@ describe('Playground Service', function () {
                 expect(StateService.removeAllGridFilters).toHaveBeenCalled();
                 expect(RecipeService.refresh).toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
-                expect(SuggestionService.reset).toHaveBeenCalled();
+                expect(StateService.resetColumnSuggestions).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
                 expect(StatisticsService.reset).toHaveBeenCalledWith(true, true, true);
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
@@ -238,7 +238,7 @@ describe('Playground Service', function () {
                 expect(StateService.removeAllGridFilters).not.toHaveBeenCalled();
                 expect(RecipeService.refresh).not.toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).not.toHaveBeenCalled();
-                expect(SuggestionService.reset).not.toHaveBeenCalled();
+                expect(StateService.resetColumnSuggestions).not.toHaveBeenCalled();
                 expect(HistoryService.clear).not.toHaveBeenCalled();
                 expect(StatisticsService.reset).not.toHaveBeenCalled();
                 expect(PreviewService.reset).not.toHaveBeenCalled();

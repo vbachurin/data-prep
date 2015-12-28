@@ -59,11 +59,11 @@
             StateService.setCurrentData(data);
             StateService.setCurrentPreparation(preparation);
             StateService.removeAllGridFilters();
+            StateService.resetColumnSuggestions();
 
             RecipeService.refresh();
             StatisticsService.reset(true, true, true);
             TransformationCacheService.invalidateCache();
-            SuggestionService.reset();
             HistoryService.clear();
             PreviewService.reset(false);
             ExportService.reset();

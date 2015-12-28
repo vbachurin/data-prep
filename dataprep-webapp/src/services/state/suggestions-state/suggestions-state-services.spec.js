@@ -62,6 +62,18 @@ describe('Suggestions state service', function () {
             //then
             expect(suggestionsState.column).toBe(transformations);
         }));
+
+        it('should update filtered Transformations', inject(function (suggestionsState, SuggestionsStateService) {
+            //given
+
+            suggestionsState.column.filteredTransformations = [{name: 'delete'}];
+
+            //when
+            SuggestionsStateService.updateFilteredTransformations([{name: 'delete'}, {name: 'split'}]);
+
+            //then
+            expect(suggestionsState.column.filteredTransformations).toEqual([{name: 'delete'}, {name: 'split'}]);
+        }));
     });
 
     describe('reset', function() {
@@ -104,11 +116,13 @@ describe('Suggestions state service', function () {
                 allTransformations: [{}],
                 filteredTransformations: [{}],
                 transformationsForEmptyCells: [{}],
-                transformationsForInvalidCells: [{}]
+                transformationsForInvalidCells: [{}],
+                allCategories: [{}],
+                searchActionString: 'ssdsdsd'
             };
 
             //when
-            SuggestionsStateService.reset();
+            SuggestionsStateService.resetColumnSuggestions();
 
             //then
             expect(suggestionsState.column.allSuggestions).toEqual([]);
@@ -116,6 +130,8 @@ describe('Suggestions state service', function () {
             expect(suggestionsState.column.filteredTransformations).toEqual([]);
             expect(suggestionsState.column.transformationsForInvalidCells).toEqual([{}]);
             expect(suggestionsState.column.transformationsForEmptyCells).toEqual([{}]);
+            expect(suggestionsState.column.allCategories).toEqual(null);
+            expect(suggestionsState.column.searchActionString).toEqual('');
         }));
     });
 });

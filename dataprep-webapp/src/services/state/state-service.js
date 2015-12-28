@@ -58,6 +58,8 @@
             setColumnTransformations: PlaygroundStateService.setColumnTransformations,
             setLineTransformations: PlaygroundStateService.setLineTransformations,
             setSuggestionsLoading: PlaygroundStateService.setSuggestionsLoading,
+            resetColumnSuggestions: PlaygroundStateService.resetColumnSuggestions,
+            updateFilteredTransformations: PlaygroundStateService.updateFilteredTransformations,
 
             //playground - Statistics
             setStatisticsHistogram: PlaygroundStateService.setStatisticsHistogram,

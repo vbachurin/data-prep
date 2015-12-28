@@ -15,13 +15,9 @@
         var EMPTY_CELLS = 'empty';
         var INVALID_CELLS = 'invalid';
 
-        var allCategories = null;
         var service = {
-            searchActionString: '',                 // current user input to filter transformations
-
             initTransformations: initTransformations,
-            filterTransformations: filterTransformations,
-            reset: reset
+            filterTransformations: filterTransformations
         };
         return service;
 
@@ -86,7 +82,7 @@
          */
         function initTransformations(column) {
             StateService.setSuggestionsLoading(true);
-            reset();
+            StateService.resetColumnSuggestions();
 
             $q
                 .all([
@@ -95,13 +91,17 @@
                 ])
                 .then(function (values) {
                     var suggestions = prepareSuggestions(values[0], values[1].allCategories);
-                    allCategories = prepareTransformations(suggestions, values[1].allCategories);
+                    var allCategories = prepareTransformations(suggestions, values[1].allCategories);
 
                     var colTransformations = {
                         allSuggestions: values[0],
                         allTransformations: values[1].allTransformations,
-                        filteredTransformations: allCategories
+                        filteredTransformations: allCategories,
+                        allCategories: allCategories,
+                        searchActionString: ''
                     };
+
+
                     colTransformations.transformationsForEmptyCells = !state.playground.suggestions.column.transformationsForEmptyCells.length ?
                                                                         _.filter(values[1].allTransformations, isAppliedToCells(EMPTY_CELLS)):
                                                                         state.playground.suggestions.column.transformationsForEmptyCells;
@@ -184,33 +184,15 @@
             resetDisplayLabels(state.playground.suggestions.column.allSuggestions);
             resetDisplayLabels(state.playground.suggestions.column.allTransformations);
 
-            var searchValue = service.searchActionString.toLowerCase();
 
-            state.playground.suggestions.column.filteredTransformations = !searchValue ?
-                allCategories :
-                _.chain(allCategories)
+            var searchValue = state.playground.suggestions.column.searchActionString.toLowerCase();
+            StateService.updateFilteredTransformations(!searchValue ?
+                state.playground.suggestions.column.allCategories :
+                _.chain(state.playground.suggestions.column.allCategories)
                     .map(extractTransfosThatMatch(searchValue))
                     .filter(hasTransformations)
                     .map(highlightDisplayedLabels(searchValue))
-                    .value();
-        }
-
-        //--------------------------------------------------------------------------------------------------------------
-        //----------------------------------------------------RESET-----------------------------------------------------
-        //--------------------------------------------------------------------------------------------------------------
-        /**
-         * @ngdoc method
-         * @name reset
-         * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
-         * @description Reset the current column and the transformations
-         */
-        function reset() {
-            //TODO move reset to the suggestionsState
-            state.playground.suggestions.column.allTransformations = [];
-            state.playground.suggestions.column.allSuggestions = [];
-            service.searchActionString = '';
-            state.playground.suggestions.column.filteredTransformations = [];
-            allCategories = null;
+                    .value());
         }
     }
 

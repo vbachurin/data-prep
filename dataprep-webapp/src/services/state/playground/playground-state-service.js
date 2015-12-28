@@ -55,6 +55,8 @@
             setColumnTransformations: SuggestionsStateService.setColumnTransformations,
             setLineTransformations: SuggestionsStateService.setLineTransformations,
             setSuggestionsLoading: SuggestionsStateService.setLoading,
+            resetColumnSuggestions: SuggestionsStateService.resetColumnSuggestions,
+            updateFilteredTransformations: SuggestionsStateService.updateFilteredTransformations,
 
             //statistics
             setStatisticsHistogram: StatisticsStateService.setHistogram,

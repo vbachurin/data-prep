@@ -37,7 +37,7 @@
                    class="action-search"
                    id="action-suggestions-search"
                    translate-once-placeholder="FIND_FUNCTION"
-                   ng-model="actionsSuggestionsCtrl.columnSuggestionService.searchActionString"
+                   ng-model="actionsSuggestionsCtrl.state.playground.suggestions.column.searchActionString"
                    ng-model-options="{debounce: { default: 300, blur: 0 }}"
                    ng-change="actionsSuggestionsCtrl.columnSuggestionService.filterTransformations()"
                    talend-search-input
