@@ -5,10 +5,9 @@ describe('preparation state service', function(){
 
     beforeEach(module('data-prep.services.state'));
 
-    afterEach(inject(function (preparationState) {
+    beforeEach(inject(function (preparationState) {
         preparationState.preparationsList = null;
     }));
-
 
     it('should update preparations list', inject(function (PreparationStateService, preparationState) {
         //given

@@ -3,7 +3,7 @@
 describe('Preparation Service', function () {
     'use strict';
 
-    var preparationConsolidation, datasetConsolidation;
+    var preparationConsolidation, datasetConsolidation, stateMock;
     var datasets = [{name: 'my dataset'}, {name: 'my second dataset'}, {name: 'my second dataset (1)'}, {name: 'my second dataset (2)'}];
     var preparations = [{id: '4385fa764bce39593a405d91bc88', dataSetId: '3214a5454ef8642c13'}, {id: '58444bce39593a405d9456'}, {id: '2545764bce39593a405d91bc8673'}];
     var newPreparationId = '6cd546546548a745';
@@ -11,7 +11,14 @@ describe('Preparation Service', function () {
     var updatedDatasetId = '99ac8561e62f34131';
     var updatedPreparationId = '5ea51464f515125e3';
 
-    beforeEach(module('data-prep.services.preparation'));
+    beforeEach(module('data-prep.services.preparation', function ($provide) {
+
+        stateMock = {preparation : {
+            preparationsList: null
+        }
+        };
+        $provide.constant('state', stateMock);
+    }));
 
     beforeEach(inject(function($q, DatasetListService, PreparationListService, PreparationRestService, StorageService, FolderService) {
         preparationConsolidation = $q.when(true);
@@ -40,11 +47,6 @@ describe('Preparation Service', function () {
         spyOn(FolderService, 'refreshDefaultPreparation').and.returnValue();
     }));
 
-    afterEach(inject(function (state) {
-        state.preparation.preparationsList = null;
-    }));
-
-
     describe('getter/refresher', function() {
         it('should refresh preparations', inject(function ($rootScope, PreparationService, PreparationListService) {
             //when
@@ -70,10 +72,10 @@ describe('Preparation Service', function () {
             expect(result).toBe(preparations);
         }));
 
-        it('should consolidate preparations and datasets on refresh', inject(function (state, $rootScope, PreparationService, PreparationListService, DatasetListService, FolderService) {
+        it('should consolidate preparations and datasets on refresh', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService, FolderService) {
             //when
             PreparationService.refreshPreparations();
-            state.preparation.preparationsList = preparations; //simulate preparations list update
+            stateMock.preparation.preparationsList = preparations; //simulate preparations list update
             $rootScope.$digest();
 
             //then
@@ -82,9 +84,9 @@ describe('Preparation Service', function () {
             expect(FolderService.refreshDefaultPreparation).toHaveBeenCalled();
         }));
 
-        it('should not refresh but return a promise resolving existing preparations if they are already fetched', inject(function (state,$rootScope, PreparationService) {
+        it('should not refresh but return a promise resolving existing preparations if they are already fetched', inject(function ($rootScope, PreparationService) {
             //given
-            state.preparation.preparationsList = preparations;
+            stateMock.preparation.preparationsList = preparations;
             var result = null;
 
             //when
@@ -100,7 +102,7 @@ describe('Preparation Service', function () {
 
         it('should not consolidate preparations and datasets when preparations has not been fetched', inject(function (state, $rootScope, PreparationService, PreparationListService, DatasetListService, FolderService) {
             //given
-            state.preparation.preparationsList = preparations;
+            stateMock.preparation.preparationsList = preparations;
 
             //when
             PreparationService.getPreparations();
@@ -112,9 +114,9 @@ describe('Preparation Service', function () {
             expect(FolderService.refreshDefaultPreparation).not.toHaveBeenCalled();
         }));
 
-        it('should fetch preparations if they are not already fetched', inject(function (state, $rootScope, PreparationService) {
+        it('should fetch preparations if they are not already fetched', inject(function ($rootScope, PreparationService) {
             //given
-            state.preparation.preparationsList = null;
+            stateMock.preparation.preparationsList = null;
             var result = null;
 
             //when
@@ -128,13 +130,13 @@ describe('Preparation Service', function () {
             expect(result).toBe(preparations);
         }));
 
-        it('should consolidate preparations and datasets on refresh', inject(function (state, $rootScope, PreparationService, PreparationListService, DatasetListService) {
+        it('should consolidate preparations and datasets on refresh', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService) {
             //given
-            state.preparation.preparationsList = null;
+            stateMock.preparation.preparationsList = null;
 
             //when
             PreparationService.getPreparations();
-            state.preparation.preparationsList = preparations; //simulate preparations update
+            stateMock.preparation.preparationsList = preparations; //simulate preparations update
             $rootScope.$digest();
 
             //then
@@ -185,9 +187,9 @@ describe('Preparation Service', function () {
                 expect(PreparationListService.create).toHaveBeenCalledWith(datasetId, name);
             }));
 
-            it('should consolidate preparations and datasets on creation', inject(function (state, $rootScope, PreparationService, PreparationListService, DatasetListService) {
+            it('should consolidate preparations and datasets on creation', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService) {
                 //given
-                state.preparation.preparationsList = preparations;
+                stateMock.preparation.preparationsList = preparations;
                 var datasetId = '2430e5df845ab6034c85';
 
                 //when
@@ -239,9 +241,9 @@ describe('Preparation Service', function () {
                 expect(StorageService.moveAggregations).toHaveBeenCalledWith(updatedDatasetId, preparationId, updatedPreparationId);
             }));
 
-            it('should consolidate preparations and datasets on name update', inject(function (state, $rootScope, PreparationService, PreparationListService, DatasetListService) {
+            it('should consolidate preparations and datasets on name update', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService) {
                 //given
-                state.preparation.preparationsList = preparations;
+                stateMock.preparation.preparationsList = preparations;
                 var preparationId = '6cd546546548a745';
                 var name = 'my preparation';
 
@@ -265,9 +267,9 @@ describe('Preparation Service', function () {
                 expect(PreparationListService.delete).toHaveBeenCalledWith(preparations[0]);
             }));
 
-            it('should consolidate preparations and datasets on deletion', inject(function (state, $rootScope, PreparationService, PreparationListService, DatasetListService) {
+            it('should consolidate preparations and datasets on deletion', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService) {
                 //given
-                state.preparation.preparationsList = preparations;
+                stateMock.preparation.preparationsList = preparations;
 
                 //when
                 PreparationService.delete(preparations[0]);
@@ -278,9 +280,9 @@ describe('Preparation Service', function () {
                 expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
             }));
 
-            it('should remove aggregations from storage', inject(function (state, $rootScope, PreparationService, PreparationListService, StorageService) {
+            it('should remove aggregations from storage', inject(function ($rootScope, PreparationService, PreparationListService, StorageService) {
                 //given
-                state.preparation.preparationsList = preparations;
+                stateMock.preparation.preparationsList = preparations;
 
                 //when
                 PreparationService.delete(preparations[0]);
@@ -463,9 +465,9 @@ describe('Preparation Service', function () {
     });
 
     describe('clone', function() {
-        it('should call service to clone a preparation', inject(function (state, $rootScope, PreparationService, PreparationListService) {
+        it('should call service to clone a preparation', inject(function ($rootScope, PreparationService, PreparationListService) {
             //given
-            state.preparation.preparationsList = preparations;
+            stateMock.preparation.preparationsList = preparations;
 
             //when
             PreparationService.clone(preparations[0].id);
@@ -475,9 +477,9 @@ describe('Preparation Service', function () {
             expect(PreparationListService.clone).toHaveBeenCalledWith(preparations[0].id);
         }));
 
-        it('should consolidate preparations and datasets after clone', inject(function (state, $rootScope, PreparationService, PreparationListService, DatasetListService) {
+        it('should consolidate preparations and datasets after clone', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService) {
             //given
-            state.preparation.preparationsList = preparations;
+            stateMock.preparation.preparationsList = preparations;
 
             //when
             PreparationService.clone(preparations[0].id);

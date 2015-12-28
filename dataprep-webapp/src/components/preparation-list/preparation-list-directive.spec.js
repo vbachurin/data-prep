@@ -1,7 +1,7 @@
 describe('Preparation list directive', function() {
     'use strict';
 
-    var scope, createElement, element;
+    var scope, createElement, element, stateMock;
     var allDatasets = [
         {
             'id': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
@@ -115,10 +115,18 @@ describe('Preparation list directive', function() {
         }
     ];
 
-    beforeEach(module('data-prep.preparation-list'));
+    beforeEach(module('data-prep.preparation-list', function ($provide) {
+
+        stateMock = {preparation : {
+                preparationsList: allPreparations
+            }
+        };
+        $provide.constant('state', stateMock);
+    }));
+
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function(state, $rootScope, $compile, $q, PreparationService) {
+    beforeEach(inject(function($rootScope, $compile, $q, PreparationService) {
         scope = $rootScope.$new();
         createElement = function() {
             element = angular.element('<preparation-list></preparation-list>');
@@ -129,13 +137,11 @@ describe('Preparation list directive', function() {
         spyOn(PreparationService, 'getPreparations').and.callFake(function() {
             return $q.when(allPreparations);
         });
-        state.preparation.preparationsList = allPreparations;
     }));
 
-    afterEach(inject(function(state) {
+    afterEach(inject(function() {
         scope.$destroy();
         element.remove();
-        state.preparation.preparationsList = null;
     }));
 
     it('should render preparations tiles', inject(function($filter) {
