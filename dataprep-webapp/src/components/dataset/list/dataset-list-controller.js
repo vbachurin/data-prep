@@ -358,7 +358,6 @@
          */
         vm.removeFolder = function (folder) {
             FolderService.removeFolder(folder.id).then(function () {
-                MessageService.success('FOLDER_REMOVE_SUCCESS_TITLE', 'FOLDER_REMOVE_SUCCESS');
                 vm.goToFolder(state.folder.currentFolder);
             });
         };
