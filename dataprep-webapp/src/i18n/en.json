@@ -99,6 +99,7 @@
   "PROCESSING": "Processing",
   "COMING_SOON": "Coming soon...",
   "PROCESSING_REMOTE_DATASET": "Processing remote dataset...",
+  "NO_FUNCTION": "No function for the current selection",
 
   "_comment": "Confirm",
   "DELETE_PERMANENTLY": "You are going to permanently delete the {{type}} \"{{name}}\".",
