@@ -1,18 +1,15 @@
 <talend-navbar class="header">
-    <a href="http://www.talend.com" class="logo-wrapper">
+    <span class="logo-wrapper">
         <span class="logo"></span>
-    </a>
+    </span>
     <a href="javascript:void(0)" class="navigation-menu-button" translate-once="MENU"></a>
     <nav role="navigation">
         <ul class="navigation-menu show">
-            <li class="nav-link" title="{{'COMING_SOON' | translate}}"><a class="icon" data-icon="i"></a></li>
             <li id="onboarding-icon" class="nav-link" translate-once-title="ONBOARDING">
                 <a class="icon enabled" data-icon="y" ng-click="navbarCtrl.startTour('dataset')"></a></li>
-            <li class="nav-link" title="{{'COMING_SOON' | translate}}"><a class="icon" data-icon="j" id="marketplace-icon" ></a></li>
             <li id="message-icon" class="nav-link" translate-once-title="FEEDBACK_TOOLTIP">
                 <a class="icon enabled" data-icon="H" ng-click="navbarCtrl.openFeedbackForm()"></a>
             </li>
-            <li class="nav-link" translate-once-title="COMING_SOON"><a class="icon notification-icon" id="notification-icon">3</a></li>
         </ul>
     </nav>
     <div class="navigation-tools">
