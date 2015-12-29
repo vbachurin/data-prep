@@ -779,8 +779,6 @@ describe('Dataset list controller', function () {
             //then
             expect(FolderService.removeFolder).toHaveBeenCalledWith(folder.id);
             expect(FolderService.getFolderContent).toHaveBeenCalledWith(theCurrentFolder);
-            //then
-            expect(MessageService.success).toHaveBeenCalledWith('FOLDER_REMOVE_SUCCESS_TITLE', 'FOLDER_REMOVE_SUCCESS');
         }));
 
     });
