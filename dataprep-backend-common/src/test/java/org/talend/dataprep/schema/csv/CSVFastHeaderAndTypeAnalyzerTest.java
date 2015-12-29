@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.talend.dataprep.api.type.Type;
 
-public class CSVFastHeaderAndTypeAnalysisTest {
+public class CSVFastHeaderAndTypeAnalyzerTest {
 
     @Test
     public void should_neither_detect_type_nor_first_line_header_when_sample_is_empty() {
@@ -17,7 +17,7 @@ public class CSVFastHeaderAndTypeAnalysisTest {
         Separator separator = new Separator(';');
 
         // when
-        CSVFastHeaderAndTypeAnalysis analysis = new CSVFastHeaderAndTypeAnalysis(list, separator);
+        CSVFastHeaderAndTypeAnalyzer analysis = new CSVFastHeaderAndTypeAnalyzer(list, separator);
 
         // then
         List<Type> expectedTypes = Arrays.asList();
@@ -33,7 +33,7 @@ public class CSVFastHeaderAndTypeAnalysisTest {
         Separator separator = new Separator(';');
 
         // when
-        CSVFastHeaderAndTypeAnalysis analysis = new CSVFastHeaderAndTypeAnalysis(list, separator);
+        CSVFastHeaderAndTypeAnalyzer analysis = new CSVFastHeaderAndTypeAnalyzer(list, separator);
 
         // then
         List<Type> expectedTypes = Arrays.asList(Type.INTEGER, Type.STRING, Type.STRING, Type.DOUBLE);
@@ -50,7 +50,7 @@ public class CSVFastHeaderAndTypeAnalysisTest {
         Separator separator = new Separator(';');
 
         // when
-        CSVFastHeaderAndTypeAnalysis analysis = new CSVFastHeaderAndTypeAnalysis(list, separator);
+        CSVFastHeaderAndTypeAnalyzer analysis = new CSVFastHeaderAndTypeAnalyzer(list, separator);
 
         // then
         List<Type> expectedTypes = Arrays.asList(Type.INTEGER, Type.STRING, Type.STRING, Type.DOUBLE);
@@ -76,7 +76,7 @@ public class CSVFastHeaderAndTypeAnalysisTest {
         Separator separator = new Separator(';');
 
         // when
-        CSVFastHeaderAndTypeAnalysis analysis = new CSVFastHeaderAndTypeAnalysis(list, separator);
+        CSVFastHeaderAndTypeAnalyzer analysis = new CSVFastHeaderAndTypeAnalyzer(list, separator);
 
         // then
         List<Type> expectedTypes = Arrays.asList(Type.STRING, Type.STRING, Type.INTEGER, Type.STRING);
@@ -94,7 +94,7 @@ public class CSVFastHeaderAndTypeAnalysisTest {
         separator.incrementCount(1);
 
         // when
-        CSVFastHeaderAndTypeAnalysis analysis = new CSVFastHeaderAndTypeAnalysis(list, separator);
+        CSVFastHeaderAndTypeAnalyzer analysis = new CSVFastHeaderAndTypeAnalyzer(list, separator);
 
         // then
         List<Type> expectedTypes = Arrays.asList(Type.INTEGER, Type.STRING, Type.STRING, Type.DOUBLE);
@@ -112,7 +112,7 @@ public class CSVFastHeaderAndTypeAnalysisTest {
         separator.incrementCount(1);
 
         // when
-        CSVFastHeaderAndTypeAnalysis analysis = new CSVFastHeaderAndTypeAnalysis(list, separator);
+        CSVFastHeaderAndTypeAnalyzer analysis = new CSVFastHeaderAndTypeAnalyzer(list, separator);
 
         // then
         List<String> expectedHeader = Arrays.asList("COL1", "COL2", "COL3");
