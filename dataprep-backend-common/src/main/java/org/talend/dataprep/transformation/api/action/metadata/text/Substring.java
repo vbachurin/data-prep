@@ -32,17 +32,15 @@ public class Substring extends ActionMetadata implements ColumnAction {
      */
     private static final String APPENDIX = "_substring"; //$NON-NLS-1$
 
-    protected static final String FROM_BEGINNING = "from_beginning"; //$NON-NLS-1$
-
-    protected static final String TO_END = "to_end"; //$NON-NLS-1$
-
     protected static final String FROM_MODE_PARAMETER = "from_mode"; //$NON-NLS-1$
-
+    protected static final String FROM_BEGINNING = "from_beginning"; //$NON-NLS-1$
     protected static final String FROM_INDEX_PARAMETER = "from_index"; //$NON-NLS-1$
+    protected static final String FROM_N_BEFORE_END_PARAMETER = "from_n_before_end"; //$NON-NLS-1$
 
     protected static final String TO_MODE_PARAMETER = "to_mode"; //$NON-NLS-1$
-
+    protected static final String TO_END = "to_end"; //$NON-NLS-1$
     protected static final String TO_INDEX_PARAMETER = "to_index"; //$NON-NLS-1$
+    protected static final String TO_N_BEFORE_END_PARAMETER = "to_n_before_end"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getName()
@@ -72,6 +70,7 @@ public class Substring extends ActionMetadata implements ColumnAction {
                 .name(FROM_MODE_PARAMETER) //
                 .item(FROM_BEGINNING) //
                 .item(FROM_INDEX_PARAMETER, new Parameter(FROM_INDEX_PARAMETER, ParameterType.INTEGER, "0")) //
+                .item(FROM_N_BEFORE_END_PARAMETER, new Parameter(FROM_N_BEFORE_END_PARAMETER, ParameterType.INTEGER, "5")) //
                 .defaultValue(FROM_BEGINNING) //
                 .build());
 
@@ -79,6 +78,7 @@ public class Substring extends ActionMetadata implements ColumnAction {
         parameters.add(SelectParameter.Builder.builder() //
                 .name(TO_MODE_PARAMETER) //
                 .item(TO_END) //
+                .item(TO_N_BEFORE_END_PARAMETER, new Parameter(TO_N_BEFORE_END_PARAMETER, ParameterType.INTEGER, "1")) //
                 .item(TO_INDEX_PARAMETER, new Parameter(TO_INDEX_PARAMETER, ParameterType.INTEGER, "5")) //
                 .defaultValue(TO_INDEX_PARAMETER) //
                 .build());
@@ -143,11 +143,15 @@ public class Substring extends ActionMetadata implements ColumnAction {
      * @return the end index
      */
     private int getEndIndex(final Map<String, String> parameters, final String value) {
-        final String toMode = parameters.get(TO_MODE_PARAMETER);
-        if (toMode.equals(TO_END)) {
+        switch (parameters.get(TO_MODE_PARAMETER)) {
+        case TO_INDEX_PARAMETER:
+            return Math.min(Integer.parseInt(parameters.get(TO_INDEX_PARAMETER)), value.length());
+        case TO_N_BEFORE_END_PARAMETER:
+            return Math.max(0, value.length() - Integer.parseInt(parameters.get(TO_N_BEFORE_END_PARAMETER)));
+        case TO_END:
+        default:
             return value.length();
         }
-        return Math.min(Integer.parseInt(parameters.get(TO_INDEX_PARAMETER)), value.length());
     }
 
     /**
@@ -158,9 +162,15 @@ public class Substring extends ActionMetadata implements ColumnAction {
      * @return the start index
      */
     private int getStartIndex(final Map<String, String> parameters, String value) {
-        final String fromMode = parameters.get(FROM_MODE_PARAMETER);
-        final int fromIndex = fromMode.equals(FROM_BEGINNING) ? 0 : Integer.parseInt(parameters.get(FROM_INDEX_PARAMETER));
-        return Math.min(fromIndex, value.length());
+        switch (parameters.get(FROM_MODE_PARAMETER)) {
+        case FROM_INDEX_PARAMETER:
+            return Math.min(Integer.parseInt(parameters.get(FROM_INDEX_PARAMETER)), value.length());
+        case FROM_N_BEFORE_END_PARAMETER:
+            return value.length() - Integer.parseInt(parameters.get(FROM_N_BEFORE_END_PARAMETER));
+        case FROM_BEGINNING:
+        default:
+            return 0;
+        }
     }
 
 }
