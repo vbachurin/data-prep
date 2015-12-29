@@ -189,19 +189,20 @@
             vm.isSendingRequest = true;
             vm.cloneNameForm.$commitViewValue();
 
-            DatasetService.clone(vm.datasetToClone, vm.folderDestination, vm.cloneName).then(function () {
-                MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
-                FolderService.getContent(state.folder.currentFolder);
-
-            }).finally(function () {
-                // reset some values to initial values
-                vm.folderDestinationModal = false;
-                vm.datasetToClone = null;
-                vm.folderDestination = null;
-                vm.foldersFound = [];
-                vm.cloneName = '';
-                vm.isSendingRequest = false;
-            });
+            DatasetService.clone(vm.datasetToClone, vm.folderDestination, vm.cloneName)
+                .then(function () {
+                    MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
+                    FolderService.getContent(state.folder.currentFolder);
+                })
+                .finally(function () {
+                    // reset some values to initial values
+                    vm.folderDestinationModal = false;
+                    vm.datasetToClone = null;
+                    vm.folderDestination = null;
+                    vm.foldersFound = [];
+                    vm.cloneName = '';
+                    vm.isSendingRequest = false;
+                });
         };
 
         /**
