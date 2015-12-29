@@ -2926,5 +2926,47 @@
         }
       }
     ]
+  },
+  {
+    "category": "split",
+    "name": "extract_string_tokens",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": ""
+      },
+      {
+        "name": "filter",
+        "type": "filter",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": ""
+      },
+      {
+        "name": "limit",
+        "type": "integer"
+      },
+      {
+        "name": "regex",
+        "type": "string"
+      }
+    ]
   }
 ]
