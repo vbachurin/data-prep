@@ -25,8 +25,9 @@ public class Serialization {
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
         builder.featuresToDisable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
         builder.indentOutput(false);
-        modules.add( new JavaTimeModule() );
-        modules.add( new Jdk8Module() );
+        // FIXME we should use jackson modules and remove home made LocalDateTimeModule
+        //modules.add( new JavaTimeModule() );
+        //modules.add( new Jdk8Module() );
         builder.modules(modules);
         return builder;
     }
