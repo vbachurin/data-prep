@@ -1,5 +1,7 @@
 package org.talend.dataprep.api.service.command.folder;
 
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static org.talend.dataprep.api.service.command.common.Defaults.asNull;
@@ -31,13 +33,14 @@ public class RemoveFolder extends GenericCommand<HttpResponse> {
         super(APIService.DATASET_GROUP, client);
         execute(() -> onExecute(path));
         onError(e -> new TDPException(UNABLE_TO_DELETE_FOLDER, e, ExceptionContext.build()));
-        on(HttpStatus.OK, HttpStatus.BAD_REQUEST).then((httpRequestBase, httpResponse) -> {
+        on(OK, CONFLICT).then((httpRequestBase, httpResponse) -> {
             try {
                 // we transfer status code and content type
-                return new HttpResponse( httpResponse.getStatusLine().getStatusCode(), //
-                                         IOUtils.toString( httpResponse.getEntity().getContent()), //
-                                         httpResponse.getStatusLine().getStatusCode() == HttpStatus.BAD_REQUEST.value() ? //
-                                             APPLICATION_JSON_VALUE : TEXT_PLAIN_VALUE);
+                return new HttpResponse(httpResponse.getStatusLine().getStatusCode(), //
+                        IOUtils.toString(httpResponse.getEntity().getContent()), //
+                        httpResponse.getStatusLine().getStatusCode() == OK.value() ? //
+                                TEXT_PLAIN_VALUE :
+                                APPLICATION_JSON_VALUE);
             } catch (IOException e) {
                 throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
             } finally {
@@ -46,13 +49,12 @@ public class RemoveFolder extends GenericCommand<HttpResponse> {
         });
     }
 
-    private HttpRequestBase onExecute( String path) {
+    private HttpRequestBase onExecute(String path) {
         try {
 
             URIBuilder uriBuilder = new URIBuilder(datasetServiceUrl + "/folders");
             uriBuilder.addParameter("path", path);
-            HttpDelete delete = new HttpDelete(uriBuilder.build());
-            return delete;
+            return new HttpDelete(uriBuilder.build());
         } catch (URISyntaxException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }

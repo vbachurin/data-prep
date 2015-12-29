@@ -55,9 +55,9 @@
          * @name importRemoteDataset
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Import the remote dataset
-         * @param {parameters} the import parameters
-         * @param {object} folder - the dataset folder
-         * @returns {Promise} the $post promise
+         * @param {parameters} parameters The import parameters
+         * @param {object} folder The dataset folder
+         * @returns {Promise} The POST promise
          */
         function importRemoteDataset(parameters, folder) {
             var folderPath =  folder && folder.id ? folder.id : '/';
