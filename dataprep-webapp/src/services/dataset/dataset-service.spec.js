@@ -106,15 +106,15 @@ describe('Dataset Service', function () {
 
                 //when
                 var result = DatasetService.update(dataset);
-                $rootScope.$digest();
 
                 //then
                 expect(result).toBe(promiseWithProgress);
                 expect(DatasetListService.update).toHaveBeenCalledWith(dataset);
             }));
 
-            it('should consolidate preparations and datasets', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
+            it('should consolidate preparations and datasets', inject(function ($rootScope, $q, DatasetService, DatasetListService, PreparationListService) {
                 //given
+                spyOn(DatasetListService, 'getDatasetsPromise').and.returnValue($q.when(datasets));
                 var dataset = DatasetListService.datasets[0];
 
                 //when
@@ -436,6 +436,13 @@ describe('Dataset Service', function () {
             expect(actual).toBeUndefined();
         }));
 
+        it('should find dataset by name in the current folder', inject(function(DatasetService) {
+            //when
+            var actual = DatasetService.getCurrentFolderDataset(datasets[1].name);
+
+            //then
+            expect(actual).toBe(datasets[1]);
+        }));
     });
 
     describe('utils', function () {

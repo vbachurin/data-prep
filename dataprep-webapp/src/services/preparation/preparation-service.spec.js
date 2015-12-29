@@ -37,7 +37,7 @@ describe('Preparation Service', function () {
         spyOn(StorageService, 'removeAllAggregations').and.returnValue();
         spyOn(StorageService, 'moveAggregations').and.returnValue();
 
-        spyOn(FolderService, 'refreshDefaultPreparationForCurrentFolder').and.returnValue();
+        spyOn(FolderService, 'refreshDefaultPreparation').and.returnValue();
     }));
 
     describe('getter/refresher', function() {
@@ -85,7 +85,7 @@ describe('Preparation Service', function () {
             //then
             expect(DatasetListService.refreshDefaultPreparation).toHaveBeenCalledWith(preparations);
             expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-            expect(FolderService.refreshDefaultPreparationForCurrentFolder).toHaveBeenCalled();
+            expect(FolderService.refreshDefaultPreparation).toHaveBeenCalled();
         }));
 
         it('should not refresh but return a promise resolving existing preparations if they are already fetched', inject(function ($rootScope, PreparationService, PreparationListService) {
@@ -104,7 +104,7 @@ describe('Preparation Service', function () {
             expect(result).toBe(preparations);
         }));
 
-        it('should not consolidate preparations and datasets when preparations has not been fetched', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService) {
+        it('should not consolidate preparations and datasets when preparations has not been fetched', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService, FolderService) {
             //given
             PreparationListService.preparations = preparations;
 
@@ -115,6 +115,7 @@ describe('Preparation Service', function () {
             //then
             expect(DatasetListService.refreshDefaultPreparation).not.toHaveBeenCalled();
             expect(PreparationListService.refreshMetadataInfos).not.toHaveBeenCalled();
+            expect(FolderService.refreshDefaultPreparation).not.toHaveBeenCalled();
         }));
 
         it('should fetch preparations if they are not already fetched', inject(function ($rootScope, PreparationService, PreparationListService) {

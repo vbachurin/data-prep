@@ -20,7 +20,7 @@
             delete: deleteDataset,
             clone: cloneDataset,
 
-            //metadata actions
+            //dataset actions
             updateColumn: DatasetRestService.updateColumn,
             processCertification: processCertification,
             toggleFavorite: toggleFavorite,
@@ -29,7 +29,7 @@
             getMetadata: DatasetRestService.getMetadata,
             getContent: DatasetRestService.getContent,
 
-            //metadata getters
+            //dataset getters
             datasetsList: datasetsList,         //cached datasets list
             getDatasets: getDatasets,           //promise that resolves datasets list
             refreshDatasets: refreshDatasets,   //force refresh datasets list
@@ -37,7 +37,8 @@
             getDatasetByName: getDatasetByName, //retrieve dataset by name
             getSheetPreview: getSheetPreview,
             setDatasetSheet: setDatasetSheet,
-            getDatasetByNameAndFolder: getDatasetByNameAndFolder,
+            getCurrentFolderDataset: getCurrentFolderDataset,
+
             //utils
             getUniqueName: getUniqueName,
             createDatasetInfo: createDatasetInfo
@@ -104,17 +105,19 @@
          */
         function update(dataset) {
             var promise = DatasetListService.update(dataset);
-            promise.then(consolidatePreparationsAndDatasets);
+            promise
+                .then(DatasetListService.getDatasetsPromise)
+                .then(consolidatePreparationsAndDatasets);
             return promise;
         }
 
         /**
          * @ngdoc method
-         * @name clone
+         * @name cloneDataset
          * @methodOf data-prep.services.dataset.service:DatasetService
          * @param {object} dataset The dataset to clone
-         * @param {object) the folder to clone the dataset
-         * @param {string) cloneName the name for the cloned dataset
+         * @param {object} folder the folder to clone the dataset
+         * @param {string} cloneName the name for the cloned dataset
          * @description Clone a dataset
          * @returns {promise} The pending CREATE promise
          */
@@ -147,6 +150,7 @@
         function consolidatePreparationsAndDatasets(response) {
             PreparationListService.refreshMetadataInfos(DatasetListService.datasets)
                 .then(DatasetListService.refreshDefaultPreparation);
+
             return response;
         }
 
@@ -219,18 +223,17 @@
 
         /**
          * @ngdoc method
-         * @name getDatasetByNameAndFolder
+         * @name getCurrentFolderDataset
          * @methodOf data-prep.services.dataset.service:DatasetService
          * @param {string} name The dataset name
-         * @description Get the dataset that has the wanted name within the folder
+         * @description Get the dataset that has the wanted name within the current folder
          * @returns {object} The dataset
          */
-        function getDatasetByNameAndFolder(name) {
+        function getCurrentFolderDataset(name) {
             return _.find(state.folder.currentFolderContent.datasets, function(dataset){
                 return dataset.name === name;
             });
         }
-
 
         /**
          * @ngdoc method

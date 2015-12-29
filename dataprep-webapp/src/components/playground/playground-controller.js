@@ -164,7 +164,7 @@
                 .then(hideAll)
                 .finally(function () {
                     vm.saveInProgress = false;
-                    FolderService.getFolderContent(state.folder.currentFolder);
+                    FolderService.getContent(state.folder.currentFolder);
                 });
         };
 

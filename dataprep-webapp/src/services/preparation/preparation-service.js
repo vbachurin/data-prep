@@ -65,7 +65,7 @@
         function consolidatePreparationsAndDatasets(response) {
             DatasetListService.refreshDefaultPreparation(preparationsList())
                 .then(PreparationListService.refreshMetadataInfos)
-                .then(FolderService.refreshDefaultPreparationForCurrentFolder);
+                .then(FolderService.refreshDefaultPreparation);
             return response;
         }
 
