@@ -302,7 +302,7 @@ public class TransformationService {
     @ApiOperation(value = "Suggest actions for a given column metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
     @ResponseBody
     public List<ActionMetadata> suggest(@RequestBody(required = false) ColumnMetadata column, //
-                                        @RequestParam(value = "limit", defaultValue = "5", required = false) int limit) {
+            @ApiParam(value = "How many actions should be returned at most", defaultValue = "5") @RequestParam(value = "limit", defaultValue = "5", required = false) int limit) {
         if (column == null) {
             return Collections.emptyList();
         }
