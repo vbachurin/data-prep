@@ -23,7 +23,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.daikon.exception.json.JsonErrorCode;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance;
@@ -43,6 +45,9 @@ import com.jayway.restassured.response.Response;
  * Unit test for Export API.
  */
 public class DataSetAPITest extends ApiServiceTestBase {
+
+    @Autowired
+    Jackson2ObjectMapperBuilder builder;
 
     @Before
     public void cleanupFolder() throws Exception {
@@ -470,7 +475,9 @@ public class DataSetAPITest extends ApiServiceTestBase {
 
         contentAsString = response.asString();
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper(  );
+
+        builder.configure( objectMapper );
 
         DataSet dataSet = objectMapper.readValue( contentAsString, DataSet.class );
 

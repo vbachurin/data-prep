@@ -2,6 +2,9 @@ package org.talend.dataprep.configuration;
 
 import java.util.List;
 
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +25,8 @@ public class Serialization {
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
         builder.featuresToDisable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
         builder.indentOutput(false);
+        modules.add( new JavaTimeModule() );
+        modules.add( new Jdk8Module() );
         builder.modules(modules);
         return builder;
     }
