@@ -48,124 +48,26 @@
       {
         "occurrences": 1,
         "range": {
-          "min": -2524521600000,
-          "max": -2208988800000
-        }
-      },
-      {
-        "occurrences": 0,
-        "range": {
-          "min": -2208988800000,
-          "max": -1893456000000
-        }
-      },
-      {
-        "occurrences": 0,
-        "range": {
-          "min": -1893456000000,
-          "max": -1577923200000
-        }
-      },
-      {
-        "occurrences": 0,
-        "range": {
-          "min": -1577923200000,
-          "max": -1262304000000
-        }
-      },
-      {
-        "occurrences": 0,
-        "range": {
-          "min": -1262304000000,
-          "max": -946771200000
-        }
-      },
-      {
-        "occurrences": 0,
-        "range": {
-          "min": -946771200000,
-          "max": -631152000000
-        }
-      },
-      {
-        "occurrences": 0,
-        "range": {
-          "min": -631152000000,
-          "max": -315619200000
-        }
-      },
-      {
-        "occurrences": 0,
-        "range": {
-          "min": -315619200000,
-          "max": 0
-        }
-      },
-      {
-        "occurrences": 0,
-        "range": {
-          "min": 0,
-          "max": 315532800000
+          "min": -5.3646624E12,
+          "max": -2.2089888E12
         }
       },
       {
         "occurrences": 1,
         "range": {
-          "min": 315532800000,
-          "max": 631152000000
+          "min": -2.2089888E12,
+          "max": 9.466848E11
         }
       },
       {
-        "occurrences": 0,
+        "occurrences": 3,
         "range": {
-          "min": 631152000000,
-          "max": 946684800000
-        }
-      },
-      {
-        "occurrences": 2,
-        "range": {
-          "min": 946684800000,
-          "max": 1262304000000
-        }
-      },
-      {
-        "occurrences": 0,
-        "range": {
-          "min": 1262304000000,
-          "max": 1577836800000
-        }
-      },
-      {
-        "occurrences": 0,
-        "range": {
-          "min": 1577836800000,
-          "max": 1893456000000
-        }
-      },
-      {
-        "occurrences": 0,
-        "range": {
-          "min": 1893456000000,
-          "max": 2208988800000
-        }
-      },
-      {
-        "occurrences": 0,
-        "range": {
-          "min": 2208988800000,
-          "max": 2524608000000
-        }
-      },
-      {
-        "occurrences": 1,
-        "range": {
-          "min": 2524608000000,
-          "max": 2840140800000
+          "min": 9.466848E11,
+          "max": 4.1024448E12
         }
       }
     ],
-    "pace": "DECADE"
+    "pace": "CENTURY"
   },
   "textLengthSummary": {
     "minimalLength": "NaN",
