@@ -119,11 +119,32 @@ public class ExtractStringTokensTest extends AbstractMetadataBaseTest {
         // given
         final DataSetRow row = getRow("lorem bacon", "Great #bigdata presentations at #TalendConnect", "01/01/2015");
         parameters.put(ExtractStringTokens.MODE_PARAMETER, ExtractStringTokens.SINGLE_COLUMN_MODE);
+        parameters.put(ExtractStringTokens.PARAMETER_SEPARATOR, ",");
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", "Great #bigdata presentations at #TalendConnect");
         expectedValues.put("0003", "bigdata,TalendConnect");
+        expectedValues.put("0002", "01/01/2015");
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
+    public void should_extract_tokens_single_column_alt_separator() {
+        // given
+        final DataSetRow row = getRow("lorem bacon", "Great #bigdata presentations at #TalendConnect", "01/01/2015");
+        parameters.put(ExtractStringTokens.MODE_PARAMETER, ExtractStringTokens.SINGLE_COLUMN_MODE);
+        parameters.put(ExtractStringTokens.PARAMETER_SEPARATOR, "LOL");
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Great #bigdata presentations at #TalendConnect");
+        expectedValues.put("0003", "bigdataLOLTalendConnect");
         expectedValues.put("0002", "01/01/2015");
 
         // when
@@ -163,6 +184,7 @@ public class ExtractStringTokensTest extends AbstractMetadataBaseTest {
         final DataSetRow row = getRow("lorem bacon", "smallet@talend.com and stef@yopmail.com", "01/01/2015");
         parameters.put(ExtractStringTokens.PARAMETER_REGEX, "(\\w+)@(\\w+[.]\\w+)");
         parameters.put(ExtractStringTokens.MODE_PARAMETER, ExtractStringTokens.SINGLE_COLUMN_MODE);
+        parameters.put(ExtractStringTokens.PARAMETER_SEPARATOR, ",");
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");

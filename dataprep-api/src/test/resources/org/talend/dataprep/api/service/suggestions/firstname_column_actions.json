@@ -2630,7 +2630,6 @@
                   "type": "string",
                   "implicit": false,
                   "canBeBlank": true,
-                  "description": "Optional new column separator",
                   "label": "Separator",
                   "default": ""
                 }
@@ -2973,7 +2972,14 @@
               ]
             },
             {
-              "value": "single_column"
+              "value": "single_column",
+              "parameters": [
+                {
+                  "name": "concat_separator",
+                  "type": "string",
+                  "default": ","
+                }
+              ]
             }
           ],
           "multiple": false

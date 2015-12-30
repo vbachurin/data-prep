@@ -54,6 +54,9 @@ public class ExtractStringTokens extends ActionMetadata implements ColumnAction 
     /** Number of items produces by the action. */
     protected static final String LIMIT = "limit"; //$NON-NLS-1$
 
+    /** Separator for single column mode. */
+    protected static final String PARAMETER_SEPARATOR = "concat_separator"; //$NON-NLS-1$
+
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtractStringTokens.class);
 
@@ -84,7 +87,7 @@ public class ExtractStringTokens extends ActionMetadata implements ColumnAction 
         parameters.add(SelectParameter.Builder.builder()
                         .name(MODE_PARAMETER)
                         .item(MULTIPLE_COLUMNS_MODE, new Parameter(LIMIT, INTEGER, "4"))
-                        .item(SINGLE_COLUMN_MODE)
+                        .item(SINGLE_COLUMN_MODE, new Parameter(PARAMETER_SEPARATOR, STRING, ","))
                         .defaultValue(MULTIPLE_COLUMNS_MODE)
                         .build()
         );
@@ -184,7 +187,7 @@ public class ExtractStringTokens extends ActionMetadata implements ColumnAction 
             }
         } else {
             StrBuilder strBuilder = new StrBuilder();
-            strBuilder.appendWithSeparators(extractedValues, ",");
+            strBuilder.appendWithSeparators(extractedValues, parameters.get(PARAMETER_SEPARATOR));
             row.set(newColumns.get(0), strBuilder.toString());
         }
     }
