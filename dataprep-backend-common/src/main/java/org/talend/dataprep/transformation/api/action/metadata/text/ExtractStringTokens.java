@@ -13,6 +13,7 @@ import java.util.regex.PatternSyntaxException;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,7 @@ import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
 
 /**
  * Extract tokens from a String cell value based on regex matching groups.
@@ -33,6 +35,12 @@ public class ExtractStringTokens extends ActionMetadata implements ColumnAction 
 
     /** The action name. */
     public static final String EXTRACT_STRING_TOKENS_ACTION_NAME = "extract_string_tokens"; //$NON-NLS-1$
+
+    protected static final String MODE_PARAMETER = "extract_mode";
+
+    protected static final String MULTIPLE_COLUMNS_MODE = "multiple_columns";
+
+    protected static final String SINGLE_COLUMN_MODE = "single_column";
 
     /** The column appendix. */
     public static final String APPENDIX = "_part"; //$NON-NLS-1$
@@ -69,8 +77,19 @@ public class ExtractStringTokens extends ActionMetadata implements ColumnAction 
     @Nonnull
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        parameters.add(new Parameter(LIMIT, INTEGER, "4"));
+
         parameters.add(new Parameter(PARAMETER_REGEX, STRING, "#(\\w+)"));
+
+        //@formatter:off
+        parameters.add(SelectParameter.Builder.builder()
+                        .name(MODE_PARAMETER)
+                        .item(MULTIPLE_COLUMNS_MODE, new Parameter(LIMIT, INTEGER, "4"))
+                        .item(SINGLE_COLUMN_MODE)
+                        .defaultValue(MULTIPLE_COLUMNS_MODE)
+                        .build()
+        );
+        //@formatter:on
+
         return parameters;
     }
 
@@ -116,8 +135,10 @@ public class ExtractStringTokens extends ActionMetadata implements ColumnAction 
     public void applyOnColumn(DataSetRow row, ActionContext context) {
         final Map<String, String> parameters = context.getParameters();
         final String columnId = context.getColumnId();
+
         // create the new columns
-        int limit = Integer.parseInt(parameters.get(LIMIT));
+        int limit = (parameters.get(MODE_PARAMETER).equals(MULTIPLE_COLUMNS_MODE) ? Integer.parseInt(parameters.get(LIMIT)) : 1);
+
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
         final List<String> newColumns = new ArrayList<>();
@@ -145,14 +166,26 @@ public class ExtractStringTokens extends ActionMetadata implements ColumnAction 
         Pattern pattern = context.get(PATTERN);
         Matcher matcher = pattern.matcher(originalValue);
 
-        int i = 0;
-        while (matcher.find() && i < newColumns.size()) {
-            row.set(newColumns.get(i), matcher.group(1));
-            i++;
+        List<String> extractedValues = new ArrayList<>();
+        while (matcher.find()) {
+            for (int i = 1; i <= matcher.groupCount(); i++) {
+                extractedValues.add(matcher.group(i));
+            }
         }
-        // If we found less tokens than limit, we complete with empty entries
-        for (; i < newColumns.size(); i++) {
-            row.set(newColumns.get(i), EMPTY);
+
+        if (parameters.get(MODE_PARAMETER).equals(MULTIPLE_COLUMNS_MODE)) {
+            for (int i = 0; i < newColumns.size(); i++) {
+                if (i<extractedValues.size()) {
+                    row.set(newColumns.get(i), extractedValues.get(i));
+                } else {
+                    // If we found less tokens than limit, we complete with empty entries
+                    row.set(newColumns.get(i), EMPTY);
+                }
+            }
+        } else {
+            StrBuilder strBuilder = new StrBuilder();
+            strBuilder.appendWithSeparators(extractedValues, ",");
+            row.set(newColumns.get(0), strBuilder.toString());
         }
     }
 

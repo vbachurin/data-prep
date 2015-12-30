@@ -2960,12 +2960,30 @@
         "default": ""
       },
       {
-        "name": "limit",
-        "type": "integer"
-      },
-      {
         "name": "regex",
         "type": "string"
+      },
+      {
+        "name": "extract_mode",
+        "type": "select",
+        "default": "multiple_columns",
+        "configuration": {
+          "values": [
+            {
+              "value": "multiple_columns",
+              "parameters": [
+                {
+                  "name": "limit",
+                  "type": "integer"
+                }
+              ]
+            },
+            {
+              "value": "single_column"
+            }
+          ],
+          "multiple": false
+        }
       }
     ]
   }
