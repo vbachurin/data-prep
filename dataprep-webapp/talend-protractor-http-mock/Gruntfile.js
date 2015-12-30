@@ -1,0 +1,95 @@
+'use strict';
+
+module.exports = function(grunt) {
+    grunt.initConfig({
+        jshint: {
+            options: {
+                jshintrc: '.jshintrc',
+            },
+            files: ['lib/**/*.js']    
+        },
+        jasmine_node: {
+            options: {
+                forceExit: true,
+                specNameMatcher: '.specs',
+            },
+            all: ['specs/']
+        },
+        connect: {
+            example: {
+                options: {
+                    base: 'example'   
+                }
+            },
+            'client-test': {
+                options: {
+                    base: '.'
+                }
+            }
+        },
+        protractor: {
+            options: {
+                configFile: 'example/protractor.conf',
+                //debug: true
+            },
+            example: {}
+        },
+        browserify: {
+            test: {
+                files: {
+                    'tests/bundle/httpMock.js': ['lib/httpMock.js']
+                },
+                options: {
+                    browserifyOptions: {
+                        standalone: 'httpMock'
+                    }
+                }
+            }
+        },
+        jasmine: {
+            test: {
+                src: 'tests/bundle/httpMock.js',
+                options: {
+                    specs: 'tests/*test.js',
+                    vendor: [
+                        'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.js'
+                    ],
+                    template: 'tests/template.tmpl'
+                }
+            }
+        },
+        
+        run_node: {
+            start: {
+                options: {
+                    cwd: process.cwd(),
+                    stdio: ['pipe', 'pipe', 'pipe'],
+                    env: {
+                       
+                    },
+                    detached: true
+                },
+                files: { src: [ './talend_record_server/server.js'] }
+            }
+        },
+        stop_node: {
+            stop: {}
+        }
+    });
+
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-jasmine-node');
+    grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-protractor-runner');
+    grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('grunt-contrib-jasmine');
+    grunt.loadNpmTasks('grunt-run-node');
+
+    grunt.registerTask('host-example', ['connect:example:keepalive']);
+    grunt.registerTask('example', ['run_node:start', 'protractor:example','stop_node:stop']);
+    grunt.registerTask('example1', ['connect:example','run_node:example', 'protractor:example','stop_node:example']);
+    grunt.registerTask('test', ['jasmine_node']);
+    grunt.registerTask('client-test', ['browserify:test', 'jasmine:test']);
+
+    grunt.registerTask('verify', ['test', 'client-test', 'example']);
+};
