@@ -258,7 +258,7 @@ public class XlsSchemaParser implements SchemaParser {
                     currentType = BOOLEAN.getName();
                     break;
                 case Cell.CELL_TYPE_NUMERIC:
-                    currentType = HSSFDateUtil.isCellDateFormatted(cell) ? DATE.getName() : NUMERIC.getName();
+                    currentType = getTypeFromNumericCell( cell );
                     break;
                 case Cell.CELL_TYPE_BLANK:
                     currentType = BLANK;
@@ -288,6 +288,14 @@ public class XlsSchemaParser implements SchemaParser {
 
         LOGGER.trace("cellsTypeMatrix: {}", cellsTypeMatrix);
         return cellsTypeMatrix;
+    }
+
+    protected String getTypeFromNumericCell(Cell cell) {
+        try {
+            return HSSFDateUtil.isCellDateFormatted(cell) ? DATE.getName() : NUMERIC.getName();
+        } catch (IllegalStateException e) {
+            return ANY.getName();
+        }
     }
 
     /**
