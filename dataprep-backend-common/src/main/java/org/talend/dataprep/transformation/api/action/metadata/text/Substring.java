@@ -1,5 +1,6 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.STRINGS;
 
 import java.util.List;
@@ -78,8 +79,8 @@ public class Substring extends ActionMetadata implements ColumnAction {
         parameters.add(SelectParameter.Builder.builder() //
                 .name(TO_MODE_PARAMETER) //
                 .item(TO_END) //
-                .item(TO_N_BEFORE_END_PARAMETER, new Parameter(TO_N_BEFORE_END_PARAMETER, ParameterType.INTEGER, "1")) //
                 .item(TO_INDEX_PARAMETER, new Parameter(TO_INDEX_PARAMETER, ParameterType.INTEGER, "5")) //
+                .item(TO_N_BEFORE_END_PARAMETER, new Parameter(TO_N_BEFORE_END_PARAMETER, ParameterType.INTEGER, "1")) //
                 .defaultValue(TO_INDEX_PARAMETER) //
                 .build());
 
@@ -131,7 +132,7 @@ public class Substring extends ActionMetadata implements ColumnAction {
             row.set(substringColumn, newValue);
         } catch (IndexOutOfBoundsException e) {
             // Nothing to do in that case, just set with the empty string:
-            row.set(substringColumn, StringUtils.EMPTY);
+            row.set(substringColumn, EMPTY);
         }
     }
 
@@ -147,7 +148,8 @@ public class Substring extends ActionMetadata implements ColumnAction {
         case TO_INDEX_PARAMETER:
             return Math.min(Integer.parseInt(parameters.get(TO_INDEX_PARAMETER)), value.length());
         case TO_N_BEFORE_END_PARAMETER:
-            return Math.max(0, value.length() - Integer.parseInt(parameters.get(TO_N_BEFORE_END_PARAMETER)));
+            final int nbChars = Math.max(0, Integer.parseInt(parameters.get(TO_N_BEFORE_END_PARAMETER)));
+            return Math.max(0, value.length() - nbChars);
         case TO_END:
         default:
             return value.length();
@@ -164,9 +166,10 @@ public class Substring extends ActionMetadata implements ColumnAction {
     private int getStartIndex(final Map<String, String> parameters, String value) {
         switch (parameters.get(FROM_MODE_PARAMETER)) {
         case FROM_INDEX_PARAMETER:
-            return Math.min(Integer.parseInt(parameters.get(FROM_INDEX_PARAMETER)), value.length());
+            final int index = Math.max(0, Integer.parseInt(parameters.get(FROM_INDEX_PARAMETER)));
+            return Math.min(index, value.length());
         case FROM_N_BEFORE_END_PARAMETER:
-            return value.length() - Integer.parseInt(parameters.get(FROM_N_BEFORE_END_PARAMETER));
+            return Math.max(0, value.length() - Integer.parseInt(parameters.get(FROM_N_BEFORE_END_PARAMETER)));
         case FROM_BEGINNING:
         default:
             return 0;
