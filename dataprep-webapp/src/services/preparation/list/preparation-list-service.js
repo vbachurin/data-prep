@@ -10,10 +10,10 @@
      * @requires data-prep.services.preparation.service:PreparationRestService
      * @requires data-prep.services.state.service:StateService
      */
-    function PreparationListService(state, $q, PreparationRestService, StateService) {
+    function PreparationListService($q, state, PreparationRestService, StateService) {
         var preparationsPromise;
 
-        var service = {
+        return {
             refreshPreparations: refreshPreparations,
             getPreparationsPromise: getPreparationsPromise,
             refreshMetadataInfos: refreshMetadataInfos,
@@ -23,7 +23,6 @@
             update: update,
             delete: deletePreparation
         };
-        return service;
 
 
         /**
@@ -38,7 +37,7 @@
                 preparationsPromise = PreparationRestService.getPreparations()
                     .then(function (response) {
                         preparationsPromise = null;
-                        StateService.updatePreparationsList(response.data);
+                        StateService.setPreparations(response.data);
                         return response.data;
                     });
             }
@@ -53,7 +52,7 @@
          * @returns {promise} The process promise
          */
         function getPreparationsPromise() {
-            return state.preparation.preparationsList === null ? refreshPreparations() : $q.when(state.preparation.preparationsList);
+            return state.inventory.preparations === null ? refreshPreparations() : $q.when(state.inventory.preparations);
         }
 
         /**
@@ -124,8 +123,7 @@
         function deletePreparation(preparation) {
             return PreparationRestService.delete(preparation.id)
                 .then(function() {
-                    var index = state.preparation.preparationsList.indexOf(preparation);
-                    StateService.deletePreparationFromPreparationsList(index);
+                    StateService.removePreparation(preparation);
                 });
         }
 
@@ -133,7 +131,7 @@
          * @ngdoc method
          * @name refreshMetadataInfos
          * @methodOf data-prep.services.preparation.service:PreparationListService
-         * @param {object[]} datasets The datasets to inject
+         * @param {array} datasets The datasets to inject
          * @description [PRIVATE] Inject the corresponding dataset to every preparation
          * @returns {promise} The process promise
          */

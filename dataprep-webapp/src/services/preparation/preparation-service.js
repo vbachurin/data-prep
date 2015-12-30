@@ -52,7 +52,7 @@
          * @description [PRIVATE] Refresh the default preparation within each dataset
          */
         function consolidatePreparationsAndDatasets(response) {
-            DatasetListService.refreshDefaultPreparation(state.preparation.preparationsList)
+            DatasetListService.refreshDefaultPreparation(state.inventory.preparations)
                 .then(PreparationListService.refreshMetadataInfos)
                 .then(FolderService.refreshDefaultPreparation);
             return response;
@@ -78,8 +78,8 @@
          * @returns {promise} The process promise
          */
         function getPreparations() {
-            return state.preparation.preparationsList !== null ?
-                $q.when(state.preparation.preparationsList) :
+            return state.inventory.preparations !== null ?
+                $q.when(state.inventory.preparations) :
                 refreshPreparations();
         }
 

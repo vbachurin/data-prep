@@ -6,13 +6,16 @@
      * @name data-prep.preparation-list.controller:PreparationListCtrl
      * @description Preparation list controller.
      * On creation, it fetch the user's preparations and load the requested one if a `prepid` is present as query param
-     * @requires data-prep.services.preparation.service:PreparationService
-     * @requires data-prep.services.playground.service:PlaygroundService
-     * @requires data-prep.services.utils.service:MessageService
      * @requires data-prep.services.state.service:StateService
+     * @requires data-prep.services.playground.service:PlaygroundService
+     * @requires data-prep.services.preparation.service:PreparationService
+     * @requires data-prep.services.utils.service:MessageService
      * @requires talend.widget.service:TalendConfirmService
      */
-    function PreparationListCtrl(state, $rootScope, $stateParams, $timeout, PlaygroundService, PreparationService, TalendConfirmService, MessageService, StateService) {
+    function PreparationListCtrl($rootScope, $stateParams, $timeout,
+                                 state, StateService,
+                                 PlaygroundService, PreparationService,
+                                 TalendConfirmService, MessageService) {
         var vm = this;
         vm.preparationService = PreparationService;
         vm.state = state;
@@ -39,7 +42,7 @@
          * @param {object} preparation - the preparation to delete
          * @description Delete a preparation
          */
-        vm.delete = function (preparation) {
+        vm.remove = function remove(preparation) {
             TalendConfirmService.confirm({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {
                     type: 'preparation',
                     name: preparation.name
@@ -63,7 +66,7 @@
          * @param {string} newName The new name for the given preparation
          * @description Trigger backend call to update preparation name
          */
-        vm.rename = function (preparation, newName) {
+        vm.rename = function rename(preparation, newName) {
             var cleanName = newName ? newName.trim() : '';
             if (cleanName) {
                 $rootScope.$emit('talend.loading.start');
@@ -84,7 +87,7 @@
          * @param {object} preparation - the preparation to clone
          * @description trigger backend call to clone preparation
          */
-        vm.clone = function (preparation) {
+        vm.clone = function clone(preparation) {
             $rootScope.$emit('talend.loading.start');
             return PreparationService.clone(preparation.id)
                 .then(function () {
@@ -102,7 +105,7 @@
          * @param {object} preparations - list of all user's preparation
          * @description [PRIVATE] Load playground with provided preparation id, if present in route param
          */
-        var loadUrlSelectedPreparation = function (preparations) {
+        var loadUrlSelectedPreparation = function loadUrlSelectedPreparation(preparations) {
             if ($stateParams.prepid) {
                 var selectedPrep = _.find(preparations, function (preparation) {
                     return preparation.id === $stateParams.prepid;

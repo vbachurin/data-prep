@@ -1,28 +1,26 @@
-(function() {
+(function () {
     'use strict';
 
-    var preparationState = {
-        preparationsList: null
+    var inventoryState = {
+        preparations: null
     };
 
-    function PreparationStateService() {
+    function InventoryStateService() {
         return {
-            //update preparations list
-            updatePreparationsList: updatePreparationsList,
-            deletePreparationFromPreparationsList: deletePreparationFromPreparationsList
+            setPreparations: setPreparations,
+            removePreparation: removePreparation
         };
 
-        function updatePreparationsList (preparations){
-            preparationState.preparationsList = preparations;
+        function setPreparations(preparations) {
+            inventoryState.preparations = preparations;
         }
 
-        function deletePreparationFromPreparationsList (index){
-            preparationState.preparationsList.splice(index, 1);
+        function removePreparation(preparation) {
+            inventoryState.preparations = _.reject(inventoryState.preparations, {id: preparation.id});
         }
-
     }
 
     angular.module('data-prep.services.state')
-        .service('PreparationStateService', PreparationStateService)
-        .constant('preparationState', preparationState);
+        .service('InventoryStateService', InventoryStateService)
+        .constant('inventoryState', inventoryState);
 })();

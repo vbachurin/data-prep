@@ -1,36 +1,31 @@
-describe('preparation state service', function(){
+describe('Inventory state service', function(){
     'use strict';
 
     var preparations = [{id: 'toto'}, {id: 'titi'}];
 
     beforeEach(module('data-prep.services.state'));
 
-    beforeEach(inject(function (preparationState) {
-        preparationState.preparationsList = null;
-    }));
-
-    it('should update preparations list', inject(function (PreparationStateService, preparationState) {
+    it('should update preparations list', inject(function (inventoryState, InventoryStateService) {
         //given
-        expect(preparationState.preparationsList).toBeNull();
+        inventoryState.preparations = null;
 
         //when
-        PreparationStateService.updatePreparationsList(preparations);
-
+        InventoryStateService.setPreparations(preparations);
 
         //then
-        expect(preparationState.preparationsList.length).toBe(2);
+        expect(inventoryState.preparations.length).toBe(2);
     }));
 
-    it('should remove a preparation from preparations list', inject(function (PreparationStateService, preparationState) {
+    it('should remove a preparation from preparations list', inject(function (inventoryState, InventoryStateService) {
         //given
-        expect(preparationState.preparationsList).toBeNull();
-        PreparationStateService.updatePreparationsList(preparations);
+        inventoryState.preparations = null;
+        InventoryStateService.setPreparations(preparations);
 
         //when
-        PreparationStateService.deletePreparationFromPreparationsList(0);
+        InventoryStateService.removePreparation(preparations[0]);
 
         //then
-        expect(preparationState.preparationsList.length).toBe(1);
-        expect(preparationState.preparationsList[0].id).toBe('titi');
+        expect(inventoryState.preparations.length).toBe(1);
+        expect(inventoryState.preparations[0].id).toBe('titi');
     }));
 });

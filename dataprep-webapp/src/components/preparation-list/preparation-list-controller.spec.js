@@ -1,7 +1,7 @@
 describe('Preparation list controller', function () {
     'use strict';
 
-    var createController, scope, stateMock;
+    var createController, scope;
     var allPreparations = [
         {
             'id': 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
@@ -72,23 +72,15 @@ describe('Preparation list controller', function () {
         }
     ];
 
-    beforeEach(module('data-prep.preparation-list', function ($provide) {
-
-        stateMock = {preparation : {
-            preparationsList: null
-        }
-        };
-        $provide.constant('state', stateMock);
-    }));
+    beforeEach(module('data-prep.preparation-list'));
 
     beforeEach(inject(function ($q, $rootScope, $controller, PreparationService, PlaygroundService, MessageService, StateService) {
         scope = $rootScope.$new();
 
         createController = function () {
-            var ctrl = $controller('PreparationListCtrl', {
+            return $controller('PreparationListCtrl', {
                 $scope: scope
             });
-            return ctrl;
         };
 
         spyOn($rootScope, '$emit').and.returnValue();
@@ -173,7 +165,7 @@ describe('Preparation list controller', function () {
         expect(StateService.showPlayground).toHaveBeenCalled();
     }));
 
-    it('should delete preparation, show success message on confirm', inject(function ($q, TalendConfirmService, PreparationService, MessageService) {
+    it('should remove preparation, show success message on confirm', inject(function ($q, TalendConfirmService, PreparationService, MessageService) {
         //given
         spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when(true));
 
@@ -184,7 +176,7 @@ describe('Preparation list controller', function () {
         };
 
         //when
-        ctrl.delete(preparation);
+        ctrl.remove(preparation);
         scope.$digest();
 
         //then
@@ -210,7 +202,7 @@ describe('Preparation list controller', function () {
         };
 
         //when
-        ctrl.delete(preparation);
+        ctrl.remove(preparation);
         scope.$digest();
 
         //then

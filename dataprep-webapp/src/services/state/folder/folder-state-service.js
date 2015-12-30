@@ -1,13 +1,12 @@
-(function() {
+(function () {
     'use strict';
 
-    // currentFolder is initialized with root value
     var folderState = {
-                        currentFolder:{id:'', path: ''},
-                        currentFolderContent: {},
-                        foldersStack: [],
-                        menuChildren: []
-                      };
+        currentFolder: {id: '', path: ''}, // currentFolder is initialized with root value
+        currentFolderContent: {},
+        foldersStack: [],
+        menuChildren: []
+    };
 
     /**
      * @ngdoc service
@@ -26,7 +25,7 @@
          * @ngdoc method
          * @name setCurrentFolder
          * @methodOf data-prep.services.state.service:FolderStateService
-         * @param {object} the current folder
+         * @param {object} folder The current folder
          * @description Update the current folder
          */
         function setCurrentFolder(folder) {
@@ -37,9 +36,9 @@
          * @ngdoc method
          * @name setCurrentFolderContent
          * @methodOf data-prep.services.state.service:FolderStateService
-         * @param {object} the content of the current folder
+         * @param {object} children The content of the current folder
          */
-        function setCurrentFolderContent(children){
+        function setCurrentFolderContent(children) {
             folderState.currentFolderContent = children;
         }
 
@@ -47,9 +46,9 @@
          * @ngdoc method
          * @name setFoldersStack
          * @methodOf data-prep.services.state.service:FolderStateService
-         * @param {object} the current folders stack
+         * @param {object} stack The current folders stack
          */
-        function setFoldersStack(stack){
+        function setFoldersStack(stack) {
             folderState.foldersStack = stack;
         }
 
@@ -57,12 +56,11 @@
          * @ngdoc method
          * @name setMenuChildren
          * @methodOf data-prep.services.state.service:FolderStateService
-         * @param {object} array the current children of the current menu entry
+         * @param {array} children The current children of the current menu entry
          */
-        function setMenuChildren(children){
+        function setMenuChildren(children) {
             folderState.menuChildren = children;
         }
-
     }
 
     angular.module('data-prep.services.state')

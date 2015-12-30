@@ -12,14 +12,14 @@
                           DatasetStateService, datasetState, //
                           FolderStateService, folderState,  //
                           EasterEggsStateService, easterEggsState, //
-                          PreparationStateService, preparationState, //
+                          InventoryStateService, inventoryState,
                           FeedbackStateService, feedbackState) {
         state.playground = playgroundState;
         state.dataset = datasetState;
         state.folder = folderState;
         state.easterEggsState = easterEggsState;
+        state.inventory = inventoryState;
         state.feedback = feedbackState;
-        state.preparation = preparationState;
 
         return {
             //playground
@@ -82,9 +82,9 @@
             enableEasterEgg: EasterEggsStateService.enableEasterEgg,
             disableEasterEgg: EasterEggsStateService.disableEasterEgg,
 
-            //preparation
-            updatePreparationsList: PreparationStateService.updatePreparationsList,
-            deletePreparationFromPreparationsList: PreparationStateService.deletePreparationFromPreparationsList,
+            //inventory
+            setPreparations: InventoryStateService.setPreparations,
+            removePreparation: InventoryStateService.removePreparation,
 
             //feedback
             showFeedback: FeedbackStateService.show,
