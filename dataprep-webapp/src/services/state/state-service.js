@@ -58,7 +58,8 @@
             setColumnTransformations: PlaygroundStateService.setColumnTransformations,
             setLineTransformations: PlaygroundStateService.setLineTransformations,
             setSuggestionsLoading: PlaygroundStateService.setSuggestionsLoading,
-            resetColumnSuggestions: PlaygroundStateService.resetColumnSuggestions,
+            setTransformationsForEmptyCells: PlaygroundStateService.setTransformationsForEmptyCells,
+            setTransformationsForInvalidCells: PlaygroundStateService.setTransformationsForInvalidCells,
             updateFilteredTransformations: PlaygroundStateService.updateFilteredTransformations,
 
             //playground - Statistics

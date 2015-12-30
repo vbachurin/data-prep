@@ -3,10 +3,9 @@ describe('Suggestion Service', function() {
 
     beforeEach(module('data-prep.services.transformation'));
 
-    beforeEach(inject(function(ColumnSuggestionService, LineSuggestionService, StateService) {
+    beforeEach(inject(function(ColumnSuggestionService, LineSuggestionService) {
         spyOn(LineSuggestionService, 'initTransformations').and.returnValue();
         spyOn(ColumnSuggestionService, 'initTransformations').and.returnValue();
-        spyOn(StateService, 'resetColumnSuggestions').and.returnValue();
     }));
 
     describe('transformations/suggestions', function() {

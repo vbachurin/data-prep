@@ -12,19 +12,21 @@ describe('Column suggestion service', function () {
     }));
 
     beforeEach(module('data-prep.services.transformation', function ($provide) {
-        stateMock = {playground : {
-                        suggestions: {
-                            column: {
-                                allSuggestions: [],     // all selected column suggestions
-                                allTransformations: [], // all selected column transformations
-                                filteredTransformations: [], // categories with their transformations to display, result of filter
-                                transformationsForEmptyCells: [], // all column transformations applied to empty cells
-                                transformationsForInvalidCells: [],// all column transformations applied to invalid cells
-                                searchActionString: '',
-                                allCategories: null
-                            }
-                        }
-        }};
+        stateMock = {
+            playground: {
+                suggestions: {
+                    column: {
+                        allSuggestions: [],     // all selected column suggestions
+                        allTransformations: [], // all selected column transformations
+                        filteredTransformations: [], // categories with their transformations to display, result of filter
+                        searchActionString: '',
+                        allCategories: null
+                    },
+                    transformationsForEmptyCells: [], // all column transformations applied to empty cells
+                    transformationsForInvalidCells: []// all column transformations applied to invalid cells
+                }
+            }
+        };
         $provide.constant('state', stateMock);
     }));
 
@@ -36,35 +38,98 @@ describe('Column suggestion service', function () {
                 {name: 'cluster', category: 'quickfix', label: 'f', labelHtml: 'f', description: 'test'},
                 {name: 'split', category: 'column_metadata', label: 'c', labelHtml: 'c', description: 'test'},
                 {name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test'},
-                {name: 'touppercase', category: 'case', label: 'u', labelHtml: 'u', description: 'test',  actionScope: ['unknown']},
-                {name: 'removeempty', category: 'clear', label: 'a', labelHtml: 'a', description: 'test', actionScope: ['empty', 'invalid']},
-                {name: 'totitlecase', category: 'case', label: 't', labelHtml: 't', description: 'test', actionScope: ['invalid']},
-                {name: 'removetrailingspaces', category: 'quickfix', label: 'm', labelHtml: 'm', description: 'test', actionScope: ['empty', 'unknown']},
+                {
+                    name: 'touppercase',
+                    category: 'case',
+                    label: 'u',
+                    labelHtml: 'u',
+                    description: 'test',
+                    actionScope: ['unknown']
+                },
+                {
+                    name: 'removeempty',
+                    category: 'clear',
+                    label: 'a',
+                    labelHtml: 'a',
+                    description: 'test',
+                    actionScope: ['empty', 'invalid']
+                },
+                {
+                    name: 'totitlecase',
+                    category: 'case',
+                    label: 't',
+                    labelHtml: 't',
+                    description: 'test',
+                    actionScope: ['invalid']
+                },
+                {
+                    name: 'removetrailingspaces',
+                    category: 'quickfix',
+                    label: 'm',
+                    labelHtml: 'm',
+                    description: 'test',
+                    actionScope: ['empty', 'unknown']
+                },
                 {name: 'split', category: 'split', label: 'l', labelHtml: 'l...', dynamic: true, description: 'test'}
             ],
             allCategories: [
                 {
                     category: 'case',
                     transformations: [
-                        {name: 'totitlecase', category: 'case', label: 't', labelHtml: 't', description: 'test', actionScope: ['invalid']},
-                        {name: 'touppercase', category: 'case', label: 'u', labelHtml: 'u', description: 'test', actionScope: ['unknown']},
+                        {
+                            name: 'totitlecase',
+                            category: 'case',
+                            label: 't',
+                            labelHtml: 't',
+                            description: 'test',
+                            actionScope: ['invalid']
+                        },
+                        {
+                            name: 'touppercase',
+                            category: 'case',
+                            label: 'u',
+                            labelHtml: 'u',
+                            description: 'test',
+                            actionScope: ['unknown']
+                        },
                         {name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test'}
                     ]
                 },
                 {
                     category: 'clear',
-                    transformations: [{name: 'removeempty', category: 'clear', label: 'a', labelHtml: 'a', description: 'test', actionScope: ['empty', 'invalid']}]
+                    transformations: [{
+                        name: 'removeempty',
+                        category: 'clear',
+                        label: 'a',
+                        labelHtml: 'a',
+                        description: 'test',
+                        actionScope: ['empty', 'invalid']
+                    }]
                 },
                 {
                     category: 'quickfix',
                     transformations: [
                         {name: 'cluster', category: 'quickfix', label: 'f', labelHtml: 'f', description: 'test'},
-                        {name: 'removetrailingspaces', category: 'quickfix', label: 'm', labelHtml: 'm', description: 'test', actionScope: ['empty', 'unknown']}
+                        {
+                            name: 'removetrailingspaces',
+                            category: 'quickfix',
+                            label: 'm',
+                            labelHtml: 'm',
+                            description: 'test',
+                            actionScope: ['empty', 'unknown']
+                        }
                     ]
                 },
                 {
                     category: 'split',
-                    transformations: [{name: 'split', category: 'split', label: 'l', labelHtml: 'l...', dynamic: true, description: 'test'}]
+                    transformations: [{
+                        name: 'split',
+                        category: 'split',
+                        label: 'l',
+                        labelHtml: 'l...',
+                        dynamic: true,
+                        description: 'test'
+                    }]
                 }
             ]
         };
@@ -72,70 +137,69 @@ describe('Column suggestion service', function () {
             {name: 'touppercase', category: 'case', label: 'u', labelHtml: 'u', description: 'test'},
             {name: 'tolowercase', category: 'case', label: 'v', labelHtml: 'v', description: 'test'}
         ];
-
         allCategories = [
             {
-                category:'suggestion',
-                categoryHtml:'SUGGESTION',
-                transformations:[
+                category: 'suggestion',
+                categoryHtml: 'SUGGESTION',
+                transformations: [
                     {
-                        name:'touppercase',
-                        category:'case',
-                        label:'u',
-                        labelHtml:'u',
-                        description:'test'
+                        name: 'touppercase',
+                        category: 'case',
+                        label: 'u',
+                        labelHtml: 'u',
+                        description: 'test'
                     },
                     {
-                        name:'tolowercase',
-                        category:'case',
-                        label:'v',
-                        labelHtml:'v',
-                        description:'test'
+                        name: 'tolowercase',
+                        category: 'case',
+                        label: 'v',
+                        labelHtml: 'v',
+                        description: 'test'
                     }
                 ]
             },
             {
-                category:'case',
-                transformations:[
+                category: 'case',
+                transformations: [
                     {
-                        name:'totitlecase',
-                        category:'case',
-                        label:'t',
-                        labelHtml:'t',
-                        description:'test',
-                        actionScope:[
+                        name: 'totitlecase',
+                        category: 'case',
+                        label: 't',
+                        labelHtml: 't',
+                        description: 'test',
+                        actionScope: [
                             'invalid'
                         ]
                     },
                     {
-                        name:'touppercase',
-                        category:'case',
-                        label:'u',
-                        labelHtml:'u',
-                        description:'test',
-                        actionScope:[
+                        name: 'touppercase',
+                        category: 'case',
+                        label: 'u',
+                        labelHtml: 'u',
+                        description: 'test',
+                        actionScope: [
                             'unknown'
                         ]
                     },
                     {
-                        name:'tolowercase',
-                        category:'case',
-                        label:'v',
-                        labelHtml:'v',
-                        description:'test'
+                        name: 'tolowercase',
+                        category: 'case',
+                        label: 'v',
+                        labelHtml: 'v',
+                        description: 'test'
                     }
                 ]
             },
             {
-                category:'clear',
-                transformations:[
+                category: 'clear',
+                transformations: [
                     {
-                        name:'removeempty',
-                        category:'clear',
-                        label:'a',
-                        labelHtml:'a',
-                        description:'test',
-                        actionScope:[
+                        name: 'removeempty',
+                        category: 'clear',
+                        label: 'a',
+                        labelHtml: 'a',
+                        description: 'test',
+                        actionScope: [
                             'empty',
                             'invalid'
                         ]
@@ -143,22 +207,22 @@ describe('Column suggestion service', function () {
                 ]
             },
             {
-                category:'quickfix',
-                transformations:[
+                category: 'quickfix',
+                transformations: [
                     {
-                        name:'cluster',
-                        category:'quickfix',
-                        label:'f',
-                        labelHtml:'f',
-                        description:'test'
+                        name: 'cluster',
+                        category: 'quickfix',
+                        label: 'f',
+                        labelHtml: 'f',
+                        description: 'test'
                     },
                     {
-                        name:'removetrailingspaces',
-                        category:'quickfix',
-                        label:'m',
-                        labelHtml:'m',
-                        description:'test',
-                        actionScope:[
+                        name: 'removetrailingspaces',
+                        category: 'quickfix',
+                        label: 'm',
+                        labelHtml: 'm',
+                        description: 'test',
+                        actionScope: [
                             'empty',
                             'unknown'
                         ]
@@ -166,27 +230,28 @@ describe('Column suggestion service', function () {
                 ]
             },
             {
-                category:'split',
-                transformations:[
+                category: 'split',
+                transformations: [
                     {
-                        name:'split',
-                        category:'split',
-                        label:'l',
-                        labelHtml:'l...',
-                        dynamic:true,
-                        description:'test'
+                        name: 'split',
+                        category: 'split',
+                        label: 'l',
+                        labelHtml: 'l...',
+                        dynamic: true,
+                        description: 'test'
                     }
                 ]
             }
         ];
 
-
         spyOn(TransformationCacheService, 'getColumnTransformations').and.returnValue($q.when(columnTransformations));
         spyOn(TransformationCacheService, 'getColumnSuggestions').and.returnValue($q.when(columnSuggestions));
         spyOn(StateService, 'setSuggestionsLoading').and.returnValue();
+        spyOn(StateService, 'setTransformationsForEmptyCells').and.returnValue();
+        spyOn(StateService, 'setTransformationsForInvalidCells').and.returnValue();
     }));
 
-    describe('loading suggestions', function() {
+    describe('loading suggestions', function () {
         it('should hide spinner', inject(function ($rootScope, ColumnSuggestionService, StateService) {
             //given
             expect(StateService.setSuggestionsLoading).not.toHaveBeenCalled();
@@ -202,7 +267,7 @@ describe('Column suggestion service', function () {
         }));
     });
 
-    describe('search filter', function() {
+    describe('search filter', function () {
         it('should not filter transformations when searchActionString is empty', inject(function ($rootScope, ColumnSuggestionService, StateService) {
             //given
             spyOn(StateService, 'setColumnTransformations');
@@ -215,7 +280,7 @@ describe('Column suggestion service', function () {
             $rootScope.$digest();
 
             //then
-            var filteredTransformations = StateService.setColumnTransformations.calls.argsFor(0)[0].filteredTransformations;
+            var filteredTransformations = StateService.setColumnTransformations.calls.argsFor(1)[0].filteredTransformations;
 
             expect(filteredTransformations[0].transformations[0].labelHtml).toBe('u');
             expect(filteredTransformations[0].transformations[1].labelHtml).toBe('v');
@@ -331,25 +396,56 @@ describe('Column suggestion service', function () {
 
         //then
         expect(TransformationCacheService.getColumnTransformations).toHaveBeenCalledWith(firstSelectedColumn);
+        expect(StateService.setTransformationsForEmptyCells).toHaveBeenCalledWith([
+            {
+                name: 'removeempty',
+                category: 'clear',
+                label: 'a',
+                labelHtml: 'a',
+                description: 'test',
+                actionScope: ['empty', 'invalid']
+            },
+            {
+                name: 'removetrailingspaces',
+                category: 'quickfix',
+                label: 'm',
+                labelHtml: 'm',
+                description: 'test',
+                actionScope: ['empty', 'unknown']
+            }
+        ]);
+        expect(StateService.setTransformationsForInvalidCells).toHaveBeenCalledWith([
+            {
+                name: 'removeempty',
+                category: 'clear',
+                label: 'a',
+                labelHtml: 'a',
+                description: 'test',
+                actionScope: ['empty', 'invalid']
+            },
+            {
+                name: 'totitlecase',
+                category: 'case',
+                label: 't',
+                labelHtml: 't',
+                description: 'test',
+                actionScope: ['invalid']
+            }
+        ]);
         expect(StateService.setColumnTransformations).toHaveBeenCalledWith({
             allSuggestions: columnSuggestions,
             allTransformations: columnTransformations.allTransformations,
             filteredTransformations: allCategories,
             allCategories: allCategories,
-            transformationsForEmptyCells:  [{name: 'removeempty', category: 'clear', label: 'a', labelHtml: 'a', description: 'test', actionScope: ['empty', 'invalid']},
-                                            {name: 'removetrailingspaces', category: 'quickfix', label: 'm', labelHtml: 'm', description: 'test', actionScope: ['empty', 'unknown']}],
-            transformationsForInvalidCells: [{name: 'removeempty', category: 'clear', label: 'a', labelHtml: 'a', description: 'test', actionScope: ['empty', 'invalid']},
-                                             {name: 'totitlecase', category: 'case', label: 't', labelHtml: 't', description: 'test', actionScope: ['invalid']}],
             searchActionString: ''
         });
 
     }));
 
-
-    it('should initialize column transformations with existing transfos for empty and invalid cells', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService, StateService) {
+    it('should NOT change transfos for empty and invalid cells when they are already initialized', inject(function ($rootScope, ColumnSuggestionService, TransformationCacheService, StateService) {
         //given
-        stateMock.playground.suggestions.column.transformationsForEmptyCells = [{name : 'deleteEmpty'}];
-        stateMock.playground.suggestions.column.transformationsForInvalidCells = [{name : 'deleteInvalid'}];
+        stateMock.playground.suggestions.transformationsForEmptyCells = [{name: 'deleteEmpty'}];
+        stateMock.playground.suggestions.transformationsForInvalidCells = [{name: 'deleteInvalid'}];
 
         //when
         spyOn(StateService, 'setColumnTransformations').and.returnValue();
@@ -358,15 +454,8 @@ describe('Column suggestion service', function () {
 
         //then
         expect(TransformationCacheService.getColumnTransformations).toHaveBeenCalledWith(firstSelectedColumn);
-        expect(StateService.setColumnTransformations).toHaveBeenCalledWith({
-            allSuggestions: columnSuggestions,
-            allTransformations: columnTransformations.allTransformations,
-            filteredTransformations: allCategories,
-            allCategories: allCategories,
-            transformationsForEmptyCells: stateMock.playground.suggestions.column.transformationsForEmptyCells,
-            transformationsForInvalidCells: stateMock.playground.suggestions.column.transformationsForInvalidCells,
-            searchActionString: ''
-        });
+        expect(StateService.setTransformationsForEmptyCells).not.toHaveBeenCalled();
+        expect(StateService.setTransformationsForInvalidCells).not.toHaveBeenCalled();
 
     }));
 });

@@ -15,11 +15,10 @@
         var EMPTY_CELLS = 'empty';
         var INVALID_CELLS = 'invalid';
 
-        var service = {
+        return {
             initTransformations: initTransformations,
             filterTransformations: filterTransformations
         };
-        return service;
 
         //--------------------------------------------------------------------------------------------------------------
         //----------------------------------------------------INIT------------------------------------------------------
@@ -47,7 +46,7 @@
          * @returns {object} The transformations grouped by category without the 'filtering' category
          */
         function prepareTransformations(suggestions, transformationsCategories) {
-            var groupedTransfoWithoutFilterCat = _.filter(transformationsCategories, function(item) {
+            var groupedTransfoWithoutFilterCat = _.filter(transformationsCategories, function (item) {
                 return item.category !== FILTERED_CATEGORY;
             });
 
@@ -82,7 +81,7 @@
          */
         function initTransformations(column) {
             StateService.setSuggestionsLoading(true);
-            StateService.resetColumnSuggestions();
+            StateService.setColumnTransformations(); //clear current transformations
 
             $q
                 .all([
@@ -100,17 +99,17 @@
                         allCategories: allCategories,
                         searchActionString: ''
                     };
-
-
-                    colTransformations.transformationsForEmptyCells = !state.playground.suggestions.column.transformationsForEmptyCells.length ?
-                                                                        _.filter(values[1].allTransformations, isAppliedToCells(EMPTY_CELLS)):
-                                                                        state.playground.suggestions.column.transformationsForEmptyCells;
-
-                    colTransformations.transformationsForInvalidCells = !state.playground.suggestions.column.transformationsForInvalidCells.length ?
-                                                                        _.filter(values[1].allTransformations, isAppliedToCells(INVALID_CELLS)):
-                                                                        state.playground.suggestions.column.transformationsForInvalidCells;
-
                     StateService.setColumnTransformations(colTransformations);
+
+                    if(!state.playground.suggestions.transformationsForEmptyCells.length) {
+                        var transfosForEmptyCells = _.filter(values[1].allTransformations, isAppliedToCells(EMPTY_CELLS));
+                        StateService.setTransformationsForEmptyCells(transfosForEmptyCells);
+                    }
+
+                    if(!state.playground.suggestions.transformationsForInvalidCells.length) {
+                        var transfosForInvalidCells = _.filter(values[1].allTransformations, isAppliedToCells(INVALID_CELLS));
+                        StateService.setTransformationsForInvalidCells(transfosForInvalidCells);
+                    }
                 })
                 .finally(function () {
                     StateService.setSuggestionsLoading(false);
