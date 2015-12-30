@@ -12,7 +12,7 @@
 	 * @requires data-prep.services.transformation.service:TransformationApplicationService
 	 */
 	function LookupCtrl(state, StateService, LookupService, EarlyPreviewService,
-						TransformationApplicationService) {
+						TransformationApplicationService, PlaygroundService) {
 		var vm = this;
 		vm.state = state;
 		vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
@@ -25,8 +25,12 @@
 		 * @description trigger a preview mode on the main dataset to show the lookup action effet
 		 */
 		vm.hoverSubmitBtn = function hoverSubmitBtn(){
-			var previewClosure = EarlyPreviewService.earlyPreview(vm.state.playground.lookup.dataset, 'dataset');
-			previewClosure(getParams());
+			if (vm.state.playground.lookup.isUpdatingLookupStep) {
+				PlaygroundService.updatePreview(vm.state.playground.lookup.step, getParams());
+			} else {
+				var previewClosure = EarlyPreviewService.earlyPreview(vm.state.playground.lookup.dataset, 'dataset');
+				previewClosure(getParams());
+			}
 		};
 
 		/**
@@ -80,14 +84,31 @@
 		 * @description submits the lookup action
 		 */
 		vm.submitLookup = function submitLookup() {
-			EarlyPreviewService.deactivatePreview();
-			EarlyPreviewService.cancelPendingPreview();
 
-			TransformationApplicationService.append(vm.state.playground.lookup.dataset, 'dataset', getParams())
-				.finally(function() {
-					setTimeout(EarlyPreviewService.activatePreview, 500);
-					StateService.setLookupVisibility(false);
-				});
+			if (vm.state.playground.lookup.isUpdatingLookupStep) {
+				vm.updateStep (vm.state.playground.lookup.step, getParams());
+			} else {
+				EarlyPreviewService.deactivatePreview();
+				EarlyPreviewService.cancelPendingPreview();
+				TransformationApplicationService.append(vm.state.playground.lookup.dataset, 'dataset', getParams())
+					.finally(function() {
+						setTimeout(EarlyPreviewService.activatePreview, 500);
+						StateService.setLookupVisibility(false);
+					});
+			}
+		};
+
+
+		/**
+		 * @ngdoc method
+		 * @name updateStep
+		 * @methodOf data-prep.recipe.controller:LookupCtrl
+		 * @param {string} step The step id to update
+		 * @param {object} newParams the new step parameters
+		 * @description Update a step parameters in the loaded preparation
+		 */
+		vm.updateStep = function updateStep(step, newParams) {
+			return PlaygroundService.updateStep(step, newParams).then(StateService.setLookupAddMode);
 		};
 	}
 

@@ -44,6 +44,11 @@
             setLookupSelectedColumn: LookupStateService.setSelectedColumn,
             setLookupVisibility: LookupStateService.setVisibility,
             updateLookupColumnsToAdd: LookupStateService.updateColumnsToAdd,
+            setLookupStep: LookupStateService.setLookupStep,
+            setLookupUpdateMode: LookupStateService.setUpdateMode,
+            setLookupAddMode: LookupStateService.setAddMode,
+            setUpdatingLookupStep: LookupStateService.setUpdatingLookupStep,
+
 
             //filters
             addGridFilter: addGridFilter,

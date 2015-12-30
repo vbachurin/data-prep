@@ -9,9 +9,10 @@
      * @requires data-prep.services.transformation.service:SuggestionService
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.playground.service:PreviewService
+     * @requires data-prep.services.lookup.service:LookupService
      *
      */
-    function DatagridExternalService($timeout, state, StatisticsService, SuggestionService, PreviewService) {
+    function DatagridExternalService($timeout, state, StatisticsService, SuggestionService, PreviewService, LookupService) {
         var grid;
         var suggestionTimeout;
         var scrollTimeout;
@@ -30,11 +31,12 @@
          * @methodOf data-prep.datagrid.service:DatagridExternalService
          * @param {string} tab The suggestion tab to select
          * @param {boolean} updateImmediately Update suggestions without timeout
+         * @param {boolean} updateLookup Update lookup panel
          * @description Set the selected column into external services except the index column. This will trigger actions that use this property
          * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
          */
 
-        function updateSuggestionPanel(tab, updateImmediately) {
+        function updateSuggestionPanel(tab, updateImmediately, updateLookup) {
             var column = state.playground.grid.selectedColumn;
             var line = state.playground.grid.selectedLine;
 
@@ -68,6 +70,10 @@
                 if (lastSelectedColumn && columnHasChanged) {
                     StatisticsService.updateStatistics();
                     SuggestionService.setColumn(lastSelectedColumn);
+                    if(updateLookup) {
+                        LookupService.loadLookupPanel(false);
+                    }
+
                 }
             }, updateImmediately ? 0 : 300);
         }
@@ -82,7 +88,7 @@
             //change selected cell column background
             grid.onActiveCellChanged.subscribe(function (e, args) {
                 if (angular.isDefined(args.cell)) {
-                    updateSuggestionPanel('COLUMN', false); //TODO : change this to CELL when cell actions are supported
+                    updateSuggestionPanel('COLUMN', false, true); //TODO : change this to CELL when cell actions are supported
                 }
             });
         }
@@ -95,11 +101,11 @@
          */
         function attachColumnListeners() {
             grid.onHeaderContextMenu.subscribe(function () {
-                updateSuggestionPanel('COLUMN', false);
+                updateSuggestionPanel('COLUMN', false, true);
             });
 
             grid.onHeaderClick.subscribe(function () {
-                updateSuggestionPanel('COLUMN', false);
+                updateSuggestionPanel('COLUMN', false, true);
             });
         }
 

@@ -108,6 +108,81 @@ describe('Lookup state service', function () {
         }));
     });
 
+    describe('step', function () {
+        it('should set step', inject(function (lookupState, LookupStateService) {
+            //given
+            lookupState.step = null;
+
+            //when
+            LookupStateService.setLookupStep({});
+
+            //then
+            expect(lookupState.step).toEqual({});
+        }));
+    });
+
+    describe('updating lookup', function () {
+        it('should set updating lookup flag', inject(function (lookupState, LookupStateService) {
+            //given
+            lookupState.isUpdatingLookupStep = false;
+
+            //when
+            LookupStateService.setUpdatingLookupStep(true);
+
+            //then
+            expect(lookupState.isUpdatingLookupStep).toBe(true);
+        }));
+
+        it('should set update mode', inject(function (lookupState, LookupStateService) {
+            //given
+            lookupState.columnsToAdd = [{}];
+            lookupState.columnCheckboxes = [{}];
+            lookupState.dataset = {};
+            lookupState.selectedColumn = {};
+            lookupState.step = {};
+            lookupState.isUpdatingLookupStep = false;
+
+            //when
+            LookupStateService.setUpdateMode();
+
+            //then
+            expect(lookupState.columnsToAdd).toEqual([]);
+            expect(lookupState.columnCheckboxes).toEqual([]);
+            expect(lookupState.dataset).toBe(null);
+            expect(lookupState.selectedColumn).toBe(null);
+            expect(lookupState.step).toBe(null);
+            expect(lookupState.isUpdatingLookupStep).toBe(true);
+
+
+        }));
+
+
+        it('should set add mode', inject(function (lookupState, LookupStateService) {
+            //given
+            lookupState.visibility = true;
+            lookupState.columnsToAdd = [{}];
+            lookupState.columnCheckboxes = [{}];
+            lookupState.dataset = {};
+            lookupState.selectedColumn = {};
+            lookupState.step = {};
+            lookupState.isUpdatingLookupStep = true;
+
+            //when
+            LookupStateService.setAddMode();
+
+            //then
+            expect(lookupState.visibility).toBe(false);
+            expect(lookupState.columnsToAdd).toEqual([]);
+            expect(lookupState.columnCheckboxes).toEqual([]);
+            expect(lookupState.dataset).toBe(null);
+            expect(lookupState.selectedColumn).toBe(null);
+            expect(lookupState.step).toBe(null);
+            expect(lookupState.isUpdatingLookupStep).toBe(false);
+        }));
+    });
+
+
+
     describe('data', function () {
         it('should set data to DataView', inject(function (lookupState, LookupStateService) {
             //given

@@ -98,16 +98,7 @@
          * @description show hides lookup panel and populates its grid
          */
         vm.toggleLookup = function toggleLookup() {
-            StateService.setLookupVisibility(!state.playground.lookup.visibility);
-
-            if (!state.playground.lookup.actions.length) {
-                LookupService.getActions(state.playground.dataset.id)
-                    .then(function (lookupActions) {
-                        if (lookupActions.length) {
-                            LookupService.loadContent(lookupActions[0]);
-                        }
-                    });
-            }
+            LookupService.loadLookupPanel(true);
         };
 
         //--------------------------------------------------------------------------------------------------------------

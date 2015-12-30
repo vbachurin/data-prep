@@ -16,7 +16,7 @@ describe('Datagrid directive', function () {
         stateMock = {
             playground: {
                 filter: {gridFilters: []},
-                grid: {dataView: dataViewMock},
+                grid: {dataView: dataViewMock, selectedColumn : {id: '0001'}, selectedLine : {'0001': '1'}},
                 lookup: {visibility: false}
             }
         };
@@ -123,34 +123,38 @@ describe('Datagrid directive', function () {
             });
 
             describe('column style', function () {
-                it('should reset cell styles when there is a selected cell', inject(function (DatagridStyleService) {
-                    //given
-                    expect(DatagridStyleService.scheduleHighlightCellsContaining).not.toHaveBeenCalled();
-
-                    stateMock.playground.grid.selectedColumn = {id: '0001'};
-                    stateMock.playground.grid.selectedLine = 25;
-
+                it('should reset cell styles when there is a selected cell onDataChange', inject(function (DatagridStyleService) {
                     //when
                     stateMock.playground.data = {metadata:{}};
                     scope.$digest();
-                    jasmine.clock().tick(1);
-
                     //then
-                    expect(DatagridStyleService.scheduleHighlightCellsContaining).toHaveBeenCalledWith(25, 2);
+                    expect(DatagridStyleService.scheduleHighlightCellsContaining).toHaveBeenCalledWith('0001', '1');
                 }));
 
-                it('should update selected column style', inject(function (DatagridService, DatagridStyleService) {
-                    //given
-                    stateMock.playground.grid.selectedColumn = {id: '0001'};
-                    expect(DatagridStyleService.updateColumnClass).not.toHaveBeenCalledWith(createdColumns, data.metadata.columns[1]);
+                it('should reset cell styles when there is a selected cell onSelectChange', inject(function (DatagridStyleService) {
+                    //when
+                    stateMock.playground.grid.selectedLine = {'0001': '2'};
+                    scope.$digest();
+                    //then
+                    expect(DatagridStyleService.scheduleHighlightCellsContaining).toHaveBeenCalledWith('0001', '2');
+                }));
 
+                it('should update selected column style onDataChange', inject(function (DatagridService, DatagridStyleService) {
                     //when
                     stateMock.playground.data = {metadata:{}};
                     scope.$digest();
-                    jasmine.clock().tick(1);
 
                     //then
                     expect(DatagridStyleService.updateColumnClass).toHaveBeenCalledWith(createdColumns, data.metadata.columns[1]);
+                }));
+
+                it('should update selected column style onSelectChange', inject(function (DatagridService, DatagridStyleService) {
+                    //when
+                    stateMock.playground.grid.selectedColumn = {id: '0000'};
+                    scope.$digest();
+
+                    //then
+                    expect(DatagridStyleService.updateColumnClass).toHaveBeenCalled();
                 }));
             });
 
@@ -166,8 +170,6 @@ describe('Datagrid directive', function () {
                 expect(DatagridColumnService.createColumns.calls.count()).toBe(1);
                 expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
                 expect(DatagridGridService.navigateToFocusedColumn.calls.count()).toBe(0);
-
-                stateMock.playground.grid.selectedColumn = {id: '0001'};
 
                 //when
                 stateMock.playground.data = {};
@@ -219,7 +221,6 @@ describe('Datagrid directive', function () {
 
             it('should NOT update suggestion panel when in preview mode', inject(function (DatagridService, DatagridStyleService, DatagridExternalService) {
                 //given
-                stateMock.playground.grid.selectedColumn = {id: '0001'};
                 expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
 
                 //when

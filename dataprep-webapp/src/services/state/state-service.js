@@ -47,6 +47,10 @@
             setLookupSelectedColumn: PlaygroundStateService.setLookupSelectedColumn,
             setLookupVisibility: PlaygroundStateService.setLookupVisibility,
             updateLookupColumnsToAdd: PlaygroundStateService.updateLookupColumnsToAdd,
+            setLookupStep: PlaygroundStateService.setLookupStep,
+            setLookupUpdateMode: PlaygroundStateService.setLookupUpdateMode,
+            setLookupAddMode: PlaygroundStateService.setLookupAddMode,
+            setUpdatingLookupStep: PlaygroundStateService.setUpdatingLookupStep,
 
             //playground - filters
             addGridFilter: PlaygroundStateService.addGridFilter,

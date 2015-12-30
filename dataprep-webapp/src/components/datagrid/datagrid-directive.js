@@ -47,6 +47,27 @@
                     return state.playground.dataset;
                 }
 
+
+                /**
+                 * @ngdoc method
+                 * @name getSelectedColumn
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description Get the selected column
+                 */
+                function getSelectedColumn() {
+                    return state.playground.grid.selectedColumn;
+                }
+
+                /**
+                 * @ngdoc method
+                 * @name getSelectedLine
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description Get the selected line
+                 */
+                function getSelectedLine() {
+                    return state.playground.grid.selectedLine;
+                }
+
                 /**
                  * @ngdoc method
                  * @name getData
@@ -107,17 +128,16 @@
                         var selectedColumn;
                         var stateSelectedColumn = ctrl.state.playground.grid.selectedColumn; //column metadata
                         var stateSelectedLine = ctrl.state.playground.grid.selectedLine; //column metadata
+                        var colId =stateSelectedColumn.id;
 
                         //create columns, manage style and size, set columns in grid
                         clearTimeout(columnTimeout);
                         columnTimeout = setTimeout(function () {
                             columns = DatagridColumnService.createColumns(data.metadata.columns, data.preview);
-
                             if (!data.preview) {
-                                selectedColumn = stateSelectedColumn ? _.find(columns, {id: stateSelectedColumn.id}) : null;
+                                selectedColumn = stateSelectedColumn ? _.find(columns, {id: colId}) : null;
                                 if (stateSelectedLine) {
-                                    var stateSelectedColumnIndex = columns.indexOf(selectedColumn);
-                                    DatagridStyleService.scheduleHighlightCellsContaining(stateSelectedLine, stateSelectedColumnIndex);
+                                    DatagridStyleService.scheduleHighlightCellsContaining(colId, stateSelectedLine[colId]);
                                 }
                             }
 
@@ -148,6 +168,33 @@
                     if (grid) {
                         DatagridStyleService.resetCellStyles();
                         grid.scrollRowToTop(0);
+                    }
+                };
+
+
+                /**
+                 * @ngdoc method
+                 * @name onSelectChange
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description Refresh selected grid styles
+                 */
+                var onSelectChange = function onSelectChange() {
+                    if (grid) {
+
+                        var stateSelectedColumn = ctrl.state.playground.grid.selectedColumn;
+                        var stateSelectedLine = ctrl.state.playground.grid.selectedLine;
+                        var colId =stateSelectedColumn.id;
+
+                        DatagridExternalService.updateSuggestionPanel();
+
+                        if (stateSelectedLine) {
+                            DatagridStyleService.scheduleHighlightCellsContaining(colId, stateSelectedLine[colId]);
+                        } else {
+                            DatagridStyleService.updateSelectedColumnStyle();
+                        }
+
+                        DatagridStyleService.updateColumnClass(grid.getColumns(),  _.find(grid.getColumns(), {id: state.playground.grid.selectedColumn.id}));
+                        grid.invalidate();
                     }
                 };
 
@@ -207,6 +254,13 @@
                  * When lookup is displayed/hidden changes, the grid should be resized fit available space
                  */
                 scope.$watch(getResizeCondition, resize);
+
+
+                /**
+                 * when a new column or a new line is selected
+                 */
+                scope.$watchGroup([getSelectedColumn, getSelectedLine], onSelectChange);
+
             }
         };
     }

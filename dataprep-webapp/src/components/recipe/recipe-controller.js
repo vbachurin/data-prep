@@ -10,10 +10,14 @@
      * @requires data-prep.services.playground.service:PreviewService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.filters.service:FilterAdapterService
+     * @requires data-prep.services.state.service:StateService
+     * @requires data-prep.services.lookup.service:LookupService
      */
-    function RecipeCtrl(state, RecipeService, PlaygroundService, PreparationService, PreviewService, MessageService, FilterAdapterService) {
+    function RecipeCtrl(state, RecipeService, PlaygroundService, PreparationService, PreviewService, MessageService, FilterAdapterService, StateService, LookupService) {
         var vm = this;
         vm.recipeService = RecipeService;
+        vm.showModal = {};
+
 
         /**
          * @ngdoc method
@@ -51,13 +55,6 @@
          * @description Update a step parameters in the loaded preparation
          */
         vm.updateStep = function updateStep(step, newParams) {
-            PreviewService.cancelPreview();
-            PreparationService.copyImplicitParameters(newParams, step.actionParameters.parameters);
-
-            if(! PreparationService.paramsHasChanged(step, newParams)) {
-                return;
-            }
-
             return PlaygroundService.updateStep(step, newParams)
                 .then(function() {
                     vm.showModal = {};
@@ -90,6 +87,24 @@
             }
         };
 
+        /**
+         * @ngdoc method
+         * @name toogleStep
+         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @param {string} step The step index
+         * @param {object} step the step
+         * @description Show/hide a step
+         */
+        vm.toogleStep = function toogleStep(stepIndex, step) {
+            vm.showModal[stepIndex] = !!vm.hasDynamicParams(step);
+
+            if (step.transformation.name === 'lookup') {
+                LookupService.setUpdateMode(step, true);
+            } else {
+                StateService.setLookupAddMode();
+            }
+        };
+
         //---------------------------------------------------------------------------------------------
         //------------------------------------------DELETE STEP----------------------------------------
         //---------------------------------------------------------------------------------------------
@@ -100,7 +115,18 @@
          * @param {object} step The step to remove
          * @description Show a popup to confirm the removal and remove it when user confirm
          */
-        vm.remove = PlaygroundService.removeStep;
+        vm.remove = function remove(step, $event) {
+            $event.stopPropagation();
+            PlaygroundService.removeStep(step).then(function () {
+                if (state.playground.lookup.visibility) {
+                    if (step.transformation.name === 'lookup') {
+                        if (state.playground.lookup.step && state.playground.lookup.step.transformation.stepId === step.transformation.stepId) {
+                            LookupService.setAddMode(false);
+                        }
+                    }
+                }
+            });
+        };
 
         //---------------------------------------------------------------------------------------------
         //------------------------------------------PARAMETERS-----------------------------------------
@@ -165,28 +191,6 @@
 
         /**
          * @ngdoc method
-         * @name updatePreview
-         * @methodOf data-prep.recipe.controller:RecipeCtrl
-         * @param {string} updateStep The step position index to update for the preview
-         * @param {object} params The new step params
-         * @description [PRIVATE] Call the preview service to display the diff between the original steps and the updated steps
-         */
-        var updatePreview = function updatePreview(updateStep, params) {
-            var originalParameters = updateStep.actionParameters.parameters;
-            PreparationService.copyImplicitParameters(params, originalParameters);
-
-            //Parameters has not changed
-            if(updateStep.inactive || ! PreparationService.paramsHasChanged(updateStep, params)) {
-                return;
-            }
-
-            var currentStep = RecipeService.getLastActiveStep();
-            var preparationId = state.playground.preparation.id;
-            PreviewService.getPreviewUpdateRecords(preparationId, currentStep, updateStep, params);
-        };
-
-        /**
-         * @ngdoc method
          * @name previewUpdateClosure
          * @methodOf data-prep.recipe.controller:RecipeCtrl
          * @param {object} step The step to update
@@ -194,7 +198,7 @@
          */
         vm.previewUpdateClosure = function previewUpdateClosure(step) {
             return function(params) {
-                updatePreview(step, params);
+                PlaygroundService.updatePreview(step, params);
             };
         };
 

@@ -21,7 +21,7 @@ describe('Datagrid external service', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function (StatisticsService, SuggestionService) {
+    beforeEach(inject(function (StatisticsService, SuggestionService, LookupService) {
         /*global SlickGridMock:false */
         gridMock = new SlickGridMock();
         gridMock.initColumnsMock(gridColumns);
@@ -36,6 +36,7 @@ describe('Datagrid external service', function () {
         spyOn(SuggestionService, 'setColumn').and.returnValue();
         spyOn(SuggestionService, 'setLine').and.returnValue();
         spyOn(SuggestionService, 'selectTab').and.returnValue();
+        spyOn(LookupService, 'loadLookupPanel').and.returnValue();
     }));
 
     beforeEach(function () {
@@ -196,6 +197,19 @@ describe('Datagrid external service', function () {
 
                 //then
                 expect(StatisticsService.updateStatistics).toHaveBeenCalled();
+            }));
+
+            it('should load Lookup Panel when a new column is selected', inject(function($timeout, DatagridExternalService, LookupService) {
+                //given
+                stateMock.playground.grid.selectedColumn = {id: '0001'};
+                expect(LookupService.loadLookupPanel).not.toHaveBeenCalled();
+
+                //when
+                DatagridExternalService.updateSuggestionPanel(null, null, true);
+                $timeout.flush(300);
+
+                //then
+                expect(LookupService.loadLookupPanel).toHaveBeenCalledWith(false);
             }));
         });
 

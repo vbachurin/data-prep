@@ -12,7 +12,6 @@
     function DatagridStyleService(DatagridService, state, ConverterService, TextFormatService) {
         var grid;
         var highlightCellTimeout;
-        var columnClassTimeout;
 
         return {
             init: init,
@@ -20,7 +19,8 @@
             updateColumnClass: updateColumnClass,
             columnFormatter: columnFormatter,
             getColumnPreviewStyle: getColumnPreviewStyle,
-            scheduleHighlightCellsContaining: scheduleHighlightCellsContaining
+            scheduleHighlightCellsContaining: scheduleHighlightCellsContaining,
+            updateSelectedColumnStyle: updateSelectedColumnStyle
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -165,80 +165,27 @@
          * @methodOf data-prep.datagrid.service:DatagridStyleService
          * @description attachColumnHeaderListeners callback
          */
-        function attachColumnHeaderCallback(event, args) {
+        function updateSelectedColumnStyle() {
             resetCellStyles();
-            updateColumnClass(grid.getColumns(), args.column);
+            updateColumnClass(grid.getColumns(),  _.find(grid.getColumns(), {id: state.playground.grid.selectedColumn.id}));
             grid.invalidate();
-        }
-
-        /**
-         * @ngdoc method
-         * @name attachColumnHeaderListeners
-         * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @description Attach style listener on headers. On header selection (on right click or left click) we update the column cells style
-         */
-        function attachColumnHeaderListeners() {
-            grid.onHeaderContextMenu.subscribe(attachColumnHeaderCallback);
-            grid.onHeaderClick.subscribe(attachColumnHeaderCallback);
         }
 
         /**
          * @ngdoc method
          * @name scheduleHighlightCellsContaining
          * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @param {number} rowIndex The row index
-         * @param {number} colIndex The column index
+         * @param {String} colId The column id
+         * @param {String} content The value to highlight
          * @description Cancel the previous scheduled task and schedule a new one to highlight the cells that contains the same value as the (rowIndex, colIndex) cell
          */
-        function scheduleHighlightCellsContaining(rowIndex, colIndex) {
+        function scheduleHighlightCellsContaining(colId, content) {
             clearTimeout(highlightCellTimeout);
 
-            var row = state.playground.grid.dataView.getItem(rowIndex);
-            if(row) {
-                highlightCellTimeout = setTimeout(function() {
-                    var column = grid.getColumns()[colIndex];
-                    var content = row[column.id];
-
-                    var sameContentConfig = DatagridService.getSameContentConfig(column.id, content, 'highlight');
-                    grid.setCellCssStyles('highlight', sameContentConfig);
-                }, 200);
-            }
-            else {
-                grid.setCellCssStyles('highlight', {});
-            }
-        }
-
-        /**
-         * @ngdoc method
-         * @name scheduleUpdateColumnClass
-         * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @param {number} colIndex The selected column index
-         * @description Cancel the previous scheduled task and schedule a new one to update columns classes.
-         */
-        function scheduleUpdateColumnClass(colIndex) {
-            var columns = grid.getColumns();
-            var column = columns[colIndex];
-
-            clearTimeout(columnClassTimeout);
-            columnClassTimeout = setTimeout(function() {
-                updateColumnClass(columns, column);
-                grid.invalidate();
-            }, 100);
-        }
-
-        /**
-         * @ngdoc method
-         * @name attachCellListeners
-         * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @description Attach cell action listeners : update columns classes and highlight cells
-         */
-        function attachCellListeners() {
-            grid.onActiveCellChanged.subscribe(function (e, args) {
-                if (angular.isDefined(args.cell)) {
-                    scheduleHighlightCellsContaining(args.row, args.cell);
-                    scheduleUpdateColumnClass(args.cell);
-                }
-            });
+            highlightCellTimeout = setTimeout(function() {
+                var sameContentConfig = DatagridService.getSameContentConfig(colId, content, 'highlight');
+                grid.setCellCssStyles('highlight', sameContentConfig);
+            }, 200);
         }
 
         /**
@@ -250,8 +197,6 @@
          */
         function init(newGrid) {
             grid = newGrid;
-            attachColumnHeaderListeners();
-            attachCellListeners();
         }
     }
 

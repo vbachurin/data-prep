@@ -15,7 +15,8 @@
        <div id="lookup-right">
            <div class="lookup-description">
                <br>
-               <strong><span translate-once="LOOKUP_DESC_TITLE"></span></strong>
+               <strong ng-if="!lookupCtrl.state.playground.lookup.isUpdatingLookupStep"><span translate-once="LOOKUP_DESC_TITLE"></span></strong>
+               <strong ng-if="lookupCtrl.state.playground.lookup.isUpdatingLookupStep"><span translate-once="LOOKUP_UPDATE_DESC_TITLE"></span></strong>
                <br>
                <p>
                    <p translate-once="LOOKUP_STEPS_1"></p>

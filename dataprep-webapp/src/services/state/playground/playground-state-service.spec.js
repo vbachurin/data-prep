@@ -24,6 +24,7 @@ describe('Playground state service', function () {
         spyOn(LookupStateService, 'setData').and.returnValue();
         spyOn(LookupStateService, 'reset').and.returnValue();
         spyOn(SuggestionsStateService, 'reset').and.returnValue();
+        spyOn(LookupStateService, 'setData').and.returnValue();
     }));
 
     describe('playground state', function () {
@@ -67,6 +68,20 @@ describe('Playground state service', function () {
 
             //then
             expect(GridStateService.setData).toHaveBeenCalledWith(data);
+        }));
+
+        it('should set lookup data in grid', inject(function(playgroundState, PlaygroundStateService, LookupStateService) {
+            //given
+            var data = {
+                records: []
+            };
+
+            //when
+            PlaygroundStateService.setLookupData(data);
+
+            //then
+            expect(playgroundState.lookupData).toEqual(data);
+            expect(LookupStateService.setData).toHaveBeenCalledWith(data);
         }));
 
         it('should set filters again on data change in grid to refresh statefull filters (ex: invalid filters)', inject(function (playgroundState, PlaygroundStateService, GridStateService) {
