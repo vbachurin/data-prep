@@ -175,6 +175,173 @@ To run these tests locally, please follow these steps from the root directory:
 3. `npm run example`
 
 
+# IMPROVEMENTS
+By default the protractor mock framework provides on the mock capability. Mock files have to be created and maintained manually. In other word depending on the number of tests and mock files we have in case of request schemas change, we might face a huge maintenance impact.
+This improvement will give the ability to record http request and store the response in the right format. 
+The idea is to create a node server responsible to store the request and response in the disk.
+The record flow can be described as follow: 
+-	Client make a call to the server
+-	Mock framework intercept and forward it to the server (if does not match some mock configuration).
+-	The server reply.
+-	We intercept the response 
+-	Then send it to our record server to store it.
+-	Response forwarded to client.
+
+What we added:
+
+<Talend-protractor-http>
+├── talend_record_server                      - main folder
+│   ├── record_generated                      - generated records are stored here
+│   └── RecordConfig.js                       - Node js server to store record
+│	└── server.js
+
+
+Usage:
+
+Scenario: I want to write a new integration test.
+
+	A- First start recording backend calls that your scenario might perform (Record Mode):
+		Record mode: In this mode we’re storing request and response in a file. Then it is important that the response comes from the server and not the mock file. So please make sure that there is no mock define in your test. If yes disable it by just passing an empty array to the mock method like: mock([]).
+	
+		1-	Configure the record mode.
+				Open the record configuration file /talend-protractor-http-mock/talend_record_server/RecordConfig.js (changing the name of this config file or its parent dir would imply to change them in the framework code (/lib/httpMock.js and /lib/initdata.js) )
+		
+				module.exports = {
+					recordMode: true,				// if true it will record request, if false no records, configs below are ignored
+					
+					backendConfig:{					//Just record request to this backend server. if port and host empty (""), it will record all requests
+						port:"8888",			
+						host:"10.42.10.99"
+					},
+					
+					recordServer:{					//Your can configure the record server port here. the host is localhost
+						listenPort:"1114"
+					}
+				};
+		
+				Set the property recordMode to true, also you can set to which backend call you want to record.
+				Make sure to have the following in you test.spec:
+				
+				afterEach(function(){		
+						mock.teardown();
+					});
+				beforeEach(function(){	
+						mock([]);
+					});
+				Note that the content of the mock should be empty (‘mock([]);’) in recordMode.
+ 
+		2-	Launch the gulp server
+				Open the ruby command line, navigate to the /dataprep-webapp folder of the dataprep project then execute the command: gulp serve
+
+		3-	Launch your test.spec and generate mock files
+				Make sure to have big timeout or a break point in order to have enough time to manually complete your scenario once you’ve initiated a browser with protractor.
+				To launch the test, open a command line then navigate to /dataprep-webapp/talend-protractor-http-mock and execute the command: npm run example (this should launch a browser with dataprep welcome page)
+				Note that ‘example’ is a combination of tasks defined in the / talend-protractor-http-mock/gruntFile.js. We’ve added a new task ‘run_node’ to it for starting the record server.
+				Now from the welcome page you can manually complete your scenario (mock files are generated for requests call sent to the specified backend server defined in the recordConfig file).
+				Goto the folder:
+				
+				As illustrated in the screenshot above, in the /record_generated, a folder containing you scenario mock files has been created.  It contains *.js files corresponding to the mock files and one *.config file which contains list mock files names. This .config file is handful, the point is to avoid the one by one copy/pasting of mock files names in the test mock configuration method.
+
+	B- Secondly test generated mock files (mock replay mode):
+		Replay mode: if your test define some mock file, any request that matches a defined mock will be intercepted and replied a mock response.
+  
+		1-	Configure replay mode 
+
+				Open the record configuration file /talend-protractor-http-mock/talend_record_server/RecordConfig.js (changing the name of this config file or its parent dir would imply to change them in the framework code (/lib/httpMock.js and /lib/initdata.js) )
+				
+				module.exports = {
+					recordMode: true,				// if true it will record request, if false no records, configs below are ignored
+					
+					backendConfig:{					//Just record request to this backend server. if port and host empty (""), it will record all requests
+						port:"8888",			
+						host:"10.42.10.99"
+					},
+					
+					recordServer:{					//Your can configure the record server port here. the host is localhost
+						listenPort:"1114"
+					}
+				};
+				Set the property recordMode to false, backendConfig property will be ignored.
+
+		2-	Configure mock
+				Go to the folder where previously generated mock files are stored:
+				
+				Open mock.config file and copy the content.
+				Open your test.spec paste the content in the highlighted section as shown below: 
+				To make the mock files test more relevant, you can change the backend address in the web application configuration (not record config one) by setting a non-existing address.
+
+
+		3-	Run your scenario without backend
+				Important thing you have to run exactly the same scenario made during the generation of mock files.
+
+	C- For ending finalize your integration test automation:
+	You’re done.
+
+SOME IDEAS FOR MORE IMPROVEMENT
+1-	Selenium server test is launched for each test execution, this could impact the test execution performance. We can disable the task dedicated for starting the server in gruntfile.js and started externally with the CI tool before the test execution and stop it at the end of the execution.
+2-	Make the test automatically point to the generated mock file folder by passing the test name as the folder to be created.
+3-	If we want a jbehave like script but in js, we can use coffee script.
+4-	Integrate results to the unit tests report or current Jbehave one.
+
+
+
+#TIPS HOW TO
+Protractor Config file:
+	1-	Configure tests folder:
+		In talend-protractor-http-mock/example/protractor.conf section :
+		specs: [
+			  		'spec/casing.spec.js'
+			 ], 	
+	2-	Configure mock directory and default mock files (default mock file are usually overridden in the test using mock method mock([])):
+		In talend-protractor-http-mock/example/protractor.conf section :
+		mocks: {
+			  		dir: 'mocks/export-api',
+			  		default: []
+			 },
+
+So if we change the name of /spec or /mock folders, the configuration above has to be updated accordantly.
+
+Grunt config file:
+	1-	Configure protractor config file:
+		In /talend-protractor-http-mock/Gruntfile.js section:
+		protractor: {
+		            options: {
+		                configFile: 'example/protractor.conf',
+		                //debug: true
+		            },
+		            example: {}
+		        },
+
+
+
+	2-	Configure the Record server
+
+		In /talend-protractor-http-mock/Gruntfile.js section:
+
+		run_node: {
+		            start: {
+		                options: {
+		                    cwd: process.cwd(),
+		                    stdio: ['pipe', 'pipe', 'pipe'],
+		                    env: {
+		                       
+		                    },
+		                    detached: true
+		               },
+		                files: { src: [ './talend_record_server/server.js'] } //here
+		            }
+		        },
+
+Therefore in case of renaming of the /example folder gruntConfig must be updated.
+
+In case of rename of the /talend_record_server/server.js path , the following file has to be updated:
+	-	talend-protractor-http-mock/Gruntfile.js
+	-	/talend-protractor-http-mock/lib/httpMock.js
+	-	/talend-protractor-http-mock/lib/initData.js
+
+
+
+
 ### Contributions and recognition
 
 * `jdgblinq` for their contribution to query string matching.
