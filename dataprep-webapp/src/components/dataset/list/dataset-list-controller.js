@@ -9,20 +9,18 @@
      * @requires data-prep.services.state.service:StateService
      * @requires data-prep.services.dataset.service:DatasetService
      * @requires data-prep.services.dataset.service:DatasetListSortService
-     * @requires data-prep.services.playground.service:PlaygroundService
-     * @requires talend.widget.service:TalendConfirmService
-     * @requires data-prep.services.utils.service:MessageService
-     * @requires data-prep.services.uploadWorkflowService.service:UploadWorkflowService
-     * @requires data-prep.services.state.service:StateService
-     * @requires data-prep.services.datasetWorkflowService:UpdateWorkflowService
      * @requires data-prep.services.folder.service:FolderService
-     * @requires data-prep.services.preparation.service:PreparationListService
+     * @requires data-prep.services.playground.service:PlaygroundService
+     * @requires data-prep.services.uploadWorkflowService.service:UploadWorkflowService
+     * @requires data-prep.services.datasetWorkflowService.service:UpdateWorkflowService
+     * @requires data-prep.services.utils.service:MessageService
+     * @requires talend.widget.service:TalendConfirmService
      */
     function DatasetListCtrl($timeout, $translate, $stateParams, state, StateService,
                              DatasetService, DatasetListSortService, FolderService,
-                             PlaygroundService, PreparationListService,
+                             PlaygroundService,
                              UploadWorkflowService, UpdateWorkflowService,
-                             TalendConfirmService, MessageService) {
+                             MessageService, TalendConfirmService) {
         var vm = this;
 
         vm.datasetService = DatasetService;
