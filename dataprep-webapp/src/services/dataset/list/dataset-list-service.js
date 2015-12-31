@@ -96,8 +96,8 @@
          * @description Clone a dataset from backend and refresh its internal list
          * @returns {promise} The pending GET promise
          */
-        function clone(dataset,folder,cloneName) {
-            var promise = DatasetRestService.clone(dataset,folder,cloneName);
+        function clone(dataset, folder, cloneName) {
+            var promise = DatasetRestService.clone(dataset, folder, cloneName);
 
             promise.then(function (){
                 refreshDatasets();

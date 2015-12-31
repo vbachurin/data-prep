@@ -187,21 +187,23 @@
             vm.isCloningDs = 'cloning';
             vm.cloneNameForm.$commitViewValue();
 
-            DatasetService.clone(vm.datasetToClone, vm.folderDestination, vm.cloneName).then(function () {
-                MessageService.success('COPY_SUCCESS_TITLE', 'COPY_SUCCESS');
+            DatasetService.clone(vm.datasetToClone, vm.folderDestination, vm.cloneName)
+                .then(function () {
+                    MessageService.success('COPY_SUCCESS_TITLE', 'COPY_SUCCESS');
 
-                // force going to current folder to refresh the content
-                FolderService.getFolderContent(state.folder.currentFolder);
+                    // force going to current folder to refresh the content
+                    FolderService.getFolderContent(state.folder.currentFolder);
+                    // reset some values to initial values
+                    vm.folderDestinationModal = false;
+                    vm.datasetToClone = null;
+                    vm.folderDestination = null;
+                    vm.foldersFound = [];
+                    vm.cloneName = '';
+                    vm.isCloningDs = false;
 
-            }).finally(function () {
-                // reset some values to initial values
-                vm.folderDestinationModal = false;
-                vm.datasetToClone = null;
-                vm.folderDestination = null;
-                vm.foldersFound = [];
-                vm.cloneName = '';
-                vm.isCloningDs = false;
-            });
+                }, function(){
+                    vm.isCloningDs = false;
+                });
         };
 
         /**
@@ -220,14 +222,14 @@
 
                     // force going to current folder to refresh the content
                     FolderService.getFolderContent(state.folder.currentFolder);
-                })
-                .finally(function () {
                     // reset some values to initial values
                     vm.folderDestinationModal = false;
                     vm.datasetToClone = null;
                     vm.folderDestination = null;
                     vm.foldersFound = [];
                     vm.cloneName = '';
+                    vm.isMovingDs = false;
+                }, function(){
                     vm.isMovingDs = false;
                 });
         };
