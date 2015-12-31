@@ -51,6 +51,13 @@ describe('Folder services', function () {
         $provide.constant('state', stateMock);
     }));
 
+    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+        $translateProvider.translations('en', {
+            'HOME_FOLDER': 'Home'
+        });
+        $translateProvider.preferredLanguage('en');
+    }));
+
     beforeEach(inject(function ($q, FolderRestService) {
         datasets = [
             {
@@ -292,7 +299,7 @@ describe('Folder services', function () {
             expect(StateService.setCurrentFolder).toHaveBeenCalledWith({id: '1/2', path: 'toto', name: 'toto'});
             expect(StateService.setCurrentFolderContent).toHaveBeenCalledWith(content.data);
             expect(StateService.setFoldersStack).toHaveBeenCalledWith([
-                {id: '', path: '', name: 'HOME_FOLDER'},
+                {id: '/', path: '/', name: 'Home'},
                 {id: '1', path: '1', name: '1'},
                 {id: '1/2', path: '1/2', name: '2'}
             ]);

@@ -14,10 +14,13 @@
     function FolderService($translate, state, StateService, FolderRestService, DatasetListSortService, PreparationListService) {
 
         var ROOT_FOLDER = {
-            id: '',
-            path: '',
-            name: $translate.instant('HOME_FOLDER')
+            id: '/',
+            path: '/',
+            name: '/'
         };
+        $translate('HOME_FOLDER').then(function(homeName) {
+            ROOT_FOLDER.name = homeName;
+        });
 
         return {
             // folder operations
