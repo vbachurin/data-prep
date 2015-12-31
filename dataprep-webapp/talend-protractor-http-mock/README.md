@@ -243,7 +243,7 @@ Scenario: I want to write a new integration test.
 				As illustrated in the screenshot above, in the /record_generated, a folder containing you scenario mock files has been created.  It contains *.js files corresponding to the mock files and one *.config file which contains list mock files names. This .config file is handful, the point is to avoid the one by one copy/pasting of mock files names in the test mock configuration method.
 
 	B- Secondly test generated mock files (mock replay mode):
-		Replay mode: if your test define some mock file, any request that matches a defined mock will be intercepted and replied a mock response.
+		Replay mode: if your test defines some mock file, any request that matches a defined mock will be intercepted and mock response replied.
   
 		1-	Configure replay mode 
 
