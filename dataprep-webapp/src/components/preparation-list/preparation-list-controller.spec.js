@@ -321,7 +321,7 @@ describe('Preparation list controller', function () {
             scope.$digest();
 
             //then
-            expect(MessageService.success).toHaveBeenCalledWith('PREPARATION_CLONING_SUCCESS_TITLE', 'PREPARATION_CLONING_SUCCESS');
+            expect(MessageService.success).toHaveBeenCalledWith('PREPARATION_COPYING_SUCCESS_TITLE', 'PREPARATION_COPYING_SUCCESS');
         }));
 
         it('should manage loader screen', inject(function ($rootScope) {

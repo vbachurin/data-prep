@@ -87,7 +87,7 @@
             $rootScope.$emit('talend.loading.start');
             return PreparationService.clone(preparation.id)
                 .then(function () {
-                    MessageService.success('PREPARATION_CLONING_SUCCESS_TITLE', 'PREPARATION_CLONING_SUCCESS');
+                    MessageService.success('PREPARATION_COPYING_SUCCESS_TITLE', 'PREPARATION_COPYING_SUCCESS');
                 })
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');

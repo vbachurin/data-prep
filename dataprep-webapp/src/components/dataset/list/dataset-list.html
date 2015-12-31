@@ -95,7 +95,7 @@
 
                 <a data-icon="B"
                    class="btn-icon btn-transparent"
-                   translate-once-title="CLONE_ACTION"
+                   translate-once-title="COPY_TO_ACTION"
                    translate-values="{type: 'dataset', name: dataset.name}"
                    ng-click="datasetListCtrl.openFolderChoice(dataset)"></a>
 
@@ -180,9 +180,9 @@
                     <script type="text/ng-template" id="folder_node_render.html">
                         <div class="folder-node" ng-class="{folderselected: node.selected}">
                             <a class="inventory-icon inventory-folder">
-                                <i data-icon="I" ng-if="!node.collapsed" class="dropdown-button-right" ng-click="datasetListCtrl.toggle(node)"></i>
+                                <i data-icon="J" ng-if="!node.collapsed" class="dropdown-button-right" ng-click="datasetListCtrl.toggle(node)"></i>
                                 <img class="icon-img" ng-click="datasetListCtrl.chooseFolder(node)" ng-if="!node.collapsed" src="assets/images/folder/folder_open_small-icon.png"/>
-                                <i data-icon="J" ng-if="node.collapsed" class="dropdown-button-down" ng-click="datasetListCtrl.toggle(node)"></i>
+                                <i data-icon="I" ng-if="node.collapsed" class="dropdown-button-down" ng-click="datasetListCtrl.toggle(node)"></i>
                                 <img class="icon-img" ng-click="datasetListCtrl.chooseFolder(node)" ng-if="node.collapsed" src="assets/images/folder/folder_close_small-icon.png"/>
                             </a>
                             <span ng-click="datasetListCtrl.chooseFolder(node)" class="folder-name">{{node.name}}</span>
@@ -211,20 +211,20 @@
                     </button>
 
                     <button class="btn-primary modal-primary-button"
-                            ng-disabled="datasetListCtrl.cloneNameForm.$invalid  || datasetListCtrl.isSendingRequest"
-                            ng-switch="datasetListCtrl.isSendingRequest" ng-click="datasetListCtrl.move()">
+                            ng-disabled="datasetListCtrl.cloneNameForm.$invalid  || datasetListCtrl.isMovingDs || datasetListCtrl.isCloningDs"
+                            ng-switch="datasetListCtrl.isMovingDs" ng-click="datasetListCtrl.move()">
                             <span ng-switch-when="false" translate-once="MOVE_HERE_ACTION"></span>
 
-                            <div class="feedback-sending-div" ng-switch-when="true" >
+                            <div class="feedback-sending-div" ng-switch-when="moving" >
                                 <span class="feedback-sending continuous-rotate"><i data-icon="c" class="icon"></i></span>
                             </div>
                     </button>
                     <button class="btn-primary modal-primary-button"
-                            ng-disabled="datasetListCtrl.cloneNameForm.$invalid || datasetListCtrl.isSendingRequest"
-                            ng-switch="datasetListCtrl.isSendingRequest" ng-click="datasetListCtrl.clone()">
+                            ng-disabled="datasetListCtrl.cloneNameForm.$invalid || datasetListCtrl.isMovingDs || datasetListCtrl.isCloningDs"
+                            ng-switch="datasetListCtrl.isCloningDs" ng-click="datasetListCtrl.clone()">
                             <span ng-switch-when="false" translate-once="COPY_HERE_ACTION"></span>
 
-                            <div class="feedback-sending-div" ng-switch-when="true" >
+                            <div class="feedback-sending-div" ng-switch-when="cloning" >
                                 <span class="feedback-sending continuous-rotate"><i data-icon="c" class="icon"></i></span>
                             </div>
 

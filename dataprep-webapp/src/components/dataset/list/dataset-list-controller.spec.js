@@ -564,7 +564,7 @@ describe('Dataset list controller', function () {
 
             //then
             expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder, cloneName);
-            expect(MessageService.success).toHaveBeenCalledWith('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
+            expect(MessageService.success).toHaveBeenCalledWith('COPY_SUCCESS_TITLE', 'COPY_SUCCESS');
             expect(FolderService.getFolderContent).toHaveBeenCalled();
         }));
     });
