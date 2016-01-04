@@ -34,7 +34,6 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
         return ACTION_NAME;
     }
 
-
     /**
      * @see ActionMetadata#getParameters()
      */
@@ -48,13 +47,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
     @Override
     public void compile(ActionContext actionContext) {
         super.compile(actionContext);
-        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
-            try {
-                actionContext.get(COMPILED_PATTERN,(p) -> getDateFormat(actionContext.getParameters()));
-            } catch (IllegalArgumentException e) {
-                actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
-            }
-        }
+        compileDatePattern(actionContext);
     }
 
     /**
@@ -65,7 +58,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
         final String columnId = context.getColumnId();
         final Map<String, String> parameters = context.getParameters();
 
-        DatePattern newPattern = context.get(COMPILED_PATTERN);
+        DatePattern newPattern = context.get(COMPILED_DATE_PATTERN);
 
         // checks for fail fast
         final RowMetadata rowMetadata = row.getRowMetadata();

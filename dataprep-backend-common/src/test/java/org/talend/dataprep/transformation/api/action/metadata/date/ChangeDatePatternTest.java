@@ -113,7 +113,7 @@ public class ChangeDatePatternTest extends BaseDateTests {
         final DataSetRow row = getRow("toto", "04/25/1999", "tata");
         setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
         parameters.put(ChangeDatePattern.NEW_PATTERN, "custom");
-        parameters.put(ChangeDatePattern.CUSTOM_PATTERN, "fff");
+        parameters.put(ChangeDatePattern.CUSTOM_PATTERN, "ff");
 
         // when
         ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
