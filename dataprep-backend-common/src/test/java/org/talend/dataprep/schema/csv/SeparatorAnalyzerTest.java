@@ -5,20 +5,20 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
- * Unit test for entropy.
+ * Unit test for Separator analyzer.
  */
-public class EntropyTest {
+public class SeparatorAnalyzerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldCheckLineNumber() throws Exception {
-        new Entropy(-1);
+        new SeparatorAnalyzer(-1, null);
     }
 
     @Test
     public void shouldSetDefaultScore() {
-        Entropy entropy = new Entropy(100);
+        SeparatorAnalyzer analyzer = new SeparatorAnalyzer(100, null);
         Separator sep = new Separator('|');
-        entropy.accept(sep);
+        analyzer.accept(sep);
         assertEquals(Double.MAX_VALUE, sep.score, 0.000000001);
     }
 
@@ -42,12 +42,12 @@ public class EntropyTest {
         incrementCount(1, 6, sep2);
 
         // when
-        Entropy entropy = new Entropy(6);
+        SeparatorAnalyzer entropy = new SeparatorAnalyzer(6, null);
         entropy.accept(sep);
         entropy.accept(sep2);
 
         // then
-        assertEquals(0.1458016414, sep.score, 0.000000001);
+        assertEquals(1.0818020196976097, sep.score, 0.000000001);
         assertEquals(0, sep2.score, 0.0);
     }
 
