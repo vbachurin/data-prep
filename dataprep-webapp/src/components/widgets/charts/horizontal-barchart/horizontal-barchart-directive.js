@@ -91,11 +91,11 @@
 
                 function getSecondaryValueFromKey(key) {
                     var secondaryData = scope.secondaryData;
-                    if(!secondaryData) {
+                    if (!secondaryData) {
                         return 0;
                     }
 
-                    var secondaryDataItem = _.find(secondaryData, function(dataItem) {
+                    var secondaryDataItem = _.find(secondaryData, function (dataItem) {
                         return getKey(dataItem) === key;
                     });
                     return secondaryDataItem ? getSecondaryValue(secondaryDataItem) : 0;
@@ -119,10 +119,14 @@
                 var xAxis, yAxis;
                 var svg;
 
-                // Axis scale definitions
                 function initScales(width, height) {
                     xScale = d3.scale.linear().range([0, width]);
                     yScale = d3.scale.ordinal().rangeBands([0, height], 0.18);
+                }
+
+                function configureScales(statData) {
+                    xScale.domain([0, d3.max(statData, getPrimaryValue)]);
+                    yScale.domain(statData.map(getKey));
                 }
 
                 function initAxes(width, height) {
@@ -154,27 +158,26 @@
                     svg.call(tooltip);
                 }
 
-                function configureScales(statData) {
-                    xScale.domain([0, d3.max(statData, getPrimaryValue)]);
-                    yScale.domain(statData.map(getKey));
-                }
-
-                function drawAxis() {
+                function drawGrid() {
                     svg.append('g')
                         .attr('class', 'grid')
                         .call(xAxis)
                         .selectAll('.tick text')
                         .style('text-anchor', 'middle');
+                }
+
+                function createBarsContainers() {
+                    svg.append('g')
+                        .attr('class', 'primaryBar');
 
                     svg.append('g')
-                        .attr('class', 'y axis')
-                        .call(yAxis);
+                        .attr('class', 'secondaryBar');
                 }
 
                 function drawBars(containerClassName, statData, getValue, barClassName) {
                     var bars = svg.select('.' + containerClassName)
                         .selectAll('.' + barClassName)
-                        .data(statData, function(d){return getKey(d);});
+                        .data(statData, getKey);
 
                     //enter
                     bars.enter()
@@ -193,23 +196,14 @@
                         });
 
                     //update
-                    bars.transition().ease('exp').delay(function (d, i) {
+                    bars.transition()
+                        .ease('exp')
+                        .delay(function (d, i) {
                             return i * 30;
                         })
                         .attr('width', function (d) {
                             return xScale(getValue(d));
                         });
-
-                    //exit
-                    //no need for the exit process as the size of the data is not changing
-                }
-
-                function createBarsContainers() {
-                    svg.append('g')
-                        .attr('class', 'primaryBar');
-
-                    svg.append('g')
-                        .attr('class', 'secondaryBar');
                 }
 
                 function drawKeysLabels(statData, width) {
@@ -275,7 +269,7 @@
                     configureScales(firstVisuData);
                     initAxes(width, height);
                     createContainer(containerWidth, containerHeight);
-                    drawAxis();
+                    drawGrid();
                     createBarsContainers();
 
                     drawBars('primaryBar', firstVisuData, getPrimaryValue, getPrimaryClassName());
@@ -286,7 +280,7 @@
                 }
 
                 function renderSecondaryBars(secondVisuData) {
-                    if(secondVisuData) {
+                    if (secondVisuData) {
                         drawBars('secondaryBar', secondVisuData, getSecondaryValue, getSecondaryClassName());
                     }
                 }

@@ -163,11 +163,22 @@
                     svg.call(tooltip);
                 }
 
+                function createBarsContainers() {
+                    svg.append('g')
+                        .attr('class', 'primaryBar');
+
+                    svg.append('g')
+                        .attr('class', 'secondaryBar');
+                }
+
                 function drawBars(containerClassName, statData, getValue, barClassName) {
                     var bars = svg.select('.' + containerClassName)
                         .selectAll('.' + barClassName)
-                        .data(statData, function(d){return ''+getInterval(d);});
+                        .data(statData, function (d) {
+                            return '' + getInterval(d);
+                        });
 
+                    //enter
                     bars.enter()
                         .append('rect')
                         .attr('class', barClassName)
@@ -189,23 +200,18 @@
                             return yScale(getValue(d));
                         });
 
-                    bars.transition().ease('exp').delay(function (d, i) {
-                        return i * 30;
-                    })
-                    .attr('height', function (d) {
-                        return height - yScale(getValue(d));
-                    })
-                    .attr('y', function (d) {
-                        return yScale(getValue(d));
-                    });
-                }
-
-                function createBarsContainers() {
-                    svg.append('g')
-                        .attr('class', 'primaryBar');
-
-                    svg.append('g')
-                        .attr('class', 'secondaryBar');
+                    //update
+                    bars.transition()
+                        .ease('exp')
+                        .delay(function (d, i) {
+                            return i * 30;
+                        })
+                        .attr('height', function (d) {
+                            return height - yScale(getValue(d));
+                        })
+                        .attr('y', function (d) {
+                            return yScale(getValue(d));
+                        });
                 }
 
                 function drawXAxis() {

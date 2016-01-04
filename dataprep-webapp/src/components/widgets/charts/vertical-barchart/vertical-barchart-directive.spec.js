@@ -12,6 +12,7 @@ describe('verticalBarchart directive', function () {
     };
 
     beforeEach(module('talend.widget'));
+
     beforeEach(inject(function ($rootScope, $compile) {
         statsData = [
             {'data': {min: 0, max: 5}, 'occurrences': 9},
@@ -35,6 +36,7 @@ describe('verticalBarchart directive', function () {
                 'show-x-axis="showXAxis"'+
                 'on-click="onClick(interval)"' +
                 'key-field="data"' +
+                'key-label="Occurrences"' +
                 'primary-data="primaryData"' +
                 'primary-value-field="occurrences"' +
                 'secondary-data="secondaryData"' +
@@ -53,6 +55,7 @@ describe('verticalBarchart directive', function () {
     beforeEach(function () {
         jasmine.clock().install();
     });
+
     afterEach(function () {
         jasmine.clock().uninstall();
 
@@ -61,6 +64,56 @@ describe('verticalBarchart directive', function () {
     });
 
     describe('render', function() {
+        it('should render y axis after a 100ms delay', function () {
+            //given
+            createElement();
+
+            //when
+            scope.primaryData = statsData;
+            scope.$digest();
+            jasmine.clock().tick(100);
+
+            //then
+            expect(element.find('.yAxis > text').length).toBe(1);
+            expect(element.find('.yAxis > text').text()).toBe('Occurrences');
+        });
+
+        it('should render grid after a 100ms delay', function () {
+            //given
+            createElement();
+
+            //when
+            scope.primaryData = statsData;
+            scope.$digest();
+            jasmine.clock().tick(100);
+
+            //then
+            expect(element.find('.grid > .tick').length).toBe(10);
+            expect(element.find('.grid > .tick').eq(0).text()).toBe('0');
+            expect(element.find('.grid > .tick').eq(1).text()).toBe('1');
+            expect(element.find('.grid > .tick').eq(2).text()).toBe('2');
+            expect(element.find('.grid > .tick').eq(3).text()).toBe('3');
+            expect(element.find('.grid > .tick').eq(4).text()).toBe('4');
+            expect(element.find('.grid > .tick').eq(5).text()).toBe('5');
+            expect(element.find('.grid > .tick').eq(6).text()).toBe('6');
+            expect(element.find('.grid > .tick').eq(7).text()).toBe('7');
+            expect(element.find('.grid > .tick').eq(8).text()).toBe('8');
+            expect(element.find('.grid > .tick').eq(9).text()).toBe('9');
+        });
+
+        it('should render hover bars after a 100ms delay', function () {
+            //given
+            createElement();
+
+            //when
+            scope.primaryData = statsData;
+            scope.$digest();
+            jasmine.clock().tick(100);
+
+            //then
+            expect(element.find('.bg-rect').length).toBe(statsData.length);
+        });
+
         it('should render primary bars after a 100ms delay', function () {
             //given
             createElement();
@@ -120,8 +173,6 @@ describe('verticalBarchart directive', function () {
             //then
             expect(element.find('.primaryBar > rect').length).toBe(statsData.length);
             expect(element.find('.secondaryBar > rect').length).toBe(statsData.length);
-            expect(element.find('.grid').length).toBe(1);
-            expect(element.find('.bg-rect').length).toBe(statsData.length);
         });
 
         it('should render secondary bars after a 100ms delay', function () {

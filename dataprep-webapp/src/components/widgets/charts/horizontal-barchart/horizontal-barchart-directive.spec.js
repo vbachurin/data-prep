@@ -64,6 +64,58 @@ describe('horizontalBarchart directive', function () {
     });
 
     describe('render', function () {
+        it('should render labels after a 100ms delay', function () {
+            //given
+            createElement();
+
+            //when
+            scope.primaryData = statsData;
+            scope.$digest();
+            jasmine.clock().tick(100);
+
+            //then
+            expect(element.find('.label').length).toBe(statsData.length);
+            expect(element.find('.label').eq(0).text()).toBe('Johnson');
+            expect(element.find('.label').eq(1).text()).toBe('Roosevelt');
+            expect(element.find('.label').eq(2).text()).toBe('Pierce');
+            expect(element.find('.label').eq(3).text()).toBe('Wilson');
+            expect(element.find('.label').eq(4).text()).toBe('Adams');
+            expect(element.find('.label').eq(5).text()).toBe('Quincy');
+            expect(element.find('.label').eq(6).text()).toBe('Clinton');
+            expect(element.find('.label').eq(7).text()).toBe('Harrison');
+        });
+
+        it('should render hover rect after a 100ms delay', function () {
+            //given
+            createElement();
+
+            //when
+            scope.primaryData = statsData;
+            scope.$digest();
+            jasmine.clock().tick(100);
+
+            //then
+            expect(element.find('.bg-rect').length).toBe(statsData.length);
+        });
+
+        it('should render grid after a 100ms delay', function () {
+            //given
+            createElement();
+
+            //when
+            scope.primaryData = statsData;
+            scope.$digest();
+            jasmine.clock().tick(100);
+
+            //then
+            expect(element.find('.grid text').length).toBe(5);
+            expect(element.find('.grid text').eq(0).text()).toBe('0');
+            expect(element.find('.grid text').eq(1).text()).toBe('2');
+            expect(element.find('.grid text').eq(2).text()).toBe('4');
+            expect(element.find('.grid text').eq(3).text()).toBe('6');
+            expect(element.find('.grid text').eq(4).text()).toBe('8');
+        });
+
         it('should render primary data after a 100ms delay', function () {
             //given
             createElement();
@@ -76,8 +128,6 @@ describe('horizontalBarchart directive', function () {
             //then
             expect(element.find('.primaryBar > rect').length).toBe(statsData.length);
             expect(element.find('.secondaryBar > rect').length).toBe(0);
-            expect(element.find('.label').length).toBe(statsData.length);
-            expect(element.find('.bg-rect').length).toBe(statsData.length);
         });
 
         it('should render primary and secondary data after a 100ms delay', function () {
@@ -93,8 +143,6 @@ describe('horizontalBarchart directive', function () {
             //then
             expect(element.find('.primaryBar > rect').length).toBe(statsData.length);
             expect(element.find('.secondaryBar > rect').length).toBe(statsData.length);
-            expect(element.find('.label').length).toBe(statsData.length);
-            expect(element.find('.bg-rect').length).toBe(statsData.length);
         });
 
         it('should render secondary data after a 100ms delay', function () {

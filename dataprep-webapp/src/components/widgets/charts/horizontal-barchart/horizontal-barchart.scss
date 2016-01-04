@@ -56,24 +56,6 @@
     }
   }
 
-  .axis {
-    shape-rendering: crispEdges;
-
-    path {
-      fill: none;
-    }
-
-    &.y {
-      path {
-        stroke: $shadow-gray;
-      }
-
-      text {
-        display: none;
-      }
-    }
-  }
-
   .hiddenChars {
     background-color: #E9E9E9;
     border: 1px dotted #BABABA;
