@@ -110,9 +110,9 @@
          * @param {dataset} dataset the dataset infos to clone
          * @param {folder) folder the folder to clone the dataset
          * @param {string) cloneName the name for the cloned dataset
-         * @returns {Promise} The GET promise
+         * @returns {HttpPromise} The GET promise
          */
-        function cloneDataset(dataset, folder, cloneName) {
+        function cloneDataset(dataset, folder, cloneName, abortPromise) {
             var url = RestURLs.datasetUrl + '/clone/' + dataset.id;
             if (folder) {
                 url += '?folderPath=' + encodeURIComponent(folder.id);
@@ -124,7 +124,12 @@
                     url += '?cloneName=' + encodeURIComponent(cloneName);
                 }
             }
-            return $http.put(url);
+            var options = {
+                url: url,
+                timeout: abortPromise,
+                method:'PUT'
+            };
+            return $http(options);
         }
 
 
@@ -137,9 +142,9 @@
          * @param {folder) folder the original folder of the dataset
          * @param {folder) newFolder the folder to move the dataset
          * @param {string) newName the name for the moved dataset (optional)
-         * @returns {Promise} The GET promise
+         * @returns {HttpPromise} The GET promise
          */
-        function moveDataset(dataset, folder, newFolder, newName) {
+        function moveDataset(dataset, folder, newFolder, newName, abortPromise) {
             var url = RestURLs.datasetUrl + '/move/' + dataset.id;
             url += '?folderPath=' + encodeURIComponent(folder.id);
             url += '&newFolderPath=' + encodeURIComponent(newFolder.id);
@@ -148,7 +153,12 @@
                 url += '&newName=' + encodeURIComponent(newName);
             }
 
-            return $http.put(url);
+            var options = {
+                url: url,
+                timeout: abortPromise,
+                method:'PUT'
+            };
+            return $http(options);
         }
 
 

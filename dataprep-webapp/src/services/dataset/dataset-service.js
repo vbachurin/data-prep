@@ -119,8 +119,8 @@
          * @description Clone a dataset
          * @returns {promise} The pending CREATE promise
          */
-        function cloneDataset(dataset, folder, cloneName) {
-            var promise = DatasetListService.clone(dataset, folder, cloneName);
+        function cloneDataset(dataset, folder, cloneName, abortPromise) {
+            var promise = DatasetListService.clone(dataset, folder, cloneName, abortPromise);
             promise.then(consolidatePreparationsAndDatasets);
             return promise;
         }
@@ -136,8 +136,8 @@
          * @description Move a dataset
          * @returns {promise} The pending PUT promise
          */
-        function moveDataset(dataset, folder, newFolder, newName) {
-            var promise = DatasetListService.move(dataset, folder, newFolder, newName);
+        function moveDataset(dataset, folder, newFolder, newName, abortPromise) {
+            var promise = DatasetListService.move(dataset, folder, newFolder, newName, abortPromise);
             promise.then(consolidatePreparationsAndDatasets);
             return promise;
         }

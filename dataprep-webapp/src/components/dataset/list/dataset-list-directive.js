@@ -15,7 +15,12 @@
             replace:true,
             bindToController: true,
             controllerAs: 'datasetListCtrl',
-            controller: 'DatasetListCtrl'
+            controller: 'DatasetListCtrl',
+            link: function(scope, iElement, iAttrs, ctrl) {
+                ctrl.focusOnNameInput = function focusOnNameInput(){
+                    angular.element('.clone-name input[type="text"]').eq(0)[0].focus();
+                };
+            }
         };
     }
 

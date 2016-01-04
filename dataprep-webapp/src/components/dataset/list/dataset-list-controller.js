@@ -18,13 +18,14 @@
      * @requires data-prep.services.folder.service:FolderService
      * @requires data-prep.services.preparation.service:PreparationListService
      */
-    function DatasetListCtrl($timeout, $translate, $stateParams, StateService, DatasetService, DatasetListSortService, PlaygroundService,
+    function DatasetListCtrl($q, $timeout, $translate, $stateParams, StateService, DatasetService, DatasetListSortService, PlaygroundService,
                              TalendConfirmService, MessageService, UploadWorkflowService, UpdateWorkflowService, FolderService, state, PreparationListService) {
         var vm = this;
 
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
         vm.state = state;
+
         vm.isCloningDs = false;
         vm.isMovingDs = false;
 
@@ -184,15 +185,16 @@
          * @description perform the dataset cloning to the folder destination
          */
         vm.clone = function () {
-            vm.isCloningDs = 'cloning';
+            vm.isCloningDs = true;
             vm.cloneNameForm.$commitViewValue();
 
-            DatasetService.clone(vm.datasetToClone, vm.folderDestination, vm.cloneName)
+            DatasetService.clone(vm.datasetToClone, vm.folderDestination, vm.cloneName, vm.cloneQueryCanceller.promise)
                 .then(function () {
                     MessageService.success('COPY_SUCCESS_TITLE', 'COPY_SUCCESS');
 
                     // force going to current folder to refresh the content
                     FolderService.getFolderContent(state.folder.currentFolder);
+
                     // reset some values to initial values
                     vm.folderDestinationModal = false;
                     vm.datasetToClone = null;
@@ -201,9 +203,22 @@
                     vm.cloneName = '';
                     vm.isCloningDs = false;
 
-                }, function(){
+                }, function(rejection){
                     vm.isCloningDs = false;
+                    if(!(rejection.config.timeout && rejection.config.timeout.$$state.value === 'user cancel')){
+                        setTimeout(vm.focusOnNameInput, 1100);
+                    }
                 });
+        };
+
+        vm.cancelQuery = function cancelQuery (){
+            if(vm.isCloningDs){
+                vm.cloneQueryCanceller.resolve('user cancel');
+            }
+            if(vm.isMovingDs){
+                vm.moveQueryCanceller.resolve('user cancel');
+            }
+            return true;
         };
 
         /**
@@ -213,15 +228,16 @@
          * @description perform the dataset moving to the folder destination
          */
         vm.move = function(){
-            vm.isMovingDs = 'moving';
+            vm.isMovingDs = true;
             vm.cloneNameForm.$commitViewValue();
 
-            DatasetService.move(vm.datasetToClone, state.folder.currentFolder, vm.folderDestination, vm.cloneName)
+            DatasetService.move(vm.datasetToClone, state.folder.currentFolder, vm.folderDestination, vm.cloneName, vm.moveQueryCanceller.promise)
                 .then(function (){
                     MessageService.success('MOVE_SUCCESS_TITLE', 'MOVE_SUCCESS');
 
                     // force going to current folder to refresh the content
                     FolderService.getFolderContent(state.folder.currentFolder);
+
                     // reset some values to initial values
                     vm.folderDestinationModal = false;
                     vm.datasetToClone = null;
@@ -229,8 +245,12 @@
                     vm.foldersFound = [];
                     vm.cloneName = '';
                     vm.isMovingDs = false;
-                }, function(){
+
+                }, function(rejection){
                     vm.isMovingDs = false;
+                    if(!(rejection.config.timeout && rejection.config.timeout.$$state.value === 'user cancel')){
+                        setTimeout(vm.focusOnNameInput, 1100);
+                    }
                 });
         };
 
@@ -393,6 +413,10 @@
             vm.foldersFound = [];
             vm.searchFolderQuery = '';
             vm.cloneName = dataset.name;
+
+            vm.cloneQueryCanceller = $q.defer();
+            vm.moveQueryCanceller = $q.defer();
+
             // ensure nothing is null
             var toggleToCurrentFolder = state.folder && state.folder.currentFolder && state.folder.currentFolder.id;
 

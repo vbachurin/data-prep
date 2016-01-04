@@ -96,8 +96,8 @@
          * @description Clone a dataset from backend and refresh its internal list
          * @returns {promise} The pending GET promise
          */
-        function clone(dataset, folder, cloneName) {
-            var promise = DatasetRestService.clone(dataset, folder, cloneName);
+        function clone(dataset, folder, cloneName, abortPromise) {
+            var promise = DatasetRestService.clone(dataset, folder, cloneName, abortPromise);
 
             promise.then(function (){
                 refreshDatasets();
@@ -117,8 +117,8 @@
          * @description Move a dataset from backend and refresh its internal list
          * @returns {promise} The pending PUT promise
          */
-        function move(dataset, folder, newFolder, newName) {
-            var promise = DatasetRestService.move(dataset, folder, newFolder, newName);
+        function move(dataset, folder, newFolder, newName, abortPromise) {
+            var promise = DatasetRestService.move(dataset, folder, newFolder, newName, abortPromise);
 
             promise.then(function (){
                 refreshDatasets();

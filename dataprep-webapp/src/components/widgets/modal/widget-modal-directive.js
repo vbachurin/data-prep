@@ -114,7 +114,8 @@
                 fullscreen: '=',
                 disableEnter: '=',
                 beforeClose: '&',
-                onClose: '&'
+                onClose: '&',
+                forbidCloseOnBackgroundClick: '='
             },
             bindToController: true,
             controllerAs: 'talendModalCtrl',
@@ -166,13 +167,16 @@
                      * and stop click propagation in inner modal to avoid a click on the dismiss screen
                      */
                     var attachListeners = function () {
-                        // Close action on all 'talend-modal-close' elements
                         iElement.find('.talend-modal-close').on('click', hideModal);
+                        // Close action on modal background click
+                        if(!ctrl.forbidCloseOnBackgroundClick){
+                            iElement.find('.modal-window').on('click', hideModal);
 
-                        // stop propagation on click on inner modal to prevent modal close
-                        innerElement.on('click', function (e) {
-                            e.stopPropagation();
-                        });
+                            // stop propagation on click on inner modal to prevent modal close
+                            innerElement.on('click', function (e) {
+                                e.stopPropagation();
+                            });
+                        }
                     };
 
                     /**
