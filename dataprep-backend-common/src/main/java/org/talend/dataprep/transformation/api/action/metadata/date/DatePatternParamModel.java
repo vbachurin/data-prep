@@ -26,6 +26,11 @@ public interface DatePatternParamModel {
     String CUSTOM_PATTERN = "custom_date_pattern"; //$NON-NLS-1$
 
     /**
+     * Key to store compiled pattern in action context.
+     */
+    final String COMPILED_PATTERN = "compiled_pattern";
+
+    /**
      * The parameter object for the custom new pattern.
      */
     Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, ParameterType.STRING, EMPTY, false, false);
