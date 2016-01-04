@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -34,27 +35,41 @@ public abstract class TransformationServiceBaseTests extends TransformationBaseT
     @Value("${local.server.port}")
     protected int port;
 
-    /** Needed to update its url at runtime. */
+    /** Needed to update urls at runtime. */
     @Autowired
-    private TransformationService transformationService;
+    private List<BaseTransformationService> transformationServices;
 
     @Before
     public void setUp() {
 
         RestAssured.port = port;
 
-        ReflectionTestUtils.setField( //
-                unwrapProxy(TransformationService.class, transformationService), // voodoo ?
-                "datasetServiceUrl", //
-                "http://localhost:" + port, //
-                String.class);
-
-        ReflectionTestUtils.setField( //
-                unwrapProxy(TransformationService.class, transformationService), // black magic ?
-                "preparationServiceUrl", //
-                "http://localhost:" + port, //
-                String.class);
+        // set the service url @runtime
+        for (BaseTransformationService service : transformationServices) {
+            setField(service, "datasetServiceUrl", "http://localhost:" + port);
+            setField(service, "preparationServiceUrl", "http://localhost:" + port);
+        }
     }
+
+    /**
+     * Set the field with the given value on the given object.
+     *
+     * @param service the service to update.
+     * @param fieldName the field name.
+     * @param value the field value.
+     */
+    private void setField(BaseTransformationService service, String fieldName, String value) {
+        try {
+            ReflectionTestUtils.setField( //
+                    unwrapProxy(BaseTransformationService.class, service), //
+                    fieldName, //
+                    value, //
+                    String.class);
+        } catch (IllegalArgumentException e) {
+            // nothing to do here
+        }
+    }
+
 
     /**
      * Black magic / voodoo needed to make ReflectionTestUtils.setField(...) work on class proxied by Spring.
@@ -66,9 +81,9 @@ public abstract class TransformationServiceBaseTests extends TransformationBaseT
     private Object unwrapProxy(Class clazz, Object proxy) {
         if (AopUtils.isAopProxy(proxy) && proxy instanceof Advised) {
             try {
-                Object target = ((Advised) proxy).getTargetSource().getTarget();
-                return target;
+                return ((Advised) proxy).getTargetSource().getTarget();
             } catch (Exception e) {
+                // nothing to do here
             }
         }
         return proxy;
