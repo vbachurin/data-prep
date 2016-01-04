@@ -277,7 +277,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
 
         //then : should have preparation service error
         response.then()
-                .statusCode(is(400))
+.statusCode(is(404))
                 .body("code", is("TDP_PS_PREPARATION_DOES_NOT_EXIST"));
     }
 
@@ -312,7 +312,7 @@ public class PreparationAPITest extends ApiServiceTestBase {
 
         //then
         response.then()//
-                .statusCode(400)//
+                .statusCode(404)//
                 .assertThat()//
                 .body("code", is("TDP_PS_PREPARATION_STEP_DOES_NOT_EXIST"));
     }
