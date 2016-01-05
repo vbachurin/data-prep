@@ -77,13 +77,12 @@ public class DataSetAPI extends APIService {
     public String createOrUpdateById(
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
             @ApiParam(value = "Id of the data set to update / create") @PathVariable(value = "id") String id,
-            @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "", required = false) String folderPath,
             @ApiParam(value = "content") InputStream dataSetContent) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionStats());
         }
         HttpClient client = getClient();
-        HystrixCommand<String> creation = getCommand(CreateOrUpdateDataSet.class, client, id, name, dataSetContent, folderPath);
+        HystrixCommand<String> creation = getCommand(CreateOrUpdateDataSet.class, client, id, name, dataSetContent);
         String result = creation.execute();
         LOG.debug("Dataset creation or update for #{} done.", id);
         return result;

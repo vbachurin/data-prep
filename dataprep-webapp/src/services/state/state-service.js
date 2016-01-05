@@ -12,11 +12,13 @@
                           DatasetStateService, datasetState, //
                           FolderStateService, folderState,  //
                           EasterEggsStateService, easterEggsState, //
+                          InventoryStateService, inventoryState,
                           FeedbackStateService, feedbackState) {
         state.playground = playgroundState;
         state.dataset = datasetState;
         state.folder = folderState;
         state.easterEggsState = easterEggsState;
+        state.inventory = inventoryState;
         state.feedback = feedbackState;
 
         return {
@@ -56,6 +58,16 @@
             setColumnTransformations: PlaygroundStateService.setColumnTransformations,
             setLineTransformations: PlaygroundStateService.setLineTransformations,
             setSuggestionsLoading: PlaygroundStateService.setSuggestionsLoading,
+            setTransformationsForEmptyCells: PlaygroundStateService.setTransformationsForEmptyCells,
+            setTransformationsForInvalidCells: PlaygroundStateService.setTransformationsForInvalidCells,
+            updateFilteredTransformations: PlaygroundStateService.updateFilteredTransformations,
+
+            //playground - Statistics
+            setStatisticsHistogram: PlaygroundStateService.setStatisticsHistogram,
+            setStatisticsFilteredHistogram: PlaygroundStateService.setStatisticsFilteredHistogram,
+            setStatisticsHistogramActiveLimits: PlaygroundStateService.setStatisticsHistogramActiveLimits,
+            setStatisticsPatterns: PlaygroundStateService.setStatisticsPatterns,
+            setStatisticsFilteredPatterns: PlaygroundStateService.setStatisticsFilteredPatterns,
 
             //dataset
             startUploadingDataset: DatasetStateService.startUploadingDataset,
@@ -70,6 +82,10 @@
             //easter eggs
             enableEasterEgg: EasterEggsStateService.enableEasterEgg,
             disableEasterEgg: EasterEggsStateService.disableEasterEgg,
+
+            //inventory
+            setPreparations: InventoryStateService.setPreparations,
+            removePreparation: InventoryStateService.removePreparation,
 
             //feedback
             showFeedback: FeedbackStateService.show,

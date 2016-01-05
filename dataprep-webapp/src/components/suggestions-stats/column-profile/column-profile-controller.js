@@ -13,6 +13,7 @@
     function ColumnProfileCtrl($scope, $timeout, state, StatisticsService, FilterService, PlaygroundService) {
         var vm = this;
         vm.statisticsService = StatisticsService;
+        vm.state = state;
         vm.chartConfig = {};
 
         //------------------------------------------------------------------------------------------------------
@@ -76,8 +77,8 @@
          * @return {string} The current aggregation name
          */
         vm.getCurrentAggregation = function getCurrentAggregation() {
-            return StatisticsService.histogram && StatisticsService.histogram.aggregation ?
-                StatisticsService.histogram.aggregation :
+            return state.playground.statistics.histogram && state.playground.statistics.histogram.aggregation ?
+                state.playground.statistics.histogram.aggregation :
                 'LINE_COUNT';
         };
 
@@ -90,9 +91,9 @@
          * @description Trigger a new aggregation graph
          */
         vm.changeAggregation = function changeAggregation(column, aggregation) {
-            if (StatisticsService.histogram &&
-                StatisticsService.histogram.aggregationColumn === column &&
-                StatisticsService.histogram.aggregation === aggregation) {
+            if (state.playground.statistics.histogram &&
+                state.playground.statistics.histogram.aggregationColumn === column &&
+                state.playground.statistics.histogram.aggregation === aggregation) {
                 return;
             }
 
@@ -210,7 +211,7 @@
          * @description Check if we have the statistics or we have to fetch them
          */
         function shouldFetchStatistics() {
-            return !StatisticsService.histogram &&// no histogram means no statistics yet whereas empty histogram means no data to display
+            return !state.playground.statistics.histogram &&// no histogram means no statistics yet whereas empty histogram means no data to display
                 !vm.stateDistribution; // and not a state distribution chart
         }
 
@@ -249,31 +250,6 @@
         );
 
     }
-
-    /**
-     * @ngdoc property
-     * @name processedData
-     * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
-     * @description The data to display
-     * This is bound to {@link data-prep.statistics:StatisticsService StatisticsService}.histogram
-     */
-    Object.defineProperty(ColumnProfileCtrl.prototype,
-        'histogram', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.statisticsService.histogram;
-            }
-        });
-
-    Object.defineProperty(ColumnProfileCtrl.prototype,
-        'filteredHistogram', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.statisticsService.filteredHistogram;
-            }
-        });
 
     /**
      * @ngdoc property

@@ -254,4 +254,13 @@ public class DateManipulator {
     private LocalDateTime getStartOfDay(final LocalDateTime localDate) {
         return localDate.with(temporal -> LocalDate.from(temporal).atStartOfDay());
     }
+
+    /**
+     * Compute the number of milliseconds for UTC timestamp
+     * @param localDate The date to convert
+     * @return The UTC epoch milliseconds
+     */
+    public long getUTCEpochMilliseconds(final LocalDateTime localDate) {
+        return localDate.toEpochSecond(ZoneOffset.UTC) * 1000;
+    }
 }

@@ -8,7 +8,12 @@ describe('ColumnProfile controller', function () {
     };
 
     beforeEach(module('data-prep.column-profile', function ($provide) {
-        stateMock = {playground: {grid: {}}};
+        stateMock = {
+            playground: {
+                grid: {},
+                statistics: {}
+            }
+        };
         $provide.constant('state', stateMock);
     }));
 
@@ -111,30 +116,6 @@ describe('ColumnProfile controller', function () {
             spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
         }));
 
-        it('should bind histogram getter to StatisticsService.histogram', inject(function (StatisticsService) {
-            //given
-            var data = {};
-            var ctrl = createController();
-
-            //when
-            StatisticsService.histogram = data;
-
-            //then
-            expect(ctrl.histogram).toBe(data);
-        }));
-
-        it('should bind filteredHistogram getter to StatisticsService.filteredHistogram', inject(function (StatisticsService) {
-            //given
-            var data = {};
-            var ctrl = createController();
-
-            //when
-            StatisticsService.filteredHistogram = data;
-
-            //then
-            expect(ctrl.filteredHistogram).toBe(data);
-        }));
-
         it('should bind aggregationColumns getter to StatisticsService.getAggregationColumns()', inject(function (StatisticsService) {
             //given
             var ctrl = createController();
@@ -152,10 +133,10 @@ describe('ColumnProfile controller', function () {
             spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
         }));
 
-        it('should get the current aggregation name', inject(function (StatisticsService) {
+        it('should get the current aggregation name', function () {
             //given
             var ctrl = createController();
-            StatisticsService.histogram = {
+            stateMock.playground.statistics.histogram = {
                 aggregation: 'MAX'
             };
 
@@ -164,31 +145,31 @@ describe('ColumnProfile controller', function () {
 
             //then
             expect(aggregation).toBe('MAX');
-        }));
+        });
 
-        it('should get the default aggregation name when there is no histogram', inject(function (StatisticsService) {
+        it('should get the default aggregation name when there is no histogram', function () {
             //given
             var ctrl = createController();
-            StatisticsService.histogram = null;
+            stateMock.playground.statistics.histogram = null;
 
             //when
             var aggregation = ctrl.getCurrentAggregation();
 
             //then
             expect(aggregation).toBe('LINE_COUNT');
-        }));
+        });
 
-        it('should get the default aggregation name when histogram is not an aggregation', inject(function (StatisticsService) {
+        it('should get the default aggregation name when histogram is not an aggregation', function () {
             //given
             var ctrl = createController();
-            StatisticsService.histogram = {data: []};
+            stateMock.playground.statistics.histogram = {data: []};
 
             //when
             var aggregation = ctrl.getCurrentAggregation();
 
             //then
             expect(aggregation).toBe('LINE_COUNT');
-        }));
+        });
 
         it('should change aggregation chart', inject(function (StatisticsService) {
             //given
@@ -211,7 +192,7 @@ describe('ColumnProfile controller', function () {
             var aggregation = {name: 'MAX'};
 
             spyOn(StatisticsService, 'processAggregation').and.returnValue();
-            StatisticsService.histogram = {
+            stateMock.playground.statistics.histogram = {
                 aggregation: aggregation,
                 aggregationColumn: column,
                 data: [{field: 'toto', value: 2}]
@@ -228,10 +209,10 @@ describe('ColumnProfile controller', function () {
     });
 
     describe('statistics', function () {
-        it('should not update columns statistics when there are statistics charts to display', inject(function ($q, PlaygroundService, StatisticsService) {
+        it('should not update columns statistics when there are statistics charts to display', inject(function ($q, PlaygroundService) {
             //given
             spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
-            StatisticsService.histogram = {data: [{field: 'toto', value: 2}]};
+            stateMock.playground.statistics.histogram = {data: [{field: 'toto', value: 2}]};
 
             //when
             createController();
@@ -240,10 +221,10 @@ describe('ColumnProfile controller', function () {
             expect(PlaygroundService.updateStatistics).not.toHaveBeenCalled();
         }));
 
-        it('should update statistics when there are no histogram yet', inject(function ($q, PlaygroundService, StatisticsService) {
+        it('should update statistics when there are no histogram yet', inject(function ($q, PlaygroundService) {
             //given
             spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
-            StatisticsService.histogram = null;
+            stateMock.playground.statistics.histogram = null;
 
             //when
             createController();
@@ -252,7 +233,7 @@ describe('ColumnProfile controller', function () {
             expect(PlaygroundService.updateStatistics).toHaveBeenCalled();
         }));
 
-        it('should retry statistics update when previous fetch has been rejected (stats not computed yet) with a delay of 1500ms', inject(function ($q, $timeout, PlaygroundService, StatisticsService) {
+        it('should retry statistics update when previous fetch has been rejected (stats not computed yet) with a delay of 1500ms', inject(function ($q, $timeout, PlaygroundService) {
             //given
             var retry = 0;
             spyOn(PlaygroundService, 'updateStatistics').and.callFake(function () {
@@ -264,7 +245,7 @@ describe('ColumnProfile controller', function () {
                     return $q.when();
                 }
             });
-            StatisticsService.histogram = null;
+            stateMock.playground.statistics.histogram = null;
 
             //when
             createController();

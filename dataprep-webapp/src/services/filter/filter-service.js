@@ -232,7 +232,7 @@
         function addFilter(type, colId, colName, args, removeFilterFn) {
             var filterFn;
             var sameColAndTypeFilter = _.find(state.playground.filter.gridFilters, {colId: colId, type: type});
-            var createFilter, updateFilter, filterExists;
+            var createFilter, getFilterValue, filterExists;
 
             switch (type) {
                 case 'contains':
@@ -241,8 +241,8 @@
                         return FilterAdapterService.createFilter(type, colId, colName, true, args, filterFn, removeFilterFn);
                     };
 
-                    updateFilter = function updateFilter() {
-                        service.updateFilter(sameColAndTypeFilter, args.phrase);
+                    getFilterValue = function getFilterValue() {
+                        return args.phrase;
                     };
 
                     filterExists = function filterExists() {
@@ -255,8 +255,8 @@
                         return FilterAdapterService.createFilter(type, colId, colName, true, args, filterFn, removeFilterFn);
                     };
 
-                    updateFilter = function updateFilter() {
-                        service.updateFilter(sameColAndTypeFilter, args.phrase);
+                    getFilterValue = function getFilterValue() {
+                        return args.phrase;
                     };
 
                     filterExists = function filterExists() {
@@ -299,8 +299,8 @@
                         return FilterAdapterService.createFilter(type, colId, colName, false, args, filterFn, removeFilterFn);
                     };
 
-                    updateFilter = function updateFilter() {
-                        service.updateFilter(sameColAndTypeFilter, args.interval);
+                    getFilterValue = function getFilterValue() {
+                        return args.interval;
                     };
 
                     filterExists = function filterExists() {
@@ -313,8 +313,8 @@
                         return FilterAdapterService.createFilter(type, colId, colName, false, args, filterFn, removeFilterFn);
                     };
 
-                    updateFilter = function updateFilter() {
-                        service.updateFilter(sameColAndTypeFilter, args.pattern);
+                    getFilterValue = function getFilterValue() {
+                        return args.pattern;
                     };
 
                     filterExists = function filterExists() {
@@ -325,15 +325,15 @@
 
             if(!sameColAndTypeFilter) {
                 var filterInfo = createFilter();
-                StateService.addGridFilter(filterInfo);
+                pushFilter(filterInfo);
             }
             else if(filterExists()) {
-                service.removeFilter(sameColAndTypeFilter);
+                removeFilter(sameColAndTypeFilter);
             }
             else {
-                updateFilter();
+                var filterValue = getFilterValue();
+                updateFilter(sameColAndTypeFilter, filterValue);
             }
-            StatisticsService.updateStatistics();
         }
 
         /**
@@ -389,7 +389,7 @@
             newFilter = FilterAdapterService.createFilter(oldFilter.type, oldFilter.colId, oldFilter.colName, editableFilter, newArgs, newFilterFn, oldFilter.removeFilterFn);
 
             StateService.updateGridFilter(oldFilter, newFilter);
-            StatisticsService.updateStatistics();
+            StatisticsService.updateFilteredStatistics();
         }
 
         /**
@@ -410,7 +410,7 @@
                     filter.removeFilterFn(filter);
                 })
                 .value();
-            StatisticsService.updateStatistics();
+            StatisticsService.updateFilteredStatistics();
         }
 
         /**
@@ -425,7 +425,19 @@
             if (filter.removeFilterFn) {
                 filter.removeFilterFn(filter);
             }
-            StatisticsService.updateStatistics();
+            StatisticsService.updateFilteredStatistics();
+        }
+
+        /**
+         * @ngdoc method
+         * @name pushFilter
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {object} filter The filter to push
+         * @description Push a filter in the filter list
+         */
+        function pushFilter(filter) {
+            StateService.addGridFilter(filter);
+            StatisticsService.updateFilteredStatistics();
         }
     }
 

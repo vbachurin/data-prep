@@ -43,7 +43,7 @@
          * @returns {Promise} the $upload promise
          */
         function create(dataset, folder) {
-            var folderPath =  folder && folder.id ? folder.id : '/';
+            var folderPath = folder && folder.id ? folder.id : '/';
             return $upload.http({
                 url: RestURLs.datasetUrl + '?name=' + encodeURIComponent(dataset.name) + '&folderPath=' + encodeURIComponent(folderPath),
                 headers: {'Content-Type': 'text/plain'},
@@ -56,12 +56,12 @@
          * @name importRemoteDataset
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Import the remote dataset
-         * @param {parameters} the import parameters
-         * @param {object} folder - the dataset folder
-         * @returns {Promise} the $post promise
+         * @param {parameters} parameters The import parameters
+         * @param {object} folder The dataset folder
+         * @returns {Promise} The POST promise
          */
         function importRemoteDataset(parameters, folder) {
-            var folderPath =  folder && folder.id ? folder.id : '/';
+            var folderPath = folder && folder.id ? folder.id : '/';
             var req = {
                 method: 'POST',
                 url: RestURLs.datasetUrl + '?name=' + encodeURIComponent(parameters.name) + '&folderPath=' + encodeURIComponent(folderPath),
@@ -116,11 +116,11 @@
             var url = RestURLs.datasetUrl + '/clone/' + dataset.id;
             if (folder) {
                 url += '?folderPath=' + encodeURIComponent(folder.id);
-                if (cloneName){
+                if (cloneName) {
                     url += '&cloneName=' + encodeURIComponent(cloneName);
                 }
             } else {
-                if (cloneName){
+                if (cloneName) {
                     url += '?cloneName=' + encodeURIComponent(cloneName);
                 }
             }
@@ -223,7 +223,7 @@
          * @description Update the dataset column
          * @param {string} datasetId The dataset id
          * @param {string} columnId The column id
-         * @param {object} params The parameters containing typeId and/or domainId
+         * @param {object} params The parameters containing typeId and/or domainId
          * @returns {Promise} The POST promise
          */
         function updateColumn(datasetId, columnId, params) {
@@ -274,7 +274,7 @@
          * @description Get the dataset content from a complete URL
          * @returns {Promise} The GET promise
          */
-        function getContentFromUrl(url){
+        function getContentFromUrl(url) {
             return $http.get(url)
                 .then(function (res) {
                     return res.data;

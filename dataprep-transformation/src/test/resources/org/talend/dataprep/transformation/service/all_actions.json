@@ -1409,6 +1409,19 @@
               "value": "from_beginning"
             },
             {
+              "value": "from_n_before_end",
+              "parameters": [
+                {
+                  "name": "from_n_before_end",
+                  "type": "integer",
+                  "implicit": false,
+                  "canBeBlank": true,
+                  "label": "From N before end",
+                  "default": "5"
+                }
+              ]
+            },
+            {
               "value": "from_index",
               "parameters": [
                 {
@@ -1438,6 +1451,19 @@
           "values": [
             {
               "value": "to_end"
+            },
+            {
+              "value": "to_n_before_end",
+              "parameters": [
+                {
+                  "name": "to_n_before_end",
+                  "type": "integer",
+                  "implicit": false,
+                  "canBeBlank": true,
+                  "label": "To N before end",
+                  "default": "1"
+                }
+              ]
             },
             {
               "value": "to_index",

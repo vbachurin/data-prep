@@ -397,11 +397,12 @@ describe('Dataset List Service', function () {
 
     it('should call rest service clone', inject(function (DatasetRestService, DatasetListService) {
         var folder = {id: 'foo'};
+        var mockPromise = {};
         //when
-        DatasetListService.clone(datasets[0], folder, 'beer');
+        DatasetListService.clone(datasets[0], folder, 'beer',mockPromise);
 
         //then
-        expect(DatasetRestService.clone).toHaveBeenCalledWith(datasets[0], folder, 'beer');
+        expect(DatasetRestService.clone).toHaveBeenCalledWith(datasets[0], folder, 'beer', mockPromise);
     }));
 
 });

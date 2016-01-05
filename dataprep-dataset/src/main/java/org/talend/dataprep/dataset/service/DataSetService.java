@@ -632,8 +632,7 @@ public class DataSetService {
     public void updateRawDataSet(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId, //
             @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name, //
-            @ApiParam(value = "content") InputStream dataSetContent,
-            @ApiParam(value = "The folder path to create the entry.") @RequestParam(defaultValue = "/", required = false) String folderPath) {
+            @ApiParam(value = "content") InputStream dataSetContent) {
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock( dataSetId );
         try {
             lock.lock();
@@ -645,9 +644,6 @@ public class DataSetService {
             // Save data set content
             contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
             dataSetMetadataRepository.add(dataSetMetadata);
-            // create the associated folder entry
-            FolderEntry folderEntry = new FolderEntry("dataset", dataSetId, folderPath);
-            folderRepository.addFolderEntry(folderEntry);
         } finally {
             lock.unlock();
         }
