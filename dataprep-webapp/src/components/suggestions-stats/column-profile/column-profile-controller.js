@@ -45,15 +45,26 @@
          * @name addRangeFilter
          * @methodOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
          * @description Add an "range" filter
-         * @param {array} interval The interval [min, max] to filter
+         * @param {object} interval The interval [min, max] to filter
          */
         vm.addRangeFilter = function addRangeFilter(interval) {
             var selectedColumn = state.playground.grid.selectedColumn;
 
+            if(!interval.label) {
+                var min = d3.format(',')(interval.min);
+                var max = d3.format(',')(interval.max);
+                interval.label = min === max ? '[' + min + ']' : '[' + min + ' .. ' + max + '[';
+            }
             var removeFilterFn = StatisticsService.getRangeFilterRemoveFn();
-            FilterService.addFilterAndDigest('inside_range', selectedColumn.id,
-                                              selectedColumn.name, {interval: [interval.min, interval.max], label: interval.label},
-                                              removeFilterFn, selectedColumn.type);
+            FilterService.addFilterAndDigest('inside_range',
+                selectedColumn.id,
+                selectedColumn.name,
+                {
+                    interval: [interval.min, interval.max],
+                    label: interval.label,
+                    type: selectedColumn.type
+                },
+                removeFilterFn);
         };
 
         //------------------------------------------------------------------------------------------------------
@@ -222,12 +233,12 @@
          */
         function fetchStatistics() {
             PlaygroundService.updateStatistics()
-                .catch(function() {
+                .catch(function () {
                     $timeout(fetchStatistics, 1500, false);
                 });
         }
 
-        if(shouldFetchStatistics()) {
+        if (shouldFetchStatistics()) {
             fetchStatistics();
         }
         //------------------------------------------------------------------------------------------------------

@@ -209,9 +209,8 @@
          * @returns {function} The predicate function
          */
         function createDateRangeFilterFn(colId, values) {
-
-            var minTimestamp = values[0].getTime();
-            var maxTimestamp = values[1].getTime();
+            var minTimestamp = values[0];
+            var maxTimestamp = values[1];
             var patterns = _.chain(state.playground.grid.selectedColumn.statistics.patternFrequencyTable)
                 .pluck('pattern')
                 .map(TextFormatService.convertJavaDateFormatToMomentDateFormat)
@@ -223,7 +222,6 @@
                     return valueInDateLimitsFn(item[colId]);
                 };
             };
-
         }
 
         /**
@@ -256,10 +254,9 @@
          * @param {string} colName The column name
          * @param {string} args The filter arguments (ex for 'contains' type : {phrase: 'toto'})
          * @param {function} removeFilterFn An optional remove callback
-         * @param {string} colType The column type
          * @description Add a filter and update datagrid filters
          */
-        function addFilter(type, colId, colName, args, removeFilterFn, colType) {
+        function addFilter(type, colId, colName, args, removeFilterFn) {
             var filterFn;
             var sameColAndTypeFilter = _.find(state.playground.filter.gridFilters, {colId: colId, type: type});
             var createFilter, getFilterValue, filterExists;
@@ -324,17 +321,12 @@
                     };
                     break;
                 case 'inside_range':
-                    if(colType === 'date') {
-                        createFilter = function createFilter() {
-                            filterFn = createDateRangeFilterFn(colId, args.interval);
-                            return FilterAdapterService.createFilter(type, colId, colName, false, args, filterFn, removeFilterFn, colType);
-                        };
-                    } else {
-                        createFilter = function createFilter() {
-                            filterFn = createRangeFilterFn(colId, args.interval);
-                            return FilterAdapterService.createFilter(type, colId, colName, false, args, filterFn, removeFilterFn);
-                        };
-                    }
+                    createFilter = function createFilter() {
+                        filterFn = args.type === 'date' ?
+                            createDateRangeFilterFn(colId, args.interval) :
+                            createRangeFilterFn(colId, args.interval);
+                        return FilterAdapterService.createFilter(type, colId, colName, false, args, filterFn, removeFilterFn);
+                    };
 
                     getFilterValue = function getFilterValue() {
                         return args;
@@ -360,11 +352,11 @@
                     break;
             }
 
-            if(!sameColAndTypeFilter) {
+            if (!sameColAndTypeFilter) {
                 var filterInfo = createFilter();
                 pushFilter(filterInfo);
             }
-            else if(filterExists()) {
+            else if (filterExists()) {
                 removeFilter(sameColAndTypeFilter);
             }
             else {
@@ -382,11 +374,10 @@
          * @param {string} colName The column name
          * @param {string} args The filter arguments (ex for 'contains' type : {phrase: 'toto'})
          * @param {function} removeFilterFn An optional remove callback
-         * @param {string} colType The column type
          * @description Wrapper on addFilter method that trigger a digest at the end (use of $timeout)
          */
-        function addFilterAndDigest(type, colId, colName, args, removeFilterFn, colType) {
-            $timeout(addFilter.bind(service, type, colId, colName, args, removeFilterFn, colType));
+        function addFilterAndDigest(type, colId, colName, args, removeFilterFn) {
+            $timeout(addFilter.bind(service, type, colId, colName, args, removeFilterFn));
         }
 
         /**
@@ -400,35 +391,33 @@
         function updateFilter(oldFilter, newValue) {
             var newFilterFn;
             var newFilter;
-            var newArgs = {};
+            var newArgs;
             var editableFilter;
             switch (oldFilter.type) {
                 case 'contains':
-                    newArgs.phrase = newValue;
+                    newArgs = {phrase: newValue};
                     newFilterFn = createContainFilterFn(oldFilter.colId, newValue);
                     editableFilter = true;
                     break;
                 case 'exact':
-                    newArgs.phrase = newValue;
-                    newFilterFn = createExactFilterFn(oldFilter.colId, newValue);
+                    newArgs = {phrase: newValue};
+                    newFilterFn = createExactFilterFn(oldFilter.colId, newValue, oldFilter.args.caseSensitive);
                     editableFilter = true;
                     break;
                 case 'inside_range':
                     newArgs = newValue;
                     editableFilter = false;
-                    if(oldFilter.colType === 'date') {
-                        newFilterFn = createDateRangeFilterFn(oldFilter.colId, newValue.interval);
-                    } else {
-                        newFilterFn = createRangeFilterFn(oldFilter.colId, newValue.interval);
-                    }
+                    newFilterFn = newValue.type === 'date' ?
+                        createDateRangeFilterFn(oldFilter.colId, newValue.interval) :
+                        createRangeFilterFn(oldFilter.colId, newValue.interval);
                     break;
                 case 'matches':
-                    newArgs.pattern = newValue;
+                    newArgs = {pattern: newValue};
                     newFilterFn = createMatchFilterFn(oldFilter.colId, newValue);
                     editableFilter = false;
                     break;
             }
-            newFilter = FilterAdapterService.createFilter(oldFilter.type, oldFilter.colId, oldFilter.colName, editableFilter, newArgs, newFilterFn, oldFilter.removeFilterFn, oldFilter.colType);
+            newFilter = FilterAdapterService.createFilter(oldFilter.type, oldFilter.colId, oldFilter.colName, editableFilter, newArgs, newFilterFn, oldFilter.removeFilterFn);
 
             StateService.updateGridFilter(oldFilter, newFilter);
             StatisticsService.updateFilteredStatistics();
