@@ -29,7 +29,7 @@ public interface DatePatternParamModel {
     /**
      * Key to store compiled pattern in action context.
      */
-    public static final String COMPILED_DATE_PATTERN = "compiled_datePattern";
+    String COMPILED_DATE_PATTERN = "compiled_datePattern";
 
     /**
      * The parameter object for the custom new pattern.
