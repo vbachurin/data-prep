@@ -2656,7 +2656,6 @@
                   "type": "string",
                   "implicit": false,
                   "canBeBlank": true,
-                  "description": "Optional new column separator",
                   "label": "Separator",
                   "default": ""
                 }
@@ -2940,6 +2939,73 @@
             },
             {
               "value": "Nothing, this column will be empty"
+            }
+          ],
+          "multiple": false
+        }
+      }
+    ]
+  },
+  {
+    "category": "split",
+    "name": "extract_string_tokens",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": ""
+      },
+      {
+        "name": "filter",
+        "type": "filter",
+        "implicit": true,
+        "canBeBlank": true,
+        "default": ""
+      },
+      {
+        "name": "regex",
+        "type": "string"
+      },
+      {
+        "name": "extract_mode",
+        "type": "select",
+        "default": "multiple_columns",
+        "configuration": {
+          "values": [
+            {
+              "value": "multiple_columns",
+              "parameters": [
+                {
+                  "name": "limit",
+                  "type": "integer"
+                }
+              ]
+            },
+            {
+              "value": "single_column",
+              "parameters": [
+                {
+                  "name": "concat_separator",
+                  "type": "string",
+                  "default": ","
+                }
+              ]
             }
           ],
           "multiple": false
