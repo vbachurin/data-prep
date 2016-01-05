@@ -99,6 +99,7 @@ public abstract class BaseTransformationService {
         return format;
     }
 
+
     /**
      * Return the actions from the preparation id and the step id.
      *

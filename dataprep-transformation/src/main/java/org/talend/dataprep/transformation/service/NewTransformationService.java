@@ -77,18 +77,18 @@ public class NewTransformationService extends BaseTransformationService {
      * @param name the transformation name.
      * @param output Where to write the response.
      */
+    //@formatter:off
     @RequestMapping(value = "/apply/preparation/{preparationId}/dataset/{datasetId}/{format}", method = GET)
     @ApiOperation(value = "Transform the given preparation to the given format on the given dataset id", notes = "This operation transforms the dataset using preparation id in the provided format.")
     @VolumeMetered
-    //@formatter:off
     public void applyOnDataset(@ApiParam(value = "Preparation id to apply.") @PathVariable(value = "preparationId") final String preparationId,
                                @ApiParam(value = "DataSet id to transform.") @PathVariable(value = "datasetId") final String datasetId,
                                @ApiParam(value = "Output format") @PathVariable("format") final String formatName,
-                               @ApiParam(name = "Sample size", value = "Optional sample size to use for the dataset, if missing, the full dataset is returned") @RequestParam(required = false) Long sample,
+                               @ApiParam(name = "Sample size", value = "Optional sample size to use for the dataset, if missing, the full dataset is returned") @RequestParam(value="sample", required = false) Long sample,
                                @ApiParam(value = "Step id", defaultValue = "head") @RequestParam(value = "stepId", required = false, defaultValue = "head") final String stepId,
                                @ApiParam(value = "Name of the transformation", defaultValue = "untitled") @RequestParam(value = "name", required = false, defaultValue = "untitled") final String name,
                                final OutputStream output) {
-        //@formatter:on
+    //@formatter:on
 
         final ObjectMapper mapper = builder.build();
 

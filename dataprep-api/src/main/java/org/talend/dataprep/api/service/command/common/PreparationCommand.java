@@ -25,8 +25,6 @@ import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.api.preparation.StepDiff;
 import org.talend.dataprep.api.service.command.dataset.DataSetGet;
-import org.talend.dataprep.cache.ContentCache;
-import org.talend.dataprep.cache.ContentCacheKey;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -36,30 +34,9 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 
 public abstract class PreparationCommand<T> extends GenericCommand<T> {
 
-    /**
-     * <p>
-     * A configuration to allow work from intermediate (cached) preparation content. If set to <b>true</b> and
-     * preparation has:
-     * <ul>
-     *     <li>Root</li>
-     *     <li>Step #1</li>
-     *     <li>Step #2</li>
-     * </ul>
-     * When user asks for content @ Step #2, a more efficient approach is to start from content @ Step #1 (iso. starting
-     * over from Root).
-     * </p>
-     * <p>
-     * However, content cached for Step #1 can't be used as is (columns are located after "records", causing DataSet
-     * deserialization to fail).
-     * </p>
-     */
-    private static final boolean ALLOW_WORK_FROM_CACHE = false;
-
     @Autowired
     protected Jackson2ObjectMapperBuilder builder;
 
-    @Autowired
-    protected ContentCache contentCache;
 
     protected PreparationCommand(final HystrixCommandGroupKey groupKey, final HttpClient client) {
         super(groupKey, client);
@@ -204,130 +181,4 @@ public abstract class PreparationCommand<T> extends GenericCommand<T> {
         }
     }
 
-    /**
-     * Return the preparation context from the given arguments.
-     *
-     * @param preparationId the preparation id.
-     * @param stepId the step id.
-     * @param sample the optional sample size.
-     * @return the preparation context from the given arguments.
-     * @throws IOException if an error occurs.
-     */
-    protected PreparationContext getContext(String preparationId, String stepId, Long sample) throws IOException {
-
-        PreparationContext ctx = new PreparationContext();
-        if (preparationId == null) {
-            ctx.actions = Collections.emptyList();
-            ctx.version = Step.ROOT_STEP.id();
-            return ctx;
-        }
-        // Modifies asked version with actual step id
-        final Preparation preparation = getPreparation(preparationId);
-        String version = stepId;
-        if ("head".equals(stepId)) {
-            int lastIndex = preparation.getSteps().size() - 1;
-            version = preparation.getSteps().get(lastIndex);
-        } else if ("origin".equals(version)) {
-            version = Step.ROOT_STEP.id();
-        }
-        ctx.preparation = preparation;
-        ctx.version = version;
-        // Direct try on cache at given version
-        ContentCacheKey key = new ContentCacheKey(preparation, version, sample);
-        ctx.content = contentCache.get(key);
-        if (ctx.content != null) {
-            ctx.actions = Collections.emptyList();
-            ctx.fromCache = true;
-            return ctx;
-        }
-        // At this point, content does *not* come from cache
-        ctx.fromCache = false;
-        String transformationStartStep;
-        if (ALLOW_WORK_FROM_CACHE) {
-            // Try to find intermediate cached version (starting from version)
-            transformationStartStep = version;
-            final List<String> preparationSteps = preparation.getSteps();
-            for (String step : preparationSteps) {
-                transformationStartStep = step;
-                key = new ContentCacheKey(preparation, step, sample);
-                ctx.content = contentCache.get(key);
-                if (ctx.content != null) {
-                    break;
-                }
-            }
-            // Did not find any cache for retrieve preparation details, starts over from original dataset
-            if (Step.ROOT_STEP.id().equals(transformationStartStep)) {
-                ctx.content = getDatasetContent(preparation.getDataSetId(), sample);
-            }
-        } else {
-            // Don't allow to work from intermediate cached steps, so start over from root (data set content).
-            ctx.content = getDatasetContent(preparation.getDataSetId(), sample);
-            transformationStartStep = stepId;
-        }
-        // Build the actions to execute
-        if (Step.ROOT_STEP.id().equals(transformationStartStep)) {
-            // Went down to root step and found nothing in cache -> get all preparation actions
-            ctx.actions = getPreparationActions(preparation, stepId);
-        } else {
-            // Stopped in the middle -> compute list of actions to remove
-            ctx.actions = getPreparationActions(preparation, transformationStartStep);
-        }
-        return ctx;
-    }
-
-    /**
-     * Internal class that holds the preparation context.
-     */
-    public class PreparationContext {
-
-        /** True if the preparation content comes from the cache. */
-        boolean fromCache;
-
-        /** The preparation content (may be the dataset one if no action is performed). */
-        InputStream content;
-
-        /** The list of actions performed in the preparation. */
-        List<Action> actions;
-
-        /** The actual preparation. */
-        Preparation preparation;
-
-        /** The preparation version (step). */
-        String version;
-
-        /**
-         * @return the preparation content.
-         */
-        public InputStream getContent() {
-            return content;
-        }
-
-        /**
-         * @return the preparation actions.
-         */
-        public List<Action> getActions() {
-            return actions;
-        }
-
-        /**
-         * @return the actual preparation.
-         */
-        public Preparation getPreparation() {
-            return preparation;
-        }
-
-        /**
-         * @return the preparation version.
-         */
-        public String getVersion() {
-            return version;
-        }
-
-        /**
-         * @return true if the preparation comes from the cache.
-         */
-        public boolean fromCache() {
-            return fromCache;
-        }
-    }
 }

@@ -8,20 +8,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.aop.framework.Advised;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.talend.dataprep.transformation.TransformationBaseTest;
+import org.talend.dataprep.transformation.test.TransformationServiceUrlRuntimeUpdater;
 
-import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
 
@@ -32,61 +27,12 @@ public abstract class TransformationServiceBaseTests extends TransformationBaseT
 
     public static final Logger LOGGER = LoggerFactory.getLogger(TransformationServiceBaseTests.class);
 
-    @Value("${local.server.port}")
-    protected int port;
-
-    /** Needed to update urls at runtime. */
     @Autowired
-    private List<BaseTransformationService> transformationServices;
+    private TransformationServiceUrlRuntimeUpdater urlUpdater;
 
     @Before
     public void setUp() {
-
-        RestAssured.port = port;
-
-        // set the service url @runtime
-        for (BaseTransformationService service : transformationServices) {
-            setField(service, "datasetServiceUrl", "http://localhost:" + port);
-            setField(service, "preparationServiceUrl", "http://localhost:" + port);
-        }
-    }
-
-    /**
-     * Set the field with the given value on the given object.
-     *
-     * @param service the service to update.
-     * @param fieldName the field name.
-     * @param value the field value.
-     */
-    private void setField(BaseTransformationService service, String fieldName, String value) {
-        try {
-            ReflectionTestUtils.setField( //
-                    unwrapProxy(BaseTransformationService.class, service), //
-                    fieldName, //
-                    value, //
-                    String.class);
-        } catch (IllegalArgumentException e) {
-            // nothing to do here
-        }
-    }
-
-
-    /**
-     * Black magic / voodoo needed to make ReflectionTestUtils.setField(...) work on class proxied by Spring.
-     *
-     * @param clazz the wanted class.
-     * @param proxy the proxy.
-     * @return the actual object behind the proxy.
-     */
-    private Object unwrapProxy(Class clazz, Object proxy) {
-        if (AopUtils.isAopProxy(proxy) && proxy instanceof Advised) {
-            try {
-                return ((Advised) proxy).getTargetSource().getTarget();
-            } catch (Exception e) {
-                // nothing to do here
-            }
-        }
-        return proxy;
+        urlUpdater.setUp();
     }
 
     protected String createDataset(final String file, final String name, final String type) throws IOException {
@@ -113,11 +59,6 @@ public abstract class TransformationServiceBaseTests extends TransformationBaseT
         assertThat(dataSetId, not(""));
 
         return dataSetId;
-    }
-
-    protected String createEmptyPreparationFromFile(final String file, final String name, final String type) throws IOException {
-        final String dataSetId = createDataset(file, "testDataset", type);
-        return createEmptyPreparationFromDataset(dataSetId, name);
     }
 
     protected String createEmptyPreparationFromDataset(final String dataSetId, final String name) throws IOException {
