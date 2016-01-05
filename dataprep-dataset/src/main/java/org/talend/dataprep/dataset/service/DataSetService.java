@@ -534,13 +534,12 @@ public class DataSetService {
         });
         
         // rename the dataset only if we received a new name
-        if (StringUtils.isNotEmpty(newName)) {
+        if (StringUtils.isNotEmpty(newName) && !StringUtils.equals(newName, dataSet.getMetadata().getName())) {
             DistributedLock datasetLock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
             datasetLock.lock();
             try {
                 dataSet.getMetadata().setName(newName);
                 dataSetMetadataRepository.add(dataSet.getMetadata());
-
             } finally {
                 datasetLock.unlock();
             }
