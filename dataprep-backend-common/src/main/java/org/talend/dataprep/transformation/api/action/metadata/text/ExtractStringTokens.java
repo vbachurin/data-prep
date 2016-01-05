@@ -5,7 +5,10 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.INTEGER;
 import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.STRING;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -117,7 +120,7 @@ public class ExtractStringTokens extends ActionMetadata implements ColumnAction 
             // Validate the regex, and put it in context once for all lines:
             // Check 1: not null or empty
             if (StringUtils.isEmpty(regex)) {
-                LOGGER.debug("Empty pattern");
+                LOGGER.debug("Empty pattern, action canceled");
                 actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
                 return;
             }
@@ -125,7 +128,7 @@ public class ExtractStringTokens extends ActionMetadata implements ColumnAction 
             try {
                 actionContext.get(PATTERN, (p) -> Pattern.compile(regex));
             } catch (PatternSyntaxException e) {
-                LOGGER.debug("Invalid pattern " + regex);
+                LOGGER.debug("Invalid pattern {} --> {}, action canceled", regex, e.getMessage());
                 actionContext.setActionStatus(ActionContext.ActionStatus.CANCELED);
             }
         }

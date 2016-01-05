@@ -17,10 +17,15 @@ import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getRow;
+import static org.talend.dataprep.transformation.api.action.metadata.text.ExtractStringTokens.MODE_PARAMETER;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +38,7 @@ import org.talend.dataprep.transformation.api.action.ActionTestWorkbench;
 import org.talend.dataprep.transformation.api.action.metadata.AbstractMetadataBaseTest;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Test class for ExtractStringTokens action. Creates one consumer, and test it.
@@ -58,6 +64,13 @@ public class ExtractStringTokensTest extends AbstractMetadataBaseTest {
     @Test
     public void testName() throws Exception {
         assertEquals("extract_string_tokens", action.getName());
+    }
+
+    @Test
+    public void testParameters() throws Exception {
+        final List<Parameter> parameters = action.getParameters();
+        assertThat(parameters.size(), is(6));
+        assertThat(parameters.stream().filter(p -> StringUtils.equals(p.getName(), MODE_PARAMETER)).count(), is(1L));
     }
 
     @Test
@@ -118,7 +131,7 @@ public class ExtractStringTokensTest extends AbstractMetadataBaseTest {
     public void should_extract_tokens_single_column() {
         // given
         final DataSetRow row = getRow("lorem bacon", "Great #bigdata presentations at #TalendConnect", "01/01/2015");
-        parameters.put(ExtractStringTokens.MODE_PARAMETER, ExtractStringTokens.SINGLE_COLUMN_MODE);
+        parameters.put(MODE_PARAMETER, ExtractStringTokens.SINGLE_COLUMN_MODE);
         parameters.put(ExtractStringTokens.PARAMETER_SEPARATOR, ",");
 
         final Map<String, String> expectedValues = new HashMap<>();
@@ -138,7 +151,7 @@ public class ExtractStringTokensTest extends AbstractMetadataBaseTest {
     public void should_extract_tokens_single_column_alt_separator() {
         // given
         final DataSetRow row = getRow("lorem bacon", "Great #bigdata presentations at #TalendConnect", "01/01/2015");
-        parameters.put(ExtractStringTokens.MODE_PARAMETER, ExtractStringTokens.SINGLE_COLUMN_MODE);
+        parameters.put(MODE_PARAMETER, ExtractStringTokens.SINGLE_COLUMN_MODE);
         parameters.put(ExtractStringTokens.PARAMETER_SEPARATOR, "LOL");
 
         final Map<String, String> expectedValues = new HashMap<>();
@@ -183,7 +196,7 @@ public class ExtractStringTokensTest extends AbstractMetadataBaseTest {
         // given
         final DataSetRow row = getRow("lorem bacon", "smallet@talend.com and stef@yopmail.com", "01/01/2015");
         parameters.put(ExtractStringTokens.PARAMETER_REGEX, "(\\w+)@(\\w+[.]\\w+)");
-        parameters.put(ExtractStringTokens.MODE_PARAMETER, ExtractStringTokens.SINGLE_COLUMN_MODE);
+        parameters.put(MODE_PARAMETER, ExtractStringTokens.SINGLE_COLUMN_MODE);
         parameters.put(ExtractStringTokens.PARAMETER_SEPARATOR, ",");
 
         final Map<String, String> expectedValues = new HashMap<>();
