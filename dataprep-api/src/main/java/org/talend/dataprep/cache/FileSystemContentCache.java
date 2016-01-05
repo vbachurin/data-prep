@@ -215,7 +215,11 @@ public class FileSystemContentCache implements ContentCache {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     final String suffix = StringUtils.substringAfterLast(file.toFile().getName(), ".");
-                    // Ignore NFS files (HDFS + NFS? yes, but may happen in local mode).
+                    // Ignore "." files (hidden files like MacOS).
+                    if (suffix.startsWith(".")) {
+                        return FileVisitResult.CONTINUE;
+                    }
+                    // Ignore NFS files (may happen in local mode when NFS is used).
                     if (suffix.startsWith("nfs")) {
                         return FileVisitResult.CONTINUE;
                     }
