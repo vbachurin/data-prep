@@ -1,5 +1,7 @@
 package org.talend.dataprep.schema.csv;
 
+import org.talend.dataprep.util.ShannonEntropy;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,11 +10,10 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
- * Computes the entropy of the separator according to the specified number of lines used as the sample size. The score
- * is based upon <a href="https://en.wikipedia.org/wiki/Entropy_(information_theory)">Shanon entropy</a>.
- *
- * The lower the entropy, the better, i.e, the number of occurrence of the separator remains stable while processing the
- * lines, which means that the separator has a huge probability of being the wanted one.
+ * This class performs header and scoring analysis on a separator. It uses the <tt>CSVFastHeaderAndTypeAnalyzer</tt> to
+ * determine the header. It also associates a score to a separator using a heuristic based upon the
+ * <a href="https://en.wikipedia.org/wiki/Entropy_(information_theory)">Shanon entropy</a>. The entropy of the separator
+ * is computed according to the specified number of lines used as the sample size.
  */
 public class SeparatorAnalyzer implements Consumer<Separator> {
 
@@ -66,25 +67,25 @@ public class SeparatorAnalyzer implements Consumer<Separator> {
     }
 
     /**
-     * @see Consumer#accept(Object)
+     * Computes the entropy of a separator.
+     * 
+     * The lower the entropy, the better, i.e, the number of occurrence of the separator remains stable while processing
+     * the lines, which means that the separator has a huge probability of being the wanted one.
      */
-    @Override
-    public void accept(Separator separator) {
+    private double computeEntropy(Separator separator) {
         final Collection<Double> countFrequencies = countFrequency(separator);
-        separator.score = entropy(countFrequencies);
+        return ShannonEntropy.computeWithFrequencies(countFrequencies);
     }
 
     /**
+     * @see Consumer#accept(Object)
      *
-     * @param collection
-     * @return
+     *
      */
-    public double entropy(Collection<Double> collection) {
-        if (collection.isEmpty()) {
-            return Double.MAX_VALUE;
-        }
-        double entropy = collection.stream().mapToDouble(d -> d).map(s -> s * Math.log(s)).sum();
-        entropy = (-entropy * Math.log(2));
-        return entropy;
+    @Override
+    public void accept(Separator separator) {
+        separator.score = computeEntropy(separator);
     }
+
+
 }

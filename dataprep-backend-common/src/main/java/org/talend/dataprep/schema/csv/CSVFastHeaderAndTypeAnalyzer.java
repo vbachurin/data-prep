@@ -7,7 +7,8 @@ import org.talend.dataprep.api.type.Type;
 /**
  * This class performs header and type analysis on a sample of records (lines).
  * 
- * It detects whether the sample contains a header or not. It also performs baseline (very simple) type detection
+ * It detects whether the sample contains a header or not. If a header could not be detected one is generated. It also
+ * performs baseline (very simple) type detection based upon the sample of records.
  */
 public class CSVFastHeaderAndTypeAnalyzer {
 

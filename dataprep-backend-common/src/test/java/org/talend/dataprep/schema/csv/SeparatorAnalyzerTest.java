@@ -24,7 +24,6 @@ public class SeparatorAnalyzerTest {
 
     @Test
     public void shouldComputeEntropy() {
-
         // given
         Separator sep = new Separator('s');
         incrementCount(12, 1, sep);
@@ -47,7 +46,7 @@ public class SeparatorAnalyzerTest {
         entropy.accept(sep2);
 
         // then
-        assertEquals(1.0818020196976097, sep.score, 0.000000001);
+        assertEquals(2.2516291673878226, sep.score, 0.000000001);
         assertEquals(0, sep2.score, 0.0);
     }
 
