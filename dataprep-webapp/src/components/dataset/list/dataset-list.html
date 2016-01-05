@@ -151,11 +151,10 @@
     </talend-modal>
 
     <talend-modal fullscreen="false"
-                  close-button="true"
-                  before-close="datasetListCtrl.cancelQuery()"
+                  close-button="false"
                   state="datasetListCtrl.folderDestinationModal"
                   ng-if="datasetListCtrl.folderDestinationModal"
-                  forbid-close-on-background-click="true"
+                  disable-close-on-background-click="true"
                   disable-enter="true">
 
         <div class="folders-modal-content">
@@ -213,11 +212,13 @@
                     <span translate-once="DATASET_NAME"></span>
                     <input type="text"
                            ng-model="datasetListCtrl.cloneName"
+                           id="new-name-input-id"
                            can-be-blank="false"/>
                 </div>
                 <div class="modal-buttons">
                     <button type="button"
                             class="talend-modal-close btn-secondary modal-secondary-button"
+                            ng-disabled="datasetListCtrl.isMovingDs || datasetListCtrl.isCloningDs"
                             translate-once="CANCEL">
                     </button>
 

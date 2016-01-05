@@ -517,110 +517,172 @@ describe('Dataset list controller', function () {
         beforeEach(inject(function ($q, MessageService, FolderService, DatasetService, PreparationListService) {
             spyOn(MessageService, 'success').and.returnValue();
             spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
-            spyOn(DatasetService, 'clone').and.returnValue($q.when(true));
             spyOn(PreparationListService, 'refreshMetadataInfos').and.returnValue($q.when(true));
         }));
 
-        it('should call clone service', inject(function ($q, DatasetService, FolderService) {
-            //given
-            var folder = {id: 'foo'};
-            var cloneName = 'bar';
-            var ctrl = createController();
-            ctrl.datasetToClone = datasets[0];
-            ctrl.folderDestination = folder;
-            ctrl.cloneNameForm = {};
-            ctrl.cloneNameForm.$commitViewValue = function () {};
-            ctrl.cloneName = cloneName;
-            ctrl.cloneQueryCanceller = $q.defer();
+        describe('when success', function () {
+            beforeEach(inject(function ($q, DatasetService) {
+                spyOn(DatasetService, 'clone').and.returnValue($q.when(true));
+            }));
 
-            //when
-            ctrl.clone();
-            expect(ctrl.isCloningDs).toBeTruthy();
-            scope.$digest();
+            it('should call clone service', inject(function ($q, DatasetService, FolderService) {
+                //given
+                var folder = {id: 'foo'};
+                var cloneName = 'bar';
+                var ctrl = createController();
+                ctrl.datasetToClone = datasets[0];
+                ctrl.folderDestination = folder;
+                ctrl.cloneNameForm = {};
+                ctrl.cloneNameForm.$commitViewValue = function () {};
+                ctrl.cloneName = cloneName;
 
-            //then
-            expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder, cloneName, ctrl.cloneQueryCanceller.promise);
-            expect(FolderService.getContent).toHaveBeenCalled();
-            expect(ctrl.isCloningDs).toBeFalsy();
-        }));
+                //when
+                ctrl.clone();
+                expect(ctrl.isCloningDs).toBeTruthy();
+                scope.$digest();
 
-        it('should display message on success', inject(function ($q, MessageService, DatasetService, FolderService) {
-            //given
-            var folder = {id: 'foo'};
-            var ctrl = createController();
-            var cloneName = 'bar';
-            ctrl.datasetToClone = datasets[0];
-            ctrl.folderDestination = folder;
-            ctrl.cloneNameForm = {};
-            ctrl.cloneNameForm.$commitViewValue = function () {};
-            ctrl.cloneName = cloneName;
-            ctrl.cloneQueryCanceller = $q.defer();
+                //then
+                expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder, cloneName);
+                expect(FolderService.getContent).toHaveBeenCalled();
+                expect(ctrl.isCloningDs).toBeFalsy();
+            }));
 
-            //when
-            ctrl.clone();
-            scope.$digest();
+            it('should display message on success', inject(function ($q, MessageService, DatasetService, FolderService) {
+                //given
+                var folder = {id: 'foo'};
+                var ctrl = createController();
+                var cloneName = 'bar';
+                ctrl.datasetToClone = datasets[0];
+                ctrl.folderDestination = folder;
+                ctrl.cloneNameForm = {};
+                ctrl.cloneNameForm.$commitViewValue = function () {};
+                ctrl.cloneName = cloneName;
 
-            //then
-            expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder, cloneName, ctrl.cloneQueryCanceller.promise);
-            expect(MessageService.success).toHaveBeenCalledWith('COPY_SUCCESS_TITLE', 'COPY_SUCCESS');
-            expect(FolderService.getContent).toHaveBeenCalled();
-        }));
+                //when
+                ctrl.clone();
+                scope.$digest();
+
+                //then
+                expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder, cloneName);
+                expect(MessageService.success).toHaveBeenCalledWith('COPY_SUCCESS_TITLE', 'COPY_SUCCESS');
+                expect(FolderService.getContent).toHaveBeenCalled();
+            }));
+        });
+
+        describe('when failure due to server error', function () {
+            beforeEach(inject(function ($q, MessageService, FolderService, DatasetService) {
+                spyOn(DatasetService, 'clone').and.returnValue($q.reject());
+            }));
+
+            it('should faill on clone service call', inject(function ($q, DatasetService) {
+                //given
+                var folder = {id: 'foo'};
+                var cloneName = 'bar';
+                var ctrl = createController();
+                ctrl.datasetToClone = datasets[0];
+                ctrl.folderDestination = folder;
+                ctrl.cloneNameForm = {};
+                ctrl.cloneNameForm.$commitViewValue = function () {};
+                ctrl.cloneName = cloneName;
+
+                //when
+                ctrl.clone();
+                expect(ctrl.isCloningDs).toBeTruthy();
+                scope.$digest();
+
+                //then
+                expect(DatasetService.clone).toHaveBeenCalledWith(datasets[0], folder, cloneName);
+                expect(ctrl.isCloningDs).toBeFalsy();
+            }));
+        });
+
     });
 
     describe('move', function () {
 
-        beforeEach(inject(function ($q, MessageService,FolderService,DatasetService,PreparationListService) {
+        beforeEach(inject(function ($q, MessageService, FolderService, DatasetService, PreparationListService) {
             spyOn(MessageService, 'success').and.returnValue();
             spyOn(FolderService, 'getContent').and.returnValue($q.when(true));
-            spyOn(DatasetService,'move').and.returnValue($q.when(true));
             spyOn(PreparationListService, 'refreshMetadataInfos').and.returnValue($q.when(true));
         }));
 
-        it('should call move service', inject(function ($q, DatasetService,FolderService) {
-            //given
-            var folder = {id:'foo'};
-            var cloneName = 'bar';
-            var ctrl = createController();
-            ctrl.datasetToClone = datasets[0];
-            ctrl.folderDestination = folder;
-            ctrl.cloneNameForm = {};
-            ctrl.cloneNameForm.$commitViewValue = function(){};
-            ctrl.cloneName = cloneName;
-            ctrl.moveQueryCanceller = $q.defer();
+        describe('when success', function () {
+            beforeEach(inject(function ($q, MessageService, FolderService, DatasetService) {
+                spyOn(DatasetService, 'move').and.returnValue($q.when(true));
+            }));
 
-            //when
-            ctrl.move();
-            scope.$digest();
-            
-            //then
-            expect(DatasetService.move).toHaveBeenCalledWith(datasets[0], theCurrentFolder, folder, cloneName, ctrl.moveQueryCanceller.promise);
-            expect(FolderService.getContent).toHaveBeenCalled();
-        }));
+            it('should call move service', inject(function ($q, DatasetService, FolderService) {
+                //given
+                var folder = {id: 'foo'};
+                var cloneName = 'bar';
+                var ctrl = createController();
+                ctrl.datasetToClone = datasets[0];
+                ctrl.folderDestination = folder;
+                ctrl.cloneNameForm = {};
+                ctrl.cloneNameForm.$commitViewValue = function () {};
+                ctrl.cloneName = cloneName;
 
-        it('should display message on success', inject(function ($q, MessageService,DatasetService,FolderService) {
-            //given
-            var folder = {id:'foo'};
-            var ctrl = createController();
-            var cloneName = 'bar';
+                //when
+                ctrl.move();
+                expect(ctrl.isMovingDs).toBeTruthy();
+                scope.$digest();
 
-            ctrl.datasetToClone = datasets[0];
-            ctrl.folderDestination = folder;
-            ctrl.cloneNameForm = {};
-            ctrl.cloneNameForm.$commitViewValue = function(){};
-            ctrl.cloneName = cloneName;
-            ctrl.moveQueryCanceller = $q.defer();
+                //then
+                expect(DatasetService.move).toHaveBeenCalledWith(datasets[0], theCurrentFolder, folder, cloneName);
+                expect(FolderService.getContent).toHaveBeenCalled();
+                expect(ctrl.isMovingDs).toBeFalsy();
+            }));
 
-            //when
-            ctrl.move();
-            scope.$digest();
+            it('should display message on success', inject(function ($q, MessageService, DatasetService, FolderService) {
+                //given
+                var folder = {id: 'foo'};
+                var ctrl = createController();
+                var cloneName = 'bar';
 
-            //then
-            expect(DatasetService.move).toHaveBeenCalledWith(datasets[0], theCurrentFolder, folder, cloneName, ctrl.moveQueryCanceller.promise);
-            expect(MessageService.success).toHaveBeenCalledWith('MOVE_SUCCESS_TITLE', 'MOVE_SUCCESS');
-            expect(FolderService.getContent).toHaveBeenCalled();
-        }));
+                ctrl.datasetToClone = datasets[0];
+                ctrl.folderDestination = folder;
+                ctrl.cloneNameForm = {};
+                ctrl.cloneNameForm.$commitViewValue = function () {};
+                ctrl.cloneName = cloneName;
+
+                //when
+                ctrl.move();
+                scope.$digest();
+
+                //then
+                expect(DatasetService.move).toHaveBeenCalledWith(datasets[0], theCurrentFolder, folder, cloneName);
+                expect(MessageService.success).toHaveBeenCalledWith('MOVE_SUCCESS_TITLE', 'MOVE_SUCCESS');
+                expect(FolderService.getContent).toHaveBeenCalled();
+            }));
+        });
+
+        describe('when failure due to server error', function () {
+            beforeEach(inject(function ($q, MessageService, FolderService, DatasetService) {
+                spyOn(DatasetService, 'move').and.returnValue($q.reject());
+            }));
+
+            it('should fail on move service call', inject(function ($q, DatasetService) {
+                //given
+                var folder = {id: 'foo'};
+                var cloneName = 'bar';
+                var ctrl = createController();
+                ctrl.datasetToClone = datasets[0];
+                ctrl.folderDestination = folder;
+                ctrl.cloneNameForm = {};
+                ctrl.cloneNameForm.$commitViewValue = function () {};
+                ctrl.cloneName = cloneName;
+
+                //when
+                ctrl.move();
+                expect(ctrl.isMovingDs).toBeTruthy();
+                scope.$digest();
+
+                //then
+                expect(DatasetService.move).toHaveBeenCalledWith(datasets[0], theCurrentFolder, folder, cloneName);
+                expect(ctrl.isMovingDs).toBeFalsy();
+            }));
+        });
     });
-
 
     describe('search folders', function () {
 
@@ -830,7 +892,7 @@ describe('Dataset list controller', function () {
             var folder = {id: 'toto'};
 
             //when
-            ctrl.removeFolder (folder);
+            ctrl.removeFolder(folder);
             scope.$digest();
             //then
             expect(FolderService.remove).toHaveBeenCalledWith(folder.id);

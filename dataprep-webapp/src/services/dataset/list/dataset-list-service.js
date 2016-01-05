@@ -91,13 +91,13 @@
          * @name clone
          * @methodOf data-prep.services.dataset.service:DatasetListService
          * @param {object} dataset The dataset to clone
-         * @param {object} the folder to clone the dataset
-         * @param {string) cloneName the name for the cloned dataset
+         * @param {object} folder to clone the dataset
+         * @param {string} cloneName the name for the cloned dataset
          * @description Clone a dataset from backend and refresh its internal list
          * @returns {promise} The pending GET promise
          */
-        function clone(dataset, folder, cloneName, abortPromise) {
-            var promise = DatasetRestService.clone(dataset, folder, cloneName, abortPromise);
+        function clone(dataset, folder, cloneName) {
+            var promise = DatasetRestService.clone(dataset, folder, cloneName);
 
             promise.then(function (){
                 refreshDatasets();
@@ -110,15 +110,15 @@
          * @ngdoc method
          * @name move
          * @methodOf data-prep.services.dataset.service:DatasetListService
-         * @param {dataset} dataset the dataset infos to move
-         * @param {folder) folder the original folder of the dataset
-         * @param {folder) newFolder the folder to move the dataset
-         * @param {string) newName the name for the moved dataset (optional)
+         * @param {Object} dataset the dataset infos to move
+         * @param {Object} folder the original folder of the dataset
+         * @param {Object} newFolder the folder to move the dataset
+         * @param {String} newName the name for the moved dataset (optional)
          * @description Move a dataset from backend and refresh its internal list
          * @returns {promise} The pending PUT promise
          */
-        function move(dataset, folder, newFolder, newName, abortPromise) {
-            var promise = DatasetRestService.move(dataset, folder, newFolder, newName, abortPromise);
+        function move(dataset, folder, newFolder, newName) {
+            var promise = DatasetRestService.move(dataset, folder, newFolder, newName);
 
             promise.then(function (){
                 refreshDatasets();
