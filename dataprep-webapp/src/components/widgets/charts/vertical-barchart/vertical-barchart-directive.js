@@ -194,23 +194,25 @@
                             return i * 10;
                         })
                         .attr('height', function (d) {
-                            return height - yScale(getValue(d));
+                            var realHeight = height - yScale(getValue(d));
+                            return realHeight > 0 && realHeight < 1 ? 3 : realHeight;
                         })
                         .attr('y', function (d) {
-                            return yScale(getValue(d));
+                            var realYPosition = yScale(getValue(d));
+                            return realYPosition > yScale(0) - 1 ? yScale(0) - 3 : realYPosition;
                         });
 
                     //update
-                    bars.transition()
-                        .ease('exp')
-                        .delay(function (d, i) {
+                    bars.transition().ease('exp').delay(function (d, i) {
                             return i * 30;
                         })
                         .attr('height', function (d) {
-                            return height - yScale(getValue(d));
+                            var realHeight = height - yScale(getValue(d));
+                            return realHeight > 0 && realHeight < 1 ? 3 : realHeight;
                         })
                         .attr('y', function (d) {
-                            return yScale(getValue(d));
+                            var realYPosition = yScale(getValue(d));
+                            return realYPosition > yScale(0) - 1 ? yScale(0) - 3 : realYPosition;
                         });
                 }
 

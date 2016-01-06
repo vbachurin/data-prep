@@ -2,6 +2,14 @@ describe('horizontalBarchart directive', function () {
     'use strict';
 
     var createElement, element, scope, statsData, filteredStatsData;
+    var flushAllD3Transitions = function () {
+        var now = Date.now;
+        Date.now = function () {
+            return Infinity;
+        };
+        d3.timer.flush();
+        Date.now = now;
+    };
 
     beforeEach(module('talend.widget'));
 
@@ -161,6 +169,24 @@ describe('horizontalBarchart directive', function () {
 
             //then
             expect(element.find('.secondaryBar > rect').length).toBe(statsData.length);
+        });
+
+
+        it('should render 3px width bar to make the tiny bar visible', function () {
+            //given
+            createElement();
+
+            //when
+            scope.primaryData = [
+                {'data': 'Johnson', 'occurrences': 90000000},
+                {'data': 'Roosevelt', 'occurrences': 1}
+            ];
+            scope.$digest();
+            jasmine.clock().tick(100);
+            flushAllD3Transitions();
+
+            //then
+            expect(element.find('.primaryBar > rect').eq(1).attr('width')).toBe('3');
         });
     });
 

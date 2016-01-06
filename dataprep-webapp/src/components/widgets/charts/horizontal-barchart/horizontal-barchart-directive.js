@@ -192,7 +192,8 @@
                             return i * 30;
                         })
                         .attr('width', function (d) {
-                            return xScale(getValue(d));
+                            var realWidth = xScale(getValue(d));
+                            return realWidth < 1 ? 3 : realWidth;
                         });
 
                     //update
@@ -202,7 +203,8 @@
                             return i * 30;
                         })
                         .attr('width', function (d) {
-                            return xScale(getValue(d));
+                            var realWidth = xScale(getValue(d));
+                            return realWidth < 1 ? 3 : realWidth;
                         });
                 }
 
