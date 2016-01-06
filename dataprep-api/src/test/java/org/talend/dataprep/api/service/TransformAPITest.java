@@ -207,13 +207,6 @@ public class TransformAPITest extends ApiServiceTestBase {
                 .get("/api/preparations/{id}/content?version=head", preparationId)
                 .asString();
 
-        /*
-         * // Vincent : why does this code not work (metadata is null...) ??? DataSet dataSet; final ObjectMapper mapper
-         * = builder.build(); try (JsonParser parser =
-         * mapper.getFactory().createParser(this.getClass().getResourceAsStream("/temp.json"))) { dataSet =
-         * mapper.readerFor(DataSet.class).readValue(parser); assertNotNull(dataSet.getMetadata()); }
-         */
-
         final JsonNode rootNode = builder.build().readTree(datasetContent);
         final DataSetMetadata metadata = builder.build().readerFor(DataSetMetadata.class).readValue(rootNode.path("metadata"));
 
