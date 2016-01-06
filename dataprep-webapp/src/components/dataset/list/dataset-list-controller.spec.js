@@ -491,11 +491,11 @@ describe('Dataset list controller', function () {
             expect(DatasetService.update).not.toHaveBeenCalledWith(dataset);
         }));
 
-        it('should not call service to rename dataset with an already existed name', inject(function ($q, DatasetService, MessageService) {
-
+        it('should not call service to rename dataset with an already existing name', inject(function ($q, DatasetService, MessageService) {
+            //given
             spyOn(DatasetService, 'update').and.returnValue($q.when(true));
+            spyOn(DatasetService, 'getDatasetByName').and.returnValue({id: 'ab45f893d8e923', name: 'Us states'});
             var ctrl = createController();
-            ctrl.currentFolderContent.datasets = [{id: 'ab45f893d8e923', name: 'Us states'}];
             var name = 'foo';
             var dataset = {name: name};
 

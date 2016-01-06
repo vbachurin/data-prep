@@ -218,11 +218,7 @@
                     return;
                 }
 
-                var nameAlreadyUsed = _.find(state.folder.currentFolderContent.datasets, function (dataset) {
-                    return cleanName === dataset.name.toLowerCase();
-                });
-
-                if (nameAlreadyUsed) {
+                if (DatasetService.getDatasetByName(cleanName)) {
                     MessageService.error('DATASET_NAME_ALREADY_USED_TITLE', 'DATASET_NAME_ALREADY_USED');
                     return;
                 }

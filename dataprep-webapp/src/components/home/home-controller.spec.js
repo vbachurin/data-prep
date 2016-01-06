@@ -223,7 +223,7 @@ describe('Home controller', function () {
             it('should display name modal on step 1 when name already exists', inject(function ($q, DatasetService) {
                 //given
                 expect(ctrl.datasetNameModal).toBeFalsy();
-                spyOn(DatasetService, 'getDatasetByName').and.returnValue($q.when(dataset));
+                spyOn(DatasetService, 'getDatasetByName').and.returnValue(dataset);
 
                 //when
                 ctrl.uploadDatasetFile();
