@@ -934,6 +934,8 @@
          * @description Processes the statistics aggregation for visualization
          */
         function processAggregation(column, aggregationName) {
+            resetCharts();
+
             if (!aggregationName) {
                 removeSavedColumnAggregation();
                 return processData();
@@ -1039,7 +1041,7 @@
          * @description responsible for updating the filtered data according to the selected column type
          */
         function updateFilteredStatistics() {
-            reset(false, false, false);
+            resetWorkers();
 
             var columnAggregation = getSavedColumnAggregation();
             var aggregationName = columnAggregation && columnAggregation.aggregation;
@@ -1081,7 +1083,8 @@
          * @description update aggregation for a selected column
          */
         function updateStatistics() {
-            reset(true, true, false);
+            resetStatistics();
+            resetWorkers();
 
             var columnAggregation = getSavedColumnAggregation();
             var aggregatedColumn = columnAggregation && _.findWhere(getAggregationColumns(), {id: columnAggregation.aggregationColumnId});
@@ -1103,21 +1106,49 @@
          */
         function reset(charts, statistics, cache) {
             if (charts) {
-                service.boxPlot = null;
-                service.rangeLimits = null;
-                service.stateDistribution = null;
-                StateService.setStatisticsHistogram(null);
-                StateService.setStatisticsHistogramActiveLimits(null);
+               resetCharts();
             }
 
             if (statistics) {
-                service.statistics = null;
+                resetStatistics();
             }
 
             if (cache) {
-                StatisticsRestService.resetCache();
+                resetCache();
             }
 
+            resetWorkers();
+        }
+
+        /**
+         * Reset the charts
+         */
+        function resetCharts() {
+            service.boxPlot = null;
+            service.rangeLimits = null;
+            service.stateDistribution = null;
+            StateService.setStatisticsHistogram(null);
+            StateService.setStatisticsHistogramActiveLimits(null);
+        }
+
+        /**
+         * Reset the statistics
+         */
+        function resetStatistics() {
+            service.statistics = null;
+        }
+
+        /**
+         * Reset the statistics cache
+         */
+        function resetCache() {
+            StatisticsRestService.resetCache();
+        }
+
+        /**
+         * Reset web workers
+         */
+        function resetWorkers() {
             if (dateFilteredWorkerWrapper) {
                 dateFilteredWorkerWrapper.terminate();
                 dateFilteredWorkerWrapper = null;
