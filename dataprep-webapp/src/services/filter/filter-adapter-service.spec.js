@@ -45,7 +45,7 @@ describe('Filter Adapter Service', function () {
             expect(filter.removeFilterFn).toBe(removeFilterFn);
         }));
 
-        describe('get value', function() {
+        describe('get value', function () {
             it('should return value on CONTAINS filter', inject(function (FilterAdapterService) {
                 //given
                 var type = 'contains';
@@ -132,7 +132,7 @@ describe('Filter Adapter Service', function () {
             }));
         });
 
-        describe('to tree', function() {
+        describe('to tree', function () {
             it('should return tree corresponding to CONTAINS filter', inject(function (FilterAdapterService) {
                 //given
                 var type = 'contains';
@@ -301,15 +301,17 @@ describe('Filter Adapter Service', function () {
             var tree = FilterAdapterService.toTree([filter]);
 
             //then
-            expect(tree).toEqual({filter: {
-                range: {
-                    field: '0001',
-                    start: 1000,
-                    end: 2000,
-                    type: 'integer',
-                    label: '[1,000 .. 2,000['
+            expect(tree).toEqual({
+                filter: {
+                    range: {
+                        field: '0001',
+                        start: 1000,
+                        end: 2000,
+                        type: 'integer',
+                        label: '[1,000 .. 2,000['
+                    }
                 }
-            }});
+            });
         }));
 
         it('should create multiple filters tree', inject(function (FilterAdapterService) {
@@ -321,44 +323,66 @@ describe('Filter Adapter Service', function () {
             };
             var containsArgs = {phrase: 'Jimmy'};
             var exactArgs = {phrase: 'Toto'};
+            var dateRangeOffset = new Date(-631152000000).getTimezoneOffset() * 60 * 1000;
+            var dateRangeArgs = {
+                interval: [-631152000000 + dateRangeOffset, -315619200000 + dateRangeOffset],
+                label: '[1950, 1960[',
+                type: 'date'
+            };
 
             var rangeFilter = FilterAdapterService.createFilter('inside_range', '0001', null, null, rangeArgs, null, null);
             var containsFilter = FilterAdapterService.createFilter('contains', '0002', null, null, containsArgs, null, null);
             var exactFilter = FilterAdapterService.createFilter('exact', '0003', null, null, exactArgs, null, null);
+            var dateRangeFilter = FilterAdapterService.createFilter('inside_range', '0004', null, null, dateRangeArgs, null, null);
 
             //when
-            var tree = FilterAdapterService.toTree([rangeFilter, containsFilter, exactFilter]);
+            var tree = FilterAdapterService.toTree([rangeFilter, containsFilter, exactFilter, dateRangeFilter]);
 
             //then
-            expect(tree).toEqual({filter: {
-                and: [
-                    {
-                        and: [
-                            {
-                                range: {
-                                    field: '0001',
-                                    start: 1000,
-                                    end: 2000,
-                                    type: 'integer',
-                                    label: '[1,000 .. 2,000['
+            expect(tree).toEqual({
+                filter: {
+                    and: [
+                        {
+                            and: [
+                                {
+                                    and: [
+                                        {
+                                            range: {
+                                                field: '0001',
+                                                start: 1000,
+                                                end: 2000,
+                                                type: 'integer',
+                                                label: '[1,000 .. 2,000['
+                                            }
+                                        },
+                                        {
+                                            contains: {
+                                                field: '0002',
+                                                value: 'Jimmy'
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    eq: {
+                                        field: '0003',
+                                        value: 'Toto'
+                                    }
                                 }
-                            },
-                            {
-                                contains: {
-                                    field: '0002',
-                                    value: 'Jimmy'
-                                }
+                            ]
+                        },
+                        {
+                            range: {
+                                field: '0004',
+                                start: -631152000000, //timestamp without timezone offset to have UTC date
+                                end: -315619200000,  //timestamp without timezone offset to have UTC date
+                                type: 'date',
+                                label: '[1950, 1960['
                             }
-                        ]
-                    },
-                    {
-                        eq: {
-                            field: '0003',
-                            value: 'Toto'
                         }
-                    }
-                ]
-            }});
+                    ]
+                }
+            });
         }));
     });
 
@@ -417,7 +441,7 @@ describe('Filter Adapter Service', function () {
             expect(singleFilter.args).toEqual({phrase: 'Jimmy'});
         }));
 
-        it('should create single INSIDE_RANGE filter from leaf', inject(function (FilterAdapterService) {
+        it('should create single number INSIDE_RANGE filter from leaf', inject(function (FilterAdapterService) {
             //given
             var tree = {
                 range: {
@@ -441,6 +465,36 @@ describe('Filter Adapter Service', function () {
             expect(singleFilter.colName).toBe('lastname');
             expect(singleFilter.editable).toBe(false);
             expect(singleFilter.args).toEqual({interval: [1000, 2000], label: '[1,000 .. 2,000[', type: 'integer'});
+        }));
+
+        it('should create single date INSIDE_RANGE filter from leaf', inject(function (FilterAdapterService) {
+            //given
+            var tree = {
+                range: {
+                    field: '0001',
+                    start: -631152000000, // UTC 1950-01-01
+                    end: -315619200000, // UTC 1960-01-01
+                    type: 'date',
+                    label: '[1950, 1960['
+                }
+            };
+
+            //when
+            var filters = FilterAdapterService.fromTree(tree);
+
+            //then
+            expect(filters.length).toBe(1);
+
+            var singleFilter = filters[0];
+            expect(singleFilter.type).toBe('inside_range');
+            expect(singleFilter.colId).toBe('0001');
+            expect(singleFilter.colName).toBe('lastname');
+            expect(singleFilter.editable).toBe(false);
+            expect(singleFilter.args).toEqual({
+                interval: [new Date(1950, 0, 1).getTime(), new Date(1960, 0, 1).getTime()], //timestamps are in the client timezone
+                label: '[1950, 1960[',
+                type: 'date'
+            });
         }));
 
         it('should create single INVALID_RECORDS filter from leaf', inject(function (FilterAdapterService) {

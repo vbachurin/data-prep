@@ -122,11 +122,17 @@
                         }
                     };
                 case INSIDE_RANGE:
+                    //on date we shift timestamp to fit UTC timezone
+                    var offset = 0;
+                    if(this.args.type === 'date') {
+                        var minDate = new Date(this.args.interval[0]);
+                        offset = minDate.getTimezoneOffset() * 60 * 1000;
+                    }
                     return {
                         range: {
                             field: this.colId,
-                            start: this.args.interval[0],
-                            end: this.args.interval[1],
+                            start: this.args.interval[0] - offset,
+                            end: this.args.interval[1] - offset,
                             type: this.args.type,
                             label: this.args.label
                         }
@@ -234,8 +240,16 @@
             else if('range' in leaf) {
                 type = INSIDE_RANGE;
                 condition = leaf.range;
+
+                //on date we shift timestamp to fit UTC timezone
+                var offset = 0;
+                if(condition.type === 'date') {
+                    var minDate = new Date(condition.start);
+                    offset = minDate.getTimezoneOffset() * 60 * 1000;
+                }
+
                 args = {
-                    interval: [condition.start, condition.end],
+                    interval: [condition.start + offset, condition.end + offset],
                     label: condition.label,
                     type: condition.type
                 };
