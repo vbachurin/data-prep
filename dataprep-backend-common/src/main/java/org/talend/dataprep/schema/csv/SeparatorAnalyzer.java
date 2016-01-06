@@ -1,13 +1,11 @@
 package org.talend.dataprep.schema.csv;
 
-import org.talend.dataprep.util.ShannonEntropy;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.util.ShannonEntropy;
 
 /**
  * This class performs header and scoring analysis on a separator. It uses the <tt>CSVFastHeaderAndTypeAnalyzer</tt> to
@@ -47,18 +45,18 @@ public class SeparatorAnalyzer implements Consumer<Separator> {
     private Collection<Double> countFrequency(Separator separator) {
         HashMap<Long, Long> countOccurrences = new HashMap<>();
 
-        if (separator.countPerLine.isEmpty()) {
-            separator.score = Double.MAX_VALUE;
+        if (separator.getCountPerLine().isEmpty()) {
+            separator.setScore(Double.MAX_VALUE);
             return Collections.emptyList();
         }
         // count the number of occurrence of each count
-        for (Long separatorCount : separator.countPerLine.values()) {
+        for (Long separatorCount : separator.getCountPerLine().values()) {
             // increment the number of occurrence of the separatorCount
             Long separatorCountOccurrence = countOccurrences.get(separatorCount);
             separatorCountOccurrence = separatorCountOccurrence == null ? 1L : separatorCountOccurrence + 1;
             countOccurrences.put(separatorCount, separatorCountOccurrence);
         }
-        int zeroCount = numberOfLines - separator.countPerLine.size();
+        int zeroCount = numberOfLines - separator.getCountPerLine().size();
         if (zeroCount > 0) {
             countOccurrences.put(0L, (long) zeroCount);
         }
@@ -84,8 +82,15 @@ public class SeparatorAnalyzer implements Consumer<Separator> {
      */
     @Override
     public void accept(Separator separator) {
-        separator.score = computeEntropy(separator);
+        separator.setScore(computeEntropy(separator));
+        CSVFastHeaderAndTypeAnalyzer csvFastHeaderAndTypeAnalyzer = new CSVFastHeaderAndTypeAnalyzer(sampleLines, separator);
+        csvFastHeaderAndTypeAnalyzer.analyze();
+        separator.setFirstLineAHeader(true);
+        separator.setConsistent(true);
+        LinkedHashMap<String, Type> header = new LinkedHashMap<>();
+        for (String s : csvFastHeaderAndTypeAnalyzer.getHeaders().keySet()) {
+            header.put(s, Type.STRING);
+        }
+        separator.setHeaders(header);
     }
-
-
 }

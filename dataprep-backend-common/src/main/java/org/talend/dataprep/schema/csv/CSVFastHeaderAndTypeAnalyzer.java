@@ -2,6 +2,7 @@ package org.talend.dataprep.schema.csv;
 
 import java.util.*;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.talend.dataprep.api.type.Type;
 
 /**
@@ -67,7 +68,7 @@ public class CSVFastHeaderAndTypeAnalyzer {
     /**
      * A boolean specifying whether or not, according to the separator, the first line is a header or not.
      */
-    private boolean firstLineAHeader = false;
+    private boolean firstLineAHeader = true;
 
     private boolean consistent = true;
 
@@ -82,6 +83,9 @@ public class CSVFastHeaderAndTypeAnalyzer {
      * @param separator the specified character or string used as a separator
      */
     public CSVFastHeaderAndTypeAnalyzer(List<String> sampleLines, Separator separator) {
+        if (sampleLines == null || sampleLines.isEmpty()){
+            throw  new IllegalArgumentException("The sample used for analysis should neither be null nor empty!");
+        }
         this.sampleLines = sampleLines;
         this.separator = separator;
         sampleTypes = setFieldTypes();
@@ -252,20 +256,24 @@ public class CSVFastHeaderAndTypeAnalyzer {
         if (!analysisPerformed) {
             // Perform Header analysis if the sample has at least two lines
             if (sampleLines.size() > 1) {
-                // check consistency: the first line must contains the separator
-                if (!separator.countPerLine.containsKey(1)) {
-                    consistent = false;
+                // check consistency: the first line must contains the separator or no line should contains it
+                if (!separator.getCountPerLine().containsKey(1) && !separator.getCountPerLine().isEmpty()) {
+                    //consistent = false;
+                    firstLineAHeader = false;
                 } else {
                     final List<Type> firstRecordTypes = firstRecordTyping();
                     final List<Type> columnTypingWithoutFirstRecord = columnTypingWithoutFirstRecord();
                     // if the first line is all text and all fields are present and following lines have some columns
                     // which are at least 50% not text
                     // mark the separator as having a header
-                    if (allStringTypes(firstRecordTypes) && !sampleTypes[0].contains(ABSENT)
-                            && !Arrays.equals(firstRecordTypes.toArray(), columnTypingWithoutFirstRecord.toArray())) {
-                        firstLineAHeader = true;
+                    if ((firstRecordTypes.contains(Type.INTEGER) || firstRecordTypes.contains(Type.DOUBLE) || firstRecordTypes.contains(Type.BOOLEAN))
+                            && !sampleTypes[0].contains(ABSENT)){
+                        firstLineAHeader = false;
                     }
                 }
+            }
+            else{
+                firstLineAHeader = false;
             }
             // type analysis: if there is a header the first line is excluded from type analysis, otherwise it is
             // included

@@ -59,7 +59,7 @@ public class CSVFastHeaderAndTypeAnalyzerTest {
     }
 
     @Test
-    public void should_detect_type_without_first_line_header_when_sample_has_ten_lines_without_header() {
+    public void should_detect_type_with_first_line_header_when_sample_has_ten_text_lines_without_header() {
         // given
         String firstRecord = "Toto; Hello;";
         String record2 = "Toto; Hello;";
@@ -74,14 +74,18 @@ public class CSVFastHeaderAndTypeAnalyzerTest {
         List<String> list = Arrays.asList(firstRecord, record2, record3, record4, record5, record6, record7, record8, record9,
                 record10);
         Separator separator = new Separator(';');
+        for (int i = 0; i < 10; i++) {
+            separator.incrementCount(i);
+        }
 
         // when
         CSVFastHeaderAndTypeAnalyzer analysis = new CSVFastHeaderAndTypeAnalyzer(list, separator);
 
         // then
-        List<Type> expectedTypes = Arrays.asList(Type.STRING, Type.STRING, Type.INTEGER, Type.STRING);
+        // List<Type> expectedTypes = Arrays.asList(Type.STRING, Type.STRING, Type.INTEGER, Type.STRING);
+        List<Type> expectedTypes = Arrays.asList(Type.STRING, Type.STRING);
         Assert.assertArrayEquals(expectedTypes.toArray(), analysis.getHeaders().values().toArray());
-        Assert.assertFalse(analysis.isFirstLineAHeader());
+        Assert.assertTrue(analysis.isFirstLineAHeader());
     }
 
     @Test

@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -53,7 +52,7 @@ public class CSVFormatGuesser implements FormatGuesser {
     /**
      * The maximum number of lines stored from the CSV stream.
      */
-    private int SMALL_SAMPLE = 10;
+    private int SMALL_SAMPLE_LIMIT = 10;
 
     /** Detectors used to check the encoding. */
     private List<WrongEncodingDetector> detectors = Arrays.asList( //
@@ -70,10 +69,11 @@ public class CSVFormatGuesser implements FormatGuesser {
     private UnsupportedFormatGuess fallbackGuess;
 
     @Autowired
-    private Jackson2ObjectMapperBuilder builder;
+    private CSVFormatUtils csvFormatUtils;
 
     /** A list of supported separators for a CSV content */
     private Set<Character> validSeparators = new HashSet<Character>() {
+
         {
             add(' ');
             add('\t');
@@ -98,9 +98,7 @@ public class CSVFormatGuesser implements FormatGuesser {
             return new FormatGuesser.Result(fallbackGuess, "UTF-8", Collections.emptyMap());
         }
 
-        final char separator = sep.getSeparator();
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put(CSVFormatGuess.SEPARATOR_PARAMETER, String.valueOf(separator));
+        Map<String, String> parameters = csvFormatUtils.compileSeparatorProperties(sep);
         return new FormatGuesser.Result(csvFormatGuess, encoding, parameters);
     }
 
@@ -128,7 +126,7 @@ public class CSVFormatGuesser implements FormatGuesser {
                     }
                     if (!inQuote) {
                         lineCount++;
-                        if( lineCount < SMALL_SAMPLE){
+                        if (lineCount < SMALL_SAMPLE_LIMIT) {
                             sampleLines.add(s);
                         }
                     }
@@ -202,23 +200,19 @@ public class CSVFormatGuesser implements FormatGuesser {
      * @param lineCount number of lines in the CSV.
      * @return the separator to use to read the CSV or null if none found.
      */
-    private Separator chooseSeparator(List<Separator> separators, int lineCount, List<String> sampleLines ) {
+    private Separator chooseSeparator(List<Separator> separators, int lineCount, List<String> sampleLines) {
 
         // easy case where there's no choice
         if (separators.isEmpty()) {
             if (lineCount > 0) {
                 // There are some lines processed, but no separator (a one-column content?), so pick a default
                 // separator.
-                return new Separator(',');
+                Separator result = new Separator(',');
+                separators.add(result);
+            } else {
+                return null;
             }
-            return null;
         }
-
-        // if there's only one separator, let's use it
-        if (separators.size() == 1) {
-            return separators.get(0);
-        }
-
 
         // filter separators
         final List<Separator> filteredSeparators = separators.stream() //
@@ -229,9 +223,15 @@ public class CSVFormatGuesser implements FormatGuesser {
         SeparatorAnalyzer separatorAnalyzer = new SeparatorAnalyzer(lineCount, sampleLines);
         filteredSeparators.forEach(separatorAnalyzer::accept); // compute each separator score
 
+        // if there's only one separator, let's use it
+        if (separators.size() == 1) {
+            return separators.get(0);
+        }
+
         // sort separator and return the first
         return filteredSeparators.stream() //
-                .sorted((s0, s1) -> Double.compare(s0.score, s1.score)) // sort by entropy (the lowest the better)
+                .sorted((s0, s1) -> Double.compare(s0.getScore(), s1.getScore())) // sort by score (the lower the
+                                                                                  // better)
                 .findFirst() //
                 .get();
     }

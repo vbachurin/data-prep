@@ -26,6 +26,9 @@ public class StatisticsAnalysisTest extends DataSetBaseTest {
     SchemaAnalysis schemaAnalysis;
 
     @Autowired
+    ContentAnalysis contentAnalysis;
+
+    @Autowired
     StatisticsAnalysis statisticsAnalysis;
 
     /** Random to generate random dataset id. */
@@ -66,6 +69,7 @@ public class StatisticsAnalysisTest extends DataSetBaseTest {
         dataSetMetadataRepository.add(metadata);
         contentStore.storeAsRaw(metadata, content);
         formatAnalysis.analyze(id);
+        contentAnalysis.analyze(id);
         schemaAnalysis.analyze(id);
         statisticsAnalysis.analyze(id);
 

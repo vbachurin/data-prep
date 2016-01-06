@@ -1,6 +1,8 @@
 package org.talend.dataprep.schema.csv;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.talend.dataprep.api.type.Type;
@@ -11,16 +13,16 @@ import org.talend.dataprep.api.type.Type;
 public class Separator {
 
     /** The value char. */
-    protected char value;
+    private char value;
 
     /** Total count of separators. */
-    protected int totalCount = 0;
+    private int totalCount = 0;
 
     /** Current line count. */
-    protected Map<Integer, Long> countPerLine = new HashMap<>();
+    private Map<Integer, Long> countPerLine = new HashMap<>();
 
     /** This separator score. */
-    protected double score = Double.MAX_VALUE;
+    private double score = Double.MAX_VALUE;
 
     /**
      * is first line identified as a header
@@ -35,7 +37,7 @@ public class Separator {
     /**
      * A map associating to each column of the header a type.
      */
-    private Map<String, Type> headers = null;
+    private Map<String, Type> headers = Collections.emptyMap();
 
     public Map<String, Type> getHeaders() {
         return headers;
@@ -59,6 +61,38 @@ public class Separator {
 
     public void setConsistent(boolean consistent) {
         this.consistent = consistent;
+    }
+
+    public char getValue() {
+        return value;
+    }
+
+    public void setValue(char value) {
+        this.value = value;
+    }
+
+    public int getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
+    }
+
+    public Map<Integer, Long> getCountPerLine() {
+        return countPerLine;
+    }
+
+    public void setCountPerLine(Map<Integer, Long> countPerLine) {
+        this.countPerLine = countPerLine;
+    }
+
+    public double getScore() {
+        return score;
+    }
+
+    public void setScore(double score) {
+        this.score = score;
     }
 
     /**
