@@ -243,7 +243,7 @@
                 }
 
                 function drawHorizontalGrid() {
-                    var minSizeBetweenGrid = 18;
+                    var minSizeBetweenGrid = 20;
                     var ticksThreshold = Math.ceil(height / minSizeBetweenGrid);
                     var ticksNbre = yScale.domain()[1] > ticksThreshold ? ticksThreshold : yScale.domain()[1];
 

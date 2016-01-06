@@ -108,12 +108,17 @@ describe('horizontalBarchart directive', function () {
             jasmine.clock().tick(100);
 
             //then
-            expect(element.find('.grid text').length).toBe(5);
+            expect(element.find('.grid text').length).toBe(10);
             expect(element.find('.grid text').eq(0).text()).toBe('0');
-            expect(element.find('.grid text').eq(1).text()).toBe('2');
-            expect(element.find('.grid text').eq(2).text()).toBe('4');
-            expect(element.find('.grid text').eq(3).text()).toBe('6');
-            expect(element.find('.grid text').eq(4).text()).toBe('8');
+            expect(element.find('.grid text').eq(1).text()).toBe('1');
+            expect(element.find('.grid text').eq(2).text()).toBe('2');
+            expect(element.find('.grid text').eq(3).text()).toBe('3');
+            expect(element.find('.grid text').eq(4).text()).toBe('4');
+            expect(element.find('.grid text').eq(5).text()).toBe('5');
+            expect(element.find('.grid text').eq(6).text()).toBe('6');
+            expect(element.find('.grid text').eq(7).text()).toBe('7');
+            expect(element.find('.grid text').eq(8).text()).toBe('8');
+            expect(element.find('.grid text').eq(9).text()).toBe('9');
         });
 
         it('should render primary data after a 100ms delay', function () {
