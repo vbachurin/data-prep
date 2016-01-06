@@ -194,23 +194,28 @@ describe('verticalBarchart directive', function () {
             expect(element.find('.secondaryBar > rect').length).toBe(statsData.length);
         });
 
-        it('should render 3px height bar to make the tiny bar visible', function () {
+        it('should render tiny bars with a 3px height bar', function () {
             //given
             createElement();
 
             //when
             scope.primaryData = [
                 {'data': {min: 0, max: 5}, 'occurrences': 9000000},
-                {'data': {min: 5, max: 10}, 'occurrences': 1}
+                {'data': {min: 5, max: 10}, 'occurrences': 0},
+                {'data': {min: 10, max: 15}, 'occurrences': 1}
             ];
             scope.$digest();
             jasmine.clock().tick(100);
             flushAllD3Transitions();
 
             //then
-            expect(element.find('.primaryBar > rect').eq(1).attr('height')).toBe('3');
             //400: passed chart height, 20: top margin to which the svg was translated, 3: the default tiny bar value
-            expect(element.find('.primaryBar > rect').eq(1).attr('y')).toBe('' + (400 - 20 - 3));
+            expect(element.find('.primaryBar > rect').eq(0).attr('height')).toBe('380'); // 400 - 20px margin
+            expect(element.find('.primaryBar > rect').eq(1).attr('height')).toBe('0');
+            expect(element.find('.primaryBar > rect').eq(2).attr('height')).toBe('3');
+            expect(element.find('.primaryBar > rect').eq(0).attr('y')).toBe('0');
+            expect(element.find('.primaryBar > rect').eq(1).attr('y')).toBe('380'); // 400 - 20px margin
+            expect(element.find('.primaryBar > rect').eq(2).attr('y')).toBe('377'); // 400 - 20px margin - 3px bar height
         });
     });
 

@@ -171,14 +171,14 @@ describe('horizontalBarchart directive', function () {
             expect(element.find('.secondaryBar > rect').length).toBe(statsData.length);
         });
 
-
-        it('should render 3px width bar to make the tiny bar visible', function () {
+        it('should render tiny bars with a 3px width bar', function () {
             //given
             createElement();
 
             //when
             scope.primaryData = [
                 {'data': 'Johnson', 'occurrences': 90000000},
+                {'data': 'Hoover', 'occurrences': 0},
                 {'data': 'Roosevelt', 'occurrences': 1}
             ];
             scope.$digest();
@@ -186,7 +186,9 @@ describe('horizontalBarchart directive', function () {
             flushAllD3Transitions();
 
             //then
-            expect(element.find('.primaryBar > rect').eq(1).attr('width')).toBe('3');
+            expect(element.find('.primaryBar > rect').eq(0).attr('width')).toBe('220');
+            expect(element.find('.primaryBar > rect').eq(1).attr('width')).toBe('0');
+            expect(element.find('.primaryBar > rect').eq(2).attr('width')).toBe('3');
         });
     });
 

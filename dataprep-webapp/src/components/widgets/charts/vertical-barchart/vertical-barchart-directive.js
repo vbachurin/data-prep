@@ -51,6 +51,7 @@
                 showXAxis: '='
             },
             link: function (scope, element, attrs) {
+                var BAR_MIN_HEIGHT = 3;
                 var oldVisuData;
                 var labelTooltip = scope.keyLabel;
                 var activeLimits = scope.activeLimits;
@@ -171,6 +172,16 @@
                         .attr('class', 'secondaryBar');
                 }
 
+                function adaptToMinHeight(realHeight) {
+                    return realHeight > 0 && realHeight < BAR_MIN_HEIGHT ? BAR_MIN_HEIGHT : realHeight;
+                }
+
+                function adaptToMinHeightYPosition(realYPosition) {
+                    var basePosition = yScale(0);
+                    var barHeight = adaptToMinHeight(basePosition - realYPosition);
+                    return basePosition - barHeight;
+                }
+
                 function drawBars(containerClassName, statData, getValue, barClassName) {
                     var bars = svg.select('.' + containerClassName)
                         .selectAll('.' + barClassName)
@@ -195,11 +206,11 @@
                         })
                         .attr('height', function (d) {
                             var realHeight = height - yScale(getValue(d));
-                            return realHeight > 0 && realHeight < 1 ? 3 : realHeight;
+                            return adaptToMinHeight(realHeight);
                         })
                         .attr('y', function (d) {
                             var realYPosition = yScale(getValue(d));
-                            return realYPosition > yScale(0) - 1 ? yScale(0) - 3 : realYPosition;
+                            return adaptToMinHeightYPosition(realYPosition);
                         });
 
                     //update
@@ -208,11 +219,11 @@
                         })
                         .attr('height', function (d) {
                             var realHeight = height - yScale(getValue(d));
-                            return realHeight > 0 && realHeight < 1 ? 3 : realHeight;
+                            return adaptToMinHeight(realHeight);
                         })
                         .attr('y', function (d) {
                             var realYPosition = yScale(getValue(d));
-                            return realYPosition > yScale(0) - 1 ? yScale(0) - 3 : realYPosition;
+                            return adaptToMinHeightYPosition(realYPosition);
                         });
                 }
 

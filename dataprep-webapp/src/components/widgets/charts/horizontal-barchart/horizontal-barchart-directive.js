@@ -51,6 +51,7 @@
                 secondaryBarClass: '@'
             },
             link: function (scope, element, attrs) {
+                var BAR_MIN_WIDTH = 3;
                 var containerId = '#' + attrs.id;
                 var renderPrimaryTimeout, renderSecondaryTimeout;
 
@@ -174,6 +175,10 @@
                         .attr('class', 'secondaryBar');
                 }
 
+                function adaptToMinHeight(realWidth) {
+                    return realWidth > 0 && realWidth < BAR_MIN_WIDTH ? BAR_MIN_WIDTH : realWidth;
+                }
+
                 function drawBars(containerClassName, statData, getValue, barClassName) {
                     var bars = svg.select('.' + containerClassName)
                         .selectAll('.' + barClassName)
@@ -193,7 +198,7 @@
                         })
                         .attr('width', function (d) {
                             var realWidth = xScale(getValue(d));
-                            return realWidth < 1 ? 3 : realWidth;
+                            return adaptToMinHeight(realWidth);
                         });
 
                     //update
@@ -204,7 +209,7 @@
                         })
                         .attr('width', function (d) {
                             var realWidth = xScale(getValue(d));
-                            return realWidth < 1 ? 3 : realWidth;
+                            return adaptToMinHeight(realWidth);
                         });
                 }
 
