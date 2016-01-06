@@ -392,7 +392,15 @@ describe('Dataset Service', function () {
             expect(actual).toBe(datasets[1]);
         }));
 
-        it('should not find dataset by name', inject(function (DatasetService) {
+        it('should find dataset by name with case insensitive', inject(function (DatasetService) {
+            //when
+            var actual = DatasetService.getDatasetByName(datasets[1].name.toUpperCase());
+
+            //then
+            expect(actual).toBe(datasets[1]);
+        }));
+
+        it('should NOT find dataset by name', inject(function (DatasetService) {
             //when
             var actual = DatasetService.getDatasetByName('unknown');
 
@@ -418,7 +426,7 @@ describe('Dataset Service', function () {
             expect(actual).toBe(datasets[2]);
         }));
 
-        it('should not find dataset by id', inject(function ($q, $rootScope, DatasetService, DatasetListService) {
+        it('should NOT find dataset by id', inject(function ($q, $rootScope, DatasetService, DatasetListService) {
             //given
             spyOn(DatasetListService, 'getDatasetsPromise').and.returnValue($q.when(datasets));
 
@@ -434,14 +442,6 @@ describe('Dataset Service', function () {
 
             //then
             expect(actual).toBeUndefined();
-        }));
-
-        it('should find dataset by name in the current folder', inject(function(DatasetService) {
-            //when
-            var actual = DatasetService.getCurrentFolderDataset(datasets[1].name);
-
-            //then
-            expect(actual).toBe(datasets[1]);
         }));
     });
 
