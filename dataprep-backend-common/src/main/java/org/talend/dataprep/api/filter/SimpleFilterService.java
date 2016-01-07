@@ -1,6 +1,5 @@
 package org.talend.dataprep.api.filter;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -64,7 +63,7 @@ public class SimpleFilterService implements FilterService {
             } else {
                 return buildFilter(root);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_FILTER, e);
         }
     }
@@ -112,9 +111,9 @@ public class SimpleFilterService implements FilterService {
                 return createOrPredicate(currentNodeContent);
             case NOT:
                 return createNotPredicate(currentNodeContent);
+            default:
+                throw new UnsupportedOperationException("Unsupported query, unknown filter '" + currentNodeName + "': " + currentNode.toString());
         }
-
-        throw new UnsupportedOperationException("Unsupported query, unknown filter '" + currentNodeName + "': " + currentNode.toString());
     }
 
     /**
@@ -451,9 +450,8 @@ public class SimpleFilterService implements FilterService {
         return r -> {
             try {
                 return inner.test(r);
-            } catch (NumberFormatException e) {
-                return false;
-            } catch (NullPointerException e) { // Double.parseDouble throws NPE when parsing null strings.
+            } catch (NumberFormatException | NullPointerException e) {
+                // Double.parseDouble throws NPE when parsing null strings.
                 return false;
             }
         };

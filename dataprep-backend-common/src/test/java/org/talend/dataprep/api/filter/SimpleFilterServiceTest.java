@@ -55,7 +55,7 @@ public class SimpleFilterServiceTest {
         assertThat(filter.test(datasetRowFromValues), is(true));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = TDPException.class)
     public void should_throw_exception_on_empty_object_definition() throws Exception {
         //given
         final String filtersDefinition = "{}";
@@ -73,6 +73,22 @@ public class SimpleFilterServiceTest {
 
         //when
         service.build(filtersDefinition);
+
+        //then
+    }
+
+    @Test(expected = TDPException.class)
+    public void should_create_unknown_filter() throws Exception {
+        //given
+        final String filtersDefinition = "{" +
+                "   \"bouh\": {" +
+                "       \"field\": \"0001\"," +
+                "       \"value\": \"toto\"" +
+                "   }" +
+                "}";
+
+        //when
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
 
         //then
     }
@@ -207,6 +223,8 @@ public class SimpleFilterServiceTest {
         assertThat(filter.test(datasetRowFromValues), is(true));
         datasetRowFromValues.set("0001", "tatatoto"); //contains but different
         assertThat(filter.test(datasetRowFromValues), is(true));
+        datasetRowFromValues.set("0001", "tagada"); // not contains
+        assertThat(filter.test(datasetRowFromValues), is(false));
     }
 
     @Test
@@ -223,10 +241,38 @@ public class SimpleFilterServiceTest {
         final Predicate<DataSetRow> filter = service.build(filtersDefinition);
 
         //then
-        datasetRowFromValues.set("0001", "toto"); //different pattern
+        datasetRowFromValues.set("0001", "toto"); // different pattern
         assertThat(filter.test(datasetRowFromValues), is(false));
-        datasetRowFromValues.set("0001", "To5-"); //same pattern
+
+        datasetRowFromValues.set("0001", "To5-"); // same pattern
         assertThat(filter.test(datasetRowFromValues), is(true));
+
+        datasetRowFromValues.set("0001", "To5--"); // different length
+        assertThat(filter.test(datasetRowFromValues), is(false));
+
+        datasetRowFromValues.set("0001", ""); // empty value
+        assertThat(filter.test(datasetRowFromValues), is(false));
+    }
+
+    @Test
+    public void should_create_MATCHES_predicate_empty_pattern() throws Exception {
+        //given
+        final String filtersDefinition = "{" +
+                "   \"matches\": {" +
+                "       \"field\": \"0001\"," +
+                "       \"value\": \"\"" +
+                "   }" +
+                "}";
+
+        //when
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+
+        //then
+        datasetRowFromValues.set("0001", ""); // empty value
+        assertThat(filter.test(datasetRowFromValues), is(true));
+
+        datasetRowFromValues.set("0001", "tagada"); // not empty value
+        assertThat(filter.test(datasetRowFromValues), is(false));
     }
 
     @Test
@@ -452,4 +498,45 @@ public class SimpleFilterServiceTest {
         datasetRowFromValues.set("0001", "toto"); //not empty
         assertThat(filter.test(datasetRowFromValues), is(true));
     }
+
+    @Test(expected = TDPException.class)
+    public void should_create_NOT_predicate_invalid1() throws Exception {
+        //given
+        final String filtersDefinition = "{" +
+                "   \"not\": [" +
+                "       {" +
+                "           \"empty\": {" +
+                "               \"field\": \"0001\"" +
+                "           }" +
+                "       }," +
+                "       {" +
+                "           \"eq\": {" +
+                "               \"field\": \"0002\"," +
+                "               \"value\": \"toto\"" +
+                "           }" +
+                "       }" +
+                "   ]" +
+                "}";
+
+        //when
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+
+        //then
+    }
+
+    @Test(expected = TDPException.class)
+    public void should_create_NOT_predicate_invalid2() throws Exception {
+        //given
+        final String filtersDefinition = "{" +
+                "   \"not\":" +
+                "       {" +
+                "       }" +
+                "}";
+
+        //when
+        final Predicate<DataSetRow> filter = service.build(filtersDefinition);
+
+        //then
+    }
+
 }

@@ -259,6 +259,7 @@ public class DateManipulator {
 
     /**
      * Compute the number of milliseconds for UTC timestamp
+     *
      * @param localDate The date to convert
      * @return The UTC epoch milliseconds
      */
@@ -269,6 +270,7 @@ public class DateManipulator {
     /**
      * Create a LocalDateTime from epochMillis by adding system offset.
      * 0L will be converted to 1970-01-01 in the system timezone.
+     *
      * @param epochMillis The epoch time in milliseconds
      * @return The local date that correspond to the epoch milliseconds minus the system offset
      */
