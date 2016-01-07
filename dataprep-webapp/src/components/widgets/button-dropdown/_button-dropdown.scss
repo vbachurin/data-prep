@@ -122,6 +122,11 @@
       &:hover {
         background: $dropdown-menu-background-hover;
       }
+
+      &.disabled {
+        color: $medium-gray;
+        cursor: default;
+      }
     }
   }
 }

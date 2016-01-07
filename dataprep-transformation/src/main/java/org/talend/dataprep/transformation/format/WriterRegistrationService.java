@@ -7,6 +7,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
@@ -21,6 +22,9 @@ public class WriterRegistrationService {
     @Autowired
     private ApplicationContext context;
 
+    @Autowired
+    private FormatRegistrationService formatRegistrationService;
+    
     /**
      * Return a TransformWriter that match the given format.
      *
@@ -30,6 +34,11 @@ public class WriterRegistrationService {
      */
     public TransformerWriter getWriter(String format, OutputStream output, Map<String, String> parameters) {
         try {
+            // Sanity check -> ensures format is actually enabled before using it.
+            if (!formatRegistrationService.getByName(format).isEnabled()) {
+                throw new TDPException(TransformationErrorCodes.UNABLE_TO_USE_EXPORT,
+                        ExceptionContext.build().put("format", format));
+            }
             if (parameters.isEmpty()) {
                 return (TransformerWriter) context.getBean("writer#" + format, output);
             } else {
