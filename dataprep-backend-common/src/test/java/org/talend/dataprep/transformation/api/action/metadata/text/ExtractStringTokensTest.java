@@ -126,6 +126,27 @@ public class ExtractStringTokensTest extends AbstractMetadataBaseTest {
         assertEquals(expectedValues, row.values());
     }
 
+    @Test
+    public void test_TDP_1195() {
+        // given
+        final DataSetRow row = getRow("lorem bacon", "10413 UNIVERSITY BLVD", "01/01/2015");
+        parameters.put(ExtractStringTokens.PARAMETER_REGEX, "(\\d+) ([NSEW])?");
+        parameters.put(ExtractStringTokens.LIMIT, "3");
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "10413 UNIVERSITY BLVD");
+        expectedValues.put("0003", "10413");
+        expectedValues.put("0004", "");
+        expectedValues.put("0005", "");
+        expectedValues.put("0002", "01/01/2015");
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
 
     @Test
     public void should_extract_tokens_single_column() {
