@@ -130,9 +130,21 @@
                     yScale.domain(statData.map(getKey));
                 }
 
-                function initAxes(width, height) {
-                    var minSizeBetweenGrid = 40;
-                    var ticksThreshold = Math.ceil(width / minSizeBetweenGrid);
+                function initAxes(height) {
+
+                    var ticksThreshold;
+                    if(xScale.domain()[1] >= 1e9){
+                        ticksThreshold = 2;
+                    }
+                    else if(xScale.domain()[1] < 1e9 && xScale.domain()[1] >= 1e6){
+                        ticksThreshold = 3;
+                    }
+                    else if(xScale.domain()[1] < 1e6 && xScale.domain()[1] >= 1e3){
+                        ticksThreshold =  5;
+                    }
+                    else {
+                        ticksThreshold = 7;
+                    }
                     var ticksNbre = xScale.domain()[1] > ticksThreshold ? ticksThreshold : xScale.domain()[1];
 
                     xAxis = d3.svg.axis()
@@ -274,7 +286,7 @@
 
                     initScales(width, height);
                     configureScales(firstVisuData);
-                    initAxes(width, height);
+                    initAxes(height);
                     createContainer(containerWidth, containerHeight);
                     drawGrid();
                     createBarsContainers();
