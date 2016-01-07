@@ -1,4 +1,4 @@
-package org.talend.dataprep.cache;
+package org.talend.dataprep.cache.noop;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,13 +8,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.cache.ContentCache;
+import org.talend.dataprep.cache.ContentCacheKey;
 
 /**
- * An implementation of {@link ContentCache} that holds no content. This is mainly an implementation to replace an
- * actual content cache in case configuration does not include HDFS configuration.
+ * An implementation of {@link ContentCache} that holds no content.
+ *
+ * This is mainly an implementation to replace an actual content cache in case configuration does not include HDFS
+ * configuration.
  */
 @Component
-@ConditionalOnProperty(name = "api.cache", havingValue = "disabled", matchIfMissing = true)
+@ConditionalOnProperty(name = "service.cache", havingValue = "disabled", matchIfMissing = true)
 public class NoOpContentCache implements ContentCache {
 
     /** This class' logger. */

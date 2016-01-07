@@ -1,11 +1,19 @@
 package org.talend.dataprep.transformation.service;
 
 import static com.jayway.restassured.RestAssured.given;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.cache.ContentCache;
+import org.talend.dataprep.transformation.cache.TransformationCacheKey;
 
 import com.jayway.restassured.response.Response;
 
@@ -13,6 +21,19 @@ import com.jayway.restassured.response.Response;
  * Integration tests on actions.
  */
 public class NewTransformTests extends TransformationServiceBaseTests {
+
+    /** Content cache for the tests. */
+    @Autowired
+    private ContentCache contentCache;
+
+    /** The dataprep ready to use jackson object builder. */
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
+
+    @Before
+    public void customSetUp() throws Exception {
+        contentCache.clear();
+    }
 
     @Test
     public void noAction() throws Exception {
@@ -46,7 +67,7 @@ public class NewTransformTests extends TransformationServiceBaseTests {
 
         // then
         Assert.assertEquals(500, response.getStatusCode());
-        Assert.assertTrue(response.asString().contains("OUTPUT_TYPE_NOT_SUPPORTED"));
+        assertTrue(response.asString().contains("OUTPUT_TYPE_NOT_SUPPORTED"));
     }
 
 
@@ -60,7 +81,7 @@ public class NewTransformTests extends TransformationServiceBaseTests {
 
         // then
         Assert.assertEquals(500, response.getStatusCode());
-        Assert.assertTrue(response.asString().contains("UNABLE_TO_READ_DATASET_CONTENT"));
+        assertTrue(response.asString().contains("UNABLE_TO_READ_DATASET_CONTENT"));
     }
 
     @Test
@@ -75,7 +96,7 @@ public class NewTransformTests extends TransformationServiceBaseTests {
 
         // then
         Assert.assertEquals(500, response.getStatusCode());
-        Assert.assertTrue(response.asString().contains("UNABLE_TO_READ_PREPARATION"));
+        assertTrue(response.asString().contains("UNABLE_TO_READ_PREPARATION"));
     }
 
     @Test
@@ -136,4 +157,32 @@ public class NewTransformTests extends TransformationServiceBaseTests {
         assertEquals(expectedContent, transformedContent, false);
     }
 
+    @Test
+    public void testCache() throws Exception {
+        // given
+        String dsId = createDataset("input_dataset.csv", "uppercase", "text/csv");
+        String prepId = createEmptyPreparationFromDataset(dsId, "uppercase prep");
+        applyActionFromFile(prepId, "uppercase_action.json");
+
+        String dataSetMetadataContent = given() //
+                .expect().statusCode(200).log().ifError()//
+                .when() //
+                .get("/datasets/{id}/metadata", dsId) //
+                .asString();
+
+        final DataSetMetadata metadata = builder.build().readerFor(DataSetMetadata.class).readValue(dataSetMetadataContent);
+
+        TransformationCacheKey key = new TransformationCacheKey(prepId, metadata, "JSON", "head");
+        assertFalse(contentCache.has(key));
+
+        // when
+        given() //
+                .expect().statusCode(200).log().ifError()//
+                .when() //
+                .get("/apply/preparation/{prepId}/dataset/{datasetId}/{format}", prepId, dsId, "JSON") //
+                .asString();
+
+        assertTrue(contentCache.has(key));
+
+    }
 }

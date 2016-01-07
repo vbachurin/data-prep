@@ -18,8 +18,12 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -27,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
@@ -38,6 +43,7 @@ import org.talend.dataprep.transformation.aggregation.AggregationService;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.transformer.suggestion.Suggestion;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngine;
+import org.talend.dataprep.transformation.cache.TransformationCacheKey;
 import org.talend.dataprep.transformation.format.ExportFormat;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -51,21 +57,25 @@ import io.swagger.annotations.ApiParam;
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
 public class NewTransformationService extends BaseTransformationService {
 
+    /** This class' logger. */
+    private static final Logger LOG = LoggerFactory.getLogger(NewTransformationService.class);
+
     /** The Spring application context. */
     @Autowired
     private ApplicationContext context;
-
     /** All available transformation actions. */
     @Autowired
     private ActionMetadata[] allActions;
-
     /** he aggregation service. */
     @Autowired
     private AggregationService aggregationService;
-
     /** The action suggestion engine. */
     @Autowired
     private SuggestionEngine suggestionEngine;
+
+    /** The content cache to... cache transformations results. */
+    @Autowired
+    private ContentCache contentCache;
 
     /**
      * Apply the preparation to the dataset out of the given IDs.
@@ -107,11 +117,11 @@ public class NewTransformationService extends BaseTransformationService {
             }
             InputStream datasetContent = datasetGet.getEntity().getContent();
 
-            // the parser need to be encapsulated within an auto closeable bloc so that the dataset can be fully
+            // the parser need to be encapsulated within an auto closeable block so that its records can be fully
             // streamed
             try (JsonParser parser = mapper.getFactory().createParser(datasetContent)) {
                 final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-                internalTransform(preparationId, dataSet, output, formatName, stepId, name);
+                useCache(preparationId, dataSet, output, formatName, stepId, name, sample);
             }
 
         } catch (Exception e) {
@@ -121,6 +131,44 @@ public class NewTransformationService extends BaseTransformationService {
         finally {
             datasetRetrieval.releaseConnection();
         }
+    }
+
+    /**
+     * Get the transformation out of the cache, if it's not cached, performs the transformation and cache its result.
+     *
+     * @param preparationId the preparation id.
+     * @param dataSet the DataSet.
+     * @param output where to write the output.
+     * @param formatName the format name.
+     * @param stepId the preparation step id.
+     * @param name the preparation name.
+     * @param sample the sample size.
+     * @throws IOException if an error occurs.
+     */
+    private void useCache(String preparationId, DataSet dataSet, OutputStream output, String formatName, String stepId,
+            String name, Long sample) throws IOException {
+
+        // compute the cache key
+        TransformationCacheKey key;
+        try {
+            key = new TransformationCacheKey(preparationId, dataSet.getMetadata(), formatName, stepId, sample);
+        } catch (IOException e) {
+            LOG.warn("cannot generate transformation cache key for {}. Cache will not be used.", dataSet.getMetadata(), e);
+            internalTransform(preparationId, dataSet, output, formatName, stepId, name);
+            return;
+        }
+
+        // get it from the cache if available
+        final InputStream inputStream = contentCache.get(key);
+        if (inputStream != null) {
+            IOUtils.copyLarge(inputStream, output);
+            return;
+        }
+
+        // or save it into the cache
+        final OutputStream newCacheEntry = contentCache.put(key, ContentCache.TimeToLive.DEFAULT);
+        TeeOutputStream outputStreams = new TeeOutputStream(output, newCacheEntry);
+        internalTransform(preparationId, dataSet, outputStreams, formatName, stepId, name);
     }
 
 
