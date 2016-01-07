@@ -129,21 +129,21 @@
                     yScale.domain(statData.map(getKey));
                 }
 
-                function initAxes(width, height) {
-                    var minSizeBetweenGrid;
+                function initAxes(height) {
+
+                    var ticksThreshold;
                     if(xScale.domain()[1] >= 1e9){
-                        minSizeBetweenGrid = width / 2;
+                        ticksThreshold = 2;
                     }
                     else if(xScale.domain()[1] < 1e9 && xScale.domain()[1] >= 1e6){
-                        minSizeBetweenGrid = width / 3;
+                        ticksThreshold = 3;
                     }
                     else if(xScale.domain()[1] < 1e6 && xScale.domain()[1] >= 1e3){
-                        minSizeBetweenGrid = width / 5;
+                        ticksThreshold =  5;
                     }
                     else {
-                        minSizeBetweenGrid = width / 7;
+                        ticksThreshold = 7;
                     }
-                    var ticksThreshold = Math.ceil(width / minSizeBetweenGrid);
                     var ticksNbre = xScale.domain()[1] > ticksThreshold ? ticksThreshold : xScale.domain()[1];
 
                     xAxis = d3.svg.axis()
@@ -279,7 +279,7 @@
 
                     initScales(width, height);
                     configureScales(firstVisuData);
-                    initAxes(width, height);
+                    initAxes(height);
                     createContainer(containerWidth, containerHeight);
                     drawGrid();
                     createBarsContainers();
