@@ -15,4 +15,8 @@
             {{navigationListCtrl.getLabel({item: item})}}
         </li>
     </ul>
+
+    <div class="add-item" ng-if="navigationListCtrl.showAddButton">
+        <button ng-click="navigationListCtrl.onAddItem()" class="add-button">+ {{navigationListCtrl.onAddItem}}</button>
+    </div>
 </div>

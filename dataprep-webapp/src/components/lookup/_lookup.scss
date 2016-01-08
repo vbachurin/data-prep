@@ -9,6 +9,11 @@
   .lookup-container {
     height: 277px;
 
+    .add-dataset-span {
+      width: 70%;
+      top: 50%;
+      position: absolute;
+    }
     #lookup-left {
       float: left;
       height: inherit;

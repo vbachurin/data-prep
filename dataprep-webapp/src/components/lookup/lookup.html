@@ -8,8 +8,12 @@
    </div>
 
    <div class="lookup-container">
-       <div id="lookup-left">
+       <div ng-if="lookupCtrl.state.playground.lookup.actions.length > 0" id="lookup-left">
            <lookup-datagrid></lookup-datagrid>
+       </div>
+
+       <div ng-if="lookupCtrl.state.playground.lookup.columnsToAdd.length === 0" id="lookup-left">
+           <span class="watermark add-dataset-span" translate-once="ADD_DATASET_TO_PERFORM_A_LOOKUP"></span>
        </div>
 
        <div id="lookup-right">
@@ -38,9 +42,36 @@
    </div>
 
     <navigation-list list="lookupCtrl.state.playground.lookup.actions"
-                   on-click="lookupCtrl.loadLookupDsContent(item)"
-                   selected-item="lookupCtrl.state.playground.lookup.dataset"
-                   get-label="lookupCtrl.getDsName(item)"
-                   nbre-labels-to-show="4">
+                     on-click="lookupCtrl.loadLookupDsContent(item)"
+                     selected-item="lookupCtrl.state.playground.lookup.dataset"
+                     get-label="lookupCtrl.getDsName(item)"
+                     nbre-labels-to-show="4"
+                     on-add-item="lookupCtrl.openAddLookupDatasetModal()">
     </navigation-list>
 </talend-slidable>
+
+<talend-modal fullscreen="false"
+              close-button="true"
+              state="lookupCtrl.addLookupDatasetModal"
+              ng-if="lookupCtrl.addLookupDatasetModal"
+              disable-enter="true">
+        <form name="lookupCtrl.addLookupDatasetForm" ng-submit="lookupCtrl.addLookupDatasetForm.$valid && lookupCtrl.addLookupDataset()">
+            <div class="clone-name">
+                <span translate-once="ADD_LOOKUP_DATASET_TITLE"></span>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL">
+                </button>
+                <button class="btn-primary modal-primary-button"
+                        ng-disabled="lookupCtrl.addLookupDatasetForm.$invalid || lookupCtrl.isSendingRequest"
+                        ng-switch="lookupCtrl.isSendingRequest">
+                    <span ng-switch-when="false" translate-once="ADD_LOOKUP_DATASET"></span>
+
+                    <div class="feedback-sending-div" ng-switch-when="true" >
+                        <span class="feedback-sending continuous-rotate"><i data-icon="c" class="icon"></i></span>
+                    </div>
+                </button>
+            </div>
+        </form>
+    </div>
+</talend-modal>

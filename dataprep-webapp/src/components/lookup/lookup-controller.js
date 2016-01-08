@@ -17,6 +17,8 @@
 		vm.state = state;
 		vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
 		vm.loadLookupDsContent = LookupService.loadContent;
+		vm.addLookupDatasetModal = false;
+		vm.isSendingRequest = false;
 
 		/**
 		 * @ngdoc method
@@ -89,6 +91,27 @@
 					StateService.setLookupVisibility(false);
 				});
 		};
+
+		/**
+		 * @ngdoc method
+		 * @name openAddLookupDatasetModal
+		 * @methodOf data-prep.lookup.controller:LookupCtrl
+		 * @description Open the add lookup dataset modal
+		 */
+		vm.openAddLookupDatasetModal = function openAddLookupDatasetModal() {
+			vm.addLookupDatasetModal = true;
+		};
+
+		/**
+		 * @ngdoc method
+		 * @name addLookupDataset
+		 * @methodOf data-prep.lookup.controller:LookupCtrl
+		 * @description Send add lookup dataset request
+		 */
+		vm.addLookupDataset = function addLookupDataset() {
+			vm.isSendingRequest = true;
+		};
+
 	}
 
 	angular.module('data-prep.lookup')

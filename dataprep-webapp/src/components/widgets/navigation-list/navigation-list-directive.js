@@ -19,6 +19,7 @@
      * @param {function} onClick The callback executed on an item clicked
      * @param {function} getLabel The function that returns the label to show
      * @param {number} nbreLabelsToShow the number of labels to show
+     * @param {function} onAddItem The function is called when the add button is clicked
      */
     function NavigationList() {
         return {
@@ -29,11 +30,21 @@
                 selectedItem: '=',
                 onClick: '&',
                 getLabel: '&',
-                nbreLabelsToShow: '@'
+                nbreLabelsToShow: '@',
+                onAddItem: '&'
             },
             bindToController: true,
             controllerAs: 'navigationListCtrl',
-            controller: 'NavigationListCtrl'
+            controller: 'NavigationListCtrl',
+
+            link: function (scope, iElement, iAttrs, ctrl) {
+                if(iAttrs.onAddItem) {
+                    ctrl.showAddButton = true;
+                } else {
+                    ctrl.showAddButton = false;
+                }
+            }
+
         };
     }
 
