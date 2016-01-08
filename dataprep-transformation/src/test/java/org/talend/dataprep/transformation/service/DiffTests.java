@@ -35,6 +35,39 @@ public class DiffTests extends TransformationServiceBaseTests {
         assertEquals(expected, response, false);
     }
 
+    /**
+     * After TDP-1184 fix, there is a problem on preview (regression?).
+     * Use case is:
+     * - delete a column (lastname here)
+     * - add new columns (with split on city here)
+     * - preview an action on the first new column (uppercase on 0000 here)
+     *
+     * -> lastname is still on the preview data for lines 4 & 6. it is absent (which is what we expect) only for the first line!
+     */
+    @Test
+    public void test_TDP_1184() throws Exception {
+        // given
+        final String datasetContent = IOUtils.toString(this.getClass().getResourceAsStream("../preview/input.json"));
+        final String expected = IOUtils.toString(this.getClass().getResourceAsStream("../preview/expected_output_TDP_1184.json"));
+
+        final String oldActions = getTransformation_TDP_1184_step_1();
+        final String newActions = getTransformation_TDP_1184_step_2();
+        final String indexes = "[1,4,6]";
+
+        // when
+        final String response = given() //
+                .multiPart("oldActions", oldActions) //
+                .multiPart("newActions", newActions) //
+                .multiPart("indexes", indexes) //
+                .multiPart("content", datasetContent) //
+                .when() //
+                .post("/transform/preview")
+                .asString();
+
+        // then
+        assertEquals(expected, response, true);
+    }
+
     @Test
     public void should_return_created_columns() throws Exception {
         // given
@@ -79,6 +112,14 @@ public class DiffTests extends TransformationServiceBaseTests {
 
     private String getSingleTransformation() {
         return "{\"actions\": [ { \"action\": \"uppercase\", \"parameters\":{ \"column_id\": \"lastname\", \"scope\": \"column\" } } ]}";
+    }
+
+    private String getTransformation_TDP_1184_step_1() {
+        return "{\"actions\": [ { \"action\": \"delete_column\", \"parameters\":{ \"column_id\": \"lastname\", \"scope\": \"column\" } }, { \"action\": \"split\", \"parameters\":{ \"column_id\": \"city\", \"scope\": \"column\", \"separator\":\" \", \"limit\":\"2\" } } ]}";
+    }
+
+    private String getTransformation_TDP_1184_step_2() {
+        return "{\"actions\": [ { \"action\": \"delete_column\", \"parameters\":{ \"column_id\": \"lastname\", \"scope\": \"column\" } }, { \"action\": \"split\", \"parameters\":{ \"column_id\": \"city\", \"scope\": \"column\", \"separator\":\" \", \"limit\":\"2\" } }, { \"action\": \"uppercase\",\"parameters\":{ \"column_id\": \"0000\", \"scope\": \"column\" } } ]}";
     }
 
     private String getMultipleTransformationWithNewColumn() {
