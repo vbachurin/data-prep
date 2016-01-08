@@ -29,29 +29,6 @@ public class SeparatorAnalyzer implements Consumer<Separator> {
     private final SeparatorComparator comparator;
 
     /**
-     * Priority of valid separators
-     */
-    private List<Character> priority = Arrays.asList(';', ',', '\t', ' ');
-
-    private int prio(char c1, char c2) {
-        int c1Priority = priority.indexOf(c1);
-        int c2Priority = priority.indexOf(c2);
-        return Integer.compare(c1Priority, c2Priority);
-    }
-
-    /**
-     * Returns true if a separator is consistent, i.e., it is in the first line and is present at least in half of the
-     * number of lines.
-     * 
-     * @param s the specified separator
-     * @return true if a separator is consistent, i.e., it is in the first line and is present at least in half of the
-     * number of lines and false otherwise
-     */
-    private boolean consistent(Separator s) {
-        return s.getCountPerLine().containsKey(1) && (s.getCountPerLine().size() > (numberOfLines / 2));
-    }
-
-    /**
      * Constructor.
      *
      * @param numberOfLines the number of lines.
@@ -63,6 +40,33 @@ public class SeparatorAnalyzer implements Consumer<Separator> {
         this.numberOfLines = numberOfLines;
         this.sampleLines = sampleLines;
         this.comparator = new SeparatorComparator();
+    }
+
+    /**
+     * Priority of valid separators
+     */
+    private List<Character> priority = Arrays.asList(';', ',', '\t', ' ');
+
+    private int prio(char c1, char c2) {
+        int c1Priority = priority.indexOf(c1);
+        int c2Priority = priority.indexOf(c2);
+        return Integer.compare(c1Priority, c2Priority);
+    }
+
+    /**
+     * Returns a positive integer indicating the confidence about the specified separator.
+     * {@code 0} is returned if <tt>s</tt>is frequent ( more than half of the number of lines) and is present in the first line.
+     * {@code 1} is returned if <tt>s</tt> is frequent and is not present in the first line.
+     * {@code 2} is returned if <tt>s</tt> is infrequent and is present in the first line.
+     * {@code 3} is returned if the separator is infrequent and is not present in the first line.
+     *
+     * @param s the specified separator
+     * @return  a positive integer indicating the confidence about the specified separator
+     */
+    private int consistencyLevel(Separator s) {
+        int result = (s.getCountPerLine().size() > (numberOfLines / 2)) ? 0 : 2;
+        result += (s.getCountPerLine().containsKey(1) ? 0: 1 );
+        return result;
     }
 
     /**
@@ -152,7 +156,7 @@ public class SeparatorAnalyzer implements Consumer<Separator> {
             if (s1Score == 0 && s2Score == 0 || (s1Score != 0 && s2Score != 0
                     && Math.abs(s1Score - s2Score) < (ShannonEntropy.maxEntropy(numberOfLines) / 2))) {
                 // choose according to consistency
-                result = Boolean.compare(consistent(s2), consistent(s1));
+                result = Integer.compare(consistencyLevel(s1), consistencyLevel(s2));
                 if (result == 0) {
                     // choose according to header confidence
                     result = Boolean.compare(s2.isHeaderInfoReliable(), s1.isHeaderInfoReliable());
