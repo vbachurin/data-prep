@@ -53,7 +53,7 @@ public class DiffTests extends TransformationServiceBaseTests {
                 .asString();
 
         // then
-        assertEquals("{\"createdColumns\":[\"0003\"]}", response, false);
+        assertEquals("{\"createdColumns\":[\"0000\"]}", response, false);
     }
 
     @Test
