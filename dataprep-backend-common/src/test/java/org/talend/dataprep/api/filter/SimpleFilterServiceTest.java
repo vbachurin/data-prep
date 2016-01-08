@@ -1,13 +1,11 @@
 package org.talend.dataprep.api.filter;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
+import static java.time.Month.JANUARY;
+import static java.time.ZoneOffset.UTC;
+import static java.util.Collections.singletonList;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
@@ -16,12 +14,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import static java.time.Month.JANUARY;
-import static java.time.ZoneOffset.UTC;
-import static java.util.Collections.singletonList;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
 
 public class SimpleFilterServiceTest {
     final SimpleFilterService service = new SimpleFilterService();
@@ -342,7 +342,6 @@ public class SimpleFilterServiceTest {
         final String filtersDefinition = "{" +
                 "   \"range\": {" +
                 "       \"field\": \"0001\"," +
-                "       \"type\": \"integer\"," +
                 "       \"start\": \"5\"," +
                 "       \"end\": \"10\"" +
                 "   }" +
@@ -352,18 +351,19 @@ public class SimpleFilterServiceTest {
         final Predicate<DataSetRow> filter = service.build(filtersDefinition);
 
         //then
-        datasetRowFromValues.set("0001", "a"); //invalid number
-        assertThat(filter.test(datasetRowFromValues), is(false));
-        datasetRowFromValues.set("0001", "4"); //lt min
-        assertThat(filter.test(datasetRowFromValues), is(false));
-        datasetRowFromValues.set("0001", "5"); //eq min
-        assertThat(filter.test(datasetRowFromValues), is(true));
-        datasetRowFromValues.set("0001", "8"); //in range
-        assertThat(filter.test(datasetRowFromValues), is(true));
-        datasetRowFromValues.set("0001", "10"); //eq max
-        assertThat(filter.test(datasetRowFromValues), is(false));
-        datasetRowFromValues.set("0001", "20"); //gt max
-        assertThat(filter.test(datasetRowFromValues), is(false));
+        datasetRowFromMetadata.getRowMetadata().getById("0001").setType("integer");
+        datasetRowFromMetadata.set("0001", "a"); //invalid number
+        assertThat(filter.test(datasetRowFromMetadata), is(false));
+        datasetRowFromMetadata.set("0001", "4"); //lt min
+        assertThat(filter.test(datasetRowFromMetadata), is(false));
+        datasetRowFromMetadata.set("0001", "5"); //eq min
+        assertThat(filter.test(datasetRowFromMetadata), is(true));
+        datasetRowFromMetadata.set("0001", "8"); //in range
+        assertThat(filter.test(datasetRowFromMetadata), is(true));
+        datasetRowFromMetadata.set("0001", "10"); //eq max
+        assertThat(filter.test(datasetRowFromMetadata), is(false));
+        datasetRowFromMetadata.set("0001", "20"); //gt max
+        assertThat(filter.test(datasetRowFromMetadata), is(false));
     }
 
     @Test
@@ -372,13 +372,13 @@ public class SimpleFilterServiceTest {
         final String filtersDefinition = "{" +
                 "   \"range\": {" +
                 "       \"field\": \"0001\"," +
-                "       \"type\": \"date\"," +
                 "       \"start\": 0," + //1970-01-01 UTC timezone
                 "       \"end\": " + (LocalDateTime.of(1990, JANUARY, 1, 0, 0).toEpochSecond(UTC) * 1000) + //1990-01-01 UTC timezone
                 "   }" +
                 "}";
 
         final ColumnMetadata column = datasetRowFromMetadata.getRowMetadata().getById("0001");
+        column.setType("date");
         final DateParser dateParser = Mockito.mock(DateParser.class);
         when(dateParser.parse("a", column)).thenThrow(new DateTimeException(""));
         when(dateParser.parse("1960-01-01", column)).thenReturn(LocalDateTime.of(1960, JANUARY, 1, 0, 0));

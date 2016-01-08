@@ -1,7 +1,11 @@
 package org.talend.dataprep.api.filter;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 import java.text.ParseException;
-import java.time.*;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Iterator;
@@ -14,16 +18,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.date.DateManipulator;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
-
-import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 @Service
 public class SimpleFilterService implements FilterService {
@@ -95,7 +97,6 @@ public class SimpleFilterService implements FilterService {
                 return createContainsPredicate(currentNode, columnId, value);
             case MATCHES:
                 return createMatchesPredicate(currentNode, columnId, value);
-
             case INVALID:
                 return createInvalidPredicate(columnId);
             case VALID:
@@ -104,7 +105,6 @@ public class SimpleFilterService implements FilterService {
                 return createEmptyPredicate(columnId);
             case RANGE:
                 return createRangePredicate(columnId, currentNodeContent);
-
             case AND:
                 return createAndPredicate(currentNodeContent);
             case OR:
@@ -299,13 +299,17 @@ public class SimpleFilterService implements FilterService {
     private Predicate<DataSetRow> createRangePredicate(final String columnId, final JsonNode nodeContent) {
         final String start = nodeContent.get("start").asText();
         final String end = nodeContent.get("end").asText();
-        final String type = nodeContent.get("type").asText();
-
-        if ("date".equals(type)) {
-            return createDateRangePredicate(columnId, start, end);
-        }
-
-        return createNumberRangePredicate(columnId, start, end);
+        return r -> {
+            final String columnType = r.getRowMetadata().getById(columnId).getType();
+            Type parsedType = Type.get(columnType);
+            if (Type.DATE.isAssignableFrom(parsedType)) {
+                return createDateRangePredicate(columnId, start, end).test(r);
+            } else if (Type.NUMERIC.isAssignableFrom(parsedType)) {
+                return createNumberRangePredicate(columnId, start, end).test(r);
+            } else {
+                throw new IllegalArgumentException("Type '" + parsedType.getName() + "' is not a valid type for range.");
+            }
+        };
     }
 
     /**
@@ -467,7 +471,8 @@ public class SimpleFilterService implements FilterService {
         };
     }
 
-    public void setDateParser(final DateParser dateParser) {
+    // Intentionally left protected since only used by unit test (in same package)
+    protected void setDateParser(final DateParser dateParser) {
         this.dateParser = dateParser;
     }
 }
