@@ -1,5 +1,6 @@
 package org.talend.dataprep.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +50,25 @@ public class ShannonEntropy {
 
         Collection<Double> frequencies = map.values().stream().mapToDouble(s -> (double) s / values.size()).boxed()
                 .collect(Collectors.toList());
+        return computeWithFrequencies(frequencies);
+    }
+
+    /**
+     * Computes the maximum value of a entropy every possible value as the same probability to appear compared to another value and
+     * <tt>cardinality</tt> represents the number of possible values considered.
+     * @param cardinality represents the number of possible values considered
+     * @return the maximun entropy
+     */
+    public static double maxEntropy(int cardinality){
+        if (cardinality < 0){
+            throw new IllegalArgumentException("The cardinality must be positive");
+        }
+        double equiprobility = (double) 1 / cardinality;
+        Collection<Double> frequencies = new ArrayList<>();
+        for (int i = 0; i < cardinality; i++){
+            frequencies.add(equiprobility);
+        }
+
         return computeWithFrequencies(frequencies);
     }
 

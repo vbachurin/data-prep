@@ -202,38 +202,33 @@ public class CSVFormatGuesser implements FormatGuesser {
      */
     private Separator chooseSeparator(List<Separator> separators, int lineCount, List<String> sampleLines) {
 
-        // easy case where there's no choice
-        if (separators.isEmpty()) {
-            if (lineCount > 0) {
-                // There are some lines processed, but no separator (a one-column content?), so pick a default
-                // separator.
-                Separator result = new Separator(',');
-                separators.add(result);
-            } else {
-                return null;
-            }
-        }
-
         // filter separators
         final List<Separator> filteredSeparators = separators.stream() //
                 .filter(sep -> validSeparators.contains(sep.getSeparator())) // filter out invalid separators
                 .collect(Collectors.toList());
 
-        // compute each separator score
-        SeparatorAnalyzer separatorAnalyzer = new SeparatorAnalyzer(lineCount, sampleLines);
-        filteredSeparators.forEach(separatorAnalyzer::accept); // compute each separator score
-
-        // if there's only one separator, let's use it
-        if (separators.size() == 1) {
-            return separators.get(0);
+        // easy case where there's no choice
+        if (filteredSeparators.isEmpty()) {
+            if (lineCount > 0) {
+                // There are some lines processed, but no separator (a one-column content?), so pick a default
+                // separator.
+                Separator result = new Separator(',');
+                filteredSeparators.add(result);
+            } else {
+                return null;
+            }
         }
 
+        // compute each separator score
+        SeparatorAnalyzer separatorAnalyzer = new SeparatorAnalyzer(lineCount, sampleLines);
+        filteredSeparators.forEach(separatorAnalyzer::accept); // analyse separators and set header info and score
+
         // sort separator and return the first
-        return filteredSeparators.stream() //
-                .sorted((s0, s1) -> Double.compare(s0.getScore(), s1.getScore())) // sort by score (the lower the
-                                                                                  // better)
-                .findFirst() //
+        Separator result = filteredSeparators.stream() //
+                .sorted((s0, s1) -> separatorAnalyzer.compare(s0, s1)).findFirst() //
                 .get();
+
+        return result;
     }
 
     /**

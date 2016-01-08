@@ -2,7 +2,6 @@ package org.talend.dataprep.schema.csv;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.talend.dataprep.api.type.Type;
@@ -32,7 +31,7 @@ public class Separator {
     /**
      * If some lines does not contains the separator, consider this separator as inconsistent
      */
-    private boolean consistent = true;
+    private boolean headerInfoReliable = true;
 
     /**
      * A map associating to each column of the header a type.
@@ -55,12 +54,12 @@ public class Separator {
         this.firstLineAHeader = header;
     }
 
-    public boolean isConsistent() {
-        return consistent;
+    public boolean isHeaderInfoReliable() {
+        return headerInfoReliable;
     }
 
-    public void setConsistent(boolean consistent) {
-        this.consistent = consistent;
+    public void setHeaderInfoReliable(boolean headerInfoReliable) {
+        this.headerInfoReliable = headerInfoReliable;
     }
 
     public char getValue() {

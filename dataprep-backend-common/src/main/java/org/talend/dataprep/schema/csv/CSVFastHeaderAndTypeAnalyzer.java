@@ -2,7 +2,6 @@ package org.talend.dataprep.schema.csv;
 
 import java.util.*;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.talend.dataprep.api.type.Type;
 
 /**
@@ -70,9 +69,12 @@ public class CSVFastHeaderAndTypeAnalyzer {
      */
     private boolean firstLineAHeader = true;
 
-    private boolean consistent = true;
+    /**
+     * A boolean specifying whether or not we have great confidence in our guess : is first line a header?
+     */
+    private boolean headerInfoReliable = false;
 
-    private Map<String, Type> headers = null;
+    private Map<String, Type> headers = Collections.emptyMap();
 
     private final String DEFAULT_HEADER_PREFIX = "COL";
 
@@ -128,7 +130,8 @@ public class CSVFastHeaderAndTypeAnalyzer {
         Scanner scanner = new Scanner(s);
         scanner.useDelimiter(separator.getSeparator() + "");
         while (scanner.hasNext()) {
-            if (scanner.hasNextInt()) {
+            // called integer but we are looking for long in Java parlance
+            if (scanner.hasNextLong()) {
                 result.add(INTEGER);
                 scanner.next();
             } else if (scanner.hasNextDouble()) {
@@ -256,9 +259,10 @@ public class CSVFastHeaderAndTypeAnalyzer {
         if (!analysisPerformed) {
             // Perform Header analysis if the sample has at least two lines
             if (sampleLines.size() > 1) {
-                // check consistency: the first line must contains the separator or no line should contains it
+                // if the separator is absent from the first line and is present elsewhere then according to this separator
+                // first line is not a header
                 if (!separator.getCountPerLine().containsKey(1) && !separator.getCountPerLine().isEmpty()) {
-                    //consistent = false;
+                    headerInfoReliable = true;
                     firstLineAHeader = false;
                 } else {
                     final List<Type> firstRecordTypes = firstRecordTyping();
@@ -267,8 +271,16 @@ public class CSVFastHeaderAndTypeAnalyzer {
                     // which are at least 50% not text
                     // mark the separator as having a header
                     if ((firstRecordTypes.contains(Type.INTEGER) || firstRecordTypes.contains(Type.DOUBLE) || firstRecordTypes.contains(Type.BOOLEAN))
-                            && !sampleTypes[0].contains(ABSENT)){
+                            ){
                         firstLineAHeader = false;
+                        headerInfoReliable = true;
+                    }
+                    else if (allStringTypes(firstRecordTypes) && !sampleTypes[0].contains(ABSENT) &&
+                            (columnTypingWithoutFirstRecord.contains(Type.INTEGER) ||
+                                    columnTypingWithoutFirstRecord.contains(Type.DOUBLE) || columnTypingWithoutFirstRecord.contains(Type.BOOLEAN))){
+                        firstLineAHeader = true;
+                        headerInfoReliable = true;
+
                     }
                 }
             }
@@ -328,10 +340,10 @@ public class CSVFastHeaderAndTypeAnalyzer {
      *
      * @return <tt>true</tt> if the first record contains the separator and <tt>false</tt> otherwise
      */
-    public boolean isConsistent() {
+    public boolean isHeaderInfoReliable() {
         if (!analysisPerformed) {
             analyze();
         }
-        return consistent;
+        return headerInfoReliable;
     }
 }
