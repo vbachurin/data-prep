@@ -49,6 +49,7 @@ public abstract class PreparationCommand<T> extends GenericCommand<T> {
      * @param actionsToAdd      The actions to add
      */
     protected StepDiff getDiffMetadata(final String preparationId, final String insertionStepId, final List<Action> actionsToAdd) throws IOException {
+
         // get preparation details
         final Preparation preparation = getPreparation(preparationId);
         final String dataSetId = preparation.getDataSetId();

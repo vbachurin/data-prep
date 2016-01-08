@@ -13,9 +13,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.TeeOutputStream;
@@ -36,6 +38,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.StepDiff;
 import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
@@ -51,12 +54,18 @@ import org.talend.dataprep.transformation.aggregation.api.AggregationResult;
 import org.talend.dataprep.transformation.api.action.dynamic.DynamicType;
 import org.talend.dataprep.transformation.api.action.dynamic.GenericParameter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
+import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
+import org.talend.dataprep.transformation.api.transformer.configuration.PreviewConfiguration;
 import org.talend.dataprep.transformation.api.transformer.suggestion.Suggestion;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngine;
 import org.talend.dataprep.transformation.cache.TransformationCacheKey;
 import org.talend.dataprep.transformation.format.ExportFormat;
+import org.talend.dataprep.transformation.format.JsonFormat;
+import org.talend.dataprep.transformation.preview.api.PreviewParameters;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.Api;
@@ -86,6 +95,9 @@ public class NewTransformationService extends BaseTransformationService {
     @Autowired
     private ContentCache contentCache;
 
+    /** The transformer factory. */
+    @Autowired
+    private TransformerFactory factory;
     /** Task executor for asynchronous processing. */
     @Resource(name = "serializer#json#executor")
     private TaskExecutor executor;
@@ -246,6 +258,126 @@ public class NewTransformationService extends BaseTransformationService {
                 getContentRequest.releaseConnection();
             }
         }
+    }
+
+    /**
+     * This operation allow client to create a diff between 2 list of actions starting from the same data. For example,
+     * sending:
+     * <ul>
+     * <li>{a1, a2} as old actions</li>
+     * <li>{a1, a2, a3} as new actions</li>
+     * </ul>
+     * ... will highlight changes done by a3.
+     * <p>
+     * To prevent the actions to exceed URL length limit, everything is shipped within via the multipart request body.
+     *
+     * @param rawParameters The preview parameters, encoded in json within the request body.
+     * @param output Where to write the response.
+     */
+    //@formatter:off
+    @RequestMapping(value = "/transform/preview", method = POST, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Preview the transformation on input data", notes = "This operation returns the input data diff between the old and the new transformation actions", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @VolumeMetered
+    public void transformPreview(
+            @ApiParam(name = "body", value = "Preview parameters.") @RequestBody final String rawParameters,
+            final OutputStream output) {
+    //@formatter:on
+
+        final ObjectMapper mapper = builder.build();
+
+        // parse the preview parameters from the request body
+        PreviewParameters previewParameters;
+        try {
+            previewParameters = builder.build().readerFor(PreviewParameters.class).readValue(rawParameters);
+        } catch (IOException e) {
+            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PERFORM_PREVIEW, e);
+        }
+
+        // get the dataset content
+        final HttpRequestBase dataSetRequest = getDataSetRequest(previewParameters.getDataSetId(), null);
+        final InputStream dataSetContent = getDataSetContent(dataSetRequest);
+
+        // because of dataset records streaming, the dataset content must be within an auto closeable block
+        try (JsonParser parser = mapper.getFactory().createParser(dataSetContent)) {
+            final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
+
+            // execute the... preview !
+            executePreview(previewParameters.getNewActions(), previewParameters.getBaseActions(), previewParameters.getTdpIds(),
+                    dataSet, output);
+
+        } catch (IOException e) {
+            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PERFORM_PREVIEW, e);
+        }
+        // don't forget to release the connection in any case
+        finally {
+            dataSetRequest.releaseConnection();
+        }
+    }
+
+    /**
+     * Compare the results of 2 sets of actions, and return the diff metadata Ex : the created columns ids
+     */
+    //@formatter:off
+    @RequestMapping(value = "/transform/diff/metadata", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value = "Apply a diff between 2 sets of actions and return the diff (containing created columns ids for example)", notes = "This operation returns the diff metadata", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @VolumeMetered
+    public StepDiff getCreatedColumns(
+            @ApiParam(value = "Actions that is considered as reference in the diff.") @RequestPart(value = "referenceActions", required = true) final Part referenceActions,
+            @ApiParam(value = "Actions which result will be compared to reference result.") @RequestPart(value = "diffActions", required = true) final Part diffActions,
+            @ApiParam(value = "Data set content as JSON. It should contains only 1 records, and the columns metadata") @RequestPart(value = "content", required = true) final Part content) {
+    //@formatter:on
+
+        final ObjectMapper mapper = builder.build();
+        final OutputStream output = new ByteArrayOutputStream();
+        try (JsonParser parser = mapper.getFactory().createParser(content.getInputStream())) {
+            // decode parts
+            final String decodedReferenceActions = referenceActions == null ? null
+                    : IOUtils.toString(referenceActions.getInputStream());
+            final String decodedDiffActions = diffActions == null ? null : IOUtils.toString(diffActions.getInputStream());
+            final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
+
+            // call diff
+            executePreview(decodedDiffActions, decodedReferenceActions, null, dataSet, output);
+
+            // extract created columns ids
+            final JsonNode node = mapper.readTree(output.toString());
+            final JsonNode columnsNode = node.findPath("columns");
+            final List<String> createdColumns = StreamSupport.stream(columnsNode.spliterator(), false)
+                    .filter(col -> "new".equals(col.path("__tdpColumnDiff").asText())).map(col -> col.path("id").asText())
+                    .collect(toList());
+
+            // create/return diff
+            final StepDiff diff = new StepDiff();
+            diff.setCreatedColumns(createdColumns);
+            return diff;
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
+        }
+    }
+
+    /**
+     * Execute the preview and write result in the provided output stream
+     *
+     * @param actions The actions to execute to diff with reference
+     * @param referenceActions The reference actions
+     * @param indexes The record indexes to diff. If null, it will process all records
+     * @param dataSet The dataset (column metadata and records)
+     * @param output The output stream where to write the result
+     */
+    private void executePreview(final String actions, final String referenceActions, final String indexes, final DataSet dataSet,
+            final OutputStream output) {
+        final PreviewConfiguration configuration = PreviewConfiguration.preview() //
+                .withActions(actions) //
+                .withIndexes(indexes) //
+                .fromReference( //
+                        Configuration.builder() //
+                                .format(JsonFormat.JSON) //
+                                .output(output) //
+                                .actions(referenceActions) //
+                                .build() //
+        ) //
+                .build();
+        factory.get(configuration).transform(dataSet, configuration);
     }
 
     /**
