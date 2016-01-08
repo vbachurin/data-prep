@@ -175,7 +175,10 @@ public class ExtractStringTokens extends ActionMetadata implements ColumnAction 
         List<String> extractedValues = new ArrayList<>();
         while (matcher.find()) {
             for (int i = 1; i <= matcher.groupCount(); i++) {
-                extractedValues.add(matcher.group(i));
+                final String matchingValue = matcher.group(i);
+                if (matchingValue != null) {
+                    extractedValues.add(matchingValue);
+                }
             }
         }
 
