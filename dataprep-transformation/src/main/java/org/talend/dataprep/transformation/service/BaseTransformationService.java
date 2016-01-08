@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -53,7 +54,7 @@ public abstract class BaseTransformationService {
     protected HttpClient httpClient;
 
     /** The dataprep ready to use jackson object builder. */
-    @Autowired(required = true)
+    @Autowired
     protected Jackson2ObjectMapperBuilder builder;
 
     /**
@@ -85,7 +86,7 @@ public abstract class BaseTransformationService {
     }
 
     /**
-     * Return the format that matches the given name or throw an error if the format is unkown.
+     * Return the format that matches the given name or throw an error if the format is unknown.
      *
      * @param formatName the format name.
      * @return the format that matches the given name.
@@ -109,8 +110,12 @@ public abstract class BaseTransformationService {
      */
     private String getActions(String preparationId, String stepId) {
 
+        String version = stepId;
+        if (StringUtils.isBlank(stepId)) {
+            version = "head";
+        }
         final HttpGet actionsRetrieval = new HttpGet(
-                preparationServiceUrl + "/preparations/" + preparationId + "/actions/" + stepId);
+                preparationServiceUrl + "/preparations/" + preparationId + "/actions/" + version);
         try {
             final HttpResponse get = httpClient.execute(actionsRetrieval);
             final HttpStatus status = HttpStatus.valueOf(get.getStatusLine().getStatusCode());
@@ -119,7 +124,7 @@ public abstract class BaseTransformationService {
             }
             return "{\"actions\": " + IOUtils.toString(get.getEntity().getContent()) + '}';
         } catch (IOException e) {
-            final ExceptionContext context = ExceptionContext.build().put("id", preparationId).put("version", stepId);
+            final ExceptionContext context = ExceptionContext.build().put("id", preparationId).put("version", version);
             throw new TDPException(PreparationErrorCodes.UNABLE_TO_READ_PREPARATION, e, context);
         } finally {
             actionsRetrieval.releaseConnection();

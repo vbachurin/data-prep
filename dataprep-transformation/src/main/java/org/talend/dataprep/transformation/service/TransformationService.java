@@ -6,7 +6,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -28,20 +27,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.web.bind.annotation.*;
-import org.talend.daikon.exception.ExceptionContext;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.preparation.StepDiff;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
-import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.aggregation.AggregationService;
-import org.talend.dataprep.transformation.aggregation.api.AggregationParameters;
-import org.talend.dataprep.transformation.aggregation.api.AggregationResult;
-import org.talend.dataprep.transformation.api.action.dynamic.DynamicType;
-import org.talend.dataprep.transformation.api.action.dynamic.GenericParameter;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
@@ -60,7 +56,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
-@Deprecated
 @RestController
 @Api(value = "transformations", basePath = "/transform", description = "Deprecated transformations on data")
 public class TransformationService {
@@ -256,7 +251,8 @@ public class TransformationService {
     @RequestMapping(value = "/transform/diff/metadata", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation(value = "Apply a diff between 2 sets of actions and return the diff (containing created columns ids for example)", notes = "This operation returns the diff metadata", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @VolumeMetered
-    public StepDiff getCreatedColumns(@ApiParam(value = "Actions that is considered as reference in the diff.") @RequestPart(value = "referenceActions", required = true) final Part referenceActions,
+    public StepDiff getCreatedColumns(
+            @ApiParam(value = "Actions that is considered as reference in the diff.") @RequestPart(value = "referenceActions", required = true) final Part referenceActions,
             @ApiParam(value = "Actions which result will be compared to reference result.") @RequestPart(value = "diffActions", required = true) final Part diffActions,
             @ApiParam(value = "Data set content as JSON. It should contains only 1 records, and the columns metadata") @RequestPart(value = "content", required = true) final Part content) {
     //@formatter:on
@@ -286,74 +282,6 @@ public class TransformationService {
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
-    }
-
-    /**
-     * Get the action dynamic params.
-     */
-    //@formatter:off
-    @RequestMapping(value = "/transform/suggest/{action}/params", method = POST)
-    @ApiOperation(value = "Get the transformation dynamic parameters", notes = "Returns the transformation parameters.")
-    @Timed
-    public GenericParameter dynamicParams(@ApiParam(value = "Action name.") @PathVariable("action") final String action,
-            @ApiParam(value = "The column id.") @RequestParam(value = "columnId", required = true) final String columnId,
-            @ApiParam(value = "Data set content as JSON")  final InputStream content) {
-    //@formatter:on
-
-        final DynamicType actionType = DynamicType.fromAction(action);
-        if (actionType == null) {
-            final ExceptionContext exceptionContext = ExceptionContext.build().put("name", action);
-            throw new TDPException(TransformationErrorCodes.UNKNOWN_DYNAMIC_ACTION, exceptionContext);
-        }
-        final ObjectMapper mapper = builder.build();
-        try (JsonParser parser = mapper.getFactory().createParser(content)) {
-            final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-            return actionType.getGenerator(context).getParameters(columnId, dataSet);
-        } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
-        }
-    }
-
-    /**
-     * Compute the given aggregation.
-     *
-     * @param parameters the aggregation parameters.
-     * @param content the content to compute the aggregation on.
-     * @param response the http response.
-     */
-    @RequestMapping(value = "/aggregate", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ApiOperation(value = "Compute the aggregation according to the request body parameters", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @VolumeMetered
-    @Deprecated // should get the dataset on its own
-    // @formatter:off
-    public void aggregate(
-            @ApiParam(value = "The aggregation parameters in json") @RequestPart(value = "parameters", required = true) final Part parameters,
-            @ApiParam(value = "Content to apply the aggregation on") @RequestPart(value = "content", required = true) final Part content,
-            final HttpServletResponse response) {
-        // @formatter:on
-
-        final ObjectMapper mapper = builder.build();
-
-        // parse the parameters
-        AggregationParameters params;
-        try {
-            params = mapper.readerFor(AggregationParameters.class).readValue(parameters.getInputStream());
-            LOG.debug("Aggregation requested {}", params);
-        } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.BAD_AGGREGATION_PARAMETERS, e);
-        }
-
-        // apply the aggregation
-        try (JsonParser parser = mapper.getFactory().createParser(content.getInputStream())) {
-            final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-
-            AggregationResult result = aggregationService.aggregate(params, dataSet);
-            mapper.writer().writeValue(response.getWriter(), result);
-
-        } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
-        }
-
     }
 
 }

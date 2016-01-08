@@ -1,8 +1,8 @@
 package org.talend.dataprep.transformation.service;
 
 import static com.jayway.restassured.RestAssured.given;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.*;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 import org.apache.commons.io.IOUtils;
@@ -182,7 +182,15 @@ public class NewTransformTests extends TransformationServiceBaseTests {
                 .get("/apply/preparation/{prepId}/dataset/{datasetId}/{format}", prepId, dsId, "JSON") //
                 .asString();
 
+        // then
         assertTrue(contentCache.has(key));
+
+        // just to pass through the cache
+        final Response response = given() //
+                .expect().statusCode(200).log().ifError()//
+                .when() //
+                .get("/apply/preparation/{prepId}/dataset/{datasetId}/{format}", prepId, dsId, "JSON");
+        assertThat(response.getStatusCode(), is(200));
 
     }
 }

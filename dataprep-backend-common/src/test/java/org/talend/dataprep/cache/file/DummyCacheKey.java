@@ -10,7 +10,7 @@ import org.talend.dataprep.cache.ContentCacheKey;
  */
 public class DummyCacheKey implements ContentCacheKey {
 
-    private final static Random RANDOMIZER = new Random();
+    private final static Random RANDOMIZE = new Random();
 
     /** A name. */
     private String name;
@@ -25,7 +25,7 @@ public class DummyCacheKey implements ContentCacheKey {
      */
     public DummyCacheKey(String name) {
         this.name = name;
-        this.random = RANDOMIZER.nextLong();
+        this.random = RANDOMIZE.nextLong();
     }
 
     /**

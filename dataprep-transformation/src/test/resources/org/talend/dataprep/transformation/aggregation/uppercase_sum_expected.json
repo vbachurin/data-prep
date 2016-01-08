@@ -1,346 +1,346 @@
 [
   {
-    "data": "Paris",
+    "data": "PARIS",
     "SUM": 2240621.0
   },
   {
-    "data": "Bouches-du-Rhone",
+    "data": "BOUCHES-DU-RHONE",
     "SUM": 1328996.0
   },
   {
-    "data": "Hauts-de-Seine",
+    "data": "HAUTS-DE-SEINE",
     "SUM": 1273424.0
   },
   {
-    "data": "Seine-Saint-Denis",
+    "data": "SEINE-SAINT-DENIS",
     "SUM": 1269460.0
   },
   {
-    "data": "Metropole de Lyon",
+    "data": "METROPOLE DE LYON",
     "SUM": 932593.0
   },
   {
-    "data": "Val-de-Marne",
+    "data": "VAL-DE-MARNE",
     "SUM": 844436.0
   },
   {
-    "data": "Nord",
+    "data": "NORD",
     "SUM": 798993.0
   },
   {
-    "data": "La Reunion",
+    "data": "LA REUNION",
     "SUM": 718939.0
   },
   {
-    "data": "Alpes-Maritimes",
+    "data": "ALPES-MARITIMES",
     "SUM": 633622.0
   },
   {
-    "data": "Haute-Garonne",
+    "data": "HAUTE-GARONNE",
     "SUM": 490016.0
   },
   {
-    "data": "Yvelines",
+    "data": "YVELINES",
     "SUM": 451403.0
   },
   {
-    "data": "Var",
+    "data": "VAR",
     "SUM": 442383.0
   },
   {
-    "data": "Loire-Atlantique",
+    "data": "LOIRE-ATLANTIQUE",
     "SUM": 442208.0
   },
   {
-    "data": "Gironde",
+    "data": "GIRONDE",
     "SUM": 408528.0
   },
   {
-    "data": "Herault",
+    "data": "HERAULT",
     "SUM": 385984.0
   },
   {
-    "data": "Val-d'Oise",
+    "data": "VAL-D'OISE",
     "SUM": 358605.0
   },
   {
-    "data": "Bas-Rhin",
+    "data": "BAS-RHIN",
     "SUM": 340491.0
   },
   {
-    "data": "Seine-Maritime",
+    "data": "SEINE-MARITIME",
     "SUM": 315331.0
   },
   {
-    "data": "Essonne",
+    "data": "ESSONNE",
     "SUM": 275549.0
   },
   {
-    "data": "Ille-et-Vilaine",
+    "data": "ILLE-ET-VILAINE",
     "SUM": 254480.0
   },
   {
-    "data": "Loire",
+    "data": "LOIRE",
     "SUM": 242846.0
   },
   {
-    "data": "Isere",
+    "data": "ISERE",
     "SUM": 232277.0
   },
   {
-    "data": "Marne",
+    "data": "MARNE",
     "SUM": 227118.0
   },
   {
-    "data": "Pas-de-Calais",
+    "data": "PAS-DE-CALAIS",
     "SUM": 220856.0
   },
   {
-    "data": "Maine-et-Loire",
+    "data": "MAINE-ET-LOIRE",
     "SUM": 203198.0
   },
   {
-    "data": "Finistere",
+    "data": "FINISTERE",
     "SUM": 203036.0
   },
   {
-    "data": "Gard",
+    "data": "GARD",
     "SUM": 187740.0
   },
   {
-    "data": "Seine-et-Marne",
+    "data": "SEINE-ET-MARNE",
     "SUM": 185004.0
   },
   {
-    "data": "Haut-Rhin",
+    "data": "HAUT-RHIN",
     "SUM": 178012.0
   },
   {
-    "data": "Indre-et-Loire",
+    "data": "INDRE-ET-LOIRE",
     "SUM": 172174.0
   },
   {
-    "data": "Pyrenees-Atlantiques",
+    "data": "PYRENEES-ATLANTIQUES",
     "SUM": 163584.0
   },
   {
-    "data": "Moselle",
+    "data": "MOSELLE",
     "SUM": 160876.0
   },
   {
-    "data": "Cote-d'Or",
+    "data": "COTE-D'OR",
     "SUM": 152071.0
   },
   {
-    "data": "Sarthe",
+    "data": "SARTHE",
     "SUM": 143599.0
   },
   {
-    "data": "Puy-de-Dome",
+    "data": "PUY-DE-DOME",
     "SUM": 141569.0
   },
   {
-    "data": "Haute-Vienne",
+    "data": "HAUTE-VIENNE",
     "SUM": 136221.0
   },
   {
-    "data": "Meurthe-et-Moselle",
+    "data": "MEURTHE-ET-MOSELLE",
     "SUM": 135636.0
   },
   {
-    "data": "Somme",
+    "data": "SOMME",
     "SUM": 132727.0
   },
   {
-    "data": "Drome",
+    "data": "DROME",
     "SUM": 131886.0
   },
   {
-    "data": "Oise",
+    "data": "OISE",
     "SUM": 128253.0
   },
   {
-    "data": "Martinique",
+    "data": "MARTINIQUE",
     "SUM": 125367.0
   },
   {
-    "data": "Pyrenees-Orientales",
+    "data": "PYRENEES-ORIENTALES",
     "SUM": 120489.0
   },
   {
-    "data": "Vienne",
+    "data": "VIENNE",
     "SUM": 119183.0
   },
   {
-    "data": "Haute-Savoie",
+    "data": "HAUTE-SAVOIE",
     "SUM": 118770.0
   },
   {
-    "data": "Doubs",
+    "data": "DOUBS",
     "SUM": 116353.0
   },
   {
-    "data": "Loiret",
+    "data": "LOIRET",
     "SUM": 114286.0
   },
   {
-    "data": "Morbihan",
+    "data": "MORBIHAN",
     "SUM": 110354.0
   },
   {
-    "data": "Calvados",
+    "data": "CALVADOS",
     "SUM": 108365.0
   },
   {
-    "data": "Aude",
+    "data": "AUDE",
     "SUM": 98937.0
   },
   {
-    "data": "Guyane",
+    "data": "GUYANE",
     "SUM": 95795.0
   },
   {
-    "data": "Tarn",
+    "data": "TARN",
     "SUM": 90760.0
   },
   {
-    "data": "Vaucluse",
+    "data": "VAUCLUSE",
     "SUM": 89380.0
   },
   {
-    "data": "Saone-et-Loire",
+    "data": "SAONE-ET-LOIRE",
     "SUM": 77481.0
   },
   {
-    "data": "Charente-Maritime",
+    "data": "CHARENTE-MARITIME",
     "SUM": 74123.0
   },
   {
-    "data": "Eure-et-Loir",
+    "data": "EURE-ET-LOIR",
     "SUM": 70084.0
   },
   {
-    "data": "Cher",
+    "data": "CHER",
     "SUM": 66666.0
   },
   {
-    "data": "Corse-du-Sud",
+    "data": "CORSE-DU-SUD",
     "SUM": 66245.0
   },
   {
-    "data": "Aube",
+    "data": "AUBE",
     "SUM": 60009.0
   },
   {
-    "data": "Guadeloupe",
+    "data": "GUADELOUPE",
     "SUM": 58606.0
   },
   {
-    "data": "Savoie",
+    "data": "SAVOIE",
     "SUM": 58039.0
   },
   {
-    "data": "Deux-Sevres",
+    "data": "DEUX-SEVRES",
     "SUM": 57607.0
   },
   {
-    "data": "Tarn-et-Garonne",
+    "data": "TARN-ET-GARONNE",
     "SUM": 56887.0
   },
   {
-    "data": "Aisne",
+    "data": "AISNE",
     "SUM": 56217.0
   },
   {
-    "data": "Vendee",
+    "data": "VENDEE",
     "SUM": 52808.0
   },
   {
-    "data": "Mayenne",
+    "data": "MAYENNE",
     "SUM": 50658.0
   },
   {
-    "data": "Territoire de Belfort",
+    "data": "TERRITOIRE DE BELFORT",
     "SUM": 50102.0
   },
   {
-    "data": "Ardennes",
+    "data": "ARDENNES",
     "SUM": 49759.0
   },
   {
-    "data": "Eure",
+    "data": "EURE",
     "SUM": 49634.0
   },
   {
-    "data": "Correze",
+    "data": "CORREZE",
     "SUM": 47411.0
   },
   {
-    "data": "Cotes-d'Armor",
+    "data": "COTES-D'ARMOR",
     "SUM": 45936.0
   },
   {
-    "data": "Loir-et-Cher",
+    "data": "LOIR-ET-CHER",
     "SUM": 45903.0
   },
   {
-    "data": "Indre",
+    "data": "INDRE",
     "SUM": 44960.0
   },
   {
-    "data": "Haute-Corse",
+    "data": "HAUTE-CORSE",
     "SUM": 43479.0
   },
   {
-    "data": "Charente",
+    "data": "CHARENTE",
     "SUM": 42014.0
   },
   {
-    "data": "Hautes-Pyrenees",
+    "data": "HAUTES-PYRENEES",
     "SUM": 41664.0
   },
   {
-    "data": "Hautes-Alpes",
+    "data": "HAUTES-ALPES",
     "SUM": 40761.0
   },
   {
-    "data": "Ain",
+    "data": "AIN",
     "SUM": 40171.0
   },
   {
-    "data": "Allier",
+    "data": "ALLIER",
     "SUM": 38072.0
   },
   {
-    "data": "Manche",
+    "data": "MANCHE",
     "SUM": 37121.0
   },
   {
-    "data": "Saint-Martin COM autonome",
+    "data": "SAINT-MARTIN COM AUTONOME",
     "SUM": 36622.0
   },
   {
-    "data": "Rhone",
+    "data": "RHONE",
     "SUM": 36241.0
   },
   {
-    "data": "Nievre",
+    "data": "NIEVRE",
     "SUM": 35327.0
   },
   {
-    "data": "Yonne",
+    "data": "YONNE",
     "SUM": 35096.0
   },
   {
-    "data": "Lot-et-Garonne",
+    "data": "LOT-ET-GARONNE",
     "SUM": 33730.0
   },
   {
-    "data": "Vosges",
+    "data": "VOSGES",
     "SUM": 32387.0
   },
   {
-    "data": "Landes",
+    "data": "LANDES",
     "SUM": 31018.0
   }
 ]
