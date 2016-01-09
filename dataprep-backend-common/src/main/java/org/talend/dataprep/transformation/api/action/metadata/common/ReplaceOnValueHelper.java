@@ -160,7 +160,7 @@ public class ReplaceOnValueHelper {
         if (value == null) {
             return false;
         }
-        if (StringUtils.isEmpty(this.token)) {
+        if (StringUtils.isEmpty(this.token) && !this.getOperator().equals(EQUALS_MODE)) {
             return false;
         }
 

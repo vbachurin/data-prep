@@ -13,10 +13,12 @@
      * @requires data-prep.services.utils.service:TextFormatService
      * @requires data-prep.services.utils.service:StorageService
      * @requires data-prep.services.utils.service:WorkerService
+     * @requires data-prep.services.utils.service:DateService
      */
-    function StatisticsService($filter, state,
+    function StatisticsService($filter, state, StateService,
                                DatagridService, RecipeService, StatisticsRestService,
-                               StateService, ConverterService, FilterAdapterService, TextFormatService, StorageService, WorkerService) {
+                               ConverterService, FilterAdapterService, TextFormatService,
+                               StorageService, WorkerService, DateService) {
 
         var dateFilteredWorkerWrapper;
         var datePatternWorkerWrapper;
@@ -25,6 +27,7 @@
         //those should be used to pass external functions, that are directly used here, to the web worker
         var workerFn0 = TextFormatService.convertJavaDateFormatToMomentDateFormat;
         var workerFn1 = TextFormatService.convertPatternToRegexp;
+        var workerFn2 = DateService.isInDateLimits;
 
         var service = {
             boxPlot: null,
@@ -370,7 +373,7 @@
             //execute a web worker that will compute the filtered occurrences
             dateFilteredWorkerWrapper = WorkerService.create(
                 ['/worker/moment.js', '/worker/moment-jdateformatparser.js', '/worker/lodash.js'],
-                [isInDateLimits],
+                [{workerFn2: workerFn2}],
                 dateFilteredOccurrenceWorker);
 
             var filteredOccurrences = state.playground.filter.gridFilters.length ? state.playground.grid.filteredOccurences : null;
@@ -381,35 +384,6 @@
                 .finally(function () {
                     dateFilteredWorkerWrapper.clean();
                 });
-        }
-
-        /**
-         * @ngdoc method
-         * @name isInDateLimits
-         * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @description Predicate that test if a date is in the range
-         * @param {number} minTimestamp The range min timestamp
-         * @param {number} maxTimestamp The range max timestamp
-         * @param {Array} patterns The date patterns to use for date parsing
-         */
-        function isInDateLimits(minTimestamp, maxTimestamp, patterns) {
-            return function (value) {
-                var parsedMoment = _.chain(patterns)
-                    .map(function (pattern) {
-                        return moment(value, pattern, true);
-                    })
-                    .find(function (momentDate) {
-                        return momentDate.isValid();
-                    })
-                    .value();
-
-                if (!parsedMoment) {
-                    return false;
-                }
-
-                var time = parsedMoment.toDate().getTime();
-                return time === minTimestamp || (time > minTimestamp && time < maxTimestamp);
-            };
         }
 
         /**
@@ -430,7 +404,7 @@
                     range.occurrences :
                     _.chain(filteredOccurences)
                         .keys()
-                        .filter(isInDateLimits(minTimestamp, maxTimestamp, patterns))
+                        .filter(workerFn2(minTimestamp, maxTimestamp, patterns))
                         .map(function (key) {
                             return filteredOccurences[key];
                         })
@@ -934,6 +908,8 @@
          * @description Processes the statistics aggregation for visualization
          */
         function processAggregation(column, aggregationName) {
+            resetCharts();
+
             if (!aggregationName) {
                 removeSavedColumnAggregation();
                 return processData();
@@ -1039,7 +1015,7 @@
          * @description responsible for updating the filtered data according to the selected column type
          */
         function updateFilteredStatistics() {
-            reset(false, false, false);
+            resetWorkers();
 
             var columnAggregation = getSavedColumnAggregation();
             var aggregationName = columnAggregation && columnAggregation.aggregation;
@@ -1081,7 +1057,8 @@
          * @description update aggregation for a selected column
          */
         function updateStatistics() {
-            reset(true, true, false);
+            resetStatistics();
+            resetWorkers();
 
             var columnAggregation = getSavedColumnAggregation();
             var aggregatedColumn = columnAggregation && _.findWhere(getAggregationColumns(), {id: columnAggregation.aggregationColumnId});
@@ -1103,21 +1080,49 @@
          */
         function reset(charts, statistics, cache) {
             if (charts) {
-                service.boxPlot = null;
-                service.rangeLimits = null;
-                service.stateDistribution = null;
-                StateService.setStatisticsHistogram(null);
-                StateService.setStatisticsHistogramActiveLimits(null);
+               resetCharts();
             }
 
             if (statistics) {
-                service.statistics = null;
+                resetStatistics();
             }
 
             if (cache) {
-                StatisticsRestService.resetCache();
+                resetCache();
             }
 
+            resetWorkers();
+        }
+
+        /**
+         * Reset the charts
+         */
+        function resetCharts() {
+            service.boxPlot = null;
+            service.rangeLimits = null;
+            service.stateDistribution = null;
+            StateService.setStatisticsHistogram(null);
+            StateService.setStatisticsHistogramActiveLimits(null);
+        }
+
+        /**
+         * Reset the statistics
+         */
+        function resetStatistics() {
+            service.statistics = null;
+        }
+
+        /**
+         * Reset the statistics cache
+         */
+        function resetCache() {
+            StatisticsRestService.resetCache();
+        }
+
+        /**
+         * Reset web workers
+         */
+        function resetWorkers() {
             if (dateFilteredWorkerWrapper) {
                 dateFilteredWorkerWrapper.terminate();
                 dateFilteredWorkerWrapper = null;

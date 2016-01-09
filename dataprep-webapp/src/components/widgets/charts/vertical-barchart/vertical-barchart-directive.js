@@ -51,6 +51,7 @@
                 showXAxis: '='
             },
             link: function (scope, element, attrs) {
+                var BAR_MIN_HEIGHT = 3;
                 var oldVisuData;
                 var labelTooltip = scope.keyLabel;
                 var activeLimits = scope.activeLimits;
@@ -171,6 +172,16 @@
                         .attr('class', 'secondaryBar');
                 }
 
+                function adaptToMinHeight(realHeight) {
+                    return realHeight > 0 && realHeight < BAR_MIN_HEIGHT ? BAR_MIN_HEIGHT : realHeight;
+                }
+
+                function adaptToMinHeightYPosition(realYPosition) {
+                    var basePosition = yScale(0);
+                    var barHeight = adaptToMinHeight(basePosition - realYPosition);
+                    return basePosition - barHeight;
+                }
+
                 function drawBars(containerClassName, statData, getValue, barClassName) {
                     var bars = svg.select('.' + containerClassName)
                         .selectAll('.' + barClassName)
@@ -194,23 +205,25 @@
                             return i * 10;
                         })
                         .attr('height', function (d) {
-                            return height - yScale(getValue(d));
+                            var realHeight = height - yScale(getValue(d));
+                            return adaptToMinHeight(realHeight);
                         })
                         .attr('y', function (d) {
-                            return yScale(getValue(d));
+                            var realYPosition = yScale(getValue(d));
+                            return adaptToMinHeightYPosition(realYPosition);
                         });
 
                     //update
-                    bars.transition()
-                        .ease('exp')
-                        .delay(function (d, i) {
+                    bars.transition().ease('exp').delay(function (d, i) {
                             return i * 30;
                         })
                         .attr('height', function (d) {
-                            return height - yScale(getValue(d));
+                            var realHeight = height - yScale(getValue(d));
+                            return adaptToMinHeight(realHeight);
                         })
                         .attr('y', function (d) {
-                            return yScale(getValue(d));
+                            var realYPosition = yScale(getValue(d));
+                            return adaptToMinHeightYPosition(realYPosition);
                         });
                 }
 
@@ -243,7 +256,7 @@
                 }
 
                 function drawHorizontalGrid() {
-                    var minSizeBetweenGrid = 18;
+                    var minSizeBetweenGrid = 20;
                     var ticksThreshold = Math.ceil(height / minSizeBetweenGrid);
                     var ticksNbre = yScale.domain()[1] > ticksThreshold ? ticksThreshold : yScale.domain()[1];
 

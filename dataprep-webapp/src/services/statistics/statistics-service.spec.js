@@ -2968,6 +2968,19 @@ describe('Statistics service', function () {
             expect(aggregationColumns).toBe(datagridNumericColumns);
             expect(DatagridService.getNumericColumns).toHaveBeenCalledWith(selectedcolumn);
         }));
+
+
+        it('should NOT get numeric columns when there is no data', inject(function (StatisticsService, DatagridService) {
+            //given
+            stateMock.playground.data = null;
+            spyOn(DatagridService, 'getNumericColumns').and.returnValue();
+
+            //when
+            StatisticsService.getAggregationColumns();
+
+            //then
+            expect(DatagridService.getNumericColumns).not.toHaveBeenCalled();
+        }));
     });
 
 });

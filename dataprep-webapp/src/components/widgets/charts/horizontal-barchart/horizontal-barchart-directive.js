@@ -51,6 +51,7 @@
                 secondaryBarClass: '@'
             },
             link: function (scope, element, attrs) {
+                var BAR_MIN_WIDTH = 3;
                 var containerId = '#' + attrs.id;
                 var renderPrimaryTimeout, renderSecondaryTimeout;
 
@@ -129,9 +130,21 @@
                     yScale.domain(statData.map(getKey));
                 }
 
-                function initAxes(width, height) {
-                    var minSizeBetweenGrid = 40;
-                    var ticksThreshold = Math.ceil(width / minSizeBetweenGrid);
+                function initAxes(height) {
+
+                    var ticksThreshold;
+                    if(xScale.domain()[1] >= 1e9){
+                        ticksThreshold = 2;
+                    }
+                    else if(xScale.domain()[1] < 1e9 && xScale.domain()[1] >= 1e6){
+                        ticksThreshold = 3;
+                    }
+                    else if(xScale.domain()[1] < 1e6 && xScale.domain()[1] >= 1e3){
+                        ticksThreshold =  5;
+                    }
+                    else {
+                        ticksThreshold = 7;
+                    }
                     var ticksNbre = xScale.domain()[1] > ticksThreshold ? ticksThreshold : xScale.domain()[1];
 
                     xAxis = d3.svg.axis()
@@ -174,6 +187,10 @@
                         .attr('class', 'secondaryBar');
                 }
 
+                function adaptToMinHeight(realWidth) {
+                    return realWidth > 0 && realWidth < BAR_MIN_WIDTH ? BAR_MIN_WIDTH : realWidth;
+                }
+
                 function drawBars(containerClassName, statData, getValue, barClassName) {
                     var bars = svg.select('.' + containerClassName)
                         .selectAll('.' + barClassName)
@@ -192,7 +209,8 @@
                             return i * 30;
                         })
                         .attr('width', function (d) {
-                            return xScale(getValue(d));
+                            var realWidth = xScale(getValue(d));
+                            return adaptToMinHeight(realWidth);
                         });
 
                     //update
@@ -202,7 +220,8 @@
                             return i * 30;
                         })
                         .attr('width', function (d) {
-                            return xScale(getValue(d));
+                            var realWidth = xScale(getValue(d));
+                            return adaptToMinHeight(realWidth);
                         });
                 }
 
@@ -267,7 +286,7 @@
 
                     initScales(width, height);
                     configureScales(firstVisuData);
-                    initAxes(width, height);
+                    initAxes(height);
                     createContainer(containerWidth, containerHeight);
                     drawGrid();
                     createBarsContainers();

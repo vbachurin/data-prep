@@ -38,7 +38,6 @@
             getDatasetByName: getDatasetByName, //retrieve dataset by name
             getSheetPreview: getSheetPreview,
             setDatasetSheet: setDatasetSheet,
-            getCurrentFolderDataset: getCurrentFolderDataset,
 
             //utils
             getUniqueName: getUniqueName,
@@ -229,21 +228,6 @@
             });
         }
 
-
-        /**
-         * @ngdoc method
-         * @name getDatasetByName
-         * @methodOf data-prep.services.dataset.service:DatasetService
-         * @param {string} name The dataset name
-         * @description Get the dataset that has the wanted name in the current folder
-         * @returns {object} The dataset
-         */
-        function getDatasetByName (name) {
-            return _.find(state.folder.currentFolderContent.datasets, function (dataset) {
-                return dataset.name === name;
-            });
-        }
-
         /**
          * @ngdoc method
          * @name getCurrentFolderDataset
@@ -255,6 +239,21 @@
         function getCurrentFolderDataset (name) {
             return _.find(state.folder.currentFolderContent.datasets, function (dataset) {
                 return dataset.name === name;
+            });
+        }
+
+        /**
+         * @ngdoc method
+         * @name getDatasetByName
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {string} name The dataset name
+         * @description Get the dataset that has the wanted name in the current folder. The case is not important here.
+         * @returns {object} The dataset that has the same name (case insensitive)
+         */
+        function getDatasetByName(name) {
+            var lowerCaseName = name.toLowerCase();
+            return _.find(state.folder.currentFolderContent.datasets, function (dataset) {
+                return dataset.name.toLowerCase() === lowerCaseName;
             });
         }
 

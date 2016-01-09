@@ -34,7 +34,7 @@ describe('ColumnProfile controller', function () {
             spyOn(PlaygroundService, 'updateStatistics').and.returnValue($q.when());
         }));
 
-        it('should add a new "exact" filter', inject(function (FilterService) {
+        it('should add a "exact" filter', inject(function (FilterService) {
             //given
             var ctrl = createController();
             var obj = {'data': 'Ulysse', 'occurrences': 5};
@@ -54,7 +54,7 @@ describe('ColumnProfile controller', function () {
             });
         }));
 
-        it('should add a new "range" filter from StatisticsService', inject(function (StatisticsService, FilterService) {
+        it('should add a number "range" filter', inject(function (StatisticsService, FilterService) {
             //given
             var ctrl = createController();
             var interval = {
@@ -64,7 +64,8 @@ describe('ColumnProfile controller', function () {
 
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
-                name: 'firstname'
+                name: 'firstname',
+                type: 'integer'
             };
 
             //when
@@ -72,17 +73,26 @@ describe('ColumnProfile controller', function () {
 
             //then
             expect(StatisticsService.getRangeFilterRemoveFn).toHaveBeenCalled();
-            expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith('inside_range', '0001', 'firstname', {interval: [5, 15]}, removeFilterFn);
+            expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith(
+                'inside_range',
+                '0001',
+                'firstname',
+                {interval: [5, 15], label: '[5 .. 15[', type: 'integer'},
+                removeFilterFn);
         }));
 
-        it('should NOT add a "range" filter on date columns', inject(function (StatisticsService, FilterService) {
+        it('should add a date "range" filter', inject(function (StatisticsService, FilterService) {
             //given
             var ctrl = createController();
-            var interval = ['1 jan 2015', '1 feb 2015'];
+            var interval = {
+                min: '01-06-2015',
+                max: '30-06-2015',
+                label: 'Jun 2015'
+            };
 
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
-                name: 'birth',
+                name: 'firstname',
                 type: 'date'
             };
 
@@ -90,10 +100,16 @@ describe('ColumnProfile controller', function () {
             ctrl.addRangeFilter(interval);
 
             //then
-            expect(FilterService.addFilterAndDigest).not.toHaveBeenCalled();
+            expect(StatisticsService.getRangeFilterRemoveFn).toHaveBeenCalled();
+            expect(FilterService.addFilterAndDigest).toHaveBeenCalledWith(
+                'inside_range',
+                '0001',
+                'firstname',
+                {interval: ['01-06-2015', '30-06-2015'], label: 'Jun 2015', type: 'date'},
+                removeFilterFn);
         }));
 
-        it('should add a new "empty_records" filter from exact_filter on barchart click callback', inject(function (StatisticsService, FilterService) {
+        it('should add a "empty_records" filter from exact_filter on barchart click callback', inject(function (StatisticsService, FilterService) {
             //given
             var ctrl = createController();
             var obj = {'data': '', 'occurrences': 5};

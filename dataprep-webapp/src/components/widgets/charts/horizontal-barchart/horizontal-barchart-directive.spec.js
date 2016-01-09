@@ -2,6 +2,14 @@ describe('horizontalBarchart directive', function () {
     'use strict';
 
     var createElement, element, scope, statsData, filteredStatsData;
+    var flushAllD3Transitions = function () {
+        var now = Date.now;
+        Date.now = function () {
+            return Infinity;
+        };
+        d3.timer.flush();
+        Date.now = now;
+    };
 
     beforeEach(module('talend.widget'));
 
@@ -98,7 +106,66 @@ describe('horizontalBarchart directive', function () {
             expect(element.find('.bg-rect').length).toBe(statsData.length);
         });
 
-        it('should render grid after a 100ms delay', function () {
+        it('should render grid after a 100ms delay with maximum occurrences >= 1e9', function () {
+            //given
+            createElement();
+
+            //when
+            scope.primaryData = [
+                {'data': 'Johnson', 'occurrences': 9e9},
+                {'data': 'Roosevelt', 'occurrences': 8}
+            ];
+            scope.$digest();
+            jasmine.clock().tick(100);
+
+            //then
+            expect(element.find('.grid text').length).toBe(2);
+            expect(element.find('.grid text').eq(0).text()).toBe('0');
+            expect(element.find('.grid text').eq(1).text()).toBe('5,000,000,000');
+        });
+
+        it('should render grid after a 100ms delay with (1e6<= maximum occurrences < 1e9)', function () {
+            //given
+            createElement();
+
+            //when
+            scope.primaryData = [
+                {'data': 'Johnson', 'occurrences': 1e8},
+                {'data': 'Roosevelt', 'occurrences': 8}
+            ];
+            scope.$digest();
+            jasmine.clock().tick(100);
+
+            //then
+            expect(element.find('.grid text').length).toBe(3);
+            expect(element.find('.grid text').eq(0).text()).toBe('0');
+            expect(element.find('.grid text').eq(1).text()).toBe('50,000,000');
+            expect(element.find('.grid text').eq(2).text()).toBe('100,000,000');
+        });
+
+        it('should render grid after a 100ms delay with (1e3<= maximum occurrences < 1e6)', function () {
+            //given
+            createElement();
+
+            //when
+            scope.primaryData = [
+                {'data': 'Johnson', 'occurrences': 1e5},
+                {'data': 'Roosevelt', 'occurrences': 8}
+            ];
+            scope.$digest();
+            jasmine.clock().tick(100);
+
+            //then
+            expect(element.find('.grid text').length).toBe(6);
+            expect(element.find('.grid text').eq(0).text()).toBe('0');
+            expect(element.find('.grid text').eq(1).text()).toBe('20,000');
+            expect(element.find('.grid text').eq(2).text()).toBe('40,000');
+            expect(element.find('.grid text').eq(3).text()).toBe('60,000');
+            expect(element.find('.grid text').eq(4).text()).toBe('80,000');
+            expect(element.find('.grid text').eq(5).text()).toBe('100,000');
+        });
+
+        it('should render grid after a 100ms delay with maximum of ticks < 1e3', function () {
             //given
             createElement();
 
@@ -108,12 +175,17 @@ describe('horizontalBarchart directive', function () {
             jasmine.clock().tick(100);
 
             //then
-            expect(element.find('.grid text').length).toBe(5);
+            expect(element.find('.grid text').length).toBe(10);
             expect(element.find('.grid text').eq(0).text()).toBe('0');
-            expect(element.find('.grid text').eq(1).text()).toBe('2');
-            expect(element.find('.grid text').eq(2).text()).toBe('4');
-            expect(element.find('.grid text').eq(3).text()).toBe('6');
-            expect(element.find('.grid text').eq(4).text()).toBe('8');
+            expect(element.find('.grid text').eq(1).text()).toBe('1');
+            expect(element.find('.grid text').eq(2).text()).toBe('2');
+            expect(element.find('.grid text').eq(3).text()).toBe('3');
+            expect(element.find('.grid text').eq(4).text()).toBe('4');
+            expect(element.find('.grid text').eq(5).text()).toBe('5');
+            expect(element.find('.grid text').eq(6).text()).toBe('6');
+            expect(element.find('.grid text').eq(7).text()).toBe('7');
+            expect(element.find('.grid text').eq(8).text()).toBe('8');
+            expect(element.find('.grid text').eq(9).text()).toBe('9');
         });
 
         it('should render primary data after a 100ms delay', function () {
@@ -161,6 +233,26 @@ describe('horizontalBarchart directive', function () {
 
             //then
             expect(element.find('.secondaryBar > rect').length).toBe(statsData.length);
+        });
+
+        it('should render tiny bars with a 3px width bar', function () {
+            //given
+            createElement();
+
+            //when
+            scope.primaryData = [
+                {'data': 'Johnson', 'occurrences': 90000000},
+                {'data': 'Hoover', 'occurrences': 0},
+                {'data': 'Roosevelt', 'occurrences': 1}
+            ];
+            scope.$digest();
+            jasmine.clock().tick(100);
+            flushAllD3Transitions();
+
+            //then
+            expect(element.find('.primaryBar > rect').eq(0).attr('width')).toBe('220');
+            expect(element.find('.primaryBar > rect').eq(1).attr('width')).toBe('0');
+            expect(element.find('.primaryBar > rect').eq(2).attr('width')).toBe('3');
         });
     });
 

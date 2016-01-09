@@ -223,7 +223,7 @@ describe('Home controller', function () {
             it('should display name modal on step 1 when name already exists', inject(function ($q, DatasetService) {
                 //given
                 expect(ctrl.datasetNameModal).toBeFalsy();
-                spyOn(DatasetService, 'getCurrentFolderDataset').and.returnValue($q.when(dataset));
+                spyOn(DatasetService, 'getDatasetByName').and.returnValue(dataset);
 
                 //when
                 ctrl.uploadDatasetFile();
@@ -324,7 +324,6 @@ describe('Home controller', function () {
                     spyOn(TalendConfirmService, 'confirm').and.returnValue(confirmDefer.promise);
                     spyOn($rootScope, '$emit').and.returnValue();
                     spyOn(UpdateWorkflowService, 'updateDataset').and.returnValue();
-                    spyOn(DatasetService, 'getCurrentFolderDataset').and.returnValue(dataset);
 
                 }));
 
@@ -337,7 +336,7 @@ describe('Home controller', function () {
                     scope.$digest();
 
                     //then
-                    expect(DatasetService.getCurrentFolderDataset).toHaveBeenCalledWith(ctrl.datasetName);
+                    expect(DatasetService.getDatasetByName).toHaveBeenCalledWith(ctrl.datasetName);
                     expect(TalendConfirmService.confirm).toHaveBeenCalledWith(null, ['UPDATE_EXISTING_DATASET'], {dataset: 'my cool dataset'});
                     expect(DatasetService.create).not.toHaveBeenCalled();
                     expect(DatasetService.update).not.toHaveBeenCalled();

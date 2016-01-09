@@ -88,9 +88,9 @@ public class DatePattern implements Comparable {
         }
 
         // 0 must not be returned if patterns have the same occurrences value, otherwise the new one won't be added,
-        // by default, return -1
+        // by default, return 1. This will keep the current order on the same occurrences.
         if (other.getOccurrences() == this.getOccurrences()) {
-            return -1;
+            return 1;
         }
 
         return Long.compare(other.getOccurrences(), this.getOccurrences());
