@@ -528,7 +528,7 @@ public class FileSystemFolderRepository extends FolderRepositoryAdapter implemen
 
         try {
 
-            Path destinationFile = Paths.get(path.toString(), folderEntry.id());
+            Path destinationFile = Paths.get(path.toString(), buildFileName( folderEntry ));
             Files.move(originFile, destinationFile);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);

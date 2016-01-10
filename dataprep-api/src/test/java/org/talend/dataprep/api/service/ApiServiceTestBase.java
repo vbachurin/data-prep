@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -108,7 +109,9 @@ public abstract class ApiServiceTestBase {
             .body(datasetContent) //
             .queryParam("Content-Type", type) //
             .when() //
-            .post("/api/datasets?name={name}&folderPath={folderPath}", name, folderPath);
+            .post( "/api/datasets?name={name}&folderPath={folderPath}", //
+                   name,  //
+                   StringUtils.isEmpty( folderPath )? "" : folderPath);
 
         final int statusCode = post.getStatusCode();
         if(statusCode != 200) {

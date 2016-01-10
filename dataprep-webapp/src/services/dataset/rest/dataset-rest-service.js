@@ -6,15 +6,17 @@
      * @name data-prep.services.dataset.service:DatasetRestService
      * @description Dataset service. This service provide the entry point to the backend dataset REST api.<br/>
      * <b style="color: red;">WARNING : do NOT use this service directly.
-     * {@link data-prep.services.dataset.service:DatasetService DatasetService} must be the only entry point for datasets</b>
+     * {@link data-prep.services.dataset.service:DatasetService DatasetService} must be the only entry point for
+     *     datasets</b>
      */
-    function DatasetRestService($rootScope, $upload, $http, RestURLs) {
+    function DatasetRestService ($rootScope, $upload, $http, RestURLs) {
         return {
             import: importRemoteDataset,
             create: create,
             update: update,
             delete: deleteDataset,
             clone: cloneDataset,
+            move: moveDataset,
 
             updateColumn: updateColumn,
 
@@ -41,7 +43,7 @@
          * @param {object} folder - the dataset folder
          * @returns {Promise} the $upload promise
          */
-        function create(dataset, folder) {
+        function create (dataset, folder) {
             var folderPath = folder && folder.id ? folder.id : '/';
             return $upload.http({
                 url: RestURLs.datasetUrl + '?name=' + encodeURIComponent(dataset.name) + '&folderPath=' + encodeURIComponent(folderPath),
@@ -59,7 +61,7 @@
          * @param {object} folder The dataset folder
          * @returns {Promise} The POST promise
          */
-        function importRemoteDataset(parameters, folder) {
+        function importRemoteDataset (parameters, folder) {
             var folderPath = folder && folder.id ? folder.id : '/';
             var req = {
                 method: 'POST',
@@ -80,7 +82,7 @@
          * @param {dataset} dataset - the dataset infos to update
          * @returns {Promise} the $upload promise
          */
-        function update(dataset) {
+        function update (dataset) {
             return $upload.http({
                 url: RestURLs.datasetUrl + '/' + dataset.id + '?name=' + encodeURIComponent(dataset.name),
                 method: 'PUT',
@@ -97,7 +99,7 @@
          * @param {dataset} dataset the dataset infos to delete
          * @returns {Promise} The DELETE promise
          */
-        function deleteDataset(dataset) {
+        function deleteDataset (dataset) {
             return $http.delete(RestURLs.datasetUrl + '/' + dataset.id);
         }
 
@@ -106,12 +108,12 @@
          * @name cloneDataset
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Clone the dataset
-         * @param {dataset} dataset the dataset infos to delete
-         * @param {folder} folder the folder to clone the dataset
+         * @param {Object} dataset the dataset infos to clone
+         * @param {Object} folder the folder to clone the dataset
          * @param {string} cloneName the name for the cloned dataset
-         * @returns {Promise} The GET promise
+         * @returns {HttpPromise} The GET promise
          */
-        function cloneDataset(dataset, folder, cloneName) {
+        function cloneDataset (dataset, folder, cloneName) {
             var url = RestURLs.datasetUrl + '/clone/' + dataset.id;
             if (folder) {
                 url += '?folderPath=' + encodeURIComponent(folder.id);
@@ -126,6 +128,31 @@
             return $http.put(url);
         }
 
+
+        /**
+         * @ngdoc method
+         * @name moveDataset
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @description Move the dataset to an other Folder
+         * @param {Object} dataset the dataset infos to move
+         * @param {Object} folder the original folder of the dataset
+         * @param {Object} newFolder the folder to move the dataset
+         * @param {String} newName the name for the moved dataset (optional)
+         * @returns {HttpPromise} The PUT promise
+         */
+        function moveDataset (dataset, folder, newFolder, newName) {
+            var url = RestURLs.datasetUrl + '/move/' + dataset.id;
+
+            return $http.put(url,
+                {
+                    folderPath: folder.id,
+                    newFolderPath: newFolder.id,
+                    newName: newName
+                }
+            );
+        }
+
+
         //--------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------Metadata---------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
@@ -139,7 +166,7 @@
          * @description Get the dataset list
          * @returns {Promise} The GET call promise
          */
-        function getDatasets(sortType, sortOrder, deferredAbort) {
+        function getDatasets (sortType, sortOrder, deferredAbort) {
             var url = RestURLs.datasetUrl;
 
             if (sortType) {
@@ -164,7 +191,7 @@
          * @param {dataset} metadata The dataset infos to update
          * @returns {Promise} The POST promise
          */
-        function updateMetadata(metadata) {
+        function updateMetadata (metadata) {
             return $http.post(RestURLs.datasetUrl + '/' + metadata.id, metadata);
         }
 
@@ -175,7 +202,7 @@
          * @description Ask certification for a dataset
          * @param {string} datasetId The dataset id
          */
-        function processCertification(datasetId) {
+        function processCertification (datasetId) {
             return $http.put(RestURLs.datasetUrl + '/' + datasetId + '/processcertification');
         }
 
@@ -190,7 +217,7 @@
          * @param {object} params The parameters containing typeId and/or domainId
          * @returns {Promise} The POST promise
          */
-        function updateColumn(datasetId, columnId, params) {
+        function updateColumn (datasetId, columnId, params) {
             var url = RestURLs.datasetUrl + '/' + datasetId + '/column/' + columnId;
             return $http.post(url, params);
         }
@@ -207,7 +234,7 @@
          * @param {boolean} metadata If false, the metadata will not be returned
          * @returns {Promise} The GET promise
          */
-        function getContent(datasetId, metadata) {
+        function getContent (datasetId, metadata) {
             var url = RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata;
             return $http.get(url)
                 .then(function (res) {
@@ -223,7 +250,7 @@
          * @param {string} datasetId The dataset id
          * @returns {Promise} The GET promise
          */
-        function getMetadata(datasetId) {
+        function getMetadata (datasetId) {
             var url = RestURLs.datasetUrl + '/' + datasetId + '/metadata';
             return $http.get(url)
                 .then(function (res) {
@@ -238,7 +265,7 @@
          * @description Get the dataset content from a complete URL
          * @returns {Promise} The GET promise
          */
-        function getContentFromUrl(url) {
+        function getContentFromUrl (url) {
             return $http.get(url)
                 .then(function (res) {
                     return res.data;
@@ -257,7 +284,7 @@
          * @param {string} sheetName The sheet to preview
          * @returns {Promise} The GET promise
          */
-        function getSheetPreview(datasetId, sheetName) {
+        function getSheetPreview (datasetId, sheetName) {
             $rootScope.$emit('talend.loading.start');
             return $http.get(RestURLs.datasetUrl + '/preview/' + datasetId + '?metadata=true' + (sheetName ? '&sheetName=' + encodeURIComponent(sheetName) : ''))
                 .then(function (res) {
@@ -267,7 +294,6 @@
                     $rootScope.$emit('talend.loading.stop');
                 });
         }
-
 
         //--------------------------------------------------------------------------------------------------------------
         //------------------------------------------------Toggle Favorite-----------------------------------------------
@@ -280,10 +306,9 @@
          * @param {dataset} dataset The dataset to be toggled
          * @returns {Promise} The PUT promise
          */
-        function toggleFavorite(dataset) {
+        function toggleFavorite (dataset) {
             return $http.post(RestURLs.datasetUrl + '/favorite/' + dataset.id + '?unset=' + dataset.favorite);
         }
-
     }
 
     angular.module('data-prep.services.dataset')

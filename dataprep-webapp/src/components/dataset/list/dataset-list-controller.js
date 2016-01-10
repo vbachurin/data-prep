@@ -16,17 +16,16 @@
      * @requires data-prep.services.utils.service:MessageService
      * @requires talend.widget.service:TalendConfirmService
      */
-    function DatasetListCtrl($timeout, $translate, $stateParams, state, StateService,
-                             DatasetService, DatasetListSortService, FolderService,
-                             PlaygroundService,
-                             UploadWorkflowService, UpdateWorkflowService,
-                             MessageService, TalendConfirmService) {
+    function DatasetListCtrl ($timeout, $translate, $stateParams, StateService, DatasetService, DatasetListSortService, PlaygroundService,
+                              TalendConfirmService, MessageService, UploadWorkflowService, UpdateWorkflowService, FolderService, state) {
         var vm = this;
 
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
         vm.state = state;
-        vm.isSendingRequest = false;
+
+        vm.isCloningDs = false;
+        vm.isMovingDs = false;
 
         /**
          * @ngdoc property
@@ -136,7 +135,7 @@
          * @description [PRIVATE] Initiate a new preparation from dataset
          * @param {object} dataset The dataset to open
          */
-        function open(dataset) {
+        function open (dataset) {
             PlaygroundService.initPlayground(dataset)
                 .then(function () {
                     $timeout(StateService.showPlayground);
@@ -149,7 +148,7 @@
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description [PRIVATE] updates the existing dataset with the uploadd one
          */
-        vm.uploadUpdatedDatasetFile = function uploadUpdatedDatasetFile(dataset) {
+        vm.uploadUpdatedDatasetFile = function uploadUpdatedDatasetFile (dataset) {
             UpdateWorkflowService.updateDataset(vm.updateDatasetFile[0], dataset);
         };
 
@@ -160,11 +159,11 @@
          * @description Delete a dataset
          * @param {object} dataset The dataset to delete
          */
-        vm.remove = function remove(dataset) {
+        vm.remove = function remove (dataset) {
             TalendConfirmService.confirm({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {
-                    type: 'dataset',
-                    name: dataset.name
-                })
+                type: 'dataset',
+                name: dataset.name
+            })
                 .then(function () {
                     return DatasetService.delete(dataset);
                 })
@@ -183,23 +182,58 @@
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description perform the dataset cloning to the folder destination
          */
-        vm.clone = function clone() {
-            vm.isSendingRequest = true;
+        vm.clone = function () {
+            vm.isCloningDs = true;
             vm.cloneNameForm.$commitViewValue();
 
             DatasetService.clone(vm.datasetToClone, vm.folderDestination, vm.cloneName)
                 .then(function () {
-                    MessageService.success('CLONE_SUCCESS_TITLE', 'CLONE_SUCCESS');
+                    MessageService.success('COPY_SUCCESS_TITLE', 'COPY_SUCCESS');
+
+                    // force going to current folder to refresh the content
                     FolderService.getContent(state.folder.currentFolder);
-                })
-                .finally(function () {
                     // reset some values to initial values
                     vm.folderDestinationModal = false;
                     vm.datasetToClone = null;
                     vm.folderDestination = null;
                     vm.foldersFound = [];
                     vm.cloneName = '';
-                    vm.isSendingRequest = false;
+                    vm.isCloningDs = false;
+
+                }, function () {
+                    vm.isCloningDs = false;
+                    setTimeout(vm.focusOnNameInput, 1100);
+                });
+        };
+
+        /**
+         * @ngdoc method
+         * @name move
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description perform the dataset moving to the folder destination
+         */
+        vm.move = function () {
+            vm.isMovingDs = true;
+            vm.cloneNameForm.$commitViewValue();
+
+            DatasetService.move(vm.datasetToClone, state.folder.currentFolder, vm.folderDestination, vm.cloneName)
+                .then(function () {
+                    MessageService.success('MOVE_SUCCESS_TITLE', 'MOVE_SUCCESS');
+
+                    // force going to current folder to refresh the content
+                    FolderService.getContent(state.folder.currentFolder);
+
+                    // reset some values to initial values
+                    vm.folderDestinationModal = false;
+                    vm.datasetToClone = null;
+                    vm.folderDestination = null;
+                    vm.foldersFound = [];
+                    vm.cloneName = '';
+                    vm.isMovingDs = false;
+
+                }, function () {
+                    vm.isMovingDs = false;
+                    setTimeout(vm.focusOnNameInput, 1100);
                 });
         };
 
@@ -211,7 +245,7 @@
          * @param {string} name The new name
          * @description Rename a dataset
          */
-        vm.rename = function rename(dataset, name) {
+        vm.rename = function rename (dataset, name) {
             var cleanName = name ? name.trim().toLowerCase() : '';
             if (cleanName) {
                 if (dataset.renaming) {
@@ -246,7 +280,7 @@
          * @description [PRIVATE] Load playground with provided dataset id, if present in route param
          * @param {object[]} datasets List of all user's datasets
          */
-        var loadUrlSelectedDataset = function loadUrlSelectedDataset(datasets) {
+        var loadUrlSelectedDataset = function loadUrlSelectedDataset (datasets) {
             if ($stateParams.datasetid) {
                 var selectedDataset = _.find(datasets, function (dataset) {
                     return dataset.id === $stateParams.datasetid;
@@ -298,7 +332,7 @@
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description Create a new folder
          */
-        vm.addFolder = function addFolder() {
+        vm.addFolder = function addFolder () {
             vm.folderNameForm.$commitViewValue();
 
             var pathToCreate = (state.folder.currentFolder.id ? state.folder.currentFolder.id : '') + '/' + vm.folderName;
@@ -317,7 +351,7 @@
          * @param {object} folder the folder to rename
          * @param {string} newName the new last part of the path
          */
-        vm.renameFolder = function renameFolder(folder, newName) {
+        vm.renameFolder = function renameFolder (folder, newName) {
             var path = folder.id;
             var lastSlashIndex = path.lastIndexOf('/');
             var newPath = path.substring(0, lastSlashIndex) + '/' + newName;
@@ -334,7 +368,7 @@
          * @description Remove a folder
          * @param {object} folder The folder to remove
          */
-        vm.removeFolder = function removeFolder(folder) {
+        vm.removeFolder = function removeFolder (folder) {
             FolderService.remove(folder.id)
                 .then(function () {
                     FolderService.getContent(state.folder.currentFolder);
@@ -349,11 +383,12 @@
          * @description Display folder destination choice modal
          * @param {object} dataset - the dataset to clone or move
          */
-        vm.openFolderChoice = function openFolderChoice(dataset) {
+        vm.openFolderChoice = function openFolderChoice (dataset) {
             vm.datasetToClone = dataset;
             vm.foldersFound = [];
             vm.searchFolderQuery = '';
-            vm.cloneName = dataset.name + $translate.instant('COPY');
+            vm.cloneName = dataset.name;
+
             var toggleToCurrentFolder = state.folder && state.folder.currentFolder && state.folder.currentFolder.id;
 
             if (toggleToCurrentFolder) {
@@ -390,7 +425,7 @@
          * @param {array} pathParts All path parts
          * @param {string} currentPath The current path for recursive call
          */
-        vm.toggle = function toggle(folder, pathParts, currentPath) {
+        vm.toggle = function toggle (folder, pathParts, currentPath) {
             if (!folder.collapsed) {
                 folder.collapsed = true;
             } else {
@@ -458,7 +493,7 @@
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description Search folders
          */
-        vm.searchFolders = function searchFolders() {
+        vm.searchFolders = function searchFolders () {
 
             vm.foldersFound = [];
             if (vm.searchFolderQuery) {
