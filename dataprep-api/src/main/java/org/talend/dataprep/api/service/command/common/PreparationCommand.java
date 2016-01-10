@@ -1,5 +1,7 @@
 package org.talend.dataprep.api.service.command.common;
 
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -49,9 +51,6 @@ public abstract class PreparationCommand<T> extends GenericCommand<T> {
         final Preparation preparation = getPreparation(preparationId);
         final String dataSetId = preparation.getDataSetId();
 
-        // get dataset content with 1 row
-        final InputStream content = getDatasetContent(dataSetId, 1L);
-
         // extract insertion point actions
         final List<Action> actions = getPreparationActions(preparation, insertionStepId);
 
@@ -67,10 +66,11 @@ public abstract class PreparationCommand<T> extends GenericCommand<T> {
         final String uri = transformationServiceUrl + "/transform/diff/metadata";
         final HttpPost transformationCall = new HttpPost(uri);
 
+        final ObjectMapper mapper = builder.build();
         try {
-            transformationCall.setEntity(new StringEntity(builder.build().writer().writeValueAsString(previewParameters)));
+            transformationCall
+                    .setEntity(new StringEntity(mapper.writer().writeValueAsString(previewParameters), APPLICATION_JSON));
             final InputStream diffInputStream = client.execute(transformationCall).getEntity().getContent();
-            final ObjectMapper mapper = builder.build();
             return mapper.readValue(diffInputStream, StepDiff.class);
         }
         finally {
