@@ -227,21 +227,7 @@
                 dataset.favorite = !dataset.favorite;
             });
         }
-
-        /**
-         * @ngdoc method
-         * @name getCurrentFolderDataset
-         * @methodOf data-prep.services.dataset.service:DatasetService
-         * @param {string} name The dataset name
-         * @description Get the dataset that has the wanted name within the current folder
-         * @returns {object} The dataset
-         */
-        function getCurrentFolderDataset (name) {
-            return _.find(state.folder.currentFolderContent.datasets, function (dataset) {
-                return dataset.name === name;
-            });
-        }
-
+        
         /**
          * @ngdoc method
          * @name getDatasetByName

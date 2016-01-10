@@ -541,7 +541,7 @@ describe('Dataset Rest Service', function () {
             $rootScope.$digest();
 
             //then
-            //expect GET not to throw any exception;
+            //expect PUT not to throw any exception;
         }));
 
         it('should call clone w/o folder path and clone name', inject(function ($rootScope, DatasetRestService, RestURLs) {
@@ -559,7 +559,7 @@ describe('Dataset Rest Service', function () {
             $rootScope.$digest();
 
             //then
-            //expect GET not to throw any exception;
+            //expect PUT not to throw any exception;
         }));
 
     });
@@ -572,8 +572,10 @@ describe('Dataset Rest Service', function () {
             var folder = {id:'/'};
             var newFolder = {id:'/wine/beer'};
 
+            var moveRequest = {folderPath: folder.id, newFolderPath: newFolder.id};
+
             $httpBackend
-                .expectPUT(RestURLs.datasetUrl + '/move/foobar?folderPath='+encodeURIComponent(folder.id)+'&newFolderPath='+encodeURIComponent(newFolder.id))
+                .expectPUT(RestURLs.datasetUrl + '/move/foobar', moveRequest)
                 .respond(200);
 
             //when
@@ -582,7 +584,7 @@ describe('Dataset Rest Service', function () {
             $rootScope.$digest();
 
             //then
-            //expect GET not to throw any exception;
+            //expect PUT not to throw any exception;
         }));
 
         it('should call move w a new name', inject(function ($rootScope, DatasetRestService, RestURLs) {
@@ -592,8 +594,10 @@ describe('Dataset Rest Service', function () {
             var newFolder = {id:'/wine/beer'};
             var newName = 'good one';
 
+            var moveRequest = {folderPath: folder.id, newFolderPath: newFolder.id, newName: newName};
+
             $httpBackend
-                .expectPUT(RestURLs.datasetUrl + '/move/foobar?folderPath='+encodeURIComponent(folder.id)+'&newFolderPath='+encodeURIComponent(newFolder.id)+'&newName='+encodeURIComponent(newName))
+                .expectPUT(RestURLs.datasetUrl + '/move/foobar', moveRequest)
                 .respond(200);
 
             //when
@@ -602,7 +606,7 @@ describe('Dataset Rest Service', function () {
             $rootScope.$digest();
 
             //then
-            //expect GET not to throw any exception;
+            //expect PUT not to throw any exception;
         }));
 
     });

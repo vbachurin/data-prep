@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import com.jayway.restassured.http.ContentType;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -30,6 +31,7 @@ import org.talend.daikon.exception.json.JsonErrorCode;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetMoveRequest;
 import org.talend.dataprep.api.folder.FolderContent;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 
@@ -347,8 +349,8 @@ public class DataSetAPITest extends ApiServiceTestBase {
 
 
         given() //
-            .queryParam( "folderPath", "") //
-            .queryParam( "newFolderPath", "wine") //
+            .body( new DataSetMoveRequest( "", "wine", null ) ) //
+            .contentType(ContentType.JSON)
             .when() //
             .put("/api/datasets/move/{id}", dataSetId) //
             .asString();
@@ -425,8 +427,8 @@ public class DataSetAPITest extends ApiServiceTestBase {
         Assertions.assertThat( dataSetMetadata.getName() ).isEqualTo( cloneName );
 
         response = given() //
-            .queryParam("folderPath", "beer") //
-            .queryParam( "newFolderPath", "foo") //
+            .body( new DataSetMoveRequest( "beer", "foo", null) ) //
+            .contentType(ContentType.JSON) //
             .when() //
             .put("/api/datasets/move/{id}", dataSetId);
 
@@ -486,9 +488,8 @@ public class DataSetAPITest extends ApiServiceTestBase {
         Assertions.assertThat( dataSetMetadata.getName() ).isEqualTo( cloneName );
 
         response = given() //
-            .queryParam("folderPath", "beer") //
-            .queryParam( "newFolderPath", "foo") //
-            .queryParam( "newName", "thegoodwine") //
+            .body( new DataSetMoveRequest("beer", "foo", "thegoodwine") ) //
+            .contentType( ContentType.JSON) //
             .when() //
             .put("/api/datasets/move/{id}", dataSetId);
 

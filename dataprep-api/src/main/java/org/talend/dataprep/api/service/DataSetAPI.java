@@ -12,11 +12,13 @@ import org.apache.http.client.HttpClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetMoveRequest;
 import org.talend.dataprep.api.service.command.common.HttpResponse;
 import org.talend.dataprep.api.service.command.dataset.CloneDataSet;
 import org.talend.dataprep.api.service.command.dataset.CreateDataSet;
@@ -214,31 +216,31 @@ public class DataSetAPI extends APIService {
     /**
      * Move a data set to an other folder
      *
-     * @param folderPath The original folder path of the dataset
-     * @param newFolderPath The new folder path of the dataset
+     * @param dataSetId
+     * @param dataSetMoveRequest
      */
-    @RequestMapping(value = "/api/datasets/move/{id}", method = PUT, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "Clone a data set", produces = MediaType.TEXT_PLAIN_VALUE, notes = "Move a data set to an other folder.")
+    @RequestMapping(value = "/api/datasets/move/{id}", method = PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Clone a data set", produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.ALL_VALUE, notes = "Move a data set to an other folder.")
     @Timed
-    public void move(
-        @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
-        @ApiParam(value = "The original folder path of the dataset.") @RequestParam(defaultValue = "", required = false) String folderPath,
-        @ApiParam(value = "The new folder path of the dataset.") @RequestParam(defaultValue = "", required = false) String newFolderPath,
-        @ApiParam(value = "The new name of the moved dataset.") @RequestParam(defaultValue = "", required = false) String newName,
-        final OutputStream output)
-        throws IOException {
+    public void move(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to clone") String dataSetId,
+            @ApiParam(value = "the parameters to move the dataset.") @RequestBody(required = true) DataSetMoveRequest dataSetMoveRequest,
+            final OutputStream output) throws IOException {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Moving dataset (pool: {} )...", getConnectionStats());
         }
         HttpClient client = getClient();
-        HystrixCommand<HttpResponse> creation = getCommand(MoveDataSet.class, client, dataSetId, folderPath, newFolderPath, newName);
+        HystrixCommand<HttpResponse> creation = getCommand(MoveDataSet.class, client, //
+                dataSetId, //
+                dataSetMoveRequest.getFolderPath(), //
+                dataSetMoveRequest.getNewFolderPath(), //
+                dataSetMoveRequest.getNewName());
         HttpResponse result = creation.execute();
         LOG.debug("Dataset move done.");
 
         HttpResponseContext.header("Content-Type", result.getContentType());
         HttpResponseContext.status(HttpStatus.valueOf(result.getStatusCode()));
-        if (result.getStatusCode() != HttpStatus.OK.value()){
+        if (result.getStatusCode() != HttpStatus.OK.value()) {
             try {
                 IOUtils.write(result.getHttpContent(), output);
                 output.flush();
@@ -250,8 +252,7 @@ public class DataSetAPI extends APIService {
 
     @RequestMapping(value = "/api/datasets/preview/{id}", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data set by id.", produces = APPLICATION_JSON_VALUE, notes = "Get a data set based on given id.")
-    public void preview(
-            @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
+    public void preview(@ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
             final OutputStream output) {

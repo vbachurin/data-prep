@@ -138,17 +138,18 @@
          * @param {Object} folder the original folder of the dataset
          * @param {Object} newFolder the folder to move the dataset
          * @param {String} newName the name for the moved dataset (optional)
-         * @returns {HttpPromise} The GET promise
+         * @returns {HttpPromise} The PUT promise
          */
         function moveDataset (dataset, folder, newFolder, newName) {
             var url = RestURLs.datasetUrl + '/move/' + dataset.id;
-            url += '?folderPath=' + encodeURIComponent(folder.id);
-            url += '&newFolderPath=' + encodeURIComponent(newFolder.id);
 
-            if (newName) {
-                url += '&newName=' + encodeURIComponent(newName);
-            }
-            return $http.put(url);
+            return $http.put(url,
+                {
+                    folderPath: folder.id,
+                    newFolderPath: newFolder.id,
+                    newName: newName
+                }
+            );
         }
 
 
