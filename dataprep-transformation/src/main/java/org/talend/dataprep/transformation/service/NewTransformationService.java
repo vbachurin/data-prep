@@ -17,7 +17,6 @@ import java.util.stream.StreamSupport;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.TeeOutputStream;
@@ -278,9 +277,8 @@ public class NewTransformationService extends BaseTransformationService {
     @RequestMapping(value = "/transform/preview", method = POST, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Preview the transformation on input data", notes = "This operation returns the input data diff between the old and the new transformation actions", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @VolumeMetered
-    public void transformPreview(
-            @ApiParam(name = "body", value = "Preview parameters.") @RequestBody final String rawParameters,
-            final OutputStream output) {
+    public void transformPreview(@ApiParam(name = "body", value = "Preview parameters.") @RequestBody final String rawParameters,
+                                 final OutputStream output) {
     //@formatter:on
 
         final ObjectMapper mapper = builder.build();
@@ -318,26 +316,33 @@ public class NewTransformationService extends BaseTransformationService {
      * Compare the results of 2 sets of actions, and return the diff metadata Ex : the created columns ids
      */
     //@formatter:off
-    @RequestMapping(value = "/transform/diff/metadata", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ApiOperation(value = "Apply a diff between 2 sets of actions and return the diff (containing created columns ids for example)", notes = "This operation returns the diff metadata", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @RequestMapping(value = "/transform/diff/metadata", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Apply a diff between 2 sets of actions and return the diff (containing created columns ids for example)", notes = "This operation returns the diff metadata", consumes = MediaType.APPLICATION_JSON_VALUE)
     @VolumeMetered
-    public StepDiff getCreatedColumns(
-            @ApiParam(value = "Actions that is considered as reference in the diff.") @RequestPart(value = "referenceActions", required = true) final Part referenceActions,
-            @ApiParam(value = "Actions which result will be compared to reference result.") @RequestPart(value = "diffActions", required = true) final Part diffActions,
-            @ApiParam(value = "Data set content as JSON. It should contains only 1 records, and the columns metadata") @RequestPart(value = "content", required = true) final Part content) {
+    public StepDiff getCreatedColumns(@ApiParam(name = "body", value = "Preview parameters in json.") @RequestBody final String rawParameters) {
     //@formatter:on
 
         final ObjectMapper mapper = builder.build();
-        final OutputStream output = new ByteArrayOutputStream();
-        try (JsonParser parser = mapper.getFactory().createParser(content.getInputStream())) {
-            // decode parts
-            final String decodedReferenceActions = referenceActions == null ? null
-                    : IOUtils.toString(referenceActions.getInputStream());
-            final String decodedDiffActions = diffActions == null ? null : IOUtils.toString(diffActions.getInputStream());
+
+        // parse parameters
+        PreviewParameters previewParameters;
+        try {
+            previewParameters = mapper.readerFor(PreviewParameters.class).readValue(rawParameters);
+        } catch (IOException e) {
+            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PERFORM_PREVIEW, e);
+        }
+
+        // get the dataset content
+        final HttpRequestBase datasetGet = getDataSetRequest(previewParameters.getDataSetId(), 1L);
+        final InputStream content = getDataSetContent(datasetGet);
+
+        try (JsonParser parser = mapper.getFactory().createParser(content)) {
             final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
 
+            final OutputStream output = new ByteArrayOutputStream();
+
             // call diff
-            executePreview(decodedDiffActions, decodedReferenceActions, null, dataSet, output);
+            executePreview(previewParameters.getNewActions(), previewParameters.getBaseActions(), null, dataSet, output);
 
             // extract created columns ids
             final JsonNode node = mapper.readTree(output.toString());
@@ -349,9 +354,12 @@ public class NewTransformationService extends BaseTransformationService {
             // create/return diff
             final StepDiff diff = new StepDiff();
             diff.setCreatedColumns(createdColumns);
+            LOG.debug("{} creates {} columns", previewParameters, diff);
             return diff;
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
+        } finally {
+            datasetGet.releaseConnection();
         }
     }
 

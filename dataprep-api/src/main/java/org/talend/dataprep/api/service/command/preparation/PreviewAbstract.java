@@ -64,6 +64,15 @@ public abstract class PreviewAbstract extends PreparationCommand<InputStream> {
         return transformationCall;
     }
 
+    /**
+     * Set the preview context.
+     *
+     * @param baseActions the list of actions to use as the starting state for the preview.
+     * @param newActions the list of action to add to the starting ones.
+     * @param datasetId the datasret id.
+     * @param tdpIds the list of rows to apply.
+     * @throws JsonProcessingException if an error occurs.
+     */
     protected void setContext(Collection<Action> baseActions, Collection<Action> newActions, String datasetId,
             List<Integer> tdpIds) throws JsonProcessingException {
         this.parameters = new PreviewParameters( //

@@ -6,7 +6,6 @@ import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -79,14 +78,13 @@ public class DiffTests extends TransformationServiceBaseTests {
     }
 
     @Test
-    @Ignore
     public void should_return_created_columns() throws Exception {
         // given
         PreviewParameters input = new PreviewParameters( //
                 getSingleTransformation(), //
                 getMultipleTransformationWithNewColumn(), //
                 createDataset("../preview/input.csv", "input4preview", "text/csv"), //
-                "[]");
+                null);
 
         // when
         final String response = given() //
@@ -97,19 +95,18 @@ public class DiffTests extends TransformationServiceBaseTests {
                 .asString();
 
         // then
-        assertEquals("{\"createdColumns\":[\"0003\"]}", response, false);
+        assertEquals("{\"createdColumns\":[\"0009\"]}", response, false);
     }
 
+
     @Test
-    @Ignore
     public void should_return_empty_array_when_step_does_not_create_columns() throws Exception {
         // given
         PreviewParameters input = new PreviewParameters( //
                 getSingleTransformation(), //
                 getMultipleTransformationWithoutNewColumn(), //
                 createDataset("../preview/input.csv", "input4preview", "text/csv"), //
-                "[]");
-
+                null);
 
         // when
         final String response = given() //
