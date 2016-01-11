@@ -9,13 +9,12 @@
     function InventoryItemCtrl() {
         var vm = this;
 
-        vm.openOnClick = function (item) {
+        vm.openOnClick = function openOnClick(item) {
             if(vm.actionsEnabled) {
                 vm.open(item);
             }
         };
-
-    };
+    }
     angular.module('data-prep.inventory-item')
         .controller('InventoryItemCtrl', InventoryItemCtrl);
 })();

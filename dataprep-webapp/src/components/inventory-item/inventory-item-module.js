@@ -10,6 +10,7 @@
     angular.module('data-prep.inventory-item', [
         'ui.router',
         'pascalprecht.translate',
-        'talend.widget'
+        'talend.widget',
+        'data-prep.services.utils'
     ]);
 })();
