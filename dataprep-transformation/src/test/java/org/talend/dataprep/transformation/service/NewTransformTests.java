@@ -191,6 +191,23 @@ public class NewTransformTests extends TransformationServiceBaseTests {
                 .when() //
                 .get("/apply/preparation/{prepId}/dataset/{datasetId}/{format}", prepId, dsId, "JSON");
         assertThat(response.getStatusCode(), is(200));
-
     }
+
+    @Test
+    public void exportDataSet() throws Exception {
+        // given
+        String dataSetId = createDataset("input_dataset.csv", "my dataset", "text/csv");
+
+        // when
+        String exportContent = given() //
+                .queryParam("name", "ds_export").expect().statusCode(200).log().ifError()//
+                .when() //
+                .get("/export/dataset/{id}/{format}", dataSetId, "JSON") //
+                .asString();
+
+        // then
+        String expectedContent = IOUtils.toString(this.getClass().getResourceAsStream("no_action_expected.json"));
+        assertEquals(expectedContent, exportContent, false);
+    }
+
 }

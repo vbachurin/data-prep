@@ -1,8 +1,8 @@
-package org.talend.dataprep.transformation.format.json;
+package org.talend.dataprep.format.export.json;
 
 import java.io.IOException;
 
-import org.talend.dataprep.transformation.format.ExportFormat;
+import org.talend.dataprep.format.export.ExportFormat;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

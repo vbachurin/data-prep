@@ -2,6 +2,8 @@ package org.talend.dataprep.transformation.service;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -19,10 +21,10 @@ import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.PreparationErrorCodes;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
+import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.http.HttpResponseContext;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
-import org.talend.dataprep.transformation.format.ExportFormat;
 import org.talend.dataprep.transformation.format.FormatRegistrationService;
 
 /**
@@ -66,21 +68,31 @@ public abstract class BaseTransformationService {
      * @param formatName the wanted export format.
      * @param stepId the step id of the preparation to apply.
      * @param exportName the export name.
+     * @param arguments the optional transformation argument (e.g. csv separator...)
      */
     protected void internalTransform(String preparationId, DataSet dataSet, OutputStream response, String formatName,
-            String stepId, String exportName) {
+            String stepId, String exportName, Map<String, String> arguments) {
 
         final ExportFormat format = getFormat(formatName);
-        String actions = getActions(preparationId, stepId);
+
+        // get the actions to apply (no preparation ==> dataset export ==> no actions)
+        String actions;
+        if (StringUtils.isBlank(preparationId)) {
+            actions = "{\"actions\": []}";
+        } else {
+            actions = getActions(preparationId, stepId);
+        }
 
         HttpResponseContext.contentType(format.getMimeType());
         HttpResponseContext.header("Content-Disposition", "attachment; filename=\"" + exportName + format.getExtension() + "\"");
 
         Configuration configuration = Configuration.builder() //
                 .format(format.getName()) //
+                .args(arguments) //
                 .output(response) //
                 .actions(actions) //
                 .build();
+
         factory.get(configuration).transform(dataSet, configuration);
 
     }
@@ -130,4 +142,17 @@ public abstract class BaseTransformationService {
             actionsRetrieval.releaseConnection();
         }
     }
+
+    /**
+     * Filter export parameters so that only relevant parameters are left.
+     *
+     * @param optionalParams the raw export parameters.
+     * @return the filtered export parameters.
+     */
+    protected Map<String, String> filterRawExportParams(Map<String, String> optionalParams) {
+        return optionalParams.entrySet().stream()
+                .filter(e -> !StringUtils.equals(e.getKey(), ExportFormat.Parameter.FILENAME_PARAMETER))
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+    }
+
 }

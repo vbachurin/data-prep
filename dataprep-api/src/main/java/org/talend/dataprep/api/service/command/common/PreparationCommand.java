@@ -16,16 +16,19 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.talend.daikon.exception.ExceptionContext;
+import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.api.preparation.StepDiff;
-import org.talend.dataprep.api.service.command.dataset.DataSetGet;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.PreparationErrorCodes;
 import org.talend.dataprep.transformation.preview.api.PreviewParameters;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 
@@ -83,7 +86,7 @@ public abstract class PreparationCommand<T> extends GenericCommand<T> {
      *
      * @param preparationId - the preparation id
      * @return the resulting Json node object
-     * @throws java.io.IOException
+     * @throws java.io.IOException if an error occurs.
      */
     protected Preparation getPreparation(final String preparationId) throws IOException {
         if (StringUtils.isEmpty(preparationId)) {
@@ -91,7 +94,16 @@ public abstract class PreparationCommand<T> extends GenericCommand<T> {
         }
         final HttpGet preparationRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + preparationId);
         try {
-            InputStream content = client.execute(preparationRetrieval).getEntity().getContent();
+            // execute the request & check the response
+            final org.apache.http.HttpResponse response = client.execute(preparationRetrieval);
+            final org.springframework.http.HttpStatus status = org.springframework.http.HttpStatus
+                    .valueOf(response.getStatusLine().getStatusCode());
+            if (status.is4xxClientError() || status.is5xxServerError()) {
+                throw new TDPException(PreparationErrorCodes.UNABLE_TO_READ_PREPARATION,
+                        ExceptionContext.build().put("id", preparationId).put("version", "head"));
+            }
+            // parsre the preparation
+            InputStream content = response.getEntity().getContent();
             return builder.build().readerFor(Preparation.class).readValue(content);
         } finally {
             preparationRetrieval.releaseConnection();
@@ -99,42 +111,21 @@ public abstract class PreparationCommand<T> extends GenericCommand<T> {
     }
 
     /**
-     * Call Dataset Service to get dataset metadata details
+     * Return the dataset metadata from its id.
      *
-     * @param datasetId - the preparation id
-     * @return the resulting Json node object
-     * @throws java.io.IOException
+     * @param datasetId The dataset id.
+     * @return the dataset metadata.
+     * @throws IOException S**t happens...
      */
-    protected JsonNode getDatasetDetails(final String datasetId) throws IOException {
+    protected DataSetMetadata getDatasetMetadata(final String datasetId) throws IOException {
         final HttpGet datasetRetrieval = new HttpGet(datasetServiceUrl + "/datasets/" + datasetId + "/metadata");
         try {
             InputStream content = client.execute(datasetRetrieval).getEntity().getContent();
-            return builder.build().readTree(content);
+            final DataSet dataset = builder.build().readerFor(DataSet.class).readValue(content);
+            return dataset.getMetadata();
         } finally {
             datasetRetrieval.releaseConnection();
         }
-    }
-
-    /**
-     * Get the full dataset records.
-     *
-     * @param dataSetId the dataset id.
-     * @return the resulting input stream records
-     */
-    protected InputStream getDatasetContent(final String dataSetId) {
-        return getDatasetContent(dataSetId, null);
-    }
-
-    /**
-     * Get dataset records
-     *
-     * @param dataSetId the dataset id.
-     * @param sample the wanted sample size (if null or <=0, the full dataset content is returned).
-     * @return the resulting input stream records
-     */
-    protected InputStream getDatasetContent(final String dataSetId, Long sample) {
-        final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, dataSetId, true, sample);
-        return retrieveDataSet.execute();
     }
 
     /**

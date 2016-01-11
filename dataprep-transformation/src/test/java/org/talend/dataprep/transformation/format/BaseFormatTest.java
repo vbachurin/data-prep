@@ -9,6 +9,7 @@ import java.io.StringWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.transformation.TransformationBaseTest;
 
 /**

@@ -1,9 +1,9 @@
-package org.talend.dataprep.transformation.format;
+package org.talend.dataprep.format.export;
 
 import java.io.Serializable;
 import java.util.List;
 
-import org.talend.dataprep.transformation.format.json.ExportFormatSerializer;
+import org.talend.dataprep.format.export.json.ExportFormatSerializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -12,6 +12,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 @JsonSerialize(using = ExportFormatSerializer.class)
 public class ExportFormat {
+
+    /** Prefix that must be used for all export parameters. */
+    public static final String PREFIX = "exportParameters.";
 
     /** The format type human readable name. */
     private final String name;

@@ -29,13 +29,13 @@ import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
+import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.aggregation.AggregationService;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngine;
-import org.talend.dataprep.transformation.format.ExportFormat;
 import org.talend.dataprep.transformation.format.FormatRegistrationService;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -126,7 +126,7 @@ public class TransformationService {
 
         final ObjectMapper mapper = builder.build();
         try (JsonParser parser = mapper.getFactory().createParser(content.getInputStream())) {
-            Map<String, Object> arguments = new HashMap<>();
+            Map<String, String> arguments = new HashMap<>();
             final Enumeration<String> names = request.getParameterNames();
             while (names.hasMoreElements()) {
 
@@ -146,7 +146,7 @@ public class TransformationService {
             final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
 
             // set headers
-            String name = request.getParameter("exportParameters." + ExportFormat.Parameter.FILENAME_PARAMETER);
+            String name = request.getParameter(ExportFormat.PREFIX + ExportFormat.Parameter.FILENAME_PARAMETER);
             if (StringUtils.isBlank(name)) {
                 name = "untitled";
             }

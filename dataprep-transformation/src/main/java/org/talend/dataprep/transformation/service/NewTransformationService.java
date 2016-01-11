@@ -11,6 +11,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -45,6 +46,7 @@ import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.exception.error.PreparationErrorCodes;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
+import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.aggregation.AggregationService;
@@ -59,7 +61,6 @@ import org.talend.dataprep.transformation.api.transformer.configuration.PreviewC
 import org.talend.dataprep.transformation.api.transformer.suggestion.Suggestion;
 import org.talend.dataprep.transformation.api.transformer.suggestion.SuggestionEngine;
 import org.talend.dataprep.transformation.cache.TransformationCacheKey;
-import org.talend.dataprep.transformation.format.ExportFormat;
 import org.talend.dataprep.transformation.format.JsonFormat;
 import org.talend.dataprep.transformation.preview.api.PreviewParameters;
 
@@ -109,6 +110,7 @@ public class NewTransformationService extends BaseTransformationService {
      * @param formatName The output {@link ExportFormat format}. This format also set the MIME response type.
      * @param stepId the preparation step id to use (default is 'head').
      * @param name the transformation name.
+     * @param exportParams additional (optional) export parameters.
      * @param output Where to write the response.
      */
     //@formatter:off
@@ -121,6 +123,7 @@ public class NewTransformationService extends BaseTransformationService {
                                @ApiParam(name = "Sample size", value = "Optional sample size to use for the dataset, if missing, the full dataset is returned") @RequestParam(value="sample", required = false) Long sample,
                                @ApiParam(value = "Step id", defaultValue = "head") @RequestParam(value = "stepId", required = false, defaultValue = "head") final String stepId,
                                @ApiParam(value = "Name of the transformation", defaultValue = "untitled") @RequestParam(value = "name", required = false, defaultValue = "untitled") final String name,
+                               final @RequestParam Map<String, String> exportParams,
                                final OutputStream output) {
     //@formatter:on
 
@@ -135,7 +138,7 @@ public class NewTransformationService extends BaseTransformationService {
             // streamed
             try (JsonParser parser = mapper.getFactory().createParser(datasetContent)) {
                 final DataSet dataSet = mapper.readerFor(DataSet.class).readValue(parser);
-                useCache(preparationId, dataSet, output, formatName, stepId, name, sample);
+                useCache(preparationId, dataSet, output, formatName, stepId, name, sample, filterRawExportParams(exportParams));
             }
 
         } catch (Exception e) {
@@ -147,6 +150,29 @@ public class NewTransformationService extends BaseTransformationService {
         }
     }
 
+    /**
+     * Export the dataset to the given format.
+     *
+     * @param datasetId the dataset id to transform.
+     * @param formatName The output {@link ExportFormat format}. This format also set the MIME response type.
+     * @param name the transformation name.
+     * @param exportParams additional (optional) export parameters.
+     * @param output Where to write the response.
+     */
+    //@formatter:off
+    @RequestMapping(value = "/export/dataset/{datasetId}/{format}", method = GET)
+    @ApiOperation(value = "Export the given dataset")
+    @Timed
+    public void exportDataset(
+            @ApiParam(value = "DataSet id to transform.") @PathVariable(value = "datasetId") final String datasetId,
+            @ApiParam(value = "Output format") @PathVariable("format") final String formatName,
+            @ApiParam(name = "Sample size", value = "Optional sample size to use for the dataset, if missing, the full dataset is returned") @RequestParam(value="sample", required = false) Long sample,
+            @ApiParam(value = "Name of the transformation", defaultValue = "untitled") @RequestParam(value = "name", required = false, defaultValue = "untitled") final String name,
+            final @RequestParam Map<String, String> exportParams,
+            final OutputStream output) {
+        //@formatter:on
+        applyOnDataset(null, datasetId, formatName, sample, null, name, exportParams, output);
+    }
 
     /**
      * Get the transformation out of the cache, if it's not cached, performs the transformation and cache its result.
@@ -158,10 +184,11 @@ public class NewTransformationService extends BaseTransformationService {
      * @param stepId the preparation step id.
      * @param name the preparation name.
      * @param sample the sample size.
+     * @param optionalParams list of optional parameters.
      * @throws IOException if an error occurs.
      */
     private void useCache(String preparationId, DataSet dataSet, OutputStream output, String formatName, String stepId,
-            String name, Long sample) throws IOException {
+            String name, Long sample, Map<String, String> optionalParams) throws IOException {
 
         // compute the cache key
         TransformationCacheKey key;
@@ -169,7 +196,7 @@ public class NewTransformationService extends BaseTransformationService {
             key = new TransformationCacheKey(preparationId, dataSet.getMetadata(), formatName, stepId, sample);
         } catch (IOException e) {
             LOG.warn("cannot generate transformation cache key for {}. Cache will not be used.", dataSet.getMetadata(), e);
-            internalTransform(preparationId, dataSet, output, formatName, stepId, name);
+            internalTransform(preparationId, dataSet, output, formatName, stepId, name, optionalParams);
             return;
         }
 
@@ -183,7 +210,7 @@ public class NewTransformationService extends BaseTransformationService {
         // or save it into the cache
         final OutputStream newCacheEntry = contentCache.put(key, ContentCache.TimeToLive.DEFAULT);
         OutputStream outputStreams = new TeeOutputStream(output, newCacheEntry);
-        internalTransform(preparationId, dataSet, outputStreams, formatName, stepId, name);
+        internalTransform(preparationId, dataSet, outputStreams, formatName, stepId, name, optionalParams);
     }
 
 
@@ -228,6 +255,7 @@ public class NewTransformationService extends BaseTransformationService {
                         parameters.getSampleSize(), //
                         parameters.getStepId(), //
                         "untitled", //
+                        Collections.emptyMap(), // no optional parameters
                         temp);
                 executor.execute(r);
 

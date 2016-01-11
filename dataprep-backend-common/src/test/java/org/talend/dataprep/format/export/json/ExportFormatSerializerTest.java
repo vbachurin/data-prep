@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.format.json;
+package org.talend.dataprep.format.export.json;
 
 import static org.junit.Assert.assertThat;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
@@ -9,13 +9,29 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Test;
-import org.talend.dataprep.transformation.format.BaseFormatTest;
-import org.talend.dataprep.transformation.format.ExportFormat;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.talend.dataprep.format.export.ExportFormat;
 
 /**
  * Unit test for json serialization of ExportFormat.
  */
-public class ExportFormatSerializerTest extends BaseFormatTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = ExportFormatSerializerTest.class)
+@Configuration
+@ComponentScan(basePackages = "org.talend.dataprep")
+@EnableAutoConfiguration
+public class ExportFormatSerializerTest {
+
+    /** Dataprep ready json builder. */
+    @Autowired
+    protected Jackson2ObjectMapperBuilder builder;
 
     @Test
     public void csv() throws IOException {

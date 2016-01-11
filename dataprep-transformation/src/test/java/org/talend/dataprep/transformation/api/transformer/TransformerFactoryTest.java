@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.transformation.TransformationBaseTest;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 
@@ -31,8 +32,8 @@ public class TransformerFactoryTest extends TransformationBaseTest {
     @Test
     public void getExporter_csv_exporter_should_write_csv_format() throws Exception {
         // given
-        Map<String, Object> arguments = new HashMap<>();
-        arguments.put("exportParameters.csvSeparator", ";");
+        Map<String, String> arguments = new HashMap<>();
+        arguments.put(ExportFormat.PREFIX + "csvSeparator", ";");
         final OutputStream outputStream = new ByteArrayOutputStream();
         final Configuration configuration = Configuration.builder() //
                 .args(arguments) //
