@@ -60,7 +60,7 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
     protected List<Map<String, String>> getValuesFromFile(String fileName, FormatGuess formatGuess,
             DataSetMetadata dataSetMetadata) throws Exception {
 
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
 
             InputStream jsonStream = formatGuess.getSerializer().serialize(inputStream, dataSetMetadata);
 
@@ -321,7 +321,7 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         XlsSchemaParser xlsSchemaParser = new XlsSchemaParser();
 
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
             formatGuess = formatGuesser.guess(getRequest(inputStream, "#7"), "UTF-8").getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
@@ -379,12 +379,6 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
      * XlsSerializer should follow the data format as set in the Excel file. This test ensures XlsSerializer follows the
      * data format as defined and don't directly use {@link Cell#getNumericCellValue()}.
      * </p>
-<<<<<<< HEAD:dataprep-backend-common/src/test/java/org/talend/dataprep/schema/xls/XlsFormatTest.java
-     *
-=======
-     * 
->>>>>>> improve testing for xls serialization:dataprep-backend-common/src/test/java/org/talend/dataprep/schema/XlsFormatTest.java
-     * @throws Exception
      * @see XlsUtils#getCellValueAsString(Cell)
      */
     @Test
@@ -462,7 +456,7 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
         String sheetName = "WEEK SUMMARY";
 
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
+        try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
             formatGuess = formatGuesser.guess(getRequest(inputStream, UUID.randomUUID().toString()), "UTF-8").getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
