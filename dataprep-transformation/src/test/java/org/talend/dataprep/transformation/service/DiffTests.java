@@ -1,9 +1,12 @@
 package org.talend.dataprep.transformation.service;
 
 import static com.jayway.restassured.RestAssured.given;
+import static org.junit.Assert.assertThat;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -56,25 +59,23 @@ public class DiffTests extends TransformationServiceBaseTests {
     @Test
     public void test_TDP_1184() throws Exception {
         // given
-        final String datasetContent = IOUtils.toString(this.getClass().getResourceAsStream("../preview/input.json"));
-        final String expected = IOUtils.toString(this.getClass().getResourceAsStream("../preview/expected_output_TDP_1184.json"));
-
-        final String oldActions = getTransformation_TDP_1184_step_1();
-        final String newActions = getTransformation_TDP_1184_step_2();
-        final String indexes = "[1,4,6]";
+        PreviewParameters input = new PreviewParameters( //
+                getTransformation_TDP_1184_step_1(), //
+                getTransformation_TDP_1184_step_2(), //
+                createDataset("../preview/input.csv", "tdp-1184", "text/csv"), //
+                "[1,4,6]");
 
         // when
         final String response = given() //
-                .multiPart("oldActions", oldActions) //
-                .multiPart("newActions", newActions) //
-                .multiPart("indexes", indexes) //
-                .multiPart("content", datasetContent) //
-                .when() //
-                .post("/transform/preview")
+                .contentType(ContentType.JSON) //
+                .body(builder.build().writer().writeValueAsString(input)) //
+                .when().expect().statusCode(200).log().ifError() //
+                .post("/transform/preview") //
                 .asString();
 
         // then
-        assertEquals(expected, response, true);
+        final InputStream expected = this.getClass().getResourceAsStream("../preview/expected_output_TDP_1184.json");
+        assertThat(response, sameJSONAsFile(expected));
     }
 
     @Test
@@ -128,12 +129,19 @@ public class DiffTests extends TransformationServiceBaseTests {
         return IOUtils.toString(this.getClass().getResourceAsStream("../preview/uppercase_copy.json"));
     }
 
-    private String getTransformation_TDP_1184_step_1() {
-        return "{\"actions\": [ { \"action\": \"delete_column\", \"parameters\":{ \"column_id\": \"lastname\", \"scope\": \"column\" } }, { \"action\": \"split\", \"parameters\":{ \"column_id\": \"city\", \"scope\": \"column\", \"separator\":\" \", \"limit\":\"2\" } } ]}";
+    private String getTransformation_TDP_1184_step_1() throws IOException {
+        // return "{\"actions\": [ { \"action\": \"delete_column\", \"parameters\":{ \"column_id\": \"lastname\",
+        // \"scope\": \"column\" } }, { \"action\": \"split\", \"parameters\":{ \"column_id\": \"city\", \"scope\":
+        // \"column\", \"separator\":\" \", \"limit\":\"2\" } } ]}";
+        return IOUtils.toString(this.getClass().getResourceAsStream("../preview/deletecolumn_split.json"));
     }
 
-    private String getTransformation_TDP_1184_step_2() {
-        return "{\"actions\": [ { \"action\": \"delete_column\", \"parameters\":{ \"column_id\": \"lastname\", \"scope\": \"column\" } }, { \"action\": \"split\", \"parameters\":{ \"column_id\": \"city\", \"scope\": \"column\", \"separator\":\" \", \"limit\":\"2\" } }, { \"action\": \"uppercase\",\"parameters\":{ \"column_id\": \"0000\", \"scope\": \"column\" } } ]}";
+    private String getTransformation_TDP_1184_step_2() throws IOException {
+        // return "{\"actions\": [ { \"action\": \"delete_column\", \"parameters\":{ \"column_id\": \"lastname\",
+        // \"scope\": \"column\" } }, { \"action\": \"split\", \"parameters\":{ \"column_id\": \"city\", \"scope\":
+        // \"column\", \"separator\":\" \", \"limit\":\"2\" } }, { \"action\": \"uppercase\",\"parameters\":{
+        // \"column_id\": \"0000\", \"scope\": \"column\" } } ]}";
+        return IOUtils.toString(this.getClass().getResourceAsStream("../preview/deletecolumn_split_uppercase.json"));
     }
 
     private String getMultipleTransformationWithoutNewColumn() throws IOException {
