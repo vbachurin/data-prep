@@ -137,7 +137,7 @@ public class AggregationTests extends TransformationServiceBaseTests {
         return given()//
                 .body(builder.build().writer().writeValueAsString(parameters))//
                 .contentType(MediaType.APPLICATION_JSON_VALUE) //
-                .when().post("/aggregate")//
+                .when().expect().statusCode(200).log().ifError().post("/aggregate")//
                 .asString();
     }
 

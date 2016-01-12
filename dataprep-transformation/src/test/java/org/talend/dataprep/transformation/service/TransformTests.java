@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.cache.ContentCache;
 import org.talend.dataprep.transformation.cache.TransformationCacheKey;
 
@@ -55,14 +56,14 @@ public class TransformTests extends TransformationServiceBaseTests {
     @Test
     public void testUnknownFormat() throws Exception {
         // given
-        Thread.sleep(100L); // don't know why but this is needed otherwise an error happens some times to times
         String dataSetId = createDataset("input_dataset.csv", "unknown format", "text/csv");
+        String preparationId = createEmptyPreparationFromDataset(dataSetId, "uppercase prep");
 
         // when
         final Response response = given() //
                 .when() //
                 .get("/apply/preparation/{preparationId}/dataset/{datasetId}/{format}", //
-                        "no need for preparation id", //
+                        preparationId, //
                         dataSetId, //
                         "Gloubi-boulga"); // Casimir rules !
 
@@ -170,10 +171,12 @@ public class TransformTests extends TransformationServiceBaseTests {
                 .when() //
                 .get("/datasets/{id}/metadata", dsId) //
                 .asString();
-
         final DataSetMetadata metadata = builder.build().readerFor(DataSetMetadata.class).readValue(dataSetMetadataContent);
 
-        TransformationCacheKey key = new TransformationCacheKey(prepId, metadata, "JSON", "head");
+        final Preparation preparation = getPreparation(prepId);
+        final String headId = preparation.getSteps().get(preparation.getSteps().size() - 1);
+
+        TransformationCacheKey key = new TransformationCacheKey(prepId, metadata, "JSON", headId);
         assertFalse(contentCache.has(key));
 
         // when

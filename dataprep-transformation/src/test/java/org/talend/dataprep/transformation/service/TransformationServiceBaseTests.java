@@ -15,6 +15,8 @@ import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.transformation.TransformationBaseTest;
 import org.talend.dataprep.transformation.test.TransformationServiceUrlRuntimeUpdater;
@@ -35,6 +37,10 @@ public abstract class TransformationServiceBaseTests extends TransformationBaseT
     @Autowired
     protected DataSetMetadataRepository dataSetMetadataRepository;
 
+    /** The dataprep ready to use jackson object builder. */
+    @Autowired
+    protected Jackson2ObjectMapperBuilder builder;
+
     @Before
     public void setUp() {
         urlUpdater.setUp();
@@ -51,6 +57,12 @@ public abstract class TransformationServiceBaseTests extends TransformationBaseT
 
     protected String createDataset(final String file, final String name, final String type, final String folderPath)
             throws IOException {
+        try {
+            Thread.sleep(250L); // a little pause is needed otherwise an error UNKNOWN_DATASET_CONTENT may sometime
+                                // happen
+        } catch (InterruptedException e) {
+            throw new IOException(e);
+        }
         final String datasetContent = IOUtils.toString(this.getClass().getResourceAsStream(file));
         final Response post = given() //
                 .contentType(ContentType.JSON) //
@@ -100,5 +112,15 @@ public abstract class TransformationServiceBaseTests extends TransformationBaseT
                 .post("/preparations/{id}/actions", preparationId) //
                 .then() //
                 .statusCode(is(200));
+    }
+
+    protected Preparation getPreparation(final String preparationId) throws IOException {
+        final String json = given().when() //
+                .expect().statusCode(200).log().ifError() //
+                .get("/preparations/{id}", preparationId) //
+                .asString();
+
+        return builder.build().readerFor(Preparation.class).readValue(json);
+
     }
 }
