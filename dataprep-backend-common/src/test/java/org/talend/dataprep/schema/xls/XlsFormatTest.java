@@ -6,11 +6,7 @@ import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -277,8 +273,7 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
         }
 
         try (InputStream inputStream = this.getClass().getResourceAsStream(fileName)) {
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
-                    .parse(getRequest(inputStream, "#951"))
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(getRequest(inputStream, "#951"))
                     .getSheetContents().get(0).getColumnMetadatas();
 
             logger.debug("columnMetadatas: {}", columnMetadatas);
@@ -292,7 +287,7 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
 
             Assertions.assertThat(columnMetadata.getType()).isEqualTo(Type.STRING.getName());
 
-            dataSetMetadata.getRowMetadata(  ).setColumns( columnMetadatas );
+            dataSetMetadata.getRowMetadata().setColumns(columnMetadatas);
 
         }
 
@@ -379,6 +374,7 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
      * XlsSerializer should follow the data format as set in the Excel file. This test ensures XlsSerializer follows the
      * data format as defined and don't directly use {@link Cell#getNumericCellValue()}.
      * </p>
+     * 
      * @see XlsUtils#getCellValueAsString(Cell)
      */
     @Test
