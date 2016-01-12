@@ -161,7 +161,14 @@ public class StackedTransformer implements Transformer {
 
             TransformationContext context = new TransformationContext();
             ExtendedStream<DataSetRow> records = BaseTransformer.baseTransform(input.getRecords(), allActions, context)
-                    .map(r -> analyzeRecords(input, r));
+                    .map(r -> {
+                        try {
+                            return analyzeRecords(input, r);
+                        } catch (Exception e) {
+                            LOGGER.debug("Unable to compute statistics on '{}'", r, e);
+                            return r;
+                        }
+                    });
             // Write records
             Deque<DataSetRow> processingRows = new ArrayDeque<>();
             writer.startObject();

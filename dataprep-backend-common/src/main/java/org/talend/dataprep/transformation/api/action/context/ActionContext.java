@@ -211,6 +211,10 @@ public class ActionContext {
      * @param actionStatus The new action status, one of {@link ActionStatus}.
      */
     public void setActionStatus(ActionStatus actionStatus) {
+        if (this.actionStatus == ActionStatus.CANCELED && actionStatus == ActionStatus.OK) {
+            // Don't allow transition from CANCELLED to OK.
+            return;
+        }
         this.actionStatus = actionStatus;
     }
 
