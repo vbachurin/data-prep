@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.TypeUtils;
@@ -19,6 +20,7 @@ import org.talend.datascience.common.inference.ValueQualityStatistics;
 /**
  * Utility class for the ActionsMetadata
  */
+@Component
 public class ActionMetadataUtils implements ApplicationContextAware {
 
     /** This class' logger. */
