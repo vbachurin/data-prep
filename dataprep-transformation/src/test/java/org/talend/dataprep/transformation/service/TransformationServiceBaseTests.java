@@ -10,10 +10,12 @@ import static org.junit.Assert.assertThat;
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.transformation.TransformationBaseTest;
 import org.talend.dataprep.transformation.test.TransformationServiceUrlRuntimeUpdater;
 
@@ -30,9 +32,17 @@ public abstract class TransformationServiceBaseTests extends TransformationBaseT
     @Autowired
     private TransformationServiceUrlRuntimeUpdater urlUpdater;
 
+    @Autowired
+    protected DataSetMetadataRepository dataSetMetadataRepository;
+
     @Before
     public void setUp() {
         urlUpdater.setUp();
+    }
+
+    @After
+    public void cleanUp() {
+        dataSetMetadataRepository.clear();
     }
 
     protected String createDataset(final String file, final String name, final String type) throws IOException {

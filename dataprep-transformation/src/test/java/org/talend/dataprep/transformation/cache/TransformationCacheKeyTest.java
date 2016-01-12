@@ -30,15 +30,20 @@ public class TransformationCacheKeyTest {
 
     @Test
     public void shouldGenerateKey() throws Exception {
-        TransformationCacheKey key = getSampleKey("prep1", "good name", "JSON", "head");
+        TransformationCacheKey key = getSampleKey("prep1", "good name", "JSON", "v1");
         assertNotNull(key.getKey());
     }
 
     @Test
     public void shouldGenerateSameKey() throws Exception {
-        TransformationCacheKey key1 = getSampleKey("prep1", "good name", "JSON", "head");
-        TransformationCacheKey key2 = getSampleKey("prep1", "good name", "JSON", "head");
+        TransformationCacheKey key1 = getSampleKey("prep1", "good name", "JSON", "v3");
+        TransformationCacheKey key2 = getSampleKey("prep1", "good name", "JSON", "v3");
         assertEquals(key1.getKey(), key2.getKey());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void headNotAllowed() throws Exception {
+        getSampleKey("prep1", "good name", "JSON", "head");
     }
 
     private TransformationCacheKey getSampleKey(String prepId, String name, String format, String step) throws IOException {

@@ -152,7 +152,7 @@ public abstract class BaseTransformationService {
     protected Map<String, String> filterRawExportParams(Map<String, String> optionalParams) {
         return optionalParams.entrySet().stream()
                 .filter(e -> !StringUtils.equals(e.getKey(), ExportFormat.Parameter.FILENAME_PARAMETER))
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
 }

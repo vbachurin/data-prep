@@ -3,7 +3,8 @@ package org.talend.dataprep.transformation.cache;
 import java.io.IOException;
 import java.util.Objects;
 
-import org.springframework.util.DigestUtils;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.cache.ContentCacheKey;
 
@@ -43,6 +44,9 @@ public class TransformationCacheKey implements ContentCacheKey {
      */
     public TransformationCacheKey(String preparationId, DataSetMetadata metadata, String format, String stepId)
             throws IOException {
+        if (StringUtils.equals("head", stepId)) {
+            throw new IllegalArgumentException("'head' is not allowed as step id for cache key");
+        }
         this.preparationId = preparationId;
         this.datasetId = metadata.getId();
         this.datasetMetadataHash = hash(metadata);
@@ -73,7 +77,7 @@ public class TransformationCacheKey implements ContentCacheKey {
     private String hash(DataSetMetadata metadata) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writer().writeValueAsString(metadata);
-        return DigestUtils.md5DigestAsHex(json.getBytes("UTF-8"));
+        return DigestUtils.sha1Hex(json.getBytes("UTF-8"));
     }
 
     /**
