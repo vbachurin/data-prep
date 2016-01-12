@@ -104,7 +104,7 @@ public class ActionContext {
      * @param name the column original name.
      * @return the context key for the column.
      */
-    private String getColumnKey(String name) {
+    protected String getColumnKey(String name) {
         return "col#" + name;
     }
 
@@ -285,6 +285,9 @@ public class ActionContext {
 
         @Override
         public String column(String name, Function<RowMetadata, ColumnMetadata> create) {
+            if (!delegate.context.containsKey(getColumnKey(name))) {
+                throw new UnsupportedOperationException();
+            }
             return delegate.column(name, create);
         }
 
