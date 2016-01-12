@@ -57,7 +57,7 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
     /**
      * A group of ReentrantReadWriteLock associating to each dataset id a unique ReentrantReadWriteLock.
      */
-    private final ReentrantReadWriteLockGroup locks = new ReentrantReadWriteLockGroup();
+    private final ReentrantReadWriteLockGroup locks = new ReentrantReadWriteLockGroup(true, 100);
 
     /**
      * @see DataSetMetadataRepository#add(DataSetMetadata)
