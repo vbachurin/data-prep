@@ -1,13 +1,5 @@
 package org.talend.dataprep.cache;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -21,6 +13,14 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 @ConditionalOnProperty(name = "api.cache", havingValue = "file")
@@ -214,11 +214,12 @@ public class FileSystemContentCache implements ContentCache {
 
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    final String suffix = StringUtils.substringAfterLast(file.toFile().getName(), ".");
+                    final String fileName = file.toFile().getName();
                     // Ignore "." files (hidden files like MacOS).
-                    if (suffix.startsWith(".")) {
+                    if (fileName.startsWith(".")) {
                         return FileVisitResult.CONTINUE;
                     }
+                    final String suffix = StringUtils.substringAfterLast(fileName, ".");
                     // Ignore NFS files (may happen in local mode when NFS is used).
                     if (suffix.startsWith("nfs")) {
                         return FileVisitResult.CONTINUE;

@@ -1,17 +1,5 @@
 package org.talend.dataprep.dataset.store.metadata.file;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.stream.Stream;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +14,17 @@ import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepositoryAdapt
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.lock.DistributedLock;
+
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * File system implementation of the DataSetMetadataRepository.
@@ -76,6 +75,10 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
     public DataSetMetadata get(String id) {
 
         final File file = getFile(id);
+        if (file.getName().startsWith(".")) {
+            LOG.info("Ignore hidden file {}", file.getName());
+            return null;
+        }
         if (!file.exists()) {
             LOG.info("dataset #{} not found in file system", id);
             return null;
