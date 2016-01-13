@@ -24,7 +24,6 @@
             updateMetadata: updateMetadata,
             getMetadata: getMetadata,
             getContent: getContent,
-            getContentFromUrl: getContentFromUrl,
             getSheetPreview: getSheetPreview,
 
             processCertification: processCertification,
@@ -252,20 +251,6 @@
          */
         function getMetadata (datasetId) {
             var url = RestURLs.datasetUrl + '/' + datasetId + '/metadata';
-            return $http.get(url)
-                .then(function (res) {
-                    return res.data;
-                });
-        }
-
-        /**
-         * @ngdoc method
-         * @name getLookupActions
-         * @methodOf data-prep.services.dataset.service:DatasetRestService
-         * @description Get the dataset content from a complete URL
-         * @returns {Promise} The GET promise
-         */
-        function getContentFromUrl (url) {
             return $http.get(url)
                 .then(function (res) {
                     return res.data;

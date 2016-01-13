@@ -3,7 +3,7 @@ describe('lookup service', function () {
     var stateMock;
 
     //lookup dataset content
-    var firstDsLookupUrl = 'http://172.17.0.6:8080/datasets/9e739b88-5ec9-4b58-84b5-2127a7e2eac7/content?metadata=true';
+    var firstDsLookupId = '9e739b88-5ec9-4b58-84b5-2127a7e2eac7';
     var dsLookupContent = {
         'metadata': {
             'id': '9e739b88-5ec9-4b58-84b5-2127a7e2eac7',
@@ -45,11 +45,6 @@ describe('lookup service', function () {
                     'name': 'lookup_ds_id',
                     'type': 'string',
                     'default': '9e739b88-5ec9-4b58-84b5-2127a7e2eac7'
-                },
-                {
-                    'name': 'lookup_ds_url',
-                    'type': 'string',
-                    'default': firstDsLookupUrl
                 },
                 {
                     'name': 'lookup_join_on',
@@ -97,7 +92,6 @@ describe('lookup service', function () {
                 filter: '',
                 lookup_ds_id: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7',
                 lookup_ds_name: 'cluster_dataset',
-                lookup_ds_url: firstDsLookupUrl,
                 lookup_join_on: '0000',
                 lookup_join_on_name: 'id',
                 lookup_selected_cols: [
@@ -131,7 +125,7 @@ describe('lookup service', function () {
     }));
 
     beforeEach(inject(function ($q, TransformationRestService, DatasetRestService, StateService) {
-        spyOn(DatasetRestService, 'getContentFromUrl').and.returnValue($q.when(dsLookupContent));
+        spyOn(DatasetRestService, 'getContent').and.returnValue($q.when(dsLookupContent));
         spyOn(StateService, 'setGridSelection').and.returnValue();
         spyOn(StateService, 'setLookupActions').and.returnValue();
         spyOn(StateService, 'setLookupAddMode').and.returnValue();
@@ -202,7 +196,7 @@ describe('lookup service', function () {
                 $rootScope.$digest();
 
                 //then
-                expect(DatasetRestService.getContentFromUrl).toHaveBeenCalledWith(firstDsLookupUrl);
+                expect(DatasetRestService.getContent).toHaveBeenCalledWith(firstDsLookupId, true);
                 expect(StateService.setLookupAddMode).toHaveBeenCalledWith(firstLookupAction, dsLookupContent);
             }));
         });
@@ -220,7 +214,7 @@ describe('lookup service', function () {
                 $rootScope.$digest();
 
                 //then
-                expect(DatasetRestService.getContentFromUrl).toHaveBeenCalledWith(firstDsLookupUrl);
+                expect(DatasetRestService.getContent).toHaveBeenCalledWith(firstDsLookupId, true);
                 expect(StateService.setLookupUpdateMode).toHaveBeenCalledWith(firstLookupAction, dsLookupContent, lookupStep);
             }));
         });
@@ -265,7 +259,7 @@ describe('lookup service', function () {
             $rootScope.$digest();
 
             //then
-            expect(DatasetRestService.getContentFromUrl).not.toHaveBeenCalled();
+            expect(DatasetRestService.getContent).not.toHaveBeenCalled();
             expect(StateService.setLookupAddMode).not.toHaveBeenCalled();
             expect(StateService.setLookupUpdateMode).not.toHaveBeenCalled();
         }));
@@ -311,7 +305,7 @@ describe('lookup service', function () {
             $rootScope.$digest();
 
             //then
-            expect(DatasetRestService.getContentFromUrl).not.toHaveBeenCalled();
+            expect(DatasetRestService.getContent).not.toHaveBeenCalled();
             expect(StateService.setLookupAddMode).not.toHaveBeenCalled();
             expect(StateService.setLookupUpdateMode).not.toHaveBeenCalled();
         }));

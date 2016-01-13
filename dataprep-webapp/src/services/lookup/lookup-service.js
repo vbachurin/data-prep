@@ -86,7 +86,7 @@
                     }
 
                     //load content
-                    return DatasetRestService.getContentFromUrl(getDsUrl(lookupAction))
+                    return DatasetRestService.getContent(getDsId(lookupAction), true)
                         .then(function (lookupDsContent) {
                             initLookupState(lookupAction, lookupDsContent, undefined);
                         });
@@ -105,9 +105,9 @@
             return getActions(state.playground.dataset.id)
                 .then(function (actions) {
                     /*jshint camelcase: false */
-                    var lookupUrl = step.actionParameters.parameters.lookup_ds_url;
+                    var lookupId = step.actionParameters.parameters.lookup_ds_id;
                     var lookupAction = _.find(actions, function (action) {
-                        return getDsUrl(action) === lookupUrl;
+                        return getDsId(action) === lookupId;
                     });
 
                     //change column selection to focus on step target
@@ -124,7 +124,7 @@
                     //load content
                     return getActions(state.playground.dataset.id)
                         .then(function () {
-                            return DatasetRestService.getContentFromUrl(lookupUrl);
+                            return DatasetRestService.getContent(lookupId, true);
                         })
                         .then(function (lookupDsContent) {
                             initLookupState(lookupAction, lookupDsContent, step);
@@ -151,14 +151,14 @@
 
         /**
          * @ngdoc method
-         * @name getDsUrl
+         * @name getDsId
          * @methodOf data-prep.services.lookup.service:LookupService
          * @param {object} lookup the lookup action
-         * @returns {String} The url of the lookup dataset
-         * @description Extract the dataset url from lookup action
+         * @returns {String} The id of the lookup dataset
+         * @description Extract the dataset id from lookup action
          */
-        function getDsUrl(lookup) {
-            return _.find(lookup.parameters, {'name': 'lookup_ds_url'}).default;
+        function getDsId(lookup) {
+            return _.find(lookup.parameters, {'name': 'lookup_ds_id'}).default;
         }
 
         /**
@@ -200,13 +200,13 @@
          * @description Fetch the step in recipe that is a lookup action on a specific dataset for the selected column
          */
         function getSelectedColumnLookup(lookupAction) {
-            var datasetUrl = getDsUrl(lookupAction);
+            var datasetId = getDsId(lookupAction);
             var selectedColumn = state.playground.grid.selectedColumn;
             return _.findLast(RecipeService.getRecipe(), function (nextStep) {
                 /*jshint camelcase: false */
                 return nextStep.column.id === selectedColumn.id &&
                     nextStep.transformation.name === 'lookup' &&
-                    nextStep.actionParameters.parameters.lookup_ds_url === datasetUrl;
+                    nextStep.actionParameters.parameters.lookup_ds_id === datasetId;
             });
         }
     }
