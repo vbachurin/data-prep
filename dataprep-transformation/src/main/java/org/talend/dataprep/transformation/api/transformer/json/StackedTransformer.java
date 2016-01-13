@@ -82,10 +82,9 @@ public class StackedTransformer implements Transformer {
      * Configure the analyzer for quality depending on the current tAnalysisStatus.
      *
      * @param row the current row.
-     * @return the configured analyzer.
      * @see StackedTransformer#currentAnalysisStatus
      */
-    private Analyzer<Analyzers.Result> configureAnalyzer(DataSetRow row) {
+    private void configureAnalyzer(DataSetRow row) {
         switch (currentAnalysisStatus) {
             case SCHEMA_ANALYSIS:
                 if (initialAnalysisBuffer.size() < ANALYSIS_BUFFER_SIZE) {
@@ -98,7 +97,6 @@ public class StackedTransformer implements Transformer {
         default:
                 // Nothing to do
         }
-        return analyzer;
     }
 
     /**
@@ -221,13 +219,16 @@ public class StackedTransformer implements Transformer {
             final List<ColumnMetadata> columns = r.getRowMetadata().getColumns();
             final DataSetRow row = r.order(columns);
             final String[] array = row.toArray(DataSetRow.SKIP_TDP_ID);
+            // Configure analyzer (and eventually switch analyzer state)
+            configureAnalyzer(row);
+            // Now that analyzer is properly configured, analyze values
             for (int i = 0; i < columns.size(); i++) {
                 // Removes non modified values from analysis
                 if (!modifiedColumnsFilter.test(columns.get(i))) {
                     array[i] = null;
                 }
             }
-            configureAnalyzer(row).analyze(array);
+            analyzer.analyze(array);
         }
         return r;
     }
