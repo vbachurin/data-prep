@@ -6,6 +6,9 @@ describe('Datagrid directive', function () {
         tdpColMetadata: {id: '0000'}
     }, {id: '0001', tdpColMetadata: {id: '0001'}}, {id: '0002', tdpColMetadata: {id: '0002'}}];
 
+    var clickCounter = 0;
+    var gridCanvas;
+
     beforeEach(function () {
         dataViewMock = new DataViewMock();
         spyOn(dataViewMock.onRowCountChanged, 'subscribe').and.returnValue();
@@ -33,6 +36,7 @@ describe('Datagrid directive', function () {
             scope.$digest();
 
             angular.element('body').append(element);
+            gridCanvas = $('#datagrid').find('.grid-canvas');
             return element;
         };
 
@@ -107,6 +111,31 @@ describe('Datagrid directive', function () {
                 //then
                 expect(DatagridTooltipService.tooltipRuler).toBeDefined();
             }));
+
+            it('should trigger slickgrid onclick event', inject(function ($rootScope, $timeout) {
+                //given
+                spyOn(grid.onClick, 'notify').and.returnValue(function(){
+                    clickCounter++;
+                    console.log('++++spyOn(grid.onClick+++++++++++++++++++++');
+                });
+                console.log($('#datagrid').find('.grid-canvas').length);
+                var events = $._data($('#datagrid').find('.grid-canvas')[0], 'events');
+                console.log(events.click.length);
+                console.log(events.click[0].handler.toString());
+
+                clickCounter = 0;
+
+                //when
+                gridCanvas.click();
+                gridCanvas.trigger('click');
+                $rootScope.$digest();
+                jasmine.clock().tick(1000);
+                $timeout.flush(300);
+
+                //then
+                expect(clickCounter).toBe(1);
+            }));
+
         });
 
         describe('grid update', function () {
