@@ -18,8 +18,6 @@ describe('Dataset column header directive', function () {
 	beforeEach(module('data-prep.lookup-datagrid-header'));
 	beforeEach(module('htmlTemplates'));
 
-
-
 	beforeEach(inject(function ($rootScope, $compile, $timeout) {
 		scope = $rootScope.$new(true);
 		scope.column = column;
@@ -81,13 +79,10 @@ describe('Dataset column header directive', function () {
 	});
 
 
-	it('should select checkbox when cliking on add-to-lookup div', function () {
+	it('should select checkbox when clicking on add-to-lookup div', function () {
 		//given
 		createElement();
-
-		//when
 		jasmine.clock().tick(250);
-
 		var event = angular.element.Event('click');
 
 		//when
