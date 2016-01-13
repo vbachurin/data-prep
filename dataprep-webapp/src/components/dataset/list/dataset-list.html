@@ -47,18 +47,19 @@
         </div>
 
         <div ng-repeat="dataset in datasetListCtrl.currentFolderContent.datasets track by $index" id="dataset_{{$index}}">
-            <inventory-item item="dataset"
-                            actions-enabled="true"
-                            details="INVENTORY_DETAILS"
-                            type= "dataset"
-                            open="datasetListCtrl.uploadWorkflowService.openDataset"
-                            rename="datasetListCtrl.rename"
-                            remove="datasetListCtrl.remove"
-                            file-model="datasetListCtrl.updateDatasetFile"
-                            update="datasetListCtrl.uploadUpdatedDatasetFile"
-                            copy="datasetListCtrl.openFolderChoice"
-                            process-certification="datasetListCtrl.processCertification"
-                            toogle-favorite="datasetListCtrl.datasetService.toggleFavorite">
+            <inventory-item
+                    actions-enabled="true"
+                    copy="datasetListCtrl.openFolderChoice"
+                    details="INVENTORY_DETAILS"
+                    file-model="datasetListCtrl.updateDatasetFile"
+                    item="dataset"
+                    open="datasetListCtrl.uploadWorkflowService.openDataset"
+                    process-certification="datasetListCtrl.processCertification"
+                    remove="datasetListCtrl.remove"
+                    rename="datasetListCtrl.rename"
+                    toggle-favorite="datasetListCtrl.datasetService.toggleFavorite"
+                    type="dataset"
+                    update="datasetListCtrl.uploadUpdatedDatasetFile">
             </inventory-item>
         </div>
     </div>

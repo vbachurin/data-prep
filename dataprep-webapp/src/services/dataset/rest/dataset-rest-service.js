@@ -300,9 +300,9 @@
         //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
-         * @name toogleFavorite
+         * @name toggleFavorite
          * @methodOf data-prep.services.dataset.service:DatasetRestService
-         * @description Toogle the Favorite flag for a dataset for the current user
+         * @description Toggle the Favorite flag for a dataset for the current user
          * @param {dataset} dataset The dataset to be toggled
          * @returns {Promise} The PUT promise
          */

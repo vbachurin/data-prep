@@ -77,12 +77,12 @@
            translate-once-title="CERTIFY_ACTION"
            translate-values="{type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name}"
            ng-click="inventoryItemCtrl.processCertification(inventoryItemCtrl.item)"></a>
-        <a ng-if="inventoryItemCtrl.toogleFavorite"
+        <a ng-if="inventoryItemCtrl.toggleFavorite"
            data-icon="f"
            class="btn-icon btn-transparent favorite"
            translate-once-title="FAVORITE_ACTION"
            translate-values="{type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name}"
            ng-class="{'favorite-true':inventoryItemCtrl.item.favorite}"
-           ng-click="inventoryItemCtrl.toogleFavorite(inventoryItemCtrl.item)"></a>
+           ng-click="inventoryItemCtrl.toggleFavorite(inventoryItemCtrl.item)"></a>
     </div>
 </div>
