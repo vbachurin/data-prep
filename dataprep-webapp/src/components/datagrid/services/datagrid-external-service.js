@@ -29,14 +29,12 @@
          * @ngdoc method
          * @name updateSuggestionPanel
          * @methodOf data-prep.datagrid.service:DatagridExternalService
-         * @param {string} tab The suggestion tab to select
          * @param {boolean} updateImmediately Update suggestions without timeout
-         * @param {boolean} updateLookup Update lookup panel
          * @description Set the selected column into external services except the index column. This will trigger actions that use this property
          * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
          */
 
-        function updateSuggestionPanel(tab, updateImmediately, updateLookup) {
+        function updateSuggestionPanel(updateImmediately) {
             var column = state.playground.grid.selectedColumn;
             var line = state.playground.grid.selectedLine;
 
@@ -51,7 +49,7 @@
             suggestionTimeout = $timeout(function () {
                 lastSelectedColumn = column;
                 lastSelectedLine = line;
-                lastSelectedTab = !column ? 'LINE' : (tab || 'COLUMN');
+                lastSelectedTab = !column ? 'LINE' : 'COLUMN';
 
                 //change tab
                 SuggestionService.selectTab(lastSelectedTab);
@@ -70,43 +68,9 @@
                 if (lastSelectedColumn && columnHasChanged) {
                     StatisticsService.updateStatistics();
                     SuggestionService.setColumn(lastSelectedColumn);
-                    if(updateLookup) {
-                        LookupService.loadLookupPanel(false);
-                    }
-
+                    LookupService.updateTargetColumn();
                 }
             }, updateImmediately ? 0 : 300);
-        }
-
-        /**
-         * @ngdoc method
-         * @name attachCellListeners
-         * @methodOf data-prep.datagrid.service:DatagridExternalService
-         * @description Attach cell selection listeners
-         */
-        function attachCellListeners() {
-            //change selected cell column background
-            grid.onActiveCellChanged.subscribe(function (e, args) {
-                if (angular.isDefined(args.cell)) {
-                    updateSuggestionPanel('COLUMN', false, true); //TODO : change this to CELL when cell actions are supported
-                }
-            });
-        }
-
-        /**
-         * @ngdoc method
-         * @name attachColumnListeners
-         * @methodOf data-prep.datagrid.service:DatagridExternalService
-         * @description Attach header selection listeners on right click or left click
-         */
-        function attachColumnListeners() {
-            grid.onHeaderContextMenu.subscribe(function () {
-                updateSuggestionPanel('COLUMN', false, true);
-            });
-
-            grid.onHeaderClick.subscribe(function () {
-                updateSuggestionPanel('COLUMN', false, true);
-            });
         }
 
         /**
@@ -133,8 +97,6 @@
          */
         function init(newGrid) {
             grid = newGrid;
-            attachCellListeners();
-            attachColumnListeners();
             attachGridScrollListener();
         }
     }

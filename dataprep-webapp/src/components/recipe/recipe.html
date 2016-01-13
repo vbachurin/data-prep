@@ -6,7 +6,7 @@
                             class="recipe-step"
                             ng-class="::{'preview': step.preview}">
         <div class="trigger step-description"
-             ng-click="recipeCtrl.toogleStep($index, step)"
+             ng-click="recipeCtrl.select(step)"
              ng-switch="step.actionParameters.parameters.scope">
 
             <i data-icon="e"
@@ -80,7 +80,7 @@
 
                 <talend-modal ng-if="recipeCtrl.hasDynamicParams(step)"
                               fullscreen="false"
-                              state="recipeCtrl.showModal[$index]"
+                              state="recipeCtrl.showModal[step.transformation.stepId]"
                               close-button="true">
                     <div class="modal-title">{{ ::step.transformation.label }}</div>
                     <div class="modal-subtitle">{{ ::step.transformation.description }}</div>

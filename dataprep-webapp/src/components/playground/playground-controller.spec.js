@@ -214,18 +214,47 @@ describe('Playground controller', function () {
     });
 
     describe('lookup', function () {
-        var ctrl;
-
-        beforeEach(inject(function ($q, LookupService) {
-            spyOn(LookupService, 'loadLookupPanel').and.returnValue();
-            ctrl = createController();
+        beforeEach(inject(function ($q, LookupService, StateService) {
+            spyOn(LookupService, 'initLookups').and.returnValue($q.when());
+            spyOn(StateService, 'setLookupVisibility').and.returnValue();
         }));
 
-        it('should load lookup panel', inject(function (LookupService) {
+        it('should load lookup panel when it is hidden', inject(function (LookupService) {
+            //given
+            stateMock.playground.lookup.visibility = false;
+            var ctrl = createController();
+
             //when
             ctrl.toggleLookup();
+
             //then
-            expect(LookupService.loadLookupPanel).toHaveBeenCalledWith(true);
+            expect(LookupService.initLookups).toHaveBeenCalled();
+        }));
+
+        it('should display lookup panel when it is hidden', inject(function (StateService) {
+            //given
+            stateMock.playground.lookup.visibility = false;
+            var ctrl = createController();
+
+            //when
+            ctrl.toggleLookup();
+            scope.$digest();
+
+            //then
+            expect(StateService.setLookupVisibility).toHaveBeenCalledWith(true, undefined);
+        }));
+
+        it('should hide lookup panel when it is visible', inject(function (LookupService, StateService) {
+            //given
+            stateMock.playground.lookup.visibility = true;
+            var ctrl = createController();
+
+            //when
+            ctrl.toggleLookup();
+
+            //then
+            expect(LookupService.initLookups).not.toHaveBeenCalled();
+            expect(StateService.setLookupVisibility).toHaveBeenCalledWith(false);
         }));
     });
 

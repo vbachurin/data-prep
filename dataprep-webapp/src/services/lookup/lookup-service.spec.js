@@ -1,58 +1,9 @@
 describe('lookup service', function () {
     'use strict';
     var stateMock;
-    var dsLookupUrl = 'http://172.17.0.6:8080/datasets/9e739b88-5ec9-4b58-84b5-2127a7e2eac7/content?metadata=true';
-    var dsActions = {
-        data: [
-            {
-                'category': 'data_blending',
-                'name': 'lookup',
-                'parameters': [
-                    {
-                        'name': 'column_id',
-                        'type': 'string',
-                        'default': ''
-                    },
-                    {
-                        'name': 'filter',
-                        'type': 'filter',
-                        'default': ''
-                    },
-                    {
-                        'name': 'lookup_ds_name',
-                        'type': 'string',
-                        'default': 'lookup_2'
-                    },
-                    {
-                        'name': 'lookup_ds_id',
-                        'type': 'string',
-                        'default': '9e739b88-5ec9-4b58-84b5-2127a7e2eac7'
-                    },
-                    {
-                        'name': 'lookup_ds_url',
-                        'type': 'string',
-                        'default': dsLookupUrl
-                    },
-                    {
-                        'name': 'lookup_join_on',
-                        'type': 'string',
-                        'default': ''
-                    },
-                    {
-                        'name': 'lookup_join_on_name',
-                        'type': 'string',
-                        'default': ''
-                    },
-                    {
-                        'name': 'lookup_selected_cols',
-                        'type': 'list',
-                        'default': ''
-                    }
-                ]
-            }
-        ]
-    };
-    var lookupDataset = dsActions.data[0];
+
+    //lookup dataset content
+    var firstDsLookupUrl = 'http://172.17.0.6:8080/datasets/9e739b88-5ec9-4b58-84b5-2127a7e2eac7/content?metadata=true';
     var dsLookupContent = {
         'metadata': {
             'id': '9e739b88-5ec9-4b58-84b5-2127a7e2eac7',
@@ -65,244 +16,353 @@ describe('lookup service', function () {
             'author': 'anonymous',
             'created': 1447689742940,
             'encoding': 'UTF-8',
-            columns : [{id : '0000'}]
+            columns: [{id: '0000'}]
         }
     };
+
+    //lookup actions
+    var lookupActions = [
+        {
+            'category': 'data_blending',
+            'name': 'lookup',
+            'parameters': [
+                {
+                    'name': 'column_id',
+                    'type': 'string',
+                    'default': ''
+                },
+                {
+                    'name': 'filter',
+                    'type': 'filter',
+                    'default': ''
+                },
+                {
+                    'name': 'lookup_ds_name',
+                    'type': 'string',
+                    'default': 'lookup_2'
+                },
+                {
+                    'name': 'lookup_ds_id',
+                    'type': 'string',
+                    'default': '9e739b88-5ec9-4b58-84b5-2127a7e2eac7'
+                },
+                {
+                    'name': 'lookup_ds_url',
+                    'type': 'string',
+                    'default': firstDsLookupUrl
+                },
+                {
+                    'name': 'lookup_join_on',
+                    'type': 'string',
+                    'default': ''
+                },
+                {
+                    'name': 'lookup_join_on_name',
+                    'type': 'string',
+                    'default': ''
+                },
+                {
+                    'name': 'lookup_selected_cols',
+                    'type': 'list',
+                    'default': ''
+                }
+            ]
+        }
+    ];
+    var firstLookupAction = lookupActions[0];
+
+    //recipe
     /*jshint camelcase: false */
-    var step = {
-        column:{
-            id:'0000',
-            name:'id'
+    var lookupStep = {
+        column: {
+            id: '0000',
+            name: 'id'
         },
-        row:{
-            id:'11'
+        row: {
+            id: '11'
         },
-        transformation:{
-            stepId:'72fe267d489b06890da69368f4760530b076ec59',
-            name:'lookup',
-            label:'Lookup',
-            description:'Blends columns from another dataset into this one',
-            parameters:[],
-            dynamic:false
+        transformation: {
+            stepId: '72fe267d489b06890da69368f4760530b076ec59',
+            name: 'lookup',
+            label: 'Lookup',
+            description: 'Blends columns from another dataset into this one',
+            parameters: [],
+            dynamic: false
         },
-        actionParameters:{
-            action:'lookup',
-            parameters:{
-                column_id:'0000',
-                filter:'',
-                lookup_ds_id:'9e739b88-5ec9-4b58-84b5-2127a7e2eac7',
-                lookup_join_on:'0000',
-                scope:'dataset',
-                column_name:'id',
-                lookup_selected_cols:[
+        actionParameters: {
+            action: 'lookup',
+            parameters: {
+                column_id: '0000',
+                column_name: 'id',
+                filter: '',
+                lookup_ds_id: '9e739b88-5ec9-4b58-84b5-2127a7e2eac7',
+                lookup_ds_name: 'cluster_dataset',
+                lookup_ds_url: firstDsLookupUrl,
+                lookup_join_on: '0000',
+                lookup_join_on_name: 'id',
+                lookup_selected_cols: [
                     {
-                        id:'0001',
-                        name:'uglystate',
+                        id: '0001',
+                        name: 'uglystate'
                     }
                 ],
-                row_id:'11',
-                lookup_ds_url:'dsLookupUrl',
-                lookup_join_on_name:'id',
-                lookup_ds_name:'cluster_dataset'
+                row_id: '11',
+                scope: 'dataset'
             }
         },
-        diff:{
-            createdColumns:[
+        diff: {
+            createdColumns: [
                 '0009'
             ]
         },
-        filters:(void 0)
+        filters: null
     };
-    beforeEach(module('data-prep.services.lookup', function($provide) {
+
+    beforeEach(module('data-prep.services.lookup', function ($provide) {
         stateMock = {
             playground: {
-                data: {metadata : {columns: [{id : '0000'}]}},
-                dataset: {id : 'abcd'},
+                data: null,
+                dataset: {id: 'abcd'},
                 lookup: {visibility: false},
-                grid: {
-                    selectedColumn: {'id': '0000'},
-                    selectedLine: {'0001': '1'}
-                }
+                grid: {}
             }
         };
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function (TransformationRestService, DatasetRestService, StateService, $q) {
+    beforeEach(inject(function ($q, TransformationRestService, DatasetRestService, StateService) {
         spyOn(DatasetRestService, 'getContentFromUrl').and.returnValue($q.when(dsLookupContent));
-        spyOn(TransformationRestService, 'getDatasetTransformations').and.returnValue($q.when(dsActions));
-        spyOn(StateService, 'setCurrentLookupData').and.returnValue();
-        spyOn(StateService, 'setLookupActions').and.returnValue();
-        spyOn(StateService, 'setLookupDataset').and.returnValue();
-        spyOn(StateService, 'setLookupUpdateMode').and.returnValue();
-        spyOn(StateService, 'setLookupStep').and.returnValue();
-        spyOn(StateService, 'setLookupVisibility').and.returnValue();
-        spyOn(StateService, 'setLookupSelectedColumn').and.returnValue();
-        spyOn(StateService, 'updateLookupColumnsToAdd').and.returnValue();
         spyOn(StateService, 'setGridSelection').and.returnValue();
-        spyOn(StateService, 'setUpdatingLookupStep').and.returnValue();
+        spyOn(StateService, 'setLookupActions').and.returnValue();
+        spyOn(StateService, 'setLookupAddMode').and.returnValue();
+        spyOn(StateService, 'setLookupUpdateMode').and.returnValue();
+
+        //spyOn(StateService, 'setLookupStep').and.returnValue();
+        //spyOn(StateService, 'setLookupVisibility').and.returnValue();
+        //spyOn(StateService, 'setLookupSelectedColumn').and.returnValue();
+        //spyOn(StateService, 'updateLookupColumnsToAdd').and.returnValue();
     }));
 
-    it('should load lookup dataset content', inject(function ($rootScope, LookupService, DatasetRestService) {
-        //when
-        LookupService.loadContent(lookupDataset);
+    describe('init lookup', function () {
+        describe('actions', function () {
+            beforeEach(inject(function ($q, TransformationRestService) {
+                spyOn(TransformationRestService, 'getDatasetTransformations').and.returnValue($q.when({data: lookupActions}));
+            }));
 
-        //then
-        expect(DatasetRestService.getContentFromUrl).toHaveBeenCalledWith(dsLookupUrl);
-    }));
+            it('should fetch lookup actions when they are not initialized yet', inject(function ($rootScope, $q, LookupService, StateService, TransformationRestService) {
+                //given
+                stateMock.playground.lookup.actions = [];
 
-    it('should set lookup dataset content in state', inject(function ($rootScope, LookupService, StateService) {
-        //when
-        LookupService.loadContent(lookupDataset);
-        $rootScope.$digest();
+                //when
+                LookupService.initLookups();
+                $rootScope.$digest();
 
-        //then
-        expect(StateService.setCurrentLookupData).toHaveBeenCalledWith(dsLookupContent);
-        expect(StateService.setLookupDataset).toHaveBeenCalledWith(lookupDataset);
-    }));
+                //then
+                expect(TransformationRestService.getDatasetTransformations).toHaveBeenCalled();
+                expect(StateService.setLookupActions).toHaveBeenCalledWith(lookupActions);
+            }));
 
-    it('should set update mode when lookup panel is hidden', inject(function ($rootScope, LookupService, StateService) {
-        //when
-        LookupService.setUpdateMode(step);
-        $rootScope.$digest();
+            it('should NOT fetch lookup actions when they are already initialized', inject(function ($rootScope, $q, LookupService, StateService, TransformationRestService) {
+                //given
+                stateMock.playground.lookup.actions = lookupActions;
 
-        //then
-        expect(StateService.setLookupUpdateMode).toHaveBeenCalled();
-        expect(StateService.setLookupStep).toHaveBeenCalledWith(step);
-    }));
+                //when
+                LookupService.initLookups();
+                $rootScope.$digest();
 
-    it('should set update mode when lookup panel is displayed', inject(function ($rootScope, LookupService, TransformationRestService, StateService, DatasetRestService) {
-        //given
-        stateMock.playground.lookup.visibility = true;
-        stateMock.playground.lookup.actions = [];
-        //when
-        LookupService.setUpdateMode(step);
-        $rootScope.$digest();
+                //then
+                expect(TransformationRestService.getDatasetTransformations).not.toHaveBeenCalled();
+                expect(StateService.setLookupActions).not.toHaveBeenCalled();
+            }));
+        });
 
-        //then
-        expect(TransformationRestService.getDatasetTransformations).toHaveBeenCalled();
-        expect(StateService.setLookupActions).toHaveBeenCalledWith(dsActions.data);
-        expect(DatasetRestService.getContentFromUrl).toHaveBeenCalledWith(dsLookupUrl);
-    }));
+        describe('with no actions', function () {
+            it('should NOT initialize lookup state', inject(function ($rootScope, $q, LookupService, StateService, TransformationRestService) {
+                //given
+                spyOn(TransformationRestService, 'getDatasetTransformations').and.returnValue($q.when({data: []}));
+                stateMock.playground.lookup.actions = [];
 
+                //when
+                LookupService.initLookups();
+                $rootScope.$digest();
 
-    it('should updating a lookup step', inject(function ($rootScope, LookupService, TransformationRestService, StateService) {
-        //given
-        stateMock.playground.lookup.visibility = true;
-        stateMock.playground.lookup.actions = [];
-        stateMock.playground.lookup.step = step;
-        stateMock.playground.lookup.isUpdatingLookupStep = true;
+                //then
+                expect(StateService.setLookupAddMode).not.toHaveBeenCalled();
+                expect(StateService.setLookupUpdateMode).not.toHaveBeenCalled();
+            }));
+        });
 
-        stateMock.playground.lookup.columnCheckboxes = [{id: '0000'}, {id: '0001'}];
+        describe('without lookup step on selected column', function () {
+            it('should load the first action as new lookup', inject(function ($rootScope, LookupService, DatasetRestService, StateService) {
+                //given
+                stateMock.playground.lookup.actions = lookupActions;
 
-        //when
-        LookupService.setUpdateMode(step);
-        $rootScope.$digest();
+                //when
+                LookupService.initLookups();
+                $rootScope.$digest();
 
-        //then
-        expect(TransformationRestService.getDatasetTransformations).toHaveBeenCalled();
-        expect(StateService.setLookupActions).toHaveBeenCalledWith(dsActions.data);
-        expect(StateService.setLookupSelectedColumn).toHaveBeenCalledWith({id : '0000'});
-        expect(StateService.updateLookupColumnsToAdd).toHaveBeenCalled();
-        expect(StateService.setGridSelection).toHaveBeenCalledWith({id : '0000'});
-        expect(stateMock.playground.lookup.columnCheckboxes[1].isAdded).toBeTruthy();
-    }));
+                //then
+                expect(DatasetRestService.getContentFromUrl).toHaveBeenCalledWith(firstDsLookupUrl);
+                expect(StateService.setLookupAddMode).toHaveBeenCalledWith(firstLookupAction, dsLookupContent);
+            }));
+        });
 
-    it('should toogle panel when lookup panel is closed a step does not exist in state', inject(function ($rootScope, LookupService, StateService) {
-        //when
-        LookupService.setUpdateMode(step, true);
-        $rootScope.$digest();
+        describe('with lookup step on selected column', function () {
+            it('should load the step action as lookup update', inject(function ($rootScope, LookupService, DatasetRestService, RecipeService, StateService) {
+                //given
+                spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
+                stateMock.playground.data = {metadata: {columns: [{id: '0000'}]}};
+                stateMock.playground.lookup.actions = lookupActions;
+                stateMock.playground.grid.selectedColumn = {'id': '0000'};
 
-        //then
-        expect(StateService.setLookupVisibility).toHaveBeenCalledWith(!stateMock.playground.lookup.visibility);
-    }));
+                //when
+                LookupService.initLookups();
+                $rootScope.$digest();
 
-    it('should toogle panel when step exists in state but different from the updating step', inject(function ($rootScope, LookupService, StateService) {
-        //given
-        stateMock.playground.lookup.step = {transformation : {stepId : '0000'}};
+                //then
+                expect(DatasetRestService.getContentFromUrl).toHaveBeenCalledWith(firstDsLookupUrl);
+                expect(StateService.setLookupUpdateMode).toHaveBeenCalledWith(firstLookupAction, dsLookupContent, lookupStep);
+            }));
+        });
+    });
 
-        //when
-        LookupService.setUpdateMode(step, true);
-        $rootScope.$digest();
+    describe('load from action', function () {
+        it('should load action as new lookup', inject(function ($rootScope, LookupService, DatasetRestService, StateService) {
+            //given
+            stateMock.playground.lookup.actions = lookupActions;
 
-        //then
-        expect(StateService.setLookupVisibility).toHaveBeenCalledWith(true);
-    }));
+            //when
+            LookupService.loadFromAction(firstLookupAction);
+            $rootScope.$digest();
 
-    it('should toogle panel when step exists in state and is updating', inject(function ($rootScope, LookupService, StateService) {
-        //given
-        stateMock.playground.lookup.step = {transformation : {stepId : '72fe267d489b06890da69368f4760530b076ec59'}};
+            //then
+            expect(StateService.setLookupAddMode).toHaveBeenCalledWith(firstLookupAction, dsLookupContent);
+        }));
 
-        //when
-        LookupService.setUpdateMode(step, true);
-        $rootScope.$digest();
+        it('should load action as lookup update when selected column has this lookup action as step', inject(function ($rootScope, LookupService, RecipeService, StateService) {
+            //given
+            stateMock.playground.data = {metadata: {columns: [{id: '0000'}]}};
+            stateMock.playground.lookup.actions = lookupActions;
+            stateMock.playground.grid.selectedColumn = {id: '0000'};
+            spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
 
-        //then
-        expect(StateService.setLookupVisibility).toHaveBeenCalledWith(!stateMock.playground.lookup.visibility);
-    }));
+            //when
+            LookupService.loadFromAction(firstLookupAction);
+            $rootScope.$digest();
 
-    it('should load lookup panel in update mode', inject(function ($rootScope, LookupService, StateService, RecipeService) {
-        //given
-        spyOn(RecipeService, 'getRecipe').and.returnValue([step]);
-        spyOn(LookupService, 'setUpdateMode').and.returnValue();
+            //then
+            expect(StateService.setLookupUpdateMode).toHaveBeenCalledWith(firstLookupAction, dsLookupContent, lookupStep);
+        }));
 
-        //when
-        LookupService.loadLookupPanel(false);
-        $rootScope.$digest();
+        it('should NOT change lookup state when the action is already loaded', inject(function ($rootScope, LookupService, DatasetRestService, StateService) {
+            //given
+            stateMock.playground.lookup.actions = lookupActions;
+            stateMock.playground.lookup.dataset = firstLookupAction;
+            stateMock.playground.lookup.step = null;
 
-        //then
-        expect(StateService.setLookupUpdateMode).toHaveBeenCalled();
-        expect(StateService.setLookupStep).toHaveBeenCalledWith(step);
-    }));
+            //when
+            LookupService.loadFromAction(firstLookupAction);
+            $rootScope.$digest();
 
-    it('should load lookup panel in add mode', inject(function ($rootScope, LookupService, StateService, RecipeService) {
-        //given
-        stateMock.playground.grid.selectedColumn.id = '0002';
-        spyOn(RecipeService, 'getRecipe').and.returnValue([step]);
-        spyOn(LookupService, 'setAddMode').and.returnValue();
+            //then
+            expect(DatasetRestService.getContentFromUrl).not.toHaveBeenCalled();
+            expect(StateService.setLookupAddMode).not.toHaveBeenCalled();
+            expect(StateService.setLookupUpdateMode).not.toHaveBeenCalled();
+        }));
+    });
 
-        //when
-        LookupService.loadLookupPanel(false);
-        $rootScope.$digest();
+    describe('load from step', function () {
+        beforeEach(function () {
+            stateMock.playground.data = {metadata: {columns: [{id: '0000'}]}};
+        });
 
-        //then
-        expect(StateService.setUpdatingLookupStep).toHaveBeenCalledWith(false);
-        expect(StateService.setLookupStep).toHaveBeenCalledWith(null);
-    }));
+        it('should load action as lookup update', inject(function ($rootScope, LookupService, DatasetRestService, StateService) {
+            //given
+            stateMock.playground.lookup.actions = lookupActions;
 
-    it('should load lookup panel in add mode when panel is displayed', inject(function ($rootScope, LookupService, StateService, TransformationRestService) {
-        //given
-        stateMock.playground.lookup.visibility = true;
-        stateMock.playground.lookup.actions = [];
+            //when
+            LookupService.loadFromStep(lookupStep);
+            $rootScope.$digest();
 
-        //when
-        LookupService.setAddMode(false);
-        $rootScope.$digest();
+            //then
+            expect(StateService.setLookupUpdateMode).toHaveBeenCalledWith(firstLookupAction, dsLookupContent, lookupStep);
+        }));
 
-        //then
-        expect(TransformationRestService.getDatasetTransformations).toHaveBeenCalled();
-        expect(StateService.setLookupActions).toHaveBeenCalledWith(dsActions.data);
-    }));
+        it('should set state grid selection to the step target', inject(function ($rootScope, LookupService, StateService) {
+            //given
+            stateMock.playground.lookup.actions = lookupActions;
 
-    it('should load lookup panel in add mode when panel is displayed and actions exist in state service', inject(function ($rootScope, LookupService, StateService, TransformationRestService) {
-        //given
-        stateMock.playground.lookup.visibility = true;
-        stateMock.playground.lookup.actions = dsActions.data;
+            //when
+            LookupService.loadFromStep(lookupStep);
+            $rootScope.$digest();
 
-        //when
-        LookupService.setAddMode(false);
-        $rootScope.$digest();
+            //then
+            expect(StateService.setGridSelection).toHaveBeenCalledWith({id: '0000'});
+        }));
 
-        //then
-        expect(TransformationRestService.getDatasetTransformations).not.toHaveBeenCalled();
-    }));
+        it('should NOT change lookup state when the step lookup is already loaded', inject(function ($rootScope, LookupService, DatasetRestService, StateService) {
+            //given
+            stateMock.playground.lookup.actions = lookupActions;
+            stateMock.playground.lookup.dataset = firstLookupAction;
+            stateMock.playground.lookup.step = lookupStep;
 
-    it('should toogle panel in add mode', inject(function ($rootScope, LookupService, StateService) {
-        //when
-        LookupService.setAddMode(true);
-        $rootScope.$digest();
+            //when
+            LookupService.loadFromStep(lookupStep);
+            $rootScope.$digest();
 
-        //then
-        expect(StateService.setLookupVisibility).toHaveBeenCalledWith(!stateMock.playground.lookup.visibility);
-    }));
+            //then
+            expect(DatasetRestService.getContentFromUrl).not.toHaveBeenCalled();
+            expect(StateService.setLookupAddMode).not.toHaveBeenCalled();
+            expect(StateService.setLookupUpdateMode).not.toHaveBeenCalled();
+        }));
+    });
+
+    describe('update target column', function () {
+        it('should load action as new lookup on the current column when it was on an update mode in the previous column', inject(function ($rootScope, LookupService, DatasetRestService, StateService) {
+            //given
+            stateMock.playground.lookup.actions = lookupActions;
+            stateMock.playground.lookup.dataset = firstLookupAction;
+            stateMock.playground.lookup.step = lookupStep;
+            stateMock.playground.lookup.visibility = true;
+
+            //when
+            LookupService.updateTargetColumn();
+            $rootScope.$digest();
+
+            //then
+            expect(StateService.setLookupAddMode).toHaveBeenCalledWith(firstLookupAction, dsLookupContent);
+        }));
+
+        it('should load action as lookup update when the new selected column has this lookup action as step', inject(function ($rootScope, LookupService, RecipeService, StateService) {
+            //given
+            stateMock.playground.data = {metadata: {columns: [{id: '0000'}]}};
+            stateMock.playground.lookup.actions = lookupActions;
+            stateMock.playground.lookup.dataset = firstLookupAction;
+            stateMock.playground.lookup.visibility = true;
+            stateMock.playground.grid.selectedColumn = {id: '0000'};
+            spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
+
+            //when
+            LookupService.updateTargetColumn();
+            $rootScope.$digest();
+
+            //then
+            expect(StateService.setLookupUpdateMode).toHaveBeenCalledWith(firstLookupAction, dsLookupContent, lookupStep);
+        }));
+
+        it('should NOT change state when the lookup is not visible', inject(function ($rootScope, LookupService, DatasetRestService, StateService) {
+            //given
+            stateMock.playground.lookup.actions = lookupActions;
+            stateMock.playground.lookup.dataset = firstLookupAction;
+            stateMock.playground.lookup.visibility = false;
+
+            //when
+            LookupService.updateTargetColumn();
+            $rootScope.$digest();
+
+            //then
+            expect(StateService.setLookupAddMode).not.toHaveBeenCalled();
+            expect(StateService.setLookupUpdateMode).not.toHaveBeenCalled();
+        }));
+    });
 });

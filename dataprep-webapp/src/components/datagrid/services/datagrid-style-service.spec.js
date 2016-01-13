@@ -14,7 +14,7 @@ describe('Datagrid style service', function () {
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function () {
+    beforeEach(function () {
         jasmine.clock().install();
         gridColumns = [
             {id: '0000', field: 'col0', tdpColMetadata: {id: '0000', name: 'col0', type: 'string'}},
@@ -35,7 +35,7 @@ describe('Datagrid style service', function () {
         spyOn(gridMock.onActiveCellChanged, 'subscribe').and.returnValue();
         spyOn(gridMock, 'resetActiveCell').and.returnValue();
         spyOn(gridMock, 'invalidate').and.returnValue();
-    }));
+    });
 
     afterEach(function() {
         jasmine.clock().uninstall();
@@ -66,15 +66,36 @@ describe('Datagrid style service', function () {
         }));
     });
 
+    describe('highlight cells', function() {
+        it('should set highlight configuration', inject(function (DatagridService, DatagridStyleService) {
+            //given
+            var colId = '0000';
+            var content = 'toto';
+            var highlightClass = 'highlight';
+            var highLightConfig = {'2': {'0000': 'highlight'}};
+            spyOn(DatagridService, 'getSameContentConfig').and.returnValue(highLightConfig);
+
+            DatagridStyleService.init(gridMock);
+            expect(gridMock.cssStyleConfig[highlightClass]).toBeFalsy();
+
+            //when
+            DatagridStyleService.highlightCellsContaining(colId, content);
+
+            //then
+            expect(DatagridService.getSameContentConfig).toHaveBeenCalledWith(colId, content, highlightClass);
+            expect(gridMock.cssStyleConfig[highlightClass]).toBe(highLightConfig);
+        }));
+    });
+
     describe('update column styles', function() {
         it('should set "selected" class on active cell column when this is NOT a preview', inject(function (DatagridStyleService) {
             //given
             DatagridStyleService.init(gridMock);
             assertColumnsHasNoStyles();
-            var selectedColumn = gridColumns[1];
+            var selectedColumnId = gridColumns[1].id;
 
             //when
-            DatagridStyleService.updateColumnClass(gridColumns, selectedColumn);
+            DatagridStyleService.updateColumnClass(selectedColumnId);
 
             //then
             expect(gridColumns[0].cssClass).toBeFalsy();
@@ -91,10 +112,44 @@ describe('Datagrid style service', function () {
             assertColumnsHasNoStyles();
 
             //when
-            DatagridStyleService.updateColumnClass(gridColumns);
+            DatagridStyleService.updateColumnClass();
 
             //then
             expect(gridColumns[0].cssClass).toBeFalsy();
+            expect(gridColumns[1].cssClass.indexOf('number') > -1).toBe(true);
+            expect(gridColumns[2].cssClass).toBeFalsy();
+            expect(gridColumns[3].cssClass).toBeFalsy();
+            expect(gridColumns[4].cssClass).toBeFalsy();
+            expect(gridColumns[5].cssClass).toBe('index-column');
+        }));
+    });
+
+    describe('reset style', function() {
+        it('should reset cell styles', inject(function (DatagridStyleService) {
+            //given
+            DatagridStyleService.init(gridMock);
+            gridMock.setCellCssStyles('highlight', {'2': {'0000': 'highlight'}});
+
+            //when
+            DatagridStyleService.resetStyles(gridColumns[1].id);
+
+            //then
+            expect(gridMock.resetActiveCell).toHaveBeenCalled();
+            expect(gridMock.cssStyleConfig.highlight).toEqual({});
+        }));
+
+        it('should update column styles', inject(function (DatagridStyleService) {
+            //given
+            DatagridStyleService.init(gridMock);
+            assertColumnsHasNoStyles();
+            var selectedColumnId = gridColumns[1].id;
+
+            //when
+            DatagridStyleService.resetStyles(selectedColumnId);
+
+            //then
+            expect(gridColumns[0].cssClass).toBeFalsy();
+            expect(gridColumns[1].cssClass.indexOf('selected') > -1).toBe(true);
             expect(gridColumns[1].cssClass.indexOf('number') > -1).toBe(true);
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();

@@ -91,19 +91,28 @@
          * @ngdoc method
          * @name toogleStep
          * @methodOf data-prep.recipe.controller:RecipeCtrl
-         * @param {string} step The step index
-         * @param {object} step the step
-         * @description Show/hide a step
+         * @param {object} step The selected step
+         * @description Action on step selection.
+         * It display dynamic parameters modal and treat specific params (ex: lookup)
          */
-        vm.toogleStep = function toogleStep(stepIndex, step) {
-            vm.showModal[stepIndex] = !!vm.hasDynamicParams(step);
-
-            if (step.transformation.name === 'lookup') {
-                LookupService.setUpdateMode(step, true);
-            } else {
-                StateService.setLookupAddMode();
-            }
+        vm.select = function select(step) {
+            toggleDynamicParams(step);
+            toggleSpecificParams(step);
         };
+
+        function toggleDynamicParams(step) {
+            vm.showModal[step.transformation.stepId] = !!vm.hasDynamicParams(step);
+        }
+
+        function toggleSpecificParams(step) {
+            if (state.playground.lookup.visibility && state.playground.lookup.step === step) {
+                StateService.setLookupVisibility(false);
+            }
+            else if (step.transformation.name === 'lookup') {
+                LookupService.loadFromStep(step)
+                    .then(StateService.setLookupVisibility.bind(null, true));
+            }
+        }
 
         //---------------------------------------------------------------------------------------------
         //------------------------------------------DELETE STEP----------------------------------------
@@ -113,19 +122,17 @@
          * @name remove
          * @methodOf data-prep.recipe.controller:RecipeCtrl
          * @param {object} step The step to remove
+         * @param {object} $event The click event
          * @description Show a popup to confirm the removal and remove it when user confirm
          */
         vm.remove = function remove(step, $event) {
             $event.stopPropagation();
-            PlaygroundService.removeStep(step).then(function () {
-                if (state.playground.lookup.visibility) {
-                    if (step.transformation.name === 'lookup') {
-                        if (state.playground.lookup.step && state.playground.lookup.step.transformation.stepId === step.transformation.stepId) {
-                            LookupService.setAddMode(false);
-                        }
+            PlaygroundService.removeStep(step)
+                .then(function () {
+                    if (state.playground.lookup.visibility && state.playground.lookup.step) {
+                        StateService.setLookupVisibility(false);
                     }
-                }
-            });
+                });
         };
 
         //---------------------------------------------------------------------------------------------
@@ -159,7 +166,7 @@
          * @description Return if the step has parameters
          */
         vm.hasParameters = function hasParameters(step) {
-            return vm.hasStaticParams(step) || vm.hasDynamicParams(step);
+            return !isSpecificParams(step) && (vm.hasStaticParams(step) || vm.hasDynamicParams(step));
         };
 
         /**
@@ -184,6 +191,17 @@
         vm.hasDynamicParams = function hasDynamicParams(step) {
             return step.transformation.cluster;
         };
+
+        /**
+         * @ngdoc method
+         * @name isSpecificParams
+         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @param {object} step The step to test
+         * @description Return if the step has parameters that will be treated specifically
+         */
+        function isSpecificParams(step) {
+            return step.transformation.name === 'lookup';
+        }
 
         //---------------------------------------------------------------------------------------------
         //---------------------------------------------Preview-----------------------------------------

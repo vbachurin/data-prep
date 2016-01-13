@@ -5,11 +5,12 @@
         actions: [],                                                // the lookup actions (1 action per dataset)
         columnCheckboxes: [],                                       // column checkboxes model
         columnsToAdd: [],                                           // columns that are checked
-        dataset: null,                                              // loaded dataset
+        dataset: null,                                              // loaded lookup action (on a lookup dataset)
+        data: null,                                                 // selected lookup action dataset data
         dataView: new Slick.Data.DataView({inlineFilters: false}),  // grid view that hold the dataset data
+        selectedColumn: null,                                       // selected column
         visibility: false,                                          // visibility flag
-        step: null,                                                   // lookup step
-        isUpdatingLookupStep: false
+        step: null                                                  // lookup step
     };
 
     /**
@@ -20,16 +21,17 @@
     function LookupStateService() {
         return {
             reset: reset,
-            setActions: setActions,
-            setData: setData,
-            setDataset: setDataset,
-            setSelectedColumn: setSelectedColumn,
             setVisibility: setVisibility,
+
+            //lookup user selection update
+            setSelectedColumn: setSelectedColumn,
             updateColumnsToAdd: updateColumnsToAdd,
-            setLookupStep: setLookupStep,
-            setUpdateMode: setUpdateMode,
-            setAddMode:setAddMode,
-            setUpdatingLookupStep: setUpdatingLookupStep
+
+            //init lookup
+            setActions: setActions,
+            setAddMode: setAddMode,
+            setUpdateMode: setUpdateMode
+
         };
 
         /**
@@ -44,23 +46,63 @@
 
         /**
          * @ngdoc method
+         * @name setDataset
+         * @methodOf data-prep.services.state.service:LookupStateService
+         * @param {object} lookupAction The lookup action on a dataset
+         * @description Sets the current lookup action
+         */
+        function setDataset(lookupAction) {
+            lookupState.dataset = lookupAction;
+        }
+
+        /**
+         * @ngdoc method
          * @name setData
          * @methodOf data-prep.services.state.service:LookupStateService
          * @param {object} data The data
-         * @description Set new data in the grid and reset the column checkboxes
+         * @description Set data to display in the grid and reset the column checkboxes
          */
         function setData(data) {
             lookupState.dataView.beginUpdate();
             lookupState.dataView.setItems(data.records, 'tdpId');
             lookupState.dataView.endUpdate();
 
-            lookupState.selectedColumn = data.metadata.columns[0];
+            lookupState.data = data;
             lookupState.columnsToAdd = [];
+            createColumnsCheckboxes(data);
+        }
+
+        /**
+         * @ngdoc method
+         * @name setSelectedColumn
+         * @methodOf data-prep.services.state.service:LookupStateService
+         * @param {object} column The column metadata
+         * @description Set the lookup ds selected column and update columns to add (omit the selected column)
+         */
+        function setSelectedColumn(column) {
+            lookupState.selectedColumn = column;
+            if (column) {
+                updateColumnsToAdd();
+            }
+        }
+
+        /**
+         * @ngdoc method
+         * @name createColumnsCheckboxes
+         * @methodOf data-prep.services.state.service:LookupStateService
+         * @param {object} data The data
+         * @description Create the checkboxes definition for each column
+         */
+        function createColumnsCheckboxes(data) {
+            var addedColIds = lookupState.step ?
+                /*jshint camelcase: false */
+                _.map(lookupState.step.actionParameters.parameters.lookup_selected_cols, 'id') :
+                [];
             lookupState.columnCheckboxes = _.map(data.metadata.columns, function(col) {
                 return {
                     id: col.id,
                     name: col.name,
-                    isAdded: false
+                    isAdded: addedColIds.indexOf(col.id) > -1
                 };
             });
         }
@@ -69,7 +111,7 @@
          * @ngdoc method
          * @name updateColumnsToAdd
          * @methodOf data-prep.services.state.service:LookupStateService
-         * @description Update the columns to add depending on the checkboxes state
+         * @description Update the columns to add in the lookup step
          */
         function updateColumnsToAdd() {
             lookupState.columnsToAdd = _.chain(lookupState.columnCheckboxes)
@@ -96,96 +138,52 @@
 
         /**
          * @ngdoc method
-         * @name setLookupStep
+         * @name setAddMode
          * @methodOf data-prep.services.state.service:LookupStateService
-         * @param {String} stepId a lookup step
-         * @description Sets a lookup step
+         * @param {object} lookupAction the lookup action
+         * @param {object} data The selected lookup dataset data
+         * @description Set parameters for add mode
          */
-        function setLookupStep(step) {
-            lookupState.step = step;
+        function setAddMode(lookupAction, data) {
+            lookupState.step = null;
+            setDataset(lookupAction);
+            setData(data); //this updates the checkboxes
+            setSelectedColumn(data.metadata.columns[0]); //this update the columns to add
         }
-
-        /**
-         * @ngdoc method
-         * @name setUpdatingLookupStep
-         * @methodOf data-prep.services.state.service:LookupStateService
-         * @param {boolean} bool flag to check if in update mode
-         * @description set flag to check if in update mode
-         */
-        function setUpdatingLookupStep(bool) {
-            lookupState.isUpdatingLookupStep = bool;
-        }
-
 
         /**
          * @ngdoc method
          * @name setUpdateMode
          * @methodOf data-prep.services.state.service:LookupStateService
+         * @param {object} lookupAction the lookup action
+         * @param {object} data The selected lookup dataset data
+         * @param {object} step The step to update
          * @description Set parameters for update mode
          */
-        function setUpdateMode() {
-            lookupState.columnsToAdd = [];
-            lookupState.columnCheckboxes = [];
-            lookupState.dataset = null;
-            lookupState.selectedColumn = null;
-            lookupState.step = null;
-            lookupState.isUpdatingLookupStep = true;
-        }
-
-
-        /**
-         * @ngdoc method
-         * @name setAddMode
-         * @methodOf data-prep.services.state.service:LookupStateService
-         * @description Set parameters for add mode
-         */
-        function setAddMode() {
-            lookupState.columnsToAdd = [];
-            lookupState.columnCheckboxes = [];
-            lookupState.dataset = null;
-            lookupState.selectedColumn = null;
-            lookupState.step = null;
-            lookupState.isUpdatingLookupStep = false;
-            lookupState.visibility = false;
-        }
-
-        /**
-         * @ngdoc method
-         * @name setDataset
-         * @methodOf data-prep.services.state.service:LookupStateService
-         * @param {object} dataset The dataset
-         * @description Sets new dataset
-         */
-        function setDataset(dataset) {
-            lookupState.dataset = dataset;
-        }
-
-        /**
-         * @ngdoc method
-         * @name setSelectedColumn
-         * @methodOf data-prep.services.state.service:LookupStateService
-         * @param {object} column The column metadata
-         * @description Set the actual selected column and line
-         */
-        function setSelectedColumn(column) {
-            lookupState.selectedColumn = column;
+        function setUpdateMode(lookupAction, data, step) {
+            /*jshint camelcase: false */
+            var selectedColumn = _.find(data.metadata.columns, {id: step.actionParameters.parameters.lookup_join_on});
+            lookupState.step = step;
+            setDataset(lookupAction);
+            setData(data); //this updates the checkboxes
+            setSelectedColumn(selectedColumn); //this update the columns to add
         }
 
         /**
          * @ngdoc method
          * @name reset
          * @methodOf data-prep.services.state.service:LookupStateService
-         * @description Reset the grid internal values
+         * @description Reset the lookup internal state
          */
         function reset() {
             lookupState.actions = [];
             lookupState.columnsToAdd = [];
             lookupState.columnCheckboxes = [];
             lookupState.dataset = null;
+            lookupState.data = null;
             lookupState.selectedColumn = null;
             lookupState.visibility = false;
             lookupState.step = null;
-            lookupState.isUpdatingLookupStep = false;
         }
     }
 

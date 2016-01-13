@@ -9,18 +9,17 @@
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.utils.service:TextFormatService
      */
-    function DatagridStyleService(DatagridService, state, ConverterService, TextFormatService) {
+    function DatagridStyleService(DatagridService, ConverterService, TextFormatService) {
         var grid;
-        var highlightCellTimeout;
 
         return {
             init: init,
-            resetCellStyles: resetCellStyles,
-            updateColumnClass: updateColumnClass,
             columnFormatter: columnFormatter,
             getColumnPreviewStyle: getColumnPreviewStyle,
-            scheduleHighlightCellsContaining: scheduleHighlightCellsContaining,
-            updateSelectedColumnStyle: updateSelectedColumnStyle
+            highlightCellsContaining: highlightCellsContaining,
+            resetCellStyles: resetCellStyles,
+            resetStyles: resetStyles,
+            updateColumnClass: updateColumnClass
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -54,10 +53,10 @@
          * @methodOf data-prep.datagrid.service:DatagridStyleService
          * @description Add 'selected' class if the column is the selected one
          * @param {object} column The target column
-         * @param {object} selectedCol The selected column
+         * @param {string} selectedColId The selected column id
          */
-        function updateSelectionClass(column, selectedCol) {
-            if (column === selectedCol) {
+        function updateSelectionClass(column, selectedColId) {
+            if (column.id === selectedColId) {
                 addClass(column, 'selected');
             }
         }
@@ -81,17 +80,16 @@
          * @name updateColumnClass
          * @methodOf data-prep.datagrid.service:DatagridStyleService
          * @description Set style classes on columns depending on its state (type, selection, ...)
-         * @param {object} columns The columns array
-         * @param {object} selectedCol The grid selected column
+         * @param {string} selectedColId The grid selected column Id
          */
-        function updateColumnClass(columns, selectedCol) {
-            _.forEach(columns, function (column) {
+        function updateColumnClass(selectedColId) {
+            _.forEach(grid.getColumns(), function (column) {
                 if (column.id === 'tdpId') {
                     column.cssClass = 'index-column';
                 }
                 else {
                     column.cssClass = null;
-                    updateSelectionClass(column, selectedCol);
+                    updateSelectionClass(column, selectedColId);
                     updateNumbersClass(column);
                 }
             });
@@ -161,31 +159,27 @@
 
         /**
          * @ngdoc method
-         * @name attachColumnHeaderCallback
+         * @name resetStyles
          * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @description attachColumnHeaderListeners callback
+         * @description Reset the cell styles and update the columns style
+         * @param {string} selectedColId The selected column id
          */
-        function updateSelectedColumnStyle() {
+        function resetStyles(selectedColId) {
             resetCellStyles();
-            updateColumnClass(grid.getColumns(),  _.find(grid.getColumns(), {id: state.playground.grid.selectedColumn.id}));
-            grid.invalidate();
+            updateColumnClass(selectedColId);
         }
 
         /**
          * @ngdoc method
-         * @name scheduleHighlightCellsContaining
+         * @name highlightCellsContaining
          * @methodOf data-prep.datagrid.service:DatagridStyleService
          * @param {String} colId The column id
          * @param {String} content The value to highlight
-         * @description Cancel the previous scheduled task and schedule a new one to highlight the cells that contains the same value as the (rowIndex, colIndex) cell
+         * @description Highlight the cells in column that contains the same value as content
          */
-        function scheduleHighlightCellsContaining(colId, content) {
-            clearTimeout(highlightCellTimeout);
-
-            highlightCellTimeout = setTimeout(function() {
-                var sameContentConfig = DatagridService.getSameContentConfig(colId, content, 'highlight');
-                grid.setCellCssStyles('highlight', sameContentConfig);
-            }, 200);
+        function highlightCellsContaining(colId, content) {
+            var sameContentConfig = DatagridService.getSameContentConfig(colId, content, 'highlight');
+            grid.setCellCssStyles('highlight', sameContentConfig);
         }
 
         /**

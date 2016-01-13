@@ -1,5 +1,4 @@
 /*jshint camelcase: false */
-
 describe('Recipe controller', function () {
     'use strict';
 
@@ -83,6 +82,7 @@ describe('Recipe controller', function () {
         beforeEach(inject(function (PlaygroundService, $q) {
             spyOn(PlaygroundService, 'updateStep').and.returnValue($q.when(true));
         }));
+
         it('should create a closure that update the step parameters', inject(function ($rootScope, PlaygroundService) {
             //given
             var ctrl = createController();
@@ -130,90 +130,92 @@ describe('Recipe controller', function () {
             //then
             expect(PlaygroundService.updateStep).toHaveBeenCalledWith(step, parameters);
         }));
+
+        describe('preview', function() {
+            it('should do nothing on update preview if the step is inactive', inject(function ($rootScope, PreviewService) {
+                //given
+                var ctrl = createController();
+                var step = {
+                    column: {id: 'state'},
+                    transformation: {
+                        stepId: 'a598bc83fc894578a8b823',
+                        name: 'cut'
+                    },
+                    actionParameters: {
+                        action: 'cut',
+                        parameters: {pattern: '.', column_name: 'state'}
+                    },
+                    inactive: true
+                };
+                var parameters = {pattern: '--'};
+                var closure = ctrl.previewUpdateClosure(step);
+
+                //when
+                closure(parameters);
+                $rootScope.$digest();
+
+                //then
+                expect(PreviewService.getPreviewUpdateRecords).not.toHaveBeenCalled();
+            }));
+
+            it('should do nothing on update preview if the params have not changed', inject(function ($rootScope, PreviewService) {
+                //given
+                var ctrl = createController();
+                var step = {
+                    column: {id: '0', name: 'state'},
+                    transformation: {
+                        stepId: 'a598bc83fc894578a8b823',
+                        name: 'cut'
+                    },
+                    actionParameters: {
+                        action: 'cut',
+                        parameters: {pattern: '.', column_id: '0', column_name: 'state'}
+                    }
+                };
+                var parameters = {pattern: '.'};
+                var closure = ctrl.previewUpdateClosure(step);
+
+                //when
+                closure(parameters);
+                $rootScope.$digest();
+
+                //then
+                expect(PreviewService.getPreviewUpdateRecords).not.toHaveBeenCalled();
+            }));
+
+            it('should call update preview', inject(function ($rootScope, PreviewService, RecipeService) {
+                //given
+                RecipeService.refresh(); //set last active step for the test : see mock
+                $rootScope.$digest();
+
+                var ctrl = createController();
+                var step = {
+                    column: {id: '0', name: 'state'},
+                    transformation: {
+                        stepId: 'a598bc83fc894578a8b823',
+                        name: 'cut'
+                    },
+                    actionParameters: {
+                        action: 'cut',
+                        parameters: {pattern: '.', column_id: '0', column_name: 'state', scope: 'column'}
+                    }
+                };
+                var parameters = {pattern: '--'};
+                var closure = ctrl.previewUpdateClosure(step);
+
+                //when
+                closure(parameters);
+                $rootScope.$digest();
+
+                //then
+                expect(PreviewService.getPreviewUpdateRecords).toHaveBeenCalledWith(
+                    stateMock.playground.preparation.id,
+                    lastActiveStep,
+                    step,
+                    {pattern: '--', column_id: '0', column_name: 'state', scope: 'column'});
+            }));
+        });
     });
-
-    it('should do nothing on update preview if the step is inactive', inject(function ($rootScope, PreviewService) {
-        //given
-        var ctrl = createController();
-        var step = {
-            column: {id: 'state'},
-            transformation: {
-                stepId: 'a598bc83fc894578a8b823',
-                name: 'cut'
-            },
-            actionParameters: {
-                action: 'cut',
-                parameters: {pattern: '.', column_name: 'state'}
-            },
-            inactive: true
-        };
-        var parameters = {pattern: '--'};
-        var closure = ctrl.previewUpdateClosure(step);
-
-        //when
-        closure(parameters);
-        $rootScope.$digest();
-
-        //then
-        expect(PreviewService.getPreviewUpdateRecords).not.toHaveBeenCalled();
-    }));
-
-    it('should do nothing on update preview if the params have not changed', inject(function ($rootScope, PreviewService) {
-        //given
-        var ctrl = createController();
-        var step = {
-            column: {id: '0', name: 'state'},
-            transformation: {
-                stepId: 'a598bc83fc894578a8b823',
-                name: 'cut'
-            },
-            actionParameters: {
-                action: 'cut',
-                parameters: {pattern: '.', column_id: '0', column_name: 'state'}
-            }
-        };
-        var parameters = {pattern: '.'};
-        var closure = ctrl.previewUpdateClosure(step);
-
-        //when
-        closure(parameters);
-        $rootScope.$digest();
-
-        //then
-        expect(PreviewService.getPreviewUpdateRecords).not.toHaveBeenCalled();
-    }));
-
-    it('should call update preview', inject(function ($rootScope, PreviewService, RecipeService) {
-        //given
-        RecipeService.refresh(); //set last active step for the test : see mock
-        $rootScope.$digest();
-
-        var ctrl = createController();
-        var step = {
-            column: {id: '0', name: 'state'},
-            transformation: {
-                stepId: 'a598bc83fc894578a8b823',
-                name: 'cut'
-            },
-            actionParameters: {
-                action: 'cut',
-                parameters: {pattern: '.', column_id: '0', column_name: 'state', scope: 'column'}
-            }
-        };
-        var parameters = {pattern: '--'};
-        var closure = ctrl.previewUpdateClosure(step);
-
-        //when
-        closure(parameters);
-        $rootScope.$digest();
-
-        //then
-        expect(PreviewService.getPreviewUpdateRecords).toHaveBeenCalledWith(
-            stateMock.playground.preparation.id,
-            lastActiveStep,
-            step,
-            {pattern: '--', column_id: '0', column_name: 'state', scope: 'column'});
-    }));
 
     describe('step parameters', function () {
         it('should return 3 added columns names given the ids', function () {
@@ -222,10 +224,10 @@ describe('Recipe controller', function () {
             var step = {
                 actionParameters: {
                     parameters: {
-                        lookup_selected_cols : [
-                            {id:'0001', name:'firstname'},
-                            {id:'0002', name:'lastname'},
-                            {id:'0003', name:'city'}
+                        lookup_selected_cols: [
+                            {id: '0001', name: 'firstname'},
+                            {id: '0002', name: 'lastname'},
+                            {id: '0003', name: 'city'}
                         ]
                     }
                 }
@@ -238,7 +240,7 @@ describe('Recipe controller', function () {
             expect(namesString).toEqual({
                 initialColsNbr: 3,
                 firstCol: 'firstname',
-                secondCol: 'lastname' ,
+                secondCol: 'lastname',
                 restOfColsNbr: 1,
                 restOfCols: 'city'
             });
@@ -250,9 +252,9 @@ describe('Recipe controller', function () {
             var step = {
                 actionParameters: {
                     parameters: {
-                        lookup_selected_cols : [
-                            {id:'0001', name:'firstname'},
-                            {id:'0002', name:'lastname'}
+                        lookup_selected_cols: [
+                            {id: '0001', name: 'firstname'},
+                            {id: '0002', name: 'lastname'}
                         ]
                     }
                 }
@@ -265,7 +267,7 @@ describe('Recipe controller', function () {
             expect(namesString).toEqual({
                 initialColsNbr: 2,
                 firstCol: 'firstname',
-                secondCol: 'lastname' ,
+                secondCol: 'lastname',
                 restOfColsNbr: 0,
                 restOfCols: ''
             });
@@ -277,8 +279,8 @@ describe('Recipe controller', function () {
             var step = {
                 actionParameters: {
                     parameters: {
-                        lookup_selected_cols : [
-                            {id:'0001', name:'firstname'}
+                        lookup_selected_cols: [
+                            {id: '0001', name: 'firstname'}
                         ]
                     }
                 }
@@ -291,7 +293,7 @@ describe('Recipe controller', function () {
             expect(namesString).toEqual({
                 initialColsNbr: 1,
                 firstCol: 'firstname',
-                secondCol: '' ,
+                secondCol: '',
                 restOfColsNbr: 0,
                 restOfCols: ''
             });
@@ -426,9 +428,9 @@ describe('Recipe controller', function () {
             actionParameters: {parameters: {column_name: 'firstname'}}
         };
 
-        beforeEach(inject(function ($q,PlaygroundService, LookupService) {
+        beforeEach(inject(function ($q, PlaygroundService, StateService) {
             spyOn(PlaygroundService, 'removeStep').and.returnValue($q.when());
-            spyOn(LookupService, 'setAddMode').and.returnValue();
+            spyOn(StateService, 'setLookupVisibility').and.returnValue();
         }));
 
         it('should remove step', inject(function (PlaygroundService) {
@@ -443,55 +445,144 @@ describe('Recipe controller', function () {
             expect(PlaygroundService.removeStep).toHaveBeenCalledWith(step);
         }));
 
-        it('should setAddMode after removing a lookup step', inject(function (LookupService) {
+        it('should stop click propagation', function () {
+            //given
+            var ctrl = createController();
+            var event = angular.element.Event('click');
+            spyOn(event, 'stopPropagation').and.returnValue();
+
+            stateMock.playground.lookup.visibility = true;
+            stateMock.playground.lookup.step = step;
+
+            //when
+            ctrl.remove(step, event);
+            scope.$digest();
+
+            //then
+            expect(event.stopPropagation).toHaveBeenCalled();
+        });
+
+        it('should hide lookup if it is in update mode', inject(function (StateService) {
             //given
             var ctrl = createController();
             var event = angular.element.Event('click');
 
             stateMock.playground.lookup.visibility = true;
             stateMock.playground.lookup.step = step;
+
             //when
             ctrl.remove(step, event);
             scope.$digest();
 
             //then
-            expect(LookupService.setAddMode).toHaveBeenCalledWith(false);
+            expect(StateService.setLookupVisibility).toHaveBeenCalledWith(false);
+        }));
+
+        it('should NOT hide lookup when it is NOT in update mode', inject(function (StateService) {
+            //given
+            var ctrl = createController();
+            var event = angular.element.Event('click');
+
+            stateMock.playground.lookup.visibility = true;
+            stateMock.playground.lookup.step = null;
+
+            //when
+            ctrl.remove(step, event);
+            scope.$digest();
+
+            //then
+            expect(StateService.setLookupVisibility).not.toHaveBeenCalled();
+        }));
+
+        it('should NOT hide lookup when it is already already hidden', inject(function (StateService) {
+            //given
+            var ctrl = createController();
+            var event = angular.element.Event('click');
+
+            stateMock.playground.lookup.visibility = false;
+            stateMock.playground.lookup.step = step;
+
+            //when
+            ctrl.remove(step, event);
+            scope.$digest();
+
+            //then
+            expect(StateService.setLookupVisibility).not.toHaveBeenCalled();
         }));
     });
 
-    describe('toogle step', function () {
-        var step = {
+    describe('select step', function () {
+        var lookupStep = {
             transformation: {label: 'Replace empty value ...', name: 'lookup', stepId: '0001'},
             actionParameters: {parameters: {column_name: 'firstname'}}
         };
+        var notLookupStep = {
+            transformation: {label: 'Change case to UPPER ...', name: 'uppercase', stepId: '0002'},
+            actionParameters: {parameters: {column_name: 'firstname'}}
+        };
+        var clusterStep = {
+            transformation: {label: 'Cluster ...', name: 'cluster', stepId: '0003', cluster: {}},
+            actionParameters: {parameters: {column_name: 'firstname'}}
+        };
 
-        beforeEach(inject(function ($q,StateService, LookupService) {
-            spyOn(LookupService, 'setUpdateMode').and.returnValue();
-            spyOn(StateService, 'setLookupAddMode').and.returnValue();
+        beforeEach(inject(function ($q, StateService, LookupService) {
+            spyOn(LookupService, 'loadFromStep').and.returnValue($q.when());
+            spyOn(StateService, 'setLookupVisibility').and.returnValue();
         }));
 
-        it('should set update mode for lookup', inject(function (LookupService) {
+        it('should close lookup if it is opened in selected step update mode', inject(function (StateService) {
             //given
             var ctrl = createController();
+            stateMock.playground.lookup.visibility = true;
+            stateMock.playground.lookup.step = lookupStep;
+
             //when
-            ctrl.toogleStep(1, step);
+            ctrl.select(lookupStep);
             scope.$digest();
 
             //then
-            expect(LookupService.setUpdateMode).toHaveBeenCalledWith(step, true);
+            expect(StateService.setLookupVisibility).toHaveBeenCalledWith(false);
         }));
 
-        it('should set add mode for lookup', inject(function (StateService) {
+        it('should open lookup in update mode', inject(function (LookupService, StateService) {
             //given
             var ctrl = createController();
-            step.transformation.name = 'invalid';
+            stateMock.playground.lookup.visibility = false;
+
             //when
-            ctrl.toogleStep(1, step);
+            ctrl.select(lookupStep);
             scope.$digest();
 
             //then
-            expect(StateService.setLookupAddMode).toHaveBeenCalled();
+            expect(LookupService.loadFromStep).toHaveBeenCalledWith(lookupStep);
+            expect(StateService.setLookupVisibility).toHaveBeenCalledWith(true, undefined);
         }));
+
+        it('should do nothing on lookup when the selected step is not a lookup', inject(function (LookupService, StateService) {
+            //given
+            var ctrl = createController();
+
+            //when
+            ctrl.select(notLookupStep);
+            scope.$digest();
+
+            //then
+            expect(LookupService.loadFromStep).not.toHaveBeenCalled();
+            expect(StateService.setLookupVisibility).not.toHaveBeenCalled();
+        }));
+
+        it('should show dynamic params modal',function () {
+            //given
+            var ctrl = createController();
+            ctrl.showModal[clusterStep.transformation.stepId] = false;
+
+            //when
+            ctrl.select(clusterStep);
+            scope.$digest();
+
+            //then
+            expect(ctrl.showModal[clusterStep.transformation.stepId]).toBe(true);
+        });
     });
 
     describe('remove step filter', function () {
@@ -589,7 +680,6 @@ describe('Recipe controller', function () {
             expect(stepWithMultipleFilters.filters.length).toBe(2);
         }));
     });
-
 
     describe('filters', function () {
         var filters = [

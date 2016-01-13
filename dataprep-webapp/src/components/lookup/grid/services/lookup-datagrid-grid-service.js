@@ -12,7 +12,7 @@
      * @requires data-prep.lookup.service:LookupDatagridTooltipService
      */
     function LookupDatagridGridService($window, state, StateService, LookupDatagridStyleService,
-                                       LookupDatagridColumnService, LookupDatagridTooltipService, $timeout) {
+                                       LookupDatagridColumnService, LookupDatagridTooltipService) {
         var grid = null;
         var lastSelectedColumn;
         var gridServices = [
@@ -55,13 +55,7 @@
                 return;
             }
             lastSelectedColumn = column.tdpColMetadata;
-            $timeout(function () {
-                //if the selected column is the index col: column.tdpColMetadata === undefined
-                StateService.setLookupSelectedColumn(column.tdpColMetadata);
-                if (column.tdpColMetadata) {
-                    StateService.updateLookupColumnsToAdd();
-                }
-            });
+            StateService.setLookupSelectedColumn(column.tdpColMetadata);
         }
 
         /**
