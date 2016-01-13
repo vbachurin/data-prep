@@ -78,7 +78,6 @@ describe('Dataset column header directive', function () {
 		expect(element.find('.grid-header-type').text()).toBe('text');
 	});
 
-
 	it('should select checkbox when clicking on add-to-lookup div', function () {
 		//given
 		createElement();
@@ -91,6 +90,23 @@ describe('Dataset column header directive', function () {
 		//then
 		expect(ctrl.updateColsToAdd).toHaveBeenCalled();
 		expect(element.find('input[type=checkbox]').is(':checked')).toBeTruthy();
+	});
+
+
+	it('should uncheck checkbox when clicking on add-to-lookup div and the column is already selected', function () {
+		//given
+		createElement();
+		jasmine.clock().tick(250);
+		var event = angular.element.Event('click');
+		element.find('.add-to-lookup').eq(0).trigger(event);
+
+
+		//when
+		element.find('.add-to-lookup').eq(0).trigger(event);
+
+		//then
+		expect(ctrl.updateColsToAdd).toHaveBeenCalled();
+		expect(element.find('input[type=checkbox]').is(':checked')).toBeFalsy();
 	});
 
 });
