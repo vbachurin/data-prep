@@ -40,13 +40,6 @@ public class CSVSchemaParserTest {
     @Autowired
     CSVFormatUtils csvFormatUtils;
 
-    /**
-     * Unit test constructor.
-     *//*
-    public CSVSchemaParserTest() {
-        parser = new CSVSchemaParser();
-    }
-*/
     @Test
     public void should_parse_csv() throws IOException {
         try (InputStream inputStream = this.getClass().getResourceAsStream("simple.csv")) {
@@ -74,7 +67,7 @@ public class CSVSchemaParserTest {
             DataSetMetadata datasetMetadata = IoTestUtils.getSimpleDataSetMetadata(columns);
             csvFormatUtils.resetParameters(datasetMetadata, ";", Arrays.asList(columns), 1);
             try {
-                SchemaParserResult result = parser.parse(new SchemaParser.Request(inputStream, datasetMetadata));
+                parser.parse(new SchemaParser.Request(inputStream, datasetMetadata));
             }
             catch(IndexOutOfBoundsException exc){
                 Assert.fail("Should not throw an IndexOutOfBoundsException, when parsing!");

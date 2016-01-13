@@ -51,14 +51,14 @@ public class CSVSchemaParser implements SchemaParser {
             List<String> header = csvFormatUtils.retrieveHeader(parameters);
 
             if (header == null || header.isEmpty()) {
-                CSVReader reader = new CSVReader(new InputStreamReader(request.getContent(), metadata.getEncoding()), separator);
-                String[] columns = reader.readNext();
-                if (columns == null) { // Empty content?
-                    reader.close();
-                    return SchemaParserResult.Builder.parserResult() //
-                            .sheetContents(sheetContents).build();
-                } else {
-                    throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT);
+                try (CSVReader reader = new CSVReader(new InputStreamReader(request.getContent(), metadata.getEncoding()), separator)) {
+                    String[] columns = reader.readNext();
+                    if (columns == null) { // Empty content?
+                        return SchemaParserResult.Builder.parserResult() //
+                                .sheetContents(sheetContents).build();
+                    } else {
+                        throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT);
+                    }
                 }
             }
             LOGGER.debug("Columns found: {}", header);

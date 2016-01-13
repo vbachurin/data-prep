@@ -43,7 +43,7 @@ public class CSVSerializer implements Serializer {
                     JsonGenerator generator = new JsonFactory().createGenerator(jsonOutput);
                     int i = 0;
                     while (i++ < metadata.getContent().getNbLinesInHeader() ) {
-                        reader.readNext(); // Skip column names
+                        reader.readNext(); // Skip all header lines
                     }
                     generator.writeStartArray();
                     writeLineContent(reader, metadata, generator, separator);

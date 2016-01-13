@@ -1,26 +1,43 @@
 package org.talend.dataprep.schema.csv;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.type.Type;
 
 public class CSVFastHeaderAndTypeAnalyzerTest {
 
+    private Locale previousLocale;
+
+    @Before
+    public void setUp() throws Exception {
+        previousLocale = Locale.getDefault();
+        Locale.setDefault(Locale.ENGLISH);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        Locale.setDefault(previousLocale);
+    }
+
     @Test
     public void should_neither_detect_type_nor_first_line_header_when_sample_is_empty() {
         // given
         String firstRecord = "";
-        List<String> list = Arrays.asList(firstRecord);
+        List<String> list = Collections.singletonList(firstRecord);
         Separator separator = new Separator(';');
 
         // when
         CSVFastHeaderAndTypeAnalyzer analysis = new CSVFastHeaderAndTypeAnalyzer(list, separator);
 
         // then
-        List<Type> expectedTypes = Arrays.asList();
+        List<Type> expectedTypes = Collections.emptyList();
         Assert.assertArrayEquals(expectedTypes.toArray(), analysis.getHeaders().values().toArray());
         Assert.assertFalse(analysis.isFirstLineAHeader());
     }
@@ -29,7 +46,7 @@ public class CSVFastHeaderAndTypeAnalyzerTest {
     public void should_detect_type_without_first_line_header_when_sample_has_one_line() {
         // given
         String firstRecord = "0001;Toto; Hello;1,000.02";
-        List<String> list = Arrays.asList(firstRecord);
+        List<String> list = Collections.singletonList(firstRecord);
         Separator separator = new Separator(';');
 
         // when
@@ -119,8 +136,9 @@ public class CSVFastHeaderAndTypeAnalyzerTest {
         CSVFastHeaderAndTypeAnalyzer analysis = new CSVFastHeaderAndTypeAnalyzer(list, separator);
 
         // then
-        List<String> expectedHeader = Arrays.asList("COL1", "COL2", "COL3");
+        List<String> expectedHeaders = Arrays.asList("COL1", "COL2", "COL3");
         List<Type> expectedTypes = Arrays.asList(Type.INTEGER, Type.STRING, Type.STRING);
+        Assert.assertArrayEquals(expectedHeaders.toArray(), analysis.getHeaders().keySet().toArray());
         Assert.assertArrayEquals(expectedTypes.toArray(), analysis.getHeaders().values().toArray());
         Assert.assertFalse(analysis.isFirstLineAHeader());
     }
