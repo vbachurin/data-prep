@@ -434,6 +434,20 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.talend.dataprep</groupId>
+                <artifactId>dataprep-preparation</artifactId>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.dataprep</groupId>
+                <artifactId>dataprep-dataset</artifactId>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>javax.mail</groupId>
                 <artifactId>mailapi</artifactId>
                 <version>1.4.3</version>
