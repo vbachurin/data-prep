@@ -2,7 +2,6 @@ package org.talend.dataprep.transformation.api.action.metadata.date;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
 
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
@@ -75,8 +74,7 @@ public interface DatePatternParamModel {
             if (StringUtils.isEmpty(pattern)) {
                 throw new IllegalArgumentException();
             }
-            final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH);
-            return new DatePattern(pattern, dateTimeFormatter);
+            return new DatePattern(pattern);
         } catch (IllegalArgumentException iae) {
             throw new IllegalArgumentException("pattern '" + pattern + "' is not a valid date pattern", iae);
         }
