@@ -3,7 +3,6 @@ package org.talend.dataprep.transformation.api.action.metadata.date;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -47,26 +46,28 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction, Dat
     @Override
     public void compile(ActionContext actionContext) {
         super.compile(actionContext);
-        compileDatePattern(actionContext);
+        if (actionContext.getActionStatus() == ActionContext.ActionStatus.OK) {
+            compileDatePattern(actionContext);
 
-        //register the new pattern in column stats as most used pattern, to be able to process date action more efficiently later
-        final DatePattern newPattern = actionContext.get(COMPILED_DATE_PATTERN);
-        final RowMetadata rowMetadata = actionContext.getInputRowMetadata();
-        final ColumnMetadata column = rowMetadata.getById(actionContext.getColumnId());
-        final Statistics statistics = column.getStatistics();
+            //register the new pattern in column stats as most used pattern, to be able to process date action more efficiently later
+            final DatePattern newPattern = actionContext.get(COMPILED_DATE_PATTERN);
+            final RowMetadata rowMetadata = actionContext.getInputRowMetadata();
+            final ColumnMetadata column = rowMetadata.getById(actionContext.getColumnId());
+            final Statistics statistics = column.getStatistics();
 
-        final PatternFrequency newPatternFrequency = statistics.getPatternFrequencies()
-                .stream()
-                .filter(patternFrequency -> StringUtils.equals(patternFrequency.getPattern(), newPattern.getPattern()))
-                .findFirst()
-                .orElseGet(() -> {
-                    final PatternFrequency newPatternFreq = new PatternFrequency(newPattern.getPattern(), 0);
-                    statistics.getPatternFrequencies().add(newPatternFreq);
-                    return newPatternFreq;
-                });
+            final PatternFrequency newPatternFrequency = statistics.getPatternFrequencies()
+                    .stream()
+                    .filter(patternFrequency -> StringUtils.equals(patternFrequency.getPattern(), newPattern.getPattern()))
+                    .findFirst()
+                    .orElseGet(() -> {
+                        final PatternFrequency newPatternFreq = new PatternFrequency(newPattern.getPattern(), 0);
+                        statistics.getPatternFrequencies().add(newPatternFreq);
+                        return newPatternFreq;
+                    });
 
-        long mostUsedPatternCount = getMostUsedPatternCount(column);
-        newPatternFrequency.setOccurrences(mostUsedPatternCount + 1);
+            long mostUsedPatternCount = getMostUsedPatternCount(column);
+            newPatternFrequency.setOccurrences(mostUsedPatternCount + 1);
+        }
     }
 
     /**
