@@ -1,5 +1,18 @@
 package org.talend.dataprep.dataset.store.metadata.file;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,17 +27,7 @@ import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepositoryAdapt
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.DataSetErrorCodes;
 import org.talend.dataprep.lock.DistributedLock;
-
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.stream.Stream;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+import org.talend.dataprep.util.ReentrantReadWriteLockGroup;
 
 /**
  * File system implementation of the DataSetMetadataRepository.
@@ -52,19 +55,30 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
     }
 
     /**
+     * A group of ReentrantReadWriteLock associating to each dataset id a unique ReentrantReadWriteLock.
+     */
+    private final ReentrantReadWriteLockGroup locks = new ReentrantReadWriteLockGroup(true, 100);
+
+    /**
      * @see DataSetMetadataRepository#add(DataSetMetadata)
      */
     @Override
     public void add(DataSetMetadata metadata) {
 
-        final File file = getFile(metadata.getId());
+        String id = metadata.getId();
 
+        ReentrantReadWriteLock lock = locks.getLock(id);
+        final File file = getFile(id);
+
+        lock.writeLock().lock();
         try (GZIPOutputStream output = new GZIPOutputStream(new FileOutputStream(file))) {
             builder.build().writer().writeValue(output, metadata);
         } catch (IOException e) {
             LOG.error("Error saving {}", metadata, e);
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_METADATA, e,
                     ExceptionContext.build().put("id", metadata.getId()));
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -83,12 +97,16 @@ public class FileSystemDataSetMetadataRepository extends DataSetMetadataReposito
             LOG.info("dataset #{} not found in file system", id);
             return null;
         }
+        ReentrantReadWriteLock lock = locks.getLock(id);
 
+        lock.readLock().lock();
         try (GZIPInputStream input = new GZIPInputStream(new FileInputStream(file))) {
             return builder.build().readerFor(DataSetMetadata.class).readValue(input);
         } catch (IOException e) {
             LOG.error("unable to load dataset {}", id, e);
             return null;
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
