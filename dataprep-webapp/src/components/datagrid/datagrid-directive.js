@@ -233,30 +233,6 @@
                         // the tooltip ruler is used compute a cell text regardless of the font and zoom used.
                         // To do so, the text is put into an invisible span so that the span can be measured.
                         DatagridTooltipService.tooltipRuler = iElement.find('#tooltip-ruler').eq(0);
-
-                        var gridCanvas = iElement.find('.grid-canvas');
-                        var gridCanvasEvents = $._data(gridCanvas[0], 'events');
-
-                        var slickClickCb = gridCanvasEvents.click[0].handler;
-                        var slickDbClickCb = gridCanvasEvents.dblclick[0].handler;
-
-                        gridCanvas.unbind('click');
-                        gridCanvas.unbind('dblclick');
-
-                        var DELAY = 300,
-                            timer = null;
-
-                        gridCanvas.bind('click', function(e) {
-                                clearTimeout(timer);
-                                timer = setTimeout(function() {
-                                    slickClickCb(e);
-                                }, DELAY);
-                            });
-
-                        gridCanvas.bind('dblclick', function(e) {
-                                clearTimeout(timer);
-                                slickDbClickCb(e);
-                            });
                     }
                 };
 

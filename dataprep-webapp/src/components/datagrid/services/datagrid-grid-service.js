@@ -130,7 +130,7 @@
                 syncColumnCellResize: false,
 				frozenColumn: 0,
 				asyncEditorLoading: true,
-				asyncEditorLoadDelay: 350// > 200(highlightCellTimeout) + 100(columnClassTimeout)
+				asyncEditorLoadDelay: 150
             };
             grid = new Slick.Grid(elementId, state.playground.grid.dataView, [{id: 'tdpId'}], options);
 
