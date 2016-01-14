@@ -171,13 +171,6 @@ $border-color: #CECECE;
     position: relative;
     width: 100%;
     margin: 30px 0 0 0;
-
-    &.datagrid{
-      min-height: 200px;
-      .slick-header-columns {
-        min-height: 29px;
-      }
-    }
   }
 
   .icon-img {
