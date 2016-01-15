@@ -1,4 +1,7 @@
 <div class="navigation-list">
+    <div class="add-item" ng-if="navigationListCtrl.showAddButton">
+        <span ng-click="navigationListCtrl.onAddItem()" class="add-button" data-icon="s"  translate-once-title="ADD_LOOKUP_DATASET_TITLE"></span>
+    </div>
     <div class="back-forth-btn">
         <button class="arrow-left"></button>
         <button class="arrow-right"></button>
@@ -13,9 +16,5 @@
                 {{navigationListCtrl.getLabel({item: item})}}
             </li>
         </ul>
-    </div>
-
-    <div class="add-item" ng-if="navigationListCtrl.showAddButton">
-        <button ng-click="navigationListCtrl.onAddItem()" class="add-button">+ {{navigationListCtrl.onAddItem}}</button>
     </div>
 </div>

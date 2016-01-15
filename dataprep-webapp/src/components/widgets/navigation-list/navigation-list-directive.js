@@ -45,10 +45,11 @@
                 }
 
                 $timeout(function () {
+
+                    var wrapper = iElement.find('.items-list-wrapper').eq(0);
                     var leftButton = iElement.find('.arrow-left').eq(0);
                     var rightButton = iElement.find('.arrow-right').eq(0);
                     var itemsList = iElement.find('.items-list').eq(0);
-                    var addItemButton = iElement.find('.add-item').eq(0);
                     itemsList.css('left', 0);
                     itemsList.css('float', 'left');
 
@@ -56,6 +57,11 @@
                         var posLeft = 0;
                         if(itemsList.css('float') === 'right') {
                             posLeft = itemsList.position().left;
+                            if(posLeft > 0){
+                                itemsList.css('float', 'left');
+                                itemsList.css('left', 0);
+                                return;
+                            }
                         } else {
                             posLeft = parseInt(itemsList.css('left'), 10);
                         }
@@ -75,15 +81,20 @@
                         var posLeft = 0;
                         if(itemsList.css('float') === 'right') {
                             posLeft = itemsList.position().left;
+                            if(posLeft > 0){
+                                itemsList.css('float', 'left');
+                                itemsList.css('left', 0);
+                                return;
+                            }
                         } else {
                             posLeft = parseInt(itemsList.css('left'), 10);
                         }
 
-                        if((posLeft + ctrl.list.length * 200) > addItemButton.position().left) {
+                        if((posLeft + ctrl.list.length * 200) > wrapper.width()) {
                             itemsList.css('left', posLeft - 200);
                             posLeft = parseInt(itemsList.css('left'), 10);
 
-                            if ((posLeft + ctrl.list.length * 200) < addItemButton.position().left) {
+                            if ((posLeft + ctrl.list.length * 200) < wrapper.width()) {
                                 itemsList.css('float', 'right');
                                 itemsList.css('left', '');
                             }
@@ -96,10 +107,13 @@
                             itemsList.css('width', ctrl.list.length * 200);
                         }
                     );
+
+                    $(window).on('resize', function(){
+                        itemsList.css('left', 0);
+                        itemsList.css('float', 'left');
+                    });
                 }, 500);
-
             }
-
         };
     }
 

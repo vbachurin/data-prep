@@ -15,7 +15,6 @@
   .back-forth-btn {
     display: inline;
     margin-right: 10px;
-    margin-left: 10px;
     height: 30px;
     float: left;
 
@@ -69,8 +68,15 @@
   }
   .add-item {
     display: inline;
+    float: left;
     .add-button {
       height: 29px;
+      padding-left: 10px;
+      cursor: pointer;
+
+      &:active {
+        color : $light-gray;
+      }
     }
   }
 
