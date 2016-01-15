@@ -48,7 +48,8 @@
                 primaryValueField: '@',
                 secondaryData: '=',
                 secondaryValueField: '@',
-                showXAxis: '='
+                showXAxis: '=',
+                tooltipContent: '='
             },
             link: function (scope, element, attrs) {
                 var BAR_MIN_HEIGHT = 3;
@@ -68,20 +69,10 @@
                     .attr('class', 'vertical-barchart-cls d3-tip')
                     .offset([0, -11])
                     .direction('w')
-                    .html(getTooltipContent);
-
-                function getTooltipContent(data) {
-                    var range = data[scope.keyField];
-                    var uniqueValue = range.min === range.max;
-                    var title = (uniqueValue ? 'Value: ' : 'Range: ');
-                    var value = range.label || (uniqueValue ? range.min : '[' + range.min + ', ' + range.max + '[');
-
-                    return '<strong>' + labelTooltip + ':</strong> <span style="color:yellow">' + getSecondaryValueFromRange(getRangeInfos(data)) + ' / ' + getPrimaryValue(data) + '</span>' +
-                        '<br/>' +
-                        '<br/>' +
-                        '<strong>' + title + '</strong> ' +
-                        '<span style="color:yellow">' + value + '</span>';
-                }
+                    .html(function (datum, index) {
+                        var secondaryDatum = scope.secondaryData ? scope.secondaryData[index] : undefined;
+                        return scope.tooltipContent(datum, secondaryDatum, scope.keyField, scope.keyLabel, scope.primaryValueField, scope.secondaryValueField);
+                    });
 
                 //------------------------------------------------------------------------------------------------------
                 //------------------------------------------ Data adaptation -------------------------------------------
@@ -109,20 +100,6 @@
 
                 function getSecondaryValue(data) {
                     return data[scope.secondaryValueField];
-                }
-
-                function getSecondaryValueFromRange(range) {
-                    var secondaryData = scope.secondaryData;
-                    if (!secondaryData) {
-                        return 0;
-                    }
-
-                    var secondaryDataItem = _.find(secondaryData, function (dataItem) {
-                        var secondaryRange = getRangeInfos(dataItem);
-                        return (range.min === secondaryRange.min && range.max === secondaryRange.max) ||
-                            (range.min instanceof Date && range.min.getTime() === secondaryRange.min.getTime() && range.max.getTime() === secondaryRange.max.getTime());
-                    });
-                    return secondaryDataItem ? getSecondaryValue(secondaryDataItem) : 0;
                 }
 
                 //------------------------------------------------------------------------------------------------------
@@ -291,16 +268,18 @@
                         .attr('height', height)
                         .attr('class', 'bg-rect')
                         .style('opacity', 0)
-                        .on('mouseenter', function (d) {
+                        .on('mouseenter', function (d, i) {
                             d3.select(this).style('opacity', 0.4);
-                            tooltip.show(d);
+                            tooltip.show(d, i);
                         })
                         .on('mouseleave', function (d) {
                             d3.select(this).style('opacity', 0);
                             tooltip.hide(d);
                         })
                         .on('click', function (d) {
-                            scope.onClick({interval: getRangeInfos(d)});
+                            //create a new reference as the data object could be modified outside the component
+                            var newDataObj = _.extend({}, getRangeInfos(d));
+                            scope.onClick({interval: newDataObj});
                         });
                 }
 

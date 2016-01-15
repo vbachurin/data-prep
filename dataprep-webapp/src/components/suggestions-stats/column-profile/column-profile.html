@@ -53,6 +53,8 @@
                                  secondary-data="columnProfileCtrl.state.playground.statistics.filteredHistogram.data"
                                  secondary-value-field="{{columnProfileCtrl.state.playground.statistics.filteredHistogram.valueField}}"
                                  secondary-bar-class="{{columnProfileCtrl.state.playground.statistics.filteredHistogram.className}}"
+
+                                 tooltip-content="columnProfileCtrl.statisticsTooltipService.getTooltipTemplate"
             ></horizontal-barchart>
 
             <vertical-barchart id="vBarChart"
@@ -71,7 +73,10 @@
                                secondary-data="columnProfileCtrl.state.playground.statistics.filteredHistogram.data"
                                secondary-value-field="{{columnProfileCtrl.state.playground.statistics.filteredHistogram.valueField}}"
 
-                               active-limits="columnProfileCtrl.state.playground.statistics.activeLimits"></vertical-barchart>
+                               tooltip-content="columnProfileCtrl.statisticsTooltipService.getTooltipTemplate"
+
+                               active-limits="columnProfileCtrl.state.playground.statistics.activeLimits"
+            ></vertical-barchart>
         </div>
 
         <range-slider id="rangeSliderId"

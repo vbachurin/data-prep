@@ -7,14 +7,17 @@
      * @description Column profile controller.
      * @requires data-prep.services.state.constant:state
      * @requires data-prep.statistics.service:StatisticsService
+     * @requires data-prep.statistics.service:StatisticsTooltipService
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function ColumnProfileCtrl($timeout, state, StatisticsService, FilterService, PlaygroundService) {
+    function ColumnProfileCtrl($timeout, state, StatisticsService, StatisticsTooltipService, FilterService, PlaygroundService) {
         var vm = this;
         vm.statisticsService = StatisticsService;
         vm.state = state;
         vm.chartConfig = {};
+        vm.statisticsTooltipService = StatisticsTooltipService;
+
 
         //------------------------------------------------------------------------------------------------------
         //------------------------------------------------FILTER------------------------------------------------

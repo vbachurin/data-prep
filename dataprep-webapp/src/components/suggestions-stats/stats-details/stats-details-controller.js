@@ -6,10 +6,14 @@
      * @name data-prep.stats-details.controller:StatsDetailsCtrl
      * @description Statistics details
      * @requires data-prep.services.filter.service:FilterService
+     * @requires data-prep.services.statisticsService.service:StatisticsService
+     * @requires data-prep.services.statisticsService.service:StatisticsTooltipService
      */
-    function StatsDetailsCtrl(state, FilterService) {
+    function StatsDetailsCtrl(state, FilterService, StatisticsService, StatisticsTooltipService) {
         var vm = this;
         vm.state = state;
+        vm.statisticsService = StatisticsService;
+        vm.statisticsTooltipService = StatisticsTooltipService;
 
         /**
          * @ngdoc method

@@ -48,7 +48,8 @@
                 primaryBarClass: '@',
                 secondaryData: '=',
                 secondaryValueField: '@',
-                secondaryBarClass: '@'
+                secondaryBarClass: '@',
+                tooltipContent: '='
             },
             link: function (scope, element, attrs) {
                 var BAR_MIN_WIDTH = 3;
@@ -65,14 +66,9 @@
                 var tooltip = d3.tip()
                     .attr('class', 'horizontal-barchart-cls d3-tip')
                     .offset([-10, 0])
-                    .html(function (d) {
-                        var key = getKey(d);
-                        var primaryValue = getPrimaryValue(d);
-                        var secondaryValue = getSecondaryValueFromKey(key);
-
-                        return '<strong>' + scope.keyLabel + ':</strong> <span style="color:yellow">' + (secondaryValue ? secondaryValue + ' / ' : '') + primaryValue + '</span>' +
-                            '<br/><br/>' +
-                            '<strong>Record:</strong> <span style="color:yellow">' + key + '</span>';
+                    .html(function (datum, index) {
+                        var secondaryDatum = scope.secondaryData ? scope.secondaryData[index] : undefined;
+                        return scope.tooltipContent(datum, secondaryDatum, scope.keyField, scope.keyLabel, scope.primaryValueField, scope.secondaryValueField);
                     });
 
                 //------------------------------------------------------------------------------------------------------
@@ -88,18 +84,6 @@
 
                 function getSecondaryValue(data) {
                     return data[scope.secondaryValueField];
-                }
-
-                function getSecondaryValueFromKey(key) {
-                    var secondaryData = scope.secondaryData;
-                    if (!secondaryData) {
-                        return 0;
-                    }
-
-                    var secondaryDataItem = _.find(secondaryData, function (dataItem) {
-                        return getKey(dataItem) === key;
-                    });
-                    return secondaryDataItem ? getSecondaryValue(secondaryDataItem) : 0;
                 }
 
                 //------------------------------------------------------------------------------------------------------
@@ -262,16 +246,17 @@
                         .attr('height', yScale.rangeBand() + 4)
                         .attr('class', 'bg-rect')
                         .style('opacity', 0)
-                        .on('mouseenter', function (d) {
+                        .on('mouseenter', function (d, i) {
                             d3.select(this).style('opacity', 0.4);
-                            tooltip.show(d);
+                            tooltip.show(d, i);
                         })
                         .on('mouseleave', function (d) {
                             d3.select(this).style('opacity', 0);
                             tooltip.hide(d);
                         })
                         .on('click', function (d) {
-                            scope.onClick({item: d});
+                            //create a new reference as the data object could be modified outside the component
+                            scope.onClick({item: _.extend({}, d)});
                         });
                 }
 
