@@ -3,10 +3,21 @@
   font-size: .95em;
   height: 30px;
 
+  .items-list-wrapper{
+    display: inline-block;
+    width: calc(100% - 100px);
+    height: 30px;
+    vertical-align: bottom;
+    overflow: hidden;
+    float: left;
+  }
+
   .back-forth-btn {
     display: inline;
     margin-right: 10px;
     margin-left: 10px;
+    height: 30px;
+    float: left;
 
     button {
       padding: 0;
@@ -34,20 +45,24 @@
   }
 
   .items-list {
-    display: inline;
+    height: 30px;
+    position: relative;
 
     .item-label {
       cursor: pointer;
       text-transform: uppercase;
-      display: inline;
+      display: inline-block;
       padding: 0 10px 2px 8px;
-      border-left: 1px solid $shadow-gray;
+      border: 1px solid $shadow-gray;
+      width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: bottom;
 
       &.selected-item-label {
         background-color: $light-gray;
         font-weight: 700;
-        border: 1px solid;
-        border-top-color: transparent;
         border-left: 10px solid #4fc1de;
       }
     }

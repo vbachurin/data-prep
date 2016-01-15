@@ -12,7 +12,7 @@
            <lookup-datagrid></lookup-datagrid>
        </div>
 
-       <div ng-if="lookupCtrl.state.playground.lookup.columnsToAdd.length === 0" id="lookup-left">
+       <div ng-if="lookupCtrl.state.playground.lookup.actions.length === 0" id="lookup-left">
            <span class="watermark add-dataset-span" translate-once="ADD_DATASET_TO_PERFORM_A_LOOKUP"></span>
        </div>
 
@@ -43,10 +43,10 @@
    </div>
 
     <navigation-list list="lookupCtrl.state.playground.lookup.actions"
-                   on-click="lookupCtrl.loadFromAction(item)"
-                   selected-item="lookupCtrl.state.playground.lookup.dataset"
-                   get-label="lookupCtrl.getDsName(item)"
-                   nbre-labels-to-show="4" 
+                     on-click="lookupCtrl.loadFromAction(item)"
+                     selected-item="lookupCtrl.state.playground.lookup.dataset"
+                     get-label="lookupCtrl.getDsName(item)"
+                     nbre-labels-to-show="4"
                      on-add-item="lookupCtrl.openAddLookupDatasetModal()">
     </navigation-list>
 </talend-slidable>

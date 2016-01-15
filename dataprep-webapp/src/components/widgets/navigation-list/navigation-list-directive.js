@@ -21,7 +21,7 @@
      * @param {number} nbreLabelsToShow the number of labels to show
      * @param {function} onAddItem The function is called when the add button is clicked
      */
-    function NavigationList() {
+    function NavigationList($timeout) {
         return {
             restrict: 'E',
             templateUrl: 'components/widgets/navigation-list/navigation-list.html',
@@ -30,7 +30,6 @@
                 selectedItem: '=',
                 onClick: '&',
                 getLabel: '&',
-                nbreLabelsToShow: '@',
                 onAddItem: '&'
             },
             bindToController: true,
@@ -38,11 +37,67 @@
             controller: 'NavigationListCtrl',
 
             link: function (scope, iElement, iAttrs, ctrl) {
+
                 if(iAttrs.onAddItem) {
                     ctrl.showAddButton = true;
                 } else {
                     ctrl.showAddButton = false;
                 }
+
+                $timeout(function () {
+                    var leftButton = iElement.find('.arrow-left').eq(0);
+                    var rightButton = iElement.find('.arrow-right').eq(0);
+                    var itemsList = iElement.find('.items-list').eq(0);
+                    var addItemButton = iElement.find('.add-item').eq(0);
+                    itemsList.css('left', 0);
+                    itemsList.css('float', 'left');
+
+                    leftButton.on('click', function () {
+                        var posLeft = 0;
+                        if(itemsList.css('float') === 'right') {
+                            posLeft = itemsList.position().left;
+                        } else {
+                            posLeft = parseInt(itemsList.css('left'), 10);
+                        }
+                        if (posLeft < 0) {
+
+                            itemsList.css('left', posLeft + 200);
+                            itemsList.css('float', 'left');
+                            posLeft = parseInt(itemsList.css('left'), 10);
+
+                            if (posLeft >= 0) {
+                                itemsList.css('left', 0);
+                            }
+                        }
+                    });
+
+                    rightButton.on('click', function () {
+                        var posLeft = 0;
+                        if(itemsList.css('float') === 'right') {
+                            posLeft = itemsList.position().left;
+                        } else {
+                            posLeft = parseInt(itemsList.css('left'), 10);
+                        }
+
+                        if((posLeft + ctrl.list.length * 200) > addItemButton.position().left) {
+                            itemsList.css('left', posLeft - 200);
+                            posLeft = parseInt(itemsList.css('left'), 10);
+
+                            if ((posLeft + ctrl.list.length * 200) < addItemButton.position().left) {
+                                itemsList.css('float', 'right');
+                                itemsList.css('left', '');
+                            }
+                        }
+                    });
+
+                    scope.$watch(function () {
+                            return ctrl.list;
+                        }, function () {
+                            itemsList.css('width', ctrl.list.length * 200);
+                        }
+                    );
+                }, 500);
+
             }
 
         };
