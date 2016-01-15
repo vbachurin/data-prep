@@ -48,17 +48,18 @@
 
         <div ng-repeat="dataset in datasetListCtrl.currentFolderContent.datasets track by $index" id="dataset_{{$index}}">
             <inventory-item
+                    class="inventory-entry"
+                    type="dataset"
+                    item="dataset"
                     actions-enabled="true"
+                    open="datasetListCtrl.uploadWorkflowService.openDataset"
+                    rename="datasetListCtrl.rename"
                     copy="datasetListCtrl.openFolderChoice"
                     details="INVENTORY_DETAILS"
                     file-model="datasetListCtrl.updateDatasetFile"
-                    item="dataset"
-                    open="datasetListCtrl.uploadWorkflowService.openDataset"
                     process-certification="datasetListCtrl.processCertification"
                     remove="datasetListCtrl.remove"
-                    rename="datasetListCtrl.rename"
                     toggle-favorite="datasetListCtrl.datasetService.toggleFavorite"
-                    type="dataset"
                     update="datasetListCtrl.uploadUpdatedDatasetFile">
             </inventory-item>
         </div>
@@ -122,7 +123,7 @@
                     </div>
 
                     <script type="text/ng-template" id="folder_node_render.html">
-                        <div class="folder-node" ng-class="{folderselected: node.selected}">
+                        <div class="folder-node" ng-class="{'folder-selected': node.selected}">
                             <a class="inventory-icon inventory-folder">
                                 <i data-icon="J" ng-if="!node.collapsed" class="dropdown-button-right" ng-click="datasetListCtrl.toggle(node)"></i>
                                 <img class="icon-img" ng-click="datasetListCtrl.chooseFolder(node)" ng-if="!node.collapsed" src="assets/images/folder/folder_open_small-icon.png"/>
