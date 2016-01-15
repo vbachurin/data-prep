@@ -17,7 +17,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.TeeOutputStream;
@@ -534,14 +533,15 @@ public class TransformationService extends BaseTransformationService {
     @RequestMapping(value = "/transform/errors", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all transformation related error codes.", notes = "Returns the list of all transformation related error codes.")
     @Timed
-    public void listErrors(HttpServletResponse response) {
+    public void listErrors(OutputStream response) {
         try {
             // need to cast the typed dataset errors into mock ones to use json parsing
             List<JsonErrorCodeDescription> errors = new ArrayList<>(TransformationErrorCodes.values().length);
             for (TransformationErrorCodes code : TransformationErrorCodes.values()) {
                 errors.add(new JsonErrorCodeDescription(code));
             }
-            builder.build().writer().writeValue(response.getOutputStream(), errors);
+            builder.build().writer().writeValue(response, errors);
+            response.flush();
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
@@ -553,12 +553,10 @@ public class TransformationService extends BaseTransformationService {
     @RequestMapping(value = "/export/formats", method = GET)
     @ApiOperation(value = "Get the available format types")
     @Timed
-    public void exportTypes(final HttpServletResponse response) {
+    public void exportTypes(final OutputStream response) {
         final List<ExportFormat> types = formatRegistrationService.getExternalFormats();
         try {
-            builder.build() //
-                    .writer() //
-                    .writeValue(response.getOutputStream(), types);
+            builder.build().writer().writeValue(response, types);
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
