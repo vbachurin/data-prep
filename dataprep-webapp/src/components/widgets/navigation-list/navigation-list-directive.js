@@ -52,9 +52,9 @@
                     var itemsList = iElement.find('.items-list').eq(0);
                     itemsList.css('left', 0);
                     itemsList.css('float', 'left');
+                    var posLeft = 0;
 
-                    leftButton.on('click', function () {
-                        var posLeft = 0;
+                    function initLeftPosition () {
                         if(itemsList.css('float') === 'right') {
                             posLeft = itemsList.position().left;
                             if(posLeft > 0){
@@ -65,6 +65,10 @@
                         } else {
                             posLeft = parseInt(itemsList.css('left'), 10);
                         }
+                    }
+
+                    leftButton.on('click', function () {
+                        initLeftPosition();
                         if (posLeft < 0) {
 
                             itemsList.css('left', posLeft + 200);
@@ -78,18 +82,7 @@
                     });
 
                     rightButton.on('click', function () {
-                        var posLeft = 0;
-                        if(itemsList.css('float') === 'right') {
-                            posLeft = itemsList.position().left;
-                            if(posLeft > 0){
-                                itemsList.css('float', 'left');
-                                itemsList.css('left', 0);
-                                return;
-                            }
-                        } else {
-                            posLeft = parseInt(itemsList.css('left'), 10);
-                        }
-
+                        initLeftPosition();
                         if((posLeft + ctrl.list.length * 200) > wrapper.width()) {
                             itemsList.css('left', posLeft - 200);
                             posLeft = parseInt(itemsList.css('left'), 10);
@@ -105,6 +98,33 @@
                             return ctrl.list;
                         }, function () {
                             itemsList.css('width', ctrl.list.length * 200);
+                        }
+                    );
+
+                    scope.$watch(function () {
+                            return ctrl.selectedItem;
+                        }, function () {
+                            if(ctrl.list && ctrl.list.length > 0 && ctrl.selectedItem){
+                                for(var i= 0; i< ctrl.list.length; i++) {
+                                    if(ctrl.list[i] === ctrl.selectedItem){
+                                        initLeftPosition();
+                                        if((posLeft + (i+1)*200) > wrapper.width() || (posLeft + (i+1)*200) < 0) {
+                                            if((i+1)*200 < wrapper.width()){
+                                                itemsList.css('float', 'left');
+                                                itemsList.css('left', 0);
+                                            } else {
+                                                itemsList.css('float', 'left');
+                                                itemsList.css('left', wrapper.width() - (i+1)*200);
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                            } else {
+                                itemsList.css('float', 'left');
+                                itemsList.css('left', 0);
+                            }
+
                         }
                     );
 
