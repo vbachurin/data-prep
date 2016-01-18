@@ -164,7 +164,7 @@ describe('Playground directive', function () {
         it('should render enterprise playground header', function () {
             //given
             stateMock.playground.dataset = metadata;
-            stateMock.enterprise = true;
+            stateMock.ee = true;
 
             //when
             createElement();

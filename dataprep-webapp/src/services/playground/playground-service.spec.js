@@ -77,7 +77,7 @@ describe('Playground Service', function () {
                 expect(RecipeService.refresh).toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
-                expect(StatisticsService.reset).toHaveBeenCalledWith(true, true, true);
+                expect(StatisticsService.reset).toHaveBeenCalled();
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
                 expect(ExportService.reset).toHaveBeenCalled();
             };
@@ -229,7 +229,7 @@ describe('Playground Service', function () {
                 expect(RecipeService.refresh).toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
-                expect(StatisticsService.reset).toHaveBeenCalledWith(true, true, true);
+                expect(StatisticsService.reset).toHaveBeenCalled();
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
             };
             assertDatasetLoadNotInitialized = function () {

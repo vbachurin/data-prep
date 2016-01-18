@@ -42,8 +42,9 @@
 
             //statistics entry points
             processAggregation: processAggregation,             // aggregation charts
+            processClassicChart: processClassicChart,           // classic charts (not aggregation)
             getAggregationColumns: getAggregationColumns,       // possible aggregation columns
-            updateStatistics: updateStatistics,                 // update stats
+            updateStatistics: updateStatistics,                 // update all stats (values, charts)
             updateFilteredStatistics: updateFilteredStatistics, // update filtered entries stats
             reset: reset,                                       // reset charts/statistics/cache
 
@@ -777,11 +778,14 @@
 
         /**
          * @ngdoc method
-         * @name processChart
+         * @name processClassicChart
          * @methodOf data-prep.services.statistics.service:StatisticsService
          * @description Compute the needed data for chart visualization
          */
-        function processChart() {
+        function processClassicChart() {
+            resetCharts();
+            removeSavedColumnAggregation();
+
             var column = state.playground.grid.selectedColumn;
             var simplifiedType = ConverterService.simplifyType(column.type);
             switch (simplifiedType) {
@@ -969,36 +973,30 @@
             resetStatistics();
             resetWorkers();
 
+            initStatisticsValues();
+            initPatternsFrequency();
+
             var columnAggregation = getSavedColumnAggregation();
             var aggregatedColumn = columnAggregation && _.findWhere(getAggregationColumns(), {id: columnAggregation.aggregationColumnId});
             var aggregation = columnAggregation && columnAggregation.aggregation;
-
-            initStatisticsValues();
-            processAggregation(aggregatedColumn, aggregation);
-            initPatternsFrequency();
+            if (aggregatedColumn && aggregation) {
+                processAggregation(aggregatedColumn, aggregation);
+            }
+            else {
+                processClassicChart();
+            }
         }
 
         /**
          * @ngdoc method
          * @name reset
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {boolean} charts Remove charts
-         * @param {boolean} statistics Remove statistics data
-         * @param {boolean} cache Clear cache
-         * @description Removes data depending on the parameters
+         * @description Removes all data (charts, statistics values, cache, workers)
          */
-        function reset(charts, statistics, cache) {
-            if (charts) {
-               resetCharts();
-            }
-
-            if (statistics) {
-                resetStatistics();
-            }
-
-            if (cache) {
-                resetCache();
-            }
+        function reset() {
+            resetCharts();
+            resetStatistics();
+            resetCache();
 
             resetWorkers();
         }

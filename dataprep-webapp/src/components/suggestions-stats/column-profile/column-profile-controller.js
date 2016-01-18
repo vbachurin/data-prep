@@ -107,7 +107,12 @@
                 return;
             }
 
-            StatisticsService.processAggregation(column, aggregation);
+            if(aggregation) {
+                StatisticsService.processAggregation(column, aggregation);
+            }
+            else {
+                StatisticsService.processClassicChart();
+            }
         };
 
         //------------------------------------------------------------------------------------------------------
