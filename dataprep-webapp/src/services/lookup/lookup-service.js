@@ -15,7 +15,8 @@
             initLookups: initLookups,
             loadFromAction: loadFromAction,
             loadFromStep: loadFromStep,
-            updateTargetColumn: updateTargetColumn
+            updateTargetColumn: updateTargetColumn,
+            updateLookupDatasets: updateLookupDatasets
         };
 
         /**
@@ -26,14 +27,26 @@
          * @description Loads the possible lookup actions (1 action per dataset lookup)
          */
         function getActions(datasetId) {
-            if (state.playground.lookup.actions.length) {
-                return $q.when(state.playground.lookup.actions);
+            if (state.playground.lookup.addedActions.length) {
+                return $q.when(state.playground.lookup.addedActions);
             }
             else {
                 return TransformationRestService.getDatasetTransformations(datasetId)
                     .then(function (lookup) {
-                        StateService.setLookupActions(lookup.data);
-                        return lookup.data;
+                        var actionsList = lookup.data;
+                        var datasetsToAdd = [];
+                        _.forEach(actionsList, function(action) {
+                            var datasetToAdd = _.find(state.inventory.datasets, {'id': getDsId(action)});
+                            datasetToAdd.addedToLookup = false;
+                            datasetToAdd.enableToAddToLookup = true;
+                            datasetsToAdd.push(datasetToAdd);
+                        });
+                        StateService.setLookupDatasets(datasetsToAdd);
+                        StateService.setLookupActions(actionsList);
+
+                        updateLookupDatasets();
+
+                        return state.playground.lookup.addedActions;
                     });
             }
         }
@@ -208,6 +221,32 @@
                     nextStep.transformation.name === 'lookup' &&
                     nextStep.actionParameters.parameters.lookup_ds_id === datasetId;
             });
+        }
+
+        /**
+         * @ngdoc method
+         * @name updateLookupDatasets
+         * @methodOf data-prep.services.lookup.service:LookupService
+         * @description Update added datasets list
+         */
+        function updateLookupDatasets() {
+
+            var datasetsToAdd = _.chain(state.playground.lookup.datasets)
+                .filter('addedToLookup')
+                .value();
+
+            var actionsToAdd = [];
+            _.forEach(datasetsToAdd, function(dataset) {
+                var actionToAdd = _.find(state.playground.lookup.actions, function (action) {
+                    return _.find(action.parameters, {'name': 'lookup_ds_id'}).default === dataset.id;
+                });
+
+                if(actionToAdd){
+                    actionsToAdd.push(actionToAdd);
+                }
+
+            });
+            StateService.setLookupAddedActions(actionsToAdd);
         }
     }
 

@@ -8,8 +8,9 @@
      * <b style="color: red;">WARNING : do NOT use this service directly.
      * {@link data-prep.services.dataset.service:DatasetService DatasetService} must be the only entry point for datasets</b>
      * @requires data-prep.services.dataset.service:DatasetRestService
+     * @requires data-prep.services.state.service:StateService
      */
-    function DatasetListService($q, DatasetRestService, DatasetListSortService) {
+    function DatasetListService($q, DatasetRestService, DatasetListSortService, StateService) {
 
         var deferredCancel;
         var datasetsPromise;
@@ -25,8 +26,7 @@
             delete : deleteDataset,
             refreshDefaultPreparation : refreshDefaultPreparation,
             getDatasetsPromise : getDatasetsPromise,
-            hasDatasetsPromise: hasDatasetsPromise,
-            datasets: null
+            hasDatasetsPromise: hasDatasetsPromise
         };
 
         return service;
@@ -59,8 +59,8 @@
             deferredCancel = $q.defer();
             datasetsPromise = DatasetRestService.getDatasets(sort, order, deferredCancel)
                 .then(function(res) {
-                    service.datasets = res.data;
-                    return service.datasets;
+                    StateService.setDatasets(res.data);
+                    return res.data;
                 });
             return datasetsPromise;
         }
@@ -194,8 +194,7 @@
         function deleteDataset(dataset) {
             return DatasetRestService.delete(dataset)
                 .then(function() {
-                    var index = service.datasets.indexOf(dataset);
-                    service.datasets.splice(index, 1);
+                    StateService.removeDataset(dataset);
                 });
         }
 

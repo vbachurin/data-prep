@@ -39,6 +39,8 @@
 
             //lookup
             setLookupActions: LookupStateService.setActions,
+            setLookupAddedActions: LookupStateService.setAddedActions,
+            setLookupDatasets: LookupStateService.setDatasets,
             setLookupAddMode: LookupStateService.setAddMode,
             setLookupSelectedColumn: LookupStateService.setSelectedColumn,
             setLookupUpdateMode: LookupStateService.setUpdateMode,

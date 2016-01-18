@@ -42,6 +42,8 @@
 
             //playground - lookup
             setLookupActions: PlaygroundStateService.setLookupActions,
+            setLookupAddedActions: PlaygroundStateService.setLookupAddedActions,
+            setLookupDatasets: PlaygroundStateService.setLookupDatasets,
             setLookupAddMode: PlaygroundStateService.setLookupAddMode,
             setLookupSelectedColumn: PlaygroundStateService.setLookupSelectedColumn,
             setLookupUpdateMode: PlaygroundStateService.setLookupUpdateMode,
@@ -86,6 +88,8 @@
             //inventory
             setPreparations: InventoryStateService.setPreparations,
             removePreparation: InventoryStateService.removePreparation,
+            setDatasets: InventoryStateService.setDatasets,
+            removeDataset: InventoryStateService.removeDataset,
 
             //feedback
             showFeedback: FeedbackStateService.show,

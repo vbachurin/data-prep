@@ -18,7 +18,6 @@
 		vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
 		vm.loadFromAction= LookupService.loadFromAction;
 		vm.addLookupDatasetModal = false;
-		vm.isSendingRequest = false;
 
 		/**
 		 * @ngdoc method
@@ -116,12 +115,20 @@
 
 		/**
 		 * @ngdoc method
-		 * @name addLookupDataset
+		 * @name addLookupDatasets
 		 * @methodOf data-prep.lookup.controller:LookupCtrl
-		 * @description Send add lookup dataset request
+		 * @description Add datasets to the lookup
 		 */
-		vm.addLookupDataset = function addLookupDataset() {
-			vm.isSendingRequest = true;
+		vm.addLookupDatasets = function addLookupDatasets() {
+
+			LookupService.updateLookupDatasets();
+
+			vm.addLookupDatasetModal = false;
+
+			//refresh lookup panel by selecting the first action
+			if(state.playground.lookup.addedActions.length > 0) {
+				LookupService.loadFromAction(state.playground.lookup.addedActions[0]);
+			}
 		};
 
 	}

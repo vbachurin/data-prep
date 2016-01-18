@@ -46,3 +46,20 @@
     }
   }
 }
+
+.add-dataset-lookup .inventory {
+  .inventory-list {
+    max-height: 500px;
+    .inventory-item-div {
+      position: relative;
+      .inventory-entry{
+        margin-left: 20px;
+      }
+      .add-dataset-input {
+        position: absolute;
+        top: 45%;
+      }
+    }
+  }
+
+}

@@ -8,11 +8,11 @@
    </div>
 
    <div class="lookup-container">
-       <div ng-if="lookupCtrl.state.playground.lookup.actions.length > 0" id="lookup-left">
+       <div ng-if="lookupCtrl.state.playground.lookup.addedActions.length > 0" id="lookup-left">
            <lookup-datagrid></lookup-datagrid>
        </div>
 
-       <div ng-if="lookupCtrl.state.playground.lookup.actions.length === 0" id="lookup-left">
+       <div ng-if="lookupCtrl.state.playground.lookup.addedActions.length === 0" id="lookup-left">
            <span class="watermark add-dataset-span" translate-once="ADD_DATASET_TO_PERFORM_A_LOOKUP"></span>
        </div>
 
@@ -42,7 +42,7 @@
        </div>
    </div>
 
-    <navigation-list list="lookupCtrl.state.playground.lookup.actions"
+    <navigation-list list="lookupCtrl.state.playground.lookup.addedActions"
                      on-click="lookupCtrl.loadFromAction(item)"
                      selected-item="lookupCtrl.state.playground.lookup.dataset"
                      get-label="lookupCtrl.getDsName(item)"
@@ -54,22 +54,33 @@
               close-button="true"
               state="lookupCtrl.addLookupDatasetModal"
               ng-if="lookupCtrl.addLookupDatasetModal"
-              disable-enter="true">
-        <form name="lookupCtrl.addLookupDatasetForm" ng-submit="lookupCtrl.addLookupDatasetForm.$valid && lookupCtrl.addLookupDataset()">
+              disable-enter="true"
+              class="add-dataset-lookup">
+        <form name="lookupCtrl.addLookupDatasetForm" ng-submit="lookupCtrl.addLookupDatasetForm.$valid && lookupCtrl.addLookupDatasets()">
             <div class="clone-name">
-                <span translate-once="ADD_LOOKUP_DATASET_TITLE"></span>
+                <span translate-once="ADD_LOOKUP_DATASET_MODAL_TITLE"></span>
+            </div>
+            <div class="inventory">
+                <div class="inventory-list">
+                    <div class="inventory-item-div" ng-repeat="dataset in lookupCtrl.state.playground.lookup.datasets track by $index" id="dataset_lookup_{{$index}}">
+                        <input class="add-dataset-input" type="checkbox" ng-model="dataset.addedToLookup" ng-disabled="!dataset.enableToAddToLookup"/>
+                        <inventory-item
+                                ng-click="dataset.addedToLookup = !dataset.addedToLookup"
+                                class="inventory-entry"
+                                type="dataset"
+                                item="dataset"
+                                actions-enabled="false"
+                                details="INVENTORY_DETAILS">
+                        </inventory-item>
+                    </div>
+                </div>
             </div>
             <div class="modal-buttons">
                 <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL">
                 </button>
                 <button class="btn-primary modal-primary-button"
-                        ng-disabled="lookupCtrl.addLookupDatasetForm.$invalid || lookupCtrl.isSendingRequest"
-                        ng-switch="lookupCtrl.isSendingRequest">
-                    <span ng-switch-when="false" translate-once="ADD_LOOKUP_DATASET"></span>
-
-                    <div class="feedback-sending-div" ng-switch-when="true" >
-                        <span class="feedback-sending continuous-rotate"><i data-icon="c" class="icon"></i></span>
-                    </div>
+                        ng-disabled="lookupCtrl.addLookupDatasetForm.$invalid">
+                    <span translate-once="ADD_LOOKUP_DATASET"></span>
                 </button>
             </div>
         </form>

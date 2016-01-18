@@ -2,7 +2,9 @@
     'use strict';
 
     var lookupState = {
-        actions: [],                                                // the lookup actions (1 action per dataset)
+        actions: [],                                                // Actions list to add to the lookup  (1 action per dataset)
+        addedActions: [],                                           // Actions already added to the lookup
+        datasets: [],                                               // Datasets list to add to the lookup
         columnCheckboxes: [],                                       // column checkboxes model
         columnsToAdd: [],                                           // columns that are checked
         dataset: null,                                              // loaded lookup action (on a lookup dataset)
@@ -29,6 +31,8 @@
 
             //init lookup
             setActions: setActions,
+            setAddedActions: setAddedActions,
+            setDatasets: setDatasets,
             setAddMode: setAddMode,
             setUpdateMode: setUpdateMode
 
@@ -53,6 +57,28 @@
          */
         function setDataset(lookupAction) {
             lookupState.dataset = lookupAction;
+        }
+
+        /**
+         * @ngdoc method
+         * @name setDatasets
+         * @methodOf data-prep.services.state.service:LookupStateService
+         * @param {object} datasets The datasets to add to the lookup
+         * @description Sets the current datasets added to the lookup
+         */
+        function setDatasets(datasets) {
+            lookupState.datasets = datasets;
+        }
+
+        /**
+         * @ngdoc method
+         * @name setAddedActions
+         * @methodOf data-prep.services.state.service:LookupStateService
+         * @param {object} actions The actions to add to the lookup
+         * @description Sets the current actions added to the lookup
+         */
+        function setAddedActions(actions) {
+            lookupState.addedActions = actions;
         }
 
         /**
@@ -177,6 +203,7 @@
          */
         function reset() {
             lookupState.actions = [];
+            lookupState.datasets = [];
             lookupState.columnsToAdd = [];
             lookupState.columnCheckboxes = [];
             lookupState.dataset = null;

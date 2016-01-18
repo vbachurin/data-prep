@@ -2,13 +2,16 @@
     'use strict';
 
     var inventoryState = {
-        preparations: null
+        preparations: null,
+        datasets: null
     };
 
     function InventoryStateService() {
         return {
             setPreparations: setPreparations,
-            removePreparation: removePreparation
+            removePreparation: removePreparation,
+            setDatasets: setDatasets,
+            removeDataset: removeDataset
         };
 
         function setPreparations(preparations) {
@@ -17,6 +20,14 @@
 
         function removePreparation(preparation) {
             inventoryState.preparations = _.reject(inventoryState.preparations, {id: preparation.id});
+        }
+
+        function setDatasets(datasets) {
+            inventoryState.datasets = datasets;
+        }
+
+        function removeDataset(dataset) {
+            inventoryState.datasets = _.reject(inventoryState.datasets, {id: dataset.id});
         }
     }
 

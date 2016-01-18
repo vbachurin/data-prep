@@ -274,6 +274,7 @@
   "RECIPE_LOOKUP_FOLLOWING_COLS_ADDED_SINGULAR": "column has been added.",
   "ADD_TO_LOOKUP": "Add to Lookup",
   "ADD_LOOKUP_DATASET_TITLE": "Add a dataset to Lookup",
+  "ADD_LOOKUP_DATASET_MODAL_TITLE": "Select dataset(s) to add to lookup",
   "ADD_LOOKUP_DATASET": "Add",
   "ADD_DATASET_TO_PERFORM_A_LOOKUP": "Add a dataset by cliking on \"+\" button to perform a lookup",
 

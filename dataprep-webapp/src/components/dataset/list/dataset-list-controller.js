@@ -527,22 +527,6 @@
 
     /**
      * @ngdoc property
-     * @name datasets
-     * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
-     * @description The dataset list.
-     * This list is bound to {@link data-prep.services.dataset.service:DatasetService DatasetService}.datasetsList()
-     */
-    Object.defineProperty(DatasetListCtrl.prototype,
-        'datasets', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.datasetService.datasetsList();
-            }
-        });
-
-    /**
-     * @ngdoc property
      * @name currentFolderContent
      * @propertyOf data-prep.folder.controller:FolderCtrl
      * @description The folder content list.
