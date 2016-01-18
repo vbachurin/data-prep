@@ -631,49 +631,6 @@ describe('Statistics service', function () {
         }
     };
 
-    var mapCol = {
-        'domain': 'US_STATE_CODE',
-        'type': '',
-        'statistics': {
-            'frequencyTable': [
-                {
-                    'data': 'MI',
-                    'occurrences': 202
-                },
-                {
-                    'data': 'WA',
-                    'occurrences': 2
-                },
-                {
-                    'data': 'DE',
-                    'occurrences': 102
-                },
-                {
-                    'data': 'IL',
-                    'occurrences': 22
-                }
-            ],
-            textLengthSummary: {
-                averageLength: 10.13248646854654,
-                minimalLength: 12,
-                maximalLength: 14
-            },
-            count: 4,
-            distinctCount: 5,
-            duplicateCount: 6,
-            empty: 7,
-            invalid: 8,
-            valid: 9,
-            min: 10,
-            max: 11,
-            mean: 12,
-            variance: 13,
-            quantiles: {
-                lowerQuantile: 'NaN'
-            }
-        }
-    };
-
     var barChartBoolCol = {
         'domain': 'barchartAndBool',
         'type': 'boolean',
@@ -1438,14 +1395,13 @@ describe('Statistics service', function () {
         it('should reset non histogram charts', inject(function (StatisticsService) {
             //given
             stateMock.playground.grid.selectedColumn = barChartNumCol;
-            StatisticsService.stateDistribution = {};
+            StatisticsService.boxPlot = {};
 
             //when
             StatisticsService.updateStatistics();
 
             //then
             expect(StatisticsService.boxPlot).toBeFalsy();
-            expect(StatisticsService.stateDistribution).toBeFalsy();
         }));
     });
 
@@ -1742,48 +1698,18 @@ describe('Statistics service', function () {
         }));
     });
 
-    describe('Update Statistics : process Geo chart', function() {
-        it('should set stateDistribution for geo chart when the column domain contains STATE_CODE', inject(function (StatisticsService) {
-            //given
-            expect(StatisticsService.stateDistribution).toBeFalsy();
-            stateMock.playground.grid.selectedColumn = mapCol;
-
-            //when
-            StatisticsService.updateStatistics();
-
-            //then
-            expect(StatisticsService.stateDistribution).toBe(mapCol);
-        }));
-
-        it('should reset non geo chart data when the column domain contains STATE_CODE', inject(function (StatisticsService, StateService) {
-            //given
-            stateMock.playground.grid.selectedColumn = mapCol;
-            StatisticsService.boxPlot = {};
-
-            //when
-            StatisticsService.updateStatistics();
-
-            //then
-            expect(StatisticsService.boxPlot).toBeFalsy();
-            expect(StateService.setStatisticsHistogram).toHaveBeenCalledWith(null);
-            expect(StateService.setStatisticsHistogramActiveLimits).toHaveBeenCalledWith(null);
-        }));
-    });
-
     describe('Update Statistics : process horizontal chart', function() {
         it('should reset non histogram data when column type is "string"', inject(function (StatisticsService) {
             //given
             stateMock.playground.grid.selectedColumn = barChartStrCol;
             stateMock.playground.grid.filteredOccurences = {'   toto': 3, 'titi': 2};
             StatisticsService.boxPlot = {};
-            StatisticsService.stateDistribution = {};
 
             //when
             StatisticsService.updateStatistics();
 
             //then
             expect(StatisticsService.boxPlot).toBeFalsy();
-            expect(StatisticsService.stateDistribution).toBeFalsy();
         }));
 
         it('should set the frequency data with formatted value when column type is "string" with filter', inject(function (StatisticsService, StateService) {
@@ -1878,14 +1804,12 @@ describe('Statistics service', function () {
             stateMock.playground.grid.selectedColumn = barChartBoolCol;
             stateMock.playground.grid.filteredOccurences = {'true': 3, 'false': 2};
             StatisticsService.boxPlot = {};
-            StatisticsService.stateDistribution = {};
 
             //when
             StatisticsService.updateStatistics();
 
             //then
             expect(StatisticsService.boxPlot).toBeFalsy();
-            expect(StatisticsService.stateDistribution).toBeFalsy();
         }));
 
         it('should set the frequency data when column type is "boolean"', inject(function (StatisticsService, StateService) {
@@ -2623,7 +2547,6 @@ describe('Statistics service', function () {
             //given
             stateMock.playground.grid.selectedColumn = unknownTypeCol;
             StatisticsService.boxPlot = {};
-            StatisticsService.stateDistribution = {};
 
             //when
             StatisticsService.updateStatistics();
@@ -2632,7 +2555,6 @@ describe('Statistics service', function () {
             expect(StateService.setStatisticsHistogram).toHaveBeenCalledWith(null);
             expect(StateService.setStatisticsHistogramActiveLimits).toHaveBeenCalledWith(null);
             expect(StatisticsService.boxPlot).toBeFalsy();
-            expect(StatisticsService.stateDistribution).toBeFalsy();
         }));
     });
 
@@ -2856,7 +2778,6 @@ describe('Statistics service', function () {
         it('should reset all charts, statistics, cache', inject(function (StatisticsRestService, StatisticsService) {
             //given
             StatisticsService.boxPlot = {};
-            StatisticsService.stateDistribution = {};
             StatisticsService.statistics = {};
 
             //when
@@ -2864,7 +2785,6 @@ describe('Statistics service', function () {
 
             //then
             expect(StatisticsService.boxPlot).toBeFalsy();
-            expect(StatisticsService.stateDistribution).toBeFalsy();
             expect(StatisticsService.statistics).toBeFalsy();
             expect(StatisticsRestService.resetCache).toHaveBeenCalled();
         }));

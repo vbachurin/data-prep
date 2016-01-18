@@ -31,7 +31,6 @@
 
         var service = {
             boxPlot: null,
-            stateDistribution: null,
             statistics: null,
             patterns: null,
 
@@ -48,9 +47,6 @@
             updateFilteredStatistics: updateFilteredStatistics, // update filtered entries stats
             reset: reset,                                       // reset charts/statistics/cache
 
-            //TODO temporary method to be replaced with new geo chart
-            getGeoDistribution: getGeoDistribution,
-
             //Pattern
             valueMatchPatternFn: valueMatchPatternFn
         };
@@ -62,7 +58,7 @@
         //
 
         //--------------------------------------------------------------------------------------------------------------
-        //-------------------------------------------- 1.0 Common barchart ---------------------------------------------
+        //-------------------------------------------- 1.1 Common barchart ---------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
@@ -105,59 +101,6 @@
                 label: label,
                 column: state.playground.grid.selectedColumn,
                 vertical: true
-            };
-        }
-
-        //--------------------------------------------------------------------------------------------------------------
-        //----------------------------------------------- 1.1 Geo charts -----------------------------------------------
-        //--------------------------------------------------------------------------------------------------------------
-        /**
-         * TEMPORARY : Calculate column value distribution
-         * @param columnId
-         * @param keyName - distribution key name (default : 'colValue');
-         * @param valueName - distribution value name (default : 'frequency')
-         * @param keyTransformer - transformer applied to the distribution key
-         * @returns {Array} Column distribution array {colValue: string, frequency: integer}}
-         * <ul>
-         *     <li>colValue (or specified) : the grouped value</li>
-         *     <li>frequency (or specified) : the nb of time the value appears</li>
-         * </ul>
-         */
-        function getDistribution(columnId, keyName, valueName, keyTransformer) {
-            keyName = keyName || 'colValue';
-            valueName = valueName || 'frequency';
-
-            var records = state.playground.data.records;
-
-            return _.chain(records)
-                .groupBy(function (item) {
-                    return item[columnId];
-                })
-                .map(function (val, index) {
-                    var item = {};
-                    item[keyName] = keyTransformer ? keyTransformer(index) : index;
-                    item[valueName] = val.length;
-                    return item;
-                })
-                .sortBy(valueName)
-                .reverse()
-                .value();
-        }
-
-        /**
-         * TEMPORARY : Calculate geo distribution, and targeted map
-         * @param {object} column The target column
-         * @returns {object} Geo distribution {map: string, data: [{}]}
-         */
-        function getGeoDistribution(column) {
-            var keyPrefix = 'US-';
-            var map = 'countries/us/us-all';
-
-            return {
-                map: map,
-                data: getDistribution(column.id, 'hc-key', 'value', function (key) {
-                    return keyPrefix + key;
-                })
             };
         }
 
@@ -583,10 +526,6 @@
          */
         function initStatisticsValues() {
             var column = state.playground.grid.selectedColumn;
-            if (!column.statistics) {
-                return;
-            }
-
             var stats = column.statistics;
             var colType = ConverterService.simplifyType(column.type);
             var commonStats = {
@@ -835,25 +774,15 @@
         //--------------------------------------------------------------------------------------------------------------
         //---------------------------------------------NON AGGREGATION--------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
-        /**
-         * @ngdoc method
-         * @name processMapData
-         * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {object} column The column to visualize
-         * @description Remove the previous charts data and set the map chart
-         */
-        function processMapData(column) {
-            service.stateDistribution = column;
-        }
 
         /**
          * @ngdoc method
-         * @name processNonMapData
+         * @name processChart
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {object} column The column to visualize
-         * @description Reset the map chart and calculate the needed data for visualization
+         * @description Compute the needed data for chart visualization
          */
-        function processNonMapData(column) {
+        function processChart() {
+            var column = state.playground.grid.selectedColumn;
             var simplifiedType = ConverterService.simplifyType(column.type);
             switch (simplifiedType) {
                 case 'integer':
@@ -874,28 +803,6 @@
             }
         }
 
-        /**
-         * @ngdoc method
-         * @name processData
-         * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @description Processes the statistics data for visualization on the selected column
-         */
-        function processData() {
-            var column = state.playground.grid.selectedColumn;
-
-            //TODO replace with new geo chart
-            if (column.domain.indexOf('STATE_CODE') !== -1) {
-                processMapData(column);
-            }
-            //TODO Coming soon after the integration of the globe map : reset charts and init localization chart data
-            // else if (column.domain === 'LOCALIZATION') {
-            //    processLocalizationMapData(column);
-            //}
-            else {
-                processNonMapData(column);
-            }
-        }
-
         //--------------------------------------------------------------------------------------------------------------
         //-------------------------------------------------Aggregation--------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
@@ -912,7 +819,7 @@
 
             if (!column || !aggregationName) {
                 removeSavedColumnAggregation();
-                return processData();
+                return processChart();
             }
 
             var datasetId = state.playground.dataset.id;
@@ -1054,7 +961,9 @@
          * @ngdoc method
          * @name updateStatistics
          * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @description update aggregation for a selected column
+         * @description update statistics for the selected column.
+         * If an aggregation is stored, we process the computation to init this aggregation chart.
+         * Otherwise, we init classic charts
          */
         function updateStatistics() {
             resetStatistics();
@@ -1100,7 +1009,6 @@
         function resetCharts() {
             service.boxPlot = null;
             service.rangeLimits = null;
-            service.stateDistribution = null;
             StateService.setStatisticsHistogram(null);
             StateService.setStatisticsHistogramActiveLimits(null);
         }
