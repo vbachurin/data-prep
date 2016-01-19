@@ -110,7 +110,7 @@ public class DataSetMetadata implements Serializable {
     /**
      * indicates what encoding should be used to read raw content. Defaults to UTF-8 but may be changed depending on
      * content.
-     * 
+     *
      * @see CSVSerializer#serialize(java.io.InputStream, org.talend.dataprep.api.dataset.DataSetMetadata)
      */
     @JsonProperty("encoding")
@@ -303,7 +303,7 @@ public class DataSetMetadata implements Serializable {
 
     /**
      * Changes the encoding of the data set content.
-     * 
+     *
      * @param encoding The new encoding. Must be supported by current JVM.
      */
     public void setEncoding(String encoding) {
@@ -324,6 +324,22 @@ public class DataSetMetadata implements Serializable {
      */
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
+    }
+
+    /**
+     * Returns true if this data set metadata is compatible with <tt>rowMetadata</tt> (they have same columns names and
+     * same types and in the same order) and false otherwise.
+     *
+     * @param other the specified data set metadata
+     * @return true if this data set metadata is similar with the specified one and false otherwise
+     */
+    public boolean compatible(DataSetMetadata other) {
+        if (other == null) {
+            return false;
+        }
+        boolean result = rowMetadata != null ? rowMetadata.compatible(other.getRowMetadata())
+                : rowMetadata == other.getRowMetadata();
+        return result;
     }
 
     @Override
