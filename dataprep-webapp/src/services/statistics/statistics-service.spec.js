@@ -691,6 +691,11 @@ describe('Statistics service', function () {
         spyOn(StateService, 'setStatisticsFilteredPatterns').and.returnValue();
         spyOn(StateService, 'setStatisticsHistogram').and.returnValue();
         spyOn(StateService, 'setStatisticsFilteredHistogram').and.returnValue();
+        spyOn(StateService, 'setStatisticsBoxPlot').and.returnValue();
+        spyOn(StateService, 'setStatisticsRangeLimits').and.returnValue();
+        spyOn(StateService, 'setStatisticsDetails').and.callFake(function(details) {
+            stateMock.playground.statistics.details = details;
+        });
     }));
 
     describe('filters', function () {
@@ -700,15 +705,6 @@ describe('Statistics service', function () {
 
         it('should create a function that reinit range limits when the selected column is the same', inject(function (StatisticsService, StateService) {
             //given
-            var originalRangeLimits = {
-                min: 5,
-                max: 55,
-                minBrush: 5,
-                maxBrush: 22,
-                minFilterVal: 0,
-                maxFilterVal: 22
-            };
-            StatisticsService.rangeLimits = originalRangeLimits;
             var column = {id: '0000', statistics: {min: 5, max: 55}};
             stateMock.playground.statistics.histogram = {};
             stateMock.playground.grid.selectedColumn = column;
@@ -719,25 +715,15 @@ describe('Statistics service', function () {
             removeCallback({colId: '0000'});
 
             //then
-            expect(StatisticsService.rangeLimits).not.toBe(originalRangeLimits);
-            expect(StatisticsService.rangeLimits).toEqual({
+            expect(StateService.setStatisticsRangeLimits).toHaveBeenCalledWith({
                 min: 5,
                 max: 55
             });
             expect(StateService.setStatisticsHistogramActiveLimits).toHaveBeenCalledWith([column.statistics.min, column.statistics.max]);
         }));
 
-        it('should create a function that do nothing when the selected column is NOT the same', inject(function (StatisticsService) {
+        it('should create a function that do nothing when the selected column is NOT the same', inject(function (StatisticsService, StateService) {
             //given
-            var originalRangeLimits = {
-                min: 5,
-                max: 55,
-                minBrush: 5,
-                maxBrush: 22,
-                minFilterVal: 0,
-                maxFilterVal: 22
-            };
-            StatisticsService.rangeLimits = originalRangeLimits;
             stateMock.playground.statistics.histogram = {};
             stateMock.playground.grid.selectedColumn = {id: '0000', statistics: {min: 5, max: 55}};
 
@@ -747,12 +733,12 @@ describe('Statistics service', function () {
             removeCallback({colId: '0001'}); // not the same column as the filters one
 
             //then
-            expect(StatisticsService.rangeLimits).toBe(originalRangeLimits);
+            expect(StateService.setStatisticsRangeLimits).not.toHaveBeenCalled();
         }));
     });
 
     describe('init Statistics : The statistics values', function () {
-        it('should init number statistics whithout quantile', inject(function (StatisticsService) {
+        it('should init number statistics whithout quantile', inject(function (StatisticsService, StateService) {
             //given
             stateMock.playground.grid.selectedColumn = {
                 'id': '0001',
@@ -774,29 +760,31 @@ describe('Statistics service', function () {
                     }
                 }
             };
+            expect(StateService.setStatisticsDetails).not.toHaveBeenCalled();
 
             //when
             StatisticsService.updateStatistics();
 
             //then
-            expect(StatisticsService.statistics).toBeTruthy();
-            expect(StatisticsService.statistics.common).toEqual({
-                COUNT: 4,
-                DISTINCT_COUNT: 5,
-                DUPLICATE_COUNT: 6,
-                VALID: 9,
-                EMPTY: 7,
-                INVALID: 8
-            });
-            expect(StatisticsService.statistics.specific).toEqual({
-                MIN: 10,
-                MAX: 11,
-                MEAN: 12,
-                VARIANCE: 13
+            expect(StateService.setStatisticsDetails).toHaveBeenCalledWith({
+                common: {
+                    COUNT: 4,
+                    DISTINCT_COUNT: 5,
+                    DUPLICATE_COUNT: 6,
+                    VALID: 9,
+                    EMPTY: 7,
+                    INVALID: 8
+                },
+                specific: {
+                    MIN: 10,
+                    MAX: 11,
+                    MEAN: 12,
+                    VARIANCE: 13
+                }
             });
         }));
 
-        it('should init number statistics with quantile', inject(function (StatisticsService) {
+        it('should init number statistics with quantile', inject(function (StatisticsService, StateService) {
             //given
             stateMock.playground.grid.selectedColumn = {
                 'id': '0001',
@@ -820,32 +808,34 @@ describe('Statistics service', function () {
                     }
                 }
             };
+            expect(StateService.setStatisticsDetails).not.toHaveBeenCalled();
 
             //when
             StatisticsService.updateStatistics();
 
             //then
-            expect(StatisticsService.statistics).toBeTruthy();
-            expect(StatisticsService.statistics.common).toEqual({
-                COUNT: 4,
-                DISTINCT_COUNT: 5,
-                DUPLICATE_COUNT: 6,
-                VALID: 9,
-                EMPTY: 7,
-                INVALID: 8
-            });
-            expect(StatisticsService.statistics.specific).toEqual({
-                MIN: 10,
-                MAX: 11,
-                MEAN: 12,
-                VARIANCE: 13,
-                MEDIAN: 14,
-                LOWER_QUANTILE: 15,
-                UPPER_QUANTILE: 16
+            expect(StateService.setStatisticsDetails).toHaveBeenCalledWith({
+                common: {
+                    COUNT: 4,
+                    DISTINCT_COUNT: 5,
+                    DUPLICATE_COUNT: 6,
+                    VALID: 9,
+                    EMPTY: 7,
+                    INVALID: 8
+                },
+                specific: {
+                    MIN: 10,
+                    MAX: 11,
+                    MEAN: 12,
+                    VARIANCE: 13,
+                    MEDIAN: 14,
+                    LOWER_QUANTILE: 15,
+                    UPPER_QUANTILE: 16
+                }
             });
         }));
 
-        it('should init text statistics', inject(function (StatisticsService) {
+        it('should init text statistics', inject(function (StatisticsService, StateService) {
             //given
             stateMock.playground.grid.selectedColumn = {
                 'id': '0001',
@@ -865,29 +855,30 @@ describe('Statistics service', function () {
                     }
                 }
             };
-            expect(StatisticsService.statistics).toBeFalsy();
+            expect(StateService.setStatisticsDetails).not.toHaveBeenCalled();
 
             //when
             StatisticsService.updateStatistics();
 
             //then
-            expect(StatisticsService.statistics).toBeTruthy();
-            expect(StatisticsService.statistics.common).toEqual({
-                COUNT: 4,
-                DISTINCT_COUNT: 5,
-                DUPLICATE_COUNT: 6,
-                VALID: 9,
-                EMPTY: 7,
-                INVALID: 8
-            });
-            expect(StatisticsService.statistics.specific).toEqual({
-                AVG_LENGTH: 10.13,
-                MIN_LENGTH: 12,
-                MAX_LENGTH: 14
+            expect(StateService.setStatisticsDetails).toHaveBeenCalledWith({
+                common: {
+                    COUNT: 4,
+                    DISTINCT_COUNT: 5,
+                    DUPLICATE_COUNT: 6,
+                    VALID: 9,
+                    EMPTY: 7,
+                    INVALID: 8
+                },
+                specific: {
+                    AVG_LENGTH: 10.13,
+                    MIN_LENGTH: 12,
+                    MAX_LENGTH: 14
+                }
             });
         }));
 
-        it('should init common statistics when the column type is not "number" or "text"', inject(function (StatisticsService) {
+        it('should init common statistics when the column type is not "number" or "text"', inject(function (StatisticsService, StateService) {
             //given
             stateMock.playground.grid.selectedColumn = {
                 id: '0001',
@@ -902,21 +893,23 @@ describe('Statistics service', function () {
                     valid: 9
                 }
             };
+            expect(StateService.setStatisticsDetails).not.toHaveBeenCalled();
 
             //when
             StatisticsService.updateStatistics();
 
             //then
-            expect(StatisticsService.statistics).toBeTruthy();
-            expect(StatisticsService.statistics.common).toEqual({
-                COUNT: 4,
-                DISTINCT_COUNT: 5,
-                DUPLICATE_COUNT: 6,
-                VALID: 9,
-                EMPTY: 7,
-                INVALID: 8
+            expect(StateService.setStatisticsDetails).toHaveBeenCalledWith({
+                common: {
+                    COUNT: 4,
+                    DISTINCT_COUNT: 5,
+                    DUPLICATE_COUNT: 6,
+                    VALID: 9,
+                    EMPTY: 7,
+                    INVALID: 8
+                },
+                specific: {}
             });
-            expect(StatisticsService.statistics.specific).toEqual({});
         }));
     });
 
@@ -1246,16 +1239,15 @@ describe('Statistics service', function () {
             });
         }));
 
-        it('should reset non histogram charts', inject(function (StatisticsService) {
+        it('should reset non histogram charts', inject(function (StatisticsService, StateService) {
             //given
             stateMock.playground.grid.selectedColumn = barChartNumCol;
-            StatisticsService.boxPlot = {};
 
             //when
             StatisticsService.updateStatistics();
 
             //then
-            expect(StatisticsService.boxPlot).toBeFalsy();
+            expect(StateService.setStatisticsBoxPlot).toHaveBeenCalledWith(null);
         }));
     });
 
@@ -1385,7 +1377,7 @@ describe('Statistics service', function () {
 
     describe('Process classic charts', function() {
         describe('The range slider', function () {
-            beforeEach(inject(function (StatisticsService) {
+            beforeEach(function () {
                 stateMock.playground.grid.selectedColumn = {
                     'id': '0001',
                     type: 'integer',
@@ -1408,7 +1400,7 @@ describe('Statistics service', function () {
                     }
                 };
                 stateMock.playground.statistics.histogram = {};
-                StatisticsService.statistics = {
+                stateMock.playground.statistics.details = {
                     common: {
                         COUNT: 4,
                         DISTINCT_COUNT: 5,
@@ -1424,7 +1416,7 @@ describe('Statistics service', function () {
                         VARIANCE: 13
                     }
                 };
-            }));
+            });
 
             it('should set range and brush limits to the min and max of the column', inject(function (StatisticsService, StateService) {
                 //given
@@ -1436,7 +1428,7 @@ describe('Statistics service', function () {
                 //then
                 expect(StateService.setStatisticsHistogramActiveLimits).toHaveBeenCalledWith(null); // due to the reset
                 expect(StateService.setStatisticsHistogramActiveLimits.calls.count()).toBe(1); // not called with value
-                expect(StatisticsService.rangeLimits).toEqual({
+                expect(StateService.setStatisticsRangeLimits).toHaveBeenCalledWith({
                     min: 0,
                     max: 11
                 });
@@ -1454,7 +1446,7 @@ describe('Statistics service', function () {
                 StatisticsService.processClassicChart();
 
                 //then
-                expect(StatisticsService.rangeLimits).toEqual({
+                expect(StateService.setStatisticsRangeLimits).toHaveBeenCalledWith({
                     min: 0,
                     max: 11,
                     minBrush: 5,
@@ -1465,7 +1457,7 @@ describe('Statistics service', function () {
                 expect(StateService.setStatisticsHistogramActiveLimits).toHaveBeenCalledWith([5, 10]);
             }));
 
-            it('should update the brush limits to the minimum', inject(function (StatisticsService) {
+            it('should update the brush limits to the minimum', inject(function (StatisticsService, StateService) {
                 //given : -5 < 0(minimum)
                 stateMock.playground.filter.gridFilters = [{
                     colId: '0001',
@@ -1477,7 +1469,7 @@ describe('Statistics service', function () {
                 StatisticsService.processClassicChart();
 
                 //then
-                expect(StatisticsService.rangeLimits).toEqual({
+                expect(StateService.setStatisticsRangeLimits).toHaveBeenCalledWith({
                     min: 0,
                     max: 11,
                     minBrush: 0,
@@ -1487,7 +1479,7 @@ describe('Statistics service', function () {
                 });
             }));
 
-            it('should update the brush limits to the [minimum, maximum] ', inject(function (StatisticsService) {
+            it('should update the brush limits to the [minimum, maximum] ', inject(function (StatisticsService, StateService) {
                 //given : -5 < 0(minimum)
                 stateMock.playground.filter.gridFilters = [{
                     colId: '0001',
@@ -1499,7 +1491,7 @@ describe('Statistics service', function () {
                 StatisticsService.processClassicChart();
 
                 //then
-                expect(StatisticsService.rangeLimits).toEqual({
+                expect(StateService.setStatisticsRangeLimits).toHaveBeenCalledWith({
                     min: 0,
                     max: 11,
                     minBrush: 0,
@@ -1509,7 +1501,7 @@ describe('Statistics service', function () {
                 });
             }));
 
-            it('should update the brush limits to the maximum', inject(function (StatisticsService) {
+            it('should update the brush limits to the maximum', inject(function (StatisticsService, StateService) {
                 //given
                 stateMock.playground.filter.gridFilters = [{
                     colId: '0001',
@@ -1521,7 +1513,7 @@ describe('Statistics service', function () {
                 StatisticsService.processClassicChart();
 
                 //then
-                expect(StatisticsService.rangeLimits).toEqual({
+                expect(StateService.setStatisticsRangeLimits).toHaveBeenCalledWith({
                     min: 0,
                     max: 11,
                     minBrush: 11,
@@ -1531,7 +1523,7 @@ describe('Statistics service', function () {
                 });
             }));
 
-            it('should update the brush limits to [minBrush, maximum]', inject(function (StatisticsService) {
+            it('should update the brush limits to [minBrush, maximum]', inject(function (StatisticsService, StateService) {
                 //given
                 stateMock.playground.filter.gridFilters = [{
                     colId: '0001',
@@ -1543,7 +1535,7 @@ describe('Statistics service', function () {
                 StatisticsService.processClassicChart();
 
                 //then
-                expect(StatisticsService.rangeLimits).toEqual({
+                expect(StateService.setStatisticsRangeLimits).toHaveBeenCalledWith({
                     min: 0,
                     max: 11,
                     minBrush: 5,
@@ -1553,7 +1545,7 @@ describe('Statistics service', function () {
                 });
             }));
 
-            it('should update the brush limits to [minimum, maxBrush]', inject(function (StatisticsService) {
+            it('should update the brush limits to [minimum, maxBrush]', inject(function (StatisticsService, StateService) {
                 //given
                 stateMock.playground.filter.gridFilters = [{
                     colId: '0001',
@@ -1565,7 +1557,7 @@ describe('Statistics service', function () {
                 StatisticsService.processClassicChart();
 
                 //then
-                expect(StatisticsService.rangeLimits).toEqual({
+                expect(StateService.setStatisticsRangeLimits).toHaveBeenCalledWith({
                     min: 0,
                     max: 11,
                     minBrush: 0,
@@ -1577,7 +1569,7 @@ describe('Statistics service', function () {
         });
 
         describe('The boxplot data', function () {
-            it('should reset boxplotData when quantile values are NaN', inject(function (StatisticsService) {
+            it('should reset boxplotData when quantile values are NaN', inject(function (StatisticsService, StateService) {
                 //given
                 stateMock.playground.grid.selectedColumn = {
                     'id': '0001',
@@ -1599,8 +1591,7 @@ describe('Statistics service', function () {
                         }
                     }
                 };
-
-                StatisticsService.statistics = {
+                stateMock.playground.statistics.details = {
                     common: {
                         COUNT: 4,
                         DISTINCT_COUNT: 5,
@@ -1621,10 +1612,10 @@ describe('Statistics service', function () {
                 StatisticsService.processClassicChart();
 
                 //then
-                expect(StatisticsService.boxPlot).toBeFalsy();
+                expect(StateService.setStatisticsBoxPlot).toHaveBeenCalledWith(null);
             }));
 
-            it('should set boxplotData statistics with quantile', inject(function (StatisticsService) {
+            it('should set boxplotData statistics with quantile', inject(function (StatisticsService, StateService) {
                 //given
                 stateMock.playground.grid.selectedColumn = {
                     'id': '0001',
@@ -1648,8 +1639,7 @@ describe('Statistics service', function () {
                         }
                     }
                 };
-
-                StatisticsService.statistics = {
+                stateMock.playground.statistics.details = {
                     common: {
                         COUNT: 4,
                         DISTINCT_COUNT: 5,
@@ -1665,7 +1655,7 @@ describe('Statistics service', function () {
                 StatisticsService.processClassicChart();
 
                 //then
-                expect(StatisticsService.boxPlot).toEqual({
+                expect(StateService.setStatisticsBoxPlot).toHaveBeenCalledWith({
                     min: 10,
                     max: 11,
                     q1: 15,
@@ -1678,17 +1668,16 @@ describe('Statistics service', function () {
         });
 
         describe('process horizontal chart', function() {
-            it('should reset non histogram data when column type is "string"', inject(function (StatisticsService) {
+            it('should reset non histogram data when column type is "string"', inject(function (StatisticsService, StateService) {
                 //given
                 stateMock.playground.grid.selectedColumn = barChartStrCol;
                 stateMock.playground.grid.filteredOccurences = {'   toto': 3, 'titi': 2};
-                StatisticsService.boxPlot = {};
 
                 //when
                 StatisticsService.processClassicChart();
 
                 //then
-                expect(StatisticsService.boxPlot).toBeFalsy();
+                expect(StateService.setStatisticsBoxPlot).toHaveBeenCalledWith(null);
             }));
 
             it('should set the frequency data with formatted value when column type is "string" with filter', inject(function (StatisticsService, StateService) {
@@ -1778,17 +1767,16 @@ describe('Statistics service', function () {
                 });
             }));
 
-            it('should reset non histogram data when column type is "boolean"', inject(function (StatisticsService) {
+            it('should reset non histogram data when column type is "boolean"', inject(function (StatisticsService, StateService) {
                 //given
                 stateMock.playground.grid.selectedColumn = barChartBoolCol;
                 stateMock.playground.grid.filteredOccurences = {'true': 3, 'false': 2};
-                StatisticsService.boxPlot = {};
 
                 //when
                 StatisticsService.processClassicChart();
 
                 //then
-                expect(StatisticsService.boxPlot).toBeFalsy();
+                expect(StateService.setStatisticsBoxPlot).toHaveBeenCalledWith(null);
             }));
 
             it('should set the frequency data when column type is "boolean"', inject(function (StatisticsService, StateService) {
@@ -1836,7 +1824,7 @@ describe('Statistics service', function () {
                     stateMock.playground.grid.selectedColumn = barChartNumCol;
                     stateMock.playground.filter.gridFilters = [{}];
                     stateMock.playground.grid.filteredOccurences = {1: 2, 3: 1, 11: 6};
-                    StatisticsService.statistics = {
+                    stateMock.playground.statistics.details = {
                         common: {
                             COUNT: 4,
                             DISTINCT_COUNT: 5,
@@ -1881,7 +1869,7 @@ describe('Statistics service', function () {
                     stateMock.playground.grid.selectedColumn = barChartNumCol;
                     stateMock.playground.filter.gridFilters = [];
                     stateMock.playground.grid.filteredOccurences = null;
-                    StatisticsService.statistics = {
+                    stateMock.playground.statistics.details = {
                         common: {
                             COUNT: 4,
                             DISTINCT_COUNT: 5,
@@ -2524,7 +2512,6 @@ describe('Statistics service', function () {
         it('should reset charts data when column type is not supported', inject(function (StatisticsService, StateService) {
             //given
             stateMock.playground.grid.selectedColumn = unknownTypeCol;
-            StatisticsService.boxPlot = {};
 
             //when
             StatisticsService.processClassicChart();
@@ -2532,7 +2519,7 @@ describe('Statistics service', function () {
             //then
             expect(StateService.setStatisticsHistogram).toHaveBeenCalledWith(null);
             expect(StateService.setStatisticsHistogramActiveLimits).toHaveBeenCalledWith(null);
-            expect(StatisticsService.boxPlot).toBeFalsy();
+            expect(StateService.setStatisticsBoxPlot).toHaveBeenCalledWith(null);
         }));
 
         it('should remove saved aggregation on current column/preparation/dataset from storage', inject(function (StatisticsService, StorageService) {
@@ -2771,17 +2758,13 @@ describe('Statistics service', function () {
             spyOn(StatisticsRestService, 'resetCache').and.returnValue();
         }));
 
-        it('should reset all charts, statistics, cache', inject(function (StatisticsRestService, StatisticsService) {
-            //given
-            StatisticsService.boxPlot = {};
-            StatisticsService.statistics = {};
-
+        it('should reset all charts, statistics, cache', inject(function (StatisticsRestService, StatisticsService, StateService) {
             //when
             StatisticsService.reset();
 
             //then
-            expect(StatisticsService.boxPlot).toBeFalsy();
-            expect(StatisticsService.statistics).toBeFalsy();
+            expect(StateService.setStatisticsBoxPlot).toHaveBeenCalledWith(null);
+            expect(StateService.setStatisticsDetails).toHaveBeenCalledWith(null);
             expect(StatisticsRestService.resetCache).toHaveBeenCalled();
         }));
 

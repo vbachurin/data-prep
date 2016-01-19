@@ -29,11 +29,7 @@
         var workerFn1 = TextFormatService.convertPatternToRegexp;
         var workerFn2 = DateService.isInDateLimits;
 
-        var service = {
-            boxPlot: null,
-            statistics: null,
-            patterns: null,
-
+        return {
             //update range
             initRangeLimits: initRangeLimits,
 
@@ -51,8 +47,6 @@
             //Pattern
             valueMatchPatternFn: valueMatchPatternFn
         };
-
-        return service;
 
         //
         // BELOW ARE ALL THE STATISTICS TABS FUNCTIONS FOR (1-CHART, 2-VALUES, 3-PATTERN, 4-OTHERS)
@@ -244,7 +238,7 @@
                 StateService.setStatisticsHistogramActiveLimits([rangeLimits.minBrush, rangeLimits.maxBrush]);
             }
 
-            service.rangeLimits = rangeLimits;
+            StateService.setStatisticsRangeLimits(rangeLimits);
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -561,10 +555,10 @@
                     break;
             }
 
-            service.statistics = {
+            StateService.setStatisticsDetails({
                 common: commonStats,
                 specific: specificStats
-            };
+            });
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -728,11 +722,11 @@
          * @description Gathers the boxPlot data from the specific stats of the columns having a 'number' type
          */
         function initBoxplotData() {
-            var specStats = service.statistics.specific;
+            var specStats = state.playground.statistics.details.specific;
 
-            //waiting for DQ to process negative values
-            if (specStats.LOWER_QUANTILE) {
-                service.boxPlot = {
+            StateService.setStatisticsBoxPlot(
+                specStats.LOWER_QUANTILE && //quantile computation is async, it is possible that we get falsy value
+                {
                     min: specStats.MIN,
                     max: specStats.MAX,
                     q1: specStats.LOWER_QUANTILE,
@@ -740,11 +734,8 @@
                     median: specStats.MEDIAN,
                     mean: specStats.MEAN,
                     variance: specStats.VARIANCE
-                };
-            }
-            else {
-                service.boxPlot = null;
-            }
+                }
+            );
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -1005,8 +996,8 @@
          * Reset the charts
          */
         function resetCharts() {
-            service.boxPlot = null;
-            service.rangeLimits = null;
+            StateService.setStatisticsRangeLimits(null);
+            StateService.setStatisticsBoxPlot(null);
             StateService.setStatisticsHistogram(null);
             StateService.setStatisticsHistogramActiveLimits(null);
         }
@@ -1015,7 +1006,7 @@
          * Reset the statistics
          */
         function resetStatistics() {
-            service.statistics = null;
+            StateService.setStatisticsDetails(null);
         }
 
         /**
