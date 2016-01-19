@@ -258,15 +258,27 @@
          */
         function initLookupDatasets() {
             var actionsToAdd = [];
+            var addedDatasets = getLookupDatasets();
 
-            _.forEach(getLookupDatasets(), function(datasetId) {
+            //Consolidate addedDatasets
+            _.forEach(RecipeService.getRecipe(), function (nextStep) {
+                if(nextStep.actionParameters.action === 'lookup'){
+                    if(_.indexOf(addedDatasets, nextStep.actionParameters.parameters.lookup_ds_id) === -1) { //If the dataset of a lookup step have not been saved
+                        addedDatasets.push(nextStep.actionParameters.parameters.lookup_ds_id);
+                    }
+                }
+            });
+            saveLookupDatasets(addedDatasets);
 
+            _.forEach(addedDatasets, function(datasetId) {
+                //init datasets list to add
                 _.forEach(state.playground.lookup.datasets, function (datasetToAdd) {
                     if(datasetToAdd.id === datasetId) {
                         datasetToAdd.addedToLookup = true;
                     }
                 });
 
+                //init actions list
                 var actionToAdd = _.find(state.playground.lookup.actions, function (action) {
                     return _.find(action.parameters, {'name': 'lookup_ds_id'}).default === datasetId;
                 });
@@ -274,7 +286,6 @@
                     actionsToAdd.push(actionToAdd);
                 }
             });
-
             StateService.setLookupAddedActions(actionsToAdd);
         }
 
