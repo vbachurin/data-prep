@@ -29,12 +29,20 @@
         border-top: 8px solid transparent;
         border-bottom: 8px solid transparent;
         border-right: 8px solid $medium-gray;
+
+        &:active {
+          border-right : 8px solid $light-gray;
+        }
       }
 
       &.arrow-right {
         border-top: 8px solid transparent;
         border-bottom: 8px solid transparent;
         border-left: 8px solid $medium-gray;
+
+        &:active {
+          border-left : 8px solid $light-gray;
+        }
       }
 
       &:focus {
@@ -73,6 +81,7 @@
       height: 29px;
       padding-left: 10px;
       cursor: pointer;
+      color: $dark-gray;
 
       &:active {
         color : $light-gray;

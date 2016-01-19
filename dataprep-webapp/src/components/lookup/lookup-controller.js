@@ -134,6 +134,18 @@
 			}
 		};
 
+		/**
+		 * @ngdoc method
+		 * @name toogleSelect
+		 * @methodOf data-prep.lookup.controller:LookupCtrl
+		 * @description Select/Deselect a dataset
+		 */
+		vm.toogleSelect = function toogleSelect(dataset) {
+			if(dataset.enableToAddToLookup) {
+				dataset.addedToLookup = !dataset.addedToLookup;
+			}
+		};
+
 	}
 
 	angular.module('data-prep.lookup')
