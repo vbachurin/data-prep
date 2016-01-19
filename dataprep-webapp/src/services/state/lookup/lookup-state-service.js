@@ -203,6 +203,7 @@
          */
         function reset() {
             lookupState.actions = [];
+            lookupState.addedActions = [];
             lookupState.datasets = [];
             lookupState.columnsToAdd = [];
             lookupState.columnCheckboxes = [];

@@ -110,6 +110,9 @@
 		 * @description Open the add lookup dataset modal
 		 */
 		vm.openAddLookupDatasetModal = function openAddLookupDatasetModal() {
+
+			LookupService.disableDatasetsUsedInRecipe();
+
 			vm.addLookupDatasetModal = true;
 		};
 

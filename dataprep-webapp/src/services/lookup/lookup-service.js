@@ -16,7 +16,8 @@
             loadFromAction: loadFromAction,
             loadFromStep: loadFromStep,
             updateTargetColumn: updateTargetColumn,
-            updateLookupDatasets: updateLookupDatasets
+            updateLookupDatasets: updateLookupDatasets,
+            disableDatasetsUsedInRecipe: disableDatasetsUsedInRecipe
         };
 
         /**
@@ -247,6 +248,25 @@
 
             });
             StateService.setLookupAddedActions(actionsToAdd);
+        }
+
+        /**
+         * @ngdoc method
+         * @name disableDatasetsUsedInRecipe
+         * @methodOf data-prep.services.lookup.service:LookupService
+         * @description Disable datasets already used in a lookup step of the recipe to not to be removed
+         */
+        function disableDatasetsUsedInRecipe() {
+
+            _.forEach(state.playground.lookup.datasets, function(dataset) {
+                var lookupStep = _.find(RecipeService.getRecipe(), function (nextStep) {
+                    return nextStep.actionParameters.action === 'lookup' && dataset.id === nextStep.actionParameters.parameters.lookup_ds_id ;
+                });
+
+                dataset.enableToAddToLookup = lookupStep ? false : true;
+            });
+
+
         }
     }
 
