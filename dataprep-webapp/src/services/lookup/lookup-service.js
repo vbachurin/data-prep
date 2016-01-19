@@ -10,10 +10,7 @@
      * @requires data-prep.services.datasets.service:DatasetRestService
      * @requires data-prep.services.recipe.service:RecipeService
      */
-    function LookupService($window, $q, state, StateService, TransformationRestService, DatasetRestService, RecipeService) {
-
-        var LOOKUP_DATASETS_KEY = 'org.talend.dataprep.lookup_datasets';
-
+    function LookupService($q, state, StateService, TransformationRestService, DatasetRestService, RecipeService, StorageService) {
 
         return {
             initLookups: initLookups,
@@ -24,27 +21,6 @@
             disableDatasetsUsedInRecipe: disableDatasetsUsedInRecipe
         };
 
-
-        /**
-         * @ngdoc method
-         * @name getLookupDatasets
-         * @methodOf data-prep.services.lookup.service:LookupService
-         * @description Get the lookup datasets from localStorage
-         */
-        function getLookupDatasets() {
-            var params = $window.localStorage.getItem(LOOKUP_DATASETS_KEY);
-            return params ? JSON.parse(params) : [];
-        }
-
-        /**
-         * @ngdoc method
-         * @name saveLookupDatasets
-         * @methodOf data-prep.services.lookup.service:LookupService
-         * @description Save the lookup datasets in localStorage
-         */
-        function saveLookupDatasets(datasets) {
-            $window.localStorage.setItem(LOOKUP_DATASETS_KEY, JSON.stringify(datasets));
-        }
 
         /**
          * @ngdoc method
@@ -258,17 +234,17 @@
          */
         function initLookupDatasets() {
             var actionsToAdd = [];
-            var addedDatasets = getLookupDatasets();
+            var addedDatasets = StorageService.getLookupDatasets();
 
             //Consolidate addedDatasets
             _.forEach(RecipeService.getRecipe(), function (nextStep) {
-                if(nextStep.actionParameters.action === 'lookup'){
+                if(nextStep.actionParameters.action === 'lookup'){ /*jshint camelcase: false */
                     if(_.indexOf(addedDatasets, nextStep.actionParameters.parameters.lookup_ds_id) === -1) { //If the dataset of a lookup step have not been saved
                         addedDatasets.push(nextStep.actionParameters.parameters.lookup_ds_id);
                     }
                 }
             });
-            saveLookupDatasets(addedDatasets);
+            StorageService.saveLookupDatasets(addedDatasets);
 
             _.forEach(addedDatasets, function(datasetId) {
                 //init datasets list to add
@@ -314,10 +290,10 @@
             StateService.setLookupAddedActions(actionsToAdd);
 
             var datasetsToSave = _.pluck(datasetsToAdd, 'id');
-            if(_.indexOf(getLookupDatasets(), state.playground.dataset.id) > -1) { //If the playground dataset have been saved in localStorage for the lookup
+            if(_.indexOf(StorageService.getLookupDatasets(), state.playground.dataset.id) > -1) { //If the playground dataset have been saved in localStorage for the lookup
                 datasetsToSave.push(state.playground.dataset.id);
             }
-            saveLookupDatasets(datasetsToSave);
+            StorageService.saveLookupDatasets(datasetsToSave);
         }
 
         /**
@@ -328,7 +304,7 @@
          */
         function disableDatasetsUsedInRecipe() {
             _.forEach(state.playground.lookup.datasets, function (dataset) {
-                var lookupStep = _.find(RecipeService.getRecipe(), function (nextStep) {
+                var lookupStep = _.find(RecipeService.getRecipe(), function (nextStep) { /*jshint camelcase: false */
                     return nextStep.actionParameters.action === 'lookup' && dataset.id === nextStep.actionParameters.parameters.lookup_ds_id;
                 });
 

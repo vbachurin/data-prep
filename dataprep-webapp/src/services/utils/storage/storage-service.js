@@ -8,6 +8,7 @@
      */
     function StorageService($window) {
         var PREFIX = 'org.talend.dataprep.';
+        var LOOKUP_DATASETS_KEY = 'org.talend.dataprep.lookup_datasets';
 
         return {
             setAggregation: setAggregation,
@@ -15,7 +16,9 @@
             removeAggregation: removeAggregation,
             removeAllAggregations: removeAllAggregations,
             savePreparationAggregationsFromDataset: savePreparationAggregationsFromDataset,
-            moveAggregations: moveAggregations
+            moveAggregations: moveAggregations,
+            getLookupDatasets: getLookupDatasets,
+            saveLookupDatasets: saveLookupDatasets
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -198,6 +201,27 @@
                 setAggregation(datasetId, newPreparationId, aggregDef.columnId, aggregDef.aggregation);
                 removeAggregation(datasetId, oldPreparationId, aggregDef.columnId);
             });
+        }
+
+        /**
+         * @ngdoc method
+         * @name getLookupDatasets
+         * @methodOf data-prep.services.utils.service:StorageService
+         * @description Get the lookup datasets from localStorage
+         */
+        function getLookupDatasets() {
+            var params = $window.localStorage.getItem(LOOKUP_DATASETS_KEY);
+            return params ? JSON.parse(params) : [];
+        }
+
+        /**
+         * @ngdoc method
+         * @name saveLookupDatasets
+         * @methodOf data-prep.services.utils.service:StorageService
+         * @description Save the lookup datasets in localStorage
+         */
+        function saveLookupDatasets(datasets) {
+            $window.localStorage.setItem(LOOKUP_DATASETS_KEY, JSON.stringify(datasets));
         }
     }
 
