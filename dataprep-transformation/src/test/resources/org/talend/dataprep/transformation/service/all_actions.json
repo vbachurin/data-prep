@@ -3018,5 +3018,8 @@
         }
       }
     ]
+  },
+  {
+    "name": "testfailedaction"
   }
 ]
