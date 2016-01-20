@@ -22,7 +22,6 @@
                                RecipeService, TransformationCacheService, PreparationService,
                                StatisticsService, HistoryService, StateService,
                                OnboardingService, MessageService, ExportService) {
-        var DEFAULT_NAME = 'Preparation draft';
 
         var service = {
             /**
@@ -90,7 +89,7 @@
                             throw Error('Empty data');
                         }
 
-                        service.preparationName = '';
+                        service.preparationName = dataset.name + ' preparation';
                         reset(dataset, data);
                         StateService.hideRecipe();
                         StateService.setNameEditionMode(true);
@@ -202,7 +201,7 @@
 
             return promise.then(function (preparation) {
                 StateService.setCurrentPreparation(preparation);
-                service.preparationName = name;
+                service.preparationName = preparation.name;
                 return preparation;
             });
         }
@@ -261,10 +260,9 @@
             //create the preparation and taf it draft if it does not exist
             var prepCreation = state.playground.preparation ?
                 $q.when(state.playground.preparation) :
-                createOrUpdatePreparation(DEFAULT_NAME)
+                createOrUpdatePreparation(state.playground.dataset.name + ' preparation')
                     .then(function (preparation) {
                         preparation.draft = true;
-                        service.preparationName = '';
                         return preparation;
                     });
 
