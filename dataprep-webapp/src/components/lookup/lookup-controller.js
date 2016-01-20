@@ -232,7 +232,7 @@
 					return;
 				}
 				vm.sortOrderSelected = order;
-				sortDatasetsList()
+				sortDatasetsList();
 			});
 		};
 

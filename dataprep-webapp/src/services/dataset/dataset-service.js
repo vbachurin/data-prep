@@ -9,11 +9,9 @@
      * @requires data-prep.services.dataset.service:DatasetRestService
      * @requires data-prep.services.preparation.service:PreparationListService
      * @requires data-prep.services.utils.service:StorageService
-     * @requires data-prep.services.lookup.service:LookupService
-     * @requires data-prep.services.state.service:StateService
      *
      */
-    function DatasetService (state, DatasetListService, DatasetRestService, PreparationListService, StorageService, LookupService, StateService) {
+    function DatasetService (state, DatasetListService, DatasetRestService, PreparationListService, StorageService) {
         return {
             //lifecycle
             import: importRemoteDataset,
@@ -161,14 +159,8 @@
          * @description [PRIVATE] Refresh the metadata within the preparations
          */
         function consolidatePreparationsAndDatasets (response) {
-            PreparationListService.refreshMetadataInfos(state.inventory.datasets)
-                .then(DatasetListService.refreshDefaultPreparation)
-                .then(function(){
-                    if(state.playground.dataset) {
-                        StateService.setLookupAddedActions([]);
-                        LookupService.initLookups();
-                    }
-                });
+            PreparationListService.refreshMetadataInfos(DatasetListService.datasets)
+                .then(DatasetListService.refreshDefaultPreparation);
 
             return response;
         }

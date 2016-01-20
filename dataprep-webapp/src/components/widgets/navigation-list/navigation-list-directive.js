@@ -34,7 +34,7 @@
             },
             bindToController: true,
             controllerAs: 'navigationListCtrl',
-            controller: 'NavigationListCtrl',
+            controller: function () {},
 
             link: function (scope, iElement, iAttrs, ctrl) {
 
@@ -83,11 +83,11 @@
 
                     rightButton.on('click', function () {
                         initLeftPosition();
-                        if((posLeft + ctrl.list.length * 200) > wrapper.width()) {
+                        if((posLeft + ctrl.list.length * 200) >= wrapper.width()) {
                             itemsList.css('left', posLeft - 200);
                             posLeft = parseInt(itemsList.css('left'), 10);
 
-                            if ((posLeft + ctrl.list.length * 200) < wrapper.width()) {
+                            if ((posLeft + ctrl.list.length * 200) <= wrapper.width()) {
                                 itemsList.css('float', 'right');
                                 itemsList.css('left', '');
                             }
@@ -112,6 +112,9 @@
                                             if((i+1)*200 < wrapper.width()){
                                                 itemsList.css('float', 'left');
                                                 itemsList.css('left', 0);
+                                            } else if(i === (ctrl.list.length -1)){
+                                                itemsList.css('float', 'right');
+                                                itemsList.css('left', '');
                                             } else {
                                                 itemsList.css('float', 'left');
                                                 itemsList.css('left', wrapper.width() - (i+1)*200);

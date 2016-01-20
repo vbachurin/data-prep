@@ -80,8 +80,6 @@
          * @returns {Promise} The process promise
          */
         function initPlayground(dataset) {
-            if (!state.playground.dataset || state.playground.preparation || dataset.id !== state.playground.dataset.id) {
-
                 $rootScope.$emit('talend.loading.start');
                 return DatasetService.getContent(dataset.id, true)
                     .then(function (data) {
@@ -106,10 +104,6 @@
                     .finally(function () {
                         $rootScope.$emit('talend.loading.stop');
                     });
-            }
-            else {
-                return $q.when(true);
-            }
         }
 
         /**
