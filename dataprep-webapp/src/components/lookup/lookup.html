@@ -61,6 +61,27 @@
                 <span translate-once="ADD_LOOKUP_DATASET_MODAL_TITLE"></span>
             </div>
             <div class="inventory">
+                <div class="inventory-sort">
+                    <div translate-once="SORTED_BY"></div>
+                    <div class="button-switch">
+                        <talend-button-switch
+                                values="lookupCtrl.sortList"
+                                current-value="lookupCtrl.sortSelected"
+                                display-key="name"
+                                change-action="lookupCtrl.updateSortBy(selected)">
+                        </talend-button-switch>
+                    </div>
+                    <div translate-once="SORT_IN"> </div>
+                    <div class="button-switch">
+                        <talend-button-switch
+                                values="lookupCtrl.orderList"
+                                current-value="lookupCtrl.sortOrderSelected"
+                                display-key="name"
+                                change-action="lookupCtrl.updateSortOrder(selected)">
+                        </talend-button-switch>
+                    </div>
+                    <div translate-once="SORT_ORDER"></div>
+                </div>
                 <div class="inventory-list">
                     <div class="inventory-item-div" ng-repeat="dataset in lookupCtrl.state.playground.lookup.datasets track by $index" id="dataset_lookup_{{$index}}">
                         <input class="add-dataset-input" type="checkbox" ng-model="dataset.addedToLookup" ng-disabled="!dataset.enableToAddToLookup"/>

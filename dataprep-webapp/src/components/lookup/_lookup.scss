@@ -69,4 +69,32 @@
     }
   }
 
+  $button-background-color: $white;
+  $button-color-text: $black;
+  $inventory-sort-height: 50px;
+
+  .inventory-sort {
+    @include display(flex);
+    @include flex-direction(row);
+    @include align-items(center);
+    @include justify-content(flex-end);
+
+    font-size: 1em;
+    height: $inventory-sort-height;
+    font-weight: 300;
+    padding: 15px 5px 0 0;
+
+    .button-switch {
+      background: $button-background-color;
+      color: $button-color-text;
+      padding: 0 5px 0 5px;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+      &:hover {
+        color: $dark-blue;
+        text-decoration: underline;
+      }
+    }
+  }
 }

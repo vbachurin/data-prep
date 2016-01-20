@@ -12,12 +12,55 @@
 	 * @requires data-prep.services.transformation.service:TransformationApplicationService
 	 */
 	function LookupCtrl(state, StateService, LookupService, EarlyPreviewService,
-						TransformationApplicationService, PlaygroundService) {
+						TransformationApplicationService, PlaygroundService, $timeout) {
 		var vm = this;
 		vm.state = state;
 		vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
 		vm.loadFromAction= LookupService.loadFromAction;
 		vm.addLookupDatasetModal = false;
+
+
+		/**
+		 * @ngdoc property
+		 * @name sortList
+		 * @propertyOf data-prep.lookup.controller:LookupCtrl
+		 * @description The sort list
+		 * @type {array}
+		 */
+		vm.sortList = [
+			{id: 'name', name: 'NAME_SORT'},
+			{id: 'created', name: 'DATE_SORT'}
+		];
+
+		/**
+		 * @ngdoc property
+		 * @name orderList
+		 * @propertyOf data-prep.lookup.controller:LookupCtrl
+		 * @description The sort order list
+		 * @type {string}
+		 */
+		vm.orderList = [
+			{id: 'asc', name: 'ASC_ORDER'},
+			{id: 'desc', name: 'DESC_ORDER'}
+		];
+
+		/**
+		 * @ngdoc property
+		 * @name sortSelected
+		 * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
+		 * @description Selected sort.
+		 * @type {object}
+		 */
+		vm.sortSelected = vm.sortList[0];
+
+		/**
+		 * @ngdoc property
+		 * @name sortOrderSelected
+		 * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
+		 * @description Selected sort order.
+		 * @type {object}
+		 */
+		vm.sortOrderSelected = vm.orderList[0];
 
 		/**
 		 * @ngdoc method
@@ -144,6 +187,53 @@
 			if(dataset.enableToAddToLookup) {
 				dataset.addedToLookup = !dataset.addedToLookup;
 			}
+		};
+
+		/**
+		 * @ngdoc method
+		 * @name sortDatasetsList
+		 * @methodOf data-prep.lookup.controller:LookupCtrl
+		 * @description sort datasets list
+		 */
+		function sortDatasetsList() {
+			state.playground.lookup.datasets =_.sortBy(state.playground.lookup.datasets, vm.sortSelected.id);
+			if(vm.sortOrderSelected.id === 'desc'){
+				state.playground.lookup.datasets = state.playground.lookup.datasets.reverse();
+			}
+		}
+
+		/**
+		 * @ngdoc method
+		 * @name sort
+		 * @methodOf data-prep.lookup.controller:LookupCtrl
+		 * @description sort dataset by sortType by calling refreshDatasets from DatasetService
+		 * @param {object} sortType Criteria to sort
+		 */
+		vm.updateSortBy = function updateSortBy (sortType) {
+			$timeout(function(){
+				if (vm.sortSelected === sortType) {
+					return;
+				}
+				vm.sortSelected = sortType;
+				sortDatasetsList();
+			});
+		};
+
+		/**
+		 * @ngdoc method
+		 * @name sort
+		 * @methodOf data-prep.lookup.controller:LookupCtrl
+		 * @description sort dataset in order (ASC or DESC) by calling refreshDatasets from DatasetService
+		 * @param {object} order Sort order ASC(ascending) or DESC(descending)
+		 */
+		vm.updateSortOrder = function updateSortOrder (order) {
+			$timeout(function(){
+				if (vm.sortOrderSelected === order) {
+					return;
+				}
+				vm.sortOrderSelected = order;
+				sortDatasetsList()
+			});
 		};
 
 	}
