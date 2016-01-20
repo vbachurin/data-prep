@@ -218,7 +218,7 @@
                         // reset default preparation for all datasets
                         _.forEach(datasets, function(dataset){
                             var preparations = datasetPreps[dataset.id];
-                            dataset.defaultPreparation = preparations && preparations.length === 1 ?  preparations[0] : null;
+                            dataset.defaultPreparations = preparations;
                         });
 
                         return datasets;

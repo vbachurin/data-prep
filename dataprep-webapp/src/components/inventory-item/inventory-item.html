@@ -41,10 +41,28 @@
     <div ng-if="!inventoryItemCtrl.item.draft" class="inventory-actions">
         <a data-icon="c"
            class="btn-icon btn-transparent"
-           ng-if="!!inventoryItemCtrl.item.defaultPreparation && inventoryItemCtrl.open && inventoryItemCtrl.rename"
+           ng-if="inventoryItemCtrl.relatedInventories.length"
            translate-once-title="OPEN_ACTION"
-           translate-values="{type: 'preparation', name: inventoryItemCtrl.item.defaultPreparation.name}"
-           ui-sref="nav.home.preparations({prepid: inventoryItemCtrl.item.defaultPreparation.id})"></a>
+           translate-values="{type: 'preparation', name: inventoryItemCtrl.item.defaultPreparations[0].name}"
+           ng-click="inventoryItemCtrl.openOnClick(inventoryItemCtrl.item)">
+        </a>
+
+        <talend-dropdown class="btn-transparent" ng-show="inventoryItemCtrl.item.defaultPreparations.length">
+            <div class="dropdown-container">
+                <span class="dropdown-action">
+                    <a class="dropdown-button"></a>
+                </span>
+                <ul class="dropdown-menu">
+                    <li ng-click="inventoryItemCtrl.open(inventoryItemCtrl.item)">
+                        Create New Preparation
+                    </li>
+                    <li class="divider"></li>
+                    <li ng-repeat="prepa in inventoryItemCtrl.item.defaultPreparations track by $index">
+                        <a data-icon="c" ui-sref="nav.home.preparations({prepid: prepa.id})">{{prepa.name}}</a>
+                    </li>
+                </ul>
+            </div>
+        </talend-dropdown>
 
         <talend-file-selector
                 ng-if="inventoryItemCtrl.update"

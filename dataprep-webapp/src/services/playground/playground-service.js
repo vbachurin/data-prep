@@ -21,7 +21,14 @@
     function PlaygroundService($rootScope, $q, state, DatasetService, DatagridService, PreviewService,
                                RecipeService, TransformationCacheService, PreparationService,
                                StatisticsService, HistoryService, StateService,
-                               OnboardingService, MessageService, ExportService) {
+                               OnboardingService, MessageService, ExportService, $translate) {
+
+        var INVENTORY_PREFIX = '';
+        var INVENTORY_SUFFIX = ' ' + $translate.instant('PREPARATION');
+
+        function wrapInventoryName (invName){
+            return INVENTORY_PREFIX + invName + INVENTORY_SUFFIX;
+        }
 
         var service = {
             /**
@@ -89,7 +96,7 @@
                             throw Error('Empty data');
                         }
 
-                        service.preparationName = dataset.name + ' preparation';
+                        service.preparationName = wrapInventoryName(dataset.name);
                         reset(dataset, data);
                         StateService.hideRecipe();
                         StateService.setNameEditionMode(true);
@@ -260,14 +267,14 @@
             //create the preparation and taf it draft if it does not exist
             var prepCreation = state.playground.preparation ?
                 $q.when(state.playground.preparation) :
-                createOrUpdatePreparation(state.playground.dataset.name + ' preparation')
+                createOrUpdatePreparation(wrapInventoryName(state.playground.dataset.name))
                     .then(function (preparation) {
                         preparation.draft = true;
                         return preparation;
                     });
 
             return prepCreation
-            //append step
+                //append step
                 .then(function (preparation) {
                     return PreparationService.appendStep(preparation.id, {action: action, parameters: parameters});
                 })

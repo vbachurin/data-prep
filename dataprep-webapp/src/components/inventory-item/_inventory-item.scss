@@ -3,6 +3,21 @@
     padding: 3px 0;
   }
 
+  .dropdown-container{
+    ul > li{
+      margin:10px;
+      &.divider{
+        min-height: 1px;
+        height: 1px;
+        width: 100%;
+        margin: 9px 0;
+        overflow: hidden;
+        background-color: #e5e5e5;
+        padding: 0;
+      }
+    }
+  }
+
   .edition-text-input {
     width: 220px;
   }
