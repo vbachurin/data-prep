@@ -54,6 +54,13 @@
       position: relative;
       .inventory-entry{
         margin-left: 20px;
+
+        .btn-icon:hover {
+          background-color: transparent;
+        }
+        .btn-transparent:hover {
+          background-color: transparent;
+        }
       }
       .add-dataset-input {
         position: absolute;

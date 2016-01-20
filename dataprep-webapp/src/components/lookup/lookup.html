@@ -65,7 +65,7 @@
                     <div class="inventory-item-div" ng-repeat="dataset in lookupCtrl.state.playground.lookup.datasets track by $index" id="dataset_lookup_{{$index}}">
                         <input class="add-dataset-input" type="checkbox" ng-model="dataset.addedToLookup" ng-disabled="!dataset.enableToAddToLookup"/>
                         <inventory-item
-                                ng-click="toogleSelect(dataset)"
+                                ng-click="lookupCtrl.toogleSelect(dataset)"
                                 class="inventory-entry"
                                 type="dataset"
                                 item="dataset"

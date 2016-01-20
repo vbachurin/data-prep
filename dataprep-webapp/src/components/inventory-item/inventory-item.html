@@ -85,4 +85,10 @@
            ng-class="{'favorite-true':inventoryItemCtrl.item.favorite}"
            ng-click="inventoryItemCtrl.toggleFavorite(inventoryItemCtrl.item)"></a>
     </div>
+    <div ng-if="!inventoryItemCtrl.actionsEnabled && !inventoryItemCtrl.item.draft" class="inventory-actions">
+        <a ng-if="inventoryItemCtrl.item.favorite"
+           data-icon="f"
+           class="btn-icon btn-transparent favorite"
+           ng-class="{'favorite-true':inventoryItemCtrl.item.favorite}"></a>
+    </div>
 </div>

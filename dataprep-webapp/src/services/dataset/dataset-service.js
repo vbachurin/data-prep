@@ -9,9 +9,11 @@
      * @requires data-prep.services.dataset.service:DatasetRestService
      * @requires data-prep.services.preparation.service:PreparationListService
      * @requires data-prep.services.utils.service:StorageService
+     * @requires data-prep.services.lookup.service:LookupService
+     * @requires data-prep.services.state.service:StateService
      *
      */
-    function DatasetService (state, DatasetListService, DatasetRestService, PreparationListService, StorageService) {
+    function DatasetService (state, DatasetListService, DatasetRestService, PreparationListService, StorageService, LookupService, StateService) {
         return {
             //lifecycle
             import: importRemoteDataset,
@@ -160,7 +162,13 @@
          */
         function consolidatePreparationsAndDatasets (response) {
             PreparationListService.refreshMetadataInfos(state.inventory.datasets)
-                .then(DatasetListService.refreshDefaultPreparation);
+                .then(DatasetListService.refreshDefaultPreparation)
+                .then(function(){
+                    if(state.playground.dataset) {
+                        StateService.setLookupAddedActions([]);
+                        LookupService.initLookups();
+                    }
+                });
 
             return response;
         }
@@ -212,9 +220,11 @@
          * @returns {promise} The pending POST promise
          */
         function toggleFavorite (dataset) {
-            return DatasetRestService.toggleFavorite(dataset).then(function () {
-                dataset.favorite = !dataset.favorite;
-            });
+            return DatasetRestService.toggleFavorite(dataset)
+                .then(function () {
+                    dataset.favorite = !dataset.favorite; //update currentFolderContent.datasets
+                    refreshDatasets(); //update inventory.datasets
+                });
         }
         
         /**
