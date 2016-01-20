@@ -1,4 +1,4 @@
-package org.talend.dataprep.dataset.service.analysis;
+package org.talend.dataprep.dataset.service.analysis.asynchronous;
 
 import static org.talend.dataprep.exception.error.DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY;
 
@@ -61,9 +61,11 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
 
     @Override
     public void analyze(String dataSetId) {
+
         if (StringUtils.isEmpty(dataSetId)) {
             throw new IllegalArgumentException("Data set id cannot be null or empty.");
         }
+
         DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
         datasetLock.lock();
         try {
