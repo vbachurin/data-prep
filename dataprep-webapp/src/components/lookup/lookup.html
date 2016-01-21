@@ -65,7 +65,7 @@
                     <div translate-once="SORTED_BY"></div>
                     <div class="button-switch">
                         <talend-button-switch
-                                values="lookupCtrl.sortList"
+                                values="lookupCtrl.state.inventory.sortList"
                                 current-value="lookupCtrl.sortSelected"
                                 display-key="name"
                                 change-action="lookupCtrl.updateSortBy(selected)">
@@ -74,7 +74,7 @@
                     <div translate-once="SORT_IN"> </div>
                     <div class="button-switch">
                         <talend-button-switch
-                                values="lookupCtrl.orderList"
+                                values="lookupCtrl.state.inventory.orderList"
                                 current-value="lookupCtrl.sortOrderSelected"
                                 display-key="name"
                                 change-action="lookupCtrl.updateSortOrder(selected)">

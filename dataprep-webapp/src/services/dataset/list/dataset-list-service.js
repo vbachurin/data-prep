@@ -9,8 +9,9 @@
      * {@link data-prep.services.dataset.service:DatasetService DatasetService} must be the only entry point for datasets</b>
      * @requires data-prep.services.dataset.service:DatasetRestService
      * @requires data-prep.services.state.service:StateService
+     * @requires data-prep.services.utils.service:StorageService
      */
-    function DatasetListService($q, DatasetRestService, DatasetListSortService, StateService) {
+    function DatasetListService(state, $q, DatasetRestService, StateService, StorageService) {
 
         var deferredCancel;
         var datasetsPromise;
@@ -26,7 +27,10 @@
             delete : deleteDataset,
             refreshDefaultPreparation : refreshDefaultPreparation,
             getDatasetsPromise : getDatasetsPromise,
-            hasDatasetsPromise: hasDatasetsPromise
+            hasDatasetsPromise: hasDatasetsPromise,
+            getSort: getSort,
+            getOrder: getOrder
+
         };
 
         return service;
@@ -46,6 +50,28 @@
 
         /**
          * @ngdoc method
+         * @methodOf data-prep.services.dataset.service:DatasetListService
+         * @name getSort
+         * @description Returns the actual sort parameter
+         * */
+        function getSort() {
+            var savedSort = StorageService.getDatasetsSort();
+            return savedSort ? savedSort : state.inventory.sortList[1].id;
+        }
+
+        /**
+         * @ngdoc method
+         * @methodOf data-prep.services.dataset.service:DatasetListService
+         * @name getOrder
+         * @description Returns the actual order parameter
+         */
+        function getOrder() {
+            var savedSortOrder = StorageService.getDatasetsOrder();
+            return savedSortOrder ? savedSortOrder : state.inventory.orderList[1].id;
+        }
+
+        /**
+         * @ngdoc method
          * @name refreshDatasets
          * @methodOf data-prep.services.dataset.service:DatasetListService
          * @description Refresh datasets list
@@ -53,8 +79,8 @@
          */
         function refreshDatasets() {
             cancelPendingGetRequest();
-            var sort = DatasetListSortService.getSort();
-            var order = DatasetListSortService.getOrder();
+            var sort = getSort();
+            var order = getOrder();
 
             deferredCancel = $q.defer();
             datasetsPromise = DatasetRestService.getDatasets(sort, order, deferredCancel)

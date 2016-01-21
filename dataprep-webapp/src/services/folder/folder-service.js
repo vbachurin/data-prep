@@ -8,10 +8,10 @@
      * @requires data-prep.services.state.constant:state
      * @requires data-prep.services.state.service:StateService
      * @requires data-prep.services.folder.service:FolderRestService
-     * @requires data-prep.services.dataset.service:DatasetListSortService
+     * @requires data-prep.services.dataset.service:DatasetListService
      * @requires data-prep.services.preparation.service:PreparationListService
      */
-    function FolderService($translate, state, StateService, FolderRestService, DatasetListSortService, PreparationListService) {
+    function FolderService($translate, state, StateService, FolderRestService, DatasetListService, PreparationListService) {
 
         var ROOT_FOLDER = {
             id: '/',
@@ -112,8 +112,8 @@
          * @returns {Promise} The GET promise
          */
         function getContent(folder) {
-            var sort = DatasetListSortService.getSort();
-            var order = DatasetListSortService.getOrder();
+            var sort = DatasetListService.getSort();
+            var order = DatasetListService.getOrder();
             var promise = FolderRestService.getContent(folder && folder.id, sort, order);
 
             promise.then(function (result) {

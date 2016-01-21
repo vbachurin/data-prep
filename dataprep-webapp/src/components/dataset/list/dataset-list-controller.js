@@ -8,16 +8,18 @@
      On creation, it fetch dataset list from backend and load playground if 'datasetid' query param is provided
      * @requires data-prep.services.state.service:StateService
      * @requires data-prep.services.dataset.service:DatasetService
-     * @requires data-prep.services.dataset.service:DatasetListSortService
      * @requires data-prep.services.folder.service:FolderService
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.uploadWorkflowService.service:UploadWorkflowService
      * @requires data-prep.services.datasetWorkflowService.service:UpdateWorkflowService
      * @requires data-prep.services.utils.service:MessageService
      * @requires talend.widget.service:TalendConfirmService
+     * @requires data-prep.services.utils.service:StorageService
+     * @requires data-prep.services.dataset.service:DatasetListService
      */
-    function DatasetListCtrl ($timeout, $translate, $stateParams, StateService, DatasetService, DatasetListSortService, PlaygroundService,
-                              TalendConfirmService, MessageService, UploadWorkflowService, UpdateWorkflowService, FolderService, state) {
+    function DatasetListCtrl (state, $timeout, $translate, $stateParams, StateService, DatasetService, PlaygroundService,
+                              TalendConfirmService, MessageService, UploadWorkflowService, UpdateWorkflowService,
+                              FolderService, StorageService, DatasetListService) {
         var vm = this;
 
         vm.datasetService = DatasetService;
@@ -38,30 +40,12 @@
 
         /**
          * @ngdoc property
-         * @name sortList
-         * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description The sort list
-         * @type {array}
-         */
-        vm.sortList = DatasetListSortService.getSortList();
-
-        /**
-         * @ngdoc property
-         * @name orderList
-         * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description The sort order list
-         * @type {string}
-         */
-        vm.orderList = DatasetListSortService.getOrderList();
-
-        /**
-         * @ngdoc property
          * @name sortSelected
          * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description Selected sort.
          * @type {object}
          */
-        vm.sortSelected = DatasetListSortService.getSortItem();
+        vm.sortSelected = StateService.getSortItem(DatasetListService.getSort());
 
         /**
          * @ngdoc property
@@ -70,7 +54,7 @@
          * @description Selected sort order.
          * @type {object}
          */
-        vm.sortOrderSelected = DatasetListSortService.getOrderItem();
+        vm.sortOrderSelected = StateService.getOrderItem(DatasetListService.getOrder());
 
         /**
          * @type {Array} folder found after a search
@@ -96,12 +80,12 @@
 
             var oldSort = vm.sortSelected;
             vm.sortSelected = sortType;
-            DatasetListSortService.setSort(sortType.id);
+            StorageService.saveDatasetsSort(sortType.id);
 
             FolderService.getContent(state.folder.currentFolder)
                 .catch(function () {
                     vm.sortSelected = oldSort;
-                    DatasetListSortService.setSort(oldSort.id);
+                    StorageService.saveDatasetsSort(oldSort.id);
                 });
         };
 
@@ -117,14 +101,14 @@
                 return;
             }
 
-            var oldSort = vm.sortOrderSelected;
+            var oldOrder = vm.sortOrderSelected;
             vm.sortOrderSelected = order;
-            DatasetListSortService.setOrder(order.id);
+            StorageService.saveDatasetsOrder(order.id);
 
             FolderService.getContent(state.folder.currentFolder)
                 .catch(function () {
-                    vm.sortOrderSelected = oldSort;
-                    DatasetListSortService.setOrder(oldSort.id);
+                    vm.sortOrderSelected = oldOrder;
+                    StorageService.saveDatasetsOrder(oldOrder.id);
                 });
         };
 

@@ -10,9 +10,10 @@
 	 * @requires data-prep.services.lookup.service:LookupService
 	 * @requires data-prep.services.playground.service:EarlyPreviewService
 	 * @requires data-prep.services.transformation.service:TransformationApplicationService
+	 * @requires data-prep.services.utils.service:StorageService
 	 */
-	function LookupCtrl(state, StateService, LookupService, EarlyPreviewService,
-						TransformationApplicationService, PlaygroundService, $timeout) {
+	function LookupCtrl($timeout, state, StateService, LookupService, EarlyPreviewService,
+						TransformationApplicationService, PlaygroundService, StorageService) {
 		var vm = this;
 		vm.state = state;
 		vm.cancelEarlyPreview = EarlyPreviewService.cancelEarlyPreview;
@@ -22,36 +23,12 @@
 
 		/**
 		 * @ngdoc property
-		 * @name sortList
-		 * @propertyOf data-prep.lookup.controller:LookupCtrl
-		 * @description The sort list
-		 * @type {array}
-		 */
-		vm.sortList = [
-			{id: 'name', name: 'NAME_SORT'},
-			{id: 'created', name: 'DATE_SORT'}
-		];
-
-		/**
-		 * @ngdoc property
-		 * @name orderList
-		 * @propertyOf data-prep.lookup.controller:LookupCtrl
-		 * @description The sort order list
-		 * @type {string}
-		 */
-		vm.orderList = [
-			{id: 'asc', name: 'ASC_ORDER'},
-			{id: 'desc', name: 'DESC_ORDER'}
-		];
-
-		/**
-		 * @ngdoc property
 		 * @name sortSelected
 		 * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
 		 * @description Selected sort.
 		 * @type {object}
 		 */
-		vm.sortSelected = vm.sortList[0];
+		vm.sortSelected = StateService.getSortItem(LookupService.getLookupDatasetsSort());
 
 		/**
 		 * @ngdoc property
@@ -60,7 +37,7 @@
 		 * @description Selected sort order.
 		 * @type {object}
 		 */
-		vm.sortOrderSelected = vm.orderList[0];
+		vm.sortOrderSelected = StateService.getOrderItem(LookupService.getLookupDatasetsOrder());
 
 		/**
 		 * @ngdoc method
@@ -196,7 +173,7 @@
 		 * @description sort datasets list
 		 */
 		function sortDatasetsList() {
-			state.playground.lookup.datasets =_.sortBy(state.playground.lookup.datasets, vm.sortSelected.id);
+			state.playground.lookup.datasets =_.sortBy(state.playground.lookup.datasets, vm.sortSelected.property);
 			if(vm.sortOrderSelected.id === 'desc'){
 				state.playground.lookup.datasets = state.playground.lookup.datasets.reverse();
 			}
@@ -216,6 +193,7 @@
 				}
 				vm.sortSelected = sortType;
 				sortDatasetsList();
+				StorageService.saveLookupDatasetsSort(sortType.id);
 			});
 		};
 
@@ -233,6 +211,7 @@
 				}
 				vm.sortOrderSelected = order;
 				sortDatasetsList();
+				StorageService.saveLookupDatasetsOrder(order.id);
 			});
 		};
 

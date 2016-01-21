@@ -9,6 +9,7 @@
      * @requires data-prep.services.transformations.service:TransformationRestService
      * @requires data-prep.services.datasets.service:DatasetRestService
      * @requires data-prep.services.recipe.service:RecipeService
+     * @requires data-prep.services.utils.service:StorageService
      */
     function LookupService($q, state, StateService, TransformationRestService, DatasetRestService, RecipeService, StorageService) {
 
@@ -18,9 +19,32 @@
             loadFromStep: loadFromStep,
             updateTargetColumn: updateTargetColumn,
             updateLookupDatasets: updateLookupDatasets,
-            disableDatasetsUsedInRecipe: disableDatasetsUsedInRecipe
+            disableDatasetsUsedInRecipe: disableDatasetsUsedInRecipe,
+            getLookupDatasetsSort: getLookupDatasetsSort,
+            getLookupDatasetsOrder: getLookupDatasetsOrder
         };
 
+        /**
+         * @ngdoc method
+         * @methodOf data-prep.services.lookup.service:LookupService
+         * @name getLookupDatasetsSort
+         * @description Returns the actual sort parameter
+         * */
+        function getLookupDatasetsSort() {
+            var savedSort = StorageService.getLookupDatasetsSort();
+            return savedSort ? savedSort : state.inventory.sortList[1].id;
+        }
+
+        /**
+         * @ngdoc method
+         * @methodOf data-prep.services.lookup.service:LookupService
+         * @name getLookupDatasetsOrder
+         * @description Returns the actual order parameter
+         */
+        function getLookupDatasetsOrder() {
+            var savedSortOrder = StorageService.getLookupDatasetsOrder();
+            return savedSortOrder ? savedSortOrder : state.inventory.orderList[1].id;
+        }
 
         /**
          * @ngdoc method

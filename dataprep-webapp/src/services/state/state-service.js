@@ -90,6 +90,8 @@
             removePreparation: InventoryStateService.removePreparation,
             setDatasets: InventoryStateService.setDatasets,
             removeDataset: InventoryStateService.removeDataset,
+            getSortItem: InventoryStateService.getSortItem,
+            getOrderItem: InventoryStateService.getOrderItem,
 
             //feedback
             showFeedback: FeedbackStateService.show,
