@@ -1,9 +1,12 @@
-<div class="inventory-item">
+<div class="inventory-item" ng-dblclick="inventoryItemCtrl.openInventoryItem()">
     <div class="inventory-icon"
-         translate-once-title="OPEN_ACTION"
-         translate-values="{type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name}"
+         title="{{'OPEN_ACTION' | translate: inventoryItemCtrl.getTooltipContent()}}"
          ng-switch="inventoryItemCtrl.item.type"
+<<<<<<< HEAD
          ng-click="inventoryItemCtrl.open(inventoryItemCtrl.item)">
+=======
+         ng-click="inventoryItemCtrl.openInventoryItem()">
+>>>>>>> TDP-691 A.3 done with tooltip, refacto inventoryItem directive into a more reusable component, documentation, remaining TUs
         <img src="/assets/images/inventory/csv_file.png" ng-switch-when="text/csv"/>
         <img src="/assets/images/inventory/xls_file.png" ng-switch-when="application/vnd.ms-excel"/>
         <img src="/assets/images/inventory/generic_file.png" ng-switch-default/>
@@ -16,8 +19,8 @@
         <talend-editable-text ng-if="inventoryItemCtrl.open && inventoryItemCtrl.rename"
                               text="inventoryItemCtrl.item.name"
                               text-class="inventory-title"
-                              text-title="{{ 'OPEN_ACTION' | translate: {type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name} }}"
-                              on-text-click="inventoryItemCtrl.open(inventoryItemCtrl.item)"
+                              text-title="{{'OPEN_ACTION' | translate: inventoryItemCtrl.getTooltipContent()}}"
+                              on-text-click="inventoryItemCtrl.openInventoryItem()"
                               on-validate="inventoryItemCtrl.rename(inventoryItemCtrl.item, text)">
         </talend-editable-text>
         <span ng-if="!inventoryItemCtrl.open || !inventoryItemCtrl.rename"
@@ -41,24 +44,23 @@
     <div ng-if="!inventoryItemCtrl.item.draft" class="inventory-actions">
         <a data-icon="c"
            class="btn-icon btn-transparent"
+           title="{{'OPEN_ACTION' | translate: inventoryItemCtrl.getTooltipContent()}}"
            ng-if="inventoryItemCtrl.relatedInventories.length"
-           translate-once-title="OPEN_ACTION"
-           translate-values="{type: 'preparation', name: inventoryItemCtrl.item.defaultPreparations[0].name}"
-           ng-click="inventoryItemCtrl.openOnClick(inventoryItemCtrl.item)">
+           ng-click="inventoryItemCtrl.openRelatedInventoryItem(inventoryItemCtrl.relatedInventories[0])">
         </a>
 
-        <talend-dropdown class="btn-transparent" ng-show="inventoryItemCtrl.item.defaultPreparations.length">
+        <talend-dropdown class="btn-transparent" ng-if="inventoryItemCtrl.relatedInventories.length">
             <div class="dropdown-container">
                 <span class="dropdown-action">
                     <a class="dropdown-button"></a>
                 </span>
                 <ul class="dropdown-menu">
-                    <li ng-click="inventoryItemCtrl.open(inventoryItemCtrl.item)">
-                        Create New Preparation
-                    </li>
+                    <li ng-click="inventoryItemCtrl.open(inventoryItemCtrl.item)" translate-once="CREATE_NEW_PREP"></li>
                     <li class="divider"></li>
-                    <li ng-repeat="prepa in inventoryItemCtrl.item.defaultPreparations track by $index">
-                        <a data-icon="c" ui-sref="nav.home.preparations({prepid: prepa.id})">{{prepa.name}}</a>
+                    <li ng-repeat="prepa in inventoryItemCtrl.relatedInventories track by $index">
+                        <a data-icon="c" ng-click="inventoryItemCtrl.openRelatedInventoryItem(prepa)">{{prepa.name}}&nbsp;
+                            <span class="related-inv-details">{{'PREPARATION_DETAILS' | translate : {nbsteps: prepa.actions.length, since : prepa.lastModificationDate} }}</span>
+                        </a>
                     </li>
                 </ul>
             </div>

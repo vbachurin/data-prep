@@ -26,9 +26,12 @@
      * @param {array}       fileModel the file which will replace the current item
      * @param {object}      item the inventory item
      * @param {function}    open the playground
+     * @param {function}    openSuggestion callback function when a suggestion is selected
      * @param {function}    processCertification attributes certification to the inventory item
      * @param {function}    remove the inventory item
      * @param {function}    rename the inventory item
+     * @param {array}       suggestions the list of suggestions corresponding to the current inventory item
+     * @param {string}      suggestionsType type of the suggestions
      * @param {function}    toggleFavorite the inventory item
      * @param {string}      type of the inventory item
      * @param {function}    update the inventory item with the given fileModel
@@ -48,9 +51,12 @@
                 fileModel : '=',
                 item : '=',
                 open : '=',
+                openRelatedInv : '=',
                 processCertification : '=',
                 remove : '=',
                 rename : '=',
+                relatedInventories : '=',
+                relatedInventoriesType : '@',
                 toggleFavorite : '=',
                 type : '@',
                 update : '='

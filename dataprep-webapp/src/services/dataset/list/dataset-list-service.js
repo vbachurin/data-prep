@@ -218,7 +218,8 @@
                         // reset default preparation for all datasets
                         _.forEach(datasets, function(dataset){
                             var preparations = datasetPreps[dataset.id];
-                            dataset.defaultPreparations = preparations;
+                            dataset.defaultPreparations = preparations || [];
+                            dataset.defaultPreparations = _.sortByOrder(dataset.defaultPreparations, 'lastModificationDate', false);
                         });
 
                         return datasets;

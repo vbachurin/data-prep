@@ -6,20 +6,70 @@
      * @name data-prep.inventory-item.controller:InventoryItemCtrl
      * @description InventoryItemCtrl controller.
      */
-    function InventoryItemCtrl($state) {
+    function InventoryItemCtrl () {
         var vm = this;
 
-        vm.openOnClick = function openOnClick(item) {
-            if(vm.actionsEnabled){
-                if(item.defaultPreparations && item.defaultPreparations.length){
-                    $state.go('nav.home.preparations', {prepid: item.defaultPreparations[0].id});
-                }
-                else{
-                    vm.open(item);
-                }
+        /**
+         * @ngdoc method
+         * @name openOnClick
+         * @methodOf data-prep.inventory-item:InventoryItemCtrl
+         * @params item the the current inventory item to be opened
+         * @description opens the current inventory item
+         */
+        vm.openOnClick = function openOnClick (item) {
+            if (vm.actionsEnabled) {
+                vm.open(item);
+            }
+        };
+
+        /**
+         * @ngdoc method
+         * @name openRelatedInventoryItem
+         * @methodOf data-prep.inventory-item:InventoryItemCtrl
+         * @params relatedInventory the related inventory item
+         * @description opens the inventory related to the current inventory item
+         */
+        vm.openRelatedInventoryItem = function openRelatedInventoryItem (relatedInventory) {
+            if (vm.actionsEnabled) {
+                vm.openRelatedInv(relatedInventory);
+            }
+        };
+
+        /**
+         * @ngdoc method
+         * @name getTooltipContent
+         * @methodOf data-prep.inventory-item:InventoryItemCtrl
+         * @description creates the object used to construct the tooltip
+         * @returns {Object} the object to construct the tooltip with
+         */
+        vm.getTooltipContent = function getTooltipContent(){
+            return vm.relatedInventories && vm.relatedInventories.length ?
+                {
+                    type: vm.relatedInventoriesType,
+                    name: vm.relatedInventories[0].name
+                } :
+                {
+                    type: vm.type,
+                    name: vm.item.name
+                };
+        };
+
+        /**
+         * @ngdoc method
+         * @name openInventoryItem
+         * @methodOf data-prep.inventory-item:InventoryItemCtrl
+         * @description given an inventory Item, it opens it
+         */
+        vm.openInventoryItem = function openInventoryItem(){
+            if(vm.relatedInventories.length){
+                vm.openRelatedInventoryItem(vm.relatedInventories[0]);
+            }
+            else{
+                vm.open(vm.item);
             }
         };
     }
+
     angular.module('data-prep.inventory-item')
         .controller('InventoryItemCtrl', InventoryItemCtrl);
 })();

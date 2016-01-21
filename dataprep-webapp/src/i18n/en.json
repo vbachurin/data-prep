@@ -59,6 +59,8 @@
   "RECIPE": "recipe",
   "ROWS": "row(s)",
   "STEPS": "step(s)",
+  "CREATE_NEW_PREP":"Create New Preparation",
+  "PREPARATION_DETAILS":"modified {{since | TDPMoment}} having {{nbsteps}} step(s)",
   "PREPARATION_RENAME_SUCCESS_TITLE": "Preparation renaming",
   "PREPARATION_RENAME_SUCCESS": "The preparation has been renamed.",
   "PREPARATION_COPYING_SUCCESS_TITLE": "Preparation copying",

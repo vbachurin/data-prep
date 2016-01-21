@@ -112,6 +112,22 @@
 
         /**
          * @ngdoc method
+         * @name openPreparation
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description opens a preparation
+         * @param {object} preparation The preparation to open
+         */
+        vm.openPreparation = function openPreparation(preparation){
+            PlaygroundService
+                .load(preparation)
+                .then(function () {
+                    $timeout(StateService.showPlayground);
+                });
+        };
+
+
+        /**
+         * @ngdoc method
          * @name uploadUpdatedDatasetFile
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description [PRIVATE] updates the existing dataset with the uploadd one

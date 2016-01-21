@@ -4,8 +4,16 @@
   }
 
   .dropdown-container{
-    ul > li{
+    ul > li {
       margin:10px;
+      a {
+        .related-inv-details {
+          float:right;
+          color:#99999A;
+          font-weight: 300;
+          font-size: 0.9em;
+        }
+      }
       &.divider{
         min-height: 1px;
         height: 1px;

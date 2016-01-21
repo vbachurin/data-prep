@@ -98,7 +98,8 @@
             // reset default preparation for all datasets
             _.forEach(state.folder.currentFolderContent.datasets, function (dataset) {
                 var preparations = datasetPreps[dataset.id];
-                dataset.defaultPreparations = preparations;
+                dataset.defaultPreparations = preparations || [];
+                dataset.defaultPreparations = _.sortByOrder(dataset.defaultPreparations, 'lastModificationDate', false);
             });
 
             return preparations;
