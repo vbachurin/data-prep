@@ -46,8 +46,27 @@ describe('Folder services', function () {
         }
     };
 
+    var sortList = [
+        {id: 'name', name: 'NAME_SORT', property: 'name'},
+        {id: 'date', name: 'DATE_SORT', property: 'created'}
+    ];
+
+    var orderList = [
+        {id: 'asc', name: 'ASC_ORDER'},
+        {id: 'desc', name: 'DESC_ORDER'}
+    ];
+
     beforeEach(module('data-prep.services.folder', function ($provide) {
-        stateMock = {folder: {currentFolderContent: {}}};
+        stateMock = {
+            folder: {
+                currentFolderContent: {}
+            },
+            inventory: {
+                datasets: [],
+                sortList: sortList,
+                orderList: orderList
+            }
+        };
         $provide.constant('state', stateMock);
     }));
 
@@ -255,7 +274,7 @@ describe('Folder services', function () {
 
     describe('content', function () {
         var content;
-        beforeEach(inject(function ($q, StateService, FolderRestService, DatasetListSortService, PreparationListService) {
+        beforeEach(inject(function ($q, StateService, FolderRestService, PreparationListService, DatasetListService) {
             content = {
                 data: {
                     folders: [{id: 'toto', path: 'toto', name: 'toto'}],
@@ -263,9 +282,8 @@ describe('Folder services', function () {
                 }
             };
             spyOn(FolderRestService, 'getContent').and.returnValue($q.when(content));
-
-            spyOn(DatasetListSortService, 'getSort').and.returnValue('name');
-            spyOn(DatasetListSortService, 'getOrder').and.returnValue('asc');
+            spyOn(DatasetListService, 'getSort').and.returnValue('name');
+            spyOn(DatasetListService, 'getOrder').and.returnValue('asc');
             spyOn(StateService, 'setFoldersStack').and.returnValue();
             spyOn(StateService, 'setCurrentFolder').and.returnValue();
             spyOn(StateService, 'setCurrentFolderContent').and.returnValue();

@@ -62,6 +62,16 @@ describe('Playground directive', function () {
         }
     ];
 
+    var sortList = [
+        {id: 'name', name: 'NAME_SORT', property: 'name'},
+        {id: 'date', name: 'DATE_SORT', property: 'created'}
+    ];
+
+    var orderList = [
+        {id: 'asc', name: 'ASC_ORDER'},
+        {id: 'desc', name: 'DESC_ORDER'}
+    ];
+
     beforeEach(module('data-prep.playground', function($provide) {
         stateMock = {
             playground: {
@@ -72,6 +82,11 @@ describe('Playground directive', function () {
                     selectedColumn: {'id': '0001'},
                     selectedLine: {'0001': '1'}
                 }
+            },
+            inventory: {
+                datasets: [],
+                sortList: sortList,
+                orderList: orderList
             }
         };
         $provide.constant('state', stateMock);

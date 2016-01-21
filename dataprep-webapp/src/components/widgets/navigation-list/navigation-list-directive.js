@@ -97,7 +97,9 @@
                     scope.$watch(function () {
                             return ctrl.list;
                         }, function () {
-                            itemsList.css('width', ctrl.list.length * 200);
+                            if(ctrl.list && ctrl.list.length > 0) {
+                                itemsList.css('width', ctrl.list.length * 200);
+                            }
                         }
                     );
 

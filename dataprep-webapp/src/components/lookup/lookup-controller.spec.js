@@ -109,6 +109,16 @@ describe('Lookup controller', function () {
         filters: (void 0)
     };
 
+    var sortList = [
+        {id: 'name', name: 'NAME_SORT', property: 'name'},
+        {id: 'date', name: 'DATE_SORT', property: 'created'}
+    ];
+
+    var orderList = [
+        {id: 'asc', name: 'ASC_ORDER'},
+        {id: 'desc', name: 'DESC_ORDER'}
+    ];
+
     beforeEach(module('data-prep.lookup', function ($provide) {
         stateMock = {
             playground: {
@@ -130,6 +140,11 @@ describe('Lookup controller', function () {
                     datasets: dsActions,
                     dataset: dsActions[0]
                 }
+            },
+            inventory: {
+                datasets: [],
+                sortList: sortList,
+                orderList: orderList
             }
         };
         $provide.constant('state', stateMock);

@@ -21,6 +21,16 @@ describe('Dataset list controller', function () {
         $translateProvider.preferredLanguage('en');
     }));
 
+    var sortList = [
+        {id: 'name', name: 'NAME_SORT', property: 'name'},
+        {id: 'date', name: 'DATE_SORT', property: 'created'}
+    ];
+
+    var orderList = [
+        {id: 'asc', name: 'ASC_ORDER'},
+        {id: 'desc', name: 'DESC_ORDER'}
+    ];
+
     beforeEach(module('data-prep.dataset-list', function ($provide) {
         stateMock = {
             folder: {
@@ -28,12 +38,17 @@ describe('Dataset list controller', function () {
                 currentFolderContent: {
                     datasets: [datasets[0]]
                 }
+            },
+            inventory: {
+                datasets: [],
+                sortList: sortList,
+                orderList: orderList
             }
         };
         $provide.constant('state', stateMock);
     }));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, $state, DatasetService, PlaygroundService, MessageService, DatasetListSortService, StateService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, $state, DatasetService, PlaygroundService, MessageService, StorageService, StateService) {
         var datasetsValues = [datasets, refreshedDatasets];
         scope = $rootScope.$new();
 
@@ -48,8 +63,8 @@ describe('Dataset list controller', function () {
             return $q.when(datasetsValues.shift());
         });
 
-        spyOn(DatasetListSortService, 'setSort').and.returnValue();
-        spyOn(DatasetListSortService, 'setOrder').and.returnValue();
+        spyOn(StorageService, 'saveDatasetsSort').and.returnValue();
+        spyOn(StorageService, 'saveDatasetsOrder').and.returnValue();
 
         spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when(true));
         spyOn(StateService, 'showPlayground').and.returnValue();
@@ -159,7 +174,7 @@ describe('Dataset list controller', function () {
                 expect(FolderService.getContent.calls.count()).toBe(1);
             }));
 
-            it('should update sort parameter', inject(function (DatasetService, DatasetListSortService) {
+            it('should update sort parameter', inject(function (DatasetService, StorageService) {
                 //given
                 var ctrl = createController();
                 var newSort = {id: 'name', name: 'NAME'};
@@ -168,10 +183,10 @@ describe('Dataset list controller', function () {
                 ctrl.updateSortBy(newSort);
 
                 //then
-                expect(DatasetListSortService.setSort).toHaveBeenCalledWith('name');
+                expect(StorageService.saveDatasetsSort).toHaveBeenCalledWith('name');
             }));
 
-            it('should update order parameter', inject(function (DatasetService, DatasetListSortService) {
+            it('should update order parameter', inject(function (DatasetService, StorageService) {
                 //given
                 var ctrl = createController();
                 var newSortOrder = {id: 'asc', name: 'ASC_ORDER'};
@@ -180,7 +195,7 @@ describe('Dataset list controller', function () {
                 ctrl.updateSortOrder(newSortOrder);
 
                 //then
-                expect(DatasetListSortService.setOrder).toHaveBeenCalledWith('asc');
+                expect(StorageService.saveDatasetsOrder).toHaveBeenCalledWith('asc');
             }));
 
         });
@@ -283,17 +298,6 @@ describe('Dataset list controller', function () {
     });
 
     describe('bindings', function () {
-
-        it('should bind datasets getter to datasetListService.datasets', inject(function (DatasetService, DatasetListService) {
-            //given
-            var ctrl = createController();
-
-            //when
-            DatasetListService.datasets = refreshedDatasets;
-
-            //then
-            expect(ctrl.datasets).toBe(refreshedDatasets);
-        }));
 
         it('should reset parameters when click on add folder button', inject(function () {
             //given

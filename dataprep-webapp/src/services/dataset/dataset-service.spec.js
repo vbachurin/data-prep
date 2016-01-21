@@ -329,17 +329,6 @@ describe('Dataset Service', function () {
     });
 
     describe('getter', function () {
-        it('should return dataset list from ListService', inject(function (DatasetService, DatasetListService) {
-            //given
-            DatasetListService.datasets = datasets;
-
-            //when
-            var result = DatasetService.datasetsList();
-
-            //then
-            expect(result).toBe(datasets);
-        }));
-
         it('should get a promise that resolve the existing datasets if already fetched', inject(function ($q, $rootScope, DatasetService, DatasetListService) {
             //given
             spyOn(DatasetListService, 'hasDatasetsPromise').and.returnValue(true);
