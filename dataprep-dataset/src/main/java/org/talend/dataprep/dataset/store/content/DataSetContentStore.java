@@ -51,7 +51,7 @@ public abstract class DataSetContentStore {
      * row (it does not mean there's a line in input stream per data set row, a data set row might be split on multiple
      * rows in stream).
      */
-    public InputStream get(DataSetMetadata dataSetMetadata) {
+    protected InputStream get(DataSetMetadata dataSetMetadata) {
         DataSetContent content = dataSetMetadata.getContent();
         Serializer serializer = factory.getFormatGuess(content.getFormatGuessId()).getSerializer();
         return serializer.serialize(getAsRaw(dataSetMetadata), dataSetMetadata);
@@ -65,7 +65,7 @@ public abstract class DataSetContentStore {
      * @param dataSetMetadata The {@link DataSetMetadata data set} to read rows from.
      * @return A valid <b>{@link DataSetRow}</b> stream.
      */
-    public Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata) {
+    public final Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata) {
         final InputStream inputStream = get(dataSetMetadata);
         final DataSetRowIterator iterator = new DataSetRowIterator(inputStream, true);
         final Iterable<DataSetRow> rowIterable = () -> iterator;
