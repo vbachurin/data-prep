@@ -209,6 +209,23 @@ public class ChangeNumberFormatTest extends AbstractMetadataBaseTest {
     }
 
     @Test
+    public void should_process_row_alt_pattern_same_seps() throws Exception {
+        // given
+        final DataSetRow row = getRow("toto", "1012.45", "tata");
+        parameters.put(TARGET_PATTERN, CUSTOM);
+        parameters.put(TARGET_PATTERN + "_" + CUSTOM, "#,##0.000");
+        parameters.put(TARGET + DECIMAL + SEPARATOR, ".");
+        parameters.put(TARGET + GROUPING + SEPARATOR, ".");
+
+        // when
+        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+
+        // then
+        final DataSetRow expectedRow = getRow("toto", "1012.450", "tata");
+        assertEquals(expectedRow.values(), row.values());
+    }
+
+    @Test
     public void should_process_row_alt_pattern_alt_seps_empty() throws Exception {
         // given
         final DataSetRow row = getRow("toto", "1012.45", "tata");

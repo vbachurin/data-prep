@@ -143,6 +143,7 @@ public class ChangeNumberFormat extends ActionMetadata implements ColumnAction {
                 .name(name)
                 .item(",")
                 .item(" ")
+                .item(".")
                 .item("", "None")
                 .item(CUSTOM, new Parameter(name + "_" + CUSTOM, STRING, ","))
                 .canBeBlank(true)
@@ -179,7 +180,7 @@ public class ChangeNumberFormat extends ActionMetadata implements ColumnAction {
             }
 
             String groupingSeparator = getCustomizableParam(TARGET + GROUPING + SEPARATOR, parameters);
-            if (StringUtils.isEmpty(groupingSeparator)) {
+            if (StringUtils.isEmpty(groupingSeparator) || groupingSeparator.equals(decimalSeparator)) {
                 decimalFormat.setGroupingUsed(false);
             } else {
                 decimalFormatSymbols.setGroupingSeparator(groupingSeparator.charAt(0));
