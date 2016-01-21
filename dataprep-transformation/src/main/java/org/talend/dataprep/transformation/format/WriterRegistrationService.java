@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.TransformationErrorCodes;
+import org.talend.dataprep.format.export.ExportFormat;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 
 /**
@@ -35,7 +36,8 @@ public class WriterRegistrationService {
     public TransformerWriter getWriter(String format, OutputStream output, Map<String, String> parameters) {
         try {
             // Sanity check -> ensures format is actually enabled before using it.
-            if (!formatRegistrationService.getByName(format).isEnabled()) {
+            final ExportFormat formatByNam = formatRegistrationService.getByName(format);
+            if (formatByNam == null || !formatByNam.isEnabled()) {
                 throw new TDPException(TransformationErrorCodes.UNABLE_TO_USE_EXPORT,
                         ExceptionContext.build().put("format", format));
             }
