@@ -67,6 +67,7 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
                         .schemaAnalysis(metadata.getRowMetadata().getColumns());
                 // Determine schema for the content (on the 20 first rows).
                 stream.limit(20).map(row -> row.toArray(DataSetRow.SKIP_TDP_ID)).forEach(analyzer::analyze);
+
                 // Find the best suitable type
                 adapter.adapt(metadata.getRowMetadata().getColumns(), analyzer.getResult());
                 LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);

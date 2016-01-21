@@ -2,6 +2,7 @@ package org.talend.dataprep.dataset.service.analysis.synchronous;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -98,9 +99,12 @@ public class ContentAnalysis implements SynchronousDataSetAnalyzer {
      * @param metadata the dataset metadata to update.
      */
     private void updateLimit(DataSetMetadata metadata) {
-        final Optional<DataSetRow> firstAfterLimit = contentStore.stream(metadata).skip(sizeLimit).findAny();
-        if (firstAfterLimit.isPresent()) {
-            metadata.getContent().setLimit(sizeLimit);
+        // auto closable block is really important to make sure the stream is closed after the limit is set
+        try (final Stream<DataSetRow> stream = contentStore.stream(metadata)) {
+            final Optional<DataSetRow> firstAfterLimit = stream.skip(sizeLimit).findAny();
+            if (firstAfterLimit.isPresent()) {
+                metadata.getContent().setLimit(sizeLimit);
+            }
         }
     }
 

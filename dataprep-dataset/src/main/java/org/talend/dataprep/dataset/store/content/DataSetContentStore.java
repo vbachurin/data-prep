@@ -69,20 +69,22 @@ public abstract class DataSetContentStore {
         final InputStream inputStream = get(dataSetMetadata);
         final DataSetRowIterator iterator = new DataSetRowIterator(inputStream, true);
         final Iterable<DataSetRow> rowIterable = () -> iterator;
-        final Stream<DataSetRow> dataSetRowStream = StreamSupport.stream(rowIterable.spliterator(), false) //
-                .onClose(() -> {
-                    try {
-                        inputStream.close();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+        Stream<DataSetRow> dataSetRowStream = StreamSupport.stream(rowIterable.spliterator(), false);
 
         // deal with dataset size limit
         final DataSetContent content = dataSetMetadata.getContent();
         if (content.getLimit().isPresent()) {
-            dataSetRowStream.limit(content.getLimit().get());
+            dataSetRowStream = dataSetRowStream.limit(content.getLimit().get());
         }
+
+        // make sure to close the original input stream when closing this one
+        dataSetRowStream = dataSetRowStream.onClose(() -> {
+            try {
+                inputStream.close();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         return dataSetRowStream;
     }
