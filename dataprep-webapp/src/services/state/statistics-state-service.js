@@ -54,6 +54,8 @@
 
         function reset() {
             statisticsState.boxPlot = null;
+            statisticsState.rangeLimits = null;
+            statisticsState.details = null;
             statisticsState.histogram = null;
             statisticsState.filteredHistogram = null;
             statisticsState.activeLimits = null;

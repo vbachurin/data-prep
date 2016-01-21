@@ -812,11 +812,6 @@
         function processAggregation(column, aggregationName) {
             resetCharts();
 
-            if (!column || !aggregationName) {
-                removeSavedColumnAggregation();
-                return processChart();
-            }
-
             var datasetId = state.playground.dataset.id;
             var preparationId = state.playground.preparation && state.playground.preparation.id;
             var stepId = preparationId && RecipeService.getLastActiveStep() && RecipeService.getLastActiveStep().transformation.stepId;

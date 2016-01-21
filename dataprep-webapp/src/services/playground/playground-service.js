@@ -62,7 +62,6 @@
             StateService.removeAllGridFilters(); //TODO JSO remove this
 
             RecipeService.refresh();
-            StatisticsService.reset();
             TransformationCacheService.invalidateCache();
             HistoryService.clear();
             PreviewService.reset(false);
