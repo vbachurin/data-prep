@@ -277,5 +277,7 @@
   "ADD_TO_LOOKUP":"Add to Dataset",
 
   "_comment": "Folders",
-  "FIND_FOLDER": "Find a Folder"
+  "FIND_FOLDER": "Find a Folder",
+
+  "ACTION_HELP": "More details"
 }

@@ -1,7 +1,7 @@
 <div class="transformation-form">
     <form ng-submit="formCtrl.paramForm.$valid && formCtrl.transformWithParam()"
           name="formCtrl.paramForm">
-        
+
         <transform-params parameters="formCtrl.transformation.parameters"></transform-params>
 
         <transform-cluster-params
@@ -11,6 +11,13 @@
     </form>
 
     <div class="param-buttons">
+
+        <a ng-if="formCtrl.transformation.docUrl!==''"
+           href="{{::formCtrl.transformation.docUrl}}"
+           target="_blank">
+            <span translate-once="ACTION_HELP"></span>
+        </a>
+
         <button ng-disabled="formCtrl.paramForm.$invalid"
                 class="param-primary-button btn-primary"
                 ng-click="formCtrl.transformWithParam()"
