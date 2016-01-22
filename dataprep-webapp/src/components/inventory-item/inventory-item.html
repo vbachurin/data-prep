@@ -55,7 +55,7 @@
                     <a class="dropdown-button"></a>
                 </span>
                 <ul class="dropdown-menu">
-                    <li ng-click="inventoryItemCtrl.open(inventoryItemCtrl.item)" translate-once="CREATE_NEW_PREP"></li>
+                    <li data-icon="c" ng-click="inventoryItemCtrl.open(inventoryItemCtrl.item)" translate-once="CREATE_NEW_PREP"></li>
                     <li class="divider"></li>
                     <li ng-repeat="prepa in inventoryItemCtrl.relatedInventories track by $index">
                         <a data-icon="c" ng-click="inventoryItemCtrl.openRelatedInventoryItem(prepa)">{{prepa.name}}&nbsp;
