@@ -174,4 +174,22 @@ public class CSVFastHeaderAndTypeAnalyzerTest {
         List<String> expectedHeaders = Arrays.asList("user_id", "birth", "country", "page_visited", "first_item");
         Assert.assertArrayEquals(expectedHeaders.toArray(), analysis.getHeaders().keySet().toArray());
     }
+
+    @Test
+    public void should_not_detect_first_line_as_column() {
+        // given
+        List<String> list = Arrays.asList("\"1000800\",\"2.0 PET X8 LIFT SOUR CHERRY\"",
+                "\"1001000\",\"1.0 RGB X12 COCA COLA\"", "\"1001300\",\"2.0 PET X6 LILIA\"");
+        Separator separator = new Separator(',');
+        separator.incrementCount(1);
+        separator.incrementCount(2);
+        separator.incrementCount(3);
+
+        // when
+        CSVFastHeaderAndTypeAnalyzer analysis = new CSVFastHeaderAndTypeAnalyzer(list, separator);
+
+        // then
+        List<String> expectedHeaders = Arrays.asList("COL1", "COL2");
+        Assert.assertArrayEquals(expectedHeaders.toArray(), analysis.getHeaders().keySet().toArray());
+    }
 }
