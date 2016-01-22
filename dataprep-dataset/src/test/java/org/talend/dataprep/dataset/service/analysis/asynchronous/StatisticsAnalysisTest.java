@@ -58,6 +58,7 @@ public class StatisticsAnalysisTest extends DataSetBaseTest {
         assertTrue(patterns.contains("aaaaa"));
         assertTrue(patterns.contains("yyyy-MM-dd"));
         assertTrue(patterns.contains("yyyy-M-d"));
+        assertThat(metadata.getContent().getNbRecords(), is(4L));
     }
 
     /**

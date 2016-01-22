@@ -30,7 +30,7 @@
             setCurrentData: PlaygroundStateService.setData,
             setCurrentPreparation: PlaygroundStateService.setPreparation,
             setNameEditionMode: PlaygroundStateService.setNameEditionMode,
-            updateColumnsStatistics: PlaygroundStateService.updateColumnsStatistics,
+            updateStatistics: PlaygroundStateService.updateStatistics,
 
             //playground - recipe
             hideRecipe: PlaygroundStateService.hideRecipe,

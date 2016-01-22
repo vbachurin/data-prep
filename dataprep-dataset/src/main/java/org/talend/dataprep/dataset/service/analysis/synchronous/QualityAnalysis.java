@@ -61,6 +61,7 @@ public class QualityAnalysis implements SynchronousDataSetAnalyzer {
                 LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
                 return;
             }
+            // e.g. excel multi sheet dataset when user has not choose the sheet yet
             if (!metadata.getLifecycle().inProgress()) {
                 LOGGER.debug("No need to recompute quality of data set #{} (statistics are completed).", dataSetId);
                 return;
