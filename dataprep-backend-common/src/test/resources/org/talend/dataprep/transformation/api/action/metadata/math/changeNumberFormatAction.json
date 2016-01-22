@@ -4,8 +4,8 @@
       "action": "change_number_format",
       "parameters": {
         "column_id": "0001",
-        "from_separators": "UNKNOWN_SEPARATORS",
-        "target_pattern": "US_PATTERN",
+        "from_separators": "unknown_separators",
+        "target_pattern": "us_pattern",
         "scope": "column"
       }
     }

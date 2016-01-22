@@ -1,5 +1,8 @@
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
+import static org.talend.dataprep.number.BigDecimalParser.*;
+import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.STRING;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -21,9 +24,6 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.action.parameters.SelectParameter;
-
-import static org.talend.dataprep.transformation.api.action.parameters.ParameterType.STRING;
-import static org.talend.dataprep.number.BigDecimalParser.*;
 
 /**
  * Change the pattern on a 'number' column.
@@ -51,24 +51,24 @@ public class ChangeNumberFormat extends ActionMetadata implements ColumnAction {
     private static final String COMPILED_TARGET_FORMAT = "compiled_number_format";
 
     /**
-     * Keys used in the values of differents parameters:
+     * Keys used in the values of different parameters:
      */
     protected static final String CUSTOM = "custom";
-    protected static final String UNKNOWN_SEPARATORS = "UNKNOWN_SEPARATORS";
-    protected static final String US_SEPARATORS = "US_SEPARATORS";
-    protected static final String EU_SEPARATORS = "EU_SEPARATORS";
-    protected static final String US_PATTERN = "US_PATTERN";
-    protected static final String EU_PATTERN = "EU_PATTERN";
-    protected static final String SCIENTIFIC = "SCIENTIFIC";
+    protected static final String UNKNOWN_SEPARATORS = "unknown_separators";
+    protected static final String US_SEPARATORS = "us_separators";
+    protected static final String EU_SEPARATORS = "eu_separators";
+    protected static final String US_PATTERN = "us_pattern";
+    protected static final String EU_PATTERN = "eu_pattern";
+    protected static final String SCIENTIFIC = "scientific";
 
     /**
      * Constants to build parameters name by concat:
      */
-    protected static final String FROM = "FROM";
-    protected static final String TARGET = "TARGET";
-    protected static final String GROUPING = "_GROUPING";
-    protected static final String DECIMAL = "_DECIMAL";
-    protected static final String SEPARATOR = "_SEPARATOR";
+    protected static final String FROM = "from";
+    protected static final String TARGET = "target";
+    protected static final String GROUPING = "_grouping";
+    protected static final String DECIMAL = "_decimal";
+    protected static final String SEPARATOR = "_separator";
 
     /**
      * @see ActionMetadata#getName()
@@ -194,7 +194,7 @@ public class ChangeNumberFormat extends ActionMetadata implements ColumnAction {
         case EU_PATTERN:
             return EU_DECIMAL_PATTERN;
         case SCIENTIFIC:
-            return SCIENTIFIC_DECIMAL_PATTERN;
+            return US_SCIENTIFIC_DECIMAL_PATTERN;
         }
 
         throw new IllegalArgumentException("Pattern is empty");

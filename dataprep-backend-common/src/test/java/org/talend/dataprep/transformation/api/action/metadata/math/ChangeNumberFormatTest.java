@@ -178,17 +178,23 @@ public class ChangeNumberFormatTest extends AbstractMetadataBaseTest {
 
     @Test
     public void should_process_row_alt_pattern() throws Exception {
-        // given
-        final DataSetRow row = getRow("toto", "0012", "tata");
-        parameters.put(TARGET_PATTERN, CUSTOM);
-        parameters.put(TARGET_PATTERN + "_" + CUSTOM, "#.000");
+        final Locale previous = Locale.getDefault();
+        try {
+            // given
+            Locale.setDefault(Locale.US);
+            final DataSetRow row = getRow("toto", "0012", "tata");
+            parameters.put(TARGET_PATTERN, CUSTOM);
+            parameters.put(TARGET_PATTERN + "_" + CUSTOM, "#.000");
 
-        // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+            // when
+            ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
-        // then
-        final DataSetRow expectedRow = getRow("toto", "12.000", "tata");
-        assertEquals(expectedRow.values(), row.values());
+            // then
+            final DataSetRow expectedRow = getRow("toto", "12.000", "tata");
+            assertEquals(expectedRow.values(), row.values());
+        } finally {
+            Locale.setDefault(previous);
+        }
     }
 
     @Test
@@ -277,17 +283,23 @@ public class ChangeNumberFormatTest extends AbstractMetadataBaseTest {
 
     @Test
     public void test_TDP_1108_empty_pattern() throws Exception {
-        // given
-        final DataSetRow row = getRow("toto", "012.50", "tata");
-        parameters.put(TARGET_PATTERN, "custom");
-        parameters.put(TARGET_PATTERN + "_" + CUSTOM, "");
+        final Locale previous = Locale.getDefault();
+        try {
+            // given
+            Locale.setDefault(Locale.US);
+            final DataSetRow row = getRow("toto", "012.50", "tata");
+            parameters.put(TARGET_PATTERN, "custom");
+            parameters.put(TARGET_PATTERN + "_" + CUSTOM, "");
 
-        // when
-        ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
+            // when
+            ActionTestWorkbench.test(row, action.create(parameters).getRowAction());
 
-        // then
-        final DataSetRow expectedRow = getRow("toto", "12.5", "tata");
-        assertEquals(expectedRow.values(), row.values());
+            // then
+            final DataSetRow expectedRow = getRow("toto", "12.5", "tata");
+            assertEquals(expectedRow.values(), row.values());
+        } finally {
+            Locale.setDefault(previous);
+        }
     }
 
     @Test

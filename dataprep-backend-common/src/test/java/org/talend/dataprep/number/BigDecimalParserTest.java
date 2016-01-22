@@ -1,18 +1,44 @@
 package org.talend.dataprep.number;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.Locale;
 
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- * Created by stef on 19/01/16.
- */
 public class BigDecimalParserTest {
+
+    private Locale previousLocale;
+
+    @Before
+    public void setUp() throws Exception {
+        previousLocale = Locale.getDefault();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        Locale.setDefault(previousLocale);
+    }
+
+    @Test
+    public void testOtherSeparator() throws Exception {
+        assertEquals(new BigDecimal(0), BigDecimalParser.toBigDecimal("0", ((char) -1), ((char) -1)));
+    }
+
+    @Test(expected = ParseException.class)
+    public void testEmptyString() throws Exception {
+        BigDecimalParser.toBigDecimal("");
+    }
+
+    @Test(expected = ParseException.class)
+    public void testNullString() throws Exception {
+        BigDecimalParser.toBigDecimal(null);
+    }
 
     @Test
     public void testToBigDecimal_US() throws Exception {
@@ -26,7 +52,7 @@ public class BigDecimalParserTest {
 
     @Test
     public void testToBigDecimal_US_precision() throws Exception {
-        assertFewLocales(new Double(0.35), new Double(BigDecimalParser.toBigDecimal("0.35").doubleValue()));
+        assertFewLocales(0.35, BigDecimalParser.toBigDecimal("0.35").doubleValue());
     }
 
     @Test
