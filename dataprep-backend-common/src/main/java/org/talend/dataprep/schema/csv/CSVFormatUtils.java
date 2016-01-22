@@ -52,7 +52,7 @@ public class CSVFormatUtils {
     public Map<String, String> compileSeparatorProperties(Separator separator) {
         return compileSeparatorProperties( //
                 String.valueOf(separator.getSeparator()), //
-                separator.getHeaders().keySet().stream().collect(Collectors.toList()), //
+                separator.getHeaders().stream().map(p -> p.getKey()).collect(Collectors.toList()), //
                 separator.isFirstLineAHeader() ? 1 : 0 //
         );
     }

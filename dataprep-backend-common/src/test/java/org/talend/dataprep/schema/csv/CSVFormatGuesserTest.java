@@ -19,8 +19,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.tools.ant.filters.StringInputStream;
@@ -41,6 +43,9 @@ public class CSVFormatGuesserTest extends AbstractSchemaTestUtils {
     /** The format guesser to test. */
     @Autowired
     CSVFormatGuesser guesser;
+
+    @Autowired
+    private CSVFormatUtils csvFormatUtils;
 
     @Test
     public void format_guesser_accept() throws Exception {
@@ -63,7 +68,6 @@ public class CSVFormatGuesserTest extends AbstractSchemaTestUtils {
     public void read_null_csv_file() throws Exception {
         guesser.guess(null, "UTF-8").getFormatGuess();
     }
-
 
     /**
      * Standard csv file.
@@ -288,6 +292,29 @@ public class CSVFormatGuesserTest extends AbstractSchemaTestUtils {
             assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
             char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
             assertEquals(',', separator);
+        }
+    }
+
+    /**
+     * Have a look at https://jira.talendforge.org/browse/TDP-1259 We should import whole header of csv files even if
+     * some fields are duplicated.
+     *
+     */
+    @Test
+    public void TDP_1259() throws IOException {
+        try (InputStream inputStream = this.getClass().getResourceAsStream("tdp-1259.csv")) {
+            FormatGuesser.Result actual = guesser.guess(getRequest(inputStream, "#14"), "UTF-8");
+
+            Assert.assertNotNull(actual);
+            assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
+            char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
+            List<String> header = csvFormatUtils.retrieveHeader(actual.getParameters());
+            assertEquals(';', separator);
+            List<String> expected = Arrays.asList("id", "first_name", "last_name", "email", "job_title", "company", "city", "state",
+                    "country", "date", "campaign_id", "lead_score", "registration", "city", "birth", "nbCommands", "id",
+                    "first_name", "last_name", "email", "job_title", "company", "city", "state", "country", "date",
+                    "campaign_id", "lead_score", "registration", "city", "birth", "nbCommands");
+            assertEquals(expected, header);
         }
     }
 
