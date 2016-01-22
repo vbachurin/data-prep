@@ -139,11 +139,11 @@ public class CSVFastHeaderAndTypeAnalyzer {
      */
     private List<Integer> setFieldType(int i) {
         List<Integer> result = new ArrayList<>();
-        String s = (i < sampleLines.size()) ? sampleLines.get(i) : null;
-        if (StringUtils.isEmpty(s)) {
+        String line = (i < sampleLines.size() ? sampleLines.get(i) : null);
+        if (StringUtils.isEmpty(line)) {
             return result;
         }
-        List<String> fields = readLine(s);
+        List<String> fields = readLine(line);
         for (String field: fields) {
             Scanner scanner = new Scanner(field);
             scanner.useDelimiter(separator.getSeparator() + "");
@@ -158,7 +158,7 @@ public class CSVFastHeaderAndTypeAnalyzer {
                 result.add(BOOLEAN);
                 scanner.next();
             } else {
-                String text = scanner.hasNext()?scanner.next():StringUtils.EMPTY;
+                String text = scanner.hasNext() ? scanner.next() : StringUtils.EMPTY;
                 switch (text) {
                 case "":
                     result.add(EMPTY);
@@ -172,27 +172,27 @@ public class CSVFastHeaderAndTypeAnalyzer {
     }
 
     /**
-     * Reads a line of sample while using the CSV reader
-     * @param line
-     * @return
+     * Extracts fields from a line, using CSVReader.
+     *
+     * @param line line as it's in the CSV raw file
+     * @return a list of ordered fields
      */
     private List<String> readLine(String line){
         List<String> result = Collections.emptyList();
-        try(CSVReader csvReader = new CSVReader(new InputStreamReader(IOUtils.toInputStream(line)),separator.getSeparator())){
+        try (CSVReader csvReader = new CSVReader(new InputStreamReader(IOUtils.toInputStream(line)), separator.getSeparator())) {
             String[] fields = csvReader.readNext();
             csvReader.close();
-            if (fields != null && fields.length != 0){
+            if (fields != null && fields.length != 0) {
                 result = Arrays.asList(fields).stream().collect(Collectors.toList());
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             LOGGER.info("Unable to read line {i} of sample", line);
         }
         // remove last fields if it is empty
         int size = result.size();
-        if (size > 0){
-            if ( StringUtils.isEmpty(result.get(size - 1))){
-                result.remove(size -1);
+        if (size > 0) {
+            if (StringUtils.isEmpty(result.get(size - 1))) {
+                result.remove(size - 1);
             }
         }
         return result;
