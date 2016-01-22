@@ -360,11 +360,11 @@ describe('Playground Service', function () {
 
     describe('update statistics', function () {
         beforeEach(inject(function ($q, StateService, DatasetService, PreparationService, StatisticsService) {
+            spyOn(StateService, 'updateDatasetStatistics').and.returnValue();
             spyOn(StatisticsService, 'updateStatistics').and.returnValue();
-            spyOn(StateService, 'updateStatistics').and.returnValue();
         }));
 
-        it('should get dataset columns and set statistics in state', inject(function ($rootScope, $q, PlaygroundService, DatasetService, StateService) {
+        it('should get dataset metadata and set metadata statistics in state', inject(function ($rootScope, $q, PlaygroundService, DatasetService, StateService) {
             //given
             spyOn(DatasetService, 'getMetadata').and.returnValue($q.when(datasetMetadata));
             stateMock.playground.dataset = {id: '1324d56456b84ef154'};
@@ -376,7 +376,7 @@ describe('Playground Service', function () {
 
             //then
             expect(DatasetService.getMetadata).toHaveBeenCalledWith('1324d56456b84ef154');
-            expect(StateService.updateStatistics).toHaveBeenCalledWith(datasetMetadata);
+            expect(StateService.updateDatasetStatistics).toHaveBeenCalledWith(datasetMetadata);
         }));
 
         it('should trigger statistics update', inject(function ($rootScope, $q, DatasetService, PlaygroundService, StatisticsService) {
@@ -408,7 +408,7 @@ describe('Playground Service', function () {
             $rootScope.$digest();
 
             //then
-            expect(StateService.updateStatistics).not.toHaveBeenCalled();
+            expect(StateService.updateDatasetStatistics).not.toHaveBeenCalled();
             expect(rejected).toBe(true);
         }));
     });

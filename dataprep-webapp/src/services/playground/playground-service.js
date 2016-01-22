@@ -187,9 +187,7 @@
                     }
                     return response;
                 })
-                .then(function (response) {
-                    StateService.updateStatistics(response);
-                })
+                .then(StateService.updateDatasetStatistics)
                 .then(StatisticsService.updateStatistics);
         }
 

@@ -44,7 +44,7 @@ public class StatisticsAnalysisTest extends DataSetBaseTest {
      */
     @Test
     public void testTDP_402() throws Exception {
-        final DataSetMetadata metadata = initializeDataSetMetadata(this.getClass().getResourceAsStream("TDP-402.csv"));
+        final DataSetMetadata metadata = initializeDataSetMetadata(this.getClass().getResourceAsStream("dataset.csv"));
         final ColumnMetadata dateOfBirth = metadata.getRowMetadata().getById("0004");
         assertThat(dateOfBirth.getName(), is("date-of-birth"));
         assertThat(dateOfBirth.getType(), is("date"));
@@ -58,6 +58,17 @@ public class StatisticsAnalysisTest extends DataSetBaseTest {
         assertTrue(patterns.contains("aaaaa"));
         assertTrue(patterns.contains("yyyy-MM-dd"));
         assertTrue(patterns.contains("yyyy-M-d"));
+    }
+
+    @Test
+    public void should_update_dataset_nb_records() throws Exception {
+        //given
+        final InputStream dataset = this.getClass().getResourceAsStream("dataset.csv");
+
+        //when
+        final DataSetMetadata metadata = initializeDataSetMetadata(dataset);
+
+        //then
         assertThat(metadata.getContent().getNbRecords(), is(4L));
     }
 

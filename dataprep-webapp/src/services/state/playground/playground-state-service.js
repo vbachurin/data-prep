@@ -27,7 +27,7 @@
             setNameEditionMode: setNameEditionMode,
             reset: reset,
             setData: setData,
-            updateStatistics: updateStatistics,
+            updateDatasetStatistics: updateDatasetStatistics,
 
             //recipe
             showRecipe: RecipeStateService.show,
@@ -96,7 +96,7 @@
             playgroundState.visible = false;
         }
 
-        function updateStatistics(metadata) {
+        function updateDatasetStatistics(metadata) {
             _.forEach(playgroundState.data.metadata.columns, function(col) {
                 var correspondingColumn = _.find(metadata.columns, {id: col.id});
                 col.statistics = correspondingColumn.statistics;
