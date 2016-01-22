@@ -39,7 +39,7 @@
         function autosizeColumns(gridColumns) {
             var localKey = getLocalStorageKey();
             var sizesStr = $window.localStorage.getItem(localKey);
-            var sizes = (sizesStr && JSON.parse(sizesStr)) || [];
+            var sizes = (sizesStr && JSON.parse(sizesStr)) || {};
             _.forEach(gridColumns, function(col) {
                 col.minWidth = MIN_COLUMN_WIDTH;
                 col.width = sizes[col.id] || INITIAL_COLUMN_WIDTH;
