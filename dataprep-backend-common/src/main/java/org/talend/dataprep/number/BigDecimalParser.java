@@ -13,9 +13,11 @@ import java.util.regex.Pattern;
  */
 public class BigDecimalParser {
 
-    public static DecimalFormat US_DECIMAL_PATTERN = new DecimalFormat("#,##0.##");
+    public static DecimalFormat US_DECIMAL_PATTERN = new DecimalFormat("#,##0.##",
+            DecimalFormatSymbols.getInstance(Locale.US));
 
-    public static DecimalFormat US_DECIMAL_PATTERN_ALT = new DecimalFormat("#,##0.##;(#)");
+    public static DecimalFormat US_DECIMAL_PATTERN_ALT = new DecimalFormat("#,##0.##;(#)",
+            DecimalFormatSymbols.getInstance(Locale.US));
 
     public static DecimalFormat EU_DECIMAL_PATTERN = new DecimalFormat("#,##0.##",
             DecimalFormatSymbols.getInstance(Locale.FRENCH));
@@ -25,10 +27,10 @@ public class BigDecimalParser {
     /**
      * Patterns used to check differents cases in guessSeparators(String):
      */
-    private static final Pattern ENDS_BY_NOT_3_DIGITS_PATTERN = Pattern.compile("^[-]?\\d+([,.])(?:\\d{0,2}|\\d{4,})");
-    private static final Pattern STARTS_WITH_DECIMAL_SEPARATOR_PATTERN = Pattern.compile("^[-]?(?:\\d{3,}|\\d{0})([,.])\\d+");
-    private static final Pattern FEW_GROUP_SEP_PATTERN = Pattern.compile("^[-]?\\d+([., ]\\d{3}){2,}");
-    private static final Pattern TWO_DIFFERENTS_SEPARATORS_PATTERN = Pattern.compile(".*\\d+([. ])\\d+[,]\\d+");
+    private static final Pattern ENDS_BY_NOT_3_DIGITS_PATTERN = Pattern.compile("^[(-]?\\d+([,.])(?:\\d{0,2}|\\d{4,})[)]?");
+    private static final Pattern STARTS_WITH_DECIMAL_SEPARATOR_PATTERN = Pattern.compile("^[(-]?(?:\\d{3,}|\\d{0})([,.])\\d+[)]?");
+    private static final Pattern FEW_GROUP_SEP_PATTERN = Pattern.compile("^[(-]?\\d+([., ]\\d{3}){2,}[)]?");
+    private static final Pattern TWO_DIFFERENTS_SEPARATORS_PATTERN = Pattern.compile(".*\\d+([. ])\\d+[,]\\d+[)]?");
 
     private BigDecimalParser() {
     }
@@ -84,7 +86,7 @@ public class BigDecimalParser {
     }
 
     protected static DecimalFormatSymbols guessSeparators(String from) {
-        final DecimalFormatSymbols toReturn = DecimalFormatSymbols.getInstance();
+        final DecimalFormatSymbols toReturn = DecimalFormatSymbols.getInstance(Locale.US);
 
         /**
          * This part checks cases where two separators are present. In this case, the first one is probably the grouping
