@@ -864,7 +864,7 @@ describe('Statistics service', function () {
                 });
             }));
 
-            it('should remove saved aggregation on current column/preparation/dataset from storage when the aggregation related column is not found (deleted or changed type)', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService, StorageService) {
+            it('should remove saved aggregation on current column/preparation/dataset from storage when the aggregation related falsy', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService, StorageService) {
                 //given
                 stateMock.playground.grid.selectedColumn = barChartStrCol;
                 stateMock.playground.grid.filteredOccurences = {'   toto': 3, 'titi': 2};
@@ -877,7 +877,7 @@ describe('Statistics service', function () {
                 expect(StorageService.removeAggregation).toHaveBeenCalledWith(datasetId, preparationId, barChartStrCol.id);
             }));
 
-            it('should remove saved aggregation on current column/preparation/dataset from storage when the aggregation name is undefined', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService, StorageService) {
+            it('should remove saved aggregation on current column/preparation/dataset from storage when the aggregation name is falsy', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService, StorageService) {
                 //given
                 stateMock.playground.grid.selectedColumn = barChartStrCol;
                 stateMock.playground.grid.filteredOccurences = {'   toto': 3, 'titi': 2};
