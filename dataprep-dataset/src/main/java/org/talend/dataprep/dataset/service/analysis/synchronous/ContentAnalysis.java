@@ -29,7 +29,7 @@ public class ContentAnalysis implements SynchronousDataSetAnalyzer {
     private static final Logger LOG = LoggerFactory.getLogger(ContentAnalysis.class);
 
     /** Size limit for datasets. */
-    @Value("${dataset.size.limit}")
+    @Value("${dataset.records.limit}")
     private Long sizeLimit;
 
     /** DataSet metadata repository. */
