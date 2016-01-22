@@ -1,4 +1,4 @@
-package org.talend.dataprep.dataset.service.analysis;
+package org.talend.dataprep.dataset.service.analysis.asynchronous;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -16,6 +16,9 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.statistics.PatternFrequency;
 import org.talend.dataprep.dataset.DataSetBaseTest;
+import org.talend.dataprep.dataset.service.analysis.synchronous.ContentAnalysis;
+import org.talend.dataprep.dataset.service.analysis.synchronous.FormatAnalysis;
+import org.talend.dataprep.dataset.service.analysis.synchronous.SchemaAnalysis;
 
 public class StatisticsAnalysisTest extends DataSetBaseTest {
 
