@@ -11,17 +11,16 @@
     </form>
 
     <div class="param-buttons">
-
-        <a ng-if="formCtrl.transformation.docUrl!==''"
-           href="{{::formCtrl.transformation.docUrl}}"
-           target="_blank">
-            <span translate-once="ACTION_HELP"></span>
-        </a>
-
         <button ng-disabled="formCtrl.paramForm.$invalid"
                 class="param-primary-button btn-primary"
                 ng-click="formCtrl.transformWithParam()"
                 ng-mouseleave="formCtrl.submitHoverOff()"
-                ng-mouseenter="formCtrl.submitHoverOn()"><span translate-once="SUBMIT"></span></button>
+                ng-mouseenter="formCtrl.submitHoverOn()"
+                translate-once="SUBMIT"></button>
+
+        <a ng-if="formCtrl.transformation.docUrl"
+           href="{{::formCtrl.transformation.docUrl}}"
+           translate-once="ACTION_HELP"
+           target="_blank"></a>
     </div>
 </div>
