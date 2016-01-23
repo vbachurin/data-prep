@@ -1,15 +1,15 @@
 /*  ============================================================================
 
-  Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+ Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 
-  This source code is available under agreement available at
-  https://github.com/Talend/data-prep/blob/master/LICENSE
+ This source code is available under agreement available at
+ https://github.com/Talend/data-prep/blob/master/LICENSE
 
-  You should have received a copy of the agreement
-  along with this program; if not, write to Talend SA
-  9 rue Pages 92150 Suresnes, France
+ You should have received a copy of the agreement
+ along with this program; if not, write to Talend SA
+ 9 rue Pages 92150 Suresnes, France
 
-  ============================================================================*/
+ ============================================================================*/
 
 /**
  * @ngdoc service
@@ -314,25 +314,24 @@ export default function StatisticsService($log, $filter, state, StateService,
      * @description Use a Worker to compute the date FilteredHistogram
      */
     function createFilteredDateRangeHistogram() {
-        var rangeData = state.playground.statistics.histogram.data;
-        var patterns = _.chain(state.playground.grid.selectedColumn.statistics.patternFrequencyTable)
-            .pluck('pattern')
-            .map(TextFormatService.convertJavaDateFormatToMomentDateFormat)
-            .value();
+        var parameters = {
+            rangeData: state.playground.statistics.histogram.data,
+            patterns: _.chain(state.playground.grid.selectedColumn.statistics.patternFrequencyTable)
+                .pluck('pattern')
+                .map(TextFormatService.convertJavaDateFormatToMomentDateFormat)
+                .value(),
+            filteredOccurrences: state.playground.filter.gridFilters.length ? state.playground.grid.filteredOccurences : null
+        };
 
-        //execute a web worker that will compute the filtered occurrences
-        dateFilteredWorkerWrapper = WorkerService.create(
-            ['/worker/moment.js', '/worker/moment-jdateformatparser.js', '/worker/lodash.js'],
-            [{workerFn2: workerFn2}],
-            dateFilteredOccurrenceWorker);
-
-        var filteredOccurrences = state.playground.filter.gridFilters.length ? state.playground.grid.filteredOccurences : null;
-        return dateFilteredWorkerWrapper.postMessage([rangeData, patterns, filteredOccurrences])
+        dateFilteredWorkerWrapper = WorkerService.create(parameters, {evalPath: '/worker/eval.js'});
+        return dateFilteredWorkerWrapper
+            .importScripts('/worker/moment.js')
+            .importScripts('/worker/lodash.js')
+            .importScripts('/worker/moment-jdateformatparser.js')
+            .require({fn: workerFn2, name: 'workerFn2'})
+            .run(dateFilteredOccurrenceWorker)
             .then(function (filteredRangeData) {
                 return initVerticalHistogram('data', 'filteredOccurrences', 'Filtered Occurrences', filteredRangeData);
-            })
-            .finally(function () {
-                dateFilteredWorkerWrapper.clean();
             });
     }
 
@@ -341,22 +340,24 @@ export default function StatisticsService($log, $filter, state, StateService,
      * @name dateFilteredOccurrenceWorker
      * @methodOf data-prep.services.statistics.service:StatisticsService
      * @description Web worker function to execute to get the date pattern filtered occurrences
-     * @param {object} rangeData The range data
-     * @param {Array} patterns The patterns to use for date parsing
-     * @param {Array} filteredOccurences The filtered occurrences
+     * @param {object} parameters {rangeData: The range data, patterns: The patterns to use for date parsing, filteredOccurences: The filtered occurrences}
      */
-    function dateFilteredOccurrenceWorker(rangeData, patterns, filteredOccurences) {
+    function dateFilteredOccurrenceWorker(parameters) {
+        var rangeData = parameters.rangeData;
+        var patterns = parameters.patterns;
+        var filteredOccurrences = parameters.filteredOccurrences;
+
         _.forEach(rangeData, function (range) {
             var minTimestamp = range.data.min;
             var maxTimestamp = range.data.max;
 
-            range.filteredOccurrences = !filteredOccurences ?
+            range.filteredOccurrences = !filteredOccurrences ?
                 range.occurrences :
-                _.chain(filteredOccurences)
+                _.chain(filteredOccurrences)
                     .keys()
                     .filter(workerFn2(minTimestamp, maxTimestamp, patterns))
                     .map(function (key) {
-                        return filteredOccurences[key];
+                        return filteredOccurrences[key];
                     })
                     .reduce(function (accu, value) {
                         return accu + value;
@@ -600,30 +601,26 @@ export default function StatisticsService($log, $filter, state, StateService,
      * @description Create the filtered patterns statistics
      */
     function createFilteredPatternsFrequency() {
-        datePatternWorkerWrapper = WorkerService.create(
-            ['/worker/moment.js', '/worker/lodash.js', '/worker/moment-jdateformatparser.js'],
-            [
-                {
-                    workerFn0: workerFn0,
-                    workerFn1: workerFn1
-                },
-                TextFormatService.escapeRegex,
-                valueMatchPatternFn,
-                isDatePattern,
-                valueMatchDatePatternFn,
-                valueMatchRegexFn,
-                valueMatchPatternFn
-            ],
-            patternOccurrenceWorker
-        );
-
         var column = state.playground.grid.selectedColumn;
-        var patternFrequency = column.statistics.patternFrequencyTable;
-        var filteredRecords = state.playground.filter.gridFilters.length ? state.playground.grid.filteredRecords : null;
-        return datePatternWorkerWrapper.postMessage([column.id, patternFrequency, filteredRecords])
-            .finally(function () {
-                datePatternWorkerWrapper.clean();
-            });
+        var parameters = {
+            columnId: column.id,
+            patternFrequencyTable: column.statistics.patternFrequencyTable,
+            filteredRecords: state.playground.filter.gridFilters.length ? state.playground.grid.filteredRecords : null
+        };
+        datePatternWorkerWrapper = WorkerService.create(parameters, {evalPath: '/worker/eval.js'});
+        return datePatternWorkerWrapper
+            .importScripts('/worker/moment.js')
+            .importScripts('/worker/lodash.js')
+            .importScripts('/worker/moment-jdateformatparser.js')
+            .require({fn: workerFn0, name: 'workerFn0'})
+            .require({fn: workerFn1, name: 'workerFn1'})
+            .require(TextFormatService.escapeRegex)
+            .require(valueMatchPatternFn)
+            .require(isDatePattern)
+            .require(valueMatchDatePatternFn)
+            .require(valueMatchRegexFn)
+            .require(valueMatchPatternFn)
+            .run(patternOccurrenceWorker);
     }
 
     /**
@@ -631,11 +628,12 @@ export default function StatisticsService($log, $filter, state, StateService,
      * @name patternOccurrenceWorker
      * @methodOf data-prep.services.statistics.service:StatisticsService
      * @description Web worker function to execute to get the pattern filtered occurrences
-     * @param {string} columnId The column id
-     * @param {Array} patternFrequencyTable The pattern frequencies to update
-     * @param {Array} filteredRecords The filtered records to process for the filtered occurrences number
+     * @param {object} parameters {columnId: The column id, patternFrequencyTable: The pattern frequencies to update, filteredRecords: The filtered records to process for the filtered occurrences number}
      */
-    function patternOccurrenceWorker(columnId, patternFrequencyTable, filteredRecords) {
+    function patternOccurrenceWorker(parameters) {
+        var columnId = parameters.columnId;
+        var patternFrequencyTable = parameters.patternFrequencyTable;
+        var filteredRecords = parameters.filteredRecords;
         _.forEach(patternFrequencyTable, function (patternFrequency) {
             var pattern = patternFrequency.pattern;
             var matchingFn = valueMatchPatternFn(pattern);
@@ -1034,11 +1032,11 @@ export default function StatisticsService($log, $filter, state, StateService,
      */
     function resetWorkers() {
         if (dateFilteredWorkerWrapper) {
-            dateFilteredWorkerWrapper.terminate();
+            dateFilteredWorkerWrapper.cancel();
             dateFilteredWorkerWrapper = null;
         }
         if (datePatternWorkerWrapper) {
-            datePatternWorkerWrapper.terminate();
+            datePatternWorkerWrapper.cancel();
             datePatternWorkerWrapper = null;
         }
     }

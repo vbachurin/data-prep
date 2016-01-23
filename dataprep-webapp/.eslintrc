@@ -23,6 +23,7 @@
     "introJs": true,
     "module": true,
     "moment": true,
+    "Parallel": true,
     "Slick": true,
     "SlickGridMock": true,
     "DataViewMock": true

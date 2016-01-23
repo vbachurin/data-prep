@@ -37,7 +37,8 @@
     "moment-jdateformatparser": "~1.0.0",
     "bourbon": "^4.2.6",
     "neat": "^1.7.2",
-    "animate.css": "^3.5.1"
+    "animate.css": "^3.5.1",
+    "parallel.js": "paralleljs#*"
   },
   "devDependencies": {
     "angular-mocks": "~1.4.x"
@@ -89,6 +90,12 @@
       "main": [
         "js/splitter.js",
         "css/style.css"
+      ]
+    },
+    "parallel.js": {
+      "main": [
+        "lib/parallel.js",
+        "lib/eval.js"
       ]
     }
   }
