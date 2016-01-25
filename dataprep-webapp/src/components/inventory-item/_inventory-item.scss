@@ -1,6 +1,7 @@
 .inventory-item {
   .inventory-title {
     padding: 3px 0;
+    @include ellipsis(430px);
   }
 
   .edition-text-input {

@@ -85,7 +85,8 @@
       padding: 5px;
     }
 
-    .editable-text-text{
+    .steps-header-preparation-text{
+      @include ellipsis(85%);
       padding: 2px 0;
       font-size: 1.2em;
       font-weight: 600;
