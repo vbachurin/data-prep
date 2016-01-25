@@ -22,16 +22,16 @@
             savePreparationAggregationsFromDataset: savePreparationAggregationsFromDataset,
             moveAggregations: moveAggregations,
             getLookupDatasets: getLookupDatasets,
-            saveLookupDatasets: saveLookupDatasets,
+            setLookupDatasets: setLookupDatasets,
 
             getDatasetsOrder: getDatasetsOrder,
-            saveDatasetsOrder: saveDatasetsOrder,
+            setDatasetsOrder: setDatasetsOrder,
             getDatasetsSort: getDatasetsSort,
-            saveDatasetsSort: saveDatasetsSort,
+            setDatasetsSort: setDatasetsSort,
             getLookupDatasetsSort: getLookupDatasetsSort,
-            saveLookupDatasetsSort: saveLookupDatasetsSort,
+            setLookupDatasetsSort: setLookupDatasetsSort,
             getLookupDatasetsOrder: getLookupDatasetsOrder,
-            saveLookupDatasetsOrder: saveLookupDatasetsOrder
+            setLookupDatasetsOrder: setLookupDatasetsOrder
 
         };
 
@@ -230,11 +230,11 @@
 
         /**
          * @ngdoc method
-         * @name saveLookupDatasets
+         * @name setLookupDatasets
          * @methodOf data-prep.services.utils.service:StorageService
          * @description Save the lookup datasets in localStorage
          */
-        function saveLookupDatasets(datasets) {
+        function setLookupDatasets(datasets) {
             $window.localStorage.setItem(LOOKUP_DATASETS_KEY, JSON.stringify(datasets));
         }
 
@@ -250,11 +250,11 @@
 
         /**
          * @ngdoc method
-         * @name saveDatasetsSort
+         * @name setDatasetsSort
          * @methodOf data-prep.services.utils.service:StorageService
          * @description Save the datasets sort in localStorage
          */
-        function saveDatasetsSort(sort) {
+        function setDatasetsSort(sort) {
             $window.localStorage.setItem(DATASETS_SORT_KEY, sort);
         }
 
@@ -270,11 +270,11 @@
 
         /**
          * @ngdoc method
-         * @name saveDatasetsOrder
+         * @name setDatasetsOrder
          * @methodOf data-prep.services.utils.service:StorageService
          * @description Save the datasets order in localStorage
          */
-        function saveDatasetsOrder(order) {
+        function setDatasetsOrder(order) {
             $window.localStorage.setItem(DATASETS_ORDER_KEY, order);
         }
 
@@ -290,11 +290,11 @@
 
         /**
          * @ngdoc method
-         * @name saveLookupDatasetsSort
+         * @name setLookupDatasetsSort
          * @methodOf data-prep.services.utils.service:StorageService
          * @description Save the Lookup datasets sort in localStorage
          */
-        function saveLookupDatasetsSort(sort) {
+        function setLookupDatasetsSort(sort) {
             $window.localStorage.setItem(LOOKUP_DATASETS_SORT_KEY, sort);
         }
 
@@ -310,11 +310,11 @@
 
         /**
          * @ngdoc method
-         * @name saveLookupDatasetsOrder
+         * @name setLookupDatasetsOrder
          * @methodOf data-prep.services.utils.service:StorageService
          * @description Save the Lookup datasets order in localStorage
          */
-        function saveLookupDatasetsOrder(order) {
+        function setLookupDatasetsOrder(order) {
             $window.localStorage.setItem(LOOKUP_DATASETS_ORDER_KEY, order);
         }
     }

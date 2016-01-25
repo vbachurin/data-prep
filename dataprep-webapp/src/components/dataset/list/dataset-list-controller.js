@@ -63,12 +63,12 @@
             var oldSort = state.inventory.sort;
 
             StateService.setDatasetsSort(sortType);
-            StorageService.saveDatasetsSort(sortType.id);
+            StorageService.setDatasetsSort(sortType.id);
 
             FolderService.getContent(state.folder.currentFolder)
                 .catch(function () {
                     StateService.setDatasetsSort(oldSort);
-                    StorageService.saveDatasetsSort(oldSort.id);
+                    StorageService.setDatasetsSort(oldSort.id);
                 });
         };
 
@@ -87,12 +87,12 @@
             var oldOrder = state.inventory.order;
 
             StateService.setDatasetsOrder(order);
-            StorageService.saveDatasetsOrder(order.id);
+            StorageService.setDatasetsOrder(order.id);
 
             FolderService.getContent(state.folder.currentFolder)
                 .catch(function () {
                     StateService.setDatasetsOrder(oldOrder);
-                    StorageService.saveDatasetsOrder(oldOrder.id);
+                    StorageService.setDatasetsOrder(oldOrder.id);
                 });
         };
 

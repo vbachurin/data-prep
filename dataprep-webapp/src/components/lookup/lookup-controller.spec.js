@@ -337,7 +337,7 @@ describe('Lookup controller', function () {
             //given
             var sortBy = {id: 'date', name: 'DATE_SORT', property: 'created'};
             stateMock.playground.lookup.datasets = [{created : 1}, {created : 3}, {created : 2}];
-            spyOn(StorageService, 'saveLookupDatasetsSort').and.returnValue();
+            spyOn(StorageService, 'setLookupDatasetsSort').and.returnValue();
             spyOn(StateService, 'setLookupDatasetsSort').and.returnValue();
             var ctrl = createController();
 
@@ -350,14 +350,14 @@ describe('Lookup controller', function () {
             //then
 
             expect(StateService.setLookupDatasetsSort).toHaveBeenCalledWith(sortBy);
-            expect(StorageService.saveLookupDatasetsSort).toHaveBeenCalledWith(sortBy.id);
+            expect(StorageService.setLookupDatasetsSort).toHaveBeenCalledWith(sortBy.id);
         }));
 
         it('should not update sort by', inject(function ($timeout, StorageService) {
             //given
             var sortBy = {id: 'date', name: 'DATE_SORT', property: 'created'};
             stateMock.playground.lookup.datasets = [{created : 1}, {created : 3}, {created : 2}];
-            spyOn(StorageService, 'saveLookupDatasetsSort').and.returnValue();
+            spyOn(StorageService, 'setLookupDatasetsSort').and.returnValue();
             var ctrl = createController();
 
             //when
@@ -365,14 +365,14 @@ describe('Lookup controller', function () {
             ctrl.updateSortBy(sortBy);
             $timeout.flush();
             //then
-            expect(StorageService.saveLookupDatasetsSort).not.toHaveBeenCalled();
+            expect(StorageService.setLookupDatasetsSort).not.toHaveBeenCalled();
         }));
 
         it('should update sort order', inject(function ($timeout, StorageService, StateService) {
             //given
             var orderBy = {id: 'desc', name: 'DESC_ORDER'};
             stateMock.playground.lookup.datasets = [{created : 1}, {created : 3}, {created : 2}];
-            spyOn(StorageService, 'saveLookupDatasetsOrder').and.returnValue();
+            spyOn(StorageService, 'setLookupDatasetsOrder').and.returnValue();
             spyOn(StateService, 'setLookupDatasetsOrder').and.returnValue();
             var ctrl = createController();
 
@@ -384,14 +384,14 @@ describe('Lookup controller', function () {
 
             //then
             expect(StateService.setLookupDatasetsOrder).toHaveBeenCalledWith(orderBy);
-            expect(StorageService.saveLookupDatasetsOrder).toHaveBeenCalledWith(orderBy.id);
+            expect(StorageService.setLookupDatasetsOrder).toHaveBeenCalledWith(orderBy.id);
         }));
 
         it('should not update sort order', inject(function ($timeout, StorageService) {
             //given
             var orderBy = {id: 'desc', name: 'DESC_ORDER'};
             stateMock.playground.lookup.datasets = [{created : 1}, {created : 3}, {created : 2}];
-            spyOn(StorageService, 'saveLookupDatasetsOrder').and.returnValue();
+            spyOn(StorageService, 'setLookupDatasetsOrder').and.returnValue();
             var ctrl = createController();
 
             //when
@@ -400,7 +400,7 @@ describe('Lookup controller', function () {
             ctrl.updateSortOrder(orderBy);
             $timeout.flush();
             //then
-            expect(StorageService.saveLookupDatasetsOrder).not.toHaveBeenCalled();
+            expect(StorageService.setLookupDatasetsOrder).not.toHaveBeenCalled();
         }));
 
         it('should refresh sort parameters', inject(function ($timeout, StorageService, StateService) {

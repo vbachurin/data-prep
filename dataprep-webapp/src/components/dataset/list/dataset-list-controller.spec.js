@@ -65,8 +65,8 @@ describe('Dataset list controller', function () {
             return $q.when(datasetsValues.shift());
         });
 
-        spyOn(StorageService, 'saveDatasetsSort').and.returnValue();
-        spyOn(StorageService, 'saveDatasetsOrder').and.returnValue();
+        spyOn(StorageService, 'setDatasetsSort').and.returnValue();
+        spyOn(StorageService, 'setDatasetsOrder').and.returnValue();
 
         spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when(true));
         spyOn(StateService, 'showPlayground').and.returnValue();
@@ -185,7 +185,7 @@ describe('Dataset list controller', function () {
                 ctrl.updateSortBy(newSort);
 
                 //then
-                expect(StorageService.saveDatasetsSort).toHaveBeenCalledWith('date');
+                expect(StorageService.setDatasetsSort).toHaveBeenCalledWith('date');
             }));
 
             it('should update order parameter', inject(function (DatasetService, StorageService) {
@@ -197,7 +197,7 @@ describe('Dataset list controller', function () {
                 ctrl.updateSortOrder(newSortOrder);
 
                 //then
-                expect(StorageService.saveDatasetsOrder).toHaveBeenCalledWith('desc');
+                expect(StorageService.setDatasetsOrder).toHaveBeenCalledWith('desc');
             }));
 
         });

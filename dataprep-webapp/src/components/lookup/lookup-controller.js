@@ -183,7 +183,7 @@
                 }
                 StateService.setLookupDatasetsSort(sortType);
                 LookupService.sortLookupDatasetsList();
-                StorageService.saveLookupDatasetsSort(sortType.id);
+                StorageService.setLookupDatasetsSort(sortType.id);
             });
         };
 
@@ -201,7 +201,7 @@
                 }
                 StateService.setLookupDatasetsOrder(order);
                 LookupService.sortLookupDatasetsList();
-                StorageService.saveLookupDatasetsOrder(order.id);
+                StorageService.setLookupDatasetsOrder(order.id);
             });
         };
 

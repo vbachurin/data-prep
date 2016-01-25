@@ -224,7 +224,7 @@ describe('Storage service', function() {
 
         it('should save Lookup Datasets', inject(function($window, StorageService) {
             //when
-            StorageService.saveLookupDatasets([{id :'abc'}]);
+            StorageService.setLookupDatasets([{id :'abc'}]);
 
             //then
             expect(JSON.parse($window.localStorage.getItem(LOOKUP_DATASETS_KEY))).toEqual([{id :'abc'}]);
@@ -243,7 +243,7 @@ describe('Storage service', function() {
 
         it('should save Lookup Datasets sort', inject(function($window, StorageService) {
             //when
-            StorageService.saveLookupDatasetsSort('name');
+            StorageService.setLookupDatasetsSort('name');
 
             //then
             expect($window.localStorage.getItem(LOOKUP_DATASETS_SORT_KEY)).toEqual('name');
@@ -262,7 +262,7 @@ describe('Storage service', function() {
 
         it('should save Lookup Datasets order', inject(function($window, StorageService) {
             //when
-            StorageService.saveLookupDatasetsOrder('desc');
+            StorageService.setLookupDatasetsOrder('desc');
 
             //then
             expect($window.localStorage.getItem(LOOKUP_DATASETS_ORDER_KEY)).toEqual('desc');
@@ -281,7 +281,7 @@ describe('Storage service', function() {
 
         it('should save Datasets sort', inject(function($window, StorageService) {
             //when
-            StorageService.saveDatasetsSort('name');
+            StorageService.setDatasetsSort('name');
 
             //then
             expect($window.localStorage.getItem(DATASETS_SORT_KEY)).toEqual('name');
@@ -300,7 +300,7 @@ describe('Storage service', function() {
 
         it('should save Datasets order', inject(function($window, StorageService) {
             //when
-            StorageService.saveDatasetsOrder('desc');
+            StorageService.setDatasetsOrder('desc');
 
             //then
             expect($window.localStorage.getItem(DATASETS_ORDER_KEY)).toEqual('desc');

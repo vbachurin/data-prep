@@ -248,7 +248,7 @@
                     }
                 }
             });
-            StorageService.saveLookupDatasets(addedDatasets);
+            StorageService.setLookupDatasets(addedDatasets);
 
             _.forEach(addedDatasets, function(datasetId) {
                 //init datasets list to add
@@ -297,7 +297,7 @@
             if(_.indexOf(StorageService.getLookupDatasets(), state.playground.dataset.id) > -1) { //If the playground dataset have been saved in localStorage for the lookup
                 datasetsToSave.push(state.playground.dataset.id);
             }
-            StorageService.saveLookupDatasets(datasetsToSave);
+            StorageService.setLookupDatasets(datasetsToSave);
         }
 
         /**

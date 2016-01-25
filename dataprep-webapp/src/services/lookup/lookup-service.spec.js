@@ -454,7 +454,7 @@ describe('lookup service', function () {
 
             spyOn(StorageService, 'getLookupDatasets').and.returnValue(['1']);
             spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
-            spyOn(StorageService, 'saveLookupDatasets').and.returnValue();
+            spyOn(StorageService, 'setLookupDatasets').and.returnValue();
             spyOn(StateService, 'setLookupAddedActions').and.returnValue();
             spyOn(TransformationRestService, 'getDatasetTransformations').and.returnValue($q.when({data: lookupActions}));
 
@@ -463,7 +463,7 @@ describe('lookup service', function () {
             $rootScope.$digest();
 
             //then
-            expect(StorageService.saveLookupDatasets).toHaveBeenCalledWith(['1','9e739b88-5ec9-4b58-84b5-2127a7e2eac7']);
+            expect(StorageService.setLookupDatasets).toHaveBeenCalledWith(['1','9e739b88-5ec9-4b58-84b5-2127a7e2eac7']);
 
             expect(stateMock.playground.lookup.datasets[0].addedToLookup ).toBe(false);
             expect(stateMock.playground.lookup.datasets[1].addedToLookup ).toBe(false);
@@ -485,7 +485,7 @@ describe('lookup service', function () {
             stateMock.playground.dataset.id = '4';
 
             spyOn(StorageService, 'getLookupDatasets').and.returnValue(['4']);
-            spyOn(StorageService, 'saveLookupDatasets').and.returnValue();
+            spyOn(StorageService, 'setLookupDatasets').and.returnValue();
             spyOn(StateService, 'setLookupAddedActions').and.returnValue();
 
             //when
@@ -495,7 +495,7 @@ describe('lookup service', function () {
             //then
             expect(StateService.setLookupAddedActions).toHaveBeenCalledWith(lookupActions);
 
-            expect(StorageService.saveLookupDatasets).toHaveBeenCalledWith(['9e739b88-5ec9-4b58-84b5-2127a7e2eac7', '4']);
+            expect(StorageService.setLookupDatasets).toHaveBeenCalledWith(['9e739b88-5ec9-4b58-84b5-2127a7e2eac7', '4']);
         }));
 
         it('should sort lookup datasets', inject(function ($q, $rootScope, LookupService) {

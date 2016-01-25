@@ -12,13 +12,12 @@
             on-click="callbackOn(item)"
             selected-item="selectedItem"
             get-label="callback(item)"
-            nbre-labels-to-show="4">
+            on-add-item="true">
        </navigation-list>
      * @param {Array} list the collection to navigate into
      * @param {object} selectedItem selected Item from the given list
      * @param {function} onClick The callback executed on an item clicked
      * @param {function} getLabel The function that returns the label to show
-     * @param {number} nbreLabelsToShow the number of labels to show
      * @param {function} onAddItem The function is called when the add button is clicked
      */
     function NavigationList($timeout) {
