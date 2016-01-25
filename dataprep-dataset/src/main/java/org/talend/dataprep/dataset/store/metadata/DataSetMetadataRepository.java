@@ -13,6 +13,9 @@
 
 package org.talend.dataprep.dataset.store.metadata;
 
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 import javax.annotation.Nullable;
 
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -34,7 +37,12 @@ public interface DataSetMetadataRepository {
      * @param id the id of a data set
      * @return A {@link java.lang.Iterable iterable} of {@link DataSetMetadata data set}.
      */
-    Iterable<DataSetMetadata> listCompatible(String id);
+    default Iterable<DataSetMetadata> listCompatible(String id) {
+        final DataSetMetadata metadata = get(id);
+        final Stream<DataSetMetadata> stream = StreamSupport.stream(list().spliterator(), false)
+                .filter(m -> m != null && !metadata.equals(m) && metadata.compatible(m));
+        return stream::iterator;
+    }
 
     /**
      * <p>

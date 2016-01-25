@@ -258,31 +258,10 @@ public class DataSetService {
         }
 
         Stream<DataSetMetadata> stream = StreamSupport.stream(iterator, false);
-        // Select order (asc or desc)
-        final Comparator<String> comparisonOrder;
-        switch (order.toUpperCase()) {
-            case "ASC":
-                comparisonOrder = Comparator.naturalOrder();
-                break;
-            case "DESC":
-                comparisonOrder = Comparator.reverseOrder();
-                break;
-            default:
-                throw new TDPException(DataSetErrorCodes.ILLEGAL_ORDER_FOR_LIST, ExceptionContext.build().put("order", order));
-        }
-        // Select comparator for sort (either by name or date)
-        final Comparator<DataSetMetadata> comparator;
-        switch (sort.toUpperCase()) {
-            case "NAME":
-                comparator = Comparator.comparing(dataSetMetadata -> dataSetMetadata.getName().toUpperCase(), comparisonOrder);
-                break;
-            case "DATE":
-                comparator = Comparator.comparing(dataSetMetadata -> String.valueOf(dataSetMetadata.getCreationDate()),
-                        comparisonOrder);
-                break;
-            default:
-                throw new TDPException(DataSetErrorCodes.ILLEGAL_SORT_FOR_LIST, ExceptionContext.build().put("sort", order));
-        }
+
+        final Comparator<String> comparisonOrder = getOrderComparator(order);
+        final Comparator<DataSetMetadata> comparator = getDataSetMetadataComparator(sort, order, comparisonOrder);
+
         // Return sorted results
         return stream.filter(metadata -> !metadata.getLifecycle().importing()) //
                 .map(metadata -> {
@@ -294,19 +273,21 @@ public class DataSetService {
     }
 
     /**
-     * Returns a list containing all data sets that are compatible with the data set with id <tt>dataSetId</tt>.
-     * If no compatible data set is found an empty list is returned.
-     * The data set with id <tt>dataSetId</tt> is never returned in the list.
+     * Returns a list containing all data sets that are compatible with the data set with id <tt>dataSetId</tt>. If no
+     * compatible data set is found an empty list is returned. The data set with id <tt>dataSetId</tt> is never returned
+     * in the list.
+     *
      * @param dataSetId the specified data set id
      * @param sort the sort criterion: either name or date.
      * @param order the sorting order: either asc or desc
-     * @return a list containing all data sets that are compatible with the data set with id <tt>dataSetId</tt>
-     * and empty list if no data set is compatible.
+     * @return a list containing all data sets that are compatible with the data set with id <tt>dataSetId</tt> and
+     * empty list if no data set is compatible.
      */
     @RequestMapping(value = "/datasets/{id}/compatibledatasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all compatible data sets", notes = "Returns the list of data sets the current user is allowed to see and which are compatible with the specified data set id.")
     @Timed
-    public Iterable<DataSetMetadata> listCompatibleDatasets(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set metadata") String dataSetId,
+    public Iterable<DataSetMetadata> listCompatibleDatasets(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set metadata") String dataSetId,
             @ApiParam(value = "Sort key (by name or date).") @RequestParam(defaultValue = "DATE", required = false) String sort,
             @ApiParam(value = "Order for sort key (desc or asc).") @RequestParam(defaultValue = "DESC", required = false) String order) {
 
@@ -314,31 +295,10 @@ public class DataSetService {
         Spliterator<DataSetMetadata> iterator = dataSetMetadataRepository.listCompatible(dataSetId).spliterator();
 
         Stream<DataSetMetadata> stream = StreamSupport.stream(iterator, false);
-        // Select order (asc or desc)
-        final Comparator<String> comparisonOrder;
-        switch (order.toUpperCase()) {
-        case "ASC":
-            comparisonOrder = Comparator.naturalOrder();
-            break;
-        case "DESC":
-            comparisonOrder = Comparator.reverseOrder();
-            break;
-        default:
-            throw new TDPException(DataSetErrorCodes.ILLEGAL_ORDER_FOR_LIST, ExceptionContext.build().put("order", order));
-        }
-        // Select comparator for sort (either by name or date)
-        final Comparator<DataSetMetadata> comparator;
-        switch (sort.toUpperCase()) {
-        case "NAME":
-            comparator = Comparator.comparing(dataSetMetadata -> dataSetMetadata.getName().toUpperCase(), comparisonOrder);
-            break;
-        case "DATE":
-            comparator = Comparator.comparing(dataSetMetadata -> String.valueOf(dataSetMetadata.getCreationDate()),
-                    comparisonOrder);
-            break;
-        default:
-            throw new TDPException(DataSetErrorCodes.ILLEGAL_SORT_FOR_LIST, ExceptionContext.build().put("sort", order));
-        }
+
+        final Comparator<String> comparisonOrder = getOrderComparator(order);
+        final Comparator<DataSetMetadata> comparator = getDataSetMetadataComparator(sort, order, comparisonOrder);
+
         // Return sorted results
         return stream.filter(metadata -> !metadata.getLifecycle().importing()) //
                 .map(metadata -> {
@@ -1096,5 +1056,53 @@ public class DataSetService {
         try (Stream<DataSetRow> stream = contentStore.sample(dataSetMetadata, sample)) {
             statisticsAnalysis.computeFullStatistics(copy.getMetadata(), stream);
         }
+    }
+
+    /**
+     * Return a dataset metadata comparator from the given parameters.
+     *
+     * @param sort the sort key.
+     * @param order the sort order.
+     * @param comparisonOrder the order comparator to use.
+     * @return a dataset metadata comparator from the given parameters.
+     */
+    private Comparator<DataSetMetadata> getDataSetMetadataComparator(String sort, String order,
+            Comparator<String> comparisonOrder) {
+        // Select comparator for sort (either by name or date)
+        final Comparator<DataSetMetadata> comparator;
+        switch (sort.toUpperCase()) {
+        case "NAME":
+            comparator = Comparator.comparing(dataSetMetadata -> dataSetMetadata.getName().toUpperCase(), comparisonOrder);
+            break;
+        case "DATE":
+            comparator = Comparator.comparing(dataSetMetadata -> String.valueOf(dataSetMetadata.getCreationDate()),
+                    comparisonOrder);
+            break;
+        default:
+            throw new TDPException(DataSetErrorCodes.ILLEGAL_SORT_FOR_LIST, ExceptionContext.build().put("sort", order));
+        }
+        return comparator;
+    }
+
+    /**
+     * Return an order comparator.
+     *
+     * @param order the order key.
+     * @return an order comparator.
+     */
+    private Comparator<String> getOrderComparator(String order) {
+        // Select order (asc or desc)
+        final Comparator<String> comparisonOrder;
+        switch (order.toUpperCase()) {
+        case "ASC":
+            comparisonOrder = Comparator.naturalOrder();
+            break;
+        case "DESC":
+            comparisonOrder = Comparator.reverseOrder();
+            break;
+        default:
+            throw new TDPException(DataSetErrorCodes.ILLEGAL_ORDER_FOR_LIST, ExceptionContext.build().put("order", order));
+        }
+        return comparisonOrder;
     }
 }
