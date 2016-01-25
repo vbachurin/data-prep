@@ -168,19 +168,6 @@
 
 		/**
 		 * @ngdoc method
-		 * @name sortDatasetsList
-		 * @methodOf data-prep.lookup.controller:LookupCtrl
-		 * @description sort datasets list
-		 */
-		function sortDatasetsList() {
-			state.playground.lookup.datasets =_.sortBy(state.playground.lookup.datasets, vm.sortSelected.property);
-			if(vm.sortOrderSelected.id === 'desc'){
-				state.playground.lookup.datasets = state.playground.lookup.datasets.reverse();
-			}
-		}
-
-		/**
-		 * @ngdoc method
 		 * @name sort
 		 * @methodOf data-prep.lookup.controller:LookupCtrl
 		 * @description sort dataset by sortType by calling refreshDatasets from DatasetService
@@ -192,7 +179,7 @@
 					return;
 				}
 				vm.sortSelected = sortType;
-				sortDatasetsList();
+				LookupService.sortLookupDatasetsList(vm.sortSelected, vm.sortOrderSelected);
 				StorageService.saveLookupDatasetsSort(sortType.id);
 			});
 		};
@@ -210,7 +197,7 @@
 					return;
 				}
 				vm.sortOrderSelected = order;
-				sortDatasetsList();
+				LookupService.sortLookupDatasetsList(vm.sortSelected, vm.sortOrderSelected);
 				StorageService.saveLookupDatasetsOrder(order.id);
 			});
 		};

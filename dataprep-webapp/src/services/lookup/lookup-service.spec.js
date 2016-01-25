@@ -151,6 +151,16 @@ describe('lookup service', function () {
         filters: null
     };
 
+    var sortList = [
+        {id: 'name', name: 'NAME_SORT', property: 'name'},
+        {id: 'date', name: 'DATE_SORT', property: 'created'}
+    ];
+
+    var orderList = [
+        {id: 'asc', name: 'ASC_ORDER'},
+        {id: 'desc', name: 'DESC_ORDER'}
+    ];
+
     beforeEach(module('data-prep.services.lookup', function ($provide) {
         stateMock = {
             playground: {
@@ -163,7 +173,9 @@ describe('lookup service', function () {
                 grid: {}
             },
             inventory: {
-                datasets: datasets
+                datasets: datasets,
+                sortList: sortList,
+                orderList: orderList
             }
         };
         $provide.constant('state', stateMock);
@@ -423,9 +435,9 @@ describe('lookup service', function () {
         it('should initialize lookup datasets', inject(function ($q, $rootScope, LookupService, StorageService, RecipeService, StateService, TransformationRestService) {
             //given
             stateMock.playground.lookup.datasets = [
-                {id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: false},
-                {id : '3', addedToLookup: false},
-                {id : '2', addedToLookup: false}
+                {id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: false, created : 100},
+                {id : '3', addedToLookup: false, created : 90},
+                {id : '2', addedToLookup: false, created : 80}
             ];
 
             stateMock.playground.lookup.actions = lookupActions;
@@ -454,9 +466,9 @@ describe('lookup service', function () {
         it('should update lookup datasets', inject(function ($q, $rootScope, LookupService, StorageService, RecipeService, StateService) {
             //given
             stateMock.playground.lookup.datasets = [
-                {id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true},
-                {id : '3', addedToLookup: false},
-                {id : '2', addedToLookup: false}
+                {id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created : 100},
+                {id : '3', addedToLookup: false, created : 90},
+                {id : '2', addedToLookup: false, created : 80}
             ];
 
             stateMock.playground.lookup.actions = lookupActions;
