@@ -400,4 +400,98 @@ describe('lookup service', function () {
             expect(StateService.setLookupUpdateMode).not.toHaveBeenCalled();
         }));
     });
+
+    describe('add datasets to lookup', function () {
+        it('should disable datasets which are used in recipe steps', inject(function ($rootScope, LookupService, RecipeService) {
+            //given
+            stateMock.playground.lookup.datasets = [
+                {id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7'},
+                {id : '3'},
+                {id : '2'}
+            ];
+            spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
+
+            //when
+            LookupService.disableDatasetsUsedInRecipe();
+
+            //then
+            expect(stateMock.playground.lookup.datasets[0].enableToAddToLookup).toBe(false);
+            expect(stateMock.playground.lookup.datasets[1].enableToAddToLookup).toBe(true);
+            expect(stateMock.playground.lookup.datasets[2].enableToAddToLookup).toBe(true);
+        }));
+
+        it('should initialize lookup datasets', inject(function ($q, $rootScope, LookupService, StorageService, RecipeService, StateService, TransformationRestService) {
+            //given
+            stateMock.playground.lookup.datasets = [
+                {id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: false},
+                {id : '3', addedToLookup: false},
+                {id : '2', addedToLookup: false}
+            ];
+
+            stateMock.playground.lookup.actions = lookupActions;
+            stateMock.playground.lookup.addedActions = [];
+
+            spyOn(StorageService, 'getLookupDatasets').and.returnValue(['1']);
+            spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
+            spyOn(StorageService, 'saveLookupDatasets').and.returnValue();
+            spyOn(StateService, 'setLookupAddedActions').and.returnValue();
+            spyOn(TransformationRestService, 'getDatasetTransformations').and.returnValue($q.when({data: lookupActions}));
+
+            //when
+            LookupService.initLookups();
+            $rootScope.$digest();
+
+            //then
+            expect(StorageService.saveLookupDatasets).toHaveBeenCalledWith(['1','9e739b88-5ec9-4b58-84b5-2127a7e2eac7']);
+
+            expect(stateMock.playground.lookup.datasets[0].addedToLookup ).toBe(true);
+            expect(stateMock.playground.lookup.datasets[1].addedToLookup ).toBe(false);
+            expect(stateMock.playground.lookup.datasets[2].addedToLookup ).toBe(false);
+
+            expect(StateService.setLookupAddedActions).toHaveBeenCalledWith(lookupActions);
+        }));
+
+        it('should update lookup datasets', inject(function ($q, $rootScope, LookupService, StorageService, RecipeService, StateService) {
+            //given
+            stateMock.playground.lookup.datasets = [
+                {id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true},
+                {id : '3', addedToLookup: false},
+                {id : '2', addedToLookup: false}
+            ];
+
+            stateMock.playground.lookup.actions = lookupActions;
+            stateMock.playground.lookup.addedActions = [];
+            stateMock.playground.dataset.id = '4';
+
+            spyOn(StorageService, 'getLookupDatasets').and.returnValue(['4']);
+            spyOn(StorageService, 'saveLookupDatasets').and.returnValue();
+            spyOn(StateService, 'setLookupAddedActions').and.returnValue();
+
+            //when
+            LookupService.updateLookupDatasets();
+            $rootScope.$digest();
+
+            //then
+            expect(StateService.setLookupAddedActions).toHaveBeenCalledWith(lookupActions);
+
+            expect(StorageService.saveLookupDatasets).toHaveBeenCalledWith(['9e739b88-5ec9-4b58-84b5-2127a7e2eac7', '4']);
+        }));
+
+
+        it('should get lookup datasets sort', inject(function (LookupService, StorageService) {
+            //given
+            spyOn(StorageService, 'getLookupDatasetsSort').and.returnValue({id : 'name'});
+
+            //then
+            expect(LookupService.getLookupDatasetsSort()).toEqual({id : 'name'});
+        }));
+
+        it('should get lookup datasets order', inject(function (LookupService, StorageService) {
+            //given
+            spyOn(StorageService, 'getLookupDatasetsOrder').and.returnValue({id : 'desc'});
+
+            //then
+            expect(LookupService.getLookupDatasetsOrder()).toEqual({id : 'desc'});
+        }));
+    });
 });

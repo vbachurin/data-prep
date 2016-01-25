@@ -138,7 +138,8 @@ describe('Lookup controller', function () {
                     },
                     columnsToAdd: ['0002', '0003'],
                     datasets: dsActions,
-                    dataset: dsActions[0]
+                    dataset: dsActions[0],
+                    addedActions: []
                 }
             },
             inventory: {
@@ -264,6 +265,148 @@ describe('Lookup controller', function () {
             var label = ctrl.getDsName(dsActions[0]);
             //then
             expect(label).toBe('lookup_2');
+        }));
+    });
+
+
+    describe('add datasets ', function () {
+        it('show modal on click', inject(function (LookupService) {
+            //given
+            var ctrl = createController();
+            spyOn(LookupService, 'disableDatasetsUsedInRecipe').and.returnValue();
+
+            //when
+            ctrl.openAddLookupDatasetModal();
+
+            //then
+            expect(LookupService.disableDatasetsUsedInRecipe).toHaveBeenCalled();
+            expect(ctrl.addLookupDatasetModal ).toBe(true);
+        }));
+
+        it('should add datasets and close the modal', inject(function (LookupService) {
+            //given
+            var ctrl = createController();
+            spyOn(LookupService, 'updateLookupDatasets').and.returnValue();
+
+            //when
+            ctrl.addLookupDatasets();
+
+            //then
+            expect(LookupService.updateLookupDatasets).toHaveBeenCalled();
+            expect(ctrl.addLookupDatasetModal ).toBe(false);
+        }));
+
+        it('should refresh lookup panel after adding datasets', inject(function ($q, LookupService) {
+            //given
+            stateMock.playground.lookup.addedActions[0] = {name : 'toto'};
+            var ctrl = createController();
+            spyOn(LookupService, 'loadFromAction').and.returnValue($q.when());
+            spyOn(LookupService, 'updateLookupDatasets').and.returnValue();
+
+            //when
+            ctrl.addLookupDatasets();
+
+            //then
+            expect(LookupService.loadFromAction).toHaveBeenCalledWith({name : 'toto'});
+        }));
+
+        it('should toogle dataset selection', inject(function () {
+            //given
+            var dataset= {enableToAddToLookup : true, addedToLookup: true};
+            var ctrl = createController();
+
+            //when
+            ctrl.toogleSelect(dataset);
+
+            //then
+            expect(dataset.addedToLookup).toBe(false);
+        }));
+
+        it('should not toogle dataset selection if dataset is disabled', inject(function () {
+            //given
+            var dataset= {enableToAddToLookup : false, addedToLookup: true};
+            var ctrl = createController();
+
+            //when
+            ctrl.toogleSelect(dataset);
+
+            //then
+            expect(dataset.addedToLookup).toBe(true);
+        }));
+
+        it('should update sort by', inject(function ($timeout, StorageService) {
+            //given
+            var sortBy = {id: 'date', name: 'DATE_SORT', property: 'created'};
+            stateMock.playground.lookup.datasets = [{created : 1}, {created : 3}, {created : 2}];
+            spyOn(StorageService, 'saveLookupDatasetsSort').and.returnValue();
+            var ctrl = createController();
+
+            //when
+            ctrl.sortSelected = {id: 'name', name: 'NAME_SORT', property: 'name'};
+            ctrl.sortOrderSelected = {id: 'desc', name: 'DESC_ORDER'};
+            ctrl.updateSortBy(sortBy);
+            $timeout.flush();
+
+            //then
+            expect(ctrl.sortSelected).toEqual(sortBy);
+            expect(StorageService.saveLookupDatasetsSort).toHaveBeenCalledWith(sortBy.id);
+
+            expect(stateMock.playground.lookup.datasets[0].created).toBe(3);
+            expect(stateMock.playground.lookup.datasets[1].created).toBe(2);
+            expect(stateMock.playground.lookup.datasets[2].created).toBe(1);
+        }));
+
+        it('should not update sort by', inject(function ($timeout, StorageService) {
+            //given
+            var sortBy = {id: 'date', name: 'DATE_SORT', property: 'created'};
+            stateMock.playground.lookup.datasets = [{created : 1}, {created : 3}, {created : 2}];
+            spyOn(StorageService, 'saveLookupDatasetsSort').and.returnValue();
+            var ctrl = createController();
+
+            //when
+            ctrl.sortSelected = {id: 'date', name: 'DATE_SORT', property: 'created'};
+            ctrl.updateSortBy(sortBy);
+            $timeout.flush();
+            //then
+            expect(StorageService.saveLookupDatasetsSort).not.toHaveBeenCalled();
+        }));
+
+        it('should update sort order', inject(function ($timeout, StorageService) {
+            //given
+            var orderBy = {id: 'desc', name: 'DESC_ORDER'};
+            stateMock.playground.lookup.datasets = [{created : 1}, {created : 3}, {created : 2}];
+            spyOn(StorageService, 'saveLookupDatasetsOrder').and.returnValue();
+            var ctrl = createController();
+
+            //when
+            ctrl.sortSelected = {id: 'date', name: 'DATE_SORT', property: 'created'};
+            ctrl.sortOrderSelected = {id: 'asc', name: 'ASC_ORDER'};
+            ctrl.updateSortOrder(orderBy);
+            $timeout.flush();
+
+            //then
+            expect(ctrl.sortOrderSelected).toEqual(orderBy);
+            expect(StorageService.saveLookupDatasetsOrder).toHaveBeenCalledWith(orderBy.id);
+
+            expect(stateMock.playground.lookup.datasets[0].created).toBe(3);
+            expect(stateMock.playground.lookup.datasets[1].created).toBe(2);
+            expect(stateMock.playground.lookup.datasets[2].created).toBe(1);
+        }));
+
+        it('should not update sort order', inject(function ($timeout, StorageService) {
+            //given
+            var orderBy = {id: 'desc', name: 'DESC_ORDER'};
+            stateMock.playground.lookup.datasets = [{created : 1}, {created : 3}, {created : 2}];
+            spyOn(StorageService, 'saveLookupDatasetsOrder').and.returnValue();
+            var ctrl = createController();
+
+            //when
+            ctrl.sortOrderSelected = {id: 'desc', name: 'DESC_ORDER'};
+            ctrl.sortSelected = {id: 'date', name: 'DATE_SORT', property: 'created'};
+            ctrl.updateSortOrder(orderBy);
+            $timeout.flush();
+            //then
+            expect(StorageService.saveLookupDatasetsOrder).not.toHaveBeenCalled();
         }));
     });
 });

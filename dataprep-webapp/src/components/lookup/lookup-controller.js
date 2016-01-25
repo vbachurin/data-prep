@@ -188,7 +188,7 @@
 		 */
 		vm.updateSortBy = function updateSortBy (sortType) {
 			$timeout(function(){
-				if (vm.sortSelected === sortType) {
+				if (vm.sortSelected.id === sortType.id) {
 					return;
 				}
 				vm.sortSelected = sortType;
@@ -206,7 +206,7 @@
 		 */
 		vm.updateSortOrder = function updateSortOrder (order) {
 			$timeout(function(){
-				if (vm.sortOrderSelected === order) {
+				if (vm.sortOrderSelected.id === order.id) {
 					return;
 				}
 				vm.sortOrderSelected = order;

@@ -412,4 +412,20 @@ describe('Dataset List Service', function () {
         expect(DatasetRestService.clone).toHaveBeenCalledWith(datasets[0], folder, 'beer');
     }));
 
+    it('should get sort', inject(function (DatasetListService, StorageService) {
+        //given
+        spyOn(StorageService, 'getDatasetsSort').and.returnValue({id : 'name'});
+
+        //then
+        expect(DatasetListService.getSort()).toEqual({id : 'name'});
+    }));
+
+    it('should get order', inject(function (DatasetListService, StorageService) {
+        //given
+        spyOn(StorageService, 'getDatasetsOrder').and.returnValue({id : 'desc'});
+
+        //then
+        expect(DatasetListService.getOrder()).toEqual({id : 'desc'});
+    }));
+
 });
