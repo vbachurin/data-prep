@@ -148,6 +148,48 @@ public class AbsoluteTest {
     }
 
     @Test
+    public void testAbsoluteFloatWithNegative_big_number() {
+        //given
+        final Map<String, String> values = new HashMap<>();
+        values.put(FLOAT_COLUMN, "-891234567898"); //$NON-NLS-1$
+        final DataSetRow row = new DataSetRow(values);
+
+        //when
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+
+        //then
+        assertEquals("891234567898", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testAbsoluteFloatWithNegativeFloat_alt_decimal_sep() {
+        //given
+        final Map<String, String> values = new HashMap<>();
+        values.put(FLOAT_COLUMN, "-5,42"); //$NON-NLS-1$
+        final DataSetRow row = new DataSetRow(values);
+
+        //when
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+
+        //then
+        assertEquals("5.42", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testAbsoluteFloatWithNegativeScientific() {
+        //given
+        final Map<String, String> values = new HashMap<>();
+        values.put(FLOAT_COLUMN, "-1.2E3"); //$NON-NLS-1$
+        final DataSetRow row = new DataSetRow(values);
+
+        //when
+        ActionTestWorkbench.test(row, absolute.create(absFloatParameters).getRowAction());
+
+        //then
+        assertEquals("1200", row.get(FLOAT_COLUMN)); //$NON-NLS-1$
+    }
+
+    @Test
     public void testAbsoluteIntWithNegativeFloat() {
         //given
         final Map<String, String> values = new HashMap<>();

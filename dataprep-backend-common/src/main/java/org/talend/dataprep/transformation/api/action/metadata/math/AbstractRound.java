@@ -14,10 +14,12 @@ package org.talend.dataprep.transformation.api.action.metadata.math;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.ParseException;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.number.BigDecimalParser;
 import org.talend.dataprep.transformation.api.action.context.ActionContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
@@ -45,11 +47,11 @@ public abstract class AbstractRound extends ActionMetadata implements ColumnActi
         }
 
         try {
-            BigDecimal bd = new BigDecimal(value);
+            BigDecimal bd = BigDecimalParser.toBigDecimal(value);
             bd = bd.setScale(0, getRoundingMode());
             long result = bd.longValue();
             row.set(columnId, String.valueOf(result));
-        } catch (NumberFormatException nfe2) {
+        } catch (ParseException nfe2) {
             // Nan: nothing to do, but fail silently (no change in value)
         }
     }
