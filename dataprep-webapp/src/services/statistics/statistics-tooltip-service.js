@@ -3,92 +3,89 @@
     /**
      * @ngdoc service
      * @name data-prep.services.statistics.service:StatisticsTooltipService
-     * @description prepares the template of the chart's tooltip
-     * @requires data-prep.services.state.constant:state
+     * @description Generate the template for the chart's tooltip
      */
-    function StatisticsTooltipService(state) {
-        var service = {
-          getTooltipTemplate: getTooltipTemplate
+    function StatisticsTooltipService(state, $translate) {
+        var TOOLTIP_FILTERED_TEMPLATE =  _.template(
+            '<strong><%= label %> ' + $translate.instant('TOOLTIP_MATCHING_FILTER') + ': </strong><span style="color:yellow"><%= secondaryValue %> <%= percentage %></span>' +
+            '<br/><br/>' +
+            '<strong><%= label %> ' + $translate.instant('TOOLTIP_MATCHING_FULL') + ': </strong><span style="color:yellow"><%= primaryValue %></span>' +
+            '<br/><br/>' +
+            '<strong><%= title %>: </strong><span style="color:yellow"><%= key %></span>'
+        );
+
+        var TOOLTIP_TEMPLATE =  _.template(
+            '<strong><%= label %>: </strong><span style="color:yellow"><%= primaryValue %></span>' +
+            '<br/><br/>' +
+            '<strong><%= title %>: </strong><span style="color:yellow"><%= key %></span>'
+        );
+
+        return {
+            getTooltip: getTooltip
         };
-
-        return service;
-
-
-        /**************************************************************************************************************/
-        /************************************************* Chart Tooltip Content **************************************/
-        /**************************************************************************************************************/
 
         /**
          * @name getPercentage
-         * @description calculates the percentage
+         * @description Compute the percentage
          * @type {Number} numer numerator
          * @type {Number} denum denumerator
-         * @returns {string} the percentage label
+         * @returns {string} The percentage label
          */
         function getPercentage(numer, denum) {
-            if(denum){
+            if (numer && denum) {
                 var quotient = (numer / denum) * 100;
                 //toFixed(1) and not toFixed(0) because (19354/19430 * 100).toFixed(0) === '100'
                 return '(' + quotient.toFixed(1) + '%)';
             }
-            else{
+            else {
                 return '(0%)';
             }
         }
 
         /**
          * @ngdoc property
-         * @name getTooltipTemplate
+         * @name getTooltip
          * @propertyOf data-prep.services.statistics:StatisticsTooltipService
          * @description creates the html tooltip template
-         * @type {Object} data the hovered object
-         * @type {Object} secData secondary data object corresponding to the nth hovered item
-         * @returns {String} compiled template
+         * @type {string} keyLabel The label
+         * @type {object} key The key
+         * @type {string} primaryValue The primary (unfiltered) value
+         * @type {string} secondaryValue The secondary (filtered) value
+         * @returns {String} Compiled tooltip
          */
-        function getTooltipTemplate(data, secData, keyField, keyLabel, primaryValField, secValField){
-            var primaryValue = data[primaryValField];
-            var range = data[keyField];
-            var uniqueValue = range.min === range.max;
-            var title, value;
-            if(range.min === undefined){//horizontal chart
-                title = 'Record:';
-                value = range;
-            }
-            else {//vertical chart
-                title = (uniqueValue ? 'Value: ' : 'Range: ');
-                value = range.label || (uniqueValue ? range.min : '[' + range.min + ', ' + range.max + '[');
+        function getTooltip(keyLabel, key, primaryValue, secondaryValue) {
+            var title = 'Record';
+            var keyString = key;
+
+            //range
+            if(key instanceof Array) {
+                var uniqueValue = key[0] === key[1];
+                title = uniqueValue ? 'Value' : 'Range';
+                keyString = uniqueValue ? key[0] : '[' + key + '[';
             }
 
-            var secondaryValue, percentage;
-            if(secData){
-                secondaryValue = secData[secValField];
-                percentage = getPercentage(secondaryValue, primaryValue);
+            if (state.playground.filter.gridFilters.length) {
+                var percentage = getPercentage(secondaryValue, primaryValue);
+                return TOOLTIP_FILTERED_TEMPLATE({
+                    label: keyLabel,
+                    title: title,
+                    percentage: percentage,
+                    key: keyString,
+                    primaryValue: primaryValue,
+                    secondaryValue: secondaryValue
+                });
             }
-            else{
-                secondaryValue = 0;
-                percentage = '(0%)';
-            }
-
-            if(state.playground.filter.gridFilters.length){
-                return '<strong>'+ keyLabel + ' matching your filter: </strong>' +
-                    '<span style="color:yellow">' + secondaryValue  + ' ' + percentage + '</span>' +
-                    '<br/>' +
-                    '<br/>' +
-                    '<strong>'+ keyLabel + ' in entire dataset:</strong> <span style="color:yellow">' + primaryValue + ' </span>' +
-                    '<br/>' +
-                    '<br/>' +
-                    '<strong>'+ title +'</strong> ' +
-                    '<span style="color:yellow">'+ value +'</span>';
-            }
-            else{
-                return '<strong>'+ keyLabel + ': </strong> <span style="color:yellow">'+ primaryValue +'</span>' +
-                    '<br/>' +
-                    '<br/>' +
-                    '<strong>'+ title +'</strong> ' +
-                    '<span style="color:yellow">'+ value +'</span>';
+            else {
+                return TOOLTIP_TEMPLATE({
+                    label: keyLabel,
+                    title: title,
+                    key: keyString,
+                    primaryValue: primaryValue
+                });
             }
         }
     }
+
     angular.module('data-prep.services.statistics')
         .service('StatisticsTooltipService', StatisticsTooltipService);
 })();

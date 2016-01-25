@@ -4,138 +4,154 @@ describe('Statistics Tooltip service', function () {
     'use strict';
     var stateMock;
 
+    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+        $translateProvider.translations('en', {
+            'TOOLTIP_MATCHING_FILTER': 'matching your filter',
+            'TOOLTIP_MATCHING_FULL': 'in entire dataset'
+        });
+        $translateProvider.preferredLanguage('en');
+    }));
+
     beforeEach(module('data-prep.services.statistics', function ($provide) {
-        stateMock = {playground: {}};
-        stateMock.playground.filter = {
-            gridFilters: [88]
+        stateMock = {
+            playground: {
+                filter: {gridFilters: []}
+            }
         };
         $provide.constant('state', stateMock);
     }));
 
-    describe('in case of filters', function () {
-        it('should construct tooltip template for horizontal chart', inject(function (StatisticsTooltipService) {
+    describe('without filter', function () {
+        it('should create tooltip for simple record', inject(function (StatisticsTooltipService) {
             //given
-            var data  = {'formattedValue':'96ebf96df2','occurrences':1,'data':'96ebf96df2'};
-            var secData = {'formattedValue':'96ebf96df2','filteredOccurrences':1};
+            stateMock.playground.filter.gridFilters = [];
+            var keyLabel = 'Occurrences';
+            var key = '96ebf96df2';
+            var primaryValue = 5;
 
             //when
-            var template = StatisticsTooltipService.getTooltipTemplate(data, secData,  'formattedValue', 'Occurrences', 'occurrences', 'filteredOccurrences');
+            var tooltip = StatisticsTooltipService.getTooltip(keyLabel, key, primaryValue, undefined);
 
             //then
-            expect(template).toBe(
-                '<strong>Occurrences matching your filter: </strong><span style="color:yellow">1 (100.0%)</span>'+
-                '<br/><br/>'+
-                '<strong>Occurrences in entire dataset:</strong> <span style="color:yellow">1 </span>'+
-                '<br/><br/>'+
-                '<strong>Record:</strong> <span style="color:yellow">96ebf96df2</span>');
+            expect(tooltip).toBe(
+                '<strong>Occurrences: </strong><span style="color:yellow">5</span>' +
+                '<br/><br/>' +
+                '<strong>Record: </strong><span style="color:yellow">96ebf96df2</span>');
         }));
 
-        it('should construct tooltip template for vertical chart', inject(function (StatisticsTooltipService) {
+        it('should create tooltip for range record', inject(function (StatisticsTooltipService) {
             //given
-            var data  = {'data':{'type':'number','min':-9.375,'max':2},'occurrences':1};
-            var secData = {'data':{'type':'number','min':-9.375,'max':2},'filteredOccurrences':0};
+            stateMock.playground.filter.gridFilters = [];
+            var keyLabel = 'Occurrences';
+            var key = [-9.375, 2];
+            var primaryValue = 10;
 
             //when
-            var template = StatisticsTooltipService.getTooltipTemplate(data, secData, 'data', 'Occurrences', 'occurrences', 'filteredOccurrences');
+            var tooltip = StatisticsTooltipService.getTooltip(keyLabel, key, primaryValue, undefined);
 
             //then
-            expect(template).toBe(
-                '<strong>Occurrences matching your filter: </strong><span style="color:yellow">0 (0.0%)</span>'+
-                '<br/><br/>'+
-                '<strong>Occurrences in entire dataset:</strong> <span style="color:yellow">1 </span>'+
-                '<br/><br/>'+
-                '<strong>Range: </strong> <span style="color:yellow">[-9.375, 2[</span>'
-            );
+            expect(tooltip).toBe(
+                '<strong>Occurrences: </strong><span style="color:yellow">10</span>' +
+                '<br/><br/>' +
+                '<strong>Range: </strong><span style="color:yellow">[-9.375,2[</span>');
         }));
 
-        it('should construct tooltip template when second data are NOT YET received', inject(function (StatisticsTooltipService) {
+        it('should create tooltip for unique-value range record', inject(function (StatisticsTooltipService) {
             //given
-            var data  = {'formattedValue':'96ebf96df2','occurrences':1,'data':'96ebf96df2'};
-            var secData;
+            stateMock.playground.filter.gridFilters = [];
+            var keyLabel = 'Occurrences';
+            var key = [2, 2];
+            var primaryValue = 10;
 
             //when
-            var template = StatisticsTooltipService.getTooltipTemplate(data, secData,  'formattedValue', 'Occurrences', 'occurrences', '');
+            var tooltip = StatisticsTooltipService.getTooltip(keyLabel, key, primaryValue, undefined);
 
             //then
-            expect(template).toBe(
-                '<strong>Occurrences matching your filter: </strong><span style="color:yellow">0 (0%)</span>'+
-                '<br/><br/>'+
-                '<strong>Occurrences in entire dataset:</strong> <span style="color:yellow">1 </span>'+
-                '<br/><br/>'+
-                '<strong>Record:</strong> <span style="color:yellow">96ebf96df2</span>');
+            expect(tooltip).toBe(
+                '<strong>Occurrences: </strong><span style="color:yellow">10</span>' +
+                '<br/><br/>' +
+                '<strong>Value: </strong><span style="color:yellow">2</span>');
         }));
-
-        it('should construct tooltip template for vertical chart in case of min === max', inject(function (StatisticsTooltipService) {
-            //given
-            var data  = {'data':{'type':'number','min':-9.375,'max':-9.375},'occurrences':1};
-            var secData = {'data':{'type':'number','min':-9.375,'max':-9.375},'filteredOccurrences':0};
-
-            //when
-            var template = StatisticsTooltipService.getTooltipTemplate(data, secData, 'data', 'Occurrences', 'occurrences', 'filteredOccurrences');
-
-            //then
-            expect(template).toBe(
-                '<strong>Occurrences matching your filter: </strong><span style="color:yellow">0 (0.0%)</span>'+
-                '<br/><br/>'+
-                '<strong>Occurrences in entire dataset:</strong> <span style="color:yellow">1 </span>'+
-                '<br/><br/>'+
-                '<strong>Value: </strong> <span style="color:yellow">-9.375</span>'
-            );
-        }));
-
-        it('should construct tooltip template for vertical chart in case of bar corresponding to the hovered range', inject(function (StatisticsTooltipService) {
-            //given
-            var data  = {'data':{'type':'number','min':-9.375,'max':2},'occurrences':0};
-            var secData = {'data':{'type':'number','min':-9.375,'max':2},'filteredOccurrences':0};
-
-            //when
-            var template = StatisticsTooltipService.getTooltipTemplate(data, secData, 'data', 'Occurrences', 'occurrences', 'filteredOccurrences');
-
-            //then
-            expect(template).toBe(
-                '<strong>Occurrences matching your filter: </strong><span style="color:yellow">0 (0%)</span>'+
-                '<br/><br/>'+
-                '<strong>Occurrences in entire dataset:</strong> <span style="color:yellow">0 </span>'+
-                '<br/><br/>'+
-                '<strong>Range: </strong> <span style="color:yellow">[-9.375, 2[</span>'
-            );
-        }));
-
     });
 
-    describe('in case of NO filters', function () {
-        it('should construct tooltip template for horizontal chart', inject(function (StatisticsTooltipService) {
+    describe('with filters', function () {
+        it('should create tooltip for simple record', inject(function (StatisticsTooltipService) {
             //given
-            var data  = {'formattedValue':'96ebf96df2','occurrences':1,'data':'96ebf96df2'};
-            var secData = {'formattedValue':'96ebf96df2','filteredOccurrences':1};
-            stateMock.playground.filter.gridFilters = [];
+            stateMock.playground.filter.gridFilters = [{}];
+            var keyLabel = 'Occurrences';
+            var key = '96ebf96df2';
+            var primaryValue = 5;
+            var secondaryValue = 1;
 
             //when
-            var template = StatisticsTooltipService.getTooltipTemplate(data, secData,  'formattedValue', 'Occurrences', 'occurrences', 'filteredOccurrences');
+            var tooltip = StatisticsTooltipService.getTooltip(keyLabel, key, primaryValue, secondaryValue);
 
             //then
-            expect(template).toBe(
-                '<strong>Occurrences: </strong> <span style="color:yellow">1</span>'+
-                '<br/><br/>'+
-                '<strong>Record:</strong> <span style="color:yellow">96ebf96df2</span>');
-
+            expect(tooltip).toBe(
+                '<strong>Occurrences matching your filter: </strong><span style="color:yellow">1 (20.0%)</span>' +
+                '<br/><br/>' +
+                '<strong>Occurrences in entire dataset: </strong><span style="color:yellow">5</span>' +
+                '<br/><br/>' +
+                '<strong>Record: </strong><span style="color:yellow">96ebf96df2</span>');
         }));
 
-        it('should construct tooltip template for vertical chart', inject(function (StatisticsTooltipService) {
+        it('should create tooltip for range record', inject(function (StatisticsTooltipService) {
             //given
-            var data  = {'data':{'type':'number','min':-9.375,'max':2},'occurrences':1};
-            var secData = {'data':{'type':'number','min':-9.375,'max':2},'filteredOccurrences':0};
-            stateMock.playground.filter.gridFilters = [];
+            stateMock.playground.filter.gridFilters = [{}];
+            var keyLabel = 'Occurrences';
+            var key = [-9.375, 2];
+            var primaryValue = 10;
+            var secondaryValue = 5;
 
             //when
-            var template = StatisticsTooltipService.getTooltipTemplate(data, secData, 'data', 'Occurrences', 'occurrences', 'filteredOccurrences');
+            var tooltip = StatisticsTooltipService.getTooltip(keyLabel, key, primaryValue, secondaryValue);
 
             //then
-            expect(template).toBe(
-                '<strong>Occurrences: </strong> <span style="color:yellow">1</span>'+
-                '<br/><br/>'+
-                '<strong>Range: </strong> <span style="color:yellow">[-9.375, 2[</span>'
-            );
+            expect(tooltip).toBe(
+                '<strong>Occurrences matching your filter: </strong><span style="color:yellow">5 (50.0%)</span>' +
+                '<br/><br/>' +
+                '<strong>Occurrences in entire dataset: </strong><span style="color:yellow">10</span>' +
+                '<br/><br/>' +
+                '<strong>Range: </strong><span style="color:yellow">[-9.375,2[</span>');
+        }));
+
+        it('should create tooltip for unique-value range record', inject(function (StatisticsTooltipService) {
+            //given
+            stateMock.playground.filter.gridFilters = [{}];
+            var keyLabel = 'Occurrences';
+            var key = [2, 2];
+            var primaryValue = 10;
+            var secondaryValue = 5;
+
+            //when
+            var tooltip = StatisticsTooltipService.getTooltip(keyLabel, key, primaryValue, secondaryValue);
+
+            //then
+            expect(tooltip).toBe(
+                '<strong>Occurrences matching your filter: </strong><span style="color:yellow">5 (50.0%)</span>' +
+                '<br/><br/>' +
+                '<strong>Occurrences in entire dataset: </strong><span style="color:yellow">10</span>' +
+                '<br/><br/>' +
+                '<strong>Value: </strong><span style="color:yellow">2</span>');
+        }));
+
+        it('should create tooltip without secondary data (not computed yet)', inject(function (StatisticsTooltipService) {
+            //given
+            stateMock.playground.filter.gridFilters = [{}];
+            var keyLabel = 'Occurrences';
+            var key = [2, 2];
+            var primaryValue = 10;
+
+            //when
+            var tooltip = StatisticsTooltipService.getTooltip(keyLabel, key, primaryValue, undefined);
+
+            //then
+            expect(tooltip).toBe(
+                '<strong>Occurrences matching your filter: </strong><span style="color:yellow"> (0%)</span>' +
+                '<br/><br/>' +
+                '<strong>Occurrences in entire dataset: </strong><span style="color:yellow">10</span>' +
+                '<br/><br/>' +
+                '<strong>Value: </strong><span style="color:yellow">2</span>');
         }));
     });
 });

@@ -21,11 +21,13 @@
      *     primary-value-field="occurrences"
      *
      *     secondary-data="secondaryData"
-     *     secondary-value-field="filteredOccurrences">
+     *     secondary-value-field="filteredOccurrences"
+     *
+     *     tooltip-content="getTooltipContent(keyLabel, key, primaryValue, secondaryValue)">
      * </vertical-barchart>
      * @param {number}      width The chart width
      * @param {number}      height The chart height
-     * @param {boolean} showXAxis Determine if the x-axis should be drawn
+     * @param {boolean}     showXAxis Determine if the x-axis should be drawn
      * @param {function}    onClick The callback on chart bar click. The interval is an Object {min: minValue, max, maxValue}
      * @param {string}      keyField The key property name in primaryData elements
      * @param {string}      keyLabel The label property name in primaryData elements
@@ -34,6 +36,7 @@
      * @param {array}       secondaryData The secondary value array to render
      * @param {string}      secondaryValueField The secondary value property name in secondaryData
      * @param {array}       activeLimits The limits [min, max[ that represents the active part
+     * @param {function}    tooltipContent The tooltip content generator. It can take 4 infos : keyLabel (the label), key (the key), primaryValue (the selected primary value), secondaryValue (the selected secondary value)
      */
 
     function VerticalBarchart() {
@@ -49,7 +52,7 @@
                 secondaryData: '=',
                 secondaryValueField: '@',
                 showXAxis: '=',
-                tooltipContent: '='
+                tooltipContent: '&'
             },
             link: function (scope, element, attrs) {
                 var BAR_MIN_HEIGHT = 3;
@@ -69,9 +72,14 @@
                     .attr('class', 'vertical-barchart-cls d3-tip')
                     .offset([0, -11])
                     .direction('w')
-                    .html(function (datum, index) {
+                    .html(function (primaryDatum, index) {
                         var secondaryDatum = scope.secondaryData ? scope.secondaryData[index] : undefined;
-                        return scope.tooltipContent(datum, secondaryDatum, scope.keyField, scope.keyLabel, scope.primaryValueField, scope.secondaryValueField);
+                        return scope.tooltipContent({
+                            keyLabel: scope.keyLabel,
+                            key: getXAxisDomain(primaryDatum),
+                            primaryValue: getPrimaryValue(primaryDatum),
+                            secondaryValue: secondaryDatum && getSecondaryValue(secondaryDatum)
+                        });
                     });
 
                 //------------------------------------------------------------------------------------------------------

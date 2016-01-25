@@ -21,7 +21,9 @@
      *
      *    secondary-data="secondaryData"
      *    secondary-value-field="filteredOccurrences"
-     *    secondary-bar-class="greenBar">
+     *    secondary-bar-class="greenBar"
+     *
+     *    tooltip-content="getTooltipContent(keyLabel, key, primaryValue, secondaryValue)">
      * </horizontal-barchart>
      * @param {number}      width The chart width
      * @param {number}      height The chart height
@@ -34,6 +36,7 @@
      * @param {array}       secondaryData The secondary value array to render
      * @param {string}      secondaryValueField The secondary value property name in secondaryData
      * @param {string}      secondaryBarClass The secondary chart bar class name. Default: 'blueBar'
+     * @param {function}    tooltipContent The tooltip content generator. It can take 4 infos : keyLabel (the label), key (the key), primaryValue (the selected primary value), secondaryValue (the selected secondary value)
      * */
 
     function HorizontalBarchart() {
@@ -49,7 +52,7 @@
                 secondaryData: '=',
                 secondaryValueField: '@',
                 secondaryBarClass: '@',
-                tooltipContent: '='
+                tooltipContent: '&'
             },
             link: function (scope, element, attrs) {
                 var BAR_MIN_WIDTH = 3;
@@ -66,9 +69,14 @@
                 var tooltip = d3.tip()
                     .attr('class', 'horizontal-barchart-cls d3-tip')
                     .offset([-10, 0])
-                    .html(function (datum, index) {
+                    .html(function (primaryDatum, index) {
                         var secondaryDatum = scope.secondaryData ? scope.secondaryData[index] : undefined;
-                        return scope.tooltipContent(datum, secondaryDatum, scope.keyField, scope.keyLabel, scope.primaryValueField, scope.secondaryValueField);
+                        return scope.tooltipContent({
+                            keyLabel: scope.keyLabel,
+                            key: getKey(primaryDatum),
+                            primaryValue: getPrimaryValue(primaryDatum),
+                            secondaryValue: secondaryDatum && getSecondaryValue(secondaryDatum)
+                        });
                     });
 
                 //------------------------------------------------------------------------------------------------------
