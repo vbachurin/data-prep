@@ -1,6 +1,17 @@
 (function () {
     'use strict';
 
+    var sortList = [
+        {id: 'name', name: 'NAME_SORT', property: 'name'},
+        {id: 'date', name: 'DATE_SORT', property: 'created'}
+    ];
+
+    var orderList = [
+        {id: 'asc', name: 'ASC_ORDER'},
+        {id: 'desc', name: 'DESC_ORDER'}
+    ];
+
+
     var lookupState = {
         actions: [],                                                // Actions list to add to the lookup  (1 action per dataset)
         addedActions: [],                                           // Actions already added to the lookup
@@ -12,7 +23,11 @@
         dataView: new Slick.Data.DataView({inlineFilters: false}),  // grid view that hold the dataset data
         selectedColumn: null,                                       // selected column
         visibility: false,                                          // visibility flag
-        step: null                                                  // lookup step
+        step: null,                                                  // lookup step
+        sort: sortList[1],
+        order: orderList[1],
+        sortList: sortList,
+        orderList: orderList
     };
 
     /**
@@ -34,9 +49,19 @@
             setAddedActions: setAddedActions,
             setDatasets: setDatasets,
             setAddMode: setAddMode,
-            setUpdateMode: setUpdateMode
-
+            setUpdateMode: setUpdateMode,
+            setSort: setSort,
+            setOrder: setOrder
         };
+
+
+        function setSort(sort) {
+            lookupState.sort = sort;
+        }
+
+        function setOrder(order) {
+            lookupState.order = order;
+        }
 
         /**
          * @ngdoc method

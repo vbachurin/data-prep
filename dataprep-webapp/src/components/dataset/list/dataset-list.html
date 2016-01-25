@@ -9,7 +9,7 @@
         <div class="button-switch">
             <talend-button-switch
                     values="datasetListCtrl.state.inventory.sortList"
-                    current-value="datasetListCtrl.sortSelected"
+                    current-value="datasetListCtrl.state.inventory.sort"
                     display-key="name"
                     change-action="datasetListCtrl.updateSortBy(selected)">
             </talend-button-switch>
@@ -18,7 +18,7 @@
         <div class="button-switch">
             <talend-button-switch
                     values="datasetListCtrl.state.inventory.orderList"
-                    current-value="datasetListCtrl.sortOrderSelected"
+                    current-value="datasetListCtrl.state.inventory.order"
                     display-key="name"
                     change-action="datasetListCtrl.updateSortOrder(selected)">
             </talend-button-switch>
@@ -27,7 +27,7 @@
     </div>
 
     <div class="inventory-list" id="datasets-list">
-        <div class="inventory-entry" ng-repeat="folder in datasetListCtrl.currentFolderContent.folders track by folder.id">
+        <div class="inventory-entry" ng-repeat="folder in datasetListCtrl.state.folder.currentFolderContent.folders track by folder.id">
             <div class="inventory-icon inventory-folder" ng-click="datasetListCtrl.goToFolder(folder)">
                 <img src="assets/images/folder/folder-icon.png"/>
             </div>
@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <div ng-repeat="dataset in datasetListCtrl.currentFolderContent.datasets track by $index" id="dataset_{{$index}}">
+        <div ng-repeat="dataset in datasetListCtrl.state.folder.currentFolderContent.datasets track by $index" id="dataset_{{$index}}">
             <inventory-item
                     class="inventory-entry"
                     type="dataset"
@@ -75,7 +75,7 @@
             <input type="text"
                    ng-model="datasetListCtrl.folderName"
                    ng-model-options="{debounce: { default: 300, blur: 0 }}"
-                   unique-folder="datasetListCtrl.currentFolderContent.folders"/>
+                   unique-folder="datasetListCtrl.state.folder.currentFolderContent.folders"/>
 
             <div class="modal-buttons">
                 <button type="button" class="talend-modal-close btn-secondary modal-secondary-button" translate-once="CANCEL">

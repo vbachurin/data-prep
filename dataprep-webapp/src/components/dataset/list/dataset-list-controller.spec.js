@@ -42,7 +42,9 @@ describe('Dataset list controller', function () {
             inventory: {
                 datasets: [],
                 sortList: sortList,
-                orderList: orderList
+                orderList: orderList,
+                sort: sortList[0],
+                order: orderList[0]
             }
         };
         $provide.constant('state', stateMock);
@@ -125,8 +127,7 @@ describe('Dataset list controller', function () {
             it('should refresh dataset when sort is changed', inject(function ($q, FolderService) {
                 //given
                 var ctrl = createController();
-                ctrl.sortSelected = {id: 'date', name: 'DATE_SORT'};
-                var newSort = {id: 'name', name: 'NAME_SORT'};
+                var newSort = {id: 'date', name: 'DATE_SORT'};
 
                 //when
                 ctrl.updateSortBy(newSort);
@@ -138,8 +139,7 @@ describe('Dataset list controller', function () {
             it('should refresh dataset when order is changed', inject(function ($q, FolderService) {
                 //given
                 var ctrl = createController();
-                ctrl.selectedOrder = {id: 'desc', name: 'DESC_ORDER'};
-                var newSortOrder = {id: 'asc', name: 'ASC_ORDER'};
+                var newSortOrder = {id: 'desc', name: 'DESC_ORDER'};
 
                 //when
                 ctrl.updateSortOrder(newSortOrder);
@@ -151,10 +151,11 @@ describe('Dataset list controller', function () {
             it('should not refresh dataset when requested sort is already the selected one', inject(function (FolderService) {
                 //given
                 var ctrl = createController();
-                var newSort = {id: 'name', name: 'NAME_SORT'};
+                var newSort = {id: 'date', name: 'DATE_SORT'};
 
                 //when
                 ctrl.updateSortBy(newSort);
+                stateMock.inventory.sort = newSort;
                 ctrl.updateSortBy(newSort);
 
                 //then
@@ -164,10 +165,11 @@ describe('Dataset list controller', function () {
             it('should not refresh dataset when requested order is already the selected one', inject(function (FolderService) {
                 //given
                 var ctrl = createController();
-                var newSortOrder = {id: 'desc', name: 'ASC_ORDER'};
+                var newSortOrder = {id: 'desc', name: 'DESC_ORDER'};
 
                 //when
                 ctrl.updateSortOrder(newSortOrder);
+                stateMock.inventory.order = newSortOrder;
                 ctrl.updateSortOrder(newSortOrder);
 
                 //then
@@ -177,67 +179,69 @@ describe('Dataset list controller', function () {
             it('should update sort parameter', inject(function (DatasetService, StorageService) {
                 //given
                 var ctrl = createController();
-                var newSort = {id: 'name', name: 'NAME'};
+                var newSort = {id: 'date', name: 'DATE'};
 
                 //when
                 ctrl.updateSortBy(newSort);
 
                 //then
-                expect(StorageService.saveDatasetsSort).toHaveBeenCalledWith('name');
+                expect(StorageService.saveDatasetsSort).toHaveBeenCalledWith('date');
             }));
 
             it('should update order parameter', inject(function (DatasetService, StorageService) {
                 //given
                 var ctrl = createController();
-                var newSortOrder = {id: 'asc', name: 'ASC_ORDER'};
+                var newSortOrder = {id: 'desc', name: 'DESC_ORDER'};
 
                 //when
                 ctrl.updateSortOrder(newSortOrder);
 
                 //then
-                expect(StorageService.saveDatasetsOrder).toHaveBeenCalledWith('asc');
+                expect(StorageService.saveDatasetsOrder).toHaveBeenCalledWith('desc');
             }));
 
         });
 
         describe('with dataset refresh failure', function () {
-            beforeEach(inject(function ($q, FolderService) {
+            beforeEach(inject(function ($q, FolderService, StateService) {
                 spyOn(FolderService, 'getContent').and.returnValue($q.reject(false));
+                spyOn(StateService, 'setDatasetsSort');
+                spyOn(StateService, 'setDatasetsOrder');
             }));
 
-            it('should set the old sort parameter', function () {
+            it('should set the old sort parameter', inject(function (StateService) {
                 //given
-                var previousSelectedSort = {id: 'date', name: 'DATE'};
-                var newSort = {id: 'name', name: 'NAME_SORT'};
+                var newSort = {id: 'date', name: 'DATE'};
+                var previousSelectedSort = {id: 'name', name: 'NAME_SORT'};
 
                 var ctrl = createController();
-                ctrl.sortSelected = previousSelectedSort;
+                stateMock.inventory.sort = previousSelectedSort;
 
                 //when
                 ctrl.updateSortBy(newSort);
-                expect(ctrl.sortSelected).toBe(newSort);
+                expect(StateService.setDatasetsSort).toHaveBeenCalledWith(newSort);
                 scope.$digest();
 
                 //then
-                expect(ctrl.sortSelected).toBe(previousSelectedSort);
-            });
+                expect(StateService.setDatasetsSort).toHaveBeenCalledWith(previousSelectedSort);
+            }));
 
-            it('should set the old order parameter', function () {
+            it('should set the old order parameter', inject(function (StateService) {
                 //given
-                var previousSelectedOrder = {id: 'desc', name: 'DESC'};
-                var newSortOrder = {id: 'asc', name: 'ASC_ORDER'};
+                var newSortOrder = {id: 'desc', name: 'DESC'};
+                var previousSelectedOrder = {id: 'asc', name: 'ASC_ORDER'};
 
                 var ctrl = createController();
-                ctrl.sortOrderSelected = previousSelectedOrder;
+                stateMock.inventory.order = previousSelectedOrder;
 
                 //when
                 ctrl.updateSortOrder(newSortOrder);
-                expect(ctrl.sortOrderSelected).toBe(newSortOrder);
+                expect(StateService.setDatasetsOrder).toHaveBeenCalledWith(newSortOrder);
                 scope.$digest();
 
                 //then
-                expect(ctrl.sortOrderSelected).toBe(previousSelectedOrder);
-            });
+                expect(StateService.setDatasetsOrder).toHaveBeenCalledWith(previousSelectedOrder);
+            }));
         });
     });
 

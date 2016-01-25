@@ -8,9 +8,31 @@
 	 * @requires data-prep.services.folder.service:FolderService
 	 * @requires data-prep.services.state.constant:state
 	 */
-	function FolderCtrl (FolderService, state, StateService) {
+	function FolderCtrl (FolderService, state, StateService, StorageService) {
 		var vm = this;
 		vm.state = state;
+
+		/**
+		 * @ngdoc method
+		 * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+		 * @name refreshDatasetsSort
+		 * @description refresh the actual sort parameter
+		 * */
+		function refreshDatasetsSort() {
+			var savedSort = StorageService.getDatasetsSort();
+			StateService.setDatasetsSort(savedSort ? _.find(state.inventory.sortList, {id: savedSort}) : state.inventory.sortList[1]);
+		}
+
+		/**
+		 * @ngdoc method
+		 * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+		 * @name refreshDatasetsOrder
+		 * @description refresh the actual order parameter
+		 */
+		function refreshDatasetsOrder() {
+			var savedSortOrder = StorageService.getDatasetsOrder();
+			StateService.setDatasetsOrder(savedSortOrder ? _.find(state.inventory.orderList, {id: savedSortOrder}) : state.inventory.orderList[1]);
+		}
 
 		/**
 		 * @ngdoc method
@@ -37,6 +59,9 @@
 		/**
 		 * Load folders on start
 		 */
+		refreshDatasetsSort();
+		refreshDatasetsOrder();
+
 		FolderService.getContent();
 	}
 

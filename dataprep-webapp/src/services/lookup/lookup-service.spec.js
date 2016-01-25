@@ -200,6 +200,9 @@ describe('lookup service', function () {
                 //given
                 stateMock.playground.lookup.addedActions = [];
 
+                stateMock.playground.lookup.sort = {id: 'date', name: 'DATE_SORT', property: 'created'};
+                stateMock.playground.lookup.order = {id: 'desc', name: 'DESC_ORDER'};
+
                 //when
                 LookupService.initLookups();
                 $rootScope.$digest();
@@ -228,6 +231,9 @@ describe('lookup service', function () {
                 //given
                 spyOn(TransformationRestService, 'getDatasetTransformations').and.returnValue($q.when({data: []}));
                 stateMock.playground.lookup.addedActions = [];
+
+                stateMock.playground.lookup.sort = {id: 'date', name: 'DATE_SORT', property: 'created'};
+                stateMock.playground.lookup.order = {id: 'desc', name: 'DESC_ORDER'};
 
                 //when
                 LookupService.initLookups();
@@ -435,13 +441,16 @@ describe('lookup service', function () {
         it('should initialize lookup datasets', inject(function ($q, $rootScope, LookupService, StorageService, RecipeService, StateService, TransformationRestService) {
             //given
             stateMock.playground.lookup.datasets = [
-                {id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: false, created : 100},
+                {id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: false, created : 80},
                 {id : '3', addedToLookup: false, created : 90},
-                {id : '2', addedToLookup: false, created : 80}
+                {id : '2', addedToLookup: false, created : 100}
             ];
 
             stateMock.playground.lookup.actions = lookupActions;
             stateMock.playground.lookup.addedActions = [];
+
+            stateMock.playground.lookup.sort = {id: 'date', name: 'DATE_SORT', property: 'created'};
+            stateMock.playground.lookup.order = {id: 'desc', name: 'DESC_ORDER'};
 
             spyOn(StorageService, 'getLookupDatasets').and.returnValue(['1']);
             spyOn(RecipeService, 'getRecipe').and.returnValue([lookupStep]);
@@ -456,9 +465,9 @@ describe('lookup service', function () {
             //then
             expect(StorageService.saveLookupDatasets).toHaveBeenCalledWith(['1','9e739b88-5ec9-4b58-84b5-2127a7e2eac7']);
 
-            expect(stateMock.playground.lookup.datasets[0].addedToLookup ).toBe(true);
+            expect(stateMock.playground.lookup.datasets[0].addedToLookup ).toBe(false);
             expect(stateMock.playground.lookup.datasets[1].addedToLookup ).toBe(false);
-            expect(stateMock.playground.lookup.datasets[2].addedToLookup ).toBe(false);
+            expect(stateMock.playground.lookup.datasets[2].addedToLookup ).toBe(true);
 
             expect(StateService.setLookupAddedActions).toHaveBeenCalledWith(lookupActions);
         }));
@@ -489,21 +498,26 @@ describe('lookup service', function () {
             expect(StorageService.saveLookupDatasets).toHaveBeenCalledWith(['9e739b88-5ec9-4b58-84b5-2127a7e2eac7', '4']);
         }));
 
-
-        it('should get lookup datasets sort', inject(function (LookupService, StorageService) {
+        it('should sort lookup datasets', inject(function ($q, $rootScope, LookupService) {
             //given
-            spyOn(StorageService, 'getLookupDatasetsSort').and.returnValue({id : 'name'});
+            stateMock.playground.lookup.datasets = [
+                {id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created : 80},
+                {id : '3', addedToLookup: false, created : 90},
+                {id : '2', addedToLookup: false, created : 100}
+            ];
+
+            stateMock.playground.lookup.sort = {id: 'date', name: 'DATE_SORT', property: 'date'};
+            stateMock.playground.lookup.order = {id: 'desc', name: 'DESC_ORDER'};
+
+
+            //when
+            LookupService.sortLookupDatasetsList();
+            $rootScope.$digest();
 
             //then
-            expect(LookupService.getLookupDatasetsSort()).toEqual({id : 'name'});
-        }));
-
-        it('should get lookup datasets order', inject(function (LookupService, StorageService) {
-            //given
-            spyOn(StorageService, 'getLookupDatasetsOrder').and.returnValue({id : 'desc'});
-
-            //then
-            expect(LookupService.getLookupDatasetsOrder()).toEqual({id : 'desc'});
+            expect(stateMock.playground.lookup.datasets[0].created).toBe(100);
+            expect(stateMock.playground.lookup.datasets[1].created).toBe(90);
+            expect(stateMock.playground.lookup.datasets[2].created).toBe(80);
         }));
     });
 });

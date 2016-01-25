@@ -139,13 +139,12 @@ describe('Lookup controller', function () {
                     columnsToAdd: ['0002', '0003'],
                     datasets: dsActions,
                     dataset: dsActions[0],
-                    addedActions: []
+                    addedActions: [],
+                    sortList: sortList,
+                    orderList: orderList,
+                    sort: sortList[1],
+                    order: orderList[1]
                 }
-            },
-            inventory: {
-                datasets: [],
-                sortList: sortList,
-                orderList: orderList
             }
         };
         $provide.constant('state', stateMock);
@@ -334,26 +333,24 @@ describe('Lookup controller', function () {
             expect(dataset.addedToLookup).toBe(true);
         }));
 
-        it('should update sort by', inject(function ($timeout, StorageService) {
+        it('should update sort by', inject(function ($timeout, StorageService, StateService) {
             //given
             var sortBy = {id: 'date', name: 'DATE_SORT', property: 'created'};
             stateMock.playground.lookup.datasets = [{created : 1}, {created : 3}, {created : 2}];
             spyOn(StorageService, 'saveLookupDatasetsSort').and.returnValue();
+            spyOn(StateService, 'setLookupDatasetsSort').and.returnValue();
             var ctrl = createController();
 
             //when
-            ctrl.sortSelected = {id: 'name', name: 'NAME_SORT', property: 'name'};
-            ctrl.sortOrderSelected = {id: 'desc', name: 'DESC_ORDER'};
+            stateMock.playground.lookup.sort = {id: 'name', name: 'NAME_SORT', property: 'name'};
+            stateMock.playground.lookup.order = {id: 'desc', name: 'DESC_ORDER'};
             ctrl.updateSortBy(sortBy);
             $timeout.flush();
 
             //then
-            expect(ctrl.sortSelected).toEqual(sortBy);
-            expect(StorageService.saveLookupDatasetsSort).toHaveBeenCalledWith(sortBy.id);
 
-            expect(stateMock.playground.lookup.datasets[0].created).toBe(3);
-            expect(stateMock.playground.lookup.datasets[1].created).toBe(2);
-            expect(stateMock.playground.lookup.datasets[2].created).toBe(1);
+            expect(StateService.setLookupDatasetsSort).toHaveBeenCalledWith(sortBy);
+            expect(StorageService.saveLookupDatasetsSort).toHaveBeenCalledWith(sortBy.id);
         }));
 
         it('should not update sort by', inject(function ($timeout, StorageService) {
@@ -371,26 +368,23 @@ describe('Lookup controller', function () {
             expect(StorageService.saveLookupDatasetsSort).not.toHaveBeenCalled();
         }));
 
-        it('should update sort order', inject(function ($timeout, StorageService) {
+        it('should update sort order', inject(function ($timeout, StorageService, StateService) {
             //given
             var orderBy = {id: 'desc', name: 'DESC_ORDER'};
             stateMock.playground.lookup.datasets = [{created : 1}, {created : 3}, {created : 2}];
             spyOn(StorageService, 'saveLookupDatasetsOrder').and.returnValue();
+            spyOn(StateService, 'setLookupDatasetsOrder').and.returnValue();
             var ctrl = createController();
 
             //when
-            ctrl.sortSelected = {id: 'date', name: 'DATE_SORT', property: 'created'};
-            ctrl.sortOrderSelected = {id: 'asc', name: 'ASC_ORDER'};
+            stateMock.playground.lookup.sort = {id: 'date', name: 'DATE_SORT', property: 'created'};
+            stateMock.playground.lookup.order = {id: 'asc', name: 'ASC_ORDER'};
             ctrl.updateSortOrder(orderBy);
             $timeout.flush();
 
             //then
-            expect(ctrl.sortOrderSelected).toEqual(orderBy);
+            expect(StateService.setLookupDatasetsOrder).toHaveBeenCalledWith(orderBy);
             expect(StorageService.saveLookupDatasetsOrder).toHaveBeenCalledWith(orderBy.id);
-
-            expect(stateMock.playground.lookup.datasets[0].created).toBe(3);
-            expect(stateMock.playground.lookup.datasets[1].created).toBe(2);
-            expect(stateMock.playground.lookup.datasets[2].created).toBe(1);
         }));
 
         it('should not update sort order', inject(function ($timeout, StorageService) {
@@ -407,6 +401,22 @@ describe('Lookup controller', function () {
             $timeout.flush();
             //then
             expect(StorageService.saveLookupDatasetsOrder).not.toHaveBeenCalled();
+        }));
+
+        it('should refresh sort parameters', inject(function ($timeout, StorageService, StateService) {
+            //given
+            spyOn(StorageService, 'getLookupDatasetsSort').and.returnValue('date');
+            spyOn(StorageService, 'getLookupDatasetsOrder').and.returnValue('desc');
+            spyOn(StateService, 'setLookupDatasetsSort');
+            spyOn(StateService, 'setLookupDatasetsOrder');
+
+
+            //when
+            createController();
+
+            //then
+            expect(StateService.setLookupDatasetsSort).toHaveBeenCalledWith({id: 'date', name: 'DATE_SORT', property: 'created'});
+            expect(StateService.setLookupDatasetsOrder).toHaveBeenCalledWith({id: 'desc', name: 'DESC_ORDER'});
         }));
     });
 });

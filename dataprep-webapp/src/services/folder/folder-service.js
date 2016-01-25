@@ -112,8 +112,8 @@
          * @returns {Promise} The GET promise
          */
         function getContent(folder) {
-            var sort = DatasetListService.getSort();
-            var order = DatasetListService.getOrder();
+            var sort = state.inventory.sort.id;
+            var order = state.inventory.order.id;
             var promise = FolderRestService.getContent(folder && folder.id, sort, order);
 
             promise.then(function (result) {

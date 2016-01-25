@@ -49,6 +49,8 @@
             setLookupUpdateMode: PlaygroundStateService.setLookupUpdateMode,
             setLookupVisibility: PlaygroundStateService.setLookupVisibility,
             updateLookupColumnsToAdd: PlaygroundStateService.updateLookupColumnsToAdd,
+            setLookupDatasetsSort: PlaygroundStateService.setLookupDatasetsSort,
+            setLookupDatasetsOrder: PlaygroundStateService.setLookupDatasetsOrder,
 
             //playground - filters
             addGridFilter: PlaygroundStateService.addGridFilter,
@@ -90,8 +92,8 @@
             removePreparation: InventoryStateService.removePreparation,
             setDatasets: InventoryStateService.setDatasets,
             removeDataset: InventoryStateService.removeDataset,
-            getSortItem: InventoryStateService.getSortItem,
-            getOrderItem: InventoryStateService.getOrderItem,
+            setDatasetsSort: InventoryStateService.setSort,
+            setDatasetsOrder: InventoryStateService.setOrder,
 
             //feedback
             showFeedback: FeedbackStateService.show,

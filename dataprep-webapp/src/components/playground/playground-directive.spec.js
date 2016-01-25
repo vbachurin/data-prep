@@ -77,7 +77,12 @@ describe('Playground directive', function () {
             playground: {
                 visible: true,
                 filter: {gridFilters: []},
-                lookup: {visibility: false},
+                lookup: {
+                    visibility: false,
+                    datasets: [],
+                    sortList: sortList,
+                    orderList: orderList
+                },
                 grid: {
                     selectedColumn: {'id': '0001'},
                     selectedLine: {'0001': '1'}

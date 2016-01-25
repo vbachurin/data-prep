@@ -46,6 +46,8 @@
             setLookupUpdateMode: LookupStateService.setUpdateMode,
             setLookupVisibility: LookupStateService.setVisibility,
             updateLookupColumnsToAdd: LookupStateService.updateColumnsToAdd,
+            setLookupDatasetsSort: LookupStateService.setSort,
+            setLookupDatasetsOrder: LookupStateService.setOrder,
 
             //filters
             addGridFilter: addGridFilter,

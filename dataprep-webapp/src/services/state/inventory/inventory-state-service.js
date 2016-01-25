@@ -15,7 +15,9 @@
         preparations: null,
         datasets: null,
         sortList: sortList,
-        orderList: orderList
+        orderList: orderList,
+        sort: sortList[1],
+        order: orderList[1]
     };
 
 
@@ -25,8 +27,8 @@
             removePreparation: removePreparation,
             setDatasets: setDatasets,
             removeDataset: removeDataset,
-            getSortItem: getSortItem,
-            getOrderItem: getOrderItem
+            setSort: setSort,
+            setOrder: setOrder
         };
 
         function setPreparations(preparations) {
@@ -45,12 +47,12 @@
             inventoryState.datasets = _.reject(inventoryState.datasets, {id: dataset.id});
         }
 
-        function getSortItem(sortId) {
-            return _.find(sortList, {id: sortId});
+        function setSort(sort) {
+            inventoryState.sort = sort;
         }
 
-        function getOrderItem(orderId) {
-            return _.find(orderList, {id: orderId});
+        function setOrder(order) {
+            inventoryState.order = order;
         }
 
     }

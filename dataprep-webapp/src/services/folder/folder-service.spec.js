@@ -64,7 +64,9 @@ describe('Folder services', function () {
             inventory: {
                 datasets: [],
                 sortList: sortList,
-                orderList: orderList
+                orderList: orderList,
+                sort: sortList[0],
+                order: orderList[0]
             }
         };
         $provide.constant('state', stateMock);
@@ -282,8 +284,6 @@ describe('Folder services', function () {
                 }
             };
             spyOn(FolderRestService, 'getContent').and.returnValue($q.when(content));
-            spyOn(DatasetListService, 'getSort').and.returnValue('name');
-            spyOn(DatasetListService, 'getOrder').and.returnValue('asc');
             spyOn(StateService, 'setFoldersStack').and.returnValue();
             spyOn(StateService, 'setCurrentFolder').and.returnValue();
             spyOn(StateService, 'setCurrentFolderContent').and.returnValue();

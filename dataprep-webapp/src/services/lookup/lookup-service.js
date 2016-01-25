@@ -20,32 +20,8 @@
             updateTargetColumn: updateTargetColumn,
             updateLookupDatasets: updateLookupDatasets,
             disableDatasetsUsedInRecipe: disableDatasetsUsedInRecipe,
-            getLookupDatasetsSort: getLookupDatasetsSort,
-            getLookupDatasetsOrder: getLookupDatasetsOrder,
             sortLookupDatasetsList: sortLookupDatasetsList
         };
-
-        /**
-         * @ngdoc method
-         * @methodOf data-prep.services.lookup.service:LookupService
-         * @name getLookupDatasetsSort
-         * @description Returns the actual sort parameter
-         * */
-        function getLookupDatasetsSort() {
-            var savedSort = StorageService.getLookupDatasetsSort();
-            return savedSort ? savedSort : state.inventory.sortList[1].id;
-        }
-
-        /**
-         * @ngdoc method
-         * @methodOf data-prep.services.lookup.service:LookupService
-         * @name getLookupDatasetsOrder
-         * @description Returns the actual order parameter
-         */
-        function getLookupDatasetsOrder() {
-            var savedSortOrder = StorageService.getLookupDatasetsOrder();
-            return savedSortOrder ? savedSortOrder : state.inventory.orderList[1].id;
-        }
 
         /**
          * @ngdoc method
@@ -262,9 +238,7 @@
             var addedDatasets = StorageService.getLookupDatasets();
 
             //Sort lookup datsets list
-            var sort = StateService.getSortItem(getLookupDatasetsSort());
-            var order = StateService.getOrderItem(getLookupDatasetsOrder());
-            sortLookupDatasetsList(sort, order);
+            sortLookupDatasetsList();
 
             //Consolidate addedDatasets
             _.forEach(RecipeService.getRecipe(), function (nextStep) {
@@ -348,7 +322,10 @@
          * @methodOf data-prep.services.lookup.service:LookupService
          * @description sort datasets list
          */
-        function sortLookupDatasetsList(sort, order) {
+        function sortLookupDatasetsList() {
+            var sort = state.playground.lookup.sort;
+            var order = state.playground.lookup.order;
+
             state.playground.lookup.datasets =_.sortBy(state.playground.lookup.datasets, sort.property);
             if(order.id === 'desc'){
                 state.playground.lookup.datasets = state.playground.lookup.datasets.reverse();

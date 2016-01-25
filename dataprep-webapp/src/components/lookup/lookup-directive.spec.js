@@ -18,16 +18,14 @@ describe('Lookup directive', function() {
 			playground : {
 				lookup : {
 					columnsToAdd : [],
-					selectedColumn : {}
+					selectedColumn : {},
+					datasets: [],
+					sortList: sortList,
+					orderList: orderList
 				},
 				grid : {
 					selectedColumn : {}
 				}
-			},
-			inventory: {
-				datasets: [],
-				sortList: sortList,
-				orderList: orderList
 			}
 		};
 		$provide.constant('state', StateMock);
