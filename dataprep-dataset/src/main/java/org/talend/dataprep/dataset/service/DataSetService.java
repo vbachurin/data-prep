@@ -745,42 +745,63 @@ public class DataSetService {
         lock.lock();
         try {
             LOG.debug("updateDataSet: {}", dataSetMetadata);
-            // we retry information we do not update
+
+            //
+            // Only part of the metadata can be updated, so the original dataset metadata is loaded and updated
+            //
             DataSetMetadata previous = dataSetMetadataRepository.get(dataSetId);
             if (previous == null) {
                 // No need to silently create the data set metadata: associated content will most likely not exist.
                 throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST, ExceptionContext.build().put("id", dataSetId));
             }
-            try {
-                // Update existing data set metadata with new one.
-                previous.setName(dataSetMetadata.getName());
-                Optional<SchemaParserResult.SheetContent> sheetContentFound = previous.getSchemaParserResult().getSheetContents()
-                        .stream().filter(sheetContent -> dataSetMetadata.getSheetName().equals(sheetContent.getName()))
-                        .findFirst();
 
-                if (sheetContentFound.isPresent()) {
-                    List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
-                    if (previous.getRowMetadata() == null) {
-                        previous.setRowMetadata(new RowMetadata(Collections.emptyList()));
+            try {
+                // update the name
+                previous.setName(dataSetMetadata.getName());
+
+                // update the sheet content (in case of a multi-sheet excel file)
+                if (previous.getSchemaParserResult() != null) {
+                    Optional<SchemaParserResult.SheetContent> sheetContentFound = previous.getSchemaParserResult()
+                            .getSheetContents().stream()
+                            .filter(sheetContent -> dataSetMetadata.getSheetName().equals(sheetContent.getName())).findFirst();
+
+                    if (sheetContentFound.isPresent()) {
+                        List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
+                        if (previous.getRowMetadata() == null) {
+                            previous.setRowMetadata(new RowMetadata(Collections.emptyList()));
+                        }
+                        previous.getRowMetadata().setColumns(columnMetadatas);
                     }
-                    previous.getRowMetadata().setColumns(columnMetadatas);
+
+                    previous.setSheetName(dataSetMetadata.getSheetName());
+                    previous.setSchemaParserResult(null);
                 }
-                // Set the user-selected sheet name
-                previous.setSheetName(dataSetMetadata.getSheetName());
-                previous.setSchemaParserResult(null);
+
+                // update parameters & encoding (so that user can change import parameters for CSV)
+                previous.getContent().setParameters(dataSetMetadata.getContent().getParameters());
+                previous.setEncoding(dataSetMetadata.getEncoding());
+
+                // Validate that the new data set metadata and removes the draft status
                 FormatGuess formatGuess = formatGuessFactory.getFormatGuess(dataSetMetadata.getContent().getFormatGuessId());
-                DraftValidator draftValidator = formatGuess.getDraftValidator();
-                // Validate that the new data set metadata removes the draft status
-                DraftValidator.Result result = draftValidator.validate(dataSetMetadata);
-                if (result.isDraft()) {
-                    // This is not an exception case: data set may remain a draft after update (although rather
-                    // unusual).
-                    LOG.warn("Data set #{} is still a draft after update.", dataSetId);
-                    return;
+                try {
+                    DraftValidator draftValidator = formatGuess.getDraftValidator();
+                    DraftValidator.Result result = draftValidator.validate(dataSetMetadata);
+                    if (result.isDraft()) {
+                        // This is not an exception case: data set may remain a draft after update (although rather
+                        // unusual)
+                        LOG.warn("Data set #{} is still a draft after update.", dataSetId);
+                        return;
+                    }
+                    // Data set metadata to update is no longer a draft
+                    previous.setDraft(false);
                 }
-                // Data set metadata to update is no longer a draft
-                previous.setDraft(false);
-                dataSetMetadataRepository.add(previous); // Save it
+ catch (UnsupportedOperationException e) {
+                    // no need to validate draft here
+                }
+
+                // update metadata
+                dataSetMetadataRepository.add(previous);
+
                 // all good mate!! so send that to jms
                 // Asks for a in depth schema analysis (for column type information).
                 queueEvents(dataSetId, FormatAnalysis.class);
