@@ -25,7 +25,7 @@
             update : update,
             processCertification : processCertification,
             delete : deleteDataset,
-            refreshDefaultPreparation : refreshDefaultPreparation,
+            refreshDefaultPreparations : refreshDefaultPreparations,
             getDatasetsPromise : getDatasetsPromise,
             hasDatasetsPromise: hasDatasetsPromise
         };
@@ -201,13 +201,13 @@
 
         /**
          * @ngdoc method
-         * @name refreshDefaultPreparation
+         * @name refreshDefaultPreparations
          * @methodOf data-prep.services.dataset.service:DatasetListService
          * @param {object[]} preparations The preparations to use
          * @description [PRIVATE] Set the default preparation to each dataset
          * @returns {promise} The process promise
          */
-        function refreshDefaultPreparation(preparations) {
+        function refreshDefaultPreparations(preparations) {
             return getDatasetsPromise()
                 .then(function(datasets) {
                         // group preparation per dataset

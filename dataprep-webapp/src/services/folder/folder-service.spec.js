@@ -368,7 +368,7 @@ describe('Folder services', function () {
             expect(stateMock.folder.currentFolderContent.datasets[0].defaultPreparation).toBeFalsy();
 
             //when
-            FolderService.refreshDefaultPreparation(preparations);
+            FolderService.refreshDefaultPreparations(preparations);
 
             //then
             expect(stateMock.folder.currentFolderContent.datasets[0].defaultPreparation.id).toBe(datasetResult.defaultPreparation.id);
@@ -389,7 +389,7 @@ describe('Folder services', function () {
             expect(stateMock.folder.currentFolderContent.datasets[0].defaultPreparation).toBeFalsy();
 
             //when
-            FolderService.refreshDefaultPreparation(preparations);
+            FolderService.refreshDefaultPreparations(preparations);
 
             //then
             expect(stateMock.folder.currentFolderContent.datasets[0].defaultPreparation).toBeFalsy();

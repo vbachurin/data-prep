@@ -336,13 +336,13 @@ describe('Dataset List Service', function () {
         stateMock.inventory.datasets = datasets.slice(0);
 
         //when
-        DatasetListService.refreshDefaultPreparation(preparations);
+        DatasetListService.refreshDefaultPreparations(preparations);
         $rootScope.$apply();
 
         //then
-        expect(datasets[0].defaultPreparation.id).toBe(preparations[0].id);
-        expect(datasets[1].defaultPreparation.id).toBe(preparations[3].id);
-        expect(datasets[2].defaultPreparation).toBeNull();
+        expect(datasets[0].defaultPreparations.id).toBe(preparations[0].id);
+        expect(datasets[1].defaultPreparations.id).toBe(preparations[3].id);
+        expect(datasets[2].defaultPreparations).toBeNull();
     }));
 
     it('should fetch datasets when not already initialized and init default preparations in datasets', inject(function ($rootScope, DatasetListService) {
@@ -350,13 +350,13 @@ describe('Dataset List Service', function () {
         stateMock.inventory.datasets = null;
 
         //when
-        DatasetListService.refreshDefaultPreparation(preparations);
+        DatasetListService.refreshDefaultPreparations(preparations);
         $rootScope.$apply();
 
         //then
-        expect(datasets[0].defaultPreparation.id).toBe(preparations[0].id);
-        expect(datasets[1].defaultPreparation.id).toBe(preparations[3].id);
-        expect(datasets[2].defaultPreparation).toBeNull();
+        expect(datasets[0].defaultPreparations.id).toBe(preparations[0].id);
+        expect(datasets[1].defaultPreparations.id).toBe(preparations[3].id);
+        expect(datasets[2].defaultPreparations).toBeNull();
     }));
 
     it('should return datasets after init default preparations in datasets', inject(function ($rootScope, DatasetListService) {
@@ -365,7 +365,7 @@ describe('Dataset List Service', function () {
         var result = [];
 
         //when
-        DatasetListService.refreshDefaultPreparation(preparations)
+        DatasetListService.refreshDefaultPreparations(preparations)
             .then(function (promiseResult) {
                 result = promiseResult;
             });

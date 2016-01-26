@@ -46,6 +46,7 @@
            class="btn-icon btn-transparent"
            title="{{'OPEN_ACTION' | translate: inventoryItemCtrl.getTooltipContent()}}"
            ng-if="inventoryItemCtrl.relatedInventories.length"
+           ng-dblclick="inventoryItemCtrl.openRelatedInventoryItem(inventoryItemCtrl.relatedInventories[0])"
            ng-click="inventoryItemCtrl.openRelatedInventoryItem(inventoryItemCtrl.relatedInventories[0])">
         </a>
 
@@ -55,11 +56,17 @@
                     <a class="dropdown-button"></a>
                 </span>
                 <ul class="dropdown-menu">
-                    <li data-icon="c" ng-click="inventoryItemCtrl.open(inventoryItemCtrl.item)" translate-once="CREATE_NEW_PREP"></li>
-                    <li class="divider"></li>
-                    <li ng-repeat="prepa in inventoryItemCtrl.relatedInventories track by $index">
-                        <a data-icon="c" ng-click="inventoryItemCtrl.openRelatedInventoryItem(prepa)">{{prepa.name}}&nbsp;
-                            <span class="related-inv-details">{{'PREPARATION_DETAILS' | translate : {nbsteps: prepa.actions.length, since : prepa.lastModificationDate} }}</span>
+                    <li class="dropdown-container-li" data-icon="c" ng-click="inventoryItemCtrl.open(inventoryItemCtrl.item)" translate-once="CREATE_NEW_PREP"></li>
+                    <li class="dropdown-container-li divider"></li>
+                    <li class="dropdown-container-li" ng-repeat="prepa in inventoryItemCtrl.relatedInventories track by $index">
+                        <a ng-click="inventoryItemCtrl.openRelatedInventoryItem(prepa)">
+                            <span data-icon="c">{{prepa.name}}&nbsp;</span>
+                            <span class="related-inv">
+                                <span class="related-inv-details-label" translate-once="REL_INV_MODIFIED"></span>
+                                <span>{{'PREPARATION_DETAILS_SINCE' | translate : {since : prepa.lastModificationDate} }}</span>
+                                <span class="related-inv-details-label">-</span>
+                                <span>{{'PREPARATION_DETAILS_STEPS' | translate : {nbsteps: prepa.actions.length} }}</span>
+                            </span>
                         </a>
                     </li>
                 </ul>

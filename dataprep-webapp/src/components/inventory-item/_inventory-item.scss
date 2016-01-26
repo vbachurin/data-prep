@@ -3,15 +3,20 @@
     padding: 3px 0;
   }
 
-  .dropdown-container{
-    ul > li {
+  .dropdown-container-li{
       margin:10px;
       a {
-        .related-inv-details {
-          float:right;
-          color:#99999A;
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+        .related-inv {
+          align-self: center;
           font-weight: 300;
+          color:#99999A;
           font-size: 0.9em;
+          .related-inv-details-label{
+            color:#000000;
+          }
         }
       }
       &.divider{
@@ -23,7 +28,6 @@
         background-color: #e5e5e5;
         padding: 0;
       }
-    }
   }
 
   .edition-text-input {
