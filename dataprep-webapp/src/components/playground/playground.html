@@ -5,7 +5,7 @@
               on-close="playgroundCtrl.close()">
     <div class="modal-header">
         <ul class="left-header" insertion-playground-left-header>
-            <li ng-switch="!!playgroundCtrl.state.playground.dataset.limit" id="dataset-header-details">
+            <li id="dataset-header-details" ng-switch="!!playgroundCtrl.state.playground.dataset.limit">
                 <span translate="FILE_DETAILS_NAME"
                       translate-value-name="{{playgroundCtrl.state.playground.dataset.name}}"></span> -
                 <span class="file-lines-count" ng-switch-when="false" translate="FILE_DETAILS_LINES"
