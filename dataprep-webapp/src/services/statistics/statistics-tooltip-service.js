@@ -6,19 +6,22 @@
      * @description Generate the template for the chart's tooltip
      */
     function StatisticsTooltipService(state, $translate) {
-        var TOOLTIP_FILTERED_TEMPLATE =  _.template(
-            '<strong><%= label %> ' + $translate.instant('TOOLTIP_MATCHING_FILTER') + ': </strong><span style="color:yellow"><%= secondaryValue %> <%= percentage %></span>' +
-            '<br/><br/>' +
-            '<strong><%= label %> ' + $translate.instant('TOOLTIP_MATCHING_FULL') + ': </strong><span style="color:yellow"><%= primaryValue %></span>' +
-            '<br/><br/>' +
-            '<strong><%= title %>: </strong><span style="color:yellow"><%= key %></span>'
-        );
-
         var TOOLTIP_TEMPLATE =  _.template(
             '<strong><%= label %>: </strong><span style="color:yellow"><%= primaryValue %></span>' +
             '<br/><br/>' +
             '<strong><%= title %>: </strong><span style="color:yellow"><%= key %></span>'
         );
+
+        var TOOLTIP_FILTERED_TEMPLATE =  _.template('');
+        $translate(['TOOLTIP_MATCHING_FILTER', 'TOOLTIP_MATCHING_FULL']).then(function(messages) {
+            TOOLTIP_FILTERED_TEMPLATE =  _.template(
+                '<strong><%= label %> ' + messages.TOOLTIP_MATCHING_FILTER + ': </strong><span style="color:yellow"><%= secondaryValue %> <%= percentage %></span>' +
+                '<br/><br/>' +
+                '<strong><%= label %> ' + messages.TOOLTIP_MATCHING_FULL + ': </strong><span style="color:yellow"><%= primaryValue %></span>' +
+                '<br/><br/>' +
+                '<strong><%= title %>: </strong><span style="color:yellow"><%= key %></span>'
+            );
+        });
 
         return {
             getTooltip: getTooltip
