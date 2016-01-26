@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -36,12 +38,20 @@ public class CompareNumbers extends ActionMetadata implements ColumnAction, Othe
     protected static final String CONSTANT_VALUE = "constant_value"; //$NON-NLS-1$
 
     protected static final String COMPARE_MODE = "compare_mode"; //$NON-NLS-1$
+
     protected static final String EQ = "eq";
+
     protected static final String NE = "ne";
+
     protected static final String GT = "gt";
+
     protected static final String GE = "ge";
+
     protected static final String LT = "lt";
+
     protected static final String LE = "le";
+
+    private  static final Logger LOGGER = LoggerFactory.getLogger(CompareNumbers.class);
 
     /**
      * @see ActionMetadata#getName()
@@ -121,20 +131,17 @@ public class CompareNumbers extends ActionMetadata implements ColumnAction, Othe
 
         // create new column and append it after current column
         final ColumnMetadata column = rowMetadata.getById(columnId);
-        final String newColumnId = context.column("result",
-                (r) -> {
-                    final ColumnMetadata c = ColumnMetadata.Builder //
-                            .column() //
-                            .name(column.getName() + "_" + compareMode + "_" + compareToLabel + "?") //
-                            .type(Type.BOOLEAN) //
-                            .build();
-                    rowMetadata.insertAfter(columnId, c);
-                    return c;
-                }
-        );
+        final String newColumnId = context.column("result", (r) -> {
+            final ColumnMetadata c = ColumnMetadata.Builder //
+                    .column() //
+                    .name(column.getName() + "_" + compareMode + "_" + compareToLabel + "?") //
+                    .type(Type.BOOLEAN) //
+                    .build();
+            rowMetadata.insertAfter(columnId, c);
+            return c;
+        });
 
-        row.set(newColumnId,
-                toStringTrueFalse(compare(row.get(columnId), getValueToCompareWith(parameters, row), compareMode)));
+        row.set(newColumnId, toStringTrueFalse(compare(row.get(columnId), getValueToCompareWith(parameters, row), compareMode)));
     }
 
     private String getValueToCompareWith(Map<String, String> parameters, DataSetRow row) {
@@ -169,6 +176,7 @@ public class CompareNumbers extends ActionMetadata implements ColumnAction, Othe
                 return false;
             }
         } catch (ParseException e) {
+            LOGGER.debug("Unable to compare values '{}' and '{}'", value1, value2, e);
             return false;
         }
     }
