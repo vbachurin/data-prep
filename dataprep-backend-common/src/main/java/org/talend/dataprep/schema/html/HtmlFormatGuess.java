@@ -11,7 +11,8 @@ import org.talend.dataprep.schema.Serializer;
 @Component(HtmlFormatGuess.BEAN_ID)
 public class HtmlFormatGuess implements FormatGuess {
 
-    public static final String MEDIA_TYPE = "text/html";
+    // TODO Html content is not Excel, but currently only HTML content wrapped in Excel is supported, thus this MIME.
+    public static final String MEDIA_TYPE = "application/vnd.ms-excel";
 
     public static final String BEAN_ID = "formatGuess#html";
 
