@@ -55,12 +55,38 @@
         };
 
 
-        function setSort(sort) {
-            lookupState.sort = sort;
+        /**
+         * @ngdoc method
+         * @name sortDatasets
+         * @description Sort lookup datasets
+         */
+        function sortDatasets() {
+            lookupState.datasets =_.sortBy(lookupState.datasets, lookupState.sort.property);
+            if(lookupState.order.id === 'desc'){
+                lookupState.datasets = lookupState.datasets.reverse();
+            }
         }
 
+        /**
+         * @ngdoc method
+         * @name setSort
+         * @methodOf data-prep.services.state.service:LookupStateService
+         * @description Set the sort type of the lookup datasets
+         */
+        function setSort(sort) {
+            lookupState.sort = sort;
+            sortDatasets();
+        }
+
+        /**
+         * @ngdoc method
+         * @name setOrder
+         * @methodOf data-prep.services.state.service:LookupStateService
+         * @description Set the order type of the lookup datasets
+         */
         function setOrder(order) {
             lookupState.order = order;
+            sortDatasets();
         }
 
         /**
@@ -93,6 +119,7 @@
          */
         function setDatasets(datasets) {
             lookupState.datasets = datasets;
+            sortDatasets();
         }
 
         /**

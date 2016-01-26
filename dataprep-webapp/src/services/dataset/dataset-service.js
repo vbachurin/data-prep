@@ -159,7 +159,7 @@
          * @description [PRIVATE] Refresh the metadata within the preparations
          */
         function consolidatePreparationsAndDatasets (response) {
-            PreparationListService.refreshMetadataInfos(DatasetListService.datasets)
+            PreparationListService.refreshMetadataInfos(state.inventory.datasets)
                 .then(DatasetListService.refreshDefaultPreparation);
 
             return response;

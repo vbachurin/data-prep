@@ -31,7 +31,7 @@ describe('InventoryItem directive', function () {
         element.remove();
     });
 
-    describe('should display actions if enabled', function() {
+    describe('should display actions', function() {
         beforeEach(inject(function ($rootScope, $compile) {
             scope = $rootScope.$new();
 
@@ -40,7 +40,7 @@ describe('InventoryItem directive', function () {
             scope.copy = function(){};
             scope.remove = function(){};
             createElement = function () {
-                element = angular.element('<inventory-item item="dataset" actions-enabled="true" details="INVENTORY_DETAILS" type= "dataset" open="openDataset" copy="copy" remove="remove"></inventory-item>');
+                element = angular.element('<inventory-item item="dataset" details="INVENTORY_DETAILS" type= "dataset" open="openDataset" copy="copy" remove="remove"></inventory-item>');
                 $compile(element)(scope);
                 scope.$digest();
                 return element;
@@ -63,32 +63,7 @@ describe('InventoryItem directive', function () {
             expect(element.find('.inventory-title').eq(0).text().indexOf('US States')).toBe(0);
             expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymousUser, created ' + momentize('1437020219741') + ', contains  lines');
 
-            expect(element.find('a').length).toBe(2); //copy and remove actions
-        }));
-    });
-
-    describe('should NOT display actions if disabled', function() {
-        beforeEach(inject(function ($rootScope, $compile) {
-            scope = $rootScope.$new();
-
-            scope.dataset = dataset;
-            scope.openDataset = function(){};
-            scope.copy = function(){};
-            scope.remove = function(){};
-            createElement = function () {
-                element = angular.element('<inventory-item item="dataset" actions-enabled="false" details="INVENTORY_DETAILS" type= "dataset" open="openDataset" copy="copy" remove="remove"></inventory-item>');
-                $compile(element)(scope);
-                scope.$digest();
-                return element;
-            };
-        }));
-
-        it('should render dataset directive', inject(function () {
-            //when
-            createElement();
-
-            //then
-            expect(element.find('a').length).toBe(0); //copy and remove actions
+            expect(element.find('a').length).toBe(3); //copy, remove and toogleFavourite actions
         }));
     });
 });

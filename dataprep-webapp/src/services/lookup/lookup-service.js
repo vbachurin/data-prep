@@ -19,8 +19,7 @@
             loadFromStep: loadFromStep,
             updateTargetColumn: updateTargetColumn,
             updateLookupDatasets: updateLookupDatasets,
-            disableDatasetsUsedInRecipe: disableDatasetsUsedInRecipe,
-            sortLookupDatasetsList: sortLookupDatasetsList
+            disableDatasetsUsedInRecipe: disableDatasetsUsedInRecipe
         };
 
         /**
@@ -237,9 +236,6 @@
             var actionsToAdd = [];
             var addedDatasets = StorageService.getLookupDatasets();
 
-            //Sort lookup datsets list
-            sortLookupDatasetsList();
-
             //Consolidate addedDatasets
             _.forEach(RecipeService.getRecipe(), function (nextStep) {
                 if(nextStep.actionParameters.action === 'lookup'){ /*jshint camelcase: false */
@@ -314,22 +310,6 @@
 
                 dataset.enableToAddToLookup = lookupStep ? false : true;
             });
-        }
-
-        /**
-         * @ngdoc method
-         * @name sortDatasetsList
-         * @methodOf data-prep.services.lookup.service:LookupService
-         * @description sort datasets list
-         */
-        function sortLookupDatasetsList() {
-            var sort = state.playground.lookup.sort;
-            var order = state.playground.lookup.order;
-
-            state.playground.lookup.datasets =_.sortBy(state.playground.lookup.datasets, sort.property);
-            if(order.id === 'desc'){
-                state.playground.lookup.datasets = state.playground.lookup.datasets.reverse();
-            }
         }
     }
 

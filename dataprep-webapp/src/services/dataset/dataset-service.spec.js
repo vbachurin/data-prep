@@ -11,11 +11,15 @@ describe('Dataset Service', function () {
     var preparations = [{id: '4385fa764bce39593a405d91bc23'}];
 
     beforeEach(module('data-prep.services.dataset', function ($provide) {
-        stateMock = {folder: {
-            currentFolderContent : {
-                datasets : datasets
+        stateMock = {
+            folder: {
+                currentFolderContent: {
+                    datasets: datasets
+                }
+            }, inventory: {
+                datasets: []
             }
-        }};
+        };
         $provide.constant('state', stateMock);
     }));
 
@@ -24,7 +28,7 @@ describe('Dataset Service', function () {
         datasetConsolidation = $q.when(true);
         promiseWithProgress = $q.when(true);
 
-        DatasetListService.datasets = datasets;
+        stateMock.inventory.datasets = datasets;
 
         spyOn(DatasetListService, 'refreshDefaultPreparation').and.returnValue(datasetConsolidation);
         spyOn(DatasetListService, 'delete').and.returnValue($q.when(true));
@@ -44,8 +48,8 @@ describe('Dataset Service', function () {
         spyOn(PreparationListService, 'refreshMetadataInfos').and.returnValue(preparationConsolidation);
     }));
 
-    afterEach(inject(function (DatasetListService) {
-        DatasetListService.datasets = null;
+    afterEach(inject(function () {
+        stateMock.inventory.datasets = [];
     }));
 
     describe('lifecycle', function () {
@@ -74,7 +78,7 @@ describe('Dataset Service', function () {
         describe('create', function() {
             it('should create a dataset and return the http promise (with progress function)', inject(function ($rootScope, DatasetService, DatasetListService) {
                 //given
-                var dataset = DatasetListService.datasets[0];
+                var dataset = stateMock.inventory.datasets[0];
                 var folder = {id : '', path: '', name: 'Home'};
 
                 //when
@@ -88,7 +92,7 @@ describe('Dataset Service', function () {
 
             it('should consolidate preparations and datasets', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
                 //given
-                var dataset = DatasetListService.datasets[0];
+                var dataset = stateMock.inventory.datasets[0];
 
                 //when
                 DatasetService.create(dataset);
@@ -103,7 +107,7 @@ describe('Dataset Service', function () {
         describe('update', function() {
             it('should update a dataset and return the http promise (with progress function)', inject(function ($rootScope, DatasetService, DatasetListService) {
                 //given
-                var dataset = DatasetListService.datasets[0];
+                var dataset = stateMock.inventory.datasets[0];
 
                 //when
                 var result = DatasetService.update(dataset);
@@ -116,7 +120,7 @@ describe('Dataset Service', function () {
             it('should consolidate preparations and datasets', inject(function ($rootScope, $q, DatasetService, DatasetListService, PreparationListService) {
                 //given
                 spyOn(DatasetListService, 'getDatasetsPromise').and.returnValue($q.when(datasets));
-                var dataset = DatasetListService.datasets[0];
+                var dataset = stateMock.inventory.datasets[0];
 
                 //when
                 DatasetService.update(dataset);
@@ -132,7 +136,7 @@ describe('Dataset Service', function () {
         describe('delete', function() {
             it('should delete a dataset', inject(function ($rootScope, DatasetService, DatasetListService) {
                 //given
-                var dataset = DatasetListService.datasets[0];
+                var dataset = stateMock.inventory.datasets[0];
 
                 //when
                 DatasetService.delete(dataset);
@@ -144,7 +148,7 @@ describe('Dataset Service', function () {
 
             it('should consolidate preparations and datasets', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
                 //given
-                var dataset = DatasetListService.datasets[0];
+                var dataset = stateMock.inventory.datasets[0];
 
                 //when
                 DatasetService.delete(dataset);
@@ -157,7 +161,7 @@ describe('Dataset Service', function () {
 
             it('should consolidate preparations and datasets', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService, StorageService) {
                 //given
-                var dataset = DatasetListService.datasets[0];
+                var dataset = stateMock.inventory.datasets[0];
                 spyOn(StorageService, 'removeAllAggregations').and.returnValue();
 
                 //when
@@ -172,7 +176,7 @@ describe('Dataset Service', function () {
         describe('clone', function() {
             it('should clone a dataset and return the http promise (with progress function)', inject(function ($rootScope, DatasetService, DatasetListService) {
                 //given
-                var dataset = DatasetListService.datasets[0];
+                var dataset = stateMock.inventory.datasets[0];
                 var newFolder = {id:'/wine/beer'};
                 var name = 'my clone';
                 var mockPromise = {};
@@ -186,7 +190,7 @@ describe('Dataset Service', function () {
 
             it('should consolidate preparations and datasets', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
                 //given
-                var dataset = DatasetListService.datasets[0];
+                var dataset = stateMock.inventory.datasets[0];
                 var name = 'my clone';
 
                 //when
@@ -202,7 +206,7 @@ describe('Dataset Service', function () {
         describe('move', function() {
             it('should love a dataset and return the http promise (with progress function)', inject(function ($rootScope, DatasetService, DatasetListService) {
                 //given
-                var dataset = DatasetListService.datasets[0];
+                var dataset = stateMock.inventory.datasets[0];
                 var folder = {id:'/wine/foo'};
                 var newFolder = {id:'/wine/beer'};
                 var name = 'my clone';
@@ -217,7 +221,7 @@ describe('Dataset Service', function () {
 
             it('should consolidate preparations and datasets', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
                 //given
-                var dataset = DatasetListService.datasets[0];
+                var dataset = stateMock.inventory.datasets[0];
                 var name = 'my clone';
 
                 //when
@@ -236,7 +240,7 @@ describe('Dataset Service', function () {
         describe('certification', function () {
             it('should process certification on dataset', inject(function ($rootScope, DatasetService, DatasetListService) {
                 //given
-                var dataset = DatasetListService.datasets[0];
+                var dataset = stateMock.inventory.datasets[0];
 
                 //when
                 DatasetService.processCertification(dataset);
@@ -248,7 +252,7 @@ describe('Dataset Service', function () {
 
             it('should consolidate preparations and datasets', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
                 //given
-                var dataset = DatasetListService.datasets[0];
+                var dataset = stateMock.inventory.datasets[0];
 
                 //when
                 DatasetService.processCertification(dataset);
@@ -263,7 +267,7 @@ describe('Dataset Service', function () {
         describe('favorite', function () {
             it('should toggle favorite in a dataset', inject(function ($rootScope, DatasetService, DatasetListService, DatasetRestService) {
                 //given
-                var dataset = DatasetListService.datasets[0];
+                var dataset = stateMock.inventory.datasets[0];
                 dataset.favorite = false;
                 //when
                 DatasetService.toggleFavorite(dataset);
@@ -360,7 +364,7 @@ describe('Dataset Service', function () {
         it('should get a promise that fetch datasets', inject(function ($rootScope, DatasetService, DatasetListService) {
             //given
             var results = null;
-            DatasetListService.datasets = null;
+            stateMock.inventory.datasets = null;
 
             //when
             DatasetService.getDatasets()
@@ -376,11 +380,11 @@ describe('Dataset Service', function () {
 
         it('should consolidate preparations and datasets on new dataset fetch', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
             //given
-            DatasetListService.datasets = null;
+            stateMock.inventory.datasets = null;
 
             //when
             DatasetService.getDatasets();
-            DatasetListService.datasets = datasets; // simulate dataset list initialisation
+            stateMock.inventory.datasets = datasets; // simulate dataset list initialisation
             $rootScope.$digest();
 
             //then
@@ -399,7 +403,7 @@ describe('Dataset Service', function () {
         it('should consolidate preparations and datasets on datasets refresh', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
             //when
             DatasetService.refreshDatasets();
-            DatasetListService.datasets = datasets; // simulate dataset list initialisation
+            stateMock.inventory.datasets = datasets; // simulate dataset list initialisation
             $rootScope.$digest();
 
             //then

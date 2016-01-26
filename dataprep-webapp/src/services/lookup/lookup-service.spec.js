@@ -465,9 +465,9 @@ describe('lookup service', function () {
             //then
             expect(StorageService.setLookupDatasets).toHaveBeenCalledWith(['1','9e739b88-5ec9-4b58-84b5-2127a7e2eac7']);
 
-            expect(stateMock.playground.lookup.datasets[0].addedToLookup ).toBe(false);
+            expect(stateMock.playground.lookup.datasets[0].addedToLookup ).toBe(true);
             expect(stateMock.playground.lookup.datasets[1].addedToLookup ).toBe(false);
-            expect(stateMock.playground.lookup.datasets[2].addedToLookup ).toBe(true);
+            expect(stateMock.playground.lookup.datasets[2].addedToLookup ).toBe(false);
 
             expect(StateService.setLookupAddedActions).toHaveBeenCalledWith(lookupActions);
         }));
@@ -496,28 +496,6 @@ describe('lookup service', function () {
             expect(StateService.setLookupAddedActions).toHaveBeenCalledWith(lookupActions);
 
             expect(StorageService.setLookupDatasets).toHaveBeenCalledWith(['9e739b88-5ec9-4b58-84b5-2127a7e2eac7', '4']);
-        }));
-
-        it('should sort lookup datasets', inject(function ($q, $rootScope, LookupService) {
-            //given
-            stateMock.playground.lookup.datasets = [
-                {id : '9e739b88-5ec9-4b58-84b5-2127a7e2eac7', addedToLookup: true, created : 80},
-                {id : '3', addedToLookup: false, created : 90},
-                {id : '2', addedToLookup: false, created : 100}
-            ];
-
-            stateMock.playground.lookup.sort = {id: 'date', name: 'DATE_SORT', property: 'date'};
-            stateMock.playground.lookup.order = {id: 'desc', name: 'DESC_ORDER'};
-
-
-            //when
-            LookupService.sortLookupDatasetsList();
-            $rootScope.$digest();
-
-            //then
-            expect(stateMock.playground.lookup.datasets[0].created).toBe(100);
-            expect(stateMock.playground.lookup.datasets[1].created).toBe(90);
-            expect(stateMock.playground.lookup.datasets[2].created).toBe(80);
         }));
     });
 });

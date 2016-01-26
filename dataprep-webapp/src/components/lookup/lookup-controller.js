@@ -180,7 +180,6 @@
         vm.updateSortBy = function updateSortBy(sortType) {
             $timeout(function () {
                 StateService.setLookupDatasetsSort(sortType);
-                LookupService.sortLookupDatasetsList();
                 StorageService.setLookupDatasetsSort(sortType.id);
             });
         };
@@ -195,7 +194,6 @@
         vm.updateSortOrder = function updateSortOrder(order) {
             $timeout(function () {
                 StateService.setLookupDatasetsOrder(order);
-                LookupService.sortLookupDatasetsList();
                 StorageService.setLookupDatasetsOrder(order.id);
             });
         };
