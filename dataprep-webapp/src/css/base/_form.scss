@@ -10,6 +10,7 @@ select {
   padding: 0.5em;
   margin: 0;
   width: 100%;
+  font-family: $base-font-family;
 
   &:hover {
     border: 1px solid $medium-gray;
