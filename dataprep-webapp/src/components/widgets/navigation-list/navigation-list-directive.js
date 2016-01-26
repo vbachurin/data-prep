@@ -57,13 +57,18 @@
                     }
 
                     function getVisiblePosition(item) {
-                        var itemPosition = ctrl.list.indexOf(item) * ITEM_WIDTH;
+                        var itemIndex = ctrl.list.indexOf(item);
+                        var itemPosition = itemIndex * ITEM_WIDTH;
                         var actualPosition = posLeft + itemPosition;
 
+                        //is not visible on the left
                         if(actualPosition < 0) {
                             return - itemPosition;
                         }
-                        return  - itemPosition - ITEM_WIDTH;
+
+                        //is not visible on the right
+                        var nbVisibleItems = Math.floor(wrapper.width() / ITEM_WIDTH) || 1;
+                        return -(itemIndex + 1 - nbVisibleItems) * ITEM_WIDTH;
                     }
 
                     leftButton.on('click', function () {
