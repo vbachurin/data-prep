@@ -43,7 +43,8 @@ public class HtmlSchemaParser implements SchemaParser {
         Map<String, String> parameters = request.getMetadata().getContent().getParameters();
         String encoding = request.getMetadata().getEncoding();
         String headerSelector = parameters.get(HtmlFormatGuesser.HEADER_SELECTOR_KEY);
-        String valuesSelector = parameters.get(HtmlFormatGuesser.VALUES_SELECTOR_KEY);
+        // no need to parse values here
+        //String valuesSelector = parameters.get(HtmlFormatGuesser.VALUES_SELECTOR_KEY);
 
         try {
             String str = IOUtils.toString(request.getContent(), encoding);
@@ -66,11 +67,14 @@ public class HtmlSchemaParser implements SchemaParser {
                 id++;
             }
 
+            /*
+            no need to parse values here
             Elements values = document.select(valuesSelector);
 
             for (Element value : values) {
                 LOGGER.debug("value: {}", value);
             }
+            */
 
             SchemaParserResult.SheetContent sheetContent = new SchemaParserResult.SheetContent();
             sheetContent.setColumnMetadatas(columnMetadatas);
