@@ -9,7 +9,6 @@
      *
      * @usage
      * <inventory-item
-     *        actions-enabled="true"
      *        copy="datasetListCtrl.openFolderChoice"
      *        details="INVENTORY_DETAILS"
      *        file-model="datasetListCtrl.updateDatasetFile"
@@ -22,7 +21,6 @@
      *        type= "dataset"
      *        update="datasetListCtrl.uploadUpdatedDatasetFile">
      * </inventory-item>
-     * @param {boolean}     actionsEnabled enable/disable actions on inventory items
      * @param {function}    copy copy or remove an inventory item
      * @param {string}      details of the inventory item to be translated (author, lines number)
      * @param {array}       fileModel the file which will replace the current item
@@ -42,7 +40,7 @@
             replace: true,
             bindToController: true,
             controllerAs: 'inventoryItemCtrl',
-            controller: 'InventoryItemCtrl',
+            controller: function() {},
             scope: {
                 actionsEnabled : '=',
                 copy : '=',

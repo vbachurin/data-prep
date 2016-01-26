@@ -20,7 +20,9 @@
 		 * */
 		function refreshDatasetsSort() {
 			var savedSort = StorageService.getDatasetsSort();
-			StateService.setDatasetsSort(savedSort ? _.find(state.inventory.sortList, {id: savedSort}) : state.inventory.sortList[1]);
+			if(savedSort){
+				StateService.setDatasetsSort(_.find(state.inventory.sortList, {id: savedSort}));
+			}
 		}
 
 		/**
@@ -31,7 +33,9 @@
 		 */
 		function refreshDatasetsOrder() {
 			var savedSortOrder = StorageService.getDatasetsOrder();
-			StateService.setDatasetsOrder(savedSortOrder ? _.find(state.inventory.orderList, {id: savedSortOrder}) : state.inventory.orderList[1]);
+			if(savedSortOrder){
+				StateService.setDatasetsOrder(_.find(state.inventory.orderList, {id: savedSortOrder}));
+			}
 		}
 
 		/**

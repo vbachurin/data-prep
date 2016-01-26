@@ -28,7 +28,10 @@
          * */
         function refreshLookupDatasetsSort() {
             var savedSort = StorageService.getLookupDatasetsSort();
-            StateService.setLookupDatasetsSort(savedSort ? _.find(state.playground.lookup.sortList, {id: savedSort}) : state.playground.lookup.sortList[1]);
+            if(savedSort) {
+                StateService.setLookupDatasetsSort(_.find(state.playground.lookup.sortList, {id: savedSort}));
+            }
+
         }
 
         /**
@@ -39,7 +42,9 @@
          */
         function refreshLookupDatasetsOrder() {
             var savedSortOrder = StorageService.getLookupDatasetsOrder();
-            StateService.setLookupDatasetsOrder(savedSortOrder ? _.find(state.playground.lookup.orderList, {id: savedSortOrder}) : state.playground.lookup.orderList[1]);
+            if(savedSortOrder){
+                StateService.setLookupDatasetsOrder(_.find(state.playground.lookup.orderList, {id: savedSortOrder}));
+            }
         }
 
         /**
