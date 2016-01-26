@@ -353,21 +353,6 @@ describe('Lookup controller', function () {
             expect(StorageService.setLookupDatasetsSort).toHaveBeenCalledWith(sortBy.id);
         }));
 
-        it('should not update sort by', inject(function ($timeout, StorageService) {
-            //given
-            var sortBy = {id: 'date', name: 'DATE_SORT', property: 'created'};
-            stateMock.playground.lookup.datasets = [{created : 1}, {created : 3}, {created : 2}];
-            spyOn(StorageService, 'setLookupDatasetsSort').and.returnValue();
-            var ctrl = createController();
-
-            //when
-            ctrl.sortSelected = {id: 'date', name: 'DATE_SORT', property: 'created'};
-            ctrl.updateSortBy(sortBy);
-            $timeout.flush();
-            //then
-            expect(StorageService.setLookupDatasetsSort).not.toHaveBeenCalled();
-        }));
-
         it('should update sort order', inject(function ($timeout, StorageService, StateService) {
             //given
             var orderBy = {id: 'desc', name: 'DESC_ORDER'};
@@ -385,22 +370,6 @@ describe('Lookup controller', function () {
             //then
             expect(StateService.setLookupDatasetsOrder).toHaveBeenCalledWith(orderBy);
             expect(StorageService.setLookupDatasetsOrder).toHaveBeenCalledWith(orderBy.id);
-        }));
-
-        it('should not update sort order', inject(function ($timeout, StorageService) {
-            //given
-            var orderBy = {id: 'desc', name: 'DESC_ORDER'};
-            stateMock.playground.lookup.datasets = [{created : 1}, {created : 3}, {created : 2}];
-            spyOn(StorageService, 'setLookupDatasetsOrder').and.returnValue();
-            var ctrl = createController();
-
-            //when
-            ctrl.sortOrderSelected = {id: 'desc', name: 'DESC_ORDER'};
-            ctrl.sortSelected = {id: 'date', name: 'DATE_SORT', property: 'created'};
-            ctrl.updateSortOrder(orderBy);
-            $timeout.flush();
-            //then
-            expect(StorageService.setLookupDatasetsOrder).not.toHaveBeenCalled();
         }));
 
         it('should refresh sort parameters', inject(function ($timeout, StorageService, StateService) {

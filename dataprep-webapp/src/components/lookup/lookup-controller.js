@@ -133,9 +133,7 @@
          * @description Open the add lookup dataset modal
          */
         vm.openAddLookupDatasetModal = function openAddLookupDatasetModal() {
-
             LookupService.disableDatasetsUsedInRecipe();
-
             vm.addLookupDatasetModal = true;
         };
 
@@ -146,9 +144,7 @@
          * @description Add datasets to the lookup
          */
         vm.addLookupDatasets = function addLookupDatasets() {
-
             LookupService.updateLookupDatasets();
-
             vm.addLookupDatasetModal = false;
 
             //refresh lookup panel by selecting the first action
@@ -178,9 +174,6 @@
          */
         vm.updateSortBy = function updateSortBy(sortType) {
             $timeout(function () {
-                if (state.playground.lookup.sort.id === sortType.id) {
-                    return;
-                }
                 StateService.setLookupDatasetsSort(sortType);
                 LookupService.sortLookupDatasetsList();
                 StorageService.setLookupDatasetsSort(sortType.id);
@@ -196,9 +189,6 @@
          */
         vm.updateSortOrder = function updateSortOrder(order) {
             $timeout(function () {
-                if (state.playground.lookup.order.id === order.id) {
-                    return;
-                }
                 StateService.setLookupDatasetsOrder(order);
                 LookupService.sortLookupDatasetsList();
                 StorageService.setLookupDatasetsOrder(order.id);
