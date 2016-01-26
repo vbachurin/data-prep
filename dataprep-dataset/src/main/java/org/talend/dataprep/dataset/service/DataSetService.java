@@ -1,12 +1,12 @@
 package org.talend.dataprep.dataset.service;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,6 +31,7 @@ import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.user.UserData;
+import org.talend.dataprep.dataset.configuration.EncodingSupport;
 import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
 import org.talend.dataprep.dataset.service.analysis.asynchronous.AsynchronousDataSetAnalyzer;
 import org.talend.dataprep.dataset.service.analysis.asynchronous.StatisticsAnalysis;
@@ -123,6 +124,10 @@ public class DataSetService {
 
     @Autowired
     private FolderRepository folderRepository;
+
+    /** Encoding support service. */
+    @Autowired
+    private EncodingSupport encodings;
 
     /**
      * Sort the synchronous analyzers.
@@ -800,8 +805,7 @@ public class DataSetService {
                     }
                     // Data set metadata to update is no longer a draft
                     metadataForUpdate.setDraft(false);
-                }
- catch (UnsupportedOperationException e) {
+                } catch (UnsupportedOperationException e) {
                     // no need to validate draft here
                 }
 
@@ -949,6 +953,13 @@ public class DataSetService {
         } finally {
             lock.unlock();
         }
+    }
+
+    @RequestMapping(value = "/datasets/encodings", method = GET, consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "list the supported encodings for dataset", notes = "This list can be used by user to change dataset encoding.")
+    @Timed
+    public List<String> listSupportedEncodings() {
+        return encodings.getSupportedCharsets().stream().map(Charset::displayName).collect(Collectors.toList());
     }
 
     /**

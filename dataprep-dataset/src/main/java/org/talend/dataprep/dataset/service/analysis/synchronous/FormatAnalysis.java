@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.*;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.dataset.configuration.EncodingSupport;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
@@ -54,6 +54,10 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
     /** List of schema updaters. */
     @Autowired
     List<SchemaUpdater> updaters = new LinkedList<>();
+
+    /** Bean that list supported encodings. */
+    @Autowired
+    private EncodingSupport encodings;
 
     /**
      * @see SynchronousDataSetAnalyzer#analyze(String)
@@ -158,7 +162,7 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
                 continue;
             }
             // Try to read content given certified encodings
-            final Collection<Charset> availableCharsets = ListUtils.union(getCertifiedCharsets(), getSupportedCharsets());
+            final Collection<Charset> availableCharsets = encodings.getSupportedCharsets();
             for (Charset charset : availableCharsets) {
                 try (InputStream content = store.getAsRaw(metadata)) {
                     LOG.debug(marker, "try reading with {} encoded in {}", guesser.getClass().getSimpleName(), charset.name());
@@ -174,31 +178,6 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
         }
         LOG.debug(marker, "found {}", mediaTypes);
         return mediaTypes;
-    }
-
-    /**
-     * @return The list of supported encodings in data prep (could be {@link Charset#availableCharsets()}, but requires
-     * extensive tests, so a sub set is returned to ease testing).
-     * @see #getSupportedCharsets()
-     */
-    private List<Charset> getCertifiedCharsets() {
-        return Arrays.asList( //
-                Charset.forName("UTF-8"), //
-                Charset.forName("UTF-16"), //
-                Charset.forName("UTF-16LE"), //
-                Charset.forName("windows-1252"), //
-                Charset.forName("ISO-8859-1"), //
-                Charset.forName("x-MacRoman") //
-        );
-    }
-
-    /**
-     * @return The list of encodings in data prep may use but are without scope of extensive tests (supported, but not
-     * certified).
-     * @see #getCertifiedCharsets()
-     */
-    private List<Charset> getSupportedCharsets() {
-        return new ArrayList<>(Charset.availableCharsets().values());
     }
 
     /**
