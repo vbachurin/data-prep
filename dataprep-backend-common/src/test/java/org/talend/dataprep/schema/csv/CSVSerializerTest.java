@@ -9,15 +9,10 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.schema.AbstractSchemaTestUtils;
 import org.talend.dataprep.schema.IoTestUtils;
 
 /**
@@ -25,12 +20,7 @@ import org.talend.dataprep.schema.IoTestUtils;
  * 
  * @see CSVSerializer
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = CSVSerializerTest.class)
-@Configuration
-@ComponentScan(basePackages = "org.talend.dataprep")
-@EnableAutoConfiguration
-public class CSVSerializerTest {
+public class CSVSerializerTest extends AbstractSchemaTestUtils {
 
     @Autowired
     private ApplicationContext context;
