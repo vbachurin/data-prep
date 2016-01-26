@@ -9,15 +9,11 @@ import java.io.InputStream;
 import java.util.*;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellValue;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.MapEntry;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -380,7 +376,6 @@ public class XlsFormatTest extends AbstractSchemaTestUtils {
      * data format as defined and don't directly use {@link Cell#getNumericCellValue()}.
      * </p>
      *
-     * @see XlsUtils#getCellValueAsString(Cell, CellValue)
      */
     @Test
     public void testGeneralNumberFormat_TDP_222() throws Exception {
