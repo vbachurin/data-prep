@@ -81,6 +81,10 @@ public class DataSetService {
     @Autowired
     private List<SynchronousDataSetAnalyzer> synchronousAnalyzers;
 
+    /** Format analyzer needed to update the schema. */
+    @Autowired
+    private FormatAnalysis formatAnalyzer;
+
     /** Quality analyzer needed to compute quality on dataset sample. */
     @Autowired
     private QualityAnalysis qualityAnalyzer;
@@ -749,37 +753,39 @@ public class DataSetService {
             //
             // Only part of the metadata can be updated, so the original dataset metadata is loaded and updated
             //
-            DataSetMetadata previous = dataSetMetadataRepository.get(dataSetId);
-            if (previous == null) {
+            DataSetMetadata metadataForUpdate = dataSetMetadataRepository.get(dataSetId);
+            DataSetMetadata original = DataSetMetadata.Builder.metadata().copy(metadataForUpdate).build();
+
+            if (metadataForUpdate == null) {
                 // No need to silently create the data set metadata: associated content will most likely not exist.
                 throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST, ExceptionContext.build().put("id", dataSetId));
             }
 
             try {
                 // update the name
-                previous.setName(dataSetMetadata.getName());
+                metadataForUpdate.setName(dataSetMetadata.getName());
 
                 // update the sheet content (in case of a multi-sheet excel file)
-                if (previous.getSchemaParserResult() != null) {
-                    Optional<SchemaParserResult.SheetContent> sheetContentFound = previous.getSchemaParserResult()
+                if (metadataForUpdate.getSchemaParserResult() != null) {
+                    Optional<SchemaParserResult.SheetContent> sheetContentFound = metadataForUpdate.getSchemaParserResult()
                             .getSheetContents().stream()
                             .filter(sheetContent -> dataSetMetadata.getSheetName().equals(sheetContent.getName())).findFirst();
 
                     if (sheetContentFound.isPresent()) {
                         List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
-                        if (previous.getRowMetadata() == null) {
-                            previous.setRowMetadata(new RowMetadata(Collections.emptyList()));
+                        if (metadataForUpdate.getRowMetadata() == null) {
+                            metadataForUpdate.setRowMetadata(new RowMetadata(Collections.emptyList()));
                         }
-                        previous.getRowMetadata().setColumns(columnMetadatas);
+                        metadataForUpdate.getRowMetadata().setColumns(columnMetadatas);
                     }
 
-                    previous.setSheetName(dataSetMetadata.getSheetName());
-                    previous.setSchemaParserResult(null);
+                    metadataForUpdate.setSheetName(dataSetMetadata.getSheetName());
+                    metadataForUpdate.setSchemaParserResult(null);
                 }
 
                 // update parameters & encoding (so that user can change import parameters for CSV)
-                previous.getContent().setParameters(dataSetMetadata.getContent().getParameters());
-                previous.setEncoding(dataSetMetadata.getEncoding());
+                metadataForUpdate.getContent().setParameters(dataSetMetadata.getContent().getParameters());
+                metadataForUpdate.setEncoding(dataSetMetadata.getEncoding());
 
                 // Validate that the new data set metadata and removes the draft status
                 FormatGuess formatGuess = formatGuessFactory.getFormatGuess(dataSetMetadata.getContent().getFormatGuessId());
@@ -793,14 +799,17 @@ public class DataSetService {
                         return;
                     }
                     // Data set metadata to update is no longer a draft
-                    previous.setDraft(false);
+                    metadataForUpdate.setDraft(false);
                 }
  catch (UnsupportedOperationException e) {
                     // no need to validate draft here
                 }
 
-                // update metadata
-                dataSetMetadataRepository.add(previous);
+                // update schema
+                formatAnalyzer.update(original, metadataForUpdate);
+
+                // save the result
+                dataSetMetadataRepository.add(metadataForUpdate);
 
                 // all good mate!! so send that to jms
                 // Asks for a in depth schema analysis (for column type information).
