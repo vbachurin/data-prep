@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     /**
@@ -8,12 +8,12 @@
      * @restrict E
      * @usage
      * <navigation-list
-            list="list"
-            on-click="callbackOn(item)"
-            selected-item="selectedItem"
-            get-label="callback(item)"
-            on-add-item="true">
-       </navigation-list>
+         list="list"
+         on-click="callbackOn(item)"
+         selected-item="selectedItem"
+         get-label="callback(item)"
+         on-add-item="true">
+     </navigation-list>
      * @param {Array} list the collection to navigate into
      * @param {object} selectedItem selected Item from the given list
      * @param {function} onClick The callback executed on an item clicked
@@ -34,109 +34,74 @@
             bindToController: true,
             controllerAs: 'navigationListCtrl',
             controller: function () {},
-
             link: function (scope, iElement, iAttrs, ctrl) {
-
-                if(iAttrs.onAddItem) {
-                    ctrl.showAddButton = true;
-                } else {
-                    ctrl.showAddButton = false;
-                }
+                var ITEM_WIDTH = 200;
+                ctrl.showAddButton = !!iAttrs.onAddItem;
 
                 $timeout(function () {
 
-                    var wrapper = iElement.find('.items-list-wrapper').eq(0);
                     var leftButton = iElement.find('.arrow-left').eq(0);
                     var rightButton = iElement.find('.arrow-right').eq(0);
+                    var wrapper = iElement.find('.items-list-wrapper').eq(0);
                     var itemsList = iElement.find('.items-list').eq(0);
-                    itemsList.css('left', 0);
-                    itemsList.css('float', 'left');
                     var posLeft = 0;
 
-                    function initLeftPosition () {
-                        if(itemsList.css('float') === 'right') {
-                            posLeft = itemsList.position().left;
-                            if(posLeft > 0){
-                                itemsList.css('float', 'left');
-                                itemsList.css('left', 0);
-                                return;
-                            }
-                        } else {
-                            posLeft = parseInt(itemsList.css('left'), 10);
+                    function translate(leftPosition) {
+                        itemsList.css('transform', 'translateX(' + leftPosition + 'px)');
+                    }
+
+                    function itemIsVisible(item) {
+                        var itemPosition = ctrl.list.indexOf(item) * ITEM_WIDTH;
+                        var actualPosition = posLeft + itemPosition;
+                        return actualPosition >= 0 && actualPosition <= (wrapper.width() - ITEM_WIDTH);
+                    }
+
+                    function getVisiblePosition(item) {
+                        var itemPosition = ctrl.list.indexOf(item) * ITEM_WIDTH;
+                        var actualPosition = posLeft + itemPosition;
+
+                        if(actualPosition < 0) {
+                            return - itemPosition;
                         }
+                        return  - itemPosition - ITEM_WIDTH;
                     }
 
                     leftButton.on('click', function () {
-                        initLeftPosition();
                         if (posLeft < 0) {
-
-                            itemsList.css('left', posLeft + 200);
-                            itemsList.css('float', 'left');
-                            posLeft = parseInt(itemsList.css('left'), 10);
-
-                            if (posLeft >= 0) {
-                                itemsList.css('left', 0);
-                            }
+                            posLeft += ITEM_WIDTH;
+                            translate(posLeft);
                         }
                     });
 
                     rightButton.on('click', function () {
-                        initLeftPosition();
-                        if((posLeft + ctrl.list.length * 200) >= wrapper.width()) {
-                            itemsList.css('left', posLeft - 200);
-                            posLeft = parseInt(itemsList.css('left'), 10);
-
-                            if ((posLeft + ctrl.list.length * 200) <= wrapper.width()) {
-                                itemsList.css('float', 'right');
-                                itemsList.css('left', '');
-                            }
+                        if ((posLeft + ctrl.list.length * ITEM_WIDTH) >= wrapper.width()) {
+                            posLeft -= ITEM_WIDTH;
+                            translate(posLeft);
                         }
                     });
 
-                    scope.$watch(function () {
-                            return ctrl.list;
-                        }, function () {
-                            if(ctrl.list && ctrl.list.length > 0) {
-                                itemsList.css('width', ctrl.list.length * 200);
+                    function getSelectedItem() {
+                        return ctrl.selectedItem;
+                    }
+
+                    function getList() {
+                        return ctrl.list;
+                    }
+
+                    scope.$watchGroup([getList, getSelectedItem],
+                        function () {
+                            var hasCorrectSelectedItem = ctrl.list && ctrl.selectedItem && ctrl.list.indexOf(ctrl.selectedItem) > -1;
+                            if(!hasCorrectSelectedItem) {
+                                posLeft = 0;
+                                translate(posLeft);
+                            }
+                            else if(!itemIsVisible(ctrl.selectedItem)) {
+                                posLeft = getVisiblePosition(ctrl.selectedItem);
+                                translate(posLeft);
                             }
                         }
                     );
-
-                    scope.$watch(function () {
-                            return ctrl.selectedItem;
-                        }, function () {
-                            if(ctrl.list && ctrl.list.length > 0 && ctrl.selectedItem){
-                                for(var i= 0; i< ctrl.list.length; i++) {
-                                    if(ctrl.list[i] === ctrl.selectedItem){
-                                        initLeftPosition();
-                                        if((posLeft + (i+1)*200) > wrapper.width() || (posLeft + (i+1)*200) < 0) {
-                                            if((i+1)*200 < wrapper.width()){
-                                                itemsList.css('float', 'left');
-                                                itemsList.css('left', 0);
-                                            } else if(i === (ctrl.list.length -1)){
-                                                itemsList.css('float', 'right');
-                                                itemsList.css('left', '');
-                                            } else {
-                                                itemsList.css('float', 'left');
-                                                itemsList.css('left', wrapper.width() - (i+1)*200);
-                                            }
-                                        }
-                                        break;
-                                    }
-                                }
-                            } else {
-                                itemsList.css('float', 'left');
-                                itemsList.css('left', 0);
-                            }
-
-                        }
-                    );
-
-                    $(window).on('resize', function(){
-                        itemsList.css('left', 0);
-                        itemsList.css('float', 'left');
-                    });
-                }, 500);
+                }, 500, false);
             }
         };
     }

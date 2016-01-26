@@ -1,53 +1,55 @@
 <talend-slidable
-        class="lookup"
         visible="lookupCtrl.visible"
         side="bottom"
         control-bar="false">
 
-   <div class="lookup-header">
-   </div>
+    <div class="lookup">
+        <div class="lookup-header"></div>
 
-   <div class="lookup-container">
-       <div ng-if="lookupCtrl.state.playground.lookup.addedActions.length > 0" id="lookup-left">
-           <lookup-datagrid></lookup-datagrid>
-       </div>
+        <div class="lookup-container">
+            <div id="lookup-left" ng-switch="!!lookupCtrl.state.playground.lookup.addedActions.length">
+                <lookup-datagrid ng-switch-when="true"></lookup-datagrid>
 
-       <div ng-if="lookupCtrl.state.playground.lookup.addedActions.length === 0" id="lookup-left">
-           <span class="watermark add-dataset-span" translate-once="ADD_DATASET_TO_PERFORM_A_LOOKUP"></span>
-       </div>
+                <div id="lookup-add-instruction"
+                     ng-switch-when="false"
+                     class="watermark"
+                     translate-once="ADD_DATASET_TO_PERFORM_A_LOOKUP">
+                </div>
+            </div>
 
-       <div id="lookup-right">
-           <div class="lookup-description">
-               <br>
-               <strong ng-if="!lookupCtrl.state.playground.lookup.step"><span translate-once="LOOKUP_DESC_TITLE"></span></strong>
-               <strong ng-if="lookupCtrl.state.playground.lookup.step"><span translate-once="LOOKUP_UPDATE_DESC_TITLE"></span></strong>
-               <br>
-               <p>
-                   <p translate-once="LOOKUP_STEPS_1"></p>
-                   <p translate-once="LOOKUP_STEPS_2"></p>
-                   <p translate-once="LOOKUP_STEPS_3"></p>
-               </p>
-           </div>
+            <div id="lookup-right">
+                <div class="lookup-description">
+                    <br>
+                    <strong ng-if="!lookupCtrl.state.playground.lookup.step"><span translate-once="LOOKUP_DESC_TITLE"></span></strong>
+                    <strong ng-if="lookupCtrl.state.playground.lookup.step"><span translate-once="LOOKUP_UPDATE_DESC_TITLE"></span></strong>
+                    <br>
+                    <p translate-once="LOOKUP_STEPS_1"></p>
+                    <p translate-once="LOOKUP_STEPS_2"></p>
+                    <p translate-once="LOOKUP_STEPS_3"></p>
+                </div>
 
-           <button ng-disabled="!lookupCtrl.state.playground.lookup.columnsToAdd.length ||
+                <button id="lookup-submit-btn-id"
+                        ng-disabled="!lookupCtrl.state.playground.lookup.columnsToAdd.length ||
                                 !lookupCtrl.state.playground.lookup.selectedColumn ||
                                 !lookupCtrl.state.playground.grid.selectedColumn"
-                   class="param-primary-button btn-primary"
-                   ng-click="lookupCtrl.submit()"
-                   ng-mouseenter="lookupCtrl.hoverSubmitBtn()"
-                   ng-mouseleave="lookupCtrl.cancelEarlyPreview()"
-                   translate-once="CONFIRM_LOOKUP"
-                   id="lookup-submit-btn-id">
-           </button>
-       </div>
-   </div>
+                        class="param-primary-button btn-primary"
+                        ng-click="lookupCtrl.submit()"
+                        ng-mouseenter="lookupCtrl.hoverSubmitBtn()"
+                        ng-mouseleave="lookupCtrl.cancelEarlyPreview()"
+                        translate-once="CONFIRM_LOOKUP"
+                        >
+                </button>
+            </div>
+        </div>
 
-    <navigation-list list="lookupCtrl.state.playground.lookup.addedActions"
-                     on-click="lookupCtrl.loadFromAction(item)"
-                     selected-item="lookupCtrl.state.playground.lookup.dataset"
-                     get-label="lookupCtrl.getDsName(item)"
-                     on-add-item="lookupCtrl.openAddLookupDatasetModal()">
-    </navigation-list>
+        <navigation-list class="lookup-footer"
+                         list="lookupCtrl.state.playground.lookup.addedActions"
+                         on-click="lookupCtrl.loadFromAction(item)"
+                         selected-item="lookupCtrl.state.playground.lookup.dataset"
+                         get-label="lookupCtrl.getDsName(item)"
+                         on-add-item="lookupCtrl.openAddLookupDatasetModal()">
+        </navigation-list>
+    </div>
 </talend-slidable>
 
 <talend-modal fullscreen="false"
@@ -57,9 +59,7 @@
               disable-enter="true"
               class="add-dataset-lookup">
         <form name="lookupCtrl.addLookupDatasetForm" ng-submit="lookupCtrl.addLookupDatasetForm.$valid && lookupCtrl.addLookupDatasets()">
-            <div class="clone-name">
-                <span translate-once="ADD_LOOKUP_DATASET_MODAL_TITLE"></span>
-            </div>
+            <div translate-once="ADD_LOOKUP_DATASET_MODAL_TITLE"></div>
             <div class="inventory">
                 <div class="inventory-sort">
                     <div translate-once="SORTED_BY"></div>
@@ -82,8 +82,9 @@
                     </div>
                     <div translate-once="SORT_ORDER"></div>
                 </div>
+
                 <div class="inventory-list">
-                    <div class="inventory-item-div" ng-repeat="dataset in lookupCtrl.state.playground.lookup.datasets track by $index" id="dataset_lookup_{{$index}}">
+                    <div class="inventory-item-row" ng-repeat="dataset in lookupCtrl.state.playground.lookup.datasets track by $index">
                         <input class="add-dataset-input" type="checkbox" ng-model="dataset.addedToLookup" ng-disabled="!dataset.enableToAddToLookup"/>
                         <inventory-item
                                 ng-click="lookupCtrl.toogleSelect(dataset)"

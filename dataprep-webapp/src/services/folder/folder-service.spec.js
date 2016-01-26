@@ -276,7 +276,7 @@ describe('Folder services', function () {
 
     describe('content', function () {
         var content;
-        beforeEach(inject(function ($q, StateService, FolderRestService, PreparationListService, DatasetListService) {
+        beforeEach(inject(function ($q, StateService, FolderRestService, PreparationListService) {
             content = {
                 data: {
                     folders: [{id: 'toto', path: 'toto', name: 'toto'}],

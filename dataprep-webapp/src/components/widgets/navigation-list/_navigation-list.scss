@@ -1,29 +1,37 @@
 .navigation-list {
-  border-top: 1px solid $light-gray;
   font-size: .95em;
   height: 30px;
 
-  .items-list-wrapper{
-    display: inline-block;
-    width: calc(100% - 100px);
-    height: 28px;
-    vertical-align: bottom;
-    overflow: hidden;
-    float: left;
+  @include display(flex);
+  @include align-items(center);
+
+  .add-item {
+    @include flex-basis(30px);
+    @include flex-shrink(0);
+    @include flex-grow(0);
+
+    .add-button {
+      height: 29px;
+      cursor: pointer;
+      color: $dark-gray;
+
+      &:active {
+        color : $light-gray;
+      }
+    }
   }
 
   .back-forth-btn {
-    display: inline;
-    margin-right: 10px;
-    height: 29px;
-    float: left;
+    @include flex-basis(50px);
+    @include flex-shrink(0);
+    @include flex-grow(0);
+
+    text-align: center;
 
     button {
       padding: 0;
-      margin-left: 10px;
+      margin: 0 5px;
       background-color: transparent;
-      width: 0;
-      height: 0;
 
       &.arrow-left {
         border-top: 8px solid transparent;
@@ -51,21 +59,27 @@
     }
   }
 
+  .items-list-wrapper{
+    @include flex-basis(200px);
+    @include flex-shrink(1);
+    @include flex-grow(1);
+
+    overflow: hidden;
+  }
+
   .items-list {
     height: 29px;
-    position: relative;
+    float: left;
+    @include display(flex);
+    transition: transform 0.25s linear;
 
     .item-label {
+      @include ellipsis();
       cursor: pointer;
       text-transform: uppercase;
-      display: inline-block;
       padding: 0 10px 2px 8px;
       border: 1px solid $shadow-gray;
       width: 200px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      vertical-align: bottom;
 
       &.selected-item-label {
         background-color: $light-gray;
@@ -74,19 +88,4 @@
       }
     }
   }
-  .add-item {
-    display: inline;
-    float: left;
-    .add-button {
-      height: 29px;
-      padding-left: 10px;
-      cursor: pointer;
-      color: $dark-gray;
-
-      &:active {
-        color : $light-gray;
-      }
-    }
-  }
-
 }
