@@ -56,17 +56,24 @@
                     <a class="dropdown-button"></a>
                 </span>
                 <ul class="dropdown-menu">
-                    <li class="dropdown-container-li" data-icon="c" ng-click="inventoryItemCtrl.open(inventoryItemCtrl.item)" translate-once="CREATE_NEW_PREP"></li>
+                    <li class="dropdown-container-li" ng-click="inventoryItemCtrl.open(inventoryItemCtrl.item)">
+                        <a>
+                            <span data-icon="K" >&nbsp;</span>
+                            <span class="dropdown-container-middle" translate-once="CREATE_NEW_PREP"></span>
+                        </a>
+                    </li>
                     <li class="dropdown-container-li divider"></li>
-                    <li class="dropdown-container-li" ng-repeat="prepa in inventoryItemCtrl.relatedInventories track by $index">
-                        <a ng-click="inventoryItemCtrl.openRelatedInventoryItem(prepa)">
-                            <span data-icon="c">{{prepa.name}}&nbsp;</span>
-                            <span class="related-inv">
-                                <span class="related-inv-details-label" translate-once="REL_INV_MODIFIED"></span>
-                                <span>{{'PREPARATION_DETAILS_SINCE' | translate : {since : prepa.lastModificationDate} }}</span>
-                                <span class="related-inv-details-label">-</span>
-                                <span>{{'PREPARATION_DETAILS_STEPS' | translate : {nbsteps: prepa.actions.length} }}</span>
-                            </span>
+                    <li class="dropdown-container-li" ng-repeat="prepa in inventoryItemCtrl.relatedInventories track by $index" ng-click="inventoryItemCtrl.openRelatedInventoryItem(prepa)">
+                        <a >
+<!--
+                            <span data-icon="c" >&nbsp;</span>
+-->
+                            <span class="related-inv">{{prepa.name}}</span>
+                            <span >&nbsp;-&nbsp;</span>
+                            <span  translate-once="REL_INV_MODIFIED"></span>
+                            <span>&nbsp;{{'PREPARATION_DETAILS_SINCE' | translate : {since : prepa.lastModificationDate} }}</span>
+                            <span >&nbsp;-&nbsp;</span>
+                            <span>{{'PREPARATION_DETAILS_STEPS' | translate : {nbsteps: prepa.actions.length} }}</span></span>
                         </a>
                     </li>
                 </ul>

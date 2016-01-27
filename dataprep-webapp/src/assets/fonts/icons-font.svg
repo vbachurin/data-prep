@@ -43,4 +43,5 @@
 <glyph glyph-name="bubbles-talk-1" unicode="&#72;" d="M448 352l-32 0 0-32c0-49-47-96-96-96l-147 0-45-45 0-19c0-32 32-64 64-64l160 0 96-96 0 0 0 96c32 0 64 32 64 64l0 128c0 32-32 64-64 64z m-288-96l160 0c32 0 64 32 64 64l0 128c0 32-32 64-64 64l-256 0c-32 0-64-32-64-64l0-128c0-32 32-64 64-64l0-96z"/>
 <glyph glyph-name="triangle-big-4-01" unicode="&#73;" d="M128 416l0-320 256 160z"/>
 <glyph glyph-name="triangle-big-1-01" unicode="&#74;" d="M96 384l160-256 160 256z"/>
+<glyph glyph-name="plus-5" unicode="&#75;" d="M256 256l0 128-32 0 0-128-128 0 0-32 128 0 0-128 32 0 0 128 128 0 0 32z"/>
 </font></defs></svg>

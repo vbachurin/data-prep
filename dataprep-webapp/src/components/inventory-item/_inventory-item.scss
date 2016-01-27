@@ -5,18 +5,15 @@
 
   .dropdown-container-li {
     margin: 10px;
+    font-size: 1.05em;
     a {
-      display: flex;
-      justify-content: space-between;
-      flex-direction: row;
+       color: $black;
+      .dropdown-container-middle{
+        vertical-align: middle;
+      }
       .related-inv {
-        align-self: center;
-        font-weight: 300;
-        color: #99999A;
-        font-size: 0.9em;
-        .related-inv-details-label {
-          color: #000000;
-        }
+        font-weight: 700;
+        text-transform: uppercase;
       }
     }
     &.divider {
@@ -27,6 +24,9 @@
       overflow: hidden;
       background-color: #e5e5e5;
       padding: 0;
+    }
+    &.hover {
+      background-color: $light-gray;
     }
   }
 
