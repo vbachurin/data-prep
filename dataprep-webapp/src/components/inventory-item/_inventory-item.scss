@@ -3,32 +3,36 @@
     padding: 3px 0;
   }
 
-  .dropdown-container-li {
-    margin: 10px;
-    font-size: 1.05em;
-    a {
-       color: $black;
-      .dropdown-container-middle{
-        vertical-align: middle;
+  .dropdown-menu{
+    outline:none;
+    .dropdown-container-li {
+      margin: 10px;
+      font-size: 1.05em;
+      a {
+        color: $black;
+        .dropdown-container-middle{
+          vertical-align: middle;
+        }
+        .related-inv {
+          font-weight: 700;
+          text-transform: uppercase;
+        }
       }
-      .related-inv {
-        font-weight: 700;
-        text-transform: uppercase;
+      &.divider {
+        min-height: 1px;
+        height: 1px;
+        width: 100%;
+        margin: 9px 0;
+        overflow: hidden;
+        background-color: #e5e5e5;
+        padding: 0;
       }
-    }
-    &.divider {
-      min-height: 1px;
-      height: 1px;
-      width: 100%;
-      margin: 9px 0;
-      overflow: hidden;
-      background-color: #e5e5e5;
-      padding: 0;
-    }
-    &.hover {
-      background-color: $light-gray;
+      &.hover {
+        background-color: $light-gray;
+      }
     }
   }
+
 
   .edition-text-input {
     width: 220px;

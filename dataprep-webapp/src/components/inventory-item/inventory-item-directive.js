@@ -26,10 +26,13 @@
      * @param {array}       fileModel the file which will replace the current item
      * @param {object}      item the inventory item
      * @param {function}    open the playground
+     * @param {function}    openRelatedInv callback function to open the related inventory item
      * @param {function}    openSuggestion callback function when a suggestion is selected
      * @param {function}    processCertification attributes certification to the inventory item
      * @param {function}    remove the inventory item
      * @param {function}    rename the inventory item
+     * @param {array}       relatedInventories related inventory items
+     * @param {string}      relatedInventoriesType of the related inventory item
      * @param {array}       suggestions the list of suggestions corresponding to the current inventory item
      * @param {string}      suggestionsType type of the suggestions
      * @param {function}    toggleFavorite the inventory item

@@ -14,7 +14,7 @@ describe('DatasetList directive', function () {
             'created': '1437020219741',
             'type': 'text/csv',
             'certificationStep': 'NONE',
-            defaultPreparations: [{name:'US States prepa'}, {name:'US States prepa 2'}]
+            'preparations': [{name:'US States prepa'}, {name:'US States prepa 2'}]
         },
         {
             'id': 'e93b9c92-e054-4f6a-a38f-ca52f22ead2b',
@@ -23,7 +23,7 @@ describe('DatasetList directive', function () {
             'created': '143702021974',
             'type': 'application/vnd.ms-excel',
             'certificationStep': 'PENDING',
-            defaultPreparations: [{name:'Customers prepa'}]
+            'preparations': [{name:'Customers prepa'}]
         },
         {
             'id': 'e93b9c92-e054-4f6a-a38f-ca52f22ead3a',
@@ -31,7 +31,7 @@ describe('DatasetList directive', function () {
             'author': 'anonymousUser',
             'created': '14370202197',
             'certificationStep': 'CERTIFIED',
-            'defaultPreparations': []
+            'preparations': []
         }
     ];
 

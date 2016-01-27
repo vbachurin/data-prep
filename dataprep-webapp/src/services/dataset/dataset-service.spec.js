@@ -30,7 +30,7 @@ describe('Dataset Service', function () {
 
         stateMock.inventory.datasets = datasets;
 
-        spyOn(DatasetListService, 'refreshDefaultPreparations').and.returnValue(datasetConsolidation);
+        spyOn(DatasetListService, 'refreshPreparations').and.returnValue(datasetConsolidation);
         spyOn(DatasetListService, 'delete').and.returnValue($q.when(true));
         spyOn(DatasetListService, 'create').and.returnValue(promiseWithProgress);
         spyOn(DatasetListService, 'importRemoteDataset').and.returnValue(promiseWithProgress);
@@ -100,7 +100,7 @@ describe('Dataset Service', function () {
 
                 //then
                 expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-                expect(DatasetListService.refreshDefaultPreparations).toHaveBeenCalledWith(preparations);
+                expect(DatasetListService.refreshPreparations).toHaveBeenCalledWith(preparations);
             }));
         });
 
@@ -128,7 +128,7 @@ describe('Dataset Service', function () {
 
                 //then
                 expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-                expect(DatasetListService.refreshDefaultPreparations).toHaveBeenCalledWith(preparations);
+                expect(DatasetListService.refreshPreparations).toHaveBeenCalledWith(preparations);
             }));
 
         });
@@ -156,7 +156,7 @@ describe('Dataset Service', function () {
 
                 //then
                 expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-                expect(DatasetListService.refreshDefaultPreparations).toHaveBeenCalledWith(preparations);
+                expect(DatasetListService.refreshPreparations).toHaveBeenCalledWith(preparations);
             }));
 
             it('should consolidate preparations and datasets', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService, StorageService) {
@@ -199,7 +199,7 @@ describe('Dataset Service', function () {
 
                 //then
                 expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-                expect(DatasetListService.refreshDefaultPreparations).toHaveBeenCalledWith(preparations);
+                expect(DatasetListService.refreshPreparations).toHaveBeenCalledWith(preparations);
             }));
         });
 
@@ -230,7 +230,7 @@ describe('Dataset Service', function () {
 
                 //then
                 expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-                expect(DatasetListService.refreshDefaultPreparations).toHaveBeenCalledWith(preparations);
+                expect(DatasetListService.refreshPreparations).toHaveBeenCalledWith(preparations);
             }));
         });
 
@@ -260,7 +260,7 @@ describe('Dataset Service', function () {
 
                 //then
                 expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-                expect(DatasetListService.refreshDefaultPreparations).toHaveBeenCalledWith(preparations);
+                expect(DatasetListService.refreshPreparations).toHaveBeenCalledWith(preparations);
             }));
         });
 
@@ -389,7 +389,7 @@ describe('Dataset Service', function () {
 
             //then
             expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-            expect(DatasetListService.refreshDefaultPreparations).toHaveBeenCalledWith(preparations);
+            expect(DatasetListService.refreshPreparations).toHaveBeenCalledWith(preparations);
         }));
 
         it('should refresh dataset list', inject(function (DatasetService, DatasetListService) {
@@ -408,7 +408,7 @@ describe('Dataset Service', function () {
 
             //then
             expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
-            expect(DatasetListService.refreshDefaultPreparations).toHaveBeenCalledWith(preparations);
+            expect(DatasetListService.refreshPreparations).toHaveBeenCalledWith(preparations);
         }));
 
         it('should find dataset by name', inject(function (DatasetService) {

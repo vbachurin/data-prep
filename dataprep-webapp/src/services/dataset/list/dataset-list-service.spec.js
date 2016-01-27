@@ -83,7 +83,7 @@ describe('Dataset List Service', function () {
                 'id': 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
                 'dataSetId': datasets[2].id,
                 'author': 'anonymousUser',
-                'creationDate': 1427447330693,
+                'lastModificationDate': 1427447330693,
                 'steps': [
                     '47e2444dd1301120b539804507fd307072294048',
                     'ae1aebf4b3fa9b983c895486612c02c766305410',
@@ -117,7 +117,7 @@ describe('Dataset List Service', function () {
                 'id': 'ds3f51sf3q1df35qsf412qdsf15ds3ff454qg8r4qr',
                 'dataSetId': datasets[2].id,
                 'author': 'anonymousUser',
-                'creationDate': 1437487330692,
+                'lastModificationDate': 1437487330692,
                 'steps': [
                     '87e38cv438dth4yd6k84x3dr84htryj84xc3k21u'
                 ],
@@ -336,15 +336,15 @@ describe('Dataset List Service', function () {
         stateMock.inventory.datasets = datasets.slice(0);
 
         //when
-        DatasetListService.refreshDefaultPreparations(preparations);
+        DatasetListService.refreshPreparations(preparations);
         $rootScope.$apply();
 
         //then
-        expect(datasets[0].defaultPreparations[0].id).toBe(preparations[0].id);
-        expect(datasets[1].defaultPreparations[0].id).toBe(preparations[3].id);
-        expect(datasets[2].defaultPreparations[0].id).toBe(preparations[1].id);
-        expect(datasets[2].defaultPreparations[1].id).toBe(preparations[2].id);
-        expect(datasets[3].defaultPreparations).toEqual([]);
+        expect(datasets[0].preparations[0].id).toBe(preparations[0].id);
+        expect(datasets[1].preparations[0].id).toBe(preparations[3].id);
+        expect(datasets[2].preparations[0].id).toBe(preparations[2].id);// due to sort process
+        expect(datasets[2].preparations[1].id).toBe(preparations[1].id);
+        expect(datasets[3].preparations).toEqual([]);
     }));
 
     it('should fetch datasets when not already initialized and init default preparations in datasets', inject(function ($rootScope, DatasetListService) {
@@ -352,15 +352,15 @@ describe('Dataset List Service', function () {
         stateMock.inventory.datasets = null;
 
         //when
-        DatasetListService.refreshDefaultPreparations(preparations);
+        DatasetListService.refreshPreparations(preparations);
         $rootScope.$apply();
 
         //then
-        expect(datasets[0].defaultPreparations[0].id).toBe(preparations[0].id);
-        expect(datasets[1].defaultPreparations[0].id).toBe(preparations[3].id);
-        expect(datasets[2].defaultPreparations[0].id).toBe(preparations[1].id);
-        expect(datasets[2].defaultPreparations[1].id).toBe(preparations[2].id);
-        expect(datasets[3].defaultPreparations).toEqual([]);
+        expect(datasets[0].preparations[0].id).toBe(preparations[0].id);
+        expect(datasets[1].preparations[0].id).toBe(preparations[3].id);
+        expect(datasets[2].preparations[0].id).toBe(preparations[2].id);
+        expect(datasets[2].preparations[1].id).toBe(preparations[1].id);
+        expect(datasets[3].preparations).toEqual([]);
     }));
 
     it('should return datasets after init default preparations in datasets', inject(function ($rootScope, DatasetListService) {
@@ -369,7 +369,7 @@ describe('Dataset List Service', function () {
         var result = [];
 
         //when
-        DatasetListService.refreshDefaultPreparations(preparations)
+        DatasetListService.refreshPreparations(preparations)
             .then(function (promiseResult) {
                 result = promiseResult;
             });

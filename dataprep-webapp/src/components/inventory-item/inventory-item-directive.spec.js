@@ -13,7 +13,7 @@ describe('InventoryItem directive', function () {
         'created': '1437020219741',
         'type': 'text/csv',
         'certificationStep': 'NONE',
-        'defaultPreparations': [{name:'US States prepa'}, {name:'US States prepa 2'}]
+        'preparations': [{name:'US States prepa'}, {name:'US States prepa 2'}]
     };
 
 
@@ -41,14 +41,14 @@ describe('InventoryItem directive', function () {
             scope.openRelatedInv = function(){};
             scope.copy = function(){};
             scope.remove = function(){};
-            scope.defaultPreparations = [];
+            scope.preparations = [];
             createElement = function () {
                 element = angular.element('<inventory-item ' +
                     'item="dataset" ' +
                     'actions-enabled="true" ' +
                     'details="INVENTORY_DETAILS" ' +
                     'type= "dataset" ' +
-                    'related-inventories="defaultPreparations" ' +
+                    'related-inventories="preparations" ' +
                     'related-inventories-type="preparation" ' +
                     'open-related-inv="openPreparation" ' +
                     'open="openDataset" ' +
@@ -83,7 +83,7 @@ describe('InventoryItem directive', function () {
         it('should list the related inventory items', inject(function () {
             //given
             scope.item = dataset;
-            scope.defaultPreparations = dataset.defaultPreparations;
+            scope.preparations = dataset.preparations;
 
             //when
             createElement();
@@ -91,13 +91,13 @@ describe('InventoryItem directive', function () {
             //then
             expect(element.find('.dropdown-container-li').length).toBe(4);
             var relatedPrepsList = element.find('.dropdown-container-li').eq(3).find('a').eq(0).text().trim();
-            expect(relatedPrepsList.indexOf(dataset.defaultPreparations[1].name) > -1).toBeTruthy();
+            expect(relatedPrepsList.indexOf(dataset.preparations[1].name) > -1).toBeTruthy();
         }));
 
         it('should NOT list the related inventory items', inject(function () {
             //given
             scope.item = dataset;
-            scope.defaultPreparations = [];
+            scope.preparations = [];
 
             //when
             createElement();
@@ -109,7 +109,7 @@ describe('InventoryItem directive', function () {
         describe('current Inventory Item openings:', function(){
             beforeEach(inject(function() {
                 scope.item = dataset;
-                scope.defaultPreparations = [];
+                scope.preparations = [];
                 createElement();
                 ctrl.open = jasmine.createSpy('open');
             }));
@@ -148,9 +148,10 @@ describe('InventoryItem directive', function () {
         describe('related inventory item openings:', function(){
             beforeEach(inject(function() {
                 scope.item = dataset;
-                scope.defaultPreparations = [{}];
+                scope.preparations = [{}, {}];
                 createElement();
                 ctrl.openRelatedInv = jasmine.createSpy('openRelatedInv');
+                ctrl.open = jasmine.createSpy('open');
             }));
 
             it('should open related inventory item on dblclick', inject(function () {
@@ -158,10 +159,10 @@ describe('InventoryItem directive', function () {
                 element.dblclick();
 
                 //then
-                expect(ctrl.openRelatedInv).toHaveBeenCalledWith(scope.defaultPreparations[0]);
+                expect(ctrl.openRelatedInv).toHaveBeenCalledWith(scope.preparations[0]);
             }));
 
-            it('should open inventory item on bottle click', inject(function () {
+            it('should open related inventory item on bottle click', inject(function () {
                 //given
                 var bottle = element.find('.inventory-actions').eq(0).find('a').eq(0);
 
@@ -169,10 +170,10 @@ describe('InventoryItem directive', function () {
                 bottle.click();
 
                 //then
-                expect(ctrl.openRelatedInv).toHaveBeenCalledWith(scope.defaultPreparations[0]);
+                expect(ctrl.openRelatedInv).toHaveBeenCalledWith(scope.preparations[0]);
             }));
 
-            it('should open inventory item on bottle dblclick', inject(function () {
+            it('should open related inventory item on bottle dblclick', inject(function () {
                 //given
                 var bottle = element.find('.inventory-actions').eq(0).find('a').eq(0);
 
@@ -180,18 +181,29 @@ describe('InventoryItem directive', function () {
                 bottle.dblclick();
 
                 //then
-                expect(ctrl.openRelatedInv).toHaveBeenCalledWith(scope.defaultPreparations[0]);
+                expect(ctrl.openRelatedInv).toHaveBeenCalledWith(scope.preparations[0]);
             }));
 
-            it('should open inventory item on bottle dblclick', inject(function () {
+            it('should open new inventory item and not the related inventory', inject(function () {
                 //given
-                var bottle = element.find('.inventory-actions').eq(0).find('a').eq(0);
+                var newPreparation = element.find('.dropdown-container-li').eq(0);
 
                 //when
-                bottle.dblclick();
+                newPreparation.click();
 
                 //then
-                expect(ctrl.openRelatedInv).toHaveBeenCalledWith(scope.defaultPreparations[0]);
+                expect(ctrl.open).toHaveBeenCalledWith(dataset);
+            }));
+
+            it('should open 2nd related inventory item', inject(function () {
+                //given
+                var secRelatedInv = element.find('.dropdown-container-li').eq(3);
+
+                //when
+                secRelatedInv.dblclick();
+
+                //then
+                expect(ctrl.openRelatedInv).toHaveBeenCalledWith(scope.preparations[1]);
             }));
         });
     });

@@ -30,7 +30,7 @@
             remove: FolderRestService.remove,
             search: FolderRestService.search,
             getContent: getContent,
-            refreshDefaultPreparations: refreshDefaultPreparations,
+            refreshPreparations: refreshPreparations,
 
             // shared folder ui mngt
             populateMenuChildren: populateMenuChildren
@@ -84,12 +84,12 @@
 
         /**
          * @ngdoc method
-         * @name refreshDefaultPreparations
+         * @name refreshPreparations
          * @methodOf data-prep.folder.controller:FolderCtrl
          * @description Inject the default preparation in the current folder datasets
          * @param {object} preparations The whole list of preparations
          */
-        function refreshDefaultPreparations(preparations) {
+        function refreshPreparations(preparations) {
             // group preparation per dataset
             var datasetPreps = _.groupBy(preparations, function (preparation) {
                 return preparation.dataSetId;
@@ -98,8 +98,8 @@
             // reset default preparation for all datasets
             _.forEach(state.folder.currentFolderContent.datasets, function (dataset) {
                 var preparations = datasetPreps[dataset.id];
-                dataset.defaultPreparations = preparations || [];
-                dataset.defaultPreparations = _.sortByOrder(dataset.defaultPreparations, 'lastModificationDate', false);
+                dataset.preparations = preparations || [];
+                dataset.preparations = _.sortByOrder(dataset.preparations, 'lastModificationDate', false);
             });
 
             return preparations;
@@ -127,7 +127,7 @@
                     StateService.setFoldersStack(foldersStack);
                 })
                 .then(PreparationListService.getPreparationsPromise)
-                .then(refreshDefaultPreparations);
+                .then(refreshPreparations);
             return promise;
         }
     }

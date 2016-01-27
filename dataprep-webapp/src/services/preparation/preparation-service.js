@@ -52,9 +52,9 @@
          * @description [PRIVATE] Refresh the default preparation within each dataset
          */
         function consolidatePreparationsAndDatasets(response) {
-            DatasetListService.refreshDefaultPreparations(state.inventory.preparations)
+            DatasetListService.refreshPreparations(state.inventory.preparations)
                 .then(PreparationListService.refreshMetadataInfos)
-                .then(FolderService.refreshDefaultPreparations);
+                .then(FolderService.refreshPreparations);
             return response;
         }
 
