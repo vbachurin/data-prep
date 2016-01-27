@@ -22,6 +22,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.date.DateManipulator;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.number.BigDecimalParser;
 import org.talend.dataprep.transformation.api.action.metadata.date.DateParser;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -161,7 +162,9 @@ public class SimpleFilterService implements FilterService {
     }
 
     /**
-     * Create a predicate that checks if the var is equals to a value
+     * Create a predicate that checks if the var is equals to a value.
+     *
+     * It first tries String comparison, and if not 'true' uses number comparison.
      *
      * @param node     The filter node
      * @param columnId The column id
@@ -170,7 +173,7 @@ public class SimpleFilterService implements FilterService {
      */
     private Predicate<DataSetRow> createEqualsPredicate(final JsonNode node, final String columnId, final String value) {
         checkValidValue(node, value);
-        return r -> StringUtils.equals(r.get(columnId), value);
+        return safeNumber(r -> StringUtils.equals(r.get(columnId), value) || toBigDecimal(r.get(columnId)) == toBigDecimal(value));
     }
 
     /**
@@ -183,7 +186,7 @@ public class SimpleFilterService implements FilterService {
      */
     private Predicate<DataSetRow> createGreaterThanPredicate(final JsonNode node, final String columnId, final String value) {
         checkValidValue(node, value);
-        return safeNumber(r -> Double.parseDouble(r.get(columnId)) > Double.parseDouble(value));
+        return safeNumber(r -> toBigDecimal(r.get(columnId)) > toBigDecimal(value));
     }
 
     /**
@@ -196,7 +199,7 @@ public class SimpleFilterService implements FilterService {
      */
     private Predicate<DataSetRow> createLowerThanPredicate(final JsonNode node, final String columnId, final String value) {
         checkValidValue(node, value);
-        return safeNumber(r -> Double.parseDouble(r.get(columnId)) < Double.parseDouble(value));
+        return safeNumber(r -> toBigDecimal(r.get(columnId)) < toBigDecimal(value));
     }
 
     /**
@@ -209,7 +212,7 @@ public class SimpleFilterService implements FilterService {
      */
     private Predicate<DataSetRow> createGreaterOrEqualsPredicate(final JsonNode node, final String columnId, final String value) {
         checkValidValue(node, value);
-        return safeNumber(r -> Double.parseDouble(r.get(columnId)) >= Double.parseDouble(value));
+        return safeNumber(r -> toBigDecimal(r.get(columnId)) >= toBigDecimal(value));
     }
 
     /**
@@ -222,7 +225,7 @@ public class SimpleFilterService implements FilterService {
      */
     private Predicate<DataSetRow> createLowerOrEqualsPredicate(final JsonNode node, final String columnId, final String value) {
         checkValidValue(node, value);
-        return safeNumber(r -> Double.parseDouble(r.get(columnId)) <= Double.parseDouble(value));
+        return safeNumber(r -> toBigDecimal(r.get(columnId)) <= toBigDecimal(value));
     }
 
     /**
@@ -348,10 +351,10 @@ public class SimpleFilterService implements FilterService {
      */
     private Predicate<DataSetRow> createNumberRangePredicate(final String columnId, final String start, final String end) {
         try {
-            final double min = Double.parseDouble(start);
-            final double max = Double.parseDouble(end);
+            final double min = toBigDecimal(start);
+            final double max = toBigDecimal(end);
             return safeNumber(r -> {
-                final double columnValue = Double.parseDouble(r.get(columnId));
+                final double columnValue = toBigDecimal(r.get(columnId));
                 return NumberUtils.compare(columnValue, min) == 0 || (columnValue > min && columnValue < max);
             });
         } catch (final Exception e) {
@@ -454,8 +457,8 @@ public class SimpleFilterService implements FilterService {
         return r -> {
             try {
                 return inner.test(r);
-            } catch (NumberFormatException | NullPointerException e) {
-                // Double.parseDouble throws NPE when parsing null strings.
+            } catch (NumberFormatException e) {
+                // BigDecimalParser.toBigDecimal throws NumberFormatException when parsing null or NaN strings.
                 return false;
             }
         };
@@ -469,6 +472,13 @@ public class SimpleFilterService implements FilterService {
                 return false;
             }
         };
+    }
+
+    /**
+     * Simple wrapper to call BigDecimalParser to simplify code above.
+     */
+    private double toBigDecimal(String value){
+        return BigDecimalParser.toBigDecimal(value).doubleValue();
     }
 
     // Intentionally left protected since only used by unit test (in same package)
