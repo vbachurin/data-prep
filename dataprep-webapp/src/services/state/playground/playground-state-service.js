@@ -27,7 +27,7 @@
             setNameEditionMode: setNameEditionMode,
             reset: reset,
             setData: setData,
-            updateColumnsStatistics: updateColumnsStatistics,
+            updateDatasetStatistics: updateDatasetStatistics,
 
             //recipe
             showRecipe: RecipeStateService.show,
@@ -64,6 +64,9 @@
             updateFilteredTransformations: SuggestionsStateService.updateFilteredTransformations,
 
             //statistics
+            setStatisticsBoxPlot: StatisticsStateService.setBoxPlot,
+            setStatisticsDetails: StatisticsStateService.setDetails,
+            setStatisticsRangeLimits: StatisticsStateService.setRangeLimits,
             setStatisticsHistogram: StatisticsStateService.setHistogram,
             setStatisticsFilteredHistogram: StatisticsStateService.setFilteredHistogram,
             setStatisticsHistogramActiveLimits: StatisticsStateService.setHistogramActiveLimits,
@@ -100,11 +103,12 @@
             playgroundState.visible = false;
         }
 
-        function updateColumnsStatistics(columns) {
+        function updateDatasetStatistics(metadata) {
             _.forEach(playgroundState.data.metadata.columns, function(col) {
-                var correspondingColumn = _.find(columns, {id: col.id});
+                var correspondingColumn = _.find(metadata.columns, {id: col.id});
                 col.statistics = correspondingColumn.statistics;
             });
+            playgroundState.dataset.records = metadata.records;
         }
 
         //--------------------------------------------------------------------------------------------------------------

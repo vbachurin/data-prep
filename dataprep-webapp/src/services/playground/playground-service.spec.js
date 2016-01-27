@@ -4,6 +4,10 @@ describe('Playground Service', function () {
 
     var datasetColumnsWithoutStatistics = {columns: [{id: '0001', statistics: {frequencyTable: []}}], records: [], data: []};
     var datasetColumns = {columns: [{id: '0001', statistics: {frequencyTable: [{'toto': 2}]}}], records: [], data: []};
+    var datasetMetadata = {
+        records: 19,
+        columns: [{id: '0001', statistics: {frequencyTable: [{'toto': 2}]}}]
+    };
     var createdPreparation;
     var stateMock = {};
     var lastActiveStep = {inactive: false};
@@ -14,7 +18,7 @@ describe('Playground Service', function () {
 
     beforeEach(inject(function ($injector, $q, StateService, DatasetService, RecipeService, DatagridService,
                                 PreparationService, TransformationCacheService, SuggestionService,
-                                HistoryService, StatisticsService, PreviewService, ExportService) {
+                                HistoryService, PreviewService, ExportService) {
         stateMock.playground = {};
         createdPreparation = {id: '32cd7869f8426465e164ab85'};
 
@@ -31,7 +35,6 @@ describe('Playground Service', function () {
         spyOn(StateService, 'setCurrentData').and.returnValue();
         spyOn(StateService, 'removeAllGridFilters').and.returnValue();
         spyOn(StateService, 'setCurrentPreparation').and.returnValue();
-        spyOn(StatisticsService, 'reset').and.returnValue();
         spyOn(TransformationCacheService, 'invalidateCache').and.returnValue();
         spyOn(ExportService, 'reset').and.returnValue();
     }));
@@ -61,7 +64,7 @@ describe('Playground Service', function () {
 
         beforeEach(inject(function ($rootScope, PlaygroundService, DatasetService,
                                     RecipeService, DatagridService, TransformationCacheService,
-                                    SuggestionService, HistoryService, StatisticsService,
+                                    SuggestionService, HistoryService,
                                     PreviewService, StateService, ExportService) {
             spyOn($rootScope, '$emit').and.returnValue();
 
@@ -73,7 +76,6 @@ describe('Playground Service', function () {
                 expect(RecipeService.refresh).toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
-                expect(StatisticsService.reset).toHaveBeenCalledWith(true, true, true);
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
                 expect(ExportService.reset).toHaveBeenCalled();
             };
@@ -85,7 +87,6 @@ describe('Playground Service', function () {
                 expect(RecipeService.refresh).not.toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).not.toHaveBeenCalled();
                 expect(HistoryService.clear).not.toHaveBeenCalled();
-                expect(StatisticsService.reset).not.toHaveBeenCalled();
                 expect(PreviewService.reset).not.toHaveBeenCalled();
                 expect(ExportService.reset).not.toHaveBeenCalled();
             };
@@ -199,7 +200,7 @@ describe('Playground Service', function () {
         };
         var assertDatasetLoadInitialized, assertDatasetLoadNotInitialized;
 
-        beforeEach(inject(function ($rootScope, $q, StateService, PreparationService, RecipeService, PlaygroundService, DatagridService, TransformationCacheService, SuggestionService, HistoryService, StatisticsService, PreviewService) {
+        beforeEach(inject(function ($rootScope, $q, StateService, PreparationService, RecipeService, PlaygroundService, DatagridService, TransformationCacheService, SuggestionService, HistoryService, PreviewService) {
             spyOn($rootScope, '$emit').and.returnValue();
             spyOn(PreparationService, 'getContent').and.returnValue($q.when(data));
             spyOn(RecipeService, 'disableStepsAfter').and.returnValue();
@@ -212,7 +213,6 @@ describe('Playground Service', function () {
                 expect(RecipeService.refresh).toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
-                expect(StatisticsService.reset).toHaveBeenCalledWith(true, true, true);
                 expect(PreviewService.reset).toHaveBeenCalledWith(false);
             };
             assertDatasetLoadNotInitialized = function () {
@@ -223,7 +223,6 @@ describe('Playground Service', function () {
                 expect(RecipeService.refresh).not.toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).not.toHaveBeenCalled();
                 expect(HistoryService.clear).not.toHaveBeenCalled();
-                expect(StatisticsService.reset).not.toHaveBeenCalled();
                 expect(PreviewService.reset).not.toHaveBeenCalled();
             };
         }));
@@ -343,14 +342,13 @@ describe('Playground Service', function () {
 
     describe('update statistics', function () {
         beforeEach(inject(function ($q, StateService, DatasetService, PreparationService, StatisticsService) {
+            spyOn(StateService, 'updateDatasetStatistics').and.returnValue();
             spyOn(StatisticsService, 'updateStatistics').and.returnValue();
-            spyOn(PreparationService, 'getContent').and.returnValue($q.when(datasetColumns));
-            spyOn(StateService, 'updateColumnsStatistics').and.returnValue();
         }));
 
-        it('should get dataset columns and set statistics in state', inject(function ($rootScope, $q, PlaygroundService, DatasetService, StateService) {
+        it('should get dataset metadata and set metadata statistics in state', inject(function ($rootScope, $q, PlaygroundService, DatasetService, StateService) {
             //given
-            spyOn(DatasetService, 'getMetadata').and.returnValue($q.when(datasetColumns));
+            spyOn(DatasetService, 'getMetadata').and.returnValue($q.when(datasetMetadata));
             stateMock.playground.dataset = {id: '1324d56456b84ef154'};
             stateMock.playground.preparation = null;
 
@@ -360,12 +358,12 @@ describe('Playground Service', function () {
 
             //then
             expect(DatasetService.getMetadata).toHaveBeenCalledWith('1324d56456b84ef154');
-            expect(StateService.updateColumnsStatistics).toHaveBeenCalledWith(datasetColumns.columns);
+            expect(StateService.updateDatasetStatistics).toHaveBeenCalledWith(datasetMetadata);
         }));
 
         it('should trigger statistics update', inject(function ($rootScope, $q, DatasetService, PlaygroundService, StatisticsService) {
             //given
-            spyOn(DatasetService, 'getMetadata').and.returnValue($q.when(datasetColumns));
+            spyOn(DatasetService, 'getMetadata').and.returnValue($q.when(datasetMetadata));
             stateMock.playground.dataset = {id: '1324d56456b84ef154'};
             stateMock.playground.preparation = null;
 
@@ -392,38 +390,8 @@ describe('Playground Service', function () {
             $rootScope.$digest();
 
             //then
-            expect(StateService.updateColumnsStatistics).not.toHaveBeenCalled();
+            expect(StateService.updateDatasetStatistics).not.toHaveBeenCalled();
             expect(rejected).toBe(true);
-        }));
-
-        it('should get preparation head content and set statistics in state', inject(function ($rootScope, RecipeService, PlaygroundService, PreparationService, StateService) {
-            //given
-            spyOn(RecipeService, 'getLastActiveStep').and.returnValue(null);
-            stateMock.playground.dataset = {id: '1324d56456b84ef154'};
-            stateMock.playground.preparation = {id: '56ab612e6546ef15'};
-
-            //when
-            PlaygroundService.updateStatistics();
-            $rootScope.$digest();
-
-            //then
-            expect(PreparationService.getContent).toHaveBeenCalledWith('56ab612e6546ef15', 'head');
-            expect(StateService.updateColumnsStatistics).toHaveBeenCalledWith(datasetColumns.columns);
-        }));
-
-        it('should get preparation columns at specific step and set statistics in state', inject(function ($rootScope, RecipeService, PlaygroundService, PreparationService, StateService) {
-            //given
-            spyOn(RecipeService, 'getLastActiveStep').and.returnValue({transformation: {stepId: '35ae846435a8486'}});
-            stateMock.playground.dataset = {id: '1324d56456b84ef154'};
-            stateMock.playground.preparation = {id: '56ab612e6546ef15'};
-
-            //when
-            PlaygroundService.updateStatistics();
-            $rootScope.$digest();
-
-            //then
-            expect(PreparationService.getContent).toHaveBeenCalledWith('56ab612e6546ef15', '35ae846435a8486');
-            expect(StateService.updateColumnsStatistics).toHaveBeenCalledWith(datasetColumns.columns);
         }));
     });
 
@@ -1244,9 +1212,7 @@ describe('Playground Service', function () {
     });
 
     describe('update preview', function(){
-        beforeEach(inject(function ($injector, $q, StateService, DatasetService, RecipeService, DatagridService,
-                                    PreparationService, TransformationCacheService, SuggestionService,
-                                    HistoryService, StatisticsService, PreviewService) {
+        beforeEach(inject(function ($q, RecipeService, PreviewService) {
             spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when(true));
             spyOn(RecipeService, 'getLastActiveStep').and.returnValue(lastActiveStep);
             var preparationId = '64f3543cd466f545';

@@ -30,7 +30,7 @@
             setCurrentData: PlaygroundStateService.setData,
             setCurrentPreparation: PlaygroundStateService.setPreparation,
             setNameEditionMode: PlaygroundStateService.setNameEditionMode,
-            updateColumnsStatistics: PlaygroundStateService.updateColumnsStatistics,
+            updateDatasetStatistics: PlaygroundStateService.updateDatasetStatistics,
 
             //playground - recipe
             hideRecipe: PlaygroundStateService.hideRecipe,
@@ -67,6 +67,9 @@
             updateFilteredTransformations: PlaygroundStateService.updateFilteredTransformations,
 
             //playground - Statistics
+            setStatisticsBoxPlot: PlaygroundStateService.setStatisticsBoxPlot,
+            setStatisticsDetails: PlaygroundStateService.setStatisticsDetails,
+            setStatisticsRangeLimits: PlaygroundStateService.setStatisticsRangeLimits,
             setStatisticsHistogram: PlaygroundStateService.setStatisticsHistogram,
             setStatisticsFilteredHistogram: PlaygroundStateService.setStatisticsFilteredHistogram,
             setStatisticsHistogramActiveLimits: PlaygroundStateService.setStatisticsHistogramActiveLimits,

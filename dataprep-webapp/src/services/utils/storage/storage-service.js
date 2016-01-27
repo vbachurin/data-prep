@@ -13,6 +13,7 @@
         var LOOKUP_DATASETS_ORDER_KEY = 'org.talend.dataprep.lookup_datasets_order';
         var DATASETS_SORT_KEY = 'org.talend.dataprep.datasets.sort';
         var DATASETS_ORDER_KEY = 'org.talend.dataprep.datasets.order';
+        var FEEDBACK_USER_MAIL_KEY = 'org.talend.dataprep.feedback_user_mail';
 
         return {
             setAggregation: setAggregation,
@@ -21,6 +22,10 @@
             removeAllAggregations: removeAllAggregations,
             savePreparationAggregationsFromDataset: savePreparationAggregationsFromDataset,
             moveAggregations: moveAggregations,
+            
+            getFeedbackUserMail: getFeedbackUserMail,
+            saveFeedbackUserMail: saveFeedbackUserMail,
+            
             getLookupDatasets: getLookupDatasets,
             setLookupDatasets: setLookupDatasets,
 
@@ -28,11 +33,11 @@
             setDatasetsOrder: setDatasetsOrder,
             getDatasetsSort: getDatasetsSort,
             setDatasetsSort: setDatasetsSort,
+            
             getLookupDatasetsSort: getLookupDatasetsSort,
             setLookupDatasetsSort: setLookupDatasetsSort,
             getLookupDatasetsOrder: getLookupDatasetsOrder,
             setLookupDatasetsOrder: setLookupDatasetsOrder
-
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -71,6 +76,31 @@
          */
         function removeItem(key) {
             $window.localStorage.removeItem(key);
+        }
+
+
+        /**
+         * @ngdoc method
+         * @name saveFeedbackUserMail
+         * @methodOf data-prep.services.utils.service:StorageService
+         * @param {any} value The value to save
+         * @description Save the value with the provided key in localStorage. The value us stringified to get back the same type.
+         */
+        function saveFeedbackUserMail(value) {
+            $window.localStorage.setItem(FEEDBACK_USER_MAIL_KEY, JSON.stringify(value));
+        }
+
+        /**
+         * @ngdoc method
+         * @name getFeedbackUserMail
+         * @methodOf data-prep.services.utils.service:StorageService
+         * @param {string} key The localStorage key
+         * @description Get the value associated to the provided key. The result have the same type as the saved value.
+         * @returns The value associated to the provided key.
+         */
+        function getFeedbackUserMail() {
+            var mail = $window.localStorage.getItem(FEEDBACK_USER_MAIL_KEY);
+            return mail ? JSON.parse(mail) : '';
         }
 
         //--------------------------------------------------------------------------------------------------------------

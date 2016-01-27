@@ -72,7 +72,9 @@
 
   "_comment": "Datagrid",
   "ENTER_PREPARATION_NAME": "Enter a name for your preparation",
-  "FILE_DETAILS": "File: {{name}} ({{records}} lines)",
+  "FILE_DETAILS_NAME": "File: {{name}} ",
+  "FILE_DETAILS_LINES": "{{records}} lines",
+  "FILE_DETAILS_LIMIT": "cut at {{records}} lines",
   "FILTER": "Search and Filter",
   "NB_LINES_MATCHING_FILTERS": "{{percentage}}% of lines are matching your filter(s)",
   "NEW_FILTER": "New filter...",
@@ -222,6 +224,8 @@
   "SELECT_PATTERN_IS": "The selected pattern is: ",
   "FILTERING_COMING_SOON": "Filtering is coming soon.",
   "REFRESHING_WAIT": "refreshing, please wait...",
+  "TOOLTIP_MATCHING_FILTER" : "matching your filter",
+  "TOOLTIP_MATCHING_FULL" : "in entire dataset",
 
   "_comment": "Dataset actions",
   "REPLACE_FILE_CONTENT": "Update dataset with another file",
@@ -270,14 +274,16 @@
   "RECIPE_LOOKUP_JOIN_COLS": "Join has been set between",
   "AND": "and",
   "OTHER": "other",
-  "RECIPE_LOOKUP_FOLLOWING_COLS_ADDED_PLURAL": "column(s) have been added.",
-  "RECIPE_LOOKUP_FOLLOWING_COLS_ADDED_SINGULAR": "column has been added.",
-  "ADD_TO_LOOKUP": "Add to Lookup",
+  "RECIPE_LOOKUP_FOLLOWING_COLS_ADDED_PLURAL":"column(s) have been added.",
+  "RECIPE_LOOKUP_FOLLOWING_COLS_ADDED_SINGULAR":"column has been added.",
+  "ADD_TO_LOOKUP":"Add to Dataset",
   "ADD_LOOKUP_DATASET_TITLE": "Add a dataset to Lookup",
   "ADD_LOOKUP_DATASET_MODAL_TITLE": "Select dataset(s) to add to lookup",
   "ADD_LOOKUP_DATASET": "Add",
   "ADD_DATASET_TO_PERFORM_A_LOOKUP": "Add a dataset by cliking on \"+\" button to perform a lookup",
 
   "_comment": "Folders",
-  "FIND_FOLDER": "Find a Folder"
+  "FIND_FOLDER": "Find a Folder",
+
+  "ACTION_HELP": "More details"
 }

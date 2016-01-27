@@ -226,13 +226,12 @@ public class TransformationService extends BaseTransformationService {
      * Compute the given aggregation.
      *
      * @param rawParams the aggregation rawParams as body rawParams.
-     * @param output the where to write the response.
      */
     // @formatter:off
     @RequestMapping(value = "/aggregate", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Compute the aggregation according to the request body rawParams", consumes = MediaType.APPLICATION_JSON_VALUE)
     @VolumeMetered
-    public AggregationResult aggregate(@ApiParam(value = "The aggregation rawParams in json") @RequestBody final String rawParams, final OutputStream output) {
+    public AggregationResult aggregate(@ApiParam(value = "The aggregation rawParams in json") @RequestBody final String rawParams) {
         // @formatter:on
 
         final ObjectMapper mapper = builder.build();
@@ -544,7 +543,9 @@ public class TransformationService extends BaseTransformationService {
     @ApiOperation(value = "Get the available format types")
     @Timed
     public List<ExportFormat> exportTypes() {
-        return formatRegistrationService.getExternalFormats();
+        return formatRegistrationService.getExternalFormats().stream() //
+                .sorted((f1, f2) -> f1.getOrder() - f2.getOrder()) // Enforce strict order.
+                .collect(Collectors.toList());
     }
 
     /**
