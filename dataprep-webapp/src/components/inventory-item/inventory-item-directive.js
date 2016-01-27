@@ -9,22 +9,22 @@
      *
      * @usage
      * <inventory-item
-     *  class="inventory-entry"
-     *  type="dataset"
-     *  item="dataset"
-     *  open="datasetListCtrl.uploadWorkflowService.openDataset"
-     *  related-inventories="dataset.preparations"
-     *  related-inventories-type="preparation"
-     *  open-related-inv="datasetListCtrl.openPreparation"
-     *  rename="datasetListCtrl.rename"
      *  copy="datasetListCtrl.openFolderChoice"
      *  details="INVENTORY_DETAILS"
      *  file-model="datasetListCtrl.updateDatasetFile"
+     *  item="dataset"
+     *  open="datasetListCtrl.uploadWorkflowService.openDataset"
+     *  open-related-inv="datasetListCtrl.openPreparation"
      *  process-certification="datasetListCtrl.processCertification"
      *  remove="datasetListCtrl.remove"
+     *  rename="datasetListCtrl.rename"
+     *  related-inventories="dataset.preparations"
+     *  related-inventories-type="preparation"
      *  toggle-favorite="datasetListCtrl.datasetService.toggleFavorite"
+     *  type="dataset"
      *  update="datasetListCtrl.uploadUpdatedDatasetFile">
      * </inventory-item>
+     *
      * @param {function}    copy copy or remove an inventory item
      * @param {string}      details of the inventory item to be translated (author, lines number)
      * @param {array}       fileModel the file which will replace the current item
@@ -36,8 +36,6 @@
      * @param {function}    rename the inventory item
      * @param {array}       relatedInventories related inventory items
      * @param {string}      relatedInventoriesType of the related inventory item
-     * @param {array}       suggestions the list of suggestions corresponding to the current inventory item
-     * @param {string}      suggestionsType type of the suggestions
      * @param {function}    toggleFavorite the inventory item
      * @param {string}      type of the inventory item
      * @param {function}    update the inventory item with the given fileModel
@@ -51,7 +49,6 @@
             controllerAs: 'inventoryItemCtrl',
             controller: 'InventoryItemCtrl',
             scope: {
-                actionsEnabled : '=',
                 copy : '=',
                 details : '@',
                 fileModel : '=',
