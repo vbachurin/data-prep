@@ -11,26 +11,13 @@
 
         /**
          * @ngdoc method
-         * @name openOnClick
-         * @methodOf data-prep.inventory-item:InventoryItemCtrl
-         * @params item the the current inventory item to be opened
-         * @description opens the current inventory item
-         */
-        vm.openOnClick = function openOnClick (item) {
-            if (vm.actionsEnabled) {
-                vm.open(item);
-            }
-        };
-
-        /**
-         * @ngdoc method
          * @name openRelatedInventoryItem
          * @methodOf data-prep.inventory-item:InventoryItemCtrl
          * @params relatedInventory the related inventory item
          * @description opens the inventory related to the current inventory item
          */
         vm.openRelatedInventoryItem = function openRelatedInventoryItem (relatedInventory) {
-            if (vm.actionsEnabled) {
+            if (vm.openRelatedInv) {
                 vm.openRelatedInv(relatedInventory);
             }
         };
@@ -65,7 +52,9 @@
                 vm.openRelatedInventoryItem(vm.relatedInventories[0]);
             }
             else {
-                vm.open(vm.item);
+                if (vm.open) {
+                    vm.open(vm.item);
+                }
             }
         };
     }

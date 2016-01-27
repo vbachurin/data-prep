@@ -9,17 +9,21 @@
      *
      * @usage
      * <inventory-item
-     *        copy="datasetListCtrl.openFolderChoice"
-     *        details="INVENTORY_DETAILS"
-     *        file-model="datasetListCtrl.updateDatasetFile"
-     *        item="dataset"
-     *        open="datasetListCtrl.uploadWorkflowService.openDataset"
-     *        process-certification="datasetListCtrl.processCertification"
-     *        remove="datasetListCtrl.remove"
-     *        rename="datasetListCtrl.rename"
-     *        toggle-favorite="datasetListCtrl.datasetService.toggleFavorite"
-     *        type= "dataset"
-     *        update="datasetListCtrl.uploadUpdatedDatasetFile">
+     *  class="inventory-entry"
+     *  type="dataset"
+     *  item="dataset"
+     *  open="datasetListCtrl.uploadWorkflowService.openDataset"
+     *  related-inventories="dataset.preparations"
+     *  related-inventories-type="preparation"
+     *  open-related-inv="datasetListCtrl.openPreparation"
+     *  rename="datasetListCtrl.rename"
+     *  copy="datasetListCtrl.openFolderChoice"
+     *  details="INVENTORY_DETAILS"
+     *  file-model="datasetListCtrl.updateDatasetFile"
+     *  process-certification="datasetListCtrl.processCertification"
+     *  remove="datasetListCtrl.remove"
+     *  toggle-favorite="datasetListCtrl.datasetService.toggleFavorite"
+     *  update="datasetListCtrl.uploadUpdatedDatasetFile">
      * </inventory-item>
      * @param {function}    copy copy or remove an inventory item
      * @param {string}      details of the inventory item to be translated (author, lines number)
@@ -27,7 +31,6 @@
      * @param {object}      item the inventory item
      * @param {function}    open the playground
      * @param {function}    openRelatedInv callback function to open the related inventory item
-     * @param {function}    openSuggestion callback function when a suggestion is selected
      * @param {function}    processCertification attributes certification to the inventory item
      * @param {function}    remove the inventory item
      * @param {function}    rename the inventory item
@@ -46,7 +49,7 @@
             replace: true,
             bindToController: true,
             controllerAs: 'inventoryItemCtrl',
-            controller: function() {},
+            controller: 'InventoryItemCtrl',
             scope: {
                 actionsEnabled : '=',
                 copy : '=',

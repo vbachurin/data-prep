@@ -32,7 +32,7 @@ describe('InventoryItem directive', function () {
         element.remove();
     });
 
-    describe('should display actions', function() {
+    describe('display actions', function() {
         beforeEach(inject(function ($rootScope, $compile) {
             scope = $rootScope.$new();
 
@@ -41,19 +41,21 @@ describe('InventoryItem directive', function () {
             scope.openRelatedInv = function(){};
             scope.copy = function(){};
             scope.remove = function(){};
+            scope.toggleFavorite = function(){};
             scope.preparations = [];
             createElement = function () {
                 element = angular.element('<inventory-item ' +
                     'item="dataset" ' +
-                    'actions-enabled="true" ' +
                     'details="INVENTORY_DETAILS" ' +
-                    'type= "dataset" ' +
+                    'type="dataset" ' +
                     'related-inventories="preparations" ' +
                     'related-inventories-type="preparation" ' +
                     'open-related-inv="openPreparation" ' +
-                    'open="openDataset" ' +
+                    'open="open" ' +
                     'copy="copy" ' +
+                    'rename="rename" ' +
                     'remove="remove"' +
+                    'toggle-favorite="toggleFavorite"' +
                     '></inventory-item>');
                 $compile(element)(scope);
                 scope.$digest();
@@ -77,7 +79,7 @@ describe('InventoryItem directive', function () {
             expect(certificationIcon.length).toBe(0);
             expect(element.find('.inventory-title').eq(0).text().indexOf('US States')).toBe(0);
             expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymousUser, created ' + momentize('1437020219741') + ', contains  lines');
-            expect(element.find('a').length).toBe(2); //copy and remove actions
+            expect(element.find('a').length).toBe(3); //copy, remove and favorite actions
         }));
 
         it('should list the related inventory items', inject(function () {
@@ -110,8 +112,9 @@ describe('InventoryItem directive', function () {
             beforeEach(inject(function() {
                 scope.item = dataset;
                 scope.preparations = [];
+                scope.open = jasmine.createSpy('open');
+                scope.rename = jasmine.createSpy('rename');
                 createElement();
-                ctrl.open = jasmine.createSpy('open');
             }));
 
             it('should open inventory item on element dblclick', inject(function () {
@@ -135,7 +138,7 @@ describe('InventoryItem directive', function () {
 
             it('should open inventory item on inventory title click', inject(function () {
                 //given
-                var title = element.find('.inventory-title').eq(0);
+                var title = element.find('.inventory-title');
 
                 //when
                 title.click();
@@ -149,9 +152,10 @@ describe('InventoryItem directive', function () {
             beforeEach(inject(function() {
                 scope.item = dataset;
                 scope.preparations = [{}, {}];
+                scope.open = jasmine.createSpy('open');
+                scope.rename = jasmine.createSpy('rename');
                 createElement();
                 ctrl.openRelatedInv = jasmine.createSpy('openRelatedInv');
-                ctrl.open = jasmine.createSpy('open');
             }));
 
             it('should open related inventory item on dblclick', inject(function () {
@@ -217,7 +221,12 @@ describe('InventoryItem directive', function () {
             scope.copy = function(){};
             scope.remove = function(){};
             createElement = function () {
-                element = angular.element('<inventory-item item="dataset" actions-enabled="false" details="INVENTORY_DETAILS" type= "dataset" open="openDataset" copy="copy" remove="remove"></inventory-item>');
+                element = angular.element('<inventory-item ' +
+                    'item="dataset" ' +
+                    'details="INVENTORY_DETAILS" ' +
+                    'type= "dataset" ' +
+                    'open="openDataset" >' +
+                    '</inventory-item>');
                 $compile(element)(scope);
                 scope.$digest();
                 return element;

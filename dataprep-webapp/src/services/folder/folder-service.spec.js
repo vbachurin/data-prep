@@ -3,6 +3,16 @@ describe('Folder services', function () {
 
     var stateMock, datasets, preparations;
 
+    var sortList = [
+        {id: 'name', name: 'NAME_SORT', property: 'name'},
+        {id: 'date', name: 'DATE_SORT', property: 'created'}
+    ];
+
+    var orderList = [
+        {id: 'asc', name: 'ASC_ORDER'},
+        {id: 'desc', name: 'DESC_ORDER'}
+    ];
+
     beforeEach(module('data-prep.services.folder', function ($provide) {
         stateMock = {
             folder: {
