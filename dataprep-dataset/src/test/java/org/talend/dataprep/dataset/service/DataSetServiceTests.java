@@ -27,6 +27,7 @@ import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.dataset.statistics.Statistics;
+import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.DataSetBaseTest;
@@ -64,6 +65,9 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
     @Autowired
     private Security security;
+
+    @Autowired
+    private VersionService versionService;
 
     @Test
     public void CORSHeaders() throws Exception {
@@ -109,7 +113,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         assertFalse(favoritesResp.get(1));
 
         // add favorite
-        UserData userData = new UserData(security.getUserId());
+        UserData userData = new UserData(security.getUserId(), versionService.version().getVersionId());
         HashSet<String> favorites = new HashSet<>();
         favorites.add(id1);
         favorites.add(id2);
@@ -338,7 +342,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         dataSetMetadataRepository.add(dataSetMetadata);
         contentStore.storeAsRaw(dataSetMetadata, new ByteArrayInputStream(new byte[0]));
 
-        final UserData userData = new UserData(security.getUserId());
+        final UserData userData = new UserData(security.getUserId(), versionService.version().getVersionId());
         userDataRepository.save(userData);
         final Set<String> favorites = new HashSet<>();
         favorites.add(datasetId);
@@ -750,7 +754,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         assertFalse(isFavorites);
 
         // add favorite
-        UserData userData = new UserData(security.getUserId());
+        UserData userData = new UserData(security.getUserId(), versionService.version().getVersionId());
         HashSet<String> favorites = new HashSet<>();
         favorites.add("1234");
         userData.setFavoritesDatasets(favorites);
@@ -840,7 +844,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         when().get("/datasets/favorites").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
         String dsId1 = UUID.randomUUID().toString();
         String dsId2 = UUID.randomUUID().toString();
-        UserData userData = new UserData(security.getUserId());
+        UserData userData = new UserData(security.getUserId(), versionService.version().getVersionId());
         HashSet<String> favorites = new HashSet<>();
         favorites.add(dsId1);
         favorites.add(dsId2);

@@ -29,6 +29,7 @@ import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.folder.FolderEntry;
+import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
 import org.talend.dataprep.dataset.service.analysis.asynchronous.AsynchronousDataSetAnalyzer;
@@ -123,6 +124,9 @@ public class DataSetService {
     /** DataSet metadata builder. */
     @Autowired
     private DataSetMetadataBuilder metadataBuilder;
+
+    @Autowired
+    private VersionService versionService;
 
     /**
      * Sort the synchronous analyzers.
@@ -840,7 +844,7 @@ public class DataSetService {
                 } // no user data for this user so nothing to unset
             } else {// set the favorites
                 if (userData == null) {// let's create a new UserData
-                    userData = new UserData(userId);
+                    userData = new UserData(userId, versionService.version().getVersionId());
                 } // else already created so just update it.
                 userData.addFavoriteDataset(dataSetId);
                 userDataRepository.save(userData);
