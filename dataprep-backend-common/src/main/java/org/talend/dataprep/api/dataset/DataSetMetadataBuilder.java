@@ -31,9 +31,9 @@ public class DataSetMetadataBuilder {
     private String id;
 
     /**
-     * @see org.talend.dataprep.api.dataset.DataSetMetadata#version
+     * @see org.talend.dataprep.api.dataset.DataSetMetadata#appVersion
      */
-    private String version;
+    private String appVersion;
 
     /**
      * @see org.talend.dataprep.api.dataset.DataSetMetadata#author
@@ -158,7 +158,7 @@ public class DataSetMetadataBuilder {
     public DataSetMetadataBuilder metadata() {
         final DataSetMetadataBuilder builder = new DataSetMetadataBuilder();
         builder.builtWithMetadata = true;
-        builder.version = versionService.version().getVersionId();
+        builder.appVersion = versionService.version().getVersionId();
         return builder;
     }
 
@@ -167,8 +167,8 @@ public class DataSetMetadataBuilder {
         return this;
     }
 
-    public DataSetMetadataBuilder version(String version) {
-        this.version = version;
+    public DataSetMetadataBuilder appVersion(String appVersion) {
+        this.appVersion = appVersion;
         return this;
     }
 
@@ -289,7 +289,7 @@ public class DataSetMetadataBuilder {
 
     public DataSetMetadataBuilder copy(DataSetMetadata original) {
         this.id = original.getId();
-        this.version = original.getVersion();
+        this.appVersion = original.getAppVersion();
         this.author = original.getAuthor();
         this.name = original.getName();
         this.createdDate = original.getCreationDate();
@@ -348,7 +348,7 @@ public class DataSetMetadataBuilder {
             columns = Collections.emptyList();
         }
         RowMetadata row = new RowMetadata(columns);
-        DataSetMetadata metadata = new DataSetMetadata(id, name, author, createdDate, row, version);
+        DataSetMetadata metadata = new DataSetMetadata(id, name, author, createdDate, row, appVersion);
         metadata.setSheetName(this.sheetName);
         metadata.setDraft(this.draft);
         metadata.setFavorite(this.isFavorite);

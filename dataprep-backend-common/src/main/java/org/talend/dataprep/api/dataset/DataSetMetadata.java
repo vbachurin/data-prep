@@ -68,8 +68,9 @@ public class DataSetMetadata implements Serializable {
     @JsonProperty("sheetName")
     private String sheetName;
 
-    /** The metadata version. */
-    private String version;
+    /** The application version. */
+    @JsonProperty("app-version")
+    private String appVersion;
 
     /**
      * if <code>true</code> this dataset is still a draft as we need more information from the user
@@ -93,6 +94,7 @@ public class DataSetMetadata implements Serializable {
     /**
      * indicates what encoding should be used to read raw content. Defaults to UTF-8 but may be changed depending on
      * content.
+     * 
      * @see CSVSerializer#serialize(java.io.InputStream, org.talend.dataprep.api.dataset.DataSetMetadata)
      */
     @JsonProperty("encoding")
@@ -113,14 +115,16 @@ public class DataSetMetadata implements Serializable {
      * @param author dataset author.
      * @param creationDate dataset creation date.
      * @param rowMetadata row metadata.
+     * @param appVersion the application version.
      */
-    protected DataSetMetadata(String id, String name, String author, long creationDate, RowMetadata rowMetadata, String version) {
+    protected DataSetMetadata(String id, String name, String author, long creationDate, RowMetadata rowMetadata,
+            String appVersion) {
         this.id = id;
         this.name = name;
         this.author = author;
         this.creationDate = creationDate;
         this.rowMetadata = rowMetadata;
-        this.version = version;
+        this.appVersion = appVersion;
     }
 
     /**
@@ -268,6 +272,7 @@ public class DataSetMetadata implements Serializable {
 
     /**
      * Changes the encoding of the data set content.
+     * 
      * @param encoding The new encoding. Must be supported by current JVM.
      */
     public void setEncoding(String encoding) {
@@ -277,8 +282,8 @@ public class DataSetMetadata implements Serializable {
     /**
      * @return the Version
      */
-    public String getVersion() {
-        return version;
+    public String getAppVersion() {
+        return appVersion;
     }
 
     /**
@@ -291,23 +296,21 @@ public class DataSetMetadata implements Serializable {
     }
 
     @Override
-    public String toString()
-    {
-        return "DataSetMetadata{" +
-            "id='" + id + '\'' +
-            ", rowMetadata=" + rowMetadata +
- ", version=" + version +
-            ", lifecycle=" + lifecycle +
-            ", content=" + content +
-            ", governance=" + governance +
-            ", name='" + name + '\'' +
-            ", author='" + author + '\'' +
-            ", creationDate=" + creationDate +
-            ", sheetName='" + sheetName + '\'' +
-            ", draft=" + draft +
-            ", schemaParserResult=" + schemaParserResult +
-            ", favorite=" + favorite +
-            '}';
+    public String toString() {
+        return "DataSetMetadata{" + //
+                "id='" + id + '\'' + //
+                ", rowMetadata=" + rowMetadata + //
+                ", appVersion=" + appVersion + //
+                ", lifecycle=" + lifecycle + //
+                ", content=" + content + //
+                ", governance=" + governance + //
+                ", name='" + name + '\'' + //
+                ", author='" + author + '\'' + //
+                ", creationDate=" + creationDate + //
+                ", sheetName='" + sheetName + '\'' + //
+                ", draft=" + draft + //
+                ", schemaParserResult=" + schemaParserResult + //
+                ", favorite=" + favorite + '}';
     }
 
     @Override
@@ -331,13 +334,13 @@ public class DataSetMetadata implements Serializable {
                 Objects.equals(author, that.author) && //
                 Objects.equals(sheetName, that.sheetName) && //
                 Objects.equals(schemaParserResult, that.schemaParserResult) && //
-                Objects.equals(version, that.version);
+                Objects.equals(appVersion, that.appVersion);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, rowMetadata, lifecycle, content, governance, location, name, author, creationDate, sheetName,
-                draft, schemaParserResult, favorite, version);
+                draft, schemaParserResult, favorite, appVersion);
     }
 
 }

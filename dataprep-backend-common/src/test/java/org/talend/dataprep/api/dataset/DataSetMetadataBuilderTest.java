@@ -1,6 +1,7 @@
 package org.talend.dataprep.api.dataset;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 
 import org.junit.Test;
@@ -48,6 +49,14 @@ public class DataSetMetadataBuilderTest {
     @Test
     public void testName() throws Exception {
         assertEquals("name", builder.metadata().id("1234").name("name").build().getName());
+    }
+
+    @Test
+    public void testVersion() throws Exception {
+        // default version
+        assertNotNull(builder.metadata().id("4321").build().getAppVersion());
+        // set version
+        assertEquals("1.0.PE", builder.metadata().id("4321").appVersion("1.0.PE").build().getAppVersion());
     }
 
     @Test
