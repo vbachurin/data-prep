@@ -24,6 +24,13 @@
 
   .file-lines-count {
     color: $dark-green;
+    @include ellipsis(100px);
+    vertical-align: top;
+  }
+
+  .playground-dataset-name {
+    @include ellipsis(500px);
+    vertical-align: top;
   }
 }
 

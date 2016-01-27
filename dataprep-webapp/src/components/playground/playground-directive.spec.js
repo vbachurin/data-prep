@@ -100,8 +100,8 @@ describe('Playground directive', function () {
     beforeEach(module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
             'FILE_DETAILS_NAME': 'File: {{name}}',
-            'FILE_DETAILS_LINES': '- {{records}} lines',
-            'FILE_DETAILS_LIMIT': '- cut at {{records}} lines'
+            'FILE_DETAILS_LINES': '{{records}} lines',
+            'FILE_DETAILS_LIMIT': 'cut at {{records}} lines'
         });
         $translateProvider.preferredLanguage('en');
     }));
@@ -159,7 +159,8 @@ describe('Playground directive', function () {
             expect(playgroundModal.find('.modal-header').length).toBe(1);
             expect(playgroundModal.find('.modal-header').eq(0).find('.left-header > li').length).toBe(1);
             expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).find('span').eq(0).text().trim()).toBe('File: US States');
-            expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).find('span').eq(1).text().trim()).toBe('- 3 lines');
+            expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).find('span').eq(1).text().trim()).toBe('-');
+            expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).find('span').eq(2).text().trim()).toBe('3 lines');
         });
 
         it('should render playground header when dataset is truncated', function () {
@@ -178,7 +179,8 @@ describe('Playground directive', function () {
             expect(playgroundModal.find('.modal-header').length).toBe(1);
             expect(playgroundModal.find('.modal-header').eq(0).find('.left-header > li').length).toBe(1);
             expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).find('span').eq(0).text().trim()).toBe('File: US States');
-            expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).find('span').eq(1).text().trim()).toBe('- cut at 50 lines');
+            expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).find('span').eq(1).text().trim()).toBe('-');
+            expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).find('span').eq(2).text().trim()).toBe('cut at 50 lines');
         });
 
         it('should render insertion playground left header', function () {
