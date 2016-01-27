@@ -42,16 +42,16 @@
          * @description creates the object used to construct the tooltip
          * @returns {Object} the object to construct the tooltip with
          */
-        vm.getTooltipContent = function getTooltipContent(){
+        vm.getTooltipContent = function getTooltipContent () {
             return vm.relatedInventories && vm.relatedInventories.length ?
-                {
-                    type: vm.relatedInventoriesType,
-                    name: vm.relatedInventories[0].name
-                } :
-                {
-                    type: vm.type,
-                    name: vm.item.name
-                };
+            {
+                type: vm.relatedInventoriesType,
+                name: vm.relatedInventories[0].name
+            } :
+            {
+                type: vm.type,
+                name: vm.item.name
+            };
         };
 
         /**
@@ -60,11 +60,11 @@
          * @methodOf data-prep.inventory-item:InventoryItemCtrl
          * @description given an inventory Item, it opens it
          */
-        vm.openInventoryItem = function openInventoryItem(){
-            if(vm.relatedInventories.length){
+        vm.openInventoryItem = function openInventoryItem () {
+            if (vm.relatedInventories.length) {
                 vm.openRelatedInventoryItem(vm.relatedInventories[0]);
             }
-            else{
+            else {
                 vm.open(vm.item);
             }
         };

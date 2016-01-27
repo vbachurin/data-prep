@@ -11,7 +11,7 @@ describe('Folder services', function () {
         'nbLinesHeader': 1,
         'nbLinesFooter': 0,
         'created': '03-30-2015 08:06',
-        'defaultPreparation': {
+        'defaultPreparations': [{
             'id': 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
             'dataSetId': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
             'author': 'anonymousUser',
@@ -43,7 +43,7 @@ describe('Folder services', function () {
                     }
                 }
             ]
-        }
+        }]
     };
 
     var sortList = [
@@ -365,13 +365,13 @@ describe('Folder services', function () {
         it('should set default preparation in current folder datasets', inject(function (FolderService) {
             //given
             stateMock.folder.currentFolderContent.datasets = [datasets[0]];
-            expect(stateMock.folder.currentFolderContent.datasets[0].defaultPreparation).toBeFalsy();
+            expect(stateMock.folder.currentFolderContent.datasets[0].defaultPreparations).toBeFalsy();
 
             //when
             FolderService.refreshDefaultPreparations(preparations);
 
             //then
-            expect(stateMock.folder.currentFolderContent.datasets[0].defaultPreparation.id).toBe(datasetResult.defaultPreparation.id);
+            expect(stateMock.folder.currentFolderContent.datasets[0].defaultPreparations[0].id).toBe(datasetResult.defaultPreparations[0].id);
         }));
 
         it('should not set default preparation on dataset that has no preparation', inject(function ($q, $rootScope, FolderService) {
@@ -386,13 +386,13 @@ describe('Folder services', function () {
                 'created': '03-30-2015 08:06'
             };
             stateMock.folder.currentFolderContent.datasets = [datasetWithoutPreparation];
-            expect(stateMock.folder.currentFolderContent.datasets[0].defaultPreparation).toBeFalsy();
+            expect(stateMock.folder.currentFolderContent.datasets[0].defaultPreparations).toBeFalsy();
 
             //when
             FolderService.refreshDefaultPreparations(preparations);
 
             //then
-            expect(stateMock.folder.currentFolderContent.datasets[0].defaultPreparation).toBeFalsy();
+            expect(stateMock.folder.currentFolderContent.datasets[0].defaultPreparations).toEqual([]);
         }));
     });
 });

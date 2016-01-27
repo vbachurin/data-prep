@@ -340,9 +340,11 @@ describe('Dataset List Service', function () {
         $rootScope.$apply();
 
         //then
-        expect(datasets[0].defaultPreparations.id).toBe(preparations[0].id);
-        expect(datasets[1].defaultPreparations.id).toBe(preparations[3].id);
-        expect(datasets[2].defaultPreparations).toBeNull();
+        expect(datasets[0].defaultPreparations[0].id).toBe(preparations[0].id);
+        expect(datasets[1].defaultPreparations[0].id).toBe(preparations[3].id);
+        expect(datasets[2].defaultPreparations[0].id).toBe(preparations[1].id);
+        expect(datasets[2].defaultPreparations[1].id).toBe(preparations[2].id);
+        expect(datasets[3].defaultPreparations).toEqual([]);
     }));
 
     it('should fetch datasets when not already initialized and init default preparations in datasets', inject(function ($rootScope, DatasetListService) {
@@ -354,9 +356,11 @@ describe('Dataset List Service', function () {
         $rootScope.$apply();
 
         //then
-        expect(datasets[0].defaultPreparations.id).toBe(preparations[0].id);
-        expect(datasets[1].defaultPreparations.id).toBe(preparations[3].id);
-        expect(datasets[2].defaultPreparations).toBeNull();
+        expect(datasets[0].defaultPreparations[0].id).toBe(preparations[0].id);
+        expect(datasets[1].defaultPreparations[0].id).toBe(preparations[3].id);
+        expect(datasets[2].defaultPreparations[0].id).toBe(preparations[1].id);
+        expect(datasets[2].defaultPreparations[1].id).toBe(preparations[2].id);
+        expect(datasets[3].defaultPreparations).toEqual([]);
     }));
 
     it('should return datasets after init default preparations in datasets', inject(function ($rootScope, DatasetListService) {

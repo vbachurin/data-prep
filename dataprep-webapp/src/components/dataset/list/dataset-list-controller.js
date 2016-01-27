@@ -125,7 +125,6 @@
                 });
         };
 
-
         /**
          * @ngdoc method
          * @name uploadUpdatedDatasetFile

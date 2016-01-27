@@ -16,18 +16,29 @@ describe('Playground Service', function () {
         $provide.constant('state', stateMock);
     }));
 
+
+    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+        $translateProvider.translations('en', {
+            'PREPARATION': 'Preparation'
+        });
+        $translateProvider.preferredLanguage('en');
+    }));
+
     beforeEach(inject(function ($injector, $q, StateService, DatasetService, RecipeService, DatagridService,
                                 PreparationService, TransformationCacheService, SuggestionService,
                                 HistoryService, PreviewService, ExportService) {
         stateMock.playground = {};
-        createdPreparation = {id: '32cd7869f8426465e164ab85'};
+        createdPreparation = {
+            id: '32cd7869f8426465e164ab85',
+            name: 'my Preparation'
+        };
 
         spyOn(DatagridService, 'updateData').and.returnValue();
         spyOn(DatasetService, 'getContent').and.returnValue($q.when(datasetColumns));
         spyOn(HistoryService, 'clear').and.returnValue();
         spyOn(PreparationService, 'create').and.returnValue($q.when(createdPreparation));
         spyOn(PreparationService, 'setHead').and.returnValue($q.when());
-        spyOn(PreparationService, 'setName').and.returnValue($q.when(true));
+        spyOn(PreparationService, 'setName').and.returnValue($q.when(createdPreparation));
         spyOn(PreviewService, 'reset').and.returnValue();
         spyOn(RecipeService, 'refresh').and.returnValue($q.when(true));
         spyOn(StateService, 'resetPlayground').and.returnValue();
@@ -39,7 +50,7 @@ describe('Playground Service', function () {
         spyOn(ExportService, 'reset').and.returnValue();
     }));
 
-    it('should set new name to the preparation', inject(function ($rootScope, PlaygroundService, PreparationService) {
+    it('should set new name to the preparation name', inject(function ($rootScope, PlaygroundService, PreparationService) {
         //given
         var name = 'My preparation';
         var newName = 'My new preparation name';
@@ -55,11 +66,14 @@ describe('Playground Service', function () {
         //then
         expect(PreparationService.create).not.toHaveBeenCalled();
         expect(PreparationService.setName).toHaveBeenCalledWith('e85afAa78556d5425bc2', newName);
-        expect(PlaygroundService.preparationName).toBe(newName);
+        expect(PlaygroundService.preparationName).toBe('my Preparation');
     }));
 
     describe('init new preparation', function () {
-        var dataset = {id: 'e85afAa78556d5425bc2'};
+        var dataset = {
+            id: 'e85afAa78556d5425bc2',
+            name: 'dataset name'
+        };
         var assertNewPreparationInitialization, assertNewPreparationNotInitialized;
 
         beforeEach(inject(function ($rootScope, PlaygroundService, DatasetService,
@@ -157,7 +171,7 @@ describe('Playground Service', function () {
             $rootScope.$digest();
 
             //then
-            expect(PlaygroundService.preparationName).toBeFalsy();
+            expect(PlaygroundService.preparationName).toBe('dataset name Preparation');
         }));
 
         it('should start playground unboarding tour', inject(function ($rootScope, PlaygroundService, OnboardingService) {
@@ -444,7 +458,10 @@ describe('Playground Service', function () {
         describe('append', function () {
             it('should create a preparation when there is no preparation yet', inject(function ($rootScope, PlaygroundService, PreparationService) {
                 //given
-                stateMock.playground.dataset = {id: '76a415cf854d8654'};
+                stateMock.playground.dataset = {
+                    id: '76a415cf854d8654',
+                    name: 'my dataset name'
+                };
                 stateMock.playground.preparation = null;
                 var action = 'uppercase';
                 var parameters = {
@@ -464,7 +481,7 @@ describe('Playground Service', function () {
 
                 //then
                 expect(createdPreparation.draft).toBe(true);
-                expect(PreparationService.create).toHaveBeenCalledWith('76a415cf854d8654', 'Preparation draft');
+                expect(PreparationService.create).toHaveBeenCalledWith('76a415cf854d8654', 'my dataset name Preparation');
             }));
 
             it('should append step to the new created preparation', inject(function ($rootScope, PlaygroundService, PreparationService) {

@@ -13,7 +13,8 @@ describe('DatasetList directive', function () {
             'author': 'anonymousUser',
             'created': '1437020219741',
             'type': 'text/csv',
-            'certificationStep': 'NONE'
+            'certificationStep': 'NONE',
+            defaultPreparations: [{name:'US States prepa'}, {name:'US States prepa 2'}]
         },
         {
             'id': 'e93b9c92-e054-4f6a-a38f-ca52f22ead2b',
@@ -21,14 +22,16 @@ describe('DatasetList directive', function () {
             'author': 'anonymousUser',
             'created': '143702021974',
             'type': 'application/vnd.ms-excel',
-            'certificationStep': 'PENDING'
+            'certificationStep': 'PENDING',
+            defaultPreparations: [{name:'Customers prepa'}]
         },
         {
             'id': 'e93b9c92-e054-4f6a-a38f-ca52f22ead3a',
             'name': 'Customers 2',
             'author': 'anonymousUser',
             'created': '14370202197',
-            'certificationStep': 'CERTIFIED'
+            'certificationStep': 'CERTIFIED',
+            'defaultPreparations': []
         }
     ];
 
@@ -98,6 +101,8 @@ describe('DatasetList directive', function () {
         createElement();
 
         //then
+        expect(element.find('.inventory-item').length).toBe(3);
+
         var icon = element.find('.inventory-icon').eq(0);
         var iconSrc = icon.find('> img')[0].src;
         var certificationIcon = icon.find('.pin');
@@ -136,5 +141,11 @@ describe('DatasetList directive', function () {
         //then
         var activeEl = document.activeElement;
         expect(angular.element(activeEl).attr('id')).toBe('new-name-input-id');
+    }));
+
+    it('should create related preparations list', inject(function(){
+        expect(element.find('.inventory-item').eq(0).find('.dropdown-container-li').length).toBe(4);
+        expect(element.find('.inventory-item').eq(1).find('.dropdown-container-li').length).toBe(3);
+        expect(element.find('.inventory-item').eq(2).find('.dropdown-container-li').length).toBe(0);
     }));
 });
