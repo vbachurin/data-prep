@@ -2,7 +2,11 @@
 describe('Playground Service', function () {
     'use strict';
 
-    var datasetColumnsWithoutStatistics = {columns: [{id: '0001', statistics: {frequencyTable: []}}], records: [], data: []};
+    var datasetColumnsWithoutStatistics = {
+        columns: [{id: '0001', statistics: {frequencyTable: []}}],
+        records: [],
+        data: []
+    };
     var datasetColumns = {columns: [{id: '0001', statistics: {frequencyTable: [{'toto': 2}]}}], records: [], data: []};
     var datasetMetadata = {
         records: 19,
@@ -24,17 +28,20 @@ describe('Playground Service', function () {
 
         spyOn(DatagridService, 'updateData').and.returnValue();
         spyOn(DatasetService, 'getContent').and.returnValue($q.when(datasetColumns));
+        spyOn(DatasetService, 'updateParameters').and.returnValue($q.when());
         spyOn(HistoryService, 'clear').and.returnValue();
         spyOn(PreparationService, 'create').and.returnValue($q.when(createdPreparation));
         spyOn(PreparationService, 'setHead').and.returnValue($q.when());
         spyOn(PreparationService, 'setName').and.returnValue($q.when(true));
         spyOn(PreviewService, 'reset').and.returnValue();
+        spyOn(RecipeService, 'disableStepsAfter').and.returnValue();
         spyOn(RecipeService, 'refresh').and.returnValue($q.when(true));
-        spyOn(StateService, 'resetPlayground').and.returnValue();
-        spyOn(StateService, 'setCurrentDataset').and.returnValue();
-        spyOn(StateService, 'setCurrentData').and.returnValue();
         spyOn(StateService, 'removeAllGridFilters').and.returnValue();
+        spyOn(StateService, 'resetPlayground').and.returnValue();
+        spyOn(StateService, 'setCurrentData').and.returnValue();
+        spyOn(StateService, 'setCurrentDataset').and.returnValue();
         spyOn(StateService, 'setCurrentPreparation').and.returnValue();
+        spyOn(StateService, 'setNameEditionMode').and.returnValue();
         spyOn(TransformationCacheService, 'invalidateCache').and.returnValue();
         spyOn(ExportService, 'reset').and.returnValue();
     }));
@@ -98,34 +105,9 @@ describe('Playground Service', function () {
             jasmine.clock().uninstall();
         });
 
-        it('should init playground when there is no loaded data yet', inject(function ($rootScope, PlaygroundService, PreparationService) {
+        it('should init playground', inject(function ($rootScope, PlaygroundService, PreparationService) {
             //given
             expect(PreparationService.preparationName).toBeFalsy();
-
-            //when
-            PlaygroundService.initPlayground(dataset);
-            $rootScope.$digest();
-
-            //then
-            assertNewPreparationInitialization();
-        }));
-
-        it('should init playground when there is already a created preparation loaded', inject(function ($rootScope, PlaygroundService) {
-            //given
-            stateMock.playground.preparation = {id: '12342305304543'};
-
-            //when
-            PlaygroundService.initPlayground(dataset);
-            $rootScope.$digest();
-
-            //then
-            assertNewPreparationInitialization();
-        }));
-
-        it('should init playground when the loaded dataset is not the wanted dataset', inject(function ($rootScope, PlaygroundService) {
-            //given
-            stateMock.playground.dataset = {id: 'ab45420c09bf98d9a90'};
-            stateMock.playground.preparation = null;
 
             //when
             PlaygroundService.initPlayground(dataset);
@@ -203,7 +185,6 @@ describe('Playground Service', function () {
         beforeEach(inject(function ($rootScope, $q, StateService, PreparationService, RecipeService, PlaygroundService, DatagridService, TransformationCacheService, SuggestionService, HistoryService, PreviewService) {
             spyOn($rootScope, '$emit').and.returnValue();
             spyOn(PreparationService, 'getContent').and.returnValue($q.when(data));
-            spyOn(RecipeService, 'disableStepsAfter').and.returnValue();
 
             assertDatasetLoadInitialized = function (metadata, data) {
                 expect(StateService.resetPlayground).toHaveBeenCalled();
@@ -322,22 +303,6 @@ describe('Playground Service', function () {
             expect(DatagridService.updateData).toHaveBeenCalledWith(data);
             expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
         }));
-
-        it('should do nothing if current step (threshold between active and inactive) is already selected', inject(function ($rootScope, PlaygroundService, RecipeService, PreparationService) {
-            //given
-            var step = {
-                column: {id: '0000'},
-                transformation: {stepId: 'a4353089cb0e039ac2'}
-            };
-            spyOn(RecipeService, 'getActiveThresholdStep').and.returnValue(step);
-
-            //when
-            PlaygroundService.loadStep(step);
-
-            //then
-            expect($rootScope.$emit).not.toHaveBeenCalledWith('talend.loading.start');
-            expect(PreparationService.getContent).not.toHaveBeenCalled();
-        }));
     });
 
     describe('update statistics', function () {
@@ -384,7 +349,7 @@ describe('Playground Service', function () {
 
             //when
             PlaygroundService.updateStatistics()
-                .catch(function() {
+                .catch(function () {
                     rejected = true;
                 });
             $rootScope.$digest();
@@ -1172,13 +1137,12 @@ describe('Playground Service', function () {
 
     describe('preparation name edition mode', function () {
 
-        beforeEach(inject(function ($q, PreparationService, RecipeService, StateService) {
+        beforeEach(inject(function ($q, PreparationService, RecipeService) {
             spyOn(PreparationService, 'getContent').and.returnValue($q.when({columns: [{}]}));
             spyOn(PreparationService, 'appendStep').and.callFake(function () {
                 RecipeService.getRecipe().push({});
                 return $q.when(true);
             });
-            spyOn(StateService, 'setNameEditionMode').and.returnValue();
         }));
 
         it('should turn on edition mode on dataset playground init', inject(function ($rootScope, PlaygroundService, StateService) {
@@ -1211,7 +1175,7 @@ describe('Playground Service', function () {
         }));
     });
 
-    describe('update preview', function(){
+    describe('update preview', function () {
         beforeEach(inject(function ($q, RecipeService, PreviewService) {
             spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when(true));
             spyOn(RecipeService, 'getLastActiveStep').and.returnValue(lastActiveStep);
@@ -1292,6 +1256,91 @@ describe('Playground Service', function () {
 
             //then
             expect(PreviewService.getPreviewUpdateRecords).not.toHaveBeenCalled();
+        }));
+    });
+
+    describe('dataset parameters', function () {
+        var assertNewPlaygroundIsInitWith, assertPreparationStepIsLoadedWith;
+        beforeEach(inject(function(StateService, RecipeService, TransformationCacheService, HistoryService, PreviewService, ExportService, DatagridService) {
+            assertNewPlaygroundIsInitWith = function(dataset) {
+                expect(StateService.resetPlayground).toHaveBeenCalled();
+                expect(StateService.setCurrentDataset).toHaveBeenCalledWith(dataset);
+                expect(StateService.setCurrentData).toHaveBeenCalledWith(datasetColumns);
+                expect(StateService.removeAllGridFilters).toHaveBeenCalled();
+                expect(RecipeService.refresh).toHaveBeenCalled();
+                expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
+                expect(HistoryService.clear).toHaveBeenCalled();
+                expect(PreviewService.reset).toHaveBeenCalledWith(false);
+                expect(ExportService.reset).toHaveBeenCalled();
+            };
+
+            assertPreparationStepIsLoadedWith = function (dataset, data, step) {
+                expect(DatagridService.updateData).toHaveBeenCalledWith(data);
+                expect(RecipeService.disableStepsAfter).toHaveBeenCalledWith(step);
+                expect(PreviewService.reset).toHaveBeenCalled();
+            };
+        }));
+
+        it('should perform parameters update on current dataset', inject(function(PlaygroundService, DatasetService) {
+            //given
+            var parameters = {separator: ';', encoding: 'UTF-8'};
+            var dataset = {id: '32549c18046cd54b265'};
+            stateMock.playground.dataset = dataset;
+            stateMock.playground.preparation = null;
+
+            expect(DatasetService.updateParameters).not.toHaveBeenCalled();
+
+            //when
+            PlaygroundService.changeDatasetParameters(parameters);
+
+            //then
+            expect(DatasetService.updateParameters).toHaveBeenCalledWith(dataset, parameters);
+        }));
+
+        it('should reinit playground with dataset after parameters update', inject(function($rootScope, PlaygroundService) {
+            //given
+            var parameters = {separator: ';', encoding: 'UTF-8'};
+            var dataset = {id: '32549c18046cd54b265'};
+            stateMock.playground.dataset = dataset;
+            stateMock.playground.preparation = null;
+
+            //when
+            PlaygroundService.changeDatasetParameters(parameters);
+            $rootScope.$digest();
+
+            //then
+            assertNewPlaygroundIsInitWith(dataset);
+        }));
+
+        it('should reinit playground with preparation at active step after parameters update', inject(function($rootScope, $q, PlaygroundService, RecipeService, PreparationService) {
+            //given
+            var parameters = {separator: ';', encoding: 'UTF-8'};
+            var dataset = {id: '32549c18046cd54b265'};
+
+            //given : state mock
+            stateMock.playground.dataset = dataset;
+            stateMock.playground.preparation = {id: '35d8cf964aa81b58'};
+
+            //given : preparation content mock
+            var data = {metadata: {columns: []}, records: []};
+            spyOn(PreparationService, 'getContent').and.returnValue($q.when(data));
+
+            //given : step mocks
+            var step = {transformation: {stepId: '5874de8432c543'}};
+            spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(5);
+            spyOn(RecipeService, 'getStep').and.callFake(function (index) {
+                if (index === 5) {
+                    return step;
+                }
+                return null;
+            });
+
+            //when
+            PlaygroundService.changeDatasetParameters(parameters);
+            $rootScope.$digest();
+
+            //then
+            assertPreparationStepIsLoadedWith(dataset, data, step);
         }));
     });
 });

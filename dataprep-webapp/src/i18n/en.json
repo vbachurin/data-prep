@@ -285,5 +285,10 @@
   "_comment": "Folders",
   "FIND_FOLDER": "Find a Folder",
 
+  "_comment": "Dataset parameters",
+  "DATASET_PARAMETERS": "Dataset parameters",
+  "DATASET_PARAMETERS_ENCODING": "Encoding",
+  "DATASET_PARAMETERS_SEPARATOR": "Separator",
+
   "ACTION_HELP": "Learn more..."
 }
