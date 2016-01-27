@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.preparation.Application;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 
@@ -35,13 +36,16 @@ public class PreparationCleanerTest {
     @Autowired
     private WebApplicationContext context;
 
+    @Autowired
+    private VersionService versionService;
+
     @Test
     public void removeOrphanSteps_should_remove_orphan_step_after_at_least_X_hours() {
         //given
         final Step firstStep = new Step(ROOT_STEP.getId(), "first");
         final Step secondStep = new Step(firstStep.getId(), "second");
         final Step orphanStep = new Step(secondStep.getId(), "orphan");
-        final Preparation preparation = new Preparation("1", secondStep.id());
+        final Preparation preparation = new Preparation("1", secondStep.id(), versionService.version().getVersionId());
 
         repository.add(firstStep);
         repository.add(secondStep);
@@ -76,8 +80,8 @@ public class PreparationCleanerTest {
         final Step secondStep = new Step(firstStep.getId(), "second");
         final Step thirdStep = new Step(secondStep.getId(), "third");
 
-        final Preparation firstPreparation = new Preparation("1", firstStep.id());
-        final Preparation secondPreparation = new Preparation("2", thirdStep.id());
+        final Preparation firstPreparation = new Preparation("1", firstStep.id(), versionService.version().getVersionId());
+        final Preparation secondPreparation = new Preparation("2", thirdStep.id(), versionService.version().getVersionId());
 
         repository.add(firstStep);
         repository.add(secondStep);

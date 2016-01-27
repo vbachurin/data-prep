@@ -27,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.dataprep.api.preparation.*;
+import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.PreparationErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
@@ -54,6 +55,9 @@ public class PreparationService {
     /** DataPrep abstraction to the underlying security (whether it's enabled or not). */
     @Autowired
     private Security security;
+
+    @Autowired
+    private VersionService versionService;
 
     @RequestMapping(value = "/preparations", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations id", notes = "Returns the list of preparations ids the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
@@ -89,6 +93,7 @@ public class PreparationService {
         LOGGER.debug("Create new preparation for data set {}", preparation.getDataSetId());
         preparation.setHeadId(ROOT_STEP.id());
         preparation.setAuthor(security.getUserId());
+        preparation.setAppVersion(versionService.version().getVersionId());
         preparationRepository.add(preparation);
         LOGGER.debug("Created new preparation: {}", preparation);
         return preparation.id();
@@ -115,6 +120,7 @@ public class PreparationService {
         if (!updated.id().equals(id)) {
             preparationRepository.remove(previousPreparation);
         }
+        updated.setAppVersion(versionService.version().getVersionId());
         preparationRepository.add(updated);
         LOGGER.debug("Updated preparation: {}", updated);
         return updated.id();

@@ -20,6 +20,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 
 
@@ -32,6 +33,9 @@ public class PreparationUtilsTest {
 
     @Autowired
     private PreparationRepository repository;
+
+    @Autowired
+    private VersionService versionService;
 
     @Test
     public void should_list_steps_ids_history_from_root() {
@@ -185,7 +189,7 @@ public class PreparationUtilsTest {
         final List<Action> actions = getSimpleAction("uppercase", "column_name", "lastname");
         final PreparationActions newContent = new PreparationActions(actions);
         final Step step = new Step(ROOT_STEP.id(), newContent.id());
-        final Preparation preparation = new Preparation("1234", step.id());
+        final Preparation preparation = new Preparation("1234", step.id(), versionService.version().getVersionId());
 
         repository.add(newContent);
         repository.add(step);

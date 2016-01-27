@@ -99,7 +99,7 @@ public class InMemoryPreparationRepositoryTest {
      * @return a new Preparation.
      */
     private Preparation getPreparation(String datasetId, String rootName) {
-        Preparation preparation = new Preparation(datasetId, getStep(rootName).id());
+        Preparation preparation = new Preparation(datasetId, getStep(rootName).id(), "1.0");
         preparation.setName(rootName + "_name");
         return preparation;
     }

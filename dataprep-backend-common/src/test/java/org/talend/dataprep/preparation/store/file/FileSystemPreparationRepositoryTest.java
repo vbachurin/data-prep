@@ -22,6 +22,7 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.preparation.PreparationTest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,6 +38,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 @TestPropertySource(inheritLocations = false, inheritProperties = false, properties = { "preparation.store=file",
         "preparation.store.file.location=target/test/store/preparation" })
 public class FileSystemPreparationRepositoryTest {
+
+    @Autowired
+    private VersionService versionService;
 
     /**
      * Bean needed to resolve test properties set by the @TestPropertySource annotation
@@ -165,7 +169,7 @@ public class FileSystemPreparationRepositoryTest {
      * @return a preparation with a root step an a the given dataset id.
      */
     private Preparation getPreparation(String datasetId) {
-        Preparation preparation = new Preparation(datasetId, Step.ROOT_STEP.id());
+        Preparation preparation = new Preparation(datasetId, Step.ROOT_STEP.id(), versionService.version().getVersionId());
         preparation.setName("prep-" + datasetId);
         return preparation;
     }

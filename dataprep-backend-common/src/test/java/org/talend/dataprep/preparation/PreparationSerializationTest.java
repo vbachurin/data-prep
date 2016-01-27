@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.preparation.*;
+import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -34,9 +35,12 @@ public class PreparationSerializationTest {
     @Autowired
     PreparationRepository repository;
 
+    @Autowired
+    private VersionService versionService;
+
     @Test
     public void emptyPreparation() throws Exception {
-        Preparation preparation = new Preparation();
+        Preparation preparation = new Preparation(versionService.version().getVersionId());
         final StringWriter output = new StringWriter();
         builder.build().writer().writeValue(output, preparation);
         final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("emptyPreparation.json");
@@ -45,7 +49,7 @@ public class PreparationSerializationTest {
 
     @Test
     public void namePreparation() throws Exception {
-        Preparation preparation = new Preparation();
+        Preparation preparation = new Preparation(versionService.version().getVersionId());
         preparation.setName("MyName");
         final StringWriter output = new StringWriter();
         builder.build().writer().writeValue(output, preparation);
@@ -55,7 +59,7 @@ public class PreparationSerializationTest {
 
     @Test
     public void preparationDataSet() throws Exception {
-        Preparation preparation = new Preparation();
+        Preparation preparation = new Preparation(versionService.version().getVersionId());
         preparation.setDataSetId("12345");
         final StringWriter output = new StringWriter();
         builder.build().writer().writeValue(output, preparation);
@@ -65,7 +69,7 @@ public class PreparationSerializationTest {
 
     @Test
     public void preparationAuthor() throws Exception {
-        Preparation preparation = new Preparation();
+        Preparation preparation = new Preparation(versionService.version().getVersionId());
         preparation.setDataSetId("12345");
         preparation.setAuthor("myAuthor");
         final StringWriter output = new StringWriter();
@@ -76,7 +80,7 @@ public class PreparationSerializationTest {
 
     @Test
     public void preparationDetailsSteps() throws Exception {
-        Preparation preparation = new Preparation("12345", Step.ROOT_STEP.id());
+        Preparation preparation = new Preparation("12345", Step.ROOT_STEP.id(), versionService.version().getVersionId());
         preparation.setAuthor("myAuthor");
         final StringWriter output = new StringWriter();
         builder.build().writer().writeValue(output, new PreparationDetails(preparation));
@@ -93,7 +97,7 @@ public class PreparationSerializationTest {
         final Step s1 = new Step(ROOT_STEP.id(), newContent1.id());
         repository.add(s1);
         // Use it in preparation
-        Preparation preparation = new Preparation("12345", s1.id());
+        Preparation preparation = new Preparation("12345", s1.id(), versionService.version().getVersionId());
         final StringWriter output = new StringWriter();
         builder.build().writer().writeValue(output, new PreparationDetails(preparation));
         final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("preparationDetailsWithStepsAndActions.json");

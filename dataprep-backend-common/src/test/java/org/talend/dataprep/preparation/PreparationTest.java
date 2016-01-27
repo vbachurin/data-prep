@@ -24,6 +24,7 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 
 
@@ -37,9 +38,12 @@ public class PreparationTest {
     @Autowired
     private PreparationRepository repository;
 
+    @Autowired
+    private VersionService versionService;
+
     @Test
     public void testDefaultPreparation() throws Exception {
-        final Preparation preparation = Preparation.defaultPreparation("12345");
+        final Preparation preparation = Preparation.defaultPreparation("12345", versionService.version().getVersionId());
         assertThat(preparation.id(), is("ec718238e9bfe45f58031313b79501a3cc55b186"));
         assertThat(preparation.getHeadId(), is(ROOT_STEP.id()));
     }
@@ -54,7 +58,7 @@ public class PreparationTest {
 
     @Test
     public void testTimestamp() throws Exception {
-        Preparation preparation = new Preparation("1234", ROOT_STEP.id());
+        Preparation preparation = new Preparation("1234", ROOT_STEP.id(), versionService.version().getVersionId());
         final long time0 = preparation.getLastModificationDate();
         TimeUnit.MILLISECONDS.sleep(50);
         preparation.updateLastModificationDate();
@@ -65,7 +69,7 @@ public class PreparationTest {
     @Test
     public void testId_withName() throws Exception {
         // Preparation id with name
-        Preparation preparation = new Preparation("1234", ROOT_STEP.id());
+        Preparation preparation = new Preparation("1234", ROOT_STEP.id(), versionService.version().getVersionId());
         preparation.setName("My Preparation");
         final String id0 = preparation.getId();
         assertThat(id0, is("e34f3448d71dac403df5305a04086fc88054aa15"));
@@ -89,7 +93,7 @@ public class PreparationTest {
         final Step s = new Step(ROOT_STEP.id(), newContent.id());
         repository.add(s);
 
-        Preparation preparation = new Preparation("1234", s.id());
+        Preparation preparation = new Preparation("1234", s.id(), versionService.version().getVersionId());
         repository.add(preparation);
 
         assertThat(preparation.id(), Is.is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
@@ -105,7 +109,7 @@ public class PreparationTest {
         final Step s = new Step(ROOT_STEP.id(), newContent.id());
         repository.add(s);
 
-        final Preparation preparation = new Preparation("1234", s.id());
+        final Preparation preparation = new Preparation("1234", s.id(), versionService.version().getVersionId());
         repository.add(preparation);
 
         assertThat(preparation.id(), Is.is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
@@ -128,7 +132,7 @@ public class PreparationTest {
         repository.add(s2);
 
         // Preparation
-        final Preparation preparation = new Preparation("1234", s2.id());
+        final Preparation preparation = new Preparation("1234", s2.id(), versionService.version().getVersionId());
         repository.add(preparation);
 
         assertThat(preparation.id(), Is.is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
@@ -136,9 +140,9 @@ public class PreparationTest {
 
     @Test
     public void should_merge_from_other() {
-        Preparation source = new Preparation();
+        Preparation source = new Preparation(versionService.version().getVersionId());
 
-        Preparation theOtherOne = new Preparation();
+        Preparation theOtherOne = new Preparation(versionService.version().getVersionId());
         theOtherOne.setAuthor("Joss Stone");
         theOtherOne.setCreationDate(source.getCreationDate() - 1000);
         theOtherOne.setDataSetId("ds#123456");
@@ -153,9 +157,9 @@ public class PreparationTest {
 
     @Test
     public void should_merge_from_source() {
-        Preparation theOtherOne = new Preparation();
+        Preparation theOtherOne = new Preparation(versionService.version().getVersionId());
 
-        Preparation source = new Preparation();
+        Preparation source = new Preparation(versionService.version().getVersionId());
         source.setAuthor("Bloc Party");
         source.setCreationDate(theOtherOne.getCreationDate() - 1000);
         source.setDataSetId("ds#65478");
