@@ -792,6 +792,12 @@ public class DataSetService {
                 metadataForUpdate.getContent().setParameters(dataSetMetadata.getContent().getParameters());
                 metadataForUpdate.setEncoding(dataSetMetadata.getEncoding());
 
+                // update limit
+                final Optional<Long> newLimit = dataSetMetadata.getContent().getLimit();
+                if (newLimit.isPresent()) {
+                    metadataForUpdate.getContent().setLimit(newLimit.get());
+                }
+
                 // Validate that the new data set metadata and removes the draft status
                 FormatGuess formatGuess = formatGuessFactory.getFormatGuess(dataSetMetadata.getContent().getFormatGuessId());
                 try {
