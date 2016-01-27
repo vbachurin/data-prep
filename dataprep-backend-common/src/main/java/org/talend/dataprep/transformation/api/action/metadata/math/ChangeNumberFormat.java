@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -232,38 +231,34 @@ public class ChangeNumberFormat extends ActionMetadata implements ColumnAction {
             return;
         }
 
-        try {
-            BigDecimal bd = null;
+        BigDecimal bd = null;
 
-            switch (context.getParameters().get(FROM_SEPARATORS)) {
-            case UNKNOWN_SEPARATORS:
-            case US_SEPARATORS:
-                bd = BigDecimalParser.toBigDecimal(value);
-                break;
-            case EU_SEPARATORS:
-                bd = BigDecimalParser.toBigDecimal(value, ',', '.');
-                break;
-            case CUSTOM:
-                String decSep = getCustomizableParam(FROM + DECIMAL + SEPARATOR, context.getParameters());
-                String groupSep = getCustomizableParam(FROM + GROUPING + SEPARATOR, context.getParameters());
+        switch (context.getParameters().get(FROM_SEPARATORS)) {
+        case UNKNOWN_SEPARATORS:
+        case US_SEPARATORS:
+            bd = BigDecimalParser.toBigDecimal(value);
+            break;
+        case EU_SEPARATORS:
+            bd = BigDecimalParser.toBigDecimal(value, ',', '.');
+            break;
+        case CUSTOM:
+            String decSep = getCustomizableParam(FROM + DECIMAL + SEPARATOR, context.getParameters());
+            String groupSep = getCustomizableParam(FROM + GROUPING + SEPARATOR, context.getParameters());
 
-                if (StringUtils.isEmpty(decSep)) {
-                    decSep = ".";
-                }
-                if (StringUtils.isEmpty(groupSep)) {
-                    groupSep = ",";
-                }
-
-                bd = BigDecimalParser.toBigDecimal(value, decSep.charAt(0), groupSep.charAt(0));
-                break;
+            if (StringUtils.isEmpty(decSep)) {
+                decSep = ".";
+            }
+            if (StringUtils.isEmpty(groupSep)) {
+                groupSep = ",";
             }
 
-            String newValue = BigDecimalFormatter.format(bd, decimalTargetFormat);
-
-            row.set(columnId, newValue);
-        } catch (ParseException e) {
-            // Do not change this value, not a number
+            bd = BigDecimalParser.toBigDecimal(value, decSep.charAt(0), groupSep.charAt(0));
+            break;
         }
+
+        String newValue = BigDecimalFormatter.format(bd, decimalTargetFormat);
+
+        row.set(columnId, newValue);
     }
 
 }

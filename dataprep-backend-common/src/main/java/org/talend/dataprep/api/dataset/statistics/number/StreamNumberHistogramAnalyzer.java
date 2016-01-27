@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.dataprep.api.dataset.statistics.number;
 
-import java.text.ParseException;
 import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -63,11 +62,7 @@ public class StreamNumberHistogramAnalyzer extends NumericalStatisticsAnalyzer<S
             if (!TypeInferenceUtils.isValid(types[index], value)) {
                 continue;
             }
-            try {
-                stats.get(index).add(BigDecimalParser.toBigDecimal(value).doubleValue());
-            } catch (ParseException e) {
-                // Nothing todo, just don't use this value
-            }
+            stats.get(index).add(BigDecimalParser.toBigDecimal(value).doubleValue());
         }
         return true;
     }
