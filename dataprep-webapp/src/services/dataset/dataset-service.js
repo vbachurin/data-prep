@@ -31,7 +31,6 @@
             getContent: DatasetRestService.getContent,
 
             //dataset getters
-            datasetsList: datasetsList,         //cached datasets list
             getDatasets: getDatasets,           //promise that resolves datasets list
             refreshDatasets: refreshDatasets,   //force refresh datasets list
             getDatasetById: getDatasetById,     //retrieve dataset by id
@@ -151,17 +150,7 @@
         //--------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------Metadata---------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
-        /**
-         * @ngdoc method
-         * @name datasetsList
-         * @methodOf data-prep.services.dataset.service:DatasetService
-         * @description Return the datasets list. See {@link data-prep.services.dataset.service:DatasetListService
-         *     DatasetListService}.datasets
-         * @returns {object[]} The datasets list
-         */
-        function datasetsList () {
-            return DatasetListService.datasets;
-        }
+
 
         /**
          * @ngdoc method
@@ -170,7 +159,7 @@
          * @description [PRIVATE] Refresh the metadata within the preparations
          */
         function consolidatePreparationsAndDatasets (response) {
-            PreparationListService.refreshMetadataInfos(DatasetListService.datasets)
+            PreparationListService.refreshMetadataInfos(state.inventory.datasets)
                 .then(DatasetListService.refreshDefaultPreparation);
 
             return response;
@@ -223,9 +212,11 @@
          * @returns {promise} The pending POST promise
          */
         function toggleFavorite (dataset) {
-            return DatasetRestService.toggleFavorite(dataset).then(function () {
-                dataset.favorite = !dataset.favorite;
-            });
+            return DatasetRestService.toggleFavorite(dataset)
+                .then(function () {
+                    dataset.favorite = !dataset.favorite; //update currentFolderContent.datasets
+                    refreshDatasets(); //update inventory.datasets
+                });
         }
         
         /**

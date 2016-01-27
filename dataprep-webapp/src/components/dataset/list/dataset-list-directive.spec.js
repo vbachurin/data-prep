@@ -32,12 +32,29 @@ describe('DatasetList directive', function () {
         }
     ];
 
+    var sortList = [
+        {id: 'name', name: 'NAME_SORT', property: 'name'},
+        {id: 'date', name: 'DATE_SORT', property: 'created'}
+    ];
+
+    var orderList = [
+        {id: 'asc', name: 'ASC_ORDER'},
+        {id: 'desc', name: 'DESC_ORDER'}
+    ];
+
     beforeEach(module('data-prep.dataset-list', function ($provide) {
-        stateMock = {folder: {
-                                currentFolderContent : {
-                                    datasets : datasets
-                                }
-                    }};
+        stateMock = {
+            folder: {
+                currentFolderContent: {
+                    datasets: datasets
+                }
+            },
+            inventory: {
+                datasets: [],
+                sortList: sortList,
+                orderList: orderList
+            }
+        };
         $provide.constant('state', stateMock);
     }));
 

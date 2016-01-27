@@ -3,13 +3,25 @@ describe('Lookup directive', function() {
 
 	var scope, createElement, element, StateMock;
 
+	var sortList = [
+		{id: 'name', name: 'NAME_SORT', property: 'name'},
+		{id: 'date', name: 'DATE_SORT', property: 'created'}
+	];
+
+	var orderList = [
+		{id: 'asc', name: 'ASC_ORDER'},
+		{id: 'desc', name: 'DESC_ORDER'}
+	];
 
 	beforeEach(module('data-prep.lookup', function ($provide) {
 		StateMock = {
 			playground : {
 				lookup : {
 					columnsToAdd : [],
-					selectedColumn : {}
+					selectedColumn : {},
+					datasets: [],
+					sortList: sortList,
+					orderList: orderList
 				},
 				grid : {
 					selectedColumn : {}

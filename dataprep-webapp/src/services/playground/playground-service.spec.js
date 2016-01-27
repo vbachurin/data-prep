@@ -191,19 +191,6 @@ describe('Playground Service', function () {
             expect(OnboardingService.shouldStartTour).toHaveBeenCalledWith('playground');
             expect(OnboardingService.startTour).not.toHaveBeenCalled();
         }));
-
-        it('should NOT init playground when the wanted dataset is loaded and no preparation was created yet', inject(function ($rootScope, PlaygroundService) {
-            //given
-            var dataset = {id: 'e85afAa78556d5425bc2'};
-            stateMock.playground.dataset = dataset;
-
-            //when
-            PlaygroundService.initPlayground(dataset);
-            $rootScope.$digest();
-
-            //then
-            assertNewPreparationNotInitialized();
-        }));
     });
 
     describe('load existing preparation', function () {
