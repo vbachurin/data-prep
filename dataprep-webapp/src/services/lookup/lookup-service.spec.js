@@ -202,6 +202,7 @@ describe('lookup service', function () {
 
                 stateMock.playground.lookup.sort = {id: 'date', name: 'DATE_SORT', property: 'created'};
                 stateMock.playground.lookup.order = {id: 'desc', name: 'DESC_ORDER'};
+                spyOn(StateService, 'setLookupDatasets');
 
                 //when
                 LookupService.initLookups();
@@ -457,6 +458,7 @@ describe('lookup service', function () {
             spyOn(StorageService, 'setLookupDatasets').and.returnValue();
             spyOn(StateService, 'setLookupAddedActions').and.returnValue();
             spyOn(TransformationRestService, 'getDatasetTransformations').and.returnValue($q.when({data: lookupActions}));
+            spyOn(StateService, 'setLookupDatasets');
 
             //when
             LookupService.initLookups();

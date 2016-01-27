@@ -61,7 +61,10 @@
          * @description Sort lookup datasets
          */
         function sortDatasets() {
-            lookupState.datasets =_.sortBy(lookupState.datasets, lookupState.sort.property);
+            lookupState.datasets =_.sortBy(lookupState.datasets,
+                function (dataset) {
+                    return _.isNumber(dataset[lookupState.sort.property]) ? dataset[lookupState.sort.property] : dataset[lookupState.sort.property].toLowerCase();
+                });
             if(lookupState.order.id === 'desc'){
                 lookupState.datasets = lookupState.datasets.reverse();
             }

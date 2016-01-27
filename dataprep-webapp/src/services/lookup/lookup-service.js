@@ -37,13 +37,20 @@
                 return TransformationRestService.getDatasetTransformations(datasetId)
                     .then(function (lookup) {
                         var actionsList = lookup.data;
-                        var datasetsToAdd = [];
-                        _.forEach(actionsList, function(action) {
-                            var datasetToAdd = _.find(state.inventory.datasets, {'id': getDsId(action)});
-                            datasetToAdd.addedToLookup = false;
-                            datasetToAdd.enableToAddToLookup = true;
-                            datasetsToAdd.push(datasetToAdd);
-                        });
+
+                        var datasetsToAdd = _.chain(actionsList)
+                            .map(function (action) { //map action to dataset
+                                return _.find(state.inventory.datasets, {'id': getDsId(action)});
+                            })
+                            .filter(function (dataset) { //remove falsy dataset
+                                return dataset;
+                            })
+                            .forEach(function (dataset) {
+                                dataset.addedToLookup = false;
+                                dataset.enableToAddToLookup = true;
+                            })
+                            .value();
+
                         StateService.setLookupDatasets(datasetsToAdd);
                         StateService.setLookupActions(actionsList);
 
@@ -233,35 +240,47 @@
          * @description init added datasets list which saved in localStorage
          */
         function initLookupDatasets() {
-            var actionsToAdd = [];
             var addedDatasets = StorageService.getLookupDatasets();
 
-            //Consolidate addedDatasets
-            _.forEach(RecipeService.getRecipe(), function (nextStep) {
-                if(nextStep.actionParameters.action === 'lookup'){ /*jshint camelcase: false */
-                    if(_.indexOf(addedDatasets, nextStep.actionParameters.parameters.lookup_ds_id) === -1) { //If the dataset of a lookup step have not been saved
-                        addedDatasets.push(nextStep.actionParameters.parameters.lookup_ds_id);
+            //Consolidate addedDatasets: if lookup datasets of a step are not save in localStorage, we add them
+            _.chain(RecipeService.getRecipe())
+                .filter(function (step) {
+                    return step.actionParameters.action === 'lookup';
+                })
+                .forEach(function (step) { /*jshint camelcase: false */
+                    if(addedDatasets.indexOf(step.actionParameters.parameters.lookup_ds_id) === -1){
+                        addedDatasets.push(step.actionParameters.parameters.lookup_ds_id);
                     }
-                }
-            });
+                })
+                .value();
             StorageService.setLookupDatasets(addedDatasets);
 
-            _.forEach(addedDatasets, function(datasetId) {
-                //init datasets list to add
-                _.forEach(state.playground.lookup.datasets, function (datasetToAdd) {
-                    if(datasetToAdd.id === datasetId) {
-                        datasetToAdd.addedToLookup = true;
-                    }
-                });
+            //Add addedToLookup flag
+            _.chain(addedDatasets)
+                .map(function (datasetId) { //map datasetId to dataset
+                    return _.find(state.playground.lookup.datasets, function (dataset) {
+                        return dataset.id === datasetId;
+                    });
+                })
+                .filter(function(dataset) { //remove falsy dataset
+                    return dataset;
+                })
+                .forEach(function (dataset) {
+                    dataset.addedToLookup = true;
+                })
+                .value();
 
-                //init actions list
-                var actionToAdd = _.find(state.playground.lookup.actions, function (action) {
-                    return _.find(action.parameters, {'name': 'lookup_ds_id'}).default === datasetId;
-                });
-                if(actionToAdd){
-                    actionsToAdd.push(actionToAdd);
-                }
-            });
+            //Get actions
+            var actionsToAdd = _.chain(addedDatasets)
+                .map(function(datasetId) { //map dataset to action
+                    return _.find(state.playground.lookup.actions, function (action) {
+                        return _.find(action.parameters, {'name': 'lookup_ds_id'}).default === datasetId;
+                    });
+                })
+                .filter(function(action) { //remove falsy action
+                    return action;
+                })
+                .value();
             StateService.setLookupAddedActions(actionsToAdd);
         }
 
@@ -272,28 +291,27 @@
          * @description Update added datasets list
          */
         function updateLookupDatasets() {
-
-            var datasetsToAdd = _.chain(state.playground.lookup.datasets)
-                .filter('addedToLookup')
+            var actionsToAdd = _.chain(state.playground.lookup.datasets)
+                .filter('addedToLookup') //filter addedToLookup = true
+                .map(function(dataset) { //map dataset to action
+                    return _.find(state.playground.lookup.actions, function (action) {
+                        return _.find(action.parameters, {'name': 'lookup_ds_id'}).default === dataset.id;
+                    });
+                })
+                .filter(function(action) { //remove falsy action (added dataset but no action with this dataset)
+                    return action;
+                })
                 .value();
-
-            var actionsToAdd = [];
-            _.forEach(datasetsToAdd, function(dataset) {
-                var actionToAdd = _.find(state.playground.lookup.actions, function (action) {
-                    return _.find(action.parameters, {'name': 'lookup_ds_id'}).default === dataset.id;
-                });
-
-                if(actionToAdd){
-                    actionsToAdd.push(actionToAdd);
-                }
-            });
             StateService.setLookupAddedActions(actionsToAdd);
 
-            var datasetsToSave = _.pluck(datasetsToAdd, 'id');
-            if(_.indexOf(StorageService.getLookupDatasets(), state.playground.dataset.id) > -1) { //If the playground dataset have been saved in localStorage for the lookup
-                datasetsToSave.push(state.playground.dataset.id);
+            var datasetsIdsToSave = _.chain(state.playground.lookup.datasets)
+                .filter('addedToLookup') //filter addedToLookup = true
+                .map('id')
+                .value();
+            if(StorageService.getLookupDatasets().indexOf(state.playground.dataset.id) > -1) { //If the playground dataset have been saved in localStorage for the lookup
+                datasetsIdsToSave.push(state.playground.dataset.id);
             }
-            StorageService.setLookupDatasets(datasetsToSave);
+            StorageService.setLookupDatasets(datasetsIdsToSave);
         }
 
         /**
