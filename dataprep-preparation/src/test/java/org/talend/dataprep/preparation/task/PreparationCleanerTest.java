@@ -2,7 +2,8 @@ package org.talend.dataprep.preparation.task;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+
+import javax.annotation.Resource;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,13 +40,18 @@ public class PreparationCleanerTest {
     @Autowired
     private VersionService versionService;
 
+    /** The root step. */
+    @Resource(name = "rootStep")
+    private Step rootStep;
+
     @Test
     public void removeOrphanSteps_should_remove_orphan_step_after_at_least_X_hours() {
         //given
-        final Step firstStep = new Step(ROOT_STEP.getId(), "first");
-        final Step secondStep = new Step(firstStep.getId(), "second");
-        final Step orphanStep = new Step(secondStep.getId(), "orphan");
-        final Preparation preparation = new Preparation("1", secondStep.id(), versionService.version().getVersionId());
+        final String version = versionService.version().getVersionId();
+        final Step firstStep = new Step(rootStep.getId(), "first", version);
+        final Step secondStep = new Step(firstStep.getId(), "second", version);
+        final Step orphanStep = new Step(secondStep.getId(), "orphan", version);
+        final Preparation preparation = new Preparation("1", secondStep.id(), version);
 
         repository.add(firstStep);
         repository.add(secondStep);
@@ -76,12 +82,13 @@ public class PreparationCleanerTest {
     @Test
     public void removeOrphanSteps_should_not_remove_step_that_still_belongs_to_a_preparation() {
         //given
-        final Step firstStep = new Step(ROOT_STEP.getId(), "first");
-        final Step secondStep = new Step(firstStep.getId(), "second");
-        final Step thirdStep = new Step(secondStep.getId(), "third");
+        final String version = versionService.version().getVersionId();
+        final Step firstStep = new Step(rootStep.getId(), "first", version);
+        final Step secondStep = new Step(firstStep.getId(), "second", version);
+        final Step thirdStep = new Step(secondStep.getId(), "third", version);
 
-        final Preparation firstPreparation = new Preparation("1", firstStep.id(), versionService.version().getVersionId());
-        final Preparation secondPreparation = new Preparation("2", thirdStep.id(), versionService.version().getVersionId());
+        final Preparation firstPreparation = new Preparation("1", firstStep.id(), version);
+        final Preparation secondPreparation = new Preparation("2", thirdStep.id(), version);
 
         repository.add(firstStep);
         repository.add(secondStep);
@@ -104,7 +111,7 @@ public class PreparationCleanerTest {
     public void removeOrphanSteps_should_not_remove_root_step() {
         //given
         repository.clear();
-        assertNotNull(repository.get(ROOT_STEP.getId(), Step.class));
+        assertNotNull(repository.get(rootStep.getId(), Step.class));
 
         //when
         cleaner.removeOrphanSteps(); //0 hour
@@ -112,6 +119,6 @@ public class PreparationCleanerTest {
         cleaner.removeOrphanSteps(); //2 hour
 
         //then
-        assertNotNull(repository.get(ROOT_STEP.getId(), Step.class));
+        assertNotNull(repository.get(rootStep.getId(), Step.class));
     }
 }

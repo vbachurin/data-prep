@@ -68,17 +68,6 @@ public class Preparation extends Identifiable implements Serializable {
         this.headId = headId;
     }
 
-    /**
-     * Creates a default preparation (no author) for <code>dataSetId</code> at {@link Step#ROOT_STEP}.
-     * 
-     * @param dataSetId A data set id.
-     * @param appVersion the application version to store within the preparation.
-     * @return A {@link Preparation preparation} where head is set to {@link Step#ROOT_STEP root step}.
-     */
-    public static Preparation defaultPreparation(String dataSetId, String appVersion) {
-        return new Preparation(dataSetId, Step.ROOT_STEP.id(), appVersion);
-    }
-
     public List<String> getSteps() {
         return steps;
     }

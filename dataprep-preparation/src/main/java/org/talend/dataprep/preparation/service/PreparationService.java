@@ -6,7 +6,6 @@ import static java.util.stream.Collectors.toList;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.exception.error.PreparationErrorCodes.*;
 
 import java.text.DecimalFormat;
@@ -19,6 +18,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,10 @@ import io.swagger.annotations.ApiParam;
 @Api(value = "preparations", basePath = "/preparations", description = "Operations on preparations")
 public class PreparationService {
 
+    /** The default root content. */
+    @Resource(name = "rootContent")
+    private PreparationActions rootContent;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(PreparationService.class);
 
     @Autowired
@@ -51,6 +56,13 @@ public class PreparationService {
 
     @Autowired
     private ActionMetadataValidation validator;
+
+    /** The root step. */
+    @Resource(name = "rootStep")
+    private Step rootStep;
+
+    @Autowired
+    private PreparationUtils preparationUtils;
 
     /** DataPrep abstraction to the underlying security (whether it's enabled or not). */
     @Autowired
@@ -91,7 +103,7 @@ public class PreparationService {
     @Timed
     public String create(@ApiParam("preparation") @RequestBody final Preparation preparation) {
         LOGGER.debug("Create new preparation for data set {}", preparation.getDataSetId());
-        preparation.setHeadId(ROOT_STEP.id());
+        preparation.setHeadId(rootStep.id());
         preparation.setAuthor(security.getUserId());
         preparation.setAppVersion(versionService.version().getVersionId());
         preparationRepository.add(preparation);
@@ -155,7 +167,7 @@ public class PreparationService {
     public List<String> getSteps(@ApiParam("id") @PathVariable("id") String id) {
         LOGGER.debug("Get steps of preparation for #{}.", id);
         final Step step = getStep(id);
-        return PreparationUtils.listStepsIds(step.id(), preparationRepository);
+        return preparationUtils.listStepsIds(step.id(), preparationRepository);
     }
 
     /**
@@ -254,7 +266,7 @@ public class PreparationService {
     final String id, //
             @PathVariable("stepId")
     final String stepToDeleteId) {
-        if (ROOT_STEP.getId().equals(stepToDeleteId)) {
+        if (rootStep.getId().equals(stepToDeleteId)) {
             throw new TDPException(PREPARATION_ROOT_STEP_CANNOT_BE_DELETED);
         }
 
@@ -339,11 +351,11 @@ public class PreparationService {
      * @param preparation The preparation
      * @return The converted step Id
      */
-    private static String getStepId(final String version, final Preparation preparation) {
+    private String getStepId(final String version, final Preparation preparation) {
         if ("head".equalsIgnoreCase(version)) { //$NON-NLS-1$
             return preparation.getHeadId();
         } else if ("origin".equalsIgnoreCase(version)) { //$NON-NLS-1$
-            return ROOT_STEP.id();
+            return rootStep.id();
         }
         return version;
     }
@@ -425,7 +437,7 @@ public class PreparationService {
      * @throws TDPException If 'fromStepId' is not a step of the provided preparation
      */
     private List<String> extractSteps(final Preparation preparation, final String fromStepId) {
-        final List<String> steps = PreparationUtils.listStepsIds(preparation.getHeadId(), fromStepId, preparationRepository);
+        final List<String> steps = preparationUtils.listStepsIds(preparation.getHeadId(), fromStepId, preparationRepository);
         if (!fromStepId.equals(steps.get(0))) {
             throw new TDPException(PREPARATION_STEP_DOES_NOT_EXIST,
                     ExceptionContext.build().put("id", preparation.getId()).put("stepId", fromStepId));
@@ -619,7 +631,7 @@ public class PreparationService {
         preparationRepository.add(newContent);
 
         // Create new step from new content
-        final Step newStep = new Step(head.id(), newContent.id(), step.getDiff());
+        final Step newStep = new Step(head.id(), newContent.id(), versionService.version().getVersionId(), step.getDiff());
         preparationRepository.add(newStep);
 
         // Update preparation head step
