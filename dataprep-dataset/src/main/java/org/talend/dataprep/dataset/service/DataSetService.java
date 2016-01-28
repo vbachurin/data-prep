@@ -3,7 +3,6 @@ package org.talend.dataprep.dataset.service;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
-import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +29,7 @@ import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.folder.FolderEntry;
+import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
 import org.talend.dataprep.dataset.service.analysis.asynchronous.AsynchronousDataSetAnalyzer;
@@ -117,8 +117,16 @@ public class DataSetService {
     @Autowired
     private Security security;
 
+    /** Folder repository. */
     @Autowired
     private FolderRepository folderRepository;
+
+    /** DataSet metadata builder. */
+    @Autowired
+    private DataSetMetadataBuilder metadataBuilder;
+
+    @Autowired
+    private VersionService versionService;
 
     /**
      * Sort the synchronous analyzers.
@@ -259,7 +267,7 @@ public class DataSetService {
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_LOCATION, e);
         }
 
-        DataSetMetadata dataSetMetadata = metadata() //
+        DataSetMetadata dataSetMetadata = metadataBuilder.metadata() //
                 .id(id) //
                 .name(name) //
                 .author(security.getUserId()) //
@@ -441,7 +449,7 @@ public class DataSetService {
         final Marker marker = Markers.dataset(newId);
         LOG.debug(marker, "Cloning...");
 
-        DataSetMetadata dataSetMetadata = metadata() //
+        DataSetMetadata dataSetMetadata = metadataBuilder.metadata() //
                 .id(newId) //
                 .name(cloneName) //
                 .author(security.getUserId()) //
@@ -611,7 +619,7 @@ public class DataSetService {
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock( dataSetId );
         try {
             lock.lock();
-            DataSetMetadata.Builder datasetBuilder = metadata().id(dataSetId);
+            DataSetMetadataBuilder datasetBuilder = metadataBuilder.metadata().id(dataSetId);
             if (name != null) {
                 datasetBuilder = datasetBuilder.name(name);
             }
@@ -836,7 +844,7 @@ public class DataSetService {
                 } // no user data for this user so nothing to unset
             } else {// set the favorites
                 if (userData == null) {// let's create a new UserData
-                    userData = new UserData(userId);
+                    userData = new UserData(userId, versionService.version().getVersionId());
                 } // else already created so just update it.
                 userData.addFavoriteDataset(dataSetId);
                 userDataRepository.save(userData);

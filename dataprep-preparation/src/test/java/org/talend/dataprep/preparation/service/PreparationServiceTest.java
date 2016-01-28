@@ -5,7 +5,6 @@ import static com.jayway.restassured.RestAssured.when;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
@@ -14,6 +13,8 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Resource;
 
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
@@ -30,6 +31,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.preparation.*;
+import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.preparation.Application;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
@@ -57,6 +59,16 @@ public class PreparationServiceTest {
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
+    @Autowired
+    private VersionService versionService;
+
+    /** The root step. */
+    @Resource(name = "rootStep")
+    private Step rootStep;
+
+    @Autowired
+    private PreparationUtils preparationUtils;
+
     @Before
     public void setUp() {
         RestAssured.port = port;
@@ -82,7 +94,7 @@ public class PreparationServiceTest {
         // given
         when().get("/preparations/all").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
 
-        final Preparation preparation = new Preparation("1234", ROOT_STEP.id());
+        final Preparation preparation = new Preparation("1234", rootStep.id(), versionService.version().getVersionId());
         preparation.setCreationDate(0);
         preparation.setLastModificationDate(12345);
         repository.add(preparation);
@@ -98,7 +110,7 @@ public class PreparationServiceTest {
                         + "\"metadata\":[]" + "}]"));
 
         // given
-        final Preparation preparation1 = new Preparation("5678", ROOT_STEP.id());
+        final Preparation preparation1 = new Preparation("5678", rootStep.id(), versionService.version().getVersionId());
         preparation1.setCreationDate(500);
         preparation1.setLastModificationDate(456789);
         repository.add(preparation1);
@@ -142,17 +154,17 @@ public class PreparationServiceTest {
     @Test
     public void list() throws Exception {
         when().get("/preparations").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
-        repository.add(new Preparation("1234", ROOT_STEP.id()));
+        repository.add(new Preparation("1234", rootStep.id(), versionService.version().getVersionId()));
         when().get("/preparations").then().statusCode(HttpStatus.OK.value())
                 .body(sameJSONAs("[\"ae242b07084aa7b8341867a8be1707f4d52501d1\"]"));
-        repository.add(new Preparation("5678", ROOT_STEP.id()));
+        repository.add(new Preparation("5678", rootStep.id(), versionService.version().getVersionId()));
         List<String> list = when().get("/preparations").jsonPath().getList("");
         assertThat(list, hasItems("ae242b07084aa7b8341867a8be1707f4d52501d1", "1de0ffaa4e00437dd0c7e1097caf5e5657440ee5"));
     }
 
     @Test
     public void get() throws Exception {
-        Preparation preparation = new Preparation("1234", ROOT_STEP.id());
+        Preparation preparation = new Preparation("1234", rootStep.id(), versionService.version().getVersionId());
         preparation.setCreationDate( 0 );
         preparation.setLastModificationDate( 12345 );
         repository.add(preparation);
@@ -163,7 +175,7 @@ public class PreparationServiceTest {
 
     @Test
     public void cloning() throws Exception {
-        Preparation preparation = new Preparation("56789", ROOT_STEP.id());
+        Preparation preparation = new Preparation("56789", rootStep.id(), versionService.version().getVersionId());
         preparation.setName("beer");
         preparation.setCreationDate(1);
         preparation.setLastModificationDate(6789);
@@ -246,11 +258,11 @@ public class PreparationServiceTest {
         assertThat(repository.listAll(Preparation.class).size(), is(0));
         String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}")
                 .when().put("/preparations").asString();
-        assertThat(preparationId, is(preparationId));
         assertThat(repository.listAll(Preparation.class).size(), is(1));
         Preparation preparation = repository.listAll(Preparation.class).iterator().next();
         assertThat(preparation.id(), is(preparationId));
         assertThat(preparation.getName(), is("test_name"));
+        assertThat(preparation.getAppVersion(), is(versionService.version().getVersionId()));
     }
 
     @Test
@@ -258,7 +270,6 @@ public class PreparationServiceTest {
         assertThat(repository.listAll(Preparation.class).size(), is(0));
         String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"éàçè\", \"dataSetId\": \"1234\"}".getBytes("UTF-8"))
                 .when().put("/preparations").asString();
-        assertThat(preparationId, is(preparationId));
         assertThat(repository.listAll(Preparation.class).size(), is(1));
         Preparation preparation = repository.listAll(Preparation.class).iterator().next();
         assertThat(preparation.id(), is(preparationId));
@@ -270,7 +281,6 @@ public class PreparationServiceTest {
         assertThat(repository.listAll(Preparation.class).size(), is(0));
         String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}")
                 .when().put("/preparations").asString();
-        assertThat(preparationId, is(preparationId));
         assertThat(repository.listAll(Preparation.class).size(), is(1));
         Preparation preparation = repository.listAll(Preparation.class).iterator().next();
         assertThat(preparation.id(), is(preparationId));
@@ -285,43 +295,46 @@ public class PreparationServiceTest {
         assertThat(repository.listAll(Preparation.class).size(), is(0));
         String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}")
                 .when().put("/preparations").asString();
-        assertThat(preparationId, is(preparationId));
+
         Preparation preparation = repository.listAll(Preparation.class).iterator().next();
+        assertThat(preparationId, is(preparation.getId()));
+
         long oldModificationDate = preparation.getLastModificationDate();
 
         // Test preparation details update
-        preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name_updated\", \"dataSetId\": \"1234\"}")
+        String updatedId = given().contentType(ContentType.JSON)
+                .body("{\"name\": \"test_name_updated\", \"dataSetId\": \"1234\"}")
                 .when().put("/preparations/{id}", preparationId).asString();
 
-        // Preparation id should not change
-        assertThat(preparationId, is(preparationId));
+        // Preparation id should change
+        assertThat(updatedId, is(not(preparationId)));
         Collection<Preparation> preparations = repository.listAll(Preparation.class);
         assertThat(preparations.size(), is(1));
         preparation = preparations.iterator().next();
-        assertThat(preparation.id(), is(preparationId));
         assertThat(preparation.getName(), is("test_name_updated"));
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
+        assertThat(preparation.getAppVersion(), is(versionService.version().getVersionId()));
     }
 
     @Test
     public void updateWithSpecialArguments() throws Exception {
-        Preparation preparation = new Preparation();
+        Preparation preparation = new Preparation(versionService.version().getVersionId());
         preparation.setDataSetId("1234");
         preparation.setName("test_name");
         String preparationId = given().contentType(ContentType.JSON).body(builder.build().writer().writeValueAsBytes(preparation))
                 .when().put("/preparations").asString();
-        assertThat(preparationId, is(preparationId));
 
         // Test preparation details update
-        preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"éàçè\", \"dataSetId\": \"1234\"}".getBytes("UTF-8"))
+        String updatedId = given().contentType(ContentType.JSON)
+                .body("{\"name\": \"éàçè\", \"dataSetId\": \"1234\"}".getBytes("UTF-8"))
                 .when().put("/preparations/{id}", preparationId).asString();
 
         // Preparation id should change (new name)
-        assertThat(preparationId, is(preparationId));
+        assertThat(updatedId, is(not(preparationId)));
         Collection<Preparation> preparations = repository.listAll(Preparation.class);
         assertThat(preparations.size(), is(1));
         preparation = preparations.iterator().next();
-        assertThat(preparation.id(), is(preparationId));
+        assertThat(preparation.id(), is(updatedId));
         assertThat(preparation.getName(), is("éàçè"));
     }
 
@@ -376,7 +389,7 @@ public class PreparationServiceTest {
         Preparation preparation = repository.get(preparationId, Preparation.class);
         final long oldModificationDate = preparation.getLastModificationDate();
 
-        assertThat(preparation.getHeadId(), is(ROOT_STEP.getId()));
+        assertThat(preparation.getHeadId(), is(rootStep.getId()));
 
         // when
         applyTransformation(preparationId, "copy_lastname.json");
@@ -401,7 +414,7 @@ public class PreparationServiceTest {
         Preparation preparation = repository.get(preparationId, Preparation.class);
         final long oldModificationDate = preparation.getLastModificationDate();
 
-        assertThat(preparation.getHeadId(), is(ROOT_STEP.getId()));
+        assertThat(preparation.getHeadId(), is(rootStep.getId()));
 
         // when
         applyTransformation(preparationId, "copy_lastname_filter.json");
@@ -427,7 +440,7 @@ public class PreparationServiceTest {
         final String preparationId = createPreparation("1234", "my preparation");
         final Preparation preparation = repository.get(preparationId, Preparation.class);
 
-        assertThat(preparation.getHeadId(), is(ROOT_STEP.getId()));
+        assertThat(preparation.getHeadId(), is(rootStep.getId()));
 
         // when
         applyTransformation(preparationId, "copy_lastname.json");
@@ -435,7 +448,7 @@ public class PreparationServiceTest {
         // then
         final String expectedStepId = "907741a33bba6e7b3c6c2e4e7d1305c6bd0644b8";
         final Step head = repository.get(expectedStepId, Step.class);
-        assertThat(head.getParent(), is(ROOT_STEP.getId()));
+        assertThat(head.getParent(), is(rootStep.getId()));
         assertThat(head.getDiff().getCreatedColumns(), hasSize(1));
         assertThat(head.getDiff().getCreatedColumns(), hasItem("0006"));
     }
@@ -484,7 +497,7 @@ public class PreparationServiceTest {
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
 
         final Step head = repository.get(expectedStepId, Step.class);
-        assertThat(head.getParent(), is(ROOT_STEP.getId()));
+        assertThat(head.getParent(), is(rootStep.getId()));
     }
 
     @Test
@@ -542,7 +555,7 @@ public class PreparationServiceTest {
         assertThat(head.getParent(), is(expectedFirstStepId));
 
         final Step first = repository.get(expectedFirstStepId, Step.class);
-        assertThat(first.getParent(), is(ROOT_STEP.getId()));
+        assertThat(first.getParent(), is(rootStep.getId()));
     }
 
     @Test
@@ -568,7 +581,7 @@ public class PreparationServiceTest {
 
         // then
         final Preparation preparation = repository.get(preparationId, Preparation.class);
-        final List<String> stepIds = PreparationUtils.listStepsIds(preparation.getHeadId(), repository);
+        final List<String> stepIds = preparationUtils.listStepsIds(preparation.getHeadId(), repository);
         assertThatStepHasCreatedColumns(stepIds.get(1), "0007"); // id < 0009 : do not change
         assertThatStepHasCreatedColumns(stepIds.get(2), "0008", "0009", "0010"); // +1 column
         assertThatStepHasCreatedColumns(stepIds.get(3), "0011"); // id >= 0009 : shift +1
@@ -718,7 +731,7 @@ public class PreparationServiceTest {
         applyTransformation(preparationId, "lower_case.json");
 
         // when: delete ROOT
-        final Response response = when().delete("/preparations/{id}/actions/{action}", preparationId, ROOT_STEP.getId());
+        final Response response = when().delete("/preparations/{id}/actions/{action}", preparationId, rootStep.getId());
 
         //then
         response.then()
@@ -737,11 +750,8 @@ public class PreparationServiceTest {
         // when : delete unknown step
         final Response response = when().delete("/preparations/{id}/actions/{action}", preparationId, "azerty");
 
-        //then
-        response.then()
-.statusCode(404)
-                .assertThat()
-                .body("code", is("TDP_PS_PREPARATION_STEP_DOES_NOT_EXIST"));
+        // then
+        response.then().statusCode(404).assertThat().body("code", is("TDP_PS_PREPARATION_STEP_DOES_NOT_EXIST"));
     }
 
     @Test
@@ -771,7 +781,7 @@ public class PreparationServiceTest {
      * @return The preparation id
      */
     private String createPreparation(final String datasetId, final String name) {
-        final Preparation preparation = new Preparation(datasetId, ROOT_STEP.id());
+        final Preparation preparation = new Preparation(datasetId, rootStep.id(), versionService.version().getVersionId());
         preparation.setName(name);
         preparation.setCreationDate(0);
         repository.add(preparation);
