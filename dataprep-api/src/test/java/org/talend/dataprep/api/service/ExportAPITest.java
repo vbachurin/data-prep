@@ -85,6 +85,24 @@ public class ExportAPITest extends ApiServiceTestBase {
     }
 
     @Test
+    public void testExportCsvFromPreparationStepWithMakeLineAsHeader() throws Exception {
+        // given
+        final String preparationId = createPreparationFromFile("export/export_dataset.csv", "testExport", "text/csv");
+        applyActionFromFile(preparationId, "export/make_header.json");
+        applyActionFromFile(preparationId, "export/upper_case_lastname.json");
+
+        final String expectedExport = IOUtils
+                .toString(this.getClass().getResourceAsStream("export/expected_export_preparation_header_uppercase_firstname.csv"));
+
+        // when
+        final String export = given().formParam("exportType", "CSV").formParam("preparationId", preparationId)
+                .formParam("stepId", "").when().get("/api/export").asString();
+
+        // then
+        assertEquals(expectedExport, export);
+    }
+
+    @Test
     public void testExportCsvWithDefaultSeparator() throws Exception {
         // given
         final String datasetId = createDataset("export/export_dataset.csv", "testExport", "text/csv");
