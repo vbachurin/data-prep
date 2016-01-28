@@ -165,6 +165,11 @@ public class StatisticsAdapter {
                     column.setDomainLabel(StringUtils.EMPTY);
                     column.setDomainFrequency(0);
                 }
+            } else if(!StringUtils.isEmpty(column.getDomain())) {
+                // Column *had* a domain but seems like new analysis removed it.
+                column.setDomain(StringUtils.EMPTY);
+                column.setDomainLabel(StringUtils.EMPTY);
+                column.setDomainFrequency(0);
             }
             // Remembers all suggested semantic categories
             Map<CategoryFrequency, Long> altCategoryCounts = semanticType.getCategoryToCount();
