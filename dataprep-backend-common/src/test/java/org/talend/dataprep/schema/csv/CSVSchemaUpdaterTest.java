@@ -11,13 +11,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.schema.AbstractSchemaTestUtils;
 
 /**
  * Unit test for CSVSchemaUpdater.
- * 
+ *
  * @see CSVSchemaUpdater
  */
-public class CSVSchemaUpdaterTest {
+public class CSVSchemaUpdaterTest extends AbstractSchemaTestUtils {
 
     @InjectMocks
     private CSVSchemaUpdater updater;
@@ -32,20 +33,20 @@ public class CSVSchemaUpdaterTest {
 
     @Test
     public void shouldAccept() throws Exception {
-        final DataSetMetadata metadata = DataSetMetadata.Builder.metadata().id("toto").formatGuessId("formatGuess#csv").build();
+        final DataSetMetadata metadata = metadataBuilder.metadata().id("toto").formatGuessId("formatGuess#csv").build();
         assertTrue(updater.accept(metadata));
     }
 
     @Test
     public void shouldNoAccept() throws Exception {
-        final DataSetMetadata metadata = DataSetMetadata.Builder.metadata().id("tata").formatGuessId("formatGuess#xls").build();
+        final DataSetMetadata metadata = metadataBuilder.metadata().id("tata").formatGuessId("formatGuess#xls").build();
         assertFalse(updater.accept(metadata));
     }
 
     @Test
     public void shouldCallCsvFormatUtils() throws Exception {
-        final DataSetMetadata original = DataSetMetadata.Builder.metadata().id("tata").build();
-        final DataSetMetadata updated = DataSetMetadata.Builder.metadata().id("toto").build();
+        final DataSetMetadata original = metadataBuilder.metadata().id("tata").build();
+        final DataSetMetadata updated = metadataBuilder.metadata().id("toto").build();
         updater.updateSchema(original, updated);
         verify(csvFormatUtils, times(1)).useNewSeparator(original, updated);
     }

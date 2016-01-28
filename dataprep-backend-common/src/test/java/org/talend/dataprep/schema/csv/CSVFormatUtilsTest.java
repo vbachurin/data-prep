@@ -23,13 +23,13 @@ public class CSVFormatUtilsTest extends AbstractSchemaTestUtils {
     @Test
     public void shouldUseNewSeparator() {
         // given
-        final DataSetMetadata original = DataSetMetadata.Builder.metadata() //
+        final DataSetMetadata original = metadataBuilder.metadata() //
                 .id("original") //
                 .parameter(HEADER_COLUMNS_PARAMETER,
                         "[\"nickname|secret\",\"firstname|secret\",\"lastname|date\",\"of\",\"birth|city\"]")
                 .parameter(SEPARATOR_PARAMETER, " ").parameter(HEADER_NB_LINES_PARAMETER, "12").build();
 
-        final DataSetMetadata updated = DataSetMetadata.Builder.metadata() //
+        final DataSetMetadata updated = metadataBuilder.metadata() //
                 .id("original") //
                 .parameter(HEADER_COLUMNS_PARAMETER,
                         "[\"nickname|secret\",\"firstname|secret\",\"lastname|date\",\"of\",\"birth|city\"]")

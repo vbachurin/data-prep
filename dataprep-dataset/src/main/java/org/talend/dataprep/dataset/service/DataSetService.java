@@ -1,9 +1,7 @@
 package org.talend.dataprep.dataset.service;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -769,7 +767,7 @@ public class DataSetService {
             // Only part of the metadata can be updated, so the original dataset metadata is loaded and updated
             //
             DataSetMetadata metadataForUpdate = dataSetMetadataRepository.get(dataSetId);
-            DataSetMetadata original = DataSetMetadata.Builder.metadata().copy(metadataForUpdate).build();
+            DataSetMetadata original = metadataBuilder.metadata().copy(metadataForUpdate).build();
 
             if (metadataForUpdate == null) {
                 // No need to silently create the data set metadata: associated content will most likely not exist.
