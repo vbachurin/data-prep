@@ -4,7 +4,9 @@ import static org.talend.dataprep.transformation.format.XlsFormat.XLSX;
 
 import java.io.*;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.*;
@@ -123,8 +125,11 @@ public class XlsWriter implements TransformerWriter {
 
     @Override
     public void write(DataSetRow row) throws IOException {
-        LOGGER.debug("Buffering DataSetRow (metadata not ready): {}", row);
-        recordsWriter.writeNext(row.toArray(DataSetRow.SKIP_TDP_ID));
+        LOGGER.trace("Buffering DataSetRow (metadata not ready): {}", row);
+        // values need to be written in the same order as the columns
+        final List<ColumnMetadata> columns = row.getRowMetadata().getColumns();
+        final List<String> values = columns.stream().map(c -> row.get(c.getId())).collect(Collectors.toList());
+        recordsWriter.writeNext(values.toArray(new String[] {}));
     }
 
     @Override
