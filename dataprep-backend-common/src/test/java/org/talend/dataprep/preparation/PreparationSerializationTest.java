@@ -49,6 +49,7 @@ public class PreparationSerializationTest {
     @Test
     public void emptyPreparation() throws Exception {
         Preparation preparation = new Preparation(versionService.version().getVersionId());
+        preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
         builder.build().writer().writeValue(output, preparation);
         final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("emptyPreparation.json");
@@ -59,6 +60,7 @@ public class PreparationSerializationTest {
     public void namePreparation() throws Exception {
         Preparation preparation = new Preparation(versionService.version().getVersionId());
         preparation.setName("MyName");
+        preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
         builder.build().writer().writeValue(output, preparation);
         final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("namePreparation.json");
@@ -69,6 +71,7 @@ public class PreparationSerializationTest {
     public void preparationDataSet() throws Exception {
         Preparation preparation = new Preparation(versionService.version().getVersionId());
         preparation.setDataSetId("12345");
+        preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
         builder.build().writer().writeValue(output, preparation);
         final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("dataSetPreparation.json");
@@ -80,6 +83,7 @@ public class PreparationSerializationTest {
         Preparation preparation = new Preparation(versionService.version().getVersionId());
         preparation.setDataSetId("12345");
         preparation.setAuthor("myAuthor");
+        preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
         builder.build().writer().writeValue(output, preparation);
         final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("authorPreparation.json");
@@ -90,6 +94,7 @@ public class PreparationSerializationTest {
     public void preparationDetailsSteps() throws Exception {
         Preparation preparation = new Preparation("12345", rootStep.id(), versionService.version().getVersionId());
         preparation.setAuthor("myAuthor");
+        preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
         builder.build().writer().writeValue(output, new PreparationDetails(preparation));
         final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("preparationDetailsSteps.json");
@@ -107,6 +112,7 @@ public class PreparationSerializationTest {
         repository.add(s1);
         // Use it in preparation
         Preparation preparation = new Preparation("12345", s1.id(), version);
+        preparation.setCreationDate(0L);
         final StringWriter output = new StringWriter();
         builder.build().writer().writeValue(output, new PreparationDetails(preparation));
         final InputStream expected = PreparationSerializationTest.class.getResourceAsStream("preparationDetailsWithStepsAndActions.json");

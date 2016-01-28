@@ -53,8 +53,9 @@ public class PreparationTest {
     public void testDefaultPreparation() throws Exception {
 
         final Preparation preparation = new Preparation("12345", rootStep.id(), versionService.version().getVersionId());
+        preparation.setCreationDate(0L);
 
-        assertThat(preparation.id(), is("ec718238e9bfe45f58031313b79501a3cc55b186"));
+        assertThat(preparation.id(), is("b7368bd7e4de38ff954636d0ac0438c7fb56a208"));
         assertThat(preparation.getHeadId(), is(rootStep.id()));
     }
 
@@ -81,16 +82,17 @@ public class PreparationTest {
         // Preparation id with name
         Preparation preparation = new Preparation("1234", rootStep.id(), versionService.version().getVersionId());
         preparation.setName("My Preparation");
+        preparation.setCreationDate(0L);
         final String id0 = preparation.getId();
-        assertThat(id0, is("e34f3448d71dac403df5305a04086fc88054aa15"));
+        assertThat(id0, is("b100bd5fd2dc6a00781342569dec27cd3550b3c8"));
         // Same preparation (but with empty name)
         preparation.setName("");
         final String id1 = preparation.getId();
-        assertThat(id1, is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
+        assertThat(id1, is("8b6281c5e99c41313a83777c3ab43b06adda9e5c"));
         // Same preparation (but with null name, null and empty names should be treated all the same)
         preparation.setName(null);
         final String id2 = preparation.getId();
-        assertThat(id2, is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
+        assertThat(id2, is("8b6281c5e99c41313a83777c3ab43b06adda9e5c"));
     }
 
     @Test
@@ -106,9 +108,10 @@ public class PreparationTest {
         repository.add(s);
 
         Preparation preparation = new Preparation("1234", s.id(), version);
+        preparation.setCreationDate(0L);
         repository.add(preparation);
 
-        assertThat(preparation.id(), Is.is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
+        assertThat(preparation.id(), Is.is("8b6281c5e99c41313a83777c3ab43b06adda9e5c"));
     }
 
     @Test
@@ -123,9 +126,10 @@ public class PreparationTest {
         repository.add(s);
 
         final Preparation preparation = new Preparation("1234", s.id(), version);
+        preparation.setCreationDate(0L);
         repository.add(preparation);
 
-        assertThat(preparation.id(), Is.is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
+        assertThat(preparation.id(), Is.is("8b6281c5e99c41313a83777c3ab43b06adda9e5c"));
     }
 
     @Test
@@ -147,9 +151,10 @@ public class PreparationTest {
 
         // Preparation
         final Preparation preparation = new Preparation("1234", s2.id(), version);
+        preparation.setCreationDate(0L);
         repository.add(preparation);
 
-        assertThat(preparation.id(), Is.is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
+        assertThat(preparation.id(), Is.is("8b6281c5e99c41313a83777c3ab43b06adda9e5c"));
     }
 
     @Test

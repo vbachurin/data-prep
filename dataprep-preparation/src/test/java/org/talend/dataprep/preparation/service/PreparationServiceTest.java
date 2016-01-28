@@ -153,12 +153,12 @@ public class PreparationServiceTest {
     @Test
     public void list() throws Exception {
         when().get("/preparations").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
-        final Preparation preparation1 = new Preparation("1234", ROOT_STEP.id());
+        final Preparation preparation1 = new Preparation("1234", rootStep.id(), versionService.version().getVersionId());
         preparation1.setCreationDate(0);
         repository.add(preparation1);
         when().get("/preparations").then().statusCode(HttpStatus.OK.value())
                 .body(sameJSONAs("[\"8b6281c5e99c41313a83777c3ab43b06adda9e5c\"]"));
-        final Preparation preparation2 = new Preparation("5678", ROOT_STEP.id());
+        final Preparation preparation2 = new Preparation("5678", rootStep.id(), versionService.version().getVersionId());
         preparation2.setCreationDate(0);
         repository.add(preparation2);
         List<String> list = when().get("/preparations").jsonPath().getList("");
@@ -167,7 +167,7 @@ public class PreparationServiceTest {
 
     @Test
     public void get() throws Exception {
-        Preparation preparation = new Preparation("1234", ROOT_STEP.id());
+        Preparation preparation = new Preparation("1234", rootStep.id(), versionService.version().getVersionId());
         preparation.setCreationDate(0);
         preparation.setLastModificationDate(12345);
         repository.add(preparation);
@@ -329,7 +329,7 @@ public class PreparationServiceTest {
                 .when().put("/preparations").asString();
 
         // Test preparation details update
-        preparationId = given().contentType(ContentType.JSON)
+        String updatedId = given().contentType(ContentType.JSON)
                 .body("{\"name\": \"éàçè\", \"dataSetId\": \"1234\"}".getBytes("UTF-8")).when()
                 .put("/preparations/{id}", preparationId).asString();
 
