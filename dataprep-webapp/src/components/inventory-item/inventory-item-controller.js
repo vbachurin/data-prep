@@ -48,7 +48,7 @@
          * @description given an inventory Item, it opens it
          */
         vm.openInventoryItem = function openInventoryItem () {
-            if (vm.relatedInventories.length) {
+            if (vm.relatedInventories && vm.relatedInventories.length) {
                 vm.openRelatedInventoryItem(vm.relatedInventories[0]);
             }
             else {
