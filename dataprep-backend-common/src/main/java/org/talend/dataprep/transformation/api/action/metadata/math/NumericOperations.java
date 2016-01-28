@@ -199,7 +199,7 @@ public class NumericOperations extends ActionMetadata implements ColumnAction, O
             // Format result:
             return toReturn.setScale(scale, rm).stripTrailingZeros().toPlainString();
         }
-        catch (ParseException | ArithmeticException | NullPointerException e) {
+        catch (NumberFormatException | ArithmeticException | NullPointerException e) {
             return "";
         }
     }

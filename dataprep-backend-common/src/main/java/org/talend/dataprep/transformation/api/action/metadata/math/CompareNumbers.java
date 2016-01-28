@@ -50,7 +50,7 @@ public class CompareNumbers extends ActionMetadata implements ColumnAction, Othe
 
     protected static final String LE = "le";
 
-    private  static final Logger LOGGER = LoggerFactory.getLogger(CompareNumbers.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompareNumbers.class);
 
     /**
      * @see ActionMetadata#getName()

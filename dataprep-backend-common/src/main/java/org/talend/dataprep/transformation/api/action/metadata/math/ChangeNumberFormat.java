@@ -37,7 +37,7 @@ public class ChangeNumberFormat extends ActionMetadata implements ColumnAction {
      * Parameter to define original decimal & grouping separators.
      */
     public static final String FROM_SEPARATORS = "from_separators";
-    
+
     /**
      * The pattern shown to the user as a list. An item in this list is the value 'custom', which allow the user to
      * manually enter his pattern.
@@ -53,20 +53,30 @@ public class ChangeNumberFormat extends ActionMetadata implements ColumnAction {
      * Keys used in the values of different parameters:
      */
     protected static final String CUSTOM = "custom";
+
     protected static final String UNKNOWN_SEPARATORS = "unknown_separators";
+
     protected static final String US_SEPARATORS = "us_separators";
+
     protected static final String EU_SEPARATORS = "eu_separators";
+
     protected static final String US_PATTERN = "us_pattern";
+
     protected static final String EU_PATTERN = "eu_pattern";
+
     protected static final String SCIENTIFIC = "scientific";
 
     /**
      * Constants to build parameters name by concat:
      */
     protected static final String FROM = "from";
+
     protected static final String TARGET = "target";
+
     protected static final String GROUPING = "_grouping";
+
     protected static final String DECIMAL = "_decimal";
+
     protected static final String SEPARATOR = "_separator";
 
     /**

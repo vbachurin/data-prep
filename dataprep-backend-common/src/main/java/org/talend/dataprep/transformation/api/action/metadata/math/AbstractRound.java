@@ -14,7 +14,6 @@ package org.talend.dataprep.transformation.api.action.metadata.math;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.ParseException;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -51,7 +50,7 @@ public abstract class AbstractRound extends ActionMetadata implements ColumnActi
             bd = bd.setScale(0, getRoundingMode());
             long result = bd.longValue();
             row.set(columnId, String.valueOf(result));
-        } catch (ParseException nfe2) {
+        } catch (NumberFormatException nfe2) {
             // Nan: nothing to do, but fail silently (no change in value)
         }
     }

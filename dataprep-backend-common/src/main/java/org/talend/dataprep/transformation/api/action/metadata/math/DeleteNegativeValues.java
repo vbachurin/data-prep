@@ -61,7 +61,7 @@ public class DeleteNegativeValues extends AbstractDelete {
             BigDecimal bd = BigDecimalParser.toBigDecimal(value.trim());
             return bd.compareTo(BigDecimal.ZERO) < 0;
         }
-        catch (ParseException exc){
+        catch (NumberFormatException exc){
             return false;
         }
     }

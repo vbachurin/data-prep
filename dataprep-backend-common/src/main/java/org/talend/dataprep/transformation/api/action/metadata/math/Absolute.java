@@ -13,7 +13,6 @@
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -68,7 +67,7 @@ public class Absolute extends ActionMetadata implements ColumnAction {
         try {
             BigDecimal bd = BigDecimalParser.toBigDecimal(value);
             return bd.abs().toPlainString();
-        } catch (ParseException nfe2) {
+        } catch (NumberFormatException nfe2) {
             return null;
         }
     }
