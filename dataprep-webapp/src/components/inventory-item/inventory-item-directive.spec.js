@@ -211,34 +211,4 @@ describe('InventoryItem directive', function () {
             }));
         });
     });
-
-    describe('should NOT display actions if disabled', function() {
-        beforeEach(inject(function ($rootScope, $compile) {
-            scope = $rootScope.$new();
-
-            scope.dataset = dataset;
-            scope.openDataset = function(){};
-            scope.copy = function(){};
-            scope.remove = function(){};
-            createElement = function () {
-                element = angular.element('<inventory-item ' +
-                    'item="dataset" ' +
-                    'details="INVENTORY_DETAILS" ' +
-                    'type= "dataset" ' +
-                    'open="openDataset" >' +
-                    '</inventory-item>');
-                $compile(element)(scope);
-                scope.$digest();
-                return element;
-            };
-        }));
-
-        it('should render dataset directive', inject(function () {
-            //when
-            createElement();
-
-            //then
-            expect(element.find('a').length).toBe(0); //copy and remove actions
-        }));
-    });
 });
