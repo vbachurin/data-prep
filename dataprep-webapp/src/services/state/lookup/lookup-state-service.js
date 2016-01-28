@@ -32,7 +32,7 @@
 
     /**
      * @ngdoc service
-     * @name data-prep.services.state.service:GridStateService
+     * @name data-prep.services.state.service:LookupStateService
      * @description Lookup state service.
      */
     function LookupStateService() {

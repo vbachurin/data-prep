@@ -1,11 +1,13 @@
 package org.talend.dataprep.dataset.service;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,6 +33,7 @@ import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.folder.FolderEntry;
 import org.talend.dataprep.api.service.info.VersionService;
 import org.talend.dataprep.api.user.UserData;
+import org.talend.dataprep.dataset.configuration.EncodingSupport;
 import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
 import org.talend.dataprep.dataset.service.analysis.asynchronous.AsynchronousDataSetAnalyzer;
 import org.talend.dataprep.dataset.service.analysis.asynchronous.StatisticsAnalysis;
@@ -81,6 +84,10 @@ public class DataSetService {
     @Autowired
     private List<SynchronousDataSetAnalyzer> synchronousAnalyzers;
 
+    /** Format analyzer needed to update the schema. */
+    @Autowired
+    private FormatAnalysis formatAnalyzer;
+
     /** Quality analyzer needed to compute quality on dataset sample. */
     @Autowired
     private QualityAnalysis qualityAnalyzer;
@@ -120,6 +127,10 @@ public class DataSetService {
     /** Folder repository. */
     @Autowired
     private FolderRepository folderRepository;
+
+    /** Encoding support service. */
+    @Autowired
+    private EncodingSupport encodings;
 
     /** DataSet metadata builder. */
     @Autowired
@@ -753,42 +764,73 @@ public class DataSetService {
         lock.lock();
         try {
             LOG.debug("updateDataSet: {}", dataSetMetadata);
-            // we retry information we do not update
-            DataSetMetadata previous = dataSetMetadataRepository.get(dataSetId);
-            if (previous == null) {
+
+            //
+            // Only part of the metadata can be updated, so the original dataset metadata is loaded and updated
+            //
+            DataSetMetadata metadataForUpdate = dataSetMetadataRepository.get(dataSetId);
+            DataSetMetadata original = metadataBuilder.metadata().copy(metadataForUpdate).build();
+
+            if (metadataForUpdate == null) {
                 // No need to silently create the data set metadata: associated content will most likely not exist.
                 throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST, ExceptionContext.build().put("id", dataSetId));
             }
-            try {
-                // Update existing data set metadata with new one.
-                previous.setName(dataSetMetadata.getName());
-                Optional<SchemaParserResult.SheetContent> sheetContentFound = previous.getSchemaParserResult().getSheetContents()
-                        .stream().filter(sheetContent -> dataSetMetadata.getSheetName().equals(sheetContent.getName()))
-                        .findFirst();
 
-                if (sheetContentFound.isPresent()) {
-                    List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
-                    if (previous.getRowMetadata() == null) {
-                        previous.setRowMetadata(new RowMetadata(Collections.emptyList()));
+            try {
+                // update the name
+                metadataForUpdate.setName(dataSetMetadata.getName());
+
+                // update the sheet content (in case of a multi-sheet excel file)
+                if (metadataForUpdate.getSchemaParserResult() != null) {
+                    Optional<SchemaParserResult.SheetContent> sheetContentFound = metadataForUpdate.getSchemaParserResult()
+                            .getSheetContents().stream()
+                            .filter(sheetContent -> dataSetMetadata.getSheetName().equals(sheetContent.getName())).findFirst();
+
+                    if (sheetContentFound.isPresent()) {
+                        List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
+                        if (metadataForUpdate.getRowMetadata() == null) {
+                            metadataForUpdate.setRowMetadata(new RowMetadata(Collections.emptyList()));
+                        }
+                        metadataForUpdate.getRowMetadata().setColumns(columnMetadatas);
                     }
-                    previous.getRowMetadata().setColumns(columnMetadatas);
+
+                    metadataForUpdate.setSheetName(dataSetMetadata.getSheetName());
+                    metadataForUpdate.setSchemaParserResult(null);
                 }
-                // Set the user-selected sheet name
-                previous.setSheetName(dataSetMetadata.getSheetName());
-                previous.setSchemaParserResult(null);
+
+                // update parameters & encoding (so that user can change import parameters for CSV)
+                metadataForUpdate.getContent().setParameters(dataSetMetadata.getContent().getParameters());
+                metadataForUpdate.setEncoding(dataSetMetadata.getEncoding());
+
+                // update limit
+                final Optional<Long> newLimit = dataSetMetadata.getContent().getLimit();
+                if (newLimit.isPresent()) {
+                    metadataForUpdate.getContent().setLimit(newLimit.get());
+                }
+
+                // Validate that the new data set metadata and removes the draft status
                 FormatGuess formatGuess = formatGuessFactory.getFormatGuess(dataSetMetadata.getContent().getFormatGuessId());
-                DraftValidator draftValidator = formatGuess.getDraftValidator();
-                // Validate that the new data set metadata removes the draft status
-                DraftValidator.Result result = draftValidator.validate(dataSetMetadata);
-                if (result.isDraft()) {
-                    // This is not an exception case: data set may remain a draft after update (although rather
-                    // unusual).
-                    LOG.warn("Data set #{} is still a draft after update.", dataSetId);
-                    return;
+                try {
+                    DraftValidator draftValidator = formatGuess.getDraftValidator();
+                    DraftValidator.Result result = draftValidator.validate(dataSetMetadata);
+                    if (result.isDraft()) {
+                        // This is not an exception case: data set may remain a draft after update (although rather
+                        // unusual)
+                        LOG.warn("Data set #{} is still a draft after update.", dataSetId);
+                        return;
+                    }
+                    // Data set metadata to update is no longer a draft
+                    metadataForUpdate.setDraft(false);
+                } catch (UnsupportedOperationException e) {
+                    // no need to validate draft here
                 }
-                // Data set metadata to update is no longer a draft
-                previous.setDraft(false);
-                dataSetMetadataRepository.add(previous); // Save it
+
+                // update schema
+                formatAnalyzer.update(original, metadataForUpdate);
+
+                // save the result
+                dataSetMetadataRepository.add(metadataForUpdate);
+
                 // all good mate!! so send that to jms
                 // Asks for a in depth schema analysis (for column type information).
                 queueEvents(dataSetId, FormatAnalysis.class);
@@ -927,6 +969,13 @@ public class DataSetService {
         } finally {
             lock.unlock();
         }
+    }
+
+    @RequestMapping(value = "/datasets/encodings", method = GET, consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "list the supported encodings for dataset", notes = "This list can be used by user to change dataset encoding.")
+    @Timed
+    public List<String> listSupportedEncodings() {
+        return encodings.getSupportedCharsets().stream().map(Charset::displayName).collect(Collectors.toList());
     }
 
     /**

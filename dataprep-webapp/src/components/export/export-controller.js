@@ -109,11 +109,6 @@
                 }
             });
         }
-
-
-        // get types list
-        vm.exportService.refreshTypes()
-            .then(vm.exportService.resetCurrentParameters);
     }
 
     /**

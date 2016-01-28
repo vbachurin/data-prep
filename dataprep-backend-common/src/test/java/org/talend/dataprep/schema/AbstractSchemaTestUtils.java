@@ -26,7 +26,7 @@ public abstract class AbstractSchemaTestUtils {
     protected IoTestUtils ioTestUtils;
 
     @Autowired
-    private DataSetMetadataBuilder metadataBuilder;
+    protected DataSetMetadataBuilder metadataBuilder;
 
     /**
      * Return the SchemaParser.Request for the given parameters.

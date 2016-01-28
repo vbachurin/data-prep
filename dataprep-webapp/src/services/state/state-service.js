@@ -32,6 +32,12 @@
             setNameEditionMode: PlaygroundStateService.setNameEditionMode,
             updateDatasetStatistics: PlaygroundStateService.updateDatasetStatistics,
 
+            //playground - dataset parameters
+            toggleDatasetParameters: PlaygroundStateService.toggleDatasetParameters,
+            hideDatasetParameters: PlaygroundStateService.hideDatasetParameters,
+            setIsSendingDatasetParameters: PlaygroundStateService.setIsSendingDatasetParameters,
+            setDatasetEncodings: PlaygroundStateService.setDatasetEncodings,
+
             //playground - recipe
             hideRecipe: PlaygroundStateService.hideRecipe,
             showRecipe: PlaygroundStateService.showRecipe,
