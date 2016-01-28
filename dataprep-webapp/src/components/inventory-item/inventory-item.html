@@ -1,9 +1,8 @@
-<div class="inventory-item">
+<div class="inventory-item" ng-dblclick="inventoryItemCtrl.openInventoryItem()">
     <div class="inventory-icon"
-         translate-once-title="OPEN_ACTION"
-         translate-values="{type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name}"
+         title="{{'OPEN_ACTION' | translate: inventoryItemCtrl.getTooltipContent()}}"
          ng-switch="inventoryItemCtrl.item.type"
-         ng-click="inventoryItemCtrl.open(inventoryItemCtrl.item)">
+         ng-click="inventoryItemCtrl.openInventoryItem()">
         <img src="/assets/images/inventory/csv_file.png" ng-switch-when="text/csv"/>
         <img src="/assets/images/inventory/xls_file.png" ng-switch-when="application/vnd.ms-excel"/>
         <img src="/assets/images/inventory/generic_file.png" ng-switch-default/>
@@ -16,8 +15,8 @@
         <talend-editable-text ng-if="inventoryItemCtrl.open && inventoryItemCtrl.rename"
                               text="inventoryItemCtrl.item.name"
                               text-class="inventory-title"
-                              text-title="{{ 'OPEN_ACTION' | translate: {type: inventoryItemCtrl.type, name: inventoryItemCtrl.item.name} }}"
-                              on-text-click="inventoryItemCtrl.open(inventoryItemCtrl.item)"
+                              text-title="{{'OPEN_ACTION' | translate: inventoryItemCtrl.getTooltipContent()}}"
+                              on-text-click="inventoryItemCtrl.openInventoryItem()"
                               on-validate="inventoryItemCtrl.rename(inventoryItemCtrl.item, text)">
         </talend-editable-text>
         <span ng-if="!inventoryItemCtrl.open || !inventoryItemCtrl.rename"
@@ -39,12 +38,41 @@
 
     <!-- Not draft actions icons -->
     <div ng-if="!inventoryItemCtrl.item.draft" class="inventory-actions">
-        <a data-icon="c"
-           class="btn-icon btn-transparent"
-           ng-if="!!inventoryItemCtrl.item.defaultPreparation && inventoryItemCtrl.open && inventoryItemCtrl.rename"
-           translate-once-title="OPEN_ACTION"
-           translate-values="{type: 'preparation', name: inventoryItemCtrl.item.defaultPreparation.name}"
-           ui-sref="nav.home.preparations({prepid: inventoryItemCtrl.item.defaultPreparation.id})"></a>
+        <div class="buttons-group">
+            <a data-icon="c"
+               class="btn-icon btn-transparent preparations"
+               title="{{'OPEN_ACTION' | translate: inventoryItemCtrl.getTooltipContent()}}"
+               ng-if="inventoryItemCtrl.relatedInventories.length"
+               ng-click="inventoryItemCtrl.openRelatedInventoryItem(inventoryItemCtrl.relatedInventories[0])">
+            </a>
+
+            <talend-dropdown class="btn-transparent" ng-if="inventoryItemCtrl.relatedInventories.length">
+                <div class="dropdown-container">
+                <span class="dropdown-action">
+                    <a class="dropdown-button preparations-dropdown"></a>
+                </span>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-container-li" ng-click="inventoryItemCtrl.open(inventoryItemCtrl.item)">
+                            <a>
+                                <span data-icon="K" >&nbsp;</span>
+                                <span class="dropdown-container-middle" translate-once="CREATE_NEW_PREP"></span>
+                            </a>
+                        </li>
+                        <li class="dropdown-container-li divider"></li>
+                        <li class="dropdown-container-li" ng-repeat="prepa in inventoryItemCtrl.relatedInventories track by $index" ng-click="inventoryItemCtrl.openRelatedInventoryItem(prepa)">
+                            <a >
+                                <span class="related-inv">{{prepa.name}}</span>
+                                <span >&nbsp;-&nbsp;</span>
+                                <span  translate-once="REL_INV_MODIFIED"></span>
+                                <span>&nbsp;{{'PREPARATION_DETAILS_SINCE' | translate : {since : prepa.lastModificationDate} }}</span>
+                                <span >&nbsp;-&nbsp;</span>
+                                <span>{{'PREPARATION_DETAILS_STEPS' | translate : {nbsteps: prepa.actions.length} }}</span></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </talend-dropdown>
+        </div>
 
         <talend-file-selector
                 ng-if="inventoryItemCtrl.update"

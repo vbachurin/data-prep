@@ -69,6 +69,7 @@ describe('Dataset list controller', function () {
         spyOn(StorageService, 'setDatasetsOrder').and.returnValue();
 
         spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when(true));
+        spyOn(PlaygroundService, 'load').and.returnValue($q.when(true));
         spyOn(StateService, 'showPlayground').and.returnValue();
         spyOn(MessageService, 'error').and.returnValue();
         spyOn($state, 'go').and.returnValue();
@@ -926,6 +927,28 @@ describe('Dataset list controller', function () {
 
             //then
             expect(UpdateWorkflowService.updateDataset).toHaveBeenCalledWith(existingDataset, newDataSet);
+        }));
+    });
+
+    describe('related preparations', function () {
+
+        it('should load preparation and show playground', inject(function ($timeout, PlaygroundService, StateService) {
+            //given
+            var ctrl = createController();
+            var preparation = {
+                id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
+                dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
+                author: 'anonymousUser'
+            };
+
+            //when
+            ctrl.openPreparation(preparation);
+            scope.$digest();
+            $timeout.flush();
+
+            //then
+            expect(PlaygroundService.load).toHaveBeenCalledWith(preparation);
+            expect(StateService.showPlayground).toHaveBeenCalled();
         }));
     });
 });

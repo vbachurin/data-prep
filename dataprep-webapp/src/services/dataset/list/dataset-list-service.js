@@ -25,7 +25,7 @@
             update : update,
             processCertification : processCertification,
             delete : deleteDataset,
-            refreshDefaultPreparation : refreshDefaultPreparation,
+            refreshPreparations : refreshPreparations,
             getDatasetsPromise : getDatasetsPromise,
             hasDatasetsPromise: hasDatasetsPromise
         };
@@ -201,13 +201,13 @@
 
         /**
          * @ngdoc method
-         * @name refreshDefaultPreparation
+         * @name refreshPreparations
          * @methodOf data-prep.services.dataset.service:DatasetListService
          * @param {object[]} preparations The preparations to use
          * @description [PRIVATE] Set the default preparation to each dataset
          * @returns {promise} The process promise
          */
-        function refreshDefaultPreparation(preparations) {
+        function refreshPreparations(preparations) {
             return getDatasetsPromise()
                 .then(function(datasets) {
                         // group preparation per dataset
@@ -218,7 +218,8 @@
                         // reset default preparation for all datasets
                         _.forEach(datasets, function(dataset){
                             var preparations = datasetPreps[dataset.id];
-                            dataset.defaultPreparation = preparations && preparations.length === 1 ?  preparations[0] : null;
+                            dataset.preparations = preparations || [];
+                            dataset.preparations = _.sortByOrder(dataset.preparations, 'lastModificationDate', false);
                         });
 
                         return datasets;

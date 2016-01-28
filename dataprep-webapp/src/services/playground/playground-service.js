@@ -21,8 +21,14 @@
     function PlaygroundService($rootScope, $q, state, DatasetService, DatagridService, PreviewService,
                                RecipeService, TransformationCacheService, PreparationService,
                                StatisticsService, HistoryService, StateService,
-                               OnboardingService, MessageService, ExportService) {
-        var DEFAULT_NAME = 'Preparation draft';
+                               OnboardingService, MessageService, ExportService, $translate) {
+
+        var INVENTORY_PREFIX = '';
+        var INVENTORY_SUFFIX = ' ' + $translate.instant('PREPARATION');
+
+        function wrapInventoryName (invName){
+            return INVENTORY_PREFIX + invName + INVENTORY_SUFFIX;
+        }
 
         var service = {
             /**
@@ -90,7 +96,7 @@
                             throw Error('Empty data');
                         }
 
-                        service.preparationName = '';
+                        service.preparationName = wrapInventoryName(dataset.name);
                         reset(dataset, data);
                         StateService.hideRecipe();
                         StateService.setNameEditionMode(true);
@@ -202,7 +208,7 @@
 
             return promise.then(function (preparation) {
                 StateService.setCurrentPreparation(preparation);
-                service.preparationName = name;
+                service.preparationName = preparation.name;
                 return preparation;
             });
         }
@@ -261,15 +267,14 @@
             //create the preparation and taf it draft if it does not exist
             var prepCreation = state.playground.preparation ?
                 $q.when(state.playground.preparation) :
-                createOrUpdatePreparation(DEFAULT_NAME)
+                createOrUpdatePreparation(wrapInventoryName(state.playground.dataset.name))
                     .then(function (preparation) {
                         preparation.draft = true;
-                        service.preparationName = '';
                         return preparation;
                     });
 
             return prepCreation
-            //append step
+                //append step
                 .then(function (preparation) {
                     return PreparationService.appendStep(preparation.id, {action: action, parameters: parameters});
                 })

@@ -93,7 +93,7 @@
   }
 
   .inventory-list {
-    max-height: 500px;
+    max-height: 60vh;
 
     .inventory-item-row {
       @include display(flex);
@@ -104,6 +104,7 @@
         @include flex-basis(30px);
         @include flex-grow(0);
         @include flex-shrink(0);
+        outline:none;
       }
 
       .inventory-entry {

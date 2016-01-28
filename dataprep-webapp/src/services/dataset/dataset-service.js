@@ -160,7 +160,7 @@
          */
         function consolidatePreparationsAndDatasets (response) {
             PreparationListService.refreshMetadataInfos(state.inventory.datasets)
-                .then(DatasetListService.refreshDefaultPreparation);
+                .then(DatasetListService.refreshPreparations);
 
             return response;
         }
