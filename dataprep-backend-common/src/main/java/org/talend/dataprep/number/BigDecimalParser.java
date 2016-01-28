@@ -51,9 +51,9 @@ public class BigDecimalParser {
      * @throws ParseException if <code>from</code> can not be parsed as a number or if <code>from</code> is
      * <code>null</code>.
      */
-    public static BigDecimal toBigDecimal(String from) throws ParseException {
+    public static BigDecimal toBigDecimal(String from) throws NumberFormatException {
         if (from == null) {
-            throw new ParseException("null is not a valid number", 0);
+            throw new NumberFormatException("null is not a valid number");
         }
         final DecimalFormatSymbols decimalFormatSymbols = guessSeparators(from);
         return toBigDecimal(from, decimalFormatSymbols.getDecimalSeparator(), decimalFormatSymbols.getGroupingSeparator());
@@ -70,9 +70,9 @@ public class BigDecimalParser {
      * @return an instance of BigDecimal
      * @throws ParseException if <code>from</code> can not be parsed as a number with the given separators
      */
-    public static BigDecimal toBigDecimal(String from, char decimalSeparator, char groupingSeparator) throws ParseException {
+    public static BigDecimal toBigDecimal(String from, char decimalSeparator, char groupingSeparator) throws NumberFormatException {
         if (from == null) {
-            throw new ParseException("null is not a valid number", 0);
+            throw new NumberFormatException("null is not a valid number");
         }
         // Remove grouping separators:
         from = from.replaceAll("[" + groupingSeparator + "]", "");
@@ -93,7 +93,7 @@ public class BigDecimalParser {
                     // nothing to do, just test next format
                 }
             }
-            throw new ParseException("'" + from + "' can not parsed as a number", 0);
+            throw new NumberFormatException("'" + from + "' can not parsed as a number");
         }
     }
 

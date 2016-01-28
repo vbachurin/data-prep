@@ -3,7 +3,6 @@ package org.talend.dataprep.transformation.api.action.metadata.math;
 import static org.apache.commons.lang.BooleanUtils.toStringTrueFalse;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -175,7 +174,7 @@ public class CompareNumbers extends ActionMetadata implements ColumnAction, Othe
             default:
                 return false;
             }
-        } catch (ParseException e) {
+        } catch (NumberFormatException e) {
             LOGGER.debug("Unable to compare values '{}' and '{}'", value1, value2, e);
             return false;
         }
